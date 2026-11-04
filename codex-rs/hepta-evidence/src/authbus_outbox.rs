@@ -10,6 +10,7 @@ use crate::EvidenceError;
 use crate::HeptaEvidenceStore;
 use crate::authbus_outbox_record::*;
 use crate::authbus_recovery::replay_checkpoint_pending;
+use crate::authbus_recovery::verify_replay_frontier;
 use crate::authbus_store::advance_replay;
 use crate::schema_validation::classify_sqlx_error;
 use crate::store::now_millis;
@@ -39,6 +40,12 @@ impl HeptaEvidenceStore {
             .await
             .map_err(classify_sqlx_error)?;
         let now = now_millis()?;
+        crate::authbus_issuer_floor::require_current_issuer(&mut tx, issuer).await?;
+        crate::authbus_issuer_floor::require_bounded_deadline(
+            issuer,
+            message.claims.expires_at_ms,
+            clock(now)?,
+        )?;
         let authenticated = message
             .authenticate(
                 issuer,
@@ -97,9 +104,9 @@ impl HeptaEvidenceStore {
         sqlx::query(
             "INSERT INTO authbus_outbox
             (delivery_id, issuer_id, key_epoch, message_id, subject_id, scope_digest,
-             payload_digest, sequence, expires_at_ms, signature, payload, state, fence,
+             payload_digest, sequence, expires_at_ms, auth_version, signature, payload, state, fence,
              attempts, available_at_ms, created_at_ms, updated_at_ms)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'queued', 0, 0, ?, ?, ?)",
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'queued', 0, 0, ?, ?, ?)",
         )
         .bind(delivery_id.as_array().as_slice())
         .bind(c.issuer_id.as_str())
@@ -110,6 +117,7 @@ impl HeptaEvidenceStore {
         .bind(c.payload_digest.as_array().as_slice())
         .bind(c.sequence.to_be_bytes().as_slice())
         .bind(c.expires_at_ms.to_be_bytes().as_slice())
+        .bind(i64::from(issuer.verifying_key.algorithm().schema_version()))
         .bind(message.signature.as_slice())
         .bind(payload)
         .bind(now)
@@ -122,6 +130,11 @@ impl HeptaEvidenceStore {
             .await?
             .ok_or(AuthBusOutboxError::NotFound)?
             .status;
+        crate::authbus_issuer_floor::require_bounded_deadline(
+            issuer,
+            message.claims.expires_at_ms,
+            clock(now_millis()?)?,
+        )?;
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(status)
     }
@@ -179,6 +192,7 @@ impl HeptaEvidenceStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
+        crate::authbus_issuer_floor::require_current_issuer(&mut tx, issuer).await?;
         let now = now_millis()?;
         let affected = sqlx::query(
             "UPDATE authbus_outbox SET state = 'quarantined', fence = fence + 1,
@@ -217,6 +231,7 @@ async fn pending(
         .begin_with("BEGIN IMMEDIATE")
         .await
         .map_err(classify_sqlx_error)?;
+    verify_replay_frontier(&mut tx).await?;
     if replay_checkpoint_pending(&mut tx).await? {
         return Err(AuthBusOutboxError::Unavailable);
     }

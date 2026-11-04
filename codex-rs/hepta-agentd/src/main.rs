@@ -11,6 +11,10 @@ use std::ffi::OsString;
 use std::sync::Arc;
 
 fn main() -> anyhow::Result<()> {
+    // Sandbox helpers run with a reduced environment and are not daemons.
+    // Normal daemon startup still binds its private home before arg0 aliases
+    // or runtime threads can read configuration.
+    codex_arg0::dispatch_helper_if_requested();
     let mut config = AgentdConfig::from_process_environment()?;
     let codex_home = AbsolutePathBuf::from_absolute_path(&config.identity().home_root)?;
     codex_utils_home_dir::set_process_codex_home_override(codex_home)?;

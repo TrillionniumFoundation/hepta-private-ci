@@ -1,0 +1,28 @@
+{
+  "command": [
+    "just",
+    "fix",
+    "--locked",
+    "-p",
+    "codex-hepta-contracts",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-authbus",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-arg0",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "base": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "exit_code": 101,
+  "elapsed_seconds": 693.367,
+  "log": "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-scoped-fix.log",
+  "log_sha256": "d4067ccbbd4dde6f51f46532f896c1efbe1e0c13b9a9f8716537911dac96f103"
+}

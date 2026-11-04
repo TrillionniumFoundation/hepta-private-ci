@@ -12,9 +12,11 @@ use std::sync::atomic::Ordering;
 use crate::AuthorityClock;
 use crate::AuthorityFrontierStore;
 use crate::AuthorityTrustError;
+use crate::FinalUseAuthenticationProfile;
 use crate::SystemAuthorityClock;
 use crate::VerifiedUseBoundaryV1;
 use crate::VerifiedUseTokenWitnessV1;
+use crate::authority_authentication::PinnedAuthorityKey;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
@@ -23,20 +25,15 @@ use sha2::Sha256;
 
 #[path = "final_use_live_owner.rs"]
 mod live_owner;
-#[path = "final_use_ml_dsa65_v2.rs"]
-mod ml_dsa65_v2;
+#[path = "final_use_pq.rs"]
+mod pq;
 #[path = "final_use_store.rs"]
 mod store;
-pub use ml_dsa65_v2::FINAL_USE_ML_DSA65_V2_CONTEXT;
-pub use ml_dsa65_v2::FinalUseMlDsa65IssuerTrustKeyV2;
-use ml_dsa65_v2::IssuerVerifier;
-pub use ml_dsa65_v2::encode_ml_dsa65_final_use_signature_v2;
 #[cfg(windows)]
 #[path = "final_use_windows.rs"]
 mod windows_owner;
 
 const MAX_CLAIMS: usize = 1_048_576;
-const MAX_REVOKED_GRANTS: usize = 16_384;
 const MAX_LIFETIME_MS: u64 = 300_000;
 const MAX_ISSUER_TRUST_KEYS: usize = 8;
 
@@ -76,17 +73,9 @@ pub struct FinalUseGrant {
 }
 
 impl FinalUseGrant {
-    /// Canonical V1 signing input for an independently operated issuer.
+    /// Canonical profile-bound signing input for an independently operated issuer.
     pub fn signing_bytes(&self) -> Result<Vec<u8>, FinalUseError> {
-        self.canonical_signing_bytes(/*schema*/ 1, b"hepta.kernel.authority.final-use.v1\0")
-    }
-
-    fn canonical_signing_bytes(
-        &self,
-        schema: u32,
-        domain: &[u8],
-    ) -> Result<Vec<u8>, FinalUseError> {
-        if self.schema_version != schema
+        if !matches!(self.schema_version, 1 | 2)
             || self.authority_epoch == 0
             || !identifier(&self.signer_id)
             || !identifier(&self.grant_id)
@@ -101,7 +90,11 @@ impl FinalUseGrant {
         {
             return Err(FinalUseError::InvalidGrant);
         }
-        let mut bytes = domain.to_vec();
+        let mut bytes = match self.schema_version {
+            1 => b"hepta.kernel.authority.final-use.v1\0".to_vec(),
+            2 => b"hepta.kernel.authority.final-use.pq.v2\0".to_vec(),
+            _ => return Err(FinalUseError::InvalidGrant),
+        };
         bytes.extend(serde_json::to_vec(self).map_err(|_| FinalUseError::InvalidGrant)?);
         Ok(bytes)
     }
@@ -128,7 +121,7 @@ pub struct FinalUseIssuerTrustKey {
 #[derive(Clone)]
 struct PinnedIssuerKey {
     key_id: String,
-    key: IssuerVerifier,
+    key: PinnedAuthorityKey,
     not_before_authority_epoch: u64,
     not_after_authority_epoch: u64,
 }
@@ -164,7 +157,7 @@ fn pin_issuer_keys(
         digest.update(candidate.not_after_authority_epoch.to_le_bytes());
         pinned.push(PinnedIssuerKey {
             key_id: candidate.key_id,
-            key: IssuerVerifier::Ed25519V1(key),
+            key: PinnedAuthorityKey::Classical(key),
             not_before_authority_epoch: candidate.not_before_authority_epoch,
             not_after_authority_epoch: candidate.not_after_authority_epoch,
         });
@@ -194,14 +187,24 @@ pub struct FinalUseFrontier {
 
 impl FinalUseFrontier {
     pub fn for_initial_head(head: &FinalUseRevocations) -> Result<Self, FinalUseError> {
-        if !valid_head(head) {
+        Self::for_initial_head_with_profile(head, FinalUseAuthenticationProfile::ClassicalV1)
+    }
+
+    pub fn for_initial_head_with_profile(
+        head: &FinalUseRevocations,
+        profile: FinalUseAuthenticationProfile,
+    ) -> Result<Self, FinalUseError> {
+        if !valid_head_with_profile(head, profile) {
             return Err(FinalUseError::InvalidTrust);
         }
-        Ok(frontier_for_state(&State {
-            head: head.clone(),
-            used_nonces: BTreeSet::new(),
-            failed: false,
-        }))
+        Ok(frontier_for_state_with_profile(
+            &State {
+                head: head.clone(),
+                used_nonces: BTreeSet::new(),
+                failed: false,
+            },
+            profile,
+        ))
     }
 }
 
@@ -246,6 +249,7 @@ struct State {
 struct Inner {
     signer_id: String,
     issuer_keys: Vec<PinnedIssuerKey>,
+    profile: FinalUseAuthenticationProfile,
     state: Mutex<State>,
     active_dispatches: AtomicUsize,
     store: store::Store,
@@ -398,9 +402,10 @@ impl FinalUseAuthority {
         let (store, state) = store::Store::open(directory, &signer_id, verifying_key, head)?;
         Ok(Self(Arc::new(Inner {
             signer_id,
+            profile: FinalUseAuthenticationProfile::ClassicalV1,
             issuer_keys: vec![PinnedIssuerKey {
                 key_id: "single-key".into(),
-                key: IssuerVerifier::Ed25519V1(key),
+                key: PinnedAuthorityKey::Classical(key),
                 not_before_authority_epoch: 1,
                 not_after_authority_epoch: u64::MAX,
             }],
@@ -439,9 +444,10 @@ impl FinalUseAuthority {
         }
         Ok(Self(Arc::new(Inner {
             signer_id,
+            profile: FinalUseAuthenticationProfile::ClassicalV1,
             issuer_keys: vec![PinnedIssuerKey {
                 key_id: "single-key".into(),
-                key: IssuerVerifier::Ed25519V1(key),
+                key: PinnedAuthorityKey::Classical(key),
                 not_before_authority_epoch: 1,
                 not_after_authority_epoch: u64::MAX,
             }],
@@ -480,6 +486,7 @@ impl FinalUseAuthority {
         }
         Ok(Self(Arc::new(Inner {
             signer_id,
+            profile: FinalUseAuthenticationProfile::ClassicalV1,
             issuer_keys,
             state: Mutex::new(state),
             active_dispatches: AtomicUsize::new(0),
@@ -497,6 +504,10 @@ impl FinalUseAuthority {
             .collect()
     }
 
+    pub fn authentication_profile(&self) -> FinalUseAuthenticationProfile {
+        self.0.profile
+    }
+
     pub fn frontier(&self) -> Result<FinalUseFrontier, FinalUseError> {
         let state = self
             .0
@@ -504,7 +515,7 @@ impl FinalUseAuthority {
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
         let state = self.0.ensure_live_state(state)?;
-        Ok(frontier_for_state(&state))
+        Ok(frontier_for_state_with_profile(&state, self.0.profile))
     }
 
     /// Return a coherent read-only snapshot that lets the trusted host alert
@@ -524,7 +535,7 @@ impl FinalUseAuthority {
             used_nonces: state.used_nonces.len(),
             revoked_grants: state.head.revoked_grant_ids.len(),
             max_claims: MAX_CLAIMS,
-            max_revocations: MAX_CLAIMS,
+            max_revocations: self.0.profile.max_revocations(),
         })
     }
 
@@ -549,7 +560,7 @@ impl FinalUseAuthority {
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
         let mut state = self.0.ensure_live_state(state)?;
-        if !valid_head(&head)
+        if !valid_head_with_profile(&head, self.0.profile)
             || head.authority_epoch < state.head.authority_epoch
             || head.revision <= state.head.revision
             || (head.authority_epoch == state.head.authority_epoch
@@ -602,25 +613,17 @@ impl FinalUseAuthority {
         signed: &SignedFinalUseGrant,
         expected: &FinalUseBinding,
     ) -> Result<Vec<u8>, FinalUseError> {
-        let input = self
-            .0
-            .issuer_keys
-            .first()
-            .ok_or(FinalUseError::InvalidTrust)?
-            .key
-            .signing_bytes(&signed.grant)?;
+        if signed.grant.schema_version != self.0.profile.grant_schema() {
+            return Err(FinalUseError::InvalidGrant);
+        }
+        let input = signed.grant.signing_bytes()?;
         if signed.grant.signer_id != self.0.signer_id || &signed.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
         let verified = self.0.issuer_keys.iter().any(|candidate| {
             signed.grant.authority_epoch >= candidate.not_before_authority_epoch
                 && signed.grant.authority_epoch <= candidate.not_after_authority_epoch
-                && candidate.key.verify(
-                    signed.grant.schema_version,
-                    &candidate.key_id,
-                    &input,
-                    &signed.signature,
-                )
+                && candidate.key.verify(&input, &signed.signature)
         });
         if !verified {
             return Err(FinalUseError::InvalidSignature);
@@ -657,14 +660,14 @@ impl FinalUseAuthority {
             .0
             .frontier_store
             .as_ref()
-            .map(|_| frontier_for_state(&state));
+            .map(|_| frontier_for_state_with_profile(&state, self.0.profile));
         state.used_nonces.insert(signed.grant.nonce);
         if let (Some(frontier_store), Some(expected_frontier)) =
             (&self.0.frontier_store, expected_frontier)
             && let Err(error) = frontier_store.compare_and_set(
                 &self.0.signer_id,
                 &expected_frontier,
-                &frontier_for_state(&state),
+                &frontier_for_state_with_profile(&state, self.0.profile),
             )
         {
             state.failed = true;
@@ -881,8 +884,8 @@ impl FinalUseAuthority {
         next: State,
     ) -> Result<(), FinalUseError> {
         if let Some(frontier_store) = &self.0.frontier_store {
-            let expected = frontier_for_state(state);
-            let advanced = frontier_for_state(&next);
+            let expected = frontier_for_state_with_profile(state, self.0.profile);
+            let advanced = frontier_for_state_with_profile(&next, self.0.profile);
             if let Err(error) =
                 frontier_store.compare_and_set(&self.0.signer_id, &expected, &advanced)
             {
@@ -982,9 +985,16 @@ fn final_use_binding_witness_sha256(binding: &FinalUseBinding) -> Result<[u8; 32
 }
 
 fn valid_head(head: &FinalUseRevocations) -> bool {
+    valid_head_with_profile(head, FinalUseAuthenticationProfile::ClassicalV1)
+}
+
+fn valid_head_with_profile(
+    head: &FinalUseRevocations,
+    profile: FinalUseAuthenticationProfile,
+) -> bool {
     head.authority_epoch > 0
         && head.revision > 0
-        && head.revoked_grant_ids.len() <= MAX_REVOKED_GRANTS
+        && head.revoked_grant_ids.len() <= profile.max_revocations()
         && head.revoked_grant_ids.iter().all(|id| identifier(id))
 }
 
@@ -1017,8 +1027,22 @@ fn validate_live(
 }
 
 fn frontier_for_state(state: &State) -> FinalUseFrontier {
+    frontier_for_state_with_profile(state, FinalUseAuthenticationProfile::ClassicalV1)
+}
+
+fn frontier_for_state_with_profile(
+    state: &State,
+    profile: FinalUseAuthenticationProfile,
+) -> FinalUseFrontier {
     let mut hash = Sha256::new();
-    hash.update(b"hepta.kernel.authority.final-use-frontier.v1\0");
+    hash.update(match profile {
+        FinalUseAuthenticationProfile::ClassicalV1 => {
+            b"hepta.kernel.authority.final-use-frontier.v1\0".as_slice()
+        }
+        FinalUseAuthenticationProfile::MlDsa65V2 => {
+            b"hepta.kernel.authority.final-use-frontier.pq.v2\0".as_slice()
+        }
+    });
     hash.update(state.head.authority_epoch.to_le_bytes());
     hash.update(state.head.revision.to_le_bytes());
     hash.update((state.head.revoked_grant_ids.len() as u64).to_le_bytes());

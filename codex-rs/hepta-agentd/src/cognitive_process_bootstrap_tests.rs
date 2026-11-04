@@ -46,7 +46,7 @@ fn raw_evidence_round_trip_preserves_exact_signature_preimage_and_rejects_grants
         issued_at: 11,
         expires_at: 19,
         payload_digest: Digest32::of_bytes(b"payload"),
-        signature: [91; 64],
+        signature: [91; 64].into(),
     };
     let bytes = serde_json::to_vec(&SignedLearningEvidenceV1Raw::from(evidence.clone())).unwrap();
     let round_trip: SignedLearningEvidenceV1 =

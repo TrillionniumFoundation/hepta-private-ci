@@ -1,0 +1,30 @@
+691: #[test]
+692: fn committed_expiry_retirement_publishes_epoch_even_when_live_callback_refuses() {
+693:     let f = Fixture::new();
+694:     let mut node = f.node();
+695:     let expiry = ingress::now().unwrap() + 1;
+696:     let old = f.request_at(1, expiry);
+697:     node.begin_pq_network_request(&f.policy, &old).unwrap();
+698:     let before = node.pq_network_epoch.load(Ordering::Acquire);
+699:     while ingress::now().unwrap() <= expiry {
+700:         thread::sleep(Duration::from_millis(10));
+701:     }
+702:     f.mode.store(5, Ordering::Release);
+703:     let next = f.request(2);
+704:     error(
+705:         node.begin_pq_network_request_with_check(
+706:             &f.policy,
+707:             &next,
+708:             Instant::now() + Duration::from_secs(1),
+709:             &mut f.live_check(),
+710:         ),
+711:         "LIVE_CANCELLED",
+712:     );
+713:     assert!(node.pq_network_epoch.load(Ordering::Acquire) > before);
+714:     let (status, highest): (u64, u64) = node.db.query_row("SELECT r.status,p.highest_sequence FROM pq_network_request_v2 r JOIN pq_network_peer_v2 p ON r.peer=p.peer WHERE r.sequence=1", [], |r| Ok((r.get(0)?, r.get(1)?))).unwrap();
+715:     assert_eq!((status, highest), (2, 1));
+716:     f.mode.store(0, Ordering::Release);
+717:     assert_eq!(checkpoint(&node.db).unwrap(), f.head());
+718:     node.begin_pq_network_request(&f.policy, &next).unwrap();
+719:     assert_eq!(records(&node), 2);
+720: }

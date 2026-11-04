@@ -1,0 +1,64 @@
+{
+  "status": "PROPOSED_ONLY_NOT_APPLIED_TO_SOURCE",
+  "source_path": "codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs",
+  "versions": {
+    "a6c58700d23efd575d2803637aa7d9203d27e7bf": {
+      "sha256": "113ef8f22ba82482fa507ed787782fa257346b7d514d4bbd0e45e5cb5d15810b",
+      "git_blob_sha": "f7718a386380314e79732fc0bb619800cf698075",
+      "bytes": 15452
+    },
+    "0baf43cf4bf8f953fff079725348de1d8f26434f": {
+      "sha256": "113ef8f22ba82482fa507ed787782fa257346b7d514d4bbd0e45e5cb5d15810b",
+      "git_blob_sha": "f7718a386380314e79732fc0bb619800cf698075",
+      "bytes": 15452
+    },
+    "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d": {
+      "sha256": "113ef8f22ba82482fa507ed787782fa257346b7d514d4bbd0e45e5cb5d15810b",
+      "git_blob_sha": "f7718a386380314e79732fc0bb619800cf698075",
+      "bytes": 15452
+    }
+  },
+  "all_three_exact_versions_equal": true,
+  "remote_source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs?ref=2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+  "good_type": "Result<AuthorizedEffectRecoveryResult, AuthorizedEffectError>",
+  "type_source": "codex-rs/hepta-automation/src/authorized_effect.rs: AuthorizedEffectRecoveryResult derives Debug; AuthorizedEffectError derives Debug and Error",
+  "failure_message_only": true,
+  "assertion_condition": "good.is_ok()",
+  "proposed_sha256": "92df0882cdd16274e374c8056181503338118958162362c2e6e4f61a4fa8fba3",
+  "patch_sha256": "eb0b2c6368e14bf17461fcbeea20009558f1efcdcc718f71aca535ab0b673dea",
+  "unchanged_controls": {
+    "concurrent_operation": "tokio::join!(recover(&started, correct), recover(&started, substituted))",
+    "accepted_lookup_rounds": 16,
+    "pending_limit": 8,
+    "initial_dispatch_now_ms": 30,
+    "recovery_now_ms": 40,
+    "run_claim_now_ms": 20,
+    "run_lease_duration_ms": 1000,
+    "valid_recovery_must_succeed": true,
+    "substituted_recovery_must_fail": true,
+    "provider_dispatch_count": 1,
+    "durable_reconciliation_count": 1,
+    "nextest_profile": "local inherits default",
+    "nextest_retries": 1,
+    "nextest_slow_timeout": {
+      "period": "30s",
+      "terminate-after": 2
+    },
+    "workflow_job_budget_minutes": 60,
+    "full_suite_minimum": 134
+  },
+  "observed_run": {
+    "run_id": 41609576379,
+    "job_id": 125827781220,
+    "artifact_id": 13218966617,
+    "artifact_zip_sha256": "48fc1e43de739408153e53022d94743fe3cebf5c7b512cfc044da10224d5cdec",
+    "passed": 133,
+    "failed": 1,
+    "skipped": 0,
+    "command_exit_code": 100,
+    "whole_command_timed_out": false,
+    "both_original_nextest_attempts_failed": true
+  },
+  "cause_limit": "The actual AuthorizedEffectError value was not printed. No environment, PQ, database or deadline cause is established.",
+  "validation": "Read-only source and type inspection; no compilation, execution, retry or source mutation performed for this one-line diagnostic proposal"
+}

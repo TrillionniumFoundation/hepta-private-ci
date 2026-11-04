@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "role_patch_commit": "88cdc9c942dff6789efcb854d1e1eb0310fcc18e",
+  "tested_commit": "f5be46914c1a6516049871680c68108a7279adf7",
+  "tested_tree": "6562cf35ff131944dfb95015d5615af2ab3b8477",
+  "source_before": "f5be4691-source-before.json",
+  "source_after": "f5be4691-source-after.json",
+  "retained_original_failure": {
+    "file": "f28-result.json",
+    "exit_code": 101,
+    "tests_executed": 0,
+    "reason": "Sparse checkout omitted a tracked include_str input; no original failure is relabeled."
+  },
+  "clippy": {
+    "file": "f5be4691-clippy-result.json",
+    "exit_code": 0,
+    "source_changed": false
+  },
+  "format": {
+    "file": "f5be4691-fmt-result.json",
+    "exit_code": 0,
+    "actual_package_check": true
+  },
+  "native": {
+    "file": "f5be4691-owner-result.json",
+    "exit_code": 0,
+    "passed": 11,
+    "skipped": 167,
+    "observed_retry_or_flaky_lines": []
+  },
+  "whole_package_qualification": false,
+  "whole_chain_pq_qualification": false,
+  "production_activation": false
+}

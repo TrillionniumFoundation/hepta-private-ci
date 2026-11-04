@@ -59,14 +59,18 @@ impl PreparedSelectedInitialSmolLmV1 {
     ) -> Result<T, String> {
         // The existing observation owns all CURRENT/selector/load checks and
         // closes its capsule on clock/callback errors. All locks end here.
-        self.observe(initial_now_seconds, |_| {
-            if execution.remaining()? > Duration::from_secs(2) {
-                return Err(
-                    "initial query requires the original at-most-two-second window".to_owned(),
-                );
-            }
-            Ok(())
-        })?;
+        let time = self.authority_time.clone();
+        self.observe(
+            || time.now_seconds(),
+            |_| {
+                if execution.remaining()? > Duration::from_secs(2) {
+                    return Err(
+                        "initial query requires the original at-most-two-second window".to_owned(),
+                    );
+                }
+                Ok(())
+            },
+        )?;
         let mut material = self.material.take().ok_or("initial owner is unavailable")?;
         let association = self
             .association
@@ -118,7 +122,7 @@ impl PreparedSelectedInitialSmolLmV1 {
             Err(panic) => std::panic::resume_unwind(panic),
         };
         execution.check()?;
-        let now = initial_now_seconds()?;
+        let now = self.authority_time.now_seconds()?;
         let current = self
             .current
             .current_registry_view(now)

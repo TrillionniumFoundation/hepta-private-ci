@@ -1,0 +1,461 @@
+{
+  "job_id": 125828666907,
+  "artifact_id": 13219649175,
+  "artifact_name": "hepta-cell-host-ubuntu-24.04-arm-base-merge-1",
+  "archive_bytes": 165262,
+  "archive_sha256": "e8c393497c8c737fe9e556118cf437dfada243158dcf6e044d8835a051a0d1fb",
+  "run_id": 41609576379,
+  "run_attempt": 1,
+  "candidate": {
+    "base_sha": "3a81000aae08c658276958d678874aca4db5eedd",
+    "lane": "base-merge",
+    "native_execution_required": false,
+    "requires_source_head_success": true,
+    "schema_version": 1,
+    "source_sha": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+    "source_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+    "tested_sha": "21ceefde202d58ef60e937d637f725727a9fe086",
+    "tested_tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+  },
+  "all_command_logs_sha256_and_length_verified": true,
+  "all_sources_unchanged_clean_and_bound": true,
+  "all_commands_passed": true,
+  "actual_unix_trust_tests": [
+    "PASS [   0.281s] codex-hepta-contracts authority_trust_unix::tests::actual_clock_rejects_rollback_cross_request_signature_domain_and_expiry",
+    "PASS [   0.144s] codex-hepta-contracts authority_trust_unix::tests::actual_external_cas_is_exact_durable_and_never_replaced_by_local_state",
+    "PASS [   0.132s] codex-hepta-contracts authority_trust_unix::learning_tests::external_learning_floor_is_typed_exact_and_retains_rotation_after_client_restart"
+  ],
+  "commands": {
+    "arg0-owner.json": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-arg0",
+        "--lib",
+        "--no-capture"
+      ],
+      "status": "passed",
+      "command_exit_code": 0,
+      "exit_code": 0,
+      "minimum_tests": 1,
+      "observed_passed_tests": 7,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "elapsed_seconds": 171.50074630699987,
+      "log_file": "arg0-owner.json.b8f168ba5b864ab691aff68b122a4cdd.log",
+      "log_bytes": 24574,
+      "log_sha256": "85b149babe40bf5a57e066592b82a0680769a78390de67a998ecbb0715e57199",
+      "nextest_summaries": [
+        "Summary [   0.037s] 7 tests run: 7 passed, 0 skipped"
+      ],
+      "retry_lines": [],
+      "exact_pass": null
+    },
+    "canonical-pq-contracts.json": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--no-capture"
+      ],
+      "status": "passed",
+      "command_exit_code": 0,
+      "exit_code": 0,
+      "minimum_tests": 195,
+      "observed_passed_tests": 195,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "elapsed_seconds": 30.29309764300001,
+      "log_file": "canonical-pq-contracts.json.2065952549e445f58d45c4d7be36bbb8.log",
+      "log_bytes": 93596,
+      "log_sha256": "9358d646b74887108c51977a13647d2866f845f8648959d5560002b1988b87e8",
+      "nextest_summaries": [
+        "Summary [   4.421s] 195 tests run: 195 passed, 0 skipped"
+      ],
+      "retry_lines": [],
+      "exact_pass": null
+    },
+    "cli-process.json": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--test",
+        "cell_host_cli",
+        "--no-capture"
+      ],
+      "status": "passed",
+      "command_exit_code": 0,
+      "exit_code": 0,
+      "minimum_tests": 3,
+      "observed_passed_tests": 3,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "elapsed_seconds": 91.85438555600012,
+      "log_file": "cli-process.json.13ab0e7561ba428e8bd070c6f28df6e0.log",
+      "log_bytes": 27308,
+      "log_sha256": "608fe94a3fcd4db53fa06270a064d3a0c234403ece9522dcaee71e78f2b0e9d4",
+      "nextest_summaries": [
+        "Summary [   0.365s] 3 tests run: 3 passed, 0 skipped"
+      ],
+      "retry_lines": [],
+      "exact_pass": null
+    },
+    "clippy-fix.json": {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-arg0",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "command_exit_code": 0,
+      "exit_code": 0,
+      "minimum_tests": 0,
+      "observed_passed_tests": 0,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "elapsed_seconds": 241.783186547,
+      "log_file": "clippy-fix.json.ea86e51274c249139af4deea5f756609.log",
+      "log_bytes": 54042,
+      "log_sha256": "86676632e2ee2d2b6a9fb1f629c0633d3ee5489015435471884fc4da475cc407",
+      "nextest_summaries": [],
+      "retry_lines": [],
+      "exact_pass": null
+    },
+    "dependency-fetch.json": {
+      "command": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml"
+      ],
+      "status": "passed",
+      "command_exit_code": 0,
+      "exit_code": 0,
+      "minimum_tests": 0,
+      "observed_passed_tests": 0,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "elapsed_seconds": 29.737048063000003,
+      "log_file": "dependency-fetch.json.d08729d71e7d46dea55b402abe56ea32.log",
+      "log_bytes": 43901,
+      "log_sha256": "6eac6a4715d09017356b50798e80b29fbf311f90389e5a2f08e4cada2f7d10c7",
+      "nextest_summaries": [],
+      "retry_lines": [],
+      "exact_pass": null
+    },
+    "format.json": {
+      "command": [
+        "just",
+        "fmt",
+        "--check",
+        "--base",
+        "3a81000aae08c658276958d678874aca4db5eedd"
+      ],
+      "status": "passed",
+      "command_exit_code": 0,
+      "exit_code": 0,
+      "minimum_tests": 0,
+      "observed_passed_tests": 0,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "elapsed_seconds": 5.819581327999998,
+      "log_file": "format.json.2b33be555269421daf3807ae53ffa68d.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "nextest_summaries": [],
+      "retry_lines": [],
+      "exact_pass": null
+    },
+    "host-material.json": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--lib",
+        "-E",
+        "test(smollm_neural_read::driver::cell_material::) | test(smollm_cognitive_process::tests::) | test(smollm_cognitive_host::tests::)",
+        "--no-capture"
+      ],
+      "status": "passed",
+      "command_exit_code": 0,
+      "exit_code": 0,
+      "minimum_tests": 23,
+      "observed_passed_tests": 23,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "elapsed_seconds": 713.014133963,
+      "log_file": "host-material.json.6749dcabcbcf4ea5a0ec70d0c826243f.log",
+      "log_bytes": 85400,
+      "log_sha256": "7cd17f5cb4be99e834542f0690ac646f12f30d9dad15c24ae03331c1c9f192b3",
+      "nextest_summaries": [
+        "Summary [   3.291s] 23 tests run: 23 passed, 151 skipped"
+      ],
+      "retry_lines": [],
+      "exact_pass": null
+    },
+    "initial-startup-budget.json": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--lib",
+        "-E",
+        "test(=smollm_neural_read::tests::expired_startup_is_not_restarted_and_cannot_admit_claim_or_spawn)",
+        "--no-capture"
+      ],
+      "status": "passed",
+      "command_exit_code": 0,
+      "exit_code": 0,
+      "minimum_tests": 1,
+      "observed_passed_tests": 1,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "elapsed_seconds": 2.053000903999873,
+      "log_file": "initial-startup-budget.json.860a2b491aa7452daecf7dee86cf8fb1.log",
+      "log_bytes": 26256,
+      "log_sha256": "805b476883a9020b592ff799972526d2e68b4bfb010683f018c45e89ede9947e",
+      "nextest_summaries": [
+        "Summary [   0.025s] 1 test run: 1 passed, 173 skipped"
+      ],
+      "retry_lines": [],
+      "exact_pass": [
+        "PASS [   0.023s] codex-hepta-infer-worker-host smollm_neural_read::tests::expired_startup_is_not_restarted_and_cannot_admit_claim_or_spawn"
+      ]
+    },
+    "original-owner.json": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--lib",
+        "-E",
+        "test(final_use_authorizer::) | test(model_worker::tests::) | test(smollm_neural_read::driver::failure::tests::) | test(smollm_neural_read::driver::session::owner::tests::) | test(smollm_neural_read::tests::)",
+        "--no-capture"
+      ],
+      "status": "passed",
+      "command_exit_code": 0,
+      "exit_code": 0,
+      "minimum_tests": 40,
+      "observed_passed_tests": 42,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "elapsed_seconds": 8.83938382600013,
+      "log_file": "original-owner.json.069a3bf5f4424090afd8c108dce316be.log",
+      "log_bytes": 50046,
+      "log_sha256": "abcf4dd63c2d6131ec7ef89f165ae4dbf1dae176730c63fb315831f0daa41c2b",
+      "nextest_summaries": [
+        "Summary [   6.413s] 42 tests run: 42 passed, 132 skipped"
+      ],
+      "retry_lines": [],
+      "exact_pass": null
+    },
+    "pq-build-codex.json": {
+      "command": [
+        "cargo",
+        "build",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-cli",
+        "--bin",
+        "codex",
+        "--locked",
+        "--message-format=json"
+      ],
+      "status": "passed",
+      "command_exit_code": 0,
+      "exit_code": 0,
+      "minimum_tests": 0,
+      "observed_passed_tests": 0,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "elapsed_seconds": 634.6693401140001,
+      "log_file": "pq-build-codex.json.b8d296179c31402686dc81213ea4e8c6.log",
+      "log_bytes": 1243278,
+      "log_sha256": "21c4ee0c3db7a1de41515c7fb240ba40dbaaf34f20a8605970fc01d37af297ba",
+      "nextest_summaries": [],
+      "retry_lines": [],
+      "exact_pass": null
+    },
+    "pq-initial-clock.json": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--lib",
+        "-E",
+        "test(=smollm_cognitive_host::initial::time::tests::initial_consumers_retain_the_real_pq_clock_and_refuse_wall_time_after_failure)",
+        "--no-capture"
+      ],
+      "status": "passed",
+      "command_exit_code": 0,
+      "exit_code": 0,
+      "minimum_tests": 1,
+      "observed_passed_tests": 1,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "elapsed_seconds": 2.417424770000025,
+      "log_file": "pq-initial-clock.json.8f973e12a83e42079f6afa124f9e4508.log",
+      "log_bytes": 26349,
+      "log_sha256": "7b27724506986ebc40aaaeb75692525afe3b68f5e013f0ba9c6a79c4e0718f0b",
+      "nextest_summaries": [
+        "Summary [   0.335s] 1 test run: 1 passed, 173 skipped"
+      ],
+      "retry_lines": [],
+      "exact_pass": [
+        "PASS [   0.334s] codex-hepta-infer-worker-host smollm_cognitive_host::initial::time::tests::initial_consumers_retain_the_real_pq_clock_and_refuse_wall_time_after_failure"
+      ]
+    },
+    "pq-initial-material.json": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "--lib",
+        "-E",
+        "test(=selection::initial_smollm_genesis::tests::pq_initial_tests::pq_initial_material_keeps_selector_current_and_final_use_profile_bound)",
+        "--no-capture"
+      ],
+      "status": "passed",
+      "command_exit_code": 0,
+      "exit_code": 0,
+      "minimum_tests": 1,
+      "observed_passed_tests": 1,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "elapsed_seconds": 17.876616183999886,
+      "log_file": "pq-initial-material.json.0317cf7f5313440da1d24b0362bbbd8d.log",
+      "log_bytes": 3626,
+      "log_sha256": "7d2165b07fc03489572b6c5775f32a0bfb936f366feee1b453391b547a729bab",
+      "nextest_summaries": [
+        "Summary [   1.250s] 1 test run: 1 passed, 130 skipped"
+      ],
+      "retry_lines": [],
+      "exact_pass": [
+        "PASS [   1.249s] codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::pq_initial_tests::pq_initial_material_keeps_selector_current_and_final_use_profile_bound"
+      ]
+    },
+    "pq-native-turn-start.json": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--lib",
+        "-E",
+        "test(=native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant)",
+        "--test-threads",
+        "1",
+        "--no-capture"
+      ],
+      "status": "passed",
+      "command_exit_code": 0,
+      "exit_code": 0,
+      "minimum_tests": 1,
+      "observed_passed_tests": 1,
+      "observed_failed_tests": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "elapsed_seconds": 3.544491353000012,
+      "log_file": "pq-native-turn-start.json.21a4d2521a534a28b3395331f1ad08b5.log",
+      "log_bytes": 28002,
+      "log_sha256": "261f7b8f2ecdf3480e7166d9c2a43dbc5f20d33f6d9cde5e7b18a545e3386562",
+      "nextest_summaries": [
+        "Summary [   1.145s] 1 test run: 1 passed, 173 skipped"
+      ],
+      "retry_lines": [],
+      "exact_pass": [
+        "PASS [   1.144s] codex-hepta-infer-worker-host native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant"
+      ]
+    }
+  },
+  "native_binding": {
+    "build_log_sha256": "21c4ee0c3db7a1de41515c7fb240ba40dbaaf34f20a8605970fc01d37af297ba",
+    "build_record_sha256": "9849a8e6fb6e578baa45403f06f666d9a770289689f3c05df27f99868e6ba102",
+    "executable": "/home/runner/work/_temp/hepta-cell-host-target.ENmjsk/debug/codex",
+    "sha256": "827564b3f26013eec84ff7472b1f5fd635ec85bf9b3130a13677cccfc05d9670",
+    "source": {
+      "commit": "21ceefde202d58ef60e937d637f725727a9fe086",
+      "dirty": false,
+      "parents": [
+        "3a81000aae08c658276958d678874aca4db5eedd",
+        "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d"
+      ],
+      "tree": "80562dbe724b082f388828b32fb305d036e8dff7"
+    },
+    "workflow_event_commit": "21ceefde202d58ef60e937d637f725727a9fe086"
+  },
+  "fresh_codex_cargo_artifact": {
+    "reason": "compiler-artifact",
+    "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli#codex-cli@0.0.0",
+    "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/Cargo.toml",
+    "target": {
+      "kind": [
+        "bin"
+      ],
+      "crate_types": [
+        "bin"
+      ],
+      "name": "codex",
+      "src_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/src/main.rs",
+      "edition": "2024",
+      "doc": true,
+      "doctest": false,
+      "test": true
+    },
+    "profile": {
+      "opt_level": "0",
+      "debuginfo": 0,
+      "debug_assertions": true,
+      "overflow_checks": true,
+      "test": false
+    },
+    "features": [],
+    "filenames": [
+      "/home/runner/work/_temp/hepta-cell-host-target.ENmjsk/debug/codex"
+    ],
+    "executable": "/home/runner/work/_temp/hepta-cell-host-target.ENmjsk/debug/codex",
+    "fresh": false
+  },
+  "binding_verification_limit": "The unchanged workflow enforces executable ELF, source/package/path and before/after binary hash on the runner. This independent archive inspection verifies the recorded binding against the exact Cargo build and test receipts/logs. The Codex executable itself is not included in this observation ZIP and was not independently downloaded or rehashed here.",
+  "clippy_scope": "The CI command is the original just fix with unchanged-source enforcement. It is not reported as the separate local no-fix strict Clippy result."
+}

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "phase": "published_selected_final_use_native_tests",
+  "job_id": "1a1a2dc9749-96a-7538",
+  "status": {
+    "at_unix_ms": 1793733835163,
+    "audit_recorded": true,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a2dc9749-96a-7538",
+    "log_bytes": {
+      "stderr": {
+        "seen": 29103,
+        "stored": 29103
+      },
+      "stdout": {
+        "seen": 0,
+        "stored": 0
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "state": "succeeded",
+    "timed_out": false
+  },
+  "source_before": "f5be4691-source-before.json",
+  "source_after": "f5be4691-source-after.json",
+  "command": "just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(final_use_authorizer::)'",
+  "nextest_run_id": "4a0af584-feb7-4104-bcd8-00b12af13606",
+  "nextest_profile": "local",
+  "selection": "test(final_use_authorizer::)",
+  "observed_run": 11,
+  "observed_passed": 11,
+  "observed_skipped": 167,
+  "test_duration_reported": "5.659s",
+  "observed_passed_names": [
+    "final_use_authorizer::pq::resource_tests::maximum_revocation_and_grant_response_fits_the_existing_transport_bound",
+    "final_use_authorizer::pq::path_tests::ancestor_aliases_are_rejected_before_external_requests_or_owner_open",
+    "final_use_authorizer::pq::concurrency_tests::concurrent_real_pq_claim_cannot_inherit_an_older_heads_longer_feed",
+    "final_use_authorizer::tests::connected_issuer_peer_uid_must_match_configured_owner",
+    "final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back",
+    "final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token",
+    "final_use_authorizer::tests::forged_grant_never_reaches_effect_entry",
+    "final_use_authorizer::tests::pq_selected_artifact_cannot_use_classic_final_use_before_issuer_dispatch",
+    "final_use_authorizer::pq::role_tests::configured_pq_roles_require_separate_canonical_keys_before_any_effect",
+    "final_use_authorizer::pq::resource_tests::max_rotation_config_loads_only_as_pq_and_oversize_response_stops_at_prefix",
+    "final_use_authorizer::pq::tests::actual_pq_host_resumes_after_rejected_replies_and_reopens_with_spent_nonce_state"
+  ],
+  "observed_retry_or_flaky_lines": [],
+  "new_test_functions": 1,
+  "new_role_regression_name": "final_use_authorizer::pq::role_tests::configured_pq_roles_require_separate_canonical_keys_before_any_effect",
+  "whole_package_executed": false,
+  "logs": {
+    "stdout.log": {
+      "file": "f5be4691-owner-stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr.log": {
+      "file": "f5be4691-owner-stderr.log",
+      "bytes": 29103,
+      "sha256": "9670b80b4d48d934aa1cb2f4c368db2fa54523f6ca1997344f36550a606da624"
+    },
+    "request.json": {
+      "file": "f5be4691-owner-request.json",
+      "bytes": 1026,
+      "sha256": "f07577a12d81324f62e366b6401f94b18da6565d0098c984940195fa54a9dbfd"
+    }
+  }
+}

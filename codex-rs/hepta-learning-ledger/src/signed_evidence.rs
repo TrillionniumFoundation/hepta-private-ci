@@ -7,10 +7,11 @@ use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 
+use crate::LearningAuthenticationProfile;
+use crate::LearningSignature;
+use crate::LearningVerificationKey;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
-use ed25519_dalek::Signature;
-use ed25519_dalek::VerifyingKey;
 
 use crate::AuthenticatedPrincipalV1;
 use crate::CausalV2Error;
@@ -49,7 +50,7 @@ impl LearningEvidenceRoleV1 {
 pub struct TrustedLearningSignerV1 {
     pub principal: AuthenticatedPrincipalV1,
     pub controller_id: StableId,
-    pub verifying_key: [u8; 32],
+    pub verifying_key: LearningVerificationKey,
     pub roles: Vec<LearningEvidenceRoleV1>,
     pub revoked_at: Option<u64>,
 }
@@ -74,14 +75,17 @@ pub struct SignedLearningEvidenceV1 {
     pub issued_at: u64,
     pub expires_at: u64,
     pub payload_digest: Digest32,
-    pub signature: [u8; 64],
+    pub signature: LearningSignature,
 }
 
 impl SignedLearningEvidenceV1 {
-    /// Canonical bytes signed with Ed25519; the signature itself is excluded.
+    /// Exact versioned application message; the signature itself is excluded.
     #[must_use]
     pub fn signing_bytes(&self) -> Vec<u8> {
-        let mut bytes = b"hepta.learning-ledger.signed-evidence.v1".to_vec();
+        let mut bytes = self.signature.profile().learning_domain(
+            b"hepta.learning-ledger.signed-evidence.v1",
+            b"hepta.learning-ledger.signed-evidence.pq.v2",
+        );
         push_id(&mut bytes, &self.evidence_id);
         push_id(&mut bytes, &self.principal_id);
         bytes.push(self.role.tag());
@@ -101,6 +105,8 @@ impl SignedLearningEvidenceV1 {
 /// unbounded authorization token. Reverify after rotation or revocation.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VerifiedLearningEvidenceV1 {
+    activation_frontier: Option<frontier::EvidenceTrustFrontier>,
+    authentication_profile: LearningAuthenticationProfile,
     principal: AuthenticatedPrincipalV1,
     controller_id: StableId,
     role: LearningEvidenceRoleV1,
@@ -113,9 +119,45 @@ pub struct VerifiedLearningEvidenceV1 {
 }
 
 impl VerifiedLearningEvidenceV1 {
+    /// Recheck retained distribution currentness and protected authority time
+    /// before using an opaque role outside the original verification call.
+    /// The supplied time is used only without a retained authority clock.
+    pub fn validate_at(&self, supplied_now: u64) -> Result<u64, SignedEvidenceError> {
+        let now = match &self.activation_frontier {
+            Some(frontier) => frontier.verify_at(supplied_now)?,
+            None => supplied_now,
+        };
+        if now < self.issued_at || self.authentication_profile.expired_at(now, self.expires_at) {
+            return Err(SignedEvidenceError::ValidityWindow);
+        }
+        if self.revoked_at.is_some_and(|at| now >= at) {
+            return Err(SignedEvidenceError::Revoked);
+        }
+        self.principal.validate(now)?;
+        Ok(now)
+    }
+
+    #[must_use]
+    pub const fn authentication_profile(&self) -> LearningAuthenticationProfile {
+        self.authentication_profile
+    }
+
     #[must_use]
     pub fn principal(&self) -> &AuthenticatedPrincipalV1 {
         &self.principal
+    }
+
+    pub(crate) fn principal_for_lifetime(&self) -> AuthenticatedPrincipalV1 {
+        let mut principal = self.principal.clone();
+        principal.authenticated_at = principal.authenticated_at.max(self.issued_at);
+        principal.expires_at = principal.expires_at.min(match self.authentication_profile {
+            LearningAuthenticationProfile::ClassicalV1 => self.expires_at,
+            LearningAuthenticationProfile::MlDsa65V2 => self.expires_at.saturating_sub(1),
+        });
+        if let Some(at) = self.revoked_at {
+            principal.expires_at = principal.expires_at.min(at.saturating_sub(1));
+        }
+        principal
     }
     #[must_use]
     pub fn role(&self) -> LearningEvidenceRoleV1 {
@@ -146,6 +188,16 @@ pub struct LearningEvidenceVerifierV1 {
     authority_epoch: u64,
     trust_digest: Digest32,
     signers: BTreeMap<StableId, TrustedLearningSignerV1>,
+    activation_window: Option<ActivationWindow>,
+    activation_frontier: Option<frontier::EvidenceTrustFrontier>,
+    authentication_profile: LearningAuthenticationProfile,
+}
+
+#[derive(Clone, Copy, Debug)]
+struct ActivationWindow {
+    verified_at: u64,
+    expires_at: u64,
+    revoked_at: Option<u64>,
 }
 
 impl LearningEvidenceVerifierV1 {
@@ -160,6 +212,7 @@ impl LearningEvidenceVerifierV1 {
         {
             return Err(SignedEvidenceError::InvalidTrust);
         }
+        let authentication_profile = trust.signers[0].verifying_key.profile();
         let mut signers = BTreeMap::new();
         for mut signer in trust.signers {
             signer
@@ -173,10 +226,12 @@ impl LearningEvidenceVerifierV1 {
             {
                 return Err(SignedEvidenceError::InvalidTrust);
             }
-            let key = VerifyingKey::from_bytes(&signer.verifying_key)
+            signer
+                .verifying_key
+                .validate()
                 .map_err(|_| SignedEvidenceError::InvalidKey)?;
-            if key.is_weak() {
-                return Err(SignedEvidenceError::InvalidKey);
+            if signer.verifying_key.profile() != authentication_profile {
+                return Err(SignedEvidenceError::InvalidTrust);
             }
             signer.roles.sort();
             if signer.roles.windows(2).any(|pair| pair[0] == pair[1]) {
@@ -189,7 +244,10 @@ impl LearningEvidenceVerifierV1 {
                 return Err(SignedEvidenceError::InvalidTrust);
             }
         }
-        let mut bytes = b"hepta.learning-ledger.evidence-trust.v1".to_vec();
+        let mut bytes = authentication_profile.learning_domain(
+            b"hepta.learning-ledger.evidence-trust.v1",
+            b"hepta.learning-ledger.evidence-trust.pq.v2",
+        );
         bytes.extend_from_slice(trust.scope_digest.as_array());
         bytes.extend_from_slice(trust.objective_digest.as_array());
         bytes.extend_from_slice(&trust.authority_epoch.to_be_bytes());
@@ -219,7 +277,48 @@ impl LearningEvidenceVerifierV1 {
             authority_epoch: trust.authority_epoch,
             trust_digest: Digest32::of_bytes(&bytes),
             signers,
+            activation_window: None,
+            activation_frontier: None,
+            authentication_profile,
         })
+    }
+
+    #[must_use]
+    pub const fn authentication_profile(&self) -> LearningAuthenticationProfile {
+        self.authentication_profile
+    }
+
+    pub(crate) fn bind_activation_window(
+        &mut self,
+        verified_at: u64,
+        expires_at: u64,
+        revoked_at: Option<u64>,
+    ) {
+        self.activation_window = Some(ActivationWindow {
+            verified_at,
+            expires_at,
+            revoked_at,
+        });
+    }
+
+    pub(crate) fn validate_active_at(&self, now: u64) -> Result<u64, SignedEvidenceError> {
+        let now = match &self.activation_frontier {
+            Some(frontier) => frontier.verify_at(now)?,
+            None => now,
+        };
+        if let Some(window) = self.activation_window {
+            if now < window.verified_at
+                || self
+                    .authentication_profile
+                    .expired_at(now, window.expires_at)
+            {
+                return Err(SignedEvidenceError::ValidityWindow);
+            }
+            if window.revoked_at.is_some_and(|at| now >= at) {
+                return Err(SignedEvidenceError::Revoked);
+            }
+        }
+        Ok(now)
     }
 
     #[must_use]
@@ -249,6 +348,7 @@ impl LearningEvidenceVerifierV1 {
         payload: &[u8],
         now: u64,
     ) -> Result<VerifiedLearningEvidenceV1, SignedEvidenceError> {
+        let now = self.validate_active_at(now)?;
         if payload.len() > MAX_PAYLOAD_BYTES {
             return Err(SignedEvidenceError::PayloadLimit);
         }
@@ -274,7 +374,9 @@ impl LearningEvidenceVerifierV1 {
             return Err(SignedEvidenceError::RoleMismatch);
         }
         if evidence.issued_at > now
-            || now > evidence.expires_at
+            || self
+                .authentication_profile
+                .expired_at(now, evidence.expires_at)
             || evidence.issued_at > evidence.expires_at
             || evidence.issued_at < signer.principal.authenticated_at
             || evidence.expires_at > signer.principal.expires_at
@@ -284,23 +386,30 @@ impl LearningEvidenceVerifierV1 {
         if Digest32::of_bytes(payload) != evidence.payload_digest {
             return Err(SignedEvidenceError::PayloadMismatch);
         }
-        VerifyingKey::from_bytes(&signer.verifying_key)
-            .map_err(|_| SignedEvidenceError::InvalidKey)?
-            .verify_strict(
-                &evidence.signing_bytes(),
-                &Signature::from_bytes(&evidence.signature),
-            )
+        signer
+            .verifying_key
+            .verify(&evidence.signing_bytes(), &evidence.signature)
             .map_err(|_| SignedEvidenceError::InvalidSignature)?;
+        let mut issued_at = evidence.issued_at;
+        let mut expires_at = evidence.expires_at;
+        let mut revoked_at = signer.revoked_at;
+        if let Some(window) = self.activation_window {
+            issued_at = issued_at.max(window.verified_at);
+            expires_at = expires_at.min(window.expires_at);
+            revoked_at = [revoked_at, window.revoked_at].into_iter().flatten().min();
+        }
         Ok(VerifiedLearningEvidenceV1 {
+            activation_frontier: self.activation_frontier.clone(),
+            authentication_profile: self.authentication_profile,
             principal: signer.principal.clone(),
             controller_id: signer.controller_id.clone(),
             role: expected_role,
             trust_digest: self.trust_digest,
             objective_digest: self.objective_digest,
             payload_digest: evidence.payload_digest,
-            issued_at: evidence.issued_at,
-            expires_at: evidence.expires_at,
-            revoked_at: signer.revoked_at,
+            issued_at,
+            expires_at,
+            revoked_at,
         })
     }
 }
@@ -328,14 +437,7 @@ pub fn verify_signed_actor_separation(
     if left.trust_digest != right.trust_digest || left.objective_digest != right.objective_digest {
         return Err(SignedEvidenceError::ContextMismatch);
     }
-    for evidence in [left, right] {
-        if now < evidence.issued_at || now > evidence.expires_at {
-            return Err(SignedEvidenceError::ValidityWindow);
-        }
-        if evidence.revoked_at.is_some_and(|at| now >= at) {
-            return Err(SignedEvidenceError::Revoked);
-        }
-    }
+    let now = left.validate_at(now)?.max(right.validate_at(now)?);
     verify_independent_roles(&left.principal, &right.principal, now)?;
     if left.controller_id == right.controller_id {
         return Err(SignedEvidenceError::ControllerCollision);
@@ -348,25 +450,7 @@ pub fn verify_verified_role_separation(
     right: &VerifiedLearningEvidenceV1,
     now: u64,
 ) -> Result<(), SignedEvidenceError> {
-    if left.trust_digest != right.trust_digest || left.objective_digest != right.objective_digest {
-        return Err(SignedEvidenceError::ContextMismatch);
-    }
-    for evidence in [left, right] {
-        if now < evidence.issued_at || now > evidence.expires_at {
-            return Err(SignedEvidenceError::ValidityWindow);
-        }
-        if evidence
-            .revoked_at
-            .is_some_and(|revoked_at| revoked_at <= now)
-        {
-            return Err(SignedEvidenceError::Revoked);
-        }
-    }
-    verify_independent_roles(&left.principal, &right.principal, now)?;
-    if left.controller_id == right.controller_id {
-        return Err(SignedEvidenceError::ControllerCollision);
-    }
-    Ok(())
+    verify_signed_actor_separation(left, right, now)
 }
 
 pub fn verify_signed_role_separation(
@@ -401,6 +485,7 @@ pub enum SignedEvidenceError {
     PayloadMismatch,
     InvalidSignature,
     ControllerCollision,
+    TrustFrontier(codex_hepta_contracts::AuthorityTrustError),
 }
 
 impl fmt::Display for SignedEvidenceError {
@@ -418,3 +503,6 @@ impl From<CausalV2Error> for SignedEvidenceError {
 #[cfg(test)]
 #[path = "signed_evidence_tests.rs"]
 mod tests;
+
+#[path = "evidence_trust_frontier.rs"]
+mod frontier;

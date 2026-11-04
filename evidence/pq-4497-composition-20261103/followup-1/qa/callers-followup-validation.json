@@ -1,0 +1,19 @@
+{
+  "base": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "command": [
+    "python",
+    "scripts/verify_hepta_callers.py",
+    "verify",
+    "--manifest",
+    "/workspace/scratch/df0a4a720ed8/pq-audit/three-way/merged/CALLERS.toml"
+  ],
+  "cwd": "/workspace/scratch/df0a4a720ed8/hepta-source",
+  "returncode": 0,
+  "manifest_sha256": "4d232f99011453793bb00a5c7eb5f4c39c970badcde78df9a398ead0ce53c88d",
+  "old_boundary_count": 51,
+  "new_boundary_count": 52,
+  "all_original_boundary_rows_and_other_rules_exactly_preserved": true,
+  "log_sha256": "e8620d92c760ed9686b2cb894fd762add4fff54097eaae92e10f1415c3703b88",
+  "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+  "scope": "source boundary checker; no production caller or deployment qualification inferred"
+}

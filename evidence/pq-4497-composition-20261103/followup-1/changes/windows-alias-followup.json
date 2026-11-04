@@ -1,0 +1,37 @@
+{
+  "status": "STATIC_FIX_READY",
+  "source_path": "codex-rs/hepta-contracts/src/lib.rs",
+  "source_identities": [
+    {
+      "name": "ours",
+      "commit": "a6c58700d23efd575d2803637aa7d9203d27e7bf",
+      "git_blob": "8571f6c3ebc35c07b00fd8165894285a47d6bb5e",
+      "sha256": "df8e7a6f56d2cab12cb5abd8e936492a8b09bc383856b4ce85599355d013bb4e",
+      "has_original_windows_alias": true
+    },
+    {
+      "name": "pq",
+      "commit": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a",
+      "git_blob": "7f430139a6a548b395743dc8eda9e542d6f978a0",
+      "sha256": "fe20ce9a357da58006eab12c661473ab10e3b16100b04bcb0052a3412284de4e",
+      "has_original_windows_alias": false
+    }
+  ],
+  "published_commit": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "published_sha256": "866eeaffa063e10bc4feed2d24e259c6db07be4084f5c85f7e760e4e8b45a206",
+  "repaired_sha256": "4733e73741dd867ca5ca6ea5f54aa7832a62a45910bb21d941952e0254b4fbdd",
+  "patch_sha256": "4d06f9f5e5e995dbfdb48b9430cd979f65e162d2b06fea9f2b60200d1039f5fd",
+  "original_native_windows_job": 125788434744,
+  "original_native_windows_log_sha256": "92dd0a22ffde15cdbfdd9e6a176cc88f59a2fd75bab802c0f5e50a6a2bc2d54c",
+  "observed_unresolved_namespace_errors": 11,
+  "change": "Restore exact a6 Windows-only public re-export of existing parent_anchor module; no new owner logic, platform gate, dependency or test change",
+  "checks": [
+    "Both original branch blobs match verified three-way manifest Git IDs",
+    "Published source omits original alias; repaired source differs only by exact restored alias block",
+    "Original cfg(windows) dependency, exported parent_anchor module and all6 referenced owner types still exist"
+  ],
+  "limitations": [
+    "No native Windows compiler or runtime executed locally after this patch",
+    "The original Windows CI failure remains a failed observation; a later native run is required"
+  ]
+}

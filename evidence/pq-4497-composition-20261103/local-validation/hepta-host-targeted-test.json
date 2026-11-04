@@ -1,0 +1,19 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--lib",
+    "-E",
+    "test(smollm_cognitive_host::tests::) | test(smollm_neural_read::tests::original_startup_window_and_cancellation_survive_transfer_to_the_loader) | test(smollm_neural_read::tests::expired_startup_is_not_restarted_and_cannot_admit_claim_or_spawn)",
+    "--no-capture"
+  ],
+  "base": "a6c58700d23efd575d2803637aa7d9203d27e7bf",
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "exit_code": 101,
+  "elapsed_seconds": 181.224,
+  "log": "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-host-targeted-test.log",
+  "log_sha256": "d510782c8bee3c41c4cbb6de29163fba78ae5dc3e0cf76c35de93d182bc9109d"
+}

@@ -1,0 +1,33 @@
+{
+  "command": [
+    "cargo",
+    "clippy",
+    "--manifest-path",
+    "codex-rs/Cargo.toml",
+    "--locked",
+    "--tests",
+    "-p",
+    "codex-hepta-contracts",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-authbus",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-arg0",
+    "-p",
+    "codex-hepta-evidence",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "base": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "exit_code": 101,
+  "elapsed_seconds": 32.619,
+  "log": "/workspace/scratch/df0a4a720ed8/pq-audit/hepta-scoped-clippy-4.log",
+  "log_sha256": "1fa55e0bd85332eae98cc194d60f3cbf3fec040dde3e1778ec3560db28309851"
+}

@@ -1,0 +1,26 @@
+{
+  "base": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "version": "2.4.3",
+  "action_ref": "8f01853be192eb0f849a5c7d721450e7a467c579",
+  "command": [
+    "/workspace/scratch/df0a4a720ed8/hepta-pq/codespell-2.4.3/bin/codespell",
+    "--count",
+    "--ignore-words",
+    ".codespellignore",
+    "--skip",
+    "./.git"
+  ],
+  "cwd": "/workspace/scratch/df0a4a720ed8/hepta-source",
+  "returncode": 65,
+  "log_sha256": "bfd0106ccd61adb232af463f804b24c57d091121aaf4893484e6a7ce00c0999a",
+  "dictionary_sha256": "becad0f381d1a654a79908cc05ccd87d85d032f962b427ae28184ca895d77eaf",
+  "immutable_compiler_log_sha256_before": "d510782c8bee3c41c4cbb6de29163fba78ae5dc3e0cf76c35de93d182bc9109d",
+  "immutable_compiler_log_sha256_after": "d510782c8bee3c41c4cbb6de29163fba78ae5dc3e0cf76c35de93d182bc9109d",
+  "tracked_paths": 10951,
+  "present_tracked_paths": 9692,
+  "limitations": [
+    "Local Python 3.12.14; not the CI Python3.13-alpine Docker container",
+    "Working checkout remains sparse; whole current visible checkout scanned with original CLI/config, not all files in published Git tree",
+    "Contains coordinated source follow-up overlay relative to published0baf; this is local validation, not remote CI result"
+  ]
+}

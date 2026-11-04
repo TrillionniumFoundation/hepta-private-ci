@@ -1,0 +1,1062 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.151` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+   Compiling codex-hepta-learning-artifacts v0.0.0 (/workspace/scratch/df0a4a720ed8/hepta-source/codex-rs/hepta-learning-artifacts)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.36s
+────────────
+ Nextest run ID 7a9b024d-3ced-40de-b931-5c52171bde7f with nextest profile: local
+    Starting 130 tests across 1 binary (1 test skipped)
+       START [         ] (  1/130) codex-hepta-learning-artifacts admin::tests::owner_status_is_bounded_read_only_and_scope_specific
+
+running 1 test
+test admin::tests::owner_status_is_bounded_read_only_and_scope_specific ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (  1/130) codex-hepta-learning-artifacts admin::tests::owner_status_is_bounded_read_only_and_scope_specific
+       START [         ] (  2/130) codex-hepta-learning-artifacts admission_v3::tests::art_05_admission_binds_exact_withdrawal_head
+
+running 1 test
+test admission_v3::tests::art_05_admission_binds_exact_withdrawal_head ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (  2/130) codex-hepta-learning-artifacts admission_v3::tests::art_05_admission_binds_exact_withdrawal_head
+       START [         ] (  3/130) codex-hepta-learning-artifacts admission_v3::tests::art_05_admission_is_domain_registry_and_scope_bound
+
+running 1 test
+test admission_v3::tests::art_05_admission_is_domain_registry_and_scope_bound ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (  3/130) codex-hepta-learning-artifacts admission_v3::tests::art_05_admission_is_domain_registry_and_scope_bound
+       START [         ] (  4/130) codex-hepta-learning-artifacts admission_v3::tests::art_05_admission_rejects_unscoped_withdrawal_registry
+
+running 1 test
+test admission_v3::tests::art_05_admission_rejects_unscoped_withdrawal_registry ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (  4/130) codex-hepta-learning-artifacts admission_v3::tests::art_05_admission_rejects_unscoped_withdrawal_registry
+       START [         ] (  5/130) codex-hepta-learning-artifacts admission_v3::tests::art_05_withdrawal_race_invalidates_admission
+
+running 1 test
+test admission_v3::tests::art_05_withdrawal_race_invalidates_admission ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (  5/130) codex-hepta-learning-artifacts admission_v3::tests::art_05_withdrawal_race_invalidates_admission
+       START [         ] (  6/130) codex-hepta-learning-artifacts closure_v2::tests::art_01_manifest_v2_normalizes_complete_lineage
+
+running 1 test
+test closure_v2::tests::art_01_manifest_v2_normalizes_complete_lineage ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (  6/130) codex-hepta-learning-artifacts closure_v2::tests::art_01_manifest_v2_normalizes_complete_lineage
+       START [         ] (  7/130) codex-hepta-learning-artifacts closure_v2::tests::art_02_persistent_withdrawal_blocks_future_admission_and_replays
+
+running 1 test
+test closure_v2::tests::art_02_persistent_withdrawal_blocks_future_admission_and_replays ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (  7/130) codex-hepta-learning-artifacts closure_v2::tests::art_02_persistent_withdrawal_blocks_future_admission_and_replays
+       START [         ] (  8/130) codex-hepta-learning-artifacts closure_v2::tests::art_03_registry_head_witness_rejects_rollback
+
+running 1 test
+test closure_v2::tests::art_03_registry_head_witness_rejects_rollback ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (  8/130) codex-hepta-learning-artifacts closure_v2::tests::art_03_registry_head_witness_rejects_rollback
+       START [         ] (  9/130) codex-hepta-learning-artifacts closure_v2::tests::art_04_lifecycle_forbids_self_selection_and_state_skips
+
+running 1 test
+test closure_v2::tests::art_04_lifecycle_forbids_self_selection_and_state_skips ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (  9/130) codex-hepta-learning-artifacts closure_v2::tests::art_04_lifecycle_forbids_self_selection_and_state_skips
+       START [         ] ( 10/130) codex-hepta-learning-artifacts closure_v2::tests::artifact_manifest_rejects_duplicate_lineage_and_missing_rollback_parent
+
+running 1 test
+test closure_v2::tests::artifact_manifest_rejects_duplicate_lineage_and_missing_rollback_parent ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.003s] ( 10/130) codex-hepta-learning-artifacts closure_v2::tests::artifact_manifest_rejects_duplicate_lineage_and_missing_rollback_parent
+       START [         ] ( 11/130) codex-hepta-learning-artifacts dataset_revocation::tests::batch_revokes_direct_targets_and_blocks_descendants_without_mutating_input
+
+running 1 test
+test dataset_revocation::tests::batch_revokes_direct_targets_and_blocks_descendants_without_mutating_input ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 11/130) codex-hepta-learning-artifacts dataset_revocation::tests::batch_revokes_direct_targets_and_blocks_descendants_without_mutating_input
+       START [         ] ( 12/130) codex-hepta-learning-artifacts dataset_revocation::tests::changed_notice_or_evaluator_under_same_operation_conflicts
+
+running 1 test
+test dataset_revocation::tests::changed_notice_or_evaluator_under_same_operation_conflicts ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 12/130) codex-hepta-learning-artifacts dataset_revocation::tests::changed_notice_or_evaluator_under_same_operation_conflicts
+       START [         ] ( 13/130) codex-hepta-learning-artifacts dataset_revocation::tests::identical_retry_reuses_existing_events_and_history
+
+running 1 test
+test dataset_revocation::tests::identical_retry_reuses_existing_events_and_history ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 13/130) codex-hepta-learning-artifacts dataset_revocation::tests::identical_retry_reuses_existing_events_and_history
+       START [         ] ( 14/130) codex-hepta-learning-artifacts dataset_revocation::tests::later_target_role_collision_discards_entire_preparation
+
+running 1 test
+test dataset_revocation::tests::later_target_role_collision_discards_entire_preparation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 14/130) codex-hepta-learning-artifacts dataset_revocation::tests::later_target_role_collision_discards_entire_preparation
+       START [         ] ( 15/130) codex-hepta-learning-artifacts dataset_revocation::tests::persisted_batch_reopens_and_blocks_candidate_but_keeps_clean_rollback
+
+running 1 test
+test dataset_revocation::tests::persisted_batch_reopens_and_blocks_candidate_but_keeps_clean_rollback ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.01s
+
+        PASS [   0.010s] ( 15/130) codex-hepta-learning-artifacts dataset_revocation::tests::persisted_batch_reopens_and_blocks_candidate_but_keeps_clean_rollback
+       START [         ] ( 16/130) codex-hepta-learning-artifacts dataset_revocation::tests::quarantined_targets_revoke_and_previously_revoked_targets_are_reported
+
+running 1 test
+test dataset_revocation::tests::quarantined_targets_revoke_and_previously_revoked_targets_are_reported ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 16/130) codex-hepta-learning-artifacts dataset_revocation::tests::quarantined_targets_revoke_and_previously_revoked_targets_are_reported
+       START [         ] ( 17/130) codex-hepta-learning-artifacts dataset_revocation::tests::stale_snapshot_missing_dataset_and_empty_notice_reject
+
+running 1 test
+test dataset_revocation::tests::stale_snapshot_missing_dataset_and_empty_notice_reject ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 17/130) codex-hepta-learning-artifacts dataset_revocation::tests::stale_snapshot_missing_dataset_and_empty_notice_reject
+       START [         ] ( 18/130) codex-hepta-learning-artifacts dataset_revocation::tests::target_quota_rejects_without_partial_registry_mutation
+
+running 1 test
+test dataset_revocation::tests::target_quota_rejects_without_partial_registry_mutation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.01s
+
+        PASS [   0.016s] ( 18/130) codex-hepta-learning-artifacts dataset_revocation::tests::target_quota_rejects_without_partial_registry_mutation
+       START [         ] ( 19/130) codex-hepta-learning-artifacts durable_snapshots::tests::art_08_lifecycle_snapshot_recovers_after_historical_actor_expiry
+
+running 1 test
+test durable_snapshots::tests::art_08_lifecycle_snapshot_recovers_after_historical_actor_expiry ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 19/130) codex-hepta-learning-artifacts durable_snapshots::tests::art_08_lifecycle_snapshot_recovers_after_historical_actor_expiry
+       START [         ] ( 20/130) codex-hepta-learning-artifacts durable_snapshots::tests::art_08_scoped_withdrawal_snapshot_round_trips_and_rejects_cross_scope_receipt
+
+running 1 test
+test durable_snapshots::tests::art_08_scoped_withdrawal_snapshot_round_trips_and_rejects_cross_scope_receipt ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 20/130) codex-hepta-learning-artifacts durable_snapshots::tests::art_08_scoped_withdrawal_snapshot_round_trips_and_rejects_cross_scope_receipt
+       START [         ] ( 21/130) codex-hepta-learning-artifacts iteration::tests::candidate_requires_predecessor_after_draft
+
+running 1 test
+test iteration::tests::candidate_requires_predecessor_after_draft ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 21/130) codex-hepta-learning-artifacts iteration::tests::candidate_requires_predecessor_after_draft
+       START [         ] ( 22/130) codex-hepta-learning-artifacts iteration::tests::transitions_are_monotonic_and_terminal
+
+running 1 test
+test iteration::tests::transitions_are_monotonic_and_terminal ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 22/130) codex-hepta-learning-artifacts iteration::tests::transitions_are_monotonic_and_terminal
+       START [         ] ( 23/130) codex-hepta-learning-artifacts iteration_ledger::tests::records_bounded_external_transitions
+
+running 1 test
+test iteration_ledger::tests::records_bounded_external_transitions ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 23/130) codex-hepta-learning-artifacts iteration_ledger::tests::records_bounded_external_transitions
+       START [         ] ( 24/130) codex-hepta-learning-artifacts iteration_ledger::tests::snapshot_replay_is_exact_and_duplicate_receipts_fail
+
+running 1 test
+test iteration_ledger::tests::snapshot_replay_is_exact_and_duplicate_receipts_fail ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 24/130) codex-hepta-learning-artifacts iteration_ledger::tests::snapshot_replay_is_exact_and_duplicate_receipts_fail
+       START [         ] ( 25/130) codex-hepta-learning-artifacts lifecycle_journal::tests::art_06_lifecycle_journal_enforces_head_state_and_role
+
+running 1 test
+test lifecycle_journal::tests::art_06_lifecycle_journal_enforces_head_state_and_role ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 25/130) codex-hepta-learning-artifacts lifecycle_journal::tests::art_06_lifecycle_journal_enforces_head_state_and_role
+       START [         ] ( 26/130) codex-hepta-learning-artifacts lifecycle_journal::tests::art_06_lifecycle_journal_replays_exact_snapshot
+
+running 1 test
+test lifecycle_journal::tests::art_06_lifecycle_journal_replays_exact_snapshot ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 26/130) codex-hepta-learning-artifacts lifecycle_journal::tests::art_06_lifecycle_journal_replays_exact_snapshot
+       START [         ] ( 27/130) codex-hepta-learning-artifacts lifecycle_journal::tests::art_06_lifecycle_snapshot_replay_survives_actor_expiry
+
+running 1 test
+test lifecycle_journal::tests::art_06_lifecycle_snapshot_replay_survives_actor_expiry ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.003s] ( 27/130) codex-hepta-learning-artifacts lifecycle_journal::tests::art_06_lifecycle_snapshot_replay_survives_actor_expiry
+       START [         ] ( 28/130) codex-hepta-learning-artifacts owner_host::tests::authenticated_current_head_is_discovered_and_signature_drift_rejects
+
+running 1 test
+test owner_host::tests::authenticated_current_head_is_discovered_and_signature_drift_rejects ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.05s
+
+        PASS [   0.054s] ( 28/130) codex-hepta-learning-artifacts owner_host::tests::authenticated_current_head_is_discovered_and_signature_drift_rejects
+       START [         ] ( 29/130) codex-hepta-learning-artifacts owner_host::tests::authenticated_current_retains_original_clock_and_signer_bounds
+
+running 1 test
+test owner_host::tests::authenticated_current_retains_original_clock_and_signer_bounds ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.11s
+
+        PASS [   0.117s] ( 29/130) codex-hepta-learning-artifacts owner_host::tests::authenticated_current_retains_original_clock_and_signer_bounds
+       START [         ] ( 30/130) codex-hepta-learning-artifacts owner_host::tests::current_head_rotation_preserves_history_and_requires_current_key_epoch
+
+running 1 test
+test owner_host::tests::current_head_rotation_preserves_history_and_requires_current_key_epoch ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.07s
+
+        PASS [   0.070s] ( 30/130) codex-hepta-learning-artifacts owner_host::tests::current_head_rotation_preserves_history_and_requires_current_key_epoch
+       START [         ] ( 31/130) codex-hepta-learning-artifacts owner_host::tests::independent_current_head_anchor_rejects_restored_old_backup
+
+running 1 test
+test owner_host::tests::independent_current_head_anchor_rejects_restored_old_backup ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.04s
+
+        PASS [   0.045s] ( 31/130) codex-hepta-learning-artifacts owner_host::tests::independent_current_head_anchor_rejects_restored_old_backup
+       START [         ] ( 32/130) codex-hepta-learning-artifacts owner_host::tests::owner_host_checkpoint_recovery_requires_exact_snapshot
+
+running 1 test
+test owner_host::tests::owner_host_checkpoint_recovery_requires_exact_snapshot ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.05s
+
+        PASS [   0.058s] ( 32/130) codex-hepta-learning-artifacts owner_host::tests::owner_host_checkpoint_recovery_requires_exact_snapshot
+       START [         ] ( 33/130) codex-hepta-learning-artifacts owner_host::tests::owner_host_exclusively_fences_writer_lease
+
+running 1 test
+test owner_host::tests::owner_host_exclusively_fences_writer_lease ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.04s
+
+        PASS [   0.045s] ( 33/130) codex-hepta-learning-artifacts owner_host::tests::owner_host_exclusively_fences_writer_lease
+       START [         ] ( 34/130) codex-hepta-learning-artifacts owner_host::tests::owner_host_process_kill_reopen_matrix
+
+running 1 test
+test owner_host::tests::owner_host_process_kill_reopen_matrix ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.80s
+
+        PASS [   0.804s] ( 34/130) codex-hepta-learning-artifacts owner_host::tests::owner_host_process_kill_reopen_matrix
+       START [         ] ( 35/130) codex-hepta-learning-artifacts owner_service::pq_tests::pq_owner_current_selector_and_payload_use_the_original_durable_pipeline
+
+running 1 test
+test owner_service::pq_tests::pq_owner_current_selector_and_payload_use_the_original_durable_pipeline ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 1.04s
+
+        PASS [   1.049s] ( 35/130) codex-hepta-learning-artifacts owner_service::pq_tests::pq_owner_current_selector_and_payload_use_the_original_durable_pipeline
+       START [         ] ( 36/130) codex-hepta-learning-artifacts owner_service::pq_tests::pq_owner_rejects_classical_roles_signatures_and_store_relabelling
+
+running 1 test
+test owner_service::pq_tests::pq_owner_rejects_classical_roles_signatures_and_store_relabelling ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.25s
+
+        PASS [   0.258s] ( 36/130) codex-hepta-learning-artifacts owner_service::pq_tests::pq_owner_rejects_classical_roles_signatures_and_store_relabelling
+       START [         ] ( 37/130) codex-hepta-learning-artifacts owner_service::reader_tests::current_directory_bounds_count_every_entry_before_decoding_unique_operations
+
+running 1 test
+test owner_service::reader_tests::current_directory_bounds_count_every_entry_before_decoding_unique_operations ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 1.86s
+
+        PASS [   1.864s] ( 37/130) codex-hepta-learning-artifacts owner_service::reader_tests::current_directory_bounds_count_every_entry_before_decoding_unique_operations
+       START [         ] ( 38/130) codex-hepta-learning-artifacts owner_service::reader_tests::reader_rejects_noncanonical_checkpoint_copies_and_unknown_entries
+
+running 1 test
+test owner_service::reader_tests::reader_rejects_noncanonical_checkpoint_copies_and_unknown_entries ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.37s
+
+        PASS [   0.379s] ( 38/130) codex-hepta-learning-artifacts owner_service::reader_tests::reader_rejects_noncanonical_checkpoint_copies_and_unknown_entries
+       START [         ] ( 39/130) codex-hepta-learning-artifacts owner_service::reader_tests::reader_requires_canonical_root_and_rejects_ancestor_aliases
+
+running 1 test
+test owner_service::reader_tests::reader_requires_canonical_root_and_rejects_ancestor_aliases ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.22s
+
+        PASS [   0.229s] ( 39/130) codex-hepta-learning-artifacts owner_service::reader_tests::reader_requires_canonical_root_and_rejects_ancestor_aliases
+       START [         ] ( 40/130) codex-hepta-learning-artifacts owner_service::reader_tests::reader_requires_existing_observation_inode_and_never_recreates_it
+
+running 1 test
+test owner_service::reader_tests::reader_requires_existing_observation_inode_and_never_recreates_it ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.18s
+
+        PASS [   0.189s] ( 40/130) codex-hepta-learning-artifacts owner_service::reader_tests::reader_requires_existing_observation_inode_and_never_recreates_it
+       START [         ] ( 41/130) codex-hepta-learning-artifacts owner_service::reader_tests::signed_snapshot_replaced_by_fifo_rejects_before_blocking_open
+
+running 1 test
+test owner_service::reader_tests::signed_snapshot_replaced_by_fifo_rejects_before_blocking_open ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.21s
+
+        PASS [   0.220s] ( 41/130) codex-hepta-learning-artifacts owner_service::reader_tests::signed_snapshot_replaced_by_fifo_rejects_before_blocking_open
+       START [         ] ( 42/130) codex-hepta-learning-artifacts owner_service::revocation_tests::actual_owner_revoke_makes_published_descendant_ineligible
+
+running 1 test
+test owner_service::revocation_tests::actual_owner_revoke_makes_published_descendant_ineligible ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.60s
+
+        PASS [   0.608s] ( 42/130) codex-hepta-learning-artifacts owner_service::revocation_tests::actual_owner_revoke_makes_published_descendant_ineligible
+       START [         ] ( 43/130) codex-hepta-learning-artifacts owner_service::revocation_tests::bounded_current_reader_wait_finishes_when_live_owner_exact_retry_settles
+
+running 1 test
+test owner_service::revocation_tests::bounded_current_reader_wait_finishes_when_live_owner_exact_retry_settles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.46s
+
+        PASS [   0.463s] ( 43/130) codex-hepta-learning-artifacts owner_service::revocation_tests::bounded_current_reader_wait_finishes_when_live_owner_exact_retry_settles
+       START [         ] ( 44/130) codex-hepta-learning-artifacts owner_service::revocation_tests::historical_revoke_retry_preserves_later_current_and_bad_retry_cannot_fence_it
+
+running 1 test
+test owner_service::revocation_tests::historical_revoke_retry_preserves_later_current_and_bad_retry_cannot_fence_it ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.67s
+
+        PASS [   0.676s] ( 44/130) codex-hepta-learning-artifacts owner_service::revocation_tests::historical_revoke_retry_preserves_later_current_and_bad_retry_cannot_fence_it
+       START [         ] ( 45/130) codex-hepta-learning-artifacts owner_service::revocation_tests::named_revoke_is_durable_idempotent_and_restart_retains_independent_signed_head
+
+running 1 test
+test owner_service::revocation_tests::named_revoke_is_durable_idempotent_and_restart_retains_independent_signed_head ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.59s
+
+        PASS [   0.595s] ( 45/130) codex-hepta-learning-artifacts owner_service::revocation_tests::named_revoke_is_durable_idempotent_and_restart_retains_independent_signed_head
+       START [         ] ( 46/130) codex-hepta-learning-artifacts owner_service::revocation_tests::revocation_ack_sync_uncertainty_blocks_readers_and_unrelated_writes_until_exact_sync
+
+running 1 test
+test owner_service::revocation_tests::revocation_ack_sync_uncertainty_blocks_readers_and_unrelated_writes_until_exact_sync ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.96s
+
+        PASS [   0.966s] ( 46/130) codex-hepta-learning-artifacts owner_service::revocation_tests::revocation_ack_sync_uncertainty_blocks_readers_and_unrelated_writes_until_exact_sync
+       START [         ] ( 47/130) codex-hepta-learning-artifacts owner_service::revocation_tests::revocation_refuses_self_evaluation_wrong_key_stale_head_and_changed_reason
+
+running 1 test
+test owner_service::revocation_tests::revocation_refuses_self_evaluation_wrong_key_stale_head_and_changed_reason ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 1.07s
+
+        PASS [   1.080s] ( 47/130) codex-hepta-learning-artifacts owner_service::revocation_tests::revocation_refuses_self_evaluation_wrong_key_stale_head_and_changed_reason
+       START [         ] ( 48/130) codex-hepta-learning-artifacts owner_service::revocation_tests::revocation_reopens_each_durable_crash_cut_without_unfencing_unrelated_work
+
+running 1 test
+test owner_service::revocation_tests::revocation_reopens_each_durable_crash_cut_without_unfencing_unrelated_work ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 2.53s
+
+        PASS [   2.532s] ( 48/130) codex-hepta-learning-artifacts owner_service::revocation_tests::revocation_reopens_each_durable_crash_cut_without_unfencing_unrelated_work
+       START [         ] ( 49/130) codex-hepta-learning-artifacts owner_service::tests::corrupt_checkpoint_reconciliation_keeps_current_use_and_restart_closed
+
+running 1 test
+test owner_service::tests::corrupt_checkpoint_reconciliation_keeps_current_use_and_restart_closed ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.24s
+
+        PASS [   0.244s] ( 49/130) codex-hepta-learning-artifacts owner_service::tests::corrupt_checkpoint_reconciliation_keeps_current_use_and_restart_closed
+       START [         ] ( 50/130) codex-hepta-learning-artifacts owner_service::tests::current_view_is_fenced_until_unacknowledged_publication_is_reconciled
+
+running 1 test
+test owner_service::tests::current_view_is_fenced_until_unacknowledged_publication_is_reconciled ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.23s
+
+        PASS [   0.235s] ( 50/130) codex-hepta-learning-artifacts owner_service::tests::current_view_is_fenced_until_unacknowledged_publication_is_reconciled
+       START [         ] ( 51/130) codex-hepta-learning-artifacts owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head
+
+running 1 test
+test owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.37s
+
+        PASS [   0.372s] ( 51/130) codex-hepta-learning-artifacts owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head
+       START [         ] ( 52/130) codex-hepta-learning-artifacts pinned::tests::cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup
+
+running 1 test
+test pinned::tests::cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.008s] ( 52/130) codex-hepta-learning-artifacts pinned::tests::cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup
+       START [         ] ( 53/130) codex-hepta-learning-artifacts pinned::tests::cached_consumer_rejects_longer_fork_and_backwards_frontier
+
+running 1 test
+test pinned::tests::cached_consumer_rejects_longer_fork_and_backwards_frontier ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.01s
+
+        PASS [   0.015s] ( 53/130) codex-hepta-learning-artifacts pinned::tests::cached_consumer_rejects_longer_fork_and_backwards_frontier
+       START [         ] ( 54/130) codex-hepta-learning-artifacts pinned::tests::cached_consumer_rejects_new_scope_and_corrupt_current_file_without_calling_consumer
+
+running 1 test
+test pinned::tests::cached_consumer_rejects_new_scope_and_corrupt_current_file_without_calling_consumer ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.011s] ( 54/130) codex-hepta-learning-artifacts pinned::tests::cached_consumer_rejects_new_scope_and_corrupt_current_file_without_calling_consumer
+       START [         ] ( 55/130) codex-hepta-learning-artifacts pinned::tests::loads_exact_pinned_manifest_and_payload
+
+running 1 test
+test pinned::tests::loads_exact_pinned_manifest_and_payload ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.008s] ( 55/130) codex-hepta-learning-artifacts pinned::tests::loads_exact_pinned_manifest_and_payload
+       START [         ] ( 56/130) codex-hepta-learning-artifacts pinned::tests::objective_and_compatibility_drift_are_pin_mismatches
+
+running 1 test
+test pinned::tests::objective_and_compatibility_drift_are_pin_mismatches ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.008s] ( 56/130) codex-hepta-learning-artifacts pinned::tests::objective_and_compatibility_drift_are_pin_mismatches
+       START [         ] ( 57/130) codex-hepta-learning-artifacts pinned::tests::quarantined_candidate_blocks_loading
+
+running 1 test
+test pinned::tests::quarantined_candidate_blocks_loading ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.008s] ( 57/130) codex-hepta-learning-artifacts pinned::tests::quarantined_candidate_blocks_loading
+       START [         ] ( 58/130) codex-hepta-learning-artifacts pinned::tests::revoked_ancestor_blocks_loading
+
+running 1 test
+test pinned::tests::revoked_ancestor_blocks_loading ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.007s] ( 58/130) codex-hepta-learning-artifacts pinned::tests::revoked_ancestor_blocks_loading
+       START [         ] ( 59/130) codex-hepta-learning-artifacts pinned::tests::tampered_payload_is_rejected
+
+running 1 test
+test pinned::tests::tampered_payload_is_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.01s
+
+        PASS [   0.011s] ( 59/130) codex-hepta-learning-artifacts pinned::tests::tampered_payload_is_rejected
+       START [         ] ( 60/130) codex-hepta-learning-artifacts pinned::tests::wrong_epoch_binding_is_rejected
+
+running 1 test
+test pinned::tests::wrong_epoch_binding_is_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.01s
+
+        PASS [   0.016s] ( 60/130) codex-hepta-learning-artifacts pinned::tests::wrong_epoch_binding_is_rejected
+       START [         ] ( 61/130) codex-hepta-learning-artifacts publication::tests::art_07_crash_snapshots_never_promote_partial_publication
+
+running 1 test
+test publication::tests::art_07_crash_snapshots_never_promote_partial_publication ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 61/130) codex-hepta-learning-artifacts publication::tests::art_07_crash_snapshots_never_promote_partial_publication
+       START [         ] ( 62/130) codex-hepta-learning-artifacts publication::tests::art_07_publication_requires_ordered_durable_phases_before_ack
+
+running 1 test
+test publication::tests::art_07_publication_requires_ordered_durable_phases_before_ack ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 62/130) codex-hepta-learning-artifacts publication::tests::art_07_publication_requires_ordered_durable_phases_before_ack
+       START [         ] ( 63/130) codex-hepta-learning-artifacts publication::tests::art_07_registry_projection_cannot_swap_payload_or_identity
+
+running 1 test
+test publication::tests::art_07_registry_projection_cannot_swap_payload_or_identity ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 63/130) codex-hepta-learning-artifacts publication::tests::art_07_registry_projection_cannot_swap_payload_or_identity
+       START [         ] ( 64/130) codex-hepta-learning-artifacts publication::tests::art_07_withdrawal_advance_blocks_recovered_publication
+
+running 1 test
+test publication::tests::art_07_withdrawal_advance_blocks_recovered_publication ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 64/130) codex-hepta-learning-artifacts publication::tests::art_07_withdrawal_advance_blocks_recovered_publication
+       START [         ] ( 65/130) codex-hepta-learning-artifacts publication::tests::published_v2_source_cannot_be_substituted_behind_equal_v1_bytes
+
+running 1 test
+test publication::tests::published_v2_source_cannot_be_substituted_behind_equal_v1_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 65/130) codex-hepta-learning-artifacts publication::tests::published_v2_source_cannot_be_substituted_behind_equal_v1_bytes
+       START [         ] ( 66/130) codex-hepta-learning-artifacts registry::tests::ancestor_revocation_makes_derived_artifacts_ineligible
+
+running 1 test
+test registry::tests::ancestor_revocation_makes_derived_artifacts_ineligible ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 66/130) codex-hepta-learning-artifacts registry::tests::ancestor_revocation_makes_derived_artifacts_ineligible
+       START [         ] ( 67/130) codex-hepta-learning-artifacts registry::tests::artifact_producer_cannot_self_evaluate
+
+running 1 test
+test registry::tests::artifact_producer_cannot_self_evaluate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 67/130) codex-hepta-learning-artifacts registry::tests::artifact_producer_cannot_self_evaluate
+       START [         ] ( 68/130) codex-hepta-learning-artifacts registry::tests::derived_artifact_requires_monotonic_matching_lineage
+
+running 1 test
+test registry::tests::derived_artifact_requires_monotonic_matching_lineage ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 68/130) codex-hepta-learning-artifacts registry::tests::derived_artifact_requires_monotonic_matching_lineage
+       START [         ] ( 69/130) codex-hepta-learning-artifacts registry::tests::event_identity_reuse_with_drift_fails
+
+running 1 test
+test registry::tests::event_identity_reuse_with_drift_fails ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 69/130) codex-hepta-learning-artifacts registry::tests::event_identity_reuse_with_drift_fails
+       START [         ] ( 70/130) codex-hepta-learning-artifacts registry::tests::quarantine_and_revoke_remove_candidate_eligibility
+
+running 1 test
+test registry::tests::quarantine_and_revoke_remove_candidate_eligibility ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 70/130) codex-hepta-learning-artifacts registry::tests::quarantine_and_revoke_remove_candidate_eligibility
+       START [         ] ( 71/130) codex-hepta-learning-artifacts registry::tests::registration_is_immutable_and_idempotent
+
+running 1 test
+test registry::tests::registration_is_immutable_and_idempotent ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 71/130) codex-hepta-learning-artifacts registry::tests::registration_is_immutable_and_idempotent
+       START [         ] ( 72/130) codex-hepta-learning-artifacts registry::tests::snapshot_replay_preserves_lineage_and_state
+
+running 1 test
+test registry::tests::snapshot_replay_preserves_lineage_and_state ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 72/130) codex-hepta-learning-artifacts registry::tests::snapshot_replay_preserves_lineage_and_state
+       START [         ] ( 73/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::actual_selected_zero_bytes_revalidate_and_cold_reopen_without_installation_authority
+
+running 1 test
+test selection::initial_smollm_genesis::tests::actual_selected_zero_bytes_revalidate_and_cold_reopen_without_installation_authority ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.48s
+
+        PASS [   0.490s] ( 73/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::actual_selected_zero_bytes_revalidate_and_cold_reopen_without_installation_authority
+       START [         ] ( 74/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::duplicate_unknown_dtype_shape_offsets_and_profile_header_aliases_are_rejected
+
+running 1 test
+test selection::initial_smollm_genesis::tests::duplicate_unknown_dtype_shape_offsets_and_profile_header_aliases_are_rejected ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 1.11s
+
+        PASS [   1.111s] ( 74/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::duplicate_unknown_dtype_shape_offsets_and_profile_header_aliases_are_rejected
+       START [         ] ( 75/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::newer_original_current_revocation_denies_the_loaded_initial_bytes
+
+running 1 test
+test selection::initial_smollm_genesis::tests::newer_original_current_revocation_denies_the_loaded_initial_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.13s
+
+        PASS [   0.139s] ( 75/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::newer_original_current_revocation_denies_the_loaded_initial_bytes
+       START [         ] ( 76/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::nonzero_negative_zero_and_nonfinite_factors_are_rejected_after_real_selection
+
+running 1 test
+test selection::initial_smollm_genesis::tests::nonzero_negative_zero_and_nonfinite_factors_are_rejected_after_real_selection ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.47s
+
+        PASS [   0.473s] ( 76/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::nonzero_negative_zero_and_nonfinite_factors_are_rejected_after_real_selection
+       START [         ] ( 77/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::original_selector_refuses_changed_tokenizer_profile_head_role_and_expired_evidence
+
+running 1 test
+test selection::initial_smollm_genesis::tests::original_selector_refuses_changed_tokenizer_profile_head_role_and_expired_evidence ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.08s
+
+        PASS [   0.086s] ( 77/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::original_selector_refuses_changed_tokenizer_profile_head_role_and_expired_evidence
+       START [         ] ( 78/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::other_existing_profile_keeps_its_original_selected_loading_semantics
+
+running 1 test
+test selection::initial_smollm_genesis::tests::other_existing_profile_keeps_its_original_selected_loading_semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.03s
+
+        PASS [   0.032s] ( 78/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::other_existing_profile_keeps_its_original_selected_loading_semantics
+       START [         ] ( 79/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::pq_initial_tests::pq_initial_material_keeps_selector_current_and_final_use_profile_bound
+
+running 1 test
+test selection::initial_smollm_genesis::tests::pq_initial_tests::pq_initial_material_keeps_selector_current_and_final_use_profile_bound ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 1.42s
+
+        PASS [   1.423s] ( 79/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::pq_initial_tests::pq_initial_material_keeps_selector_current_and_final_use_profile_bound
+       START [         ] ( 80/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::public_initial_tests::public_initial_admission_rejects_profile_crossing_and_changed_factors
+
+running 1 test
+test selection::initial_smollm_genesis::tests::public_initial_tests::public_initial_admission_rejects_profile_crossing_and_changed_factors ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.65s
+
+        PASS [   0.653s] ( 80/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::public_initial_tests::public_initial_admission_rejects_profile_crossing_and_changed_factors
+       START [         ] ( 81/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::public_initial_tests::public_initial_expired_current_is_sticky_and_cannot_be_revived
+
+running 1 test
+test selection::initial_smollm_genesis::tests::public_initial_tests::public_initial_expired_current_is_sticky_and_cannot_be_revived ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.14s
+
+        PASS [   0.141s] ( 81/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::public_initial_tests::public_initial_expired_current_is_sticky_and_cannot_be_revived
+       START [         ] ( 82/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::current_expiry_and_clock_rollback_fail_closed_without_invoking_consumer
+
+running 1 test
+test selection::initial_smollm_genesis::tests::selected_tests::current_expiry_and_clock_rollback_fail_closed_without_invoking_consumer ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.32s
+
+        PASS [   0.329s] ( 82/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::current_expiry_and_clock_rollback_fail_closed_without_invoking_consumer
+       START [         ] ( 83/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::failed_time_or_withdrawal_cannot_be_revived_by_an_old_current
+
+running 1 test
+test selection::initial_smollm_genesis::tests::selected_tests::failed_time_or_withdrawal_cannot_be_revived_by_an_old_current ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.17s
+
+        PASS [   0.180s] ( 83/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::failed_time_or_withdrawal_cannot_be_revived_by_an_old_current
+       START [         ] ( 84/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::newly_authenticated_current_cannot_substitute_the_original_owner_trust
+
+running 1 test
+test selection::initial_smollm_genesis::tests::selected_tests::newly_authenticated_current_cannot_substitute_the_original_owner_trust ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.18s
+
+        PASS [   0.184s] ( 84/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::newly_authenticated_current_cannot_substitute_the_original_owner_trust
+       START [         ] ( 85/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::old_trained_profile_null_bytes_and_null_signature_cannot_make_typed_material
+
+running 1 test
+test selection::initial_smollm_genesis::tests::selected_tests::old_trained_profile_null_bytes_and_null_signature_cannot_make_typed_material ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.22s
+
+        PASS [   0.224s] ( 85/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::old_trained_profile_null_bytes_and_null_signature_cannot_make_typed_material
+       START [         ] ( 86/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::opaque_material_reads_actual_bytes_and_cold_reopens_same_selected_files
+
+running 1 test
+test selection::initial_smollm_genesis::tests::selected_tests::opaque_material_reads_actual_bytes_and_cold_reopens_same_selected_files ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.35s
+
+        PASS [   0.350s] ( 86/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::opaque_material_reads_actual_bytes_and_cold_reopens_same_selected_files
+       START [         ] ( 87/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::original_files_are_checked_again_and_cached_panic_is_sticky
+
+running 1 test
+
+thread 'selection::initial_smollm_genesis::tests::selected_tests::original_files_are_checked_again_and_cached_panic_is_sticky' (269) panicked at hepta-learning-artifacts/src/selected_initial_smollm_tests.rs:319:17:
+bounded consumer panic
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test selection::initial_smollm_genesis::tests::selected_tests::original_files_are_checked_again_and_cached_panic_is_sticky ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.21s
+
+        PASS [   0.214s] ( 87/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::original_files_are_checked_again_and_cached_panic_is_sticky
+       START [         ] ( 88/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::original_signed_expiry_survives_load_and_cold_reverification
+
+running 1 test
+test selection::initial_smollm_genesis::tests::selected_tests::original_signed_expiry_survives_load_and_cold_reverification ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.22s
+
+        PASS [   0.219s] ( 88/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::original_signed_expiry_survives_load_and_cold_reverification
+       START [         ] ( 89/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::original_trusted_selector_expiry_and_known_revocation_are_not_lost
+
+running 1 test
+test selection::initial_smollm_genesis::tests::selected_tests::original_trusted_selector_expiry_and_known_revocation_are_not_lost ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.34s
+
+        PASS [   0.348s] ( 89/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::original_trusted_selector_expiry_and_known_revocation_are_not_lost
+       START [         ] ( 90/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::typed_material_cannot_bypass_actual_positive_zero_or_snapshot_bytes
+
+running 1 test
+test selection::initial_smollm_genesis::tests::selected_tests::typed_material_cannot_bypass_actual_positive_zero_or_snapshot_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.22s
+
+        PASS [   0.230s] ( 90/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::selected_tests::typed_material_cannot_bypass_actual_positive_zero_or_snapshot_bytes
+       START [         ] ( 91/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::wrong_manifest_generation_kind_and_lengths_cannot_enter_the_new_profile
+
+running 1 test
+test selection::initial_smollm_genesis::tests::wrong_manifest_generation_kind_and_lengths_cannot_enter_the_new_profile ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.32s
+
+        PASS [   0.325s] ( 91/130) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::wrong_manifest_generation_kind_and_lengths_cannot_enter_the_new_profile
+       START [         ] ( 92/130) codex-hepta-learning-artifacts selection::tests::art_12_independent_selector_binds_exact_current_and_manifest
+
+running 1 test
+test selection::tests::art_12_independent_selector_binds_exact_current_and_manifest ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.01s
+
+        PASS [   0.017s] ( 92/130) codex-hepta-learning-artifacts selection::tests::art_12_independent_selector_binds_exact_current_and_manifest
+       START [         ] ( 93/130) codex-hepta-learning-artifacts selection::tests::art_12_selection_rejects_self_selection_and_revoked_selector
+
+running 1 test
+test selection::tests::art_12_selection_rejects_self_selection_and_revoked_selector ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.006s] ( 93/130) codex-hepta-learning-artifacts selection::tests::art_12_selection_rejects_self_selection_and_revoked_selector
+       START [         ] ( 94/130) codex-hepta-learning-artifacts selection::tests::art_12_verified_selection_records_only_selected_transition
+
+running 1 test
+test selection::tests::art_12_verified_selection_records_only_selected_transition ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.01s
+
+        PASS [   0.017s] ( 94/130) codex-hepta-learning-artifacts selection::tests::art_12_verified_selection_records_only_selected_transition
+       START [         ] ( 95/130) codex-hepta-learning-artifacts selection::tests::lifetime::delayed_selection_recording_preserves_all_original_authorization_windows
+
+running 1 test
+test selection::tests::lifetime::delayed_selection_recording_preserves_all_original_authorization_windows ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.06s
+
+        PASS [   0.062s] ( 95/130) codex-hepta-learning-artifacts selection::tests::lifetime::delayed_selection_recording_preserves_all_original_authorization_windows
+       START [         ] ( 96/130) codex-hepta-learning-artifacts sensor_core_registry::tests::operator_sensor_core_projection_has_one_physical_owner
+
+running 1 test
+test sensor_core_registry::tests::operator_sensor_core_projection_has_one_physical_owner ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 96/130) codex-hepta-learning-artifacts sensor_core_registry::tests::operator_sensor_core_projection_has_one_physical_owner
+       START [         ] ( 97/130) codex-hepta-learning-artifacts sensor_core_registry::tests::operator_sensor_core_projection_tracks_revocation_without_second_write
+
+running 1 test
+test sensor_core_registry::tests::operator_sensor_core_projection_tracks_revocation_without_second_write ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 97/130) codex-hepta-learning-artifacts sensor_core_registry::tests::operator_sensor_core_projection_tracks_revocation_without_second_write
+       START [         ] ( 98/130) codex-hepta-learning-artifacts storage::budget_tests::empty_snapshot_keeps_corrupt_semantics
+
+running 1 test
+test storage::budget_tests::empty_snapshot_keeps_corrupt_semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] ( 98/130) codex-hepta-learning-artifacts storage::budget_tests::empty_snapshot_keeps_corrupt_semantics
+       START [         ] ( 99/130) codex-hepta-learning-artifacts storage::budget_tests::exact_file_is_read_from_start_even_with_a_nonzero_cursor
+
+running 1 test
+test storage::budget_tests::exact_file_is_read_from_start_even_with_a_nonzero_cursor ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] ( 99/130) codex-hepta-learning-artifacts storage::budget_tests::exact_file_is_read_from_start_even_with_a_nonzero_cursor
+       START [         ] (100/130) codex-hepta-learning-artifacts storage::budget_tests::global_ceiling_and_empty_payload_keep_capacity_semantics
+
+running 1 test
+test storage::budget_tests::global_ceiling_and_empty_payload_keep_capacity_semantics ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (100/130) codex-hepta-learning-artifacts storage::budget_tests::global_ceiling_and_empty_payload_keep_capacity_semantics
+       START [         ] (101/130) codex-hepta-learning-artifacts storage::budget_tests::pre_read_and_post_read_metadata_use_the_same_error_priority
+
+running 1 test
+test storage::budget_tests::pre_read_and_post_read_metadata_use_the_same_error_priority ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (101/130) codex-hepta-learning-artifacts storage::budget_tests::pre_read_and_post_read_metadata_use_the_same_error_priority
+       START [         ] (102/130) codex-hepta-learning-artifacts storage::budget_tests::short_nonempty_file_is_also_rejected_without_reading
+
+running 1 test
+test storage::budget_tests::short_nonempty_file_is_also_rejected_without_reading ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (102/130) codex-hepta-learning-artifacts storage::budget_tests::short_nonempty_file_is_also_rejected_without_reading
+       START [         ] (103/130) codex-hepta-learning-artifacts storage::budget_tests::wrong_exact_length_is_rejected_before_any_seek_or_read
+
+running 1 test
+test storage::budget_tests::wrong_exact_length_is_rejected_before_any_seek_or_read ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (103/130) codex-hepta-learning-artifacts storage::budget_tests::wrong_exact_length_is_rejected_before_any_seek_or_read
+       START [         ] (104/130) codex-hepta-learning-artifacts storage::lock_tests::created_target_held_by_another_writer_fails_busy_without_writing
+
+running 1 test
+test storage::lock_tests::created_target_held_by_another_writer_fails_busy_without_writing ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (104/130) codex-hepta-learning-artifacts storage::lock_tests::created_target_held_by_another_writer_fails_busy_without_writing
+       START [         ] (105/130) codex-hepta-learning-artifacts storage::lock_tests::failed_read_releases_own_lock_with_transient_duplicate_retained
+
+running 1 test
+test storage::lock_tests::failed_read_releases_own_lock_with_transient_duplicate_retained ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (105/130) codex-hepta-learning-artifacts storage::lock_tests::failed_read_releases_own_lock_with_transient_duplicate_retained
+       START [         ] (106/130) codex-hepta-learning-artifacts storage::lock_tests::readonly_handles_load_registry_and_payload
+
+running 1 test
+test storage::lock_tests::readonly_handles_load_registry_and_payload ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (106/130) codex-hepta-learning-artifacts storage::lock_tests::readonly_handles_load_registry_and_payload
+       START [         ] (107/130) codex-hepta-learning-artifacts storage::lock_tests::shared_readers_coexist_and_existing_path_cannot_be_recreated
+
+running 1 test
+test storage::lock_tests::shared_readers_coexist_and_existing_path_cannot_be_recreated ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (107/130) codex-hepta-learning-artifacts storage::lock_tests::shared_readers_coexist_and_existing_path_cannot_be_recreated
+       START [         ] (108/130) codex-hepta-learning-artifacts storage::lock_tests::write_guard_releases_lock_with_transient_duplicate_retained
+
+running 1 test
+test storage::lock_tests::write_guard_releases_lock_with_transient_duplicate_retained ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (108/130) codex-hepta-learning-artifacts storage::lock_tests::write_guard_releases_lock_with_transient_duplicate_retained
+       START [         ] (109/130) codex-hepta-learning-artifacts storage::tests::bytes_appearing_after_atomic_creation_are_indeterminate
+
+running 1 test
+test storage::tests::bytes_appearing_after_atomic_creation_are_indeterminate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (109/130) codex-hepta-learning-artifacts storage::tests::bytes_appearing_after_atomic_creation_are_indeterminate
+       START [         ] (110/130) codex-hepta-learning-artifacts storage::tests::concurrent_creation_has_exactly_one_winner
+
+running 1 test
+test storage::tests::concurrent_creation_has_exactly_one_winner ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.006s] (110/130) codex-hepta-learning-artifacts storage::tests::concurrent_creation_has_exactly_one_winner
+       START [         ] (111/130) codex-hepta-learning-artifacts storage::tests::contained_write_rejects_escape_and_validates_before_create
+
+running 1 test
+test storage::tests::contained_write_rejects_escape_and_validates_before_create ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (111/130) codex-hepta-learning-artifacts storage::tests::contained_write_rejects_escape_and_validates_before_create
+       START [         ] (112/130) codex-hepta-learning-artifacts storage::tests::contained_write_rejects_symlink_ancestor
+
+running 1 test
+test storage::tests::contained_write_rejects_symlink_ancestor ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (112/130) codex-hepta-learning-artifacts storage::tests::contained_write_rejects_symlink_ancestor
+       START [         ] (113/130) codex-hepta-learning-artifacts storage::tests::create_only_capability_debug_is_opaque
+
+running 1 test
+test storage::tests::create_only_capability_debug_is_opaque ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (113/130) codex-hepta-learning-artifacts storage::tests::create_only_capability_debug_is_opaque
+       START [         ] (114/130) codex-hepta-learning-artifacts storage::tests::created_target_permissions_are_never_wider_than_owner_read_write
+
+running 1 test
+test storage::tests::created_target_permissions_are_never_wider_than_owner_read_write ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (114/130) codex-hepta-learning-artifacts storage::tests::created_target_permissions_are_never_wider_than_owner_read_write
+       START [         ] (115/130) codex-hepta-learning-artifacts storage::tests::current_head_witness_rejects_stale_or_tampered_receipts
+
+running 1 test
+test storage::tests::current_head_witness_rejects_stale_or_tampered_receipts ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (115/130) codex-hepta-learning-artifacts storage::tests::current_head_witness_rejects_stale_or_tampered_receipts
+       START [         ] (116/130) codex-hepta-learning-artifacts storage::tests::current_head_witness_round_trips_only_with_current_requirement
+
+running 1 test
+test storage::tests::current_head_witness_round_trips_only_with_current_requirement ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (116/130) codex-hepta-learning-artifacts storage::tests::current_head_witness_round_trips_only_with_current_requirement
+       START [         ] (117/130) codex-hepta-learning-artifacts storage::tests::every_truncation_and_wrong_external_witness_rejects_without_repair
+
+running 1 test
+test storage::tests::every_truncation_and_wrong_external_witness_rejects_without_repair ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.04s
+
+        PASS [   0.041s] (117/130) codex-hepta-learning-artifacts storage::tests::every_truncation_and_wrong_external_witness_rejects_without_repair
+       START [         ] (118/130) codex-hepta-learning-artifacts storage::tests::existing_empty_and_truncated_files_are_never_adopted
+
+running 1 test
+test storage::tests::existing_empty_and_truncated_files_are_never_adopted ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (118/130) codex-hepta-learning-artifacts storage::tests::existing_empty_and_truncated_files_are_never_adopted
+       START [         ] (119/130) codex-hepta-learning-artifacts storage::tests::existing_nonempty_file_is_never_reopened_for_writing
+
+running 1 test
+test storage::tests::existing_nonempty_file_is_never_reopened_for_writing ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (119/130) codex-hepta-learning-artifacts storage::tests::existing_nonempty_file_is_never_reopened_for_writing
+       START [         ] (120/130) codex-hepta-learning-artifacts storage::tests::existing_symlinks_are_never_followed_for_creation
+
+running 1 test
+test storage::tests::existing_symlinks_are_never_followed_for_creation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (120/130) codex-hepta-learning-artifacts storage::tests::existing_symlinks_are_never_followed_for_creation
+       START [         ] (121/130) codex-hepta-learning-artifacts storage::tests::noncanonical_encoding_rejects_even_with_rehashed_file_receipt
+
+running 1 test
+test storage::tests::noncanonical_encoding_rejects_even_with_rehashed_file_receipt ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (121/130) codex-hepta-learning-artifacts storage::tests::noncanonical_encoding_rejects_even_with_rehashed_file_receipt
+       START [         ] (122/130) codex-hepta-learning-artifacts storage::tests::payload_corruption_and_invalid_receipt_reject
+
+running 1 test
+test storage::tests::payload_corruption_and_invalid_receipt_reject ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (122/130) codex-hepta-learning-artifacts storage::tests::payload_corruption_and_invalid_receipt_reject
+       START [         ] (123/130) codex-hepta-learning-artifacts storage::tests::payload_rejects_wrong_bytes_without_reusing_its_created_target
+
+running 1 test
+test storage::tests::payload_rejects_wrong_bytes_without_reusing_its_created_target ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (123/130) codex-hepta-learning-artifacts storage::tests::payload_rejects_wrong_bytes_without_reusing_its_created_target
+       START [         ] (124/130) codex-hepta-learning-artifacts storage::tests::revoked_payload_cannot_be_loaded_from_current_registry
+
+running 1 test
+test storage::tests::revoked_payload_cannot_be_loaded_from_current_registry ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (124/130) codex-hepta-learning-artifacts storage::tests::revoked_payload_cannot_be_loaded_from_current_registry
+       START [         ] (125/130) codex-hepta-learning-artifacts storage::tests::sensor_core_kind_survives_durable_registry_roundtrip
+
+running 1 test
+test storage::tests::sensor_core_kind_survives_durable_registry_roundtrip ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (125/130) codex-hepta-learning-artifacts storage::tests::sensor_core_kind_survives_durable_registry_roundtrip
+       START [         ] (126/130) codex-hepta-learning-artifacts storage::tests::snapshot_reopens_exact_history_and_revoked_ancestors
+
+running 1 test
+test storage::tests::snapshot_reopens_exact_history_and_revoked_ancestors ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (126/130) codex-hepta-learning-artifacts storage::tests::snapshot_reopens_exact_history_and_revoked_ancestors
+       START [         ] (127/130) codex-hepta-learning-artifacts storage::tests::zero_binding_leaves_created_file_empty_for_host_reconciliation
+
+running 1 test
+test storage::tests::zero_binding_leaves_created_file_empty_for_host_reconciliation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (127/130) codex-hepta-learning-artifacts storage::tests::zero_binding_leaves_created_file_empty_for_host_reconciliation
+       START [         ] (128/130) codex-hepta-learning-artifacts storage_hygiene::tests::orphan_cleanup_never_follows_final_symlink
+
+running 1 test
+test storage_hygiene::tests::orphan_cleanup_never_follows_final_symlink ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (128/130) codex-hepta-learning-artifacts storage_hygiene::tests::orphan_cleanup_never_follows_final_symlink
+       START [         ] (129/130) codex-hepta-learning-artifacts storage_hygiene::tests::orphan_cleanup_rejects_path_escape
+
+running 1 test
+test storage_hygiene::tests::orphan_cleanup_rejects_path_escape ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.004s] (129/130) codex-hepta-learning-artifacts storage_hygiene::tests::orphan_cleanup_rejects_path_escape
+       START [         ] (130/130) codex-hepta-learning-artifacts storage_hygiene::tests::orphan_cleanup_removes_only_zero_length_regular_file
+
+running 1 test
+test storage_hygiene::tests::orphan_cleanup_removes_only_zero_length_regular_file ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 130 filtered out; finished in 0.00s
+
+        PASS [   0.005s] (130/130) codex-hepta-learning-artifacts storage_hygiene::tests::orphan_cleanup_removes_only_zero_length_regular_file
+────────────
+     Summary [  20.908s] 130 tests run: 130 passed, 1 skipped

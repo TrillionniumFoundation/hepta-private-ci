@@ -1,8 +1,9 @@
+use crate::AuthBusAlgorithm;
+use crate::AuthBusSignature;
+use crate::AuthBusVerifyingKey;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use ed25519_dalek::Signature;
-use ed25519_dalek::VerifyingKey;
 
 use crate::Error;
 use crate::PreverifiedAuthEnvelope;
@@ -16,7 +17,7 @@ use crate::push_id;
 pub struct IssuerRegistration {
     pub issuer_id: StableId,
     pub key_epoch: Generation,
-    pub verifying_key: VerifyingKey,
+    pub verifying_key: AuthBusVerifyingKey,
     pub revoked: bool,
 }
 
@@ -36,8 +37,15 @@ impl SignedMessageClaims {
     /// Canonical, length-delimited signed preimage. The domain and every replay
     /// field are signed; signatures cannot be moved between issuers or epochs.
     pub fn signing_bytes(&self) -> Vec<u8> {
+        self.signing_bytes_for(AuthBusAlgorithm::Ed25519V1)
+    }
+
+    pub fn signing_bytes_for(&self, algorithm: AuthBusAlgorithm) -> Vec<u8> {
         let mut bytes = Vec::with_capacity(640);
-        bytes.extend_from_slice(b"hepta.authbus.signed-message.v1\0");
+        bytes.extend_from_slice(match algorithm {
+            AuthBusAlgorithm::Ed25519V1 => b"hepta.authbus.signed-message.v1\0",
+            AuthBusAlgorithm::MlDsa65V2 => b"hepta.authbus.signed-message.pq.v2\0".as_slice(),
+        });
         push_id(&mut bytes, &self.issuer_id);
         bytes.extend_from_slice(&self.key_epoch.get().to_be_bytes());
         push_id(&mut bytes, &self.message_id);
@@ -52,7 +60,7 @@ impl SignedMessageClaims {
 
 pub struct SignedMessage {
     pub claims: SignedMessageClaims,
-    pub signature: [u8; 64],
+    pub signature: AuthBusSignature,
 }
 
 /// Cryptographically admitted message. Construction is private; admission alone
@@ -75,9 +83,11 @@ impl SignedMessage {
         }
         issuer
             .verifying_key
-            .verify_strict(
-                &self.claims.signing_bytes(),
-                &Signature::from_bytes(&self.signature),
+            .verify(
+                &self
+                    .claims
+                    .signing_bytes_for(issuer.verifying_key.algorithm()),
+                &self.signature,
             )
             .map_err(|_| Error::InvalidSignature)?;
         // Reuse the structural/expiry/scope checks, but do not represent this

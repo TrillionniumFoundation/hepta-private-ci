@@ -32,6 +32,14 @@ fn request() -> WorkerRequest {
 
 #[test]
 fn real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown)
+    )) {
+        return;
+    }
+
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .worker_threads(2)
         .enable_all()
@@ -112,6 +120,14 @@ fn real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown
 
 #[test]
 fn real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes)
+    )) {
+        return;
+    }
+
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .worker_threads(2)
         .enable_all()
@@ -169,6 +185,14 @@ fn real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes(
 
 #[test]
 fn original_cancellation_sends_no_frame_and_is_recorded_without_io_error() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(original_cancellation_sends_no_frame_and_is_recorded_without_io_error)
+    )) {
+        return;
+    }
+
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()

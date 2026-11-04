@@ -17,6 +17,7 @@ use crate::CandidateSetCompleteness;
 use crate::CreditAllocationBatchRecordV2;
 use crate::CreditAssignment;
 use crate::EpisodeDecision;
+use crate::LearningAuthenticationProfile;
 use crate::LedgerError;
 use crate::LedgerEvent;
 use crate::LedgerRecord;
@@ -67,8 +68,9 @@ pub(crate) struct PreparedAppend {
 
 /// Deterministic append-only ledger core. Legacy V1 facts remain readable, while
 /// product-facing V2 facts add authenticated outcome lineage and atomic credit.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct LearningLedger {
+    authentication_profile: LearningAuthenticationProfile,
     records: Vec<LedgerRecord>,
     record_digests: BTreeMap<StableId, (Digest32, usize)>,
     digest_positions: BTreeMap<Digest32, usize>,
@@ -148,7 +150,7 @@ impl LearningLedger {
     pub(crate) fn prepare(&self, mut event: LedgerEvent) -> Result<PreparedAppend, LedgerError> {
         normalize_event(&mut event)?;
         let record_id = event.record_id().clone();
-        let event_digest = digest_event(&event);
+        let event_digest = authentication::event_digest(self.authentication_profile, &event);
 
         if let Some((existing_digest, position)) = self.record_digests.get(&record_id) {
             if *existing_digest != event_digest {
@@ -178,7 +180,12 @@ impl LearningLedger {
             .records
             .last()
             .map_or(Digest32::ZERO, |record| record.chain_digest);
-        let chain_digest = digest_chain(predecessor_chain_digest, sequence, event_digest);
+        let chain_digest = authentication::chain_digest(
+            self.authentication_profile,
+            predecessor_chain_digest,
+            sequence,
+            event_digest,
+        );
         let record = LedgerRecord {
             sequence,
             predecessor_chain_digest,
@@ -301,6 +308,7 @@ impl LearningLedger {
     #[must_use]
     pub fn snapshot(&self) -> LedgerSnapshot {
         LedgerSnapshot {
+            authentication_profile: self.authentication_profile,
             records: self.records.clone(),
             head_digest: self
                 .records
@@ -311,7 +319,7 @@ impl LearningLedger {
 
     pub fn from_snapshot(snapshot: LedgerSnapshot) -> Result<Self, LedgerError> {
         let expected_head = snapshot.head_digest;
-        let mut ledger = Self::new();
+        let mut ledger = Self::new_with_authentication_profile(snapshot.authentication_profile);
         for expected in snapshot.records {
             let receipt = ledger.append(expected.event.clone())?;
             let actual = ledger
@@ -1595,3 +1603,6 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) {
 #[cfg(test)]
 #[path = "ledger_tests.rs"]
 mod tests;
+
+#[path = "ledger_authentication.rs"]
+mod authentication;
