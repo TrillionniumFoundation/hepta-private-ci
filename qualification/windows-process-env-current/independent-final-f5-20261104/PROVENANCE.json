@@ -1,0 +1,469 @@
+{
+  "schema": 1,
+  "scope": "Read-only verification of original final Env source and actual merge artifacts. No product rerun. No claim about whole CI or unrelated scopes.",
+  "bridge": {
+    "source": "9f2ebcf7c009b085d0d83f67b3aae8084edcadbf",
+    "tree": "7adf2a50c05e3e02b400ba7a5256ba84f88c76ec",
+    "run": 41784438376
+  },
+  "reports": [
+    {
+      "kind": "source",
+      "bridge_job": 126423214198,
+      "source": "f5bddc124052837befca7735b9e5a46ab708e5a5",
+      "original_run": 41782882626,
+      "artifact_id": 13300197050,
+      "zip_bytes": 4455946,
+      "zip_sha256": "574a82d2d4a37be504d1a0a12b5c3e16db43351a8eeb90f3a280250159760aef",
+      "inputs": 9152,
+      "original_qualification_status": "passed",
+      "readonly_job": {
+        "bytes": 207759,
+        "sha256": "d023458084fa5a2273e853e806bbec47253709f7e8a1b57fb522bd89eff35b0d"
+      },
+      "result": {
+        "original_tests": {
+          "git-utils-unit-tests": {
+            "outer_passed": 33,
+            "outer_failed": 0,
+            "outer_ignored": 0,
+            "outer_filtered": 0,
+            "names": [
+              "apply::tests::apply_add_success",
+              "apply::tests::apply_modify_conflict",
+              "apply::tests::apply_modify_skipped_missing_index",
+              "apply::tests::apply_then_revert_success",
+              "apply::tests::extract_paths_handles_quoted_headers",
+              "apply::tests::extract_paths_ignores_dev_null_header",
+              "apply::tests::extract_paths_unescapes_c_style_in_quoted_headers",
+              "apply::tests::parse_output_unescapes_quoted_paths",
+              "apply::tests::preflight_blocks_partial_changes",
+              "apply::tests::revert_preflight_does_not_stage_index",
+              "baseline::tests::diff_reports_added_modified_and_deleted_files",
+              "baseline::tests::ensure_recovers_from_unborn_repository",
+              "baseline::tests::reset_creates_fresh_baseline",
+              "baseline::tests::reset_drops_previous_history",
+              "baseline::tests::status_scan_does_not_write_added_file_blobs",
+              "branch::tests::merge_base_prefers_upstream_when_remote_ahead",
+              "branch::tests::merge_base_returns_none_when_branch_missing",
+              "branch::tests::merge_base_returns_shared_commit",
+              "fsmonitor::tests::detects_supported_builtin_fsmonitor_values",
+              "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+              "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running",
+              "info::tests::canonicalize_git_remote_url_handles_ghe_without_lowercasing_path",
+              "info::tests::canonicalize_git_remote_url_normalizes_github_variants",
+              "info::tests::canonicalize_git_remote_url_rejects_non_repository_values",
+              "info::tests::git_metadata_commands_do_not_inherit_stdin",
+              "info::tests::local_git_branches_excludes_detached_head_entry",
+              "status::tests::canceling_one_consumer_preserves_the_shared_status_scan",
+              "status::tests::canceling_the_last_consumer_allows_a_fresh_status_scan",
+              "status::tests::completed_status_requests_are_not_reused_while_a_consumer_retains_them",
+              "status::tests::completed_status_requests_start_fresh_scans_and_prune_expired_entries",
+              "status::tests::concurrent_status_requests_share_one_repository_scan",
+              "status::tests::status_requests_do_not_share_different_repositories",
+              "status::tests::status_requests_from_sibling_directories_use_the_known_worktree_root"
+            ],
+            "bazel_wrapper_cases": 1,
+            "original_nested_subprocess_summaries": [
+              [
+                1,
+                0,
+                0,
+                0,
+                32
+              ]
+            ],
+            "log_sha256": "7cb1cd6aa9a360ed141fb0c2caacbdf98d6e86bb99438ba9ecafff0b1b01a899",
+            "xml_sha256": "44c8c37490f630e346d2af330c9a33dff76a86fb0ed998566bd24dc22f040d47"
+          },
+          "queue-queue_service-test": {
+            "outer_passed": 35,
+            "outer_failed": 0,
+            "outer_ignored": 0,
+            "outer_filtered": 0,
+            "names": [
+              "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+              "capacity_rejection_preserves_the_admitted_client_identity",
+              "completion_panic_retains_exact_authority_in_settlement_guardian",
+              "conflicting_queued_client_ids_fail_closed_before_core_submission",
+              "core_error_after_started_never_releases_ambiguous_dispatch",
+              "corrupt_rollout_blocks_queue_replay_and_preserves_the_item",
+              "duplicate_queued_client_ids_dispatch_to_core_once",
+              "editing_reordering_and_deleting_preserve_queue_identity",
+              "exact_and_legacy_bindings_for_the_same_turn_join_once",
+              "exact_reconcile_conflicting_payload_fails_before_second_admission",
+              "exact_reconcile_is_one_idempotent_queue_admission",
+              "exact_reconcile_rejects_expected_digest_drift_without_a_row",
+              "explicitly_started_rejected_queue_messages_remain_durable",
+              "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+              "interrupted_turns_pause_queued_messages_but_failed_turns_drain_them",
+              "invalid_head_is_skipped_and_a_live_user_turn_is_accepted",
+              "invalid_local_attachments_do_not_mutate_queue",
+              "legacy_client_id_without_payload_digest_is_readable_but_cannot_join",
+              "local_attachments_are_snapshotted_before_enqueue_and_update",
+              "non_user_input_cannot_enter_the_user_message_queue",
+              "persisted_admission_reconciles_compressed_rollout",
+              "persisted_client_id_with_conflicting_payload_fails_closed_from_compressed_rollout",
+              "queued_input_and_unique_event_ids_round_trip",
+              "queued_text_limit_counts_characters_and_ignores_non_text_items",
+              "queued_text_limit_is_enforced_across_all_input_items",
+              "raw_queue_store_enqueue_cannot_bypass_reconcile_reservation",
+              "registered_queue_lifecycle_starts_messages_in_fifo_order",
+              "rejected_queue_messages_remain_durable_and_block_followups",
+              "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+              "resumed_idle_dispatches_input_without_a_loaded_manager",
+              "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+              "same_client_id_bound_to_two_turns_is_ambiguous_and_fails_closed",
+              "starting_a_selected_item_preserves_the_remaining_queue",
+              "starting_a_selected_item_while_active_leaves_it_queued",
+              "two_queue_services_across_state_runtimes_submit_one_exact_binding"
+            ],
+            "bazel_wrapper_cases": 1,
+            "original_nested_subprocess_summaries": [],
+            "log_sha256": "f46d296a8f3f27dbfae440b045ecb75439fed348aadab874f02a3ff7fa772ef2",
+            "xml_sha256": "5ee4f30d0e4eaabe7ec698fa6302d168f69b406c444b1778735bbacea141413a"
+          }
+        },
+        "original_steps": null,
+        "original_commands": [
+          {
+            "argv": [
+              "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+              ".github/scripts/run-bazel-ci.sh",
+              "--print-failed-action-summary",
+              "--print-failed-test-logs",
+              "--windows-msvc-host-platform",
+              "--remote-download-toplevel",
+              "--",
+              "test",
+              "--platforms=//:windows_x86_64_msvc",
+              "--skip_incompatible_explicit_targets",
+              "--test_tag_filters=-argument-comment-lint",
+              "--test_verbose_timeout_warnings",
+              "--nocache_test_results",
+              "--test_output=all",
+              "--build_metadata=COMMIT_SHA=f5bddc124052837befca7735b9e5a46ab708e5a5",
+              "--",
+              "//codex-rs/git-utils:git-utils-unit-tests",
+              "//codex-rs/ext/queue:queue-queue_service-test"
+            ],
+            "exit_code": 0,
+            "seconds": 262.046,
+            "log_sha256": "d1b531e6cfc88c3d612f35f71def2daa4185abe45d245e21379617f3165aaf90"
+          },
+          {
+            "argv": [
+              "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+              ".github/scripts/run-bazel-ci.sh",
+              "--windows-msvc-host-platform",
+              "--remote-download-toplevel",
+              "--",
+              "test",
+              "--platforms=//:windows_x86_64_msvc",
+              "--nocache_test_results",
+              "--test_output=all",
+              "--test_sharding_strategy=disabled",
+              "--test_arg=tasks::idle_work::tests",
+              "--",
+              "//codex-rs/core:core-unit-tests"
+            ],
+            "exit_code": 0,
+            "seconds": 16.25,
+            "log_sha256": "57146649cc491a9d299f50dcc14dd33bf5359b82d79d29bf812655b0423af410"
+          }
+        ],
+        "native_logs": {
+          "deferred-idle-controls-test.log": {
+            "summaries": [
+              [
+                "ok",
+                "3",
+                "0",
+                "0",
+                "0",
+                "2331"
+              ]
+            ],
+            "failed_cases": [],
+            "ignored_cases": [],
+            "panic_blocks": []
+          },
+          "git-utils-unit-tests-test.log": {
+            "summaries": [
+              [
+                "ok",
+                "1",
+                "0",
+                "0",
+                "0",
+                "32"
+              ],
+              [
+                "ok",
+                "33",
+                "0",
+                "0",
+                "0",
+                "0"
+              ]
+            ],
+            "failed_cases": [],
+            "ignored_cases": [],
+            "panic_blocks": []
+          },
+          "queue-queue_service-test-test.log": {
+            "summaries": [
+              [
+                "ok",
+                "35",
+                "0",
+                "0",
+                "0",
+                "0"
+              ]
+            ],
+            "failed_cases": [],
+            "ignored_cases": [],
+            "panic_blocks": []
+          }
+        },
+        "bash_launcher": {
+          "path": "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "bytes": 2449886,
+          "sha256": "5490d0da5e7cf9d92068cc48fcc590f2bcf8564add8ff91c3b5fe541eb2d72e3",
+          "version_exit": 0,
+          "version_log_sha256": "64e0c91e1c0ed648eed7e6f287b24f6b3b77338344f3535cf794bebf5907ec01"
+        }
+      }
+    },
+    {
+      "kind": "merge",
+      "bridge_job": 126423214752,
+      "source": "97c601299dd3af35640ac79475f9010e3a30ee2b",
+      "original_run": 41782882626,
+      "artifact_id": 13299958989,
+      "zip_bytes": 4524122,
+      "zip_sha256": "eb1e915ea591a26e275a04bebedea6aa81766628c4c185c81aba1281e22d8fb7",
+      "inputs": 9152,
+      "original_qualification_status": "passed",
+      "readonly_job": {
+        "bytes": 207625,
+        "sha256": "9e195a494bb77bede690427f7fe67eacbc3d9ffbfd39b7081ecc37fa1e1f123d"
+      },
+      "result": {
+        "original_tests": {
+          "git-utils-unit-tests": {
+            "outer_passed": 33,
+            "outer_failed": 0,
+            "outer_ignored": 0,
+            "outer_filtered": 0,
+            "names": [
+              "apply::tests::apply_add_success",
+              "apply::tests::apply_modify_conflict",
+              "apply::tests::apply_modify_skipped_missing_index",
+              "apply::tests::apply_then_revert_success",
+              "apply::tests::extract_paths_handles_quoted_headers",
+              "apply::tests::extract_paths_ignores_dev_null_header",
+              "apply::tests::extract_paths_unescapes_c_style_in_quoted_headers",
+              "apply::tests::parse_output_unescapes_quoted_paths",
+              "apply::tests::preflight_blocks_partial_changes",
+              "apply::tests::revert_preflight_does_not_stage_index",
+              "baseline::tests::diff_reports_added_modified_and_deleted_files",
+              "baseline::tests::ensure_recovers_from_unborn_repository",
+              "baseline::tests::reset_creates_fresh_baseline",
+              "baseline::tests::reset_drops_previous_history",
+              "baseline::tests::status_scan_does_not_write_added_file_blobs",
+              "branch::tests::merge_base_prefers_upstream_when_remote_ahead",
+              "branch::tests::merge_base_returns_none_when_branch_missing",
+              "branch::tests::merge_base_returns_shared_commit",
+              "fsmonitor::tests::detects_supported_builtin_fsmonitor_values",
+              "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+              "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running",
+              "info::tests::canonicalize_git_remote_url_handles_ghe_without_lowercasing_path",
+              "info::tests::canonicalize_git_remote_url_normalizes_github_variants",
+              "info::tests::canonicalize_git_remote_url_rejects_non_repository_values",
+              "info::tests::git_metadata_commands_do_not_inherit_stdin",
+              "info::tests::local_git_branches_excludes_detached_head_entry",
+              "status::tests::canceling_one_consumer_preserves_the_shared_status_scan",
+              "status::tests::canceling_the_last_consumer_allows_a_fresh_status_scan",
+              "status::tests::completed_status_requests_are_not_reused_while_a_consumer_retains_them",
+              "status::tests::completed_status_requests_start_fresh_scans_and_prune_expired_entries",
+              "status::tests::concurrent_status_requests_share_one_repository_scan",
+              "status::tests::status_requests_do_not_share_different_repositories",
+              "status::tests::status_requests_from_sibling_directories_use_the_known_worktree_root"
+            ],
+            "bazel_wrapper_cases": 1,
+            "original_nested_subprocess_summaries": [
+              [
+                1,
+                0,
+                0,
+                0,
+                32
+              ]
+            ],
+            "log_sha256": "18ea6f9625625c0608a0a7013b5081c0147db2cd2251f6f1f9555ade08add076",
+            "xml_sha256": "2418545caf6a713fd9456eadad1fea39a4f77a3f848657f62db0ae499a80548d"
+          },
+          "queue-queue_service-test": {
+            "outer_passed": 35,
+            "outer_failed": 0,
+            "outer_ignored": 0,
+            "outer_filtered": 0,
+            "names": [
+              "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+              "capacity_rejection_preserves_the_admitted_client_identity",
+              "completion_panic_retains_exact_authority_in_settlement_guardian",
+              "conflicting_queued_client_ids_fail_closed_before_core_submission",
+              "core_error_after_started_never_releases_ambiguous_dispatch",
+              "corrupt_rollout_blocks_queue_replay_and_preserves_the_item",
+              "duplicate_queued_client_ids_dispatch_to_core_once",
+              "editing_reordering_and_deleting_preserve_queue_identity",
+              "exact_and_legacy_bindings_for_the_same_turn_join_once",
+              "exact_reconcile_conflicting_payload_fails_before_second_admission",
+              "exact_reconcile_is_one_idempotent_queue_admission",
+              "exact_reconcile_rejects_expected_digest_drift_without_a_row",
+              "explicitly_started_rejected_queue_messages_remain_durable",
+              "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+              "interrupted_turns_pause_queued_messages_but_failed_turns_drain_them",
+              "invalid_head_is_skipped_and_a_live_user_turn_is_accepted",
+              "invalid_local_attachments_do_not_mutate_queue",
+              "legacy_client_id_without_payload_digest_is_readable_but_cannot_join",
+              "local_attachments_are_snapshotted_before_enqueue_and_update",
+              "non_user_input_cannot_enter_the_user_message_queue",
+              "persisted_admission_reconciles_compressed_rollout",
+              "persisted_client_id_with_conflicting_payload_fails_closed_from_compressed_rollout",
+              "queued_input_and_unique_event_ids_round_trip",
+              "queued_text_limit_counts_characters_and_ignores_non_text_items",
+              "queued_text_limit_is_enforced_across_all_input_items",
+              "raw_queue_store_enqueue_cannot_bypass_reconcile_reservation",
+              "registered_queue_lifecycle_starts_messages_in_fifo_order",
+              "rejected_queue_messages_remain_durable_and_block_followups",
+              "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+              "resumed_idle_dispatches_input_without_a_loaded_manager",
+              "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+              "same_client_id_bound_to_two_turns_is_ambiguous_and_fails_closed",
+              "starting_a_selected_item_preserves_the_remaining_queue",
+              "starting_a_selected_item_while_active_leaves_it_queued",
+              "two_queue_services_across_state_runtimes_submit_one_exact_binding"
+            ],
+            "bazel_wrapper_cases": 1,
+            "original_nested_subprocess_summaries": [],
+            "log_sha256": "7493859feba3ce039192ac1c49603c3d4b6b596bd3958da319e60cb7c88c455b",
+            "xml_sha256": "38b782e1d0649b1a2d73fde2aab8dc55702f8f06556b3316c37a8936282ed624"
+          }
+        },
+        "original_steps": null,
+        "original_commands": [
+          {
+            "argv": [
+              "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+              ".github/scripts/run-bazel-ci.sh",
+              "--print-failed-action-summary",
+              "--print-failed-test-logs",
+              "--windows-msvc-host-platform",
+              "--remote-download-toplevel",
+              "--",
+              "test",
+              "--platforms=//:windows_x86_64_msvc",
+              "--skip_incompatible_explicit_targets",
+              "--test_tag_filters=-argument-comment-lint",
+              "--test_verbose_timeout_warnings",
+              "--nocache_test_results",
+              "--test_output=all",
+              "--build_metadata=COMMIT_SHA=97c601299dd3af35640ac79475f9010e3a30ee2b",
+              "--",
+              "//codex-rs/git-utils:git-utils-unit-tests",
+              "//codex-rs/ext/queue:queue-queue_service-test"
+            ],
+            "exit_code": 0,
+            "seconds": 233.46899999999994,
+            "log_sha256": "3803c79b3c4ac549e69712f6ecab8d6a79f48780553c6a5aae03d49332bb56dc"
+          },
+          {
+            "argv": [
+              "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+              ".github/scripts/run-bazel-ci.sh",
+              "--windows-msvc-host-platform",
+              "--remote-download-toplevel",
+              "--",
+              "test",
+              "--platforms=//:windows_x86_64_msvc",
+              "--nocache_test_results",
+              "--test_output=all",
+              "--test_sharding_strategy=disabled",
+              "--test_arg=tasks::idle_work::tests",
+              "--",
+              "//codex-rs/core:core-unit-tests"
+            ],
+            "exit_code": 0,
+            "seconds": 12.6099999999999,
+            "log_sha256": "0995301b359963581f2d6dfc4d5beb6d59bd644bf2b5553f00c94044e85af1bf"
+          }
+        ],
+        "native_logs": {
+          "deferred-idle-controls-test.log": {
+            "summaries": [
+              [
+                "ok",
+                "3",
+                "0",
+                "0",
+                "0",
+                "2331"
+              ]
+            ],
+            "failed_cases": [],
+            "ignored_cases": [],
+            "panic_blocks": []
+          },
+          "git-utils-unit-tests-test.log": {
+            "summaries": [
+              [
+                "ok",
+                "1",
+                "0",
+                "0",
+                "0",
+                "32"
+              ],
+              [
+                "ok",
+                "33",
+                "0",
+                "0",
+                "0",
+                "0"
+              ]
+            ],
+            "failed_cases": [],
+            "ignored_cases": [],
+            "panic_blocks": []
+          },
+          "queue-queue_service-test-test.log": {
+            "summaries": [
+              [
+                "ok",
+                "35",
+                "0",
+                "0",
+                "0",
+                "0"
+              ]
+            ],
+            "failed_cases": [],
+            "ignored_cases": [],
+            "panic_blocks": []
+          }
+        },
+        "bash_launcher": {
+          "path": "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "bytes": 2449886,
+          "sha256": "5490d0da5e7cf9d92068cc48fcc590f2bcf8564add8ff91c3b5fe541eb2d72e3",
+          "version_exit": 0,
+          "version_log_sha256": "64e0c91e1c0ed648eed7e6f287b24f6b3b77338344f3535cf794bebf5907ec01"
+        }
+      }
+    }
+  ]
+}
