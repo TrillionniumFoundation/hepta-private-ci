@@ -1,0 +1,162 @@
+{
+  "schema": 1,
+  "base": "306da9948bfebf86f425d76f089921244a4a64d9",
+  "historical_source": "112c05026a36a3555b01886c5bad9bb9f9c1d2e8",
+  "files": [
+    {
+      "path": "codex-rs/core/src/codex_thread.rs",
+      "before": {
+        "git_blob_sha": "7272a699937ac9f5e474e2f11ee47db3d3725b8c",
+        "sha256": "1fea6d570d3d278393741f28e62b80ba55d546745167713af82a37701f6cf378",
+        "bytes": 47186
+      },
+      "after": {
+        "git_blob_sha": "729df0733060a7820045e0738672e800ba535e9f",
+        "sha256": "ecb247ab2bd9662c75a0f0c9ea627afa7807d81b58cd675b3e3068891a7751e4",
+        "bytes": 47745
+      }
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "before": {
+        "git_blob_sha": "6a615f6cf82eedc174f5bdc600ab2b183e440985",
+        "sha256": "3ea2664348df333a676529be2229bd7b2050138d0a94a7de48e92cd60660aa8d",
+        "bytes": 176456
+      },
+      "after": {
+        "git_blob_sha": "2ee949fb477313003f6eb02961e5cebf50432613",
+        "sha256": "0161b0acb05df2f9d153090cfd258f8ace71f7a3510d98ec6a55be5baabdf426",
+        "bytes": 176503
+      }
+    },
+    {
+      "path": "codex-rs/core/src/tasks/terminalization_completion.rs",
+      "before": null,
+      "after": {
+        "git_blob_sha": "58380b295fcbe3502d72a714e1a98e7472459f8a",
+        "sha256": "912802dce5df821c04dd351373ffa7cd8269931ab5d1791595a61fe970095866",
+        "bytes": 932
+      }
+    },
+    {
+      "path": "codex-rs/core/src/tasks/idle_work.rs",
+      "before": null,
+      "after": {
+        "git_blob_sha": "afcf7cfaaa4a00070a208b7a4e2880d52adafaa9",
+        "sha256": "bd5bdb94b152fb495b0101f20948fc7a709c17bcb4e2c9425223aab31936bbe4",
+        "bytes": 2533
+      }
+    },
+    {
+      "path": "codex-rs/core/src/tasks/idle_work_tests.rs",
+      "before": null,
+      "after": {
+        "git_blob_sha": "5a64bd9fa162d98c6fb7cb0e01a6512d6fa9f6f3",
+        "sha256": "d1d5c33a3df839c4c2caec55b1954dd7cb3e4cb51aba5a04ec25865ed2c1d56f",
+        "bytes": 3082
+      }
+    },
+    {
+      "path": "codex-rs/ext/queue/src/service.rs",
+      "before": {
+        "git_blob_sha": "5b563dcb07894a61b954bcc3c5a59352814e34e9",
+        "sha256": "9910c796c8c4fcd490c3a6e0b1938c44b17b5fc862f315ea24849525a73e2d6d",
+        "bytes": 82206
+      },
+      "after": {
+        "git_blob_sha": "398ca3bf998ff0a5853a6934bef7fca67ff3e736",
+        "sha256": "59a2a2538612747cecb3e381e662815f889988b65baa816b1673ea3964de60bd",
+        "bytes": 83258
+      }
+    },
+    {
+      "path": "codex-rs/git-utils/src/git_process_tests.rs",
+      "before": {
+        "git_blob_sha": "fafd04517317251dd14b94991c7311b72b781e7d",
+        "sha256": "b1e1c269c2f35b013a3f7806aa214ffc24fd126ee821b91c9574b1105aff6b74",
+        "bytes": 8206
+      },
+      "after": {
+        "git_blob_sha": "9c7dbc3caf7438c13229ad178bd9d8229bf8ea93",
+        "sha256": "258d4fa2209f4bb3c793306f0705a118e4f7bed49c11a7c70eff7eccec7788c1",
+        "bytes": 9035
+      }
+    },
+    {
+      "path": "qualification/windows-process-fixtures-current/scope.json",
+      "before": {
+        "git_blob_sha": "ee5a780b938bc9ca8edfc0d4ffdf91b9d6f8c75a",
+        "sha256": "b159f1c56eaa5146942682fd1fe9bc232d1662a23d94e0d3d67733ab59d23bb2",
+        "bytes": 1132
+      },
+      "after": {
+        "git_blob_sha": "2ecd3441e119362de1fbea33178ff9c26586a140",
+        "sha256": "62cc002049d889e99113f74281f942333fd6a3e78b4fe53abae4fe167e1d5ff2",
+        "bytes": 2866
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-windows-process-env-qualification.yml",
+      "before": {
+        "git_blob_sha": "e25120cb6eb528932695cf889c87d965cfdc753c",
+        "sha256": "3f8dec0b2ec78c8e9bb7a67e2599e7df71119446a8dd0f1ad73ff0abab655c9b",
+        "bytes": 5195
+      },
+      "after": {
+        "git_blob_sha": "8dc94da655a7350e13d0d81ac8f4ea9171866079",
+        "sha256": "87a19ad98efd8f12307c65d2a84d56b8dd649d116f5f7e5d7b9315317a6b9499",
+        "bytes": 5220
+      }
+    },
+    {
+      "path": "qualification/windows-process-env-current/run_qualification.py",
+      "before": {
+        "git_blob_sha": "ee553a5e6974a102797dab3ce363b955f844ddef",
+        "sha256": "feb57ff8f6ba2c1baa1bf86484bf23a03464573346da2421120bd36da116eb7a",
+        "bytes": 10629
+      },
+      "after": {
+        "git_blob_sha": "e96223241c49279988f62606a8637637cefd413b",
+        "sha256": "b00b73434abd4078a2101e41c9baf81806024407f0e5cc3485dba2489eef1ef2",
+        "bytes": 17169
+      }
+    },
+    {
+      "path": "qualification/windows-process-env-current/test_reports.py",
+      "before": {
+        "git_blob_sha": "d8e7a22b42cf45250f9c0cfbe1213c1c9404e056",
+        "sha256": "d390c45f4293ac816811ed36c0525cd3be8af840d132d4ad05079ea4a574b80f",
+        "bytes": 3817
+      },
+      "after": {
+        "git_blob_sha": "e2c840bcca81dd0285a0d89ba96870fc4a7ea1af",
+        "sha256": "51dd14efaf9c65a9c919b14a8716ffbdc0fb73cc910e6c2d5b2edecfed5a37c8",
+        "bytes": 5554
+      }
+    }
+  ],
+  "checks": {
+    "queue_existing_test_file_unchanged": true,
+    "git_original_assertion_and_expect_lines_unchanged": true,
+    "task_state_machine_other_than_two_private_module_declarations_unchanged": true,
+    "normal_admission_functions_unchanged": true,
+    "production_git_and_jobobject_unchanged": true,
+    "original_native_test_argv_unchanged": true,
+    "original_report_acceptance_function_unchanged": true,
+    "original_source_and_merge_matrix_and_timeouts_unchanged": true
+  },
+  "additional_tests": {
+    "old_async_order_and_capacity_controls": 2,
+    "new_cancelled_predecessor_control": 1,
+    "python_original_report_controls": 9,
+    "new_selected_control_report_checks": 4,
+    "full_codex_core_owner_suite": "Not represented by the selected three new controls; full owner/combined CI remains a separate gate."
+  },
+  "local_execution": {
+    "executor_available": false,
+    "rust_tests": false,
+    "python_tests": false,
+    "formatting": false
+  },
+  "status": "Draft source candidate; original generated formatter/locks and native gates must run on this new commit."
+}

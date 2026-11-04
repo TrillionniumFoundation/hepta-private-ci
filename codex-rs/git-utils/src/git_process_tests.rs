@@ -23,6 +23,8 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     let release_child_file = temp_dir.path().join("release-child");
     let child_survived_file = temp_dir.path().join("child-survived");
     let release_wrapper_file = temp_dir.path().join("release-wrapper");
+    let wrapper_stage_file = temp_dir.path().join("wrapper-stage");
+    let child_stage_file = temp_dir.path().join("child-stage");
     #[cfg(unix)]
     let mut command = {
         let mut command = Command::new("/bin/sh");
@@ -40,7 +42,7 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     #[cfg(windows)]
     let mut command = {
         let mut command = Command::new("powershell.exe");
-        let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
+        let child_command = "[System.IO.File]::WriteAllText($env:GIT_CHILD_STAGE_FILE, 'child-script-started'); Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
         // Start-Process joins -ArgumentList into one command line. Quoting a
         // multiword -Command script is not preserved on Windows; use a single
         // space-free UTF-16LE -EncodedCommand argument for the child.
@@ -51,7 +53,7 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
                 .collect::<Vec<_>>(),
         );
         let launch_child = format!(
-            "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', '{encoded_child}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); "
+            "[System.IO.File]::WriteAllText($env:GIT_WRAPPER_STAGE_FILE, 'parent-before-child-launch'); $child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', '{encoded_child}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:GIT_WRAPPER_STAGE_FILE, 'parent-after-child-launch'); [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); "
         );
         let wrapper_command = match wrapper_lifetime {
             GitWrapperLifetime::WaitForChild => {
@@ -80,6 +82,10 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         .env("RELEASE_CHILD_FILE", &release_child_file)
         .env("CHILD_SURVIVED_FILE", &child_survived_file)
         .env("RELEASE_WRAPPER_FILE", &release_wrapper_file);
+    #[cfg(windows)]
+    command
+        .env("GIT_WRAPPER_STAGE_FILE", &wrapper_stage_file)
+        .env("GIT_CHILD_STAGE_FILE", &child_stage_file);
 
     let (mut wrapper, process_tree) = spawn_git_command(&mut command).expect("spawn Git wrapper");
     let child_readiness = tokio::time::timeout(Duration::from_secs(30), async {
@@ -105,6 +111,8 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
             let wrapper_status = wrapper.try_wait();
             let child_pid_contents = std::fs::read_to_string(&child_pid_file);
             let child_ready = child_ready_file.try_exists();
+            let wrapper_stage = std::fs::read_to_string(&wrapper_stage_file);
+            let child_stage = std::fs::read_to_string(&child_stage_file);
             // Close the process tree before collecting pipes that descendants may hold open.
             drop(process_tree);
             let output_future = wrapper.wait_with_output();
@@ -123,6 +131,8 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
                  wrapper status before cleanup: {wrapper_status:?}; \
                  child PID file {child_pid_file:?}: {child_pid_contents:?}; \
                  child ready file {child_ready_file:?}: {child_ready:?}; \
+                 wrapper stage before cleanup: {wrapper_stage:?}; \
+                 child stage before cleanup: {child_stage:?}; \
                  wrapper output after cleanup: {output}"
             );
         }

@@ -1,0 +1,187 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "product_pr": 4755,
+  "base_source": "306da9948bfebf86f425d76f089921244a4a64d9",
+  "observed_originals": [
+    {
+      "source": "306da9948bfebf86f425d76f089921244a4a64d9",
+      "original_run": 41758742975,
+      "original_artifact": {
+        "id": 13291075177,
+        "bytes": 4297546,
+        "sha256": "90e3ec8b4d99e0e697a6231ccaa2d3d9a820dfeb8679c91b123f09d27c99450c",
+        "all_member_crc_verified": true
+      },
+      "readback": {
+        "run": 41762791646,
+        "attempt": 1,
+        "job": 126354111843,
+        "status": "success",
+        "hosted_job_log": {
+          "git_blob_sha": "349c92d594ca21fe2069464280529792a1a4bb80",
+          "sha256": "0750d566d8f87f4bbb6c44cd972cde72547e1beb9777f99cc607a037a039003c",
+          "bytes": 362858
+        },
+        "verification_report_sha256": "a3e8b70deb979f6974128d7a006e633d54e53eab9a41eaf5f581a4c71cb1dd1d"
+      },
+      "source_binding": {
+        "count": 9094,
+        "before_sha256": "ff34c05fc580b3adf9c5dc093513f441d6fd4dd8e6bf349e0a85ea73c46eec3b",
+        "after_sha256": "ff34c05fc580b3adf9c5dc093513f441d6fd4dd8e6bf349e0a85ea73c46eec3b",
+        "all_match_exact_git_bytes": true
+      },
+      "original_status": "failed",
+      "original_command": [
+        {
+          "exit_code": 3,
+          "seconds": 388.76599999999996,
+          "log_sha256": "68870dfb9a17c4ecdbe8025abfbd615ed99215fe09b721ad2606cdf12a04f9ce"
+        }
+      ],
+      "native_summaries": {
+        "git-utils-unit-tests-test.log": {
+          "summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "32"
+            ],
+            [
+              "FAILED",
+              "31",
+              "2",
+              "0",
+              "0",
+              "0"
+            ]
+          ],
+          "failed_cases": [
+            "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+            "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running"
+          ],
+          "ignored_cases": []
+        },
+        "queue-queue_service-test-test.log": {
+          "summaries": [
+            [
+              "FAILED",
+              "33",
+              "2",
+              "0",
+              "0",
+              "0"
+            ]
+          ],
+          "failed_cases": [
+            "registered_queue_lifecycle_starts_messages_in_fifo_order",
+            "rejected_queue_messages_remain_durable_and_block_followups"
+          ],
+          "ignored_cases": []
+        }
+      }
+    },
+    {
+      "source": "f8d21a60d76215d7bc36c1eb5c9f55322d97ac87",
+      "original_run": 41758742975,
+      "original_artifact": {
+        "id": 13291105263,
+        "bytes": 4311090,
+        "sha256": "7454d700e5351b13ce2979fdb0327ee7d377e805836d4baf8ef9a6f0a2beb29c",
+        "all_member_crc_verified": true
+      },
+      "readback": {
+        "run": 41762791646,
+        "attempt": 1,
+        "job": 126354111912,
+        "status": "success",
+        "hosted_job_log": {
+          "git_blob_sha": "68de6bf75eae6e05327056aee0fb7d040f15f5ed",
+          "sha256": "436cb25e2525bf9ea9fcacccb4d1cf0b0e1e3b7b4eabaa14ff6d9d43ce3f9fb4",
+          "bytes": 370789
+        },
+        "verification_report_sha256": "c122d549177647b3db9338e43a0a96d6428547fefd8c1b9afafe44dd21460668"
+      },
+      "source_binding": {
+        "count": 9094,
+        "before_sha256": "ff34c05fc580b3adf9c5dc093513f441d6fd4dd8e6bf349e0a85ea73c46eec3b",
+        "after_sha256": "ff34c05fc580b3adf9c5dc093513f441d6fd4dd8e6bf349e0a85ea73c46eec3b",
+        "all_match_exact_git_bytes": true
+      },
+      "original_status": "failed",
+      "original_command": [
+        {
+          "exit_code": 3,
+          "seconds": 482.641,
+          "log_sha256": "de37daa903b3bc6ba2631bfbafcf20b978b742e21c306caa5571443f253b3ad9"
+        }
+      ],
+      "native_summaries": {
+        "git-utils-unit-tests-test.log": {
+          "summaries": [
+            [
+              "ok",
+              "1",
+              "0",
+              "0",
+              "0",
+              "32"
+            ],
+            [
+              "FAILED",
+              "31",
+              "2",
+              "0",
+              "0",
+              "0"
+            ]
+          ],
+          "failed_cases": [
+            "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+            "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running"
+          ],
+          "ignored_cases": []
+        },
+        "queue-queue_service-test-test.log": {
+          "summaries": [
+            [
+              "FAILED",
+              "33",
+              "2",
+              "0",
+              "0",
+              "0"
+            ]
+          ],
+          "failed_cases": [
+            "registered_queue_lifecycle_starts_messages_in_fifo_order",
+            "rejected_queue_messages_remain_durable_and_block_followups"
+          ],
+          "ignored_cases": []
+        }
+      }
+    }
+  ],
+  "observations": {
+    "git": "In both original inputs, the exact two descendant-cleanup cases time out at the 30-second readiness precondition. The wrapper is still alive, child PID/ready files are absent, and cleanup yields empty stdout/stderr. No exact startup mechanism is inferred from these logs.",
+    "queue": "In both inputs the lifecycle FIFO case observes one of three required model requests, and the rejection/durability case reaches its existing deadline. The original outer suites report Git31/2 and queue33/2."
+  },
+  "source_analysis": {
+    "current_fence_owner": "core/tasks/mod.rs retains the pending terminalization registration through the awaited idle callback and clears it afterward.",
+    "current_admission": "core/session/turn_input.rs rejects normal StartIfIdle while that fence is pending.",
+    "current_queue": "queue/service.rs synchronously attempts normal admission in that callback and returns on NotSubmitted. It does not schedule a wake after the fence.",
+    "historical_minimum": "The historical112c queue service differs from306 only by the 1052-byte ordered deferral block. The restoration retains the original fence and uses the same normal admission after completion.",
+    "proof_kind": "Source-backed causal analysis aligned with real original failures; the new source still needs fresh native qualification."
+  },
+  "interpretation": {
+    "new_native_execution_in_this_readback": 0,
+    "readback_success_does_not_make_original_test_pass": true,
+    "all_runtime_blockers_closed": false,
+    "library_clearance": false,
+    "raw_rendered_log_reconstruction_is_original_binary_equality": false
+  },
+  "retention": "The exact original artifact IDs/digests remain the authoritative binary evidence; this bounded summary does not republish model request bodies or signed artifact URLs."
+}

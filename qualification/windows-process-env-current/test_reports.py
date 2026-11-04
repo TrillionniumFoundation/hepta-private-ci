@@ -4,6 +4,8 @@ import unittest
 import xml.etree.ElementTree as ET
 
 from run_qualification import parse_reports
+from run_qualification import parse_idle_reports
+from run_qualification import IDLE_CASES
 
 
 class OriginalReportAcceptance(unittest.TestCase):
@@ -85,3 +87,37 @@ class OriginalReportAcceptance(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class DeferredIdleReportAcceptance(unittest.TestCase):
+    def reports(self, names=None, summary=None):
+        names = sorted(IDLE_CASES) if names is None else names
+        summary = summary or "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 100 filtered out;"
+        log = "\n".join([*(f"test {name} ... ok" for name in names), summary]) + "\n"
+        root = ET.Element("testsuites")
+        suite = ET.SubElement(root, "testsuite", tests="1", failures="0", errors="0")
+        ET.SubElement(suite, "testcase", name="core-unit-tests")
+        ET.SubElement(suite, "system-out").text = log
+        return log.encode(), ET.tostring(root)
+
+    def test_accepts_only_all_three_selected_controls(self):
+        result = parse_idle_reports(*self.reports())
+        self.assertEqual(result["passed"], 3)
+        self.assertEqual(result["filtered_other_core_cases"], 100)
+
+    def test_rejects_missing_or_duplicate_control(self):
+        names = sorted(IDLE_CASES)
+        with self.assertRaises(RuntimeError):
+            parse_idle_reports(*self.reports(names=names[:-1]))
+        with self.assertRaises(RuntimeError):
+            parse_idle_reports(*self.reports(names=[names[0], names[0], names[2]]))
+
+    def test_rejects_ignored_control(self):
+        with self.assertRaises(RuntimeError):
+            parse_idle_reports(*self.reports(
+                summary="test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 100 filtered out;"
+            ))
+
+    def test_rejects_stale_xml(self):
+        log, xml = self.reports()
+        with self.assertRaises(RuntimeError):
+            parse_idle_reports(log + b"changed\n", xml)

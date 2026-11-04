@@ -8,7 +8,17 @@
     "codex-rs/git-utils/Cargo.toml",
     "codex-rs/git-utils/src/git_process_tests.rs",
     "codex-rs/ext/queue/tests/queue_service.rs",
-    "qualification/windows-process-fixtures-current/generate.py"
+    "qualification/windows-process-fixtures-current/generate.py",
+    "codex-rs/core/src/codex_thread.rs",
+    "codex-rs/core/src/tasks/mod.rs",
+    "codex-rs/core/src/tasks/terminalization_completion.rs",
+    "codex-rs/core/src/tasks/idle_work.rs",
+    "codex-rs/core/src/tasks/idle_work_tests.rs",
+    "codex-rs/ext/queue/src/service.rs",
+    "qualification/windows-process-fixtures-current/scope.json",
+    ".github/workflows/hepta-windows-process-env-qualification.yml",
+    "qualification/windows-process-env-current/run_qualification.py",
+    "qualification/windows-process-env-current/test_reports.py"
   ],
   "package_count": 1517,
   "expected_added_dependencies": {
@@ -19,8 +29,8 @@
   "excluded_upstream_scope": [
     "duplicate_queued_client_ids_dispatch_to_core_once pending_turn_terminalization wait",
     "production Git or JobObject changes",
-    "queue production logic",
-    "larger timeouts or PowerShell prewarming"
+    "larger timeouts or PowerShell prewarming",
+    "unrelated TaskFlow state-machine changes or global turn-admission waits"
   ],
   "original_budgets": {
     "child_readiness_seconds": 30,
@@ -31,5 +41,28 @@
   "original_outer_cases": {
     "git-utils-unit-tests": 33,
     "queue-queue_service-test": 35
+  },
+  "ordered_idle_restoration": {
+    "source": "112c05026a36a3555b01886c5bad9bb9f9c1d2e8",
+    "files": [
+      "codex-rs/core/src/codex_thread.rs",
+      "codex-rs/core/src/tasks/mod.rs",
+      "codex-rs/core/src/tasks/terminalization_completion.rs",
+      "codex-rs/core/src/tasks/idle_work.rs",
+      "codex-rs/core/src/tasks/idle_work_tests.rs",
+      "codex-rs/ext/queue/src/service.rs"
+    ],
+    "scope": "Observe the exact existing completion, defer ordered queue work, then use unchanged normal atomic admission. Do not remove any fence.",
+    "new_control": "cancelled predecessor does not bypass the follower's own fence",
+    "runtime_status": "pending-current-source-native",
+    "new_control_count": 3,
+    "current_control_gate": "Separate exact three-case core-unit-tests selector; original Git33/queue35 argv and readers unchanged."
+  },
+  "git_stage_markers": {
+    "purpose": "Diagnose the original 30-second readiness failure in the same fixture process tree",
+    "prewarming": false,
+    "original_command_model_preserved": true,
+    "readiness_budget_seconds": 30,
+    "production_git_or_jobobject_changed": false
   }
 }

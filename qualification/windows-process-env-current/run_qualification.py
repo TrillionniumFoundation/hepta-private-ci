@@ -86,6 +86,68 @@ def parse_reports(log_raw, xml_raw, target):
             "log_sha256": digest(log_raw), "xml_sha256": digest(xml_raw)}
 
 
+IDLE_CASES = {
+    "tasks::idle_work::tests::deferred_idle_contributors_wait_for_fence_and_preserve_registration_order",
+    "tasks::idle_work::tests::deferred_idle_work_rejects_capacity_overflow",
+    "tasks::idle_work::tests::cancelled_idle_fence_releases_followers_without_bypassing_their_fence",
+}
+
+
+def parse_idle_reports(log_raw, xml_raw):
+    """Verify the explicitly selected new controls, separate from original suites."""
+    log = log_raw.decode("utf-8-sig").replace("\r\n", "\n")
+    xml = ET.fromstring(xml_raw)
+    suites = xml.findall("testsuite")
+    cases = xml.findall(".//testcase")
+    if (len(suites) != 1 or len(cases) != 1 or suites[0].get("tests") != "1"
+            or suites[0].get("failures") != "0" or suites[0].get("errors") != "0"
+            or any(cases[0].find(tag) is not None for tag in ("failure", "error", "skipped"))):
+        raise RuntimeError("deferred-idle controls: failed or missing wrapper")
+    stdout = suites[0].find("system-out")
+    if stdout is None or (stdout.text or "").replace("\r\n", "\n").strip() != log.strip():
+        raise RuntimeError("deferred-idle controls: XML/log mismatch")
+    summaries = [tuple(map(int, row)) for row in re.findall(
+        r"^test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored; "
+        r"(\d+) measured; (\d+) filtered out;", log, re.M)]
+    rows = re.findall(r"^test ([^\r\n]+?) \.\.\. ok$", log, re.M)
+    if (len(summaries) != 1 or summaries[0][:4] != (3, 0, 0, 0)
+            or len(rows) != 3 or set(rows) != IDLE_CASES
+            or "skipping test:" in log.lower()
+            or re.search(r"^test .* \.\.\. (FAILED|ignored)", log, re.M)):
+        raise RuntimeError("deferred-idle controls: incomplete or changed case set")
+    return {"passed": 3, "failed": 0, "ignored": 0, "measured": 0,
+            "filtered_other_core_cases": summaries[0][4], "names": sorted(rows),
+            "scope": "Only the three selected idle-work controls; not the full core suite.",
+            "log_sha256": digest(log_raw), "xml_sha256": digest(xml_raw)}
+
+
+def native_failure_projection(output):
+    """Print bounded fixed-field diagnostics; retain arbitrary original logs in artifacts."""
+    result = {}
+    for target in TARGETS:
+        path = output / f"{target}-test.log"
+        if not path.is_file():
+            result[target] = {"log_present": False}
+            continue
+        raw = path.read_bytes()
+        log = raw.decode("utf-8", errors="replace").replace("\r\n", "\n")
+        summaries = [list(map(int, row)) for row in re.findall(
+            r"^test result: (?:ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; "
+            r"(\d+) measured; (\d+) filtered out;", log, re.M)]
+        failed = re.findall(r"^test ([A-Za-z0-9_:]+) \.\.\. FAILED$", log, re.M)
+        known = TARGETS[target][2]
+        result[target] = {
+            "log_present": True, "bytes": len(raw), "sha256": digest(raw),
+            "summaries": summaries[:4], "summary_count": len(summaries),
+            "known_failed_cases": sorted(name for name in set(failed) if name in known),
+            "other_failed_case_count": len(set(failed) - known),
+            "parent_before_child_launch": 'wrapper stage before cleanup: Ok("parent-before-child-launch")' in log,
+            "parent_after_child_launch": 'wrapper stage before cleanup: Ok("parent-after-child-launch")' in log,
+            "child_script_started": 'child stage before cleanup: Ok("child-script-started")' in log,
+        }
+    return result
+
+
 def report_paths(base, package, target, suffix):
     return sorted(base.glob(
         f"*/bazel-out/*/testlogs/codex-rs/{package}/{target}/test.{suffix}"
@@ -175,6 +237,46 @@ def main():
                 except (RuntimeError, ET.ParseError, UnicodeDecodeError) as error:
                     receipt["tests"][target] = {"status": "failed", "error": str(error)}
                     errors.append(str(error))
+        # Compile the same current core crate and execute all three new controls.
+        # Only this separate selected-control command disables core's eight shards.
+        # The original 33/35 command above, its budgets and acceptance are unchanged.
+        for suffix in ("log", "xml"):
+            for path in report_paths(base, "core", "core-unit-tests", suffix):
+                receipt["removed_stale_reports"].append(str(path))
+                path.unlink()
+        idle_argv = [str(bash), ".github/scripts/run-bazel-ci.sh",
+                     "--windows-msvc-host-platform", "--remote-download-toplevel", "--",
+                     "test", "--platforms=//:windows_x86_64_msvc",
+                     "--nocache_test_results", "--test_output=all",
+                     "--test_sharding_strategy=disabled",
+                     "--test_arg=tasks::idle_work::tests", "--",
+                     "//codex-rs/core:core-unit-tests"]
+        idle_log = output / "deferred-idle-controls-command.log"
+        start = time.monotonic()
+        with idle_log.open("wb") as stream:
+            idle_command = subprocess.run(idle_argv, cwd=ROOT, stdout=stream, stderr=subprocess.STDOUT)
+        receipt["commands"].append({"argv": idle_argv, "exit_code": idle_command.returncode,
+                                    "seconds": time.monotonic() - start,
+                                    "log_sha256": digest(idle_log.read_bytes())})
+        idle_reports = {}
+        for suffix in ("log", "xml"):
+            paths = report_paths(base, "core", "core-unit-tests", suffix)
+            if len(paths) != 1:
+                errors.append(f"deferred-idle controls: missing or ambiguous {suffix}")
+                continue
+            raw = paths[0].read_bytes()
+            destination = output / f"deferred-idle-controls-test.{suffix}"
+            destination.write_bytes(raw)
+            receipt["retained"].append({"path": str(paths[0]), "file": destination.name,
+                                       "bytes": len(raw), "sha256": digest(raw)})
+            idle_reports[suffix] = raw
+        if set(idle_reports) == {"log", "xml"}:
+            try:
+                receipt["idle_controls"] = parse_idle_reports(idle_reports["log"], idle_reports["xml"])
+            except (RuntimeError, ET.ParseError, UnicodeDecodeError) as error:
+                errors.append(str(error))
+        if idle_command.returncode:
+            errors.append(f"deferred-idle control command exited {idle_command.returncode}")
         if command.returncode:
             errors.append(f"original Bazel command exited {command.returncode}")
         if errors:
@@ -190,6 +292,14 @@ def main():
         receipt["source_after"] = snapshot()
         receipt["source_unchanged"] = receipt["source_after"] == before
         (output / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+        projection = {"status": receipt["status"], "source_commit": head,
+                      "source_unchanged": receipt["source_unchanged"],
+                      "native": native_failure_projection(output),
+                      "idle_controls": receipt.get("idle_controls")}
+        rendered = json.dumps(projection)
+        if len(rendered.encode("utf-8")) > 16384:
+            raise RuntimeError("process diagnostic projection exceeds its fixed output budget")
+        print("PROCESS_QUALIFICATION_DIAGNOSTIC=" + rendered, flush=True)
         execution_logs = Path(os.environ["RUNNER_TEMP"]) / "bazel-execution-logs"
         if execution_logs.is_dir():
             shutil.copytree(execution_logs, output / "bazel-execution-logs")
