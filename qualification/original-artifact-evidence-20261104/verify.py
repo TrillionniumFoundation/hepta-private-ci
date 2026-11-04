@@ -171,6 +171,8 @@ def snapshot_scope(source_code):
             continue
         if isinstance(value, list) and value[:4] == ["git", "ls-files", "-z", "--"]:
             return value[4:]
+        if isinstance(value, list) and value[:5] == ["git", "--no-replace-objects", "ls-files", "-z", "--"]:
+            return value[5:]
     raise RuntimeError("exact source reader has no supported static snapshot scope")
 
 
@@ -187,7 +189,7 @@ def verify_sources(spec, receipt, members, git):
     require(names == set(before), "snapshot is incomplete or contains unbound extra input")
     for name in sorted(names):
         require(re.fullmatch(r"[0-9a-f]{64}", before[name]) is not None, "invalid source digest")
-        require(git.digest(name, spec["kind"] != "env") == before[name], "Git input differs: " + name)
+        require(git.digest(name, spec["kind"] not in {"env", "generation"}) == before[name], "Git input differs: " + name)
     if spec["kind"] == "dylint":
         require(len(names) == 1664, "original Dylint input count changed")
     return {"count": len(names), "before_sha256": sha(canonical(before)),
@@ -342,6 +344,20 @@ def main():
             result = inspect_state(spec, receipt, members, git)
         elif spec["kind"] == "dylint":
             result = inspect_dylint(receipt, members, git)
+        elif spec["kind"] == "generation":
+            require(receipt["status"] == "failed", "expected original generation failure")
+            require(members["committed-Cargo.lock"] == git.read("codex-rs/Cargo.lock"),
+                    "committed Cargo evidence differs from original source")
+            require(members["committed-MODULE.bazel.lock"] == git.read("MODULE.bazel.lock"),
+                    "committed Bazel evidence differs from original source")
+            failed = [row for row in receipt["commands"] if row["exit_code"] != 0]
+            require(failed, "original failure command missing")
+            result = {"original_commands": receipt["commands"], "failed_command_logs": {}}
+            for row in failed:
+                name = row["name"] + ".log"
+                raw = members[name]
+                result["failed_command_logs"][name] = {"bytes": len(raw), "sha256": sha(raw)}
+                emit_raw(name, raw)
         elif spec["kind"] == "robrix-lock":
             require(receipt["status"] == "passed" and receipt["committed_lock_required"] is True,
                     "Robrix original committed lock did not pass")

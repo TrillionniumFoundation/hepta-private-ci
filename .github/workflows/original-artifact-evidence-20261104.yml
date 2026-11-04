@@ -19,24 +19,9 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - key: robrix-windows
-            source: 767f069c96a6cd2735b3a4166799a1de79017d25
+          - key: memory-b12-metadata-failure
+            source: b12f9b216d91bb760582a9df0d569f7e051a1016
             script: verify.py
-          - key: robrix-linux
-            source: 767f069c96a6cd2735b3a4166799a1de79017d25
-            script: verify.py
-          - key: robrix-macos
-            source: 767f069c96a6cd2735b3a4166799a1de79017d25
-            script: verify.py
-          - key: robrix-lock
-            source: 767f069c96a6cd2735b3a4166799a1de79017d25
-            script: verify.py
-          - key: legacy-env-source
-            source: 112c05026a36a3555b01886c5bad9bb9f9c1d2e8
-            script: verify_legacy_env.py
-          - key: legacy-env-merge
-            source: 5333650cac868e4a1d2c9efbd9d80ab656a8c655
-            script: verify_legacy_env.py
     env:
       GIT_CONFIG_COUNT: 1
       GIT_CONFIG_KEY_0: core.autocrlf
@@ -78,6 +63,7 @@ jobs:
             /.bazelversion
             /workspace_root_test_launcher.*
             /qualification/windows-private-state-current/
+            /qualification/windows-memory-recovery-current/
             /qualification/windows-process-env-current/
             /qualification/memory-migration-20261103/
             /qualification/dylint-20261103/
