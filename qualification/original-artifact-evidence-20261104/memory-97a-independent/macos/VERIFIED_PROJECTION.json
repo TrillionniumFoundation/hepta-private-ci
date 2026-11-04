@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+  "original_run": 41767471183,
+  "artifact_id": 13293547848,
+  "original_qualification_status": "passed",
+  "key": "memory97-macos",
+  "zip_bytes": 977696,
+  "zip_sha256": "89a32f1d38726aa11ccedc3d787a418afb25c00817b0c42d2412c2767c7e7362",
+  "all_member_crc": true,
+  "source_verification": {
+    "count": 9212,
+    "before_sha256": "b941184aba1a50997cfb74b9fa19fc24229913fee9812940464ca3952a9905c5",
+    "after_sha256": "b941184aba1a50997cfb74b9fa19fc24229913fee9812940464ca3952a9905c5",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs",
+      ".github",
+      "scripts",
+      "bazel",
+      "patches",
+      "third_party",
+      "cargo_bazel_template",
+      "justfile",
+      "defs.bzl",
+      "BUILD.bazel",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      "qualification/windows-memory-recovery-current",
+      "qualification/keyring-sync-provider/build_pinned_client.py"
+    ],
+    "symlink_resolution": []
+  },
+  "result": {
+    "mode": "native",
+    "libraries": {
+      "codex-utils-path": {
+        "executed": 4,
+        "original_ignored": [],
+        "inventory_cases": 4,
+        "junit_sha256": "9d49895bf998d8abca98d417c9553b748597eb32ce730b13ec97a3f3337e24ab",
+        "case_names_sha256": "b5fdd0950bfbdc9c7a2400bba520d48d70e6bbc58291ea2fc5b29b336c48018e",
+        "recorded_binary_sha256": "06fce80bdfe6179e286b624995601198b087a0a3f49a1c405c7738071e2df80e"
+      },
+      "codex-state": {
+        "executed": 215,
+        "original_ignored": [],
+        "inventory_cases": 215,
+        "junit_sha256": "4394283b4e80548c5a1aad7713caa94373222f062f7eff3800ff75c2d1615ddd",
+        "case_names_sha256": "b467af3ed78a98705607ac98464e36df07e4571e7d54fc0c75b865a60c3673df",
+        "recorded_binary_sha256": "a4f8fda78203cfa5fa261d16428028e3c6d678447fc943450b68af7bf4ce8295"
+      },
+      "codex-hepta-memory": {
+        "executed": 272,
+        "original_ignored": [
+          "cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt",
+          "cognitive_retrieval::observation::tests::target_host_owner_retrieval_reports_latency_percentiles",
+          "cognitive_store_tests::kg_projection_crash_child",
+          "cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor",
+          "local_compact_executor_tests::host_restart_reopen_replay_process_soak",
+          "local_compact_executor_tests::sqlite_1000_operation_seeded_reopen_replay_stress",
+          "local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe"
+        ],
+        "inventory_cases": 279,
+        "junit_sha256": "5f90a210cdd1d3352565e118fd9265d5bc02724f782b1e30b9f8804b3b05c5ec",
+        "case_names_sha256": "e64f9aa11e92845f564a3a675f2a784e772c7bf3daf6e7c64dc7409003cfbdf8",
+        "recorded_binary_sha256": "c1f930fe10eb57e35c9539637d9498f0e2b371512281c2c2248143075d1e804f"
+      }
+    },
+    "total_executed": 491,
+    "failed": 0,
+    "skipped": 0,
+    "retried": 0,
+    "boundary": "Exact original Cargo inventory versus JUnit. Binary equality is the original recorded before/after hash; binaries are not retained in this artifact."
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only verification of original retained evidence; no new product execution or whole-CI admission.",
+  "output_count": 26,
+  "verified_report_sha256": "5200cdec986b873708c9f2e4c49f43cf9ac7d7a8e5cf19cabd9b5db3dbef21ba"
+}

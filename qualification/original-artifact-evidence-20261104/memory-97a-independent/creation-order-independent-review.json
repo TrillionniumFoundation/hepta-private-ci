@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.memory.windows-creation-order.source-review.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline_commit": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+  "inputs": [
+    {
+      "role": "candidate",
+      "git_blob_sha": "9aae0a0e5ec329cf1985d828833ab9302f2db7be",
+      "sha256": "2dfe7377781535a5abc105f38820856e7cedd18ed5b2b91b266b89a5129c1eae",
+      "bytes": 4522
+    },
+    {
+      "role": "prior",
+      "git_blob_sha": "cb41206ab6bfb219f0e0feb98a317a64794e4327",
+      "sha256": "005db7a596160711aff6893b551415f718e11f4ffd9e8be38227ff5530982abe",
+      "bytes": 3985
+    },
+    {
+      "role": "shared canonical identity helper",
+      "git_blob_sha": "b084411f8d0fd6352669e8ca8c67bf4bf9f9f2b8",
+      "sha256": "cf9e8bed3cfe7d8f8169fa6f8f0563973efc1844870cbafa798c240b58c493be",
+      "bytes": 2134
+    },
+    {
+      "role": "existing owner implementation",
+      "git_blob_sha": "83225e8fd04a575ac816544aceedda82c7701d1f",
+      "sha256": "76072e34610533bccc36e0212d939a6b6600b8d79fdaed64475af03cc06fa124",
+      "bytes": 4266
+    }
+  ],
+  "observations": [
+    "The candidate adds only an early refusal between finding the first existing ancestor and creating any missing component.",
+    "None from the existing canonical-path helper becomes the original CognitiveStoreError::Invalid class; IO errors remain unavailable. A successful observation neither changes root/missing paths nor grants or retains any handle.",
+    "The shared helper requires identical ordinary components, only explicit equivalent Windows Disk/VerbatimDisk or same-server/share UNC namespace spellings, and rejects reparse attributes on every ancestor.",
+    "All native missing-directory creation, final existing-root validation and subsequent child operations remain in their prior order and unchanged source.",
+    "The existing owner blob 83225e8fd04a575ac816544aceedda82c7701d1f contains the same early helper/None-to-Invalid structure at the same point. Candidate differences are helper qualification, diagnostic text and explanatory comments."
+  ],
+  "findings": [],
+  "conclusion": "No confirmed permission broadening in this narrow static source review. The change supports stable invalid-path classification before native acquisition.",
+  "boundaries": [
+    "The read-only precheck is not a retained-directory capability, an atomic authorization proof or a substitute for the later native checks.",
+    "An IO error or a later path race can still fail as Unavailable. This review does not claim every invalid-path failure must be categorized Invalid.",
+    "The prior failing test did not print the actual returned error variant. Source order explains a plausible contract mismatch but does not independently establish that runtime variant.",
+    "No local or hosted native test, SQL migration, archived-source execution or whole-library qualification was performed by this review. Earlier owner green results are not reused for this candidate."
+  ],
+  "executions": 0
+}

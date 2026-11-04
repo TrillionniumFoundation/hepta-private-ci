@@ -1,0 +1,277 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+  "original_run": 41767471183,
+  "artifact_id": 13294760102,
+  "original_qualification_status": "failed",
+  "key": "memory97-windows",
+  "zip_bytes": 975016,
+  "zip_sha256": "d97763fa99637bf24aef71a12edf4f7ec273c765ed233e60d08c5d96a28df77e",
+  "all_member_crc": true,
+  "source_verification": {
+    "count": 9212,
+    "before_sha256": "b941184aba1a50997cfb74b9fa19fc24229913fee9812940464ca3952a9905c5",
+    "after_sha256": "b941184aba1a50997cfb74b9fa19fc24229913fee9812940464ca3952a9905c5",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs",
+      ".github",
+      "scripts",
+      "bazel",
+      "patches",
+      "third_party",
+      "cargo_bazel_template",
+      "justfile",
+      "defs.bzl",
+      "BUILD.bazel",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      "qualification/windows-memory-recovery-current",
+      "qualification/keyring-sync-provider/build_pinned_client.py"
+    ],
+    "symlink_resolution": []
+  },
+  "result": {
+    "mode": "negative-evidence",
+    "original_commands": [
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 0.21899999999993724
+      },
+      {
+        "name": "rustc-version",
+        "argv": [
+          "rustc",
+          "-Vv"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 0.031000000000062755
+      },
+      {
+        "name": "nextest-version",
+        "argv": [
+          "cargo",
+          "nextest",
+          "--version"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+        "exit_code": 0,
+        "seconds": 0.6879999999999882
+      },
+      {
+        "name": "codex-utils-path-inventory",
+        "argv": [
+          "cargo",
+          "nextest",
+          "list",
+          "--locked",
+          "-p",
+          "codex-utils-path",
+          "--lib",
+          "--message-format=json"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+        "exit_code": 102,
+        "seconds": 15.108999999999924
+      },
+      {
+        "name": "codex-state-inventory",
+        "argv": [
+          "cargo",
+          "nextest",
+          "list",
+          "--locked",
+          "-p",
+          "codex-state",
+          "--lib",
+          "--message-format=json"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+        "exit_code": 0,
+        "seconds": 401.28200000000004
+      },
+      {
+        "name": "codex-state-original-tests",
+        "argv": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-state",
+          "--lib",
+          "--no-tests=fail",
+          "--retries",
+          "0",
+          "--success-output=final"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 86.15599999999995
+      },
+      {
+        "name": "codex-hepta-memory-inventory",
+        "argv": [
+          "cargo",
+          "nextest",
+          "list",
+          "--locked",
+          "-p",
+          "codex-hepta-memory",
+          "--lib",
+          "--message-format=json"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+        "exit_code": 0,
+        "seconds": 131.28199999999993
+      },
+      {
+        "name": "codex-hepta-memory-original-tests",
+        "argv": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-memory",
+          "--lib",
+          "--no-tests=fail",
+          "--retries",
+          "0",
+          "--success-output=final"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 1,
+        "seconds": 78.25
+      },
+      {
+        "name": "original-scoped-clippy",
+        "argv": [
+          "just",
+          "fix",
+          "--locked",
+          "-p",
+          "codex-utils-path",
+          "-p",
+          "codex-state",
+          "-p",
+          "codex-hepta-memory",
+          "--no-deps"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 128.20299999999997
+      },
+      {
+        "name": "final-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 0.20299999999997453
+      }
+    ],
+    "original_libraries": {
+      "codex-utils-path": {
+        "status": "failed",
+        "inventory_count": 0,
+        "expected_count": 0,
+        "result_passed": null
+      },
+      "codex-state": {
+        "status": "passed",
+        "inventory_count": 210,
+        "expected_count": 210,
+        "result_passed": 210
+      },
+      "codex-hepta-memory": {
+        "status": "failed",
+        "inventory_count": 271,
+        "expected_count": 264,
+        "result_passed": null
+      }
+    },
+    "original_targets": null,
+    "original_problems": [
+      "codex-utils-path: library inventory failed",
+      "codex-hepta-memory: original library tests failed"
+    ],
+    "failed_streams": {
+      "codex-utils-path-inventory.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "codex-utils-path-inventory.stderr": {
+        "bytes": 1267,
+        "sha256": "801f55760c0ff7b6e38b5449f336024a7598a72f0d0c7db1f41fc8db96bca748"
+      },
+      "codex-hepta-memory-original-tests.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "codex-hepta-memory-original-tests.stderr": {
+        "bytes": 206401,
+        "sha256": "2901b78506d103336ac476d48a53593be44480fc3267bee506bd8c15e81f4a52"
+      }
+    },
+    "observed_junit": {
+      "codex-state": {
+        "cases": 210,
+        "sha256": "c6e2a6513d6e6a060c6c30c1f301b8a2e61ff624635e74246eec831e086cdd66",
+        "failures": []
+      },
+      "codex-hepta-memory": {
+        "cases": 264,
+        "sha256": "41a578c1e58c4f0697c6b99fad31ce18191421376d12a015ba7e6fe5cbb13a13",
+        "failures": [
+          {
+            "name": "cognitive_path::tests::junction_and_its_descendants_are_rejected",
+            "details": [
+              {
+                "tag": "failure",
+                "attributes": {
+                  "message": "thread 'cognitive_path::tests::junction_and_its_descendants_are_rejected' (8836) panicked at hepta-memory\\src\\cognitive_path_tests.rs:127:5",
+                  "type": "test failure with exit code 101"
+                },
+                "text": "thread 'cognitive_path::tests::junction_and_its_descendants_are_rejected' (8836) panicked at hepta-memory\\src\\cognitive_path_tests.rs:127:5:\nassertion failed: matches!(CognitiveStore::open(&layout).await,\n    Err(crate::CognitiveStoreError::Invalid(_)))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+              },
+              {
+                "tag": "system-out",
+                "attributes": {},
+                "text": "\nrunning 1 test\ntest cognitive_path::tests::junction_and_its_descendants_are_rejected ... FAILED\n\nfailures:\n\nfailures:\n    cognitive_path::tests::junction_and_its_descendants_are_rejected\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 270 filtered out; finished in 0.04s\n\n"
+              },
+              {
+                "tag": "system-err",
+                "attributes": {},
+                "text": "\nthread 'cognitive_path::tests::junction_and_its_descendants_are_rejected' (8836) panicked at hepta-memory\\src\\cognitive_path_tests.rs:127:5:\nassertion failed: matches!(CognitiveStore::open(&layout).await,\n    Err(crate::CognitiveStoreError::Invalid(_)))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only verification of original retained evidence; no new product execution or whole-CI admission.",
+  "output_count": 23,
+  "verified_report_sha256": "df6271aeb78a8d34d8c9baa802ead6d1d6917ecfde1c83d289bef0ccf0fbfa10"
+}

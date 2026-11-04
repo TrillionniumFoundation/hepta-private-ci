@@ -1,0 +1,133 @@
+{
+  "schema": "private-ci.memory97.independent-checkpoint.v1",
+  "items": [
+    {
+      "host": "linux",
+      "original_status": "passed",
+      "original_source": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+      "original_run": 41767471183,
+      "original_artifact_id": 13293483813,
+      "original_zip_bytes": 978162,
+      "original_zip_sha256": "22546ede2e166620d8a5f3d46f11132e476bd8519c0ee1c680402516c028906b",
+      "independent_run": 41770240985,
+      "independent_source": "5a941e32725d478c98347e55b400a95043b160ee",
+      "independent_job": 126377986774,
+      "original_verifier_job": {
+        "bytes": 46778,
+        "sha256": "3538e2dae58af4137119aa299917a62eb4c81a9660f91ed01fec11106a7f7aa7",
+        "git_blob": "8478188942a87dae4a99e725d43b6389a600658e"
+      },
+      "verified_projection": {
+        "bytes": 3632,
+        "sha256": "a74985be5680c2c09a7177b33a1dc9281fb1d07f208d25d001f3e78f609e0305",
+        "git_blob": "ef17a06d7e684408bcce2eaee71c8b10ad1f4a03"
+      },
+      "full_report_sha256_recorded_by_verifier": "898405d1aee47855d9cdb88586f2df9bc84d66c63643bdd3a6e9eeaa32ec16b0",
+      "retained_independent_artifact": {
+        "id": 13295067392,
+        "bytes": 1426760,
+        "digest": "sha256:1148ed002dd61be4a1158f39c04b64b1ceb86cf97ad7e4fa615d6343b25568f0"
+      },
+      "git_input_count": 9212,
+      "evidence_status": "passed"
+    },
+    {
+      "host": "macos",
+      "original_status": "passed",
+      "original_source": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+      "original_run": 41767471183,
+      "original_artifact_id": 13293547848,
+      "original_zip_bytes": 977696,
+      "original_zip_sha256": "89a32f1d38726aa11ccedc3d787a418afb25c00817b0c42d2412c2767c7e7362",
+      "independent_run": 41770240985,
+      "independent_source": "5a941e32725d478c98347e55b400a95043b160ee",
+      "independent_job": 126377986820,
+      "original_verifier_job": {
+        "bytes": 46839,
+        "sha256": "08d9e00ba5606b02084f1f4d68613c6af2c266376e113cede3d0fc1f5336f1e0",
+        "git_blob": "7d02c6815f5134647598f2b9877f91adbea4debc"
+      },
+      "verified_projection": {
+        "bytes": 3632,
+        "sha256": "22855918affb6e98d907d5545ad7366d03e09b36d80e0c3aca138dae291278ea",
+        "git_blob": "89849711ea1b4b0d0dc64d36e5bc0fbc13e39d37"
+      },
+      "full_report_sha256_recorded_by_verifier": "5200cdec986b873708c9f2e4c49f43cf9ac7d7a8e5cf19cabd9b5db3dbef21ba",
+      "retained_independent_artifact": {
+        "id": 13294952287,
+        "bytes": 1426202,
+        "digest": "sha256:58bc1a8deb0dc3f161227647af3e3fc0995b428692533a24f7be984d8383e3ed"
+      },
+      "git_input_count": 9212,
+      "evidence_status": "passed"
+    },
+    {
+      "host": "bazel",
+      "original_status": "passed",
+      "original_source": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+      "original_run": 41767471183,
+      "original_artifact_id": 13293991859,
+      "original_zip_bytes": 956933,
+      "original_zip_sha256": "6fe0b1fd0dd6487820d55b9f00d066e05f805ecaad474778c30271a3b436a0ea",
+      "independent_run": 41770240985,
+      "independent_source": "5a941e32725d478c98347e55b400a95043b160ee",
+      "independent_job": 126377986533,
+      "original_verifier_job": {
+        "bytes": 132873,
+        "sha256": "0a814fe2b28f9363615b776973aaab52ac6c7a75303d98e66d314fd9a9e6f641",
+        "git_blob": "4f2021815458b4eae734391716e356e228d2f3cc"
+      },
+      "verified_projection": {
+        "bytes": 102527,
+        "sha256": "e0d5f9650b3dc8e3a736844eb8370cec9c934c8264be9fc390e76279e77f5de1",
+        "git_blob": "862b3a157106323814d8bb412683c5a9b7a02b46"
+      },
+      "full_report_sha256_recorded_by_verifier": "58b6562ccdafe3665e95a247a1ba35726694511c5075946d864644031baf3aeb",
+      "retained_independent_artifact": {
+        "id": 13294404666,
+        "bytes": 1428580,
+        "digest": "sha256:f153861db9ad6374a4c1e4280b2c405afb472afe4bd2626b12b95bfc3c1e314a"
+      },
+      "git_input_count": 9212,
+      "evidence_status": "passed"
+    },
+    {
+      "host": "windows",
+      "original_status": "failed",
+      "original_source": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+      "original_run": 41767471183,
+      "original_artifact_id": 13294760102,
+      "original_zip_bytes": 975016,
+      "original_zip_sha256": "d97763fa99637bf24aef71a12edf4f7ec273c765ed233e60d08c5d96a28df77e",
+      "independent_run": 41770240985,
+      "independent_source": "5a941e32725d478c98347e55b400a95043b160ee",
+      "independent_job": 126377986752,
+      "original_verifier_job": {
+        "bytes": 346920,
+        "sha256": "311f53f40e8918f154cfb231b82e70df440316bc2af38b8117ea71e5dc615220",
+        "git_blob": "40ce463b7c755a2c008c94b8e3bcb70403394804"
+      },
+      "verified_projection": {
+        "bytes": 8709,
+        "sha256": "1f5ca69fa8e003b37b742b904c1149b624a0b5e981bb81076b7975966d9362ea",
+        "git_blob": "42f405e125071122e767d05aa15f34d7f75d7d60"
+      },
+      "full_report_sha256_recorded_by_verifier": "df6271aeb78a8d34d8c9baa802ead6d1d6917ecfde1c83d289bef0ccf0fbfa10",
+      "retained_independent_artifact": {
+        "id": 13293774831,
+        "bytes": 1435266,
+        "digest": "sha256:43f0ddad46d7da9e412e987371a7ab4d48e5d031c3909205fa56ee0185daf5ac"
+      },
+      "git_input_count": 9212,
+      "evidence_status": "passed"
+    }
+  ],
+  "scope": [
+    "All four original ZIP sizes/digests/CRCs, 9212 original Git inputs each, source-before/source-after identity and all recorded output hashes passed the independent verifier.",
+    "Linux, macOS and Bazel original qualifications passed; Windows original qualification failed and remains failed.",
+    "Projection files are the exact structured report values printed by the independent jobs, reformatted as JSON. They are not the full VERIFIED.json files, whose separate hashes and hosting artifact identities are recorded.",
+    "Generation independent verification initially failed parsing a combined Cargo diagnostic/metadata stream. Its original eight generation commands succeeded, and the same ZIP is being reverified by a corrected strict reader under a331c3ac.",
+    "The product candidate is now 8facd08bcb51222fe3c88c3b9b03bdea09db4553; no 97a native result is promoted to that candidate."
+  ],
+  "execution_boundary": "Read-only artifact verification; no original test is rerun by this checkpoint."
+}
