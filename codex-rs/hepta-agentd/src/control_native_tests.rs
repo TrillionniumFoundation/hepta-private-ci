@@ -22,6 +22,12 @@ type TestResult<T = ()> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
 // Use the actual registry and prompt owner. Do not grant readiness or attach a
 // substitute state owner just to exercise the transport.
 fn state_fixture() -> TestResult<(tempfile::TempDir, Arc<AgentdState>)> {
+    // Darwin's temporary root can exceed the kernel socket path limit.
+    #[cfg(target_os = "macos")]
+    let directory = tempfile::Builder::new()
+        .prefix("agentd-")
+        .tempdir_in("/tmp")?;
+    #[cfg(not(target_os = "macos"))]
     let directory = tempfile::tempdir()?;
     let root = directory.path().canonicalize()?;
     let fleet_path = root.join("fleet");

@@ -95,17 +95,20 @@ fn lost_retirement_ack_can_retry_the_exact_datagram_and_cannot_send_effects() ->
 fn inherited_socketpair_preserves_exact_frame_bytes() -> TestResult {
     let (owner, mut application) = UnixStream::pair()?;
     let channel = AgentdNotesChannel::from_private_channel(owner)?;
-    let peer = std::thread::spawn(move || -> io::Result<Vec<u8>> {
+    let peer = std::thread::spawn(move || -> io::Result<(Vec<u8>, UnixStream)> {
         let mut prefix = [0; 4];
         application.read_exact(&mut prefix)?;
         let mut request = vec![0; u32::from_be_bytes(prefix) as usize];
         application.read_exact(&mut request)?;
         application.write_all(&3_u32.to_be_bytes())?;
         application.write_all(b"ack")?;
-        Ok(request)
+        // Hold the live application until the complete response has been read.
+        // Darwin can reject a new SO_RCVTIMEO after the peer has closed.
+        Ok((request, application))
     });
     assert_eq!(channel.exchange(b" exact\nbytes ")?, b"ack");
-    assert_eq!(peer.join().expect("application thread")?, b" exact\nbytes ");
+    let (request, _application) = peer.join().expect("application thread")?;
+    assert_eq!(request, b" exact\nbytes ");
     Ok(())
 }
 
