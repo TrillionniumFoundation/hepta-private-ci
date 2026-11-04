@@ -1484,9 +1484,18 @@ async fn run_before_review_deadline<T>(
     external_cancel: Option<&CancellationToken>,
     future: impl Future<Output = T>,
 ) -> Result<T, GuardianReviewSessionOutcome> {
+    // Admission is bounded by the review deadline even if this task was not
+    // scheduled until several branches were ready.
+    if tokio::time::Instant::now() >= deadline {
+        return Err(GuardianReviewSessionOutcome::TimedOut);
+    }
+    if external_cancel.is_some_and(CancellationToken::is_cancelled) {
+        return Err(GuardianReviewSessionOutcome::Aborted);
+    }
+
     tokio::select! {
+        biased;
         _ = tokio::time::sleep_until(deadline) => Err(GuardianReviewSessionOutcome::TimedOut),
-        result = future => Ok(result),
         _ = async {
             if let Some(cancel_token) = external_cancel {
                 cancel_token.cancelled().await;
@@ -1494,6 +1503,17 @@ async fn run_before_review_deadline<T>(
                 std::future::pending::<()>().await;
             }
         } => Err(GuardianReviewSessionOutcome::Aborted),
+        result = future => {
+            // Polling the future can itself cross the deadline or observe
+            // cancellation. Reject and drop that result before admitting it.
+            if tokio::time::Instant::now() >= deadline {
+                Err(GuardianReviewSessionOutcome::TimedOut)
+            } else if external_cancel.is_some_and(CancellationToken::is_cancelled) {
+                Err(GuardianReviewSessionOutcome::Aborted)
+            } else {
+                Ok(result)
+            }
+        },
     }
 }
 
@@ -2522,3 +2542,7 @@ mod tests {
         assert!(review_session.io.rx_event.try_recv().is_err());
     }
 }
+
+#[cfg(test)]
+#[path = "review_deadline_tests.rs"]
+mod review_deadline_tests;
