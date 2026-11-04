@@ -573,6 +573,11 @@ crate.annotation(
     },
     crate = "rama-dns",
     gen_build_script = "on",
+    # MinGW import libraries use lowercase names on case-sensitive executors.
+    patch_args = ["-p1"],
+    patches = [
+        "//patches:rama_dns_windows_gnu_dnsapi.patch",
+    ],
 )
 crate.annotation(
     # Provide the hermetic SDK path so the build script doesn't try to invoke an unhermetic `xcrun --show-sdk-path`.
