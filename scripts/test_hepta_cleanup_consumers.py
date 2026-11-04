@@ -39,6 +39,39 @@ class CleanupConsumerTests(unittest.TestCase):
                 ):
                     VERIFIER.verify_exact_workflow_references()
 
+    def test_external_signer_workflow_does_not_claim_local_workflow(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "qualification").mkdir()
+            (root / "qualification/provenance.json").write_text(
+                '{"signer_workflow": "openai/fence/.github/workflows/release.yml"}\n',
+                encoding="utf-8",
+            )
+            for relative in VERIFIER.WORKFLOW_REFERENCE_SCRIPTS:
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("", encoding="utf-8")
+            with patch.object(VERIFIER, "ROOT", root):
+                VERIFIER.verify_exact_workflow_references()
+
+    def test_explicit_local_prefix_remains_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "docs").mkdir()
+            (root / "docs/reference.md").write_text(
+                '"./.github/workflows/missing.yml"\n',
+                encoding="utf-8",
+            )
+            for relative in VERIFIER.WORKFLOW_REFERENCE_SCRIPTS:
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("", encoding="utf-8")
+            with patch.object(VERIFIER, "ROOT", root):
+                with self.assertRaisesRegex(
+                    SystemExit, "stale exact workflow references"
+                ):
+                    VERIFIER.verify_exact_workflow_references()
+
     def test_exact_workflow_reference_accepts_existing_file(self):
         with tempfile.TemporaryDirectory(
             prefix="hepta-workflow-reference-"
