@@ -1,0 +1,120 @@
+name: hepta original Robrix runfiles qualification
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-robrix-runfiles-qualification.yml
+      - qualification/robrix-runfiles-20261104/**
+      - codex-rs/hepta-supervisor/**
+      - codex-rs/Cargo.lock
+      - MODULE.bazel
+      - MODULE.bazel.lock
+
+permissions:
+  contents: read
+
+concurrency:
+  group: robrix-runfiles-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  source-format:
+    if: github.head_ref == 'fix/private-ci-robrix-runfiles-union-20261104-gpt6'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          toolchain: 1.96.0
+          components: rustfmt
+      - name: Run the repository formatter and require identical source bytes
+        working-directory: codex-rs
+        run: |
+          git fetch --no-tags --depth=1 origin 9b3521c42d4a81dd814a364d02e77d89be2e0a7d
+          just fmt --base 9b3521c42d4a81dd814a364d02e77d89be2e0a7d
+          git diff --exit-code HEAD -- .
+  native:
+    if: github.head_ref == 'fix/private-ci-robrix-runfiles-union-20261104-gpt6'
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            config: ci-linux
+          - runner: macos-15
+            target: aarch64-apple-darwin
+            config: ci-macos
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            config: ci-windows
+    env:
+      BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+    steps:
+      - name: Preserve exact Git bytes on Windows
+        if: runner.os == 'Windows'
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.target }}
+          cache-scope: robrix-runfiles
+      - name: Run the complete original two-case Robrix corpus target and Clippy
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            export ROBRIX_QUALIFICATION_BASH="$(cygpath -w "$BASH")"
+          else
+            export ROBRIX_QUALIFICATION_BASH="$BASH"
+          fi
+          python3 qualification/robrix-runfiles-20261104/run.py --config "${{ matrix.config }}" --output "$RUNNER_TEMP/robrix-runfiles"
+      - name: Retain complete native results and source identities
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: robrix-runfiles-${{ matrix.target }}-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/robrix-runfiles
+          if-no-files-found: error
+          retention-days: 7
+  original-lock:
+    if: github.head_ref == 'fix/private-ci-robrix-runfiles-union-20261104-gpt6'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: robrix-runfiles-lock
+      - name: Check the committed lock and require identical original regeneration
+        run: python3 qualification/robrix-runfiles-20261104/run_lock.py --require-committed --output "$RUNNER_TEMP/robrix-runfiles-lock"
+      - name: Retain complete original commands and generated lock bytes
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: robrix-runfiles-lock-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/robrix-runfiles-lock
+          if-no-files-found: error
+          retention-days: 7

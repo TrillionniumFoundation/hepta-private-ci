@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "status": "HOSTED_QUALIFICATION_PENDING",
+  "posture": "Draft / HOLD_NO_GO / DENY_ALL",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent": {
+    "commit": "9b3521c42d4a81dd814a364d02e77d89be2e0a7d",
+    "tree": "2b5346bcdb91ba131f43f1173b099199e784c0ab",
+    "base_branch": "fix/cli-crate-entrypoint-20261103-gpt6"
+  },
+  "original_repair": {
+    "pull_request": 4718,
+    "commit": "68efa4101917d40ab551610e44bf7f26663bd963",
+    "copied_exactly": [
+      {
+        "path": "codex-rs/hepta-supervisor/BUILD.bazel",
+        "blob": "b9ad95d989d193699b8cc43ee1ec9bb182905ca0",
+        "bytes": 609,
+        "sha256": "4b3f4fc83bd81e7aba44f942941dc485a76bd1d2900d55d6e539b5f4f5f92fe2"
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/Cargo.toml",
+        "blob": "3a5c9f790aca3e0ee660d69d6d8f592b28e76abc",
+        "bytes": 2755,
+        "sha256": "16c8f5bb4a0f8681198c35a14970f918a716f48d89d305d0dade7d0496df0a5c"
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+        "blob": "260b692aecb85bed9117be38db8027e8e5f553b5",
+        "bytes": 13194,
+        "sha256": "661af82634cf02037bb6ea932f73a8b3252f6cb11ad6e3037f187d589ec85cc5"
+      }
+    ],
+    "prior_qualification_not_transferred": true
+  },
+  "lock_change": {
+    "path": "codex-rs/Cargo.lock",
+    "parent_blob": "d6c49a2eed9bddda69d9a46726014c5262c7b310",
+    "blob": "186a92cfef199e15ea9cf4897c5776f22d6b2227",
+    "description": "Only the existing codex-utils-cargo-bin dependency edge is added to codex-hepta-supervisor; maintained union versions and checksums are unchanged.",
+    "original_bazel_generator": "just bazel-lock-update",
+    "generated_module_lock_status": "pending actual hosted generation"
+  },
+  "preserved_fixtures": [
+    {
+      "path": "codex-rs/hepta-supervisor/fixtures/robrix-control-v2/cross-parser-corpus-v2.json",
+      "sha": "044fe5d461e3e1b2dc2530aa3f7b822b4d1e66e2",
+      "size": 1846236,
+      "type": "file"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/fixtures/robrix-control-v2/manifest.json",
+      "sha": "a5ae1f8034403f55a0ec075665685922ebfb3306",
+      "size": 2206,
+      "type": "file"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/fixtures/robrix-control-v2/matrixd-control-v2.schema.json",
+      "sha": "bb7909afc0247246f2814649a6da76b115dc879b",
+      "size": 25875,
+      "type": "file"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/fixtures/robrix-control-v2/robrix_control_projection.rs",
+      "sha": "71e7ed5b6380a64d38481d7271d13f94e6d19161",
+      "size": 1202,
+      "type": "file"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/fixtures/robrix-control-v2/supervisord-readonly-v2.schema.json",
+      "sha": "ee485187d1d311f26659328b4494ce619179e55c",
+      "size": 21482,
+      "type": "file"
+    }
+  ],
+  "negative": {
+    "source_commit": "c4023a27d00622382d8f23830fae93350252bf5f",
+    "tested_merge": "29729b01833f7f24bdda41e0a3f6c4ee158be1d5",
+    "tested_tree": "01f5745a2c54cb15d4f310efc57d0373b21cee47",
+    "same_target_source_as_parent": [
+      {
+        "path": "codex-rs/hepta-supervisor/BUILD.bazel",
+        "blob": "7e0bfea1cb7526fcbb282a52b63b59f80a695817",
+        "bytes": 465,
+        "sha256": "a97c5296ab5031b4eb15e205819bf9c043ea47290fdd42173f999c23ff2a41bd"
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/Cargo.toml",
+        "blob": "3ed96436070a4e0d5a06aca8f247c25f28a798f1",
+        "bytes": 2710,
+        "sha256": "d12a4fcdc5752242de0ee2c4d3b87b40f68184b8ff184400593f2c8377e9111e"
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+        "blob": "01dfc5694bf9750464233eb7e0ace3b89827e08d",
+        "bytes": 13044,
+        "sha256": "53de7ba097303fda8e5d618cef073fdf167f6e05fe87542acff65e82ae84de12"
+      }
+    ],
+    "scope": "The three target source files match the new parent byte-for-byte; the whole negative checkout is a different Memory branch.",
+    "workflow_run": 41729364052,
+    "job_id": 126243659686,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41729364052/job/126243659686",
+    "original_counts": {
+      "passed": 0,
+      "failed": 2,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    "cause": "Both original cases cannot find the original fixture directory at the compile-time /buildbuddy-execroot path.",
+    "decoded_full_job_log": {
+      "bytes": 3387682,
+      "sha256": "0fc9d02377842ebcd1b8dc2a12a56387caea1d51cd800b1a2f30c45c87086372",
+      "retained_here": false
+    },
+    "retained_excerpt": {
+      "path": "qualification/robrix-runfiles-20261104/original-negative-target.log.gz",
+      "scope": "One contiguous original target output, including both failures and the original summary; not the complete job log.",
+      "decoded_bytes": 2290,
+      "decoded_sha256": "771c00f7fc2ee5926ef698e74a2c78065cc47e85750e7283057ad6268c20e17f",
+      "gzip_bytes": 2313,
+      "gzip_sha256": "c98832d7eec05f4d325b9f3ee7adaf82107c4b2d21512c698fe0f55614b71774",
+      "encoding": "RFC1952 gzip with lossless stored DEFLATE blocks"
+    }
+  },
+  "required_gates": {
+    "target": "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test",
+    "hosts": [
+      "x86_64-unknown-linux-gnu",
+      "aarch64-apple-darwin",
+      "x86_64-pc-windows-msvc"
+    ],
+    "per_host_original_counts": [
+      2,
+      0,
+      0,
+      0,
+      0
+    ],
+    "required_cases": [
+      "robrix_control_v2_generated_projection_and_cross_parser_corpus",
+      "writer_reproduces_the_tracked_artifact_set_byte_for_byte"
+    ],
+    "clippy": "Original selector must include //codex-rs/...; build the existing plain rust_test target with --config=clippy.",
+    "lock": "Committed check, original regeneration, post-check all exit zero and generated bytes equal the committed lock. Entry lock must match HEAD, and initial/final whole tracked checkout diffs must both be clean.",
+    "formatter": "Original just fmt --base 9b3521c42d4a81dd814a364d02e77d89be2e0a7d and git diff --exit-code.",
+    "source_binding": "Before/after scoped input hashes and complete native log/XML/output artifacts; artifact replay must compare the committed Git bytes."
+  },
+  "limitations": [
+    "No local execution environment is available; no local Rust/Python/Clippy/formatter result is claimed.",
+    "Source from the old PR is reused exactly; its historical green result does not qualify the new dependency/CLI combination.",
+    "Whole private-ci, unrelated native suites, CodeQL, Library clearance, protected main and product activation remain open."
+  ]
+}
