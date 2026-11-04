@@ -140,11 +140,13 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
     .await;
 
     let request = response.single_request();
-    assert!(request.has_content_kinds(&["guardian.approved_action"]));
-    let mut guardian_item = request
-        .input()
-        .into_iter()
-        .next()
+    let local_input = request.durable_input(&test.codex).await;
+    request
+        .assert_durable_content_kinds(&test.codex, &["guardian.approved_action"])
+        .await;
+    let mut guardian_item = local_input
+        .first()
+        .cloned()
         .expect("guardian approval should be the first context item");
     guardian_item
         .as_object_mut()
@@ -187,8 +189,7 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
         })
     );
 
-    let items = request
-        .input()
+    let items = local_input
         .into_iter()
         .map(|item| {
             let item_type = item["type"].as_str().expect("response item type");
@@ -239,12 +240,14 @@ async fn content_item_kinds_are_omitted_when_feature_disabled() -> Result<()> {
 
     test.submit_text_turn("inspect request metadata").await?;
 
-    let input = response.single_request().input();
+    let request = response.single_request();
+    let input = request.input();
+    let local_input = request.durable_input(&test.codex).await;
     assert!(input.iter().all(|item| {
         item.pointer("/internal_chat_message_metadata_passthrough/content_item_kinds")
             .is_none()
     }));
-    assert!(input.iter().any(|item| {
+    assert!(local_input.iter().any(|item| {
         item.pointer("/internal_chat_message_metadata_passthrough/turn_id")
             .is_some()
     }));

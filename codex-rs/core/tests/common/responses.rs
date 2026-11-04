@@ -9,6 +9,7 @@ use anyhow::Result;
 use base64::Engine;
 use codex_protocol::models::ContentItem;
 use codex_protocol::models::ResponseItem;
+use codex_protocol::openai_models::InputModality;
 use codex_protocol::openai_models::ModelsResponse;
 use futures::SinkExt;
 use futures::StreamExt;
@@ -309,6 +310,176 @@ impl ResponsesRequest {
                             .all(|(actual, expected)| actual.as_str() == Some(*expected))
                 })
         })
+    }
+
+    /// Checks durable annotations against the actual local mock request.
+    pub async fn assert_durable_content_kinds(
+        &self,
+        thread: &codex_core::CodexThread,
+        kinds: &[&str],
+    ) {
+        self.assert_projected_durable_content_kinds(
+            thread,
+            kinds,
+            &[
+                InputModality::Text,
+                InputModality::Image,
+                InputModality::Audio,
+            ],
+            /*use_responses_lite*/ false,
+        )
+        .await;
+    }
+
+    /// Replays production input projection on actual durable items, then matches the wire.
+    /// Captured requests are never modified or given synthetic annotations.
+    pub async fn assert_projected_durable_content_kinds(
+        &self,
+        thread: &codex_core::CodexThread,
+        kinds: &[&str],
+        input_modalities: &[InputModality],
+        use_responses_lite: bool,
+    ) {
+        let wire_items = self.input();
+        assert!(
+            wire_items.iter().all(|item| {
+                item.get("internal_chat_message_metadata_passthrough")
+                    .is_none()
+            }),
+            "local mock requests must not receive internal metadata"
+        );
+        thread
+            .flush_rollout()
+            .await
+            .expect("flush actual durable annotations");
+        let history = thread
+            .load_history(/*include_archived*/ true)
+            .await
+            .expect("load actual durable annotations");
+        let local_items = history
+            .items
+            .into_iter()
+            .filter_map(|item| {
+                let persisted = serde_json::to_value(item).expect("serialize actual rollout item");
+                (persisted["type"] == "response_item").then(|| persisted["payload"].clone())
+            })
+            .collect::<Vec<_>>();
+        let local_items = codex_core::test_support::format_history_items_for_request(
+            local_items
+                .into_iter()
+                .map(|item| serde_json::from_value(item).expect("decode actual response item"))
+                .collect(),
+            input_modalities,
+            use_responses_lite,
+        )
+        .into_iter()
+        .map(|item| serde_json::to_value(item).expect("serialize projected response item"))
+        .collect::<Vec<_>>();
+        let matches = local_items.iter().any(|item| {
+            let annotations =
+                item["internal_chat_message_metadata_passthrough"]["content_item_kinds"].as_array();
+            let exact_kinds = annotations.is_some_and(|actual| {
+                actual.len() == kinds.len()
+                    && actual
+                        .iter()
+                        .zip(kinds)
+                        .all(|(actual, expected)| actual.as_str() == Some(*expected))
+            });
+            exact_kinds
+                && wire_items.iter().any(|wire| {
+                    strip_response_item_ids_from_json(strip_metadata_from_json(item.clone()))
+                        == strip_response_item_ids_from_json(wire.clone())
+                })
+        });
+        assert!(
+            matches,
+            "projected durable annotations {kinds:?} must belong to an actual wire input; recorded annotation sequences: {:?}",
+            local_items
+                .iter()
+                .map(
+                    |item| &item["internal_chat_message_metadata_passthrough"]["content_item_kinds"]
+                )
+                .collect::<Vec<_>>()
+        );
+    }
+
+    /// Returns actual persisted items in the order of their matching mock request inputs.
+    /// Internal annotations remain local; this never adds metadata to captured wire bytes.
+    pub async fn durable_input(&self, thread: &codex_core::CodexThread) -> Vec<Value> {
+        let wire_items = self.input();
+        assert!(wire_items.iter().all(|item| {
+            item.get("internal_chat_message_metadata_passthrough")
+                .is_none()
+        }));
+        thread.flush_rollout().await.expect("flush actual rollout");
+        let history = thread
+            .load_history(/*include_archived*/ true)
+            .await
+            .expect("load actual rollout");
+        let local_items = history
+            .items
+            .into_iter()
+            .filter_map(|item| {
+                let persisted = serde_json::to_value(item).expect("serialize actual rollout item");
+                (persisted["type"] == "response_item").then(|| persisted["payload"].clone())
+            })
+            .collect::<Vec<_>>();
+        self.matching_local_input(wire_items, local_items)
+    }
+
+    /// Matches every captured Message against actual history and the lite instruction prefix.
+    /// Other input variants are outside the original message-annotation assertions.
+    pub async fn current_history_messages(&self, thread: &codex_core::CodexThread) -> Vec<Value> {
+        let use_responses_lite = !self.inputs_of_type("additional_tools").is_empty();
+        let wire_messages = self.inputs_of_type("message");
+        assert!(
+            !wire_messages.is_empty(),
+            "expected actual request messages"
+        );
+        let local_items = codex_core::test_support::format_thread_history_for_request(
+            thread,
+            &[
+                InputModality::Text,
+                InputModality::Image,
+                InputModality::Audio,
+            ],
+            use_responses_lite,
+        )
+        .await
+        .into_iter()
+        .map(|item| serde_json::to_value(item).expect("serialize actual thread history"))
+        .collect();
+        self.matching_local_input(wire_messages, local_items)
+    }
+
+    fn matching_local_input(&self, wire_items: Vec<Value>, local_items: Vec<Value>) -> Vec<Value> {
+        assert!(self.input().iter().all(|item| {
+            item.get("internal_chat_message_metadata_passthrough")
+                .is_none()
+        }));
+        let mut cursor = 0;
+        wire_items
+            .into_iter()
+            .enumerate()
+            .map(|(wire_index, wire)| {
+                let wire = strip_response_item_ids_from_json(wire);
+                let (offset, local) = local_items[cursor..]
+                    .iter()
+                    .enumerate()
+                    .find(|(_, local)| {
+                        strip_response_item_ids_from_json(strip_metadata_from_json(
+                            (*local).clone(),
+                        )) == wire
+                    })
+                    .unwrap_or_else(|| {
+                        panic!(
+                            "request input {wire_index} has no ordered local history semantic match"
+                        )
+                    });
+                cursor += offset + 1;
+                local.clone()
+            })
+            .collect()
     }
 
     pub fn inputs_of_type(&self, ty: &str) -> Vec<Value> {
