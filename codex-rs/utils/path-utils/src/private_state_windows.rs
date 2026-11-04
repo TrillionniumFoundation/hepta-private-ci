@@ -101,7 +101,24 @@ pub enum PrivateFileAccess {
 
 /// Creates or opens a retained private-state directory.
 pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
-    let directory = directory::open(root)?;
+    let directory = directory::open(root, directory::DirectoryDisposition::OpenOrCreate)?;
+    validate_handle(&directory, HandleKind::Directory)?;
+    Ok(directory)
+}
+
+/// Opens a retained private-state directory without creating missing state.
+pub fn open_existing_private_state_directory(root: &Path) -> io::Result<File> {
+    let directory = directory::open(root, directory::DirectoryDisposition::OpenExisting)?;
+    validate_handle(&directory, HandleKind::Directory)?;
+    Ok(directory)
+}
+
+/// Creates one new retained private-state directory, refusing every existing leaf.
+///
+/// Ownership and the protected DACL are applied by the same atomic native open
+/// as `open_private_state_directory`. An existing path is never adopted.
+pub fn create_private_state_directory(root: &Path) -> io::Result<File> {
+    let directory = directory::open(root, directory::DirectoryDisposition::CreateNew)?;
     validate_handle(&directory, HandleKind::Directory)?;
     Ok(directory)
 }
@@ -112,9 +129,31 @@ pub fn open_private_state_child(
     name: &str,
     access: PrivateFileAccess,
 ) -> io::Result<File> {
+    let access = match access {
+        PrivateFileAccess::Read => ChildAccess::Read,
+        PrivateFileAccess::Write => ChildAccess::Write,
+        PrivateFileAccess::Create => ChildAccess::CreateOrOpen,
+    };
+    open_child(directory, name, access)
+}
+
+/// Creates one new private child, refusing an existing name without writing it.
+pub fn create_private_state_child(directory: &File, name: &str) -> io::Result<File> {
+    open_child(directory, name, ChildAccess::CreateNew)
+}
+
+#[derive(Clone, Copy)]
+enum ChildAccess {
+    Read,
+    Write,
+    CreateOrOpen,
+    CreateNew,
+}
+
+fn open_child(directory: &File, name: &str, access: ChildAccess) -> io::Result<File> {
     let path = child_path(directory, name)?;
     let file = match access {
-        PrivateFileAccess::Create => {
+        ChildAccess::CreateOrOpen | ChildAccess::CreateNew => {
             let wide = wide_path(&path)?;
             with_private_security(|security| {
                 let handle = unsafe {
@@ -133,7 +172,9 @@ pub fn open_private_state_child(
                     return Ok(unsafe { File::from_raw_handle(handle as *mut c_void) });
                 }
                 let error = io::Error::last_os_error();
-                if error.kind() != io::ErrorKind::AlreadyExists {
+                if error.kind() != io::ErrorKind::AlreadyExists
+                    || matches!(access, ChildAccess::CreateNew)
+                {
                     return Err(error);
                 }
                 // Existing state is never repaired, re-owned, or re-permissioned.
@@ -144,9 +185,9 @@ pub fn open_private_state_child(
                     .open(&path)
             })?
         }
-        PrivateFileAccess::Read | PrivateFileAccess::Write => OpenOptions::new()
+        ChildAccess::Read | ChildAccess::Write => OpenOptions::new()
             .read(true)
-            .write(access == PrivateFileAccess::Write)
+            .write(matches!(access, ChildAccess::Write))
             .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
             .open(&path)?,
     };

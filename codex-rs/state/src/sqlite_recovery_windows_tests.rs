@@ -2,9 +2,35 @@ use super::*;
 use crate::runtime::test_support::unique_temp_dir;
 use codex_utils_absolute_path::test_support::PathExt;
 use pretty_assertions::assert_eq;
+use std::cell::Cell;
+use std::cell::RefCell;
+use std::io;
 use std::os::windows::fs::OpenOptionsExt;
+use std::rc::Rc;
+use windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED;
 use windows_sys::Win32::Security::ACE_HEADER;
 use windows_sys::Win32::Security::*;
+
+type AfterHomeSnapshot = Box<dyn FnOnce() -> io::Result<()>>;
+thread_local! {
+    static AFTER_HOME_SNAPSHOT: RefCell<Option<AfterHomeSnapshot>> = const { RefCell::new(None) };
+}
+
+pub(super) fn after_home_snapshot() -> io::Result<()> {
+    let hook = AFTER_HOME_SNAPSHOT.with(|slot| slot.borrow_mut().take());
+    match hook {
+        Some(hook) => hook(),
+        None => Ok(()),
+    }
+}
+
+struct HomeSnapshotHook;
+
+impl Drop for HomeSnapshotHook {
+    fn drop(&mut self) {
+        AFTER_HOME_SNAPSHOT.with(|slot| slot.borrow_mut().take());
+    }
+}
 
 struct Fixture {
     root: std::path::PathBuf,
@@ -212,13 +238,57 @@ fn retained_windows_rejects_parent_junction_and_replacement() -> anyhow::Result<
     let guard = fixture
         .sqlite
         .bind_existing_recovery_database(&fixture.path)?;
-    std::fs::rename(&fixture.home, fixture.root.join("retained-home"))?;
-    std::fs::create_dir(&fixture.home)?;
-    std::fs::write(&fixture.path, b"original database bytes")?;
-    assert!(matches!(
-        guard.verify_inspection_unchanged(),
-        Err(SqliteRecoveryError::Indeterminate)
-    ));
+    let original_parent = identity::file_id(&guard.inner.parent.descriptor)?;
+    let parked = fixture.root.join("retained-home");
+    // NTFS forbids moving a directory while files below it have open handles.
+    // A retained guard must keep that native protection and remain valid after
+    // the rejected move; dropping its file handles to force a race is unsound.
+    let error = std::fs::rename(&fixture.home, &parked)
+        .expect_err("retained database handles must prevent parent rename");
+    assert_eq!(error.raw_os_error(), Some(ERROR_ACCESS_DENIED as i32));
+    assert!(!parked.try_exists()?);
+    guard.verify_inspection_unchanged()?;
+    assert_eq!(std::fs::read(&fixture.path)?, b"original database bytes");
+    drop(guard);
+
+    // The real substitution window is before the first database handle is
+    // acquired. Retain the original parent, replace its name, then let the
+    // unmodified required(DB) and revalidate path reject the changed identity.
+    let swapped = Rc::new(Cell::new(false));
+    let observed = Rc::clone(&swapped);
+    let home = fixture.home.clone();
+    let path = fixture.path.clone();
+    let previous = AFTER_HOME_SNAPSHOT.with(|slot| {
+        slot.borrow_mut().replace(Box::new(move || {
+            std::fs::rename(&home, &parked)?;
+            drop(codex_utils_path::open_private_state_directory(&home)?);
+            std::fs::write(&path, b"original database bytes")?;
+            observed.set(true);
+            Ok(())
+        }))
+    });
+    assert!(previous.is_none(), "one substitution hook per thread");
+    let hook = HomeSnapshotHook;
+    let replaced = fixture
+        .sqlite
+        .bind_existing_recovery_database(&fixture.path);
+    drop(hook);
+    assert!(
+        swapped.get(),
+        "the original parent substitution must complete"
+    );
+    assert!(matches!(replaced, Err(SqliteRecoveryError::Indeterminate)));
+
+    // The replacement itself is valid private state. Rejection above must not
+    // be manufactured by bad ACLs, invalid bytes, or a failed fixture mutation.
+    let replacement = fixture
+        .sqlite
+        .bind_existing_recovery_database(&fixture.path)?;
+    replacement.verify_inspection_unchanged()?;
+    assert_ne!(
+        identity::file_id(&replacement.inner.parent.descriptor)?,
+        original_parent
+    );
     Ok(())
 }
 

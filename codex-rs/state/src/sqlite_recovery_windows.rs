@@ -56,6 +56,8 @@ pub(super) fn bind(path: &Path) -> Result<ExistingSqliteRecoveryGuard, SqliteRec
         descriptor: directory,
         name: OsString::new(),
     };
+    #[cfg(test)]
+    tests::after_home_snapshot().map_err(super::indeterminate)?;
     let database = required(&parent.descriptor, file_name(path)?)?;
     let sidecars = ["-wal", "-shm", "-journal"].map(|suffix| {
         let sidecar = super::sqlite_sidecar_path(path, suffix);
