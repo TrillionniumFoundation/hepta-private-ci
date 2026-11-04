@@ -19,7 +19,7 @@ pub(crate) const SYSTEM_PROXY_URL_ENV: &str = dispatch::SYSTEM_PROXY_URL_ENV;
 // re-execs here because glibc initializes Rust's argument storage before ctors.
 #[ctor]
 pub static TEST_BINARY_DISPATCH_GUARD: Option<TestBinaryDispatchGuard> =
-    dispatch::configure_and_dispatch();
+    { dispatch::configure_and_dispatch() };
 
 #[cfg(all(target_os = "linux", target_env = "musl"))]
 pub(crate) fn current_test_binary_helper_paths() -> anyhow::Result<(PathBuf, Option<PathBuf>)> {
