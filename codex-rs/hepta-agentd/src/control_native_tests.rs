@@ -30,7 +30,7 @@ fn state_fixture() -> TestResult<(tempfile::TempDir, Arc<AgentdState>)> {
     let workspace = root.join("workspace");
     std::fs::create_dir(&workspace)?;
     let workspace = workspace.canonicalize()?;
-    let agent_id = AgentId::new("control.native")?;
+    let agent_id = AgentId::parse("11111111-1111-4111-8111-111111111111")?;
     let manifest = AgentManifest::new(
         agent_id.clone(),
         WorkspaceBinding::new(&workspace, &fleet_root)?,
@@ -80,7 +80,10 @@ async fn ordinary_control_preserves_server_identity_and_launch_generation() -> T
     assert!(!health.ready);
     assert!(!health.promotion_ready);
     for (agent_id, generation) in [
-        (AgentId::new("control.other")?, identity.spawn_generation),
+        (
+            AgentId::parse("22222222-2222-4222-8222-222222222222")?,
+            identity.spawn_generation,
+        ),
         (identity.agent_id, identity.spawn_generation + 1),
     ] {
         let wrong = AgentdClient::new(identity.control_socket.clone(), agent_id, generation)?;
