@@ -19,33 +19,17 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - key: core061-windows
-            source: 061ec434abcbe673013f1e16b6b5a1b3d9c1d3bb
-            script: verify_original_followups.py
+          - key: schemaee-original
+            source: ee24895753b65e5b7cf0ec01398995af2fbfe0f2
+            script: verify_schema_original.py
             full_source: true
-          - key: core061-linux
-            source: 061ec434abcbe673013f1e16b6b5a1b3d9c1d3bb
-            script: verify_original_followups.py
-            full_source: true
-          - key: memory8fac-windows
-            source: 8facd08bcb51222fe3c88c3b9b03bdea09db4553
-            script: verify_memory_current.py
+          - key: env4db-source
+            source: 4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37
+            script: verify.py
             full_source: false
-          - key: memory8fac-bazel
-            source: 8facd08bcb51222fe3c88c3b9b03bdea09db4553
-            script: verify_memory_current.py
-            full_source: false
-          - key: memory8fac-generation
-            source: 8facd08bcb51222fe3c88c3b9b03bdea09db4553
-            script: verify_memory_current.py
-            full_source: false
-          - key: memory8fac-macos
-            source: 8facd08bcb51222fe3c88c3b9b03bdea09db4553
-            script: verify_memory_current.py
-            full_source: false
-          - key: memory8fac-linux
-            source: 8facd08bcb51222fe3c88c3b9b03bdea09db4553
-            script: verify_memory_current.py
+          - key: env4db-merge-failed
+            source: 9149d3e01bcc3777b605920cef6bbb166bacf61c
+            script: verify.py
             full_source: false
     env:
       GIT_CONFIG_COUNT: 1
@@ -108,11 +92,13 @@ jobs:
             /qualification/windows-archive-inputs-20261104/
             /qualification/keyring-sync-provider/build_pinned_client.py
       - name: Check verifier syntax
-        run: python3 -m py_compile harness/qualification/original-artifact-evidence-20261104/verify.py harness/qualification/original-artifact-evidence-20261104/verify_memory_current.py harness/qualification/original-artifact-evidence-20261104/verify_original_followups.py harness/qualification/original-artifact-evidence-20261104/test_original_followup_reader.py
+        run: python3 -m py_compile harness/qualification/original-artifact-evidence-20261104/verify.py harness/qualification/original-artifact-evidence-20261104/verify_memory_current.py harness/qualification/original-artifact-evidence-20261104/verify_original_followups.py harness/qualification/original-artifact-evidence-20261104/test_original_followup_reader.py harness/qualification/original-artifact-evidence-20261104/verify_schema_original.py harness/qualification/original-artifact-evidence-20261104/test_schema_original_reader.py
       - name: Exercise mixed-output and command-binding reader controls
         run: python3 -m unittest discover -s harness/qualification/original-artifact-evidence-20261104 -p test_reader_boundaries.py -v
       - name: Exercise focused native inventory and JUnit reader controls
         run: python3 -m unittest discover -s harness/qualification/original-artifact-evidence-20261104 -p test_original_followup_reader.py -v
+      - name: Exercise complete schema inventory and JUnit reader controls
+        run: python3 -m unittest discover -s harness/qualification/original-artifact-evidence-20261104 -p test_schema_original_reader.py -v
       - name: Reject optimized Python before artifact processing
         run: |
           if python3 -O harness/qualification/original-artifact-evidence-20261104/verify_memory_current.py --help; then
@@ -121,6 +107,10 @@ jobs:
           fi
           if python3 -O harness/qualification/original-artifact-evidence-20261104/verify_original_followups.py --help; then
             echo 'optimized focused verifier unexpectedly accepted'
+            exit 1
+          fi
+          if python3 -O harness/qualification/original-artifact-evidence-20261104/verify_schema_original.py --help; then
+            echo 'optimized schema verifier unexpectedly accepted'
             exit 1
           fi
       - name: Verify original ZIP, Git inputs and recorded outputs
