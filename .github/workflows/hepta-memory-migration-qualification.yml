@@ -15,6 +15,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  fixture-format:
+    if: github.head_ref == 'fix/private-ci-memory-migration-ledger-20261103-gpt6'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          toolchain: 1.96.0
+          components: rustfmt
+      - name: Run the repository formatter and require identical fixture bytes
+        working-directory: codex-rs
+        run: |
+          just fmt --base c4023a27d00622382d8f23830fae93350252bf5f
+          git diff --exit-code HEAD -- .
   native:
     if: github.head_ref == 'fix/private-ci-memory-migration-ledger-20261103-gpt6'
     runs-on: ${{ matrix.runner }}

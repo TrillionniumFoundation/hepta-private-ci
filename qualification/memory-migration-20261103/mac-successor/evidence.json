@@ -1,0 +1,55 @@
+{
+  "source_commit": "c4023a27d00622382d8f23830fae93350252bf5f",
+  "source_tree": "01f5745a2c54cb15d4f310efc57d0373b21cee47",
+  "run_id": 41729364052,
+  "job_id": 126243659686,
+  "original_job": {
+    "bytes": 3387682,
+    "sha256": "0fc9d02377842ebcd1b8dc2a12a56387caea1d51cd800b1a2f30c45c87086372",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41729364052/job/126243659686"
+  },
+  "retained_target_excerpt": {
+    "bytes": 44985,
+    "sha256": "787a83b6f159281bbb4d5c596349bcb39b6e690c5229ba794001c33d53777186",
+    "scope": "Contiguous original Memory target excerpt ending at its outer summary; not the complete full-CI job.",
+    "gzip_bytes": 45008,
+    "gzip_sha256": "826671ce5b958ab34b7ae5e3e73b3759a8cbc6cf2a7ece2b7e55af691bd56bb8",
+    "gzip_storage": "RFC1952 gzip with lossless stored DEFLATE blocks; no executor was available for compression"
+  },
+  "original_counts": {
+    "outer_passed": 261,
+    "outer_failed": 11,
+    "original_ignored": 7,
+    "outer_filtered": 0,
+    "failed_child_selector": {
+      "passed": 0,
+      "failed": 1,
+      "filtered": 278,
+      "counts_in_parent_once": true
+    }
+  },
+  "repair_scope": "Only physical owned fixture paths at H7 creation/reopen, local-turn test setup, and the crash child environment argument. Original exit73/WAL/source-immutability assertions remain.",
+  "source_inputs": [
+    {
+      "path": "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+      "before_git_blob": "14b629d44b36d9c93acff4c90300ee356af4d130",
+      "after_git_blob": "1f080c913fab362a68b7a988c7b871b57f24fe31",
+      "after_sha256": "f81c26a9e7ed3b9c5a251118003afdf37f4fded329441af3470dd44898f5d57e"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_turn_binding.rs",
+      "before_git_blob": "e9adb5979c37aa47eeeded998597f6703013bf70",
+      "after_git_blob": "090ca350ac2089e0a610b39914400abeb1d593fe",
+      "after_sha256": "0794bf1a554508c56795b5b70184a8e1b0c2543a7c94e00dccca32827c9e7a95"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+      "before_git_blob": "b6f2d1b35b708cadae9db5978efd4dfea71a0ded",
+      "after_git_blob": "1bcd82a012961d73e84349c7003d1975ad12b17c",
+      "after_sha256": "beb9e87922f6874d8535539d042096c27a6e5f8ff1b48902fe4952b18975294f"
+    }
+  ],
+  "qualification": "No local execution environment. Required just fmt is a separate hosted job; original complete three-host Bazel Memory and Clippy jobs remain unchanged.",
+  "existing_failure_preserved": true,
+  "production_admission_unchanged": true
+}
