@@ -117,7 +117,7 @@ tokio-util = { workspace = true }
 [target.'cfg(windows)'.dependencies]
 codex-utils-path = { workspace = true }
 
-[target.'cfg(target_os = "linux")'.dependencies]
+[target.'cfg(unix)'.dependencies]
 libc = { workspace = true }
 
 [dev-dependencies]
