@@ -17,3 +17,9 @@ The formatter job runs the original repository formatter against the exact paren
 No local execution environment is available, so no local Rust, Python, formatter, Clippy, or lock-generator success is claimed. Prior #4718 local results do not transfer to this candidate. The original 30-minute native and generator budgets are unchanged. This isolated Draft does not merge main, deploy, activate a product, clear other blockers, or authorize deleting Library originals.
 
 Posture: **Draft / HOLD_NO_GO / DENY_ALL**.
+
+## First native result and physical-manifest successor
+
+Initial source `a488f1d0f5a02a8604703f50b1a6e18f179b14d1` passed both complete original cases and scoped Clippy on Linux and Windows. The original formatter, all three lock commands and both lock checkout checks passed; the actual generated MODULE lock was unchanged. macOS still failed both cases because its runfiles directory contained symlink entries, correctly rejected by the original strict artifact reader.
+
+The successor canonicalizes the resolved manifest file before taking its physical parent. The original directory-wide reader, non-file rejection, both full test bodies, every assertion and all five fixture assets remain unchanged. Complete first-attempt logs, exact ZIP identities and original receipts are retained under `native-a488/`. The successor requires its own complete native qualification; no predecessor result is transferred.

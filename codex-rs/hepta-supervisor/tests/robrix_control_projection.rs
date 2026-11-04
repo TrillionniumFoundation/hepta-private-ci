@@ -350,7 +350,10 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
 
 fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
     let resource = format!("fixtures/robrix-control-v2/{MANIFEST_FILE}");
-    let manifest = codex_utils_cargo_bin::find_resource!(resource)?;
+    // Resolve the file itself because macOS runfiles directories contain symlink entries.
+    let manifest = codex_utils_cargo_bin::find_resource!(resource)?
+        .canonicalize()
+        .context("canonicalize tracked projection manifest")?;
     let root = manifest
         .parent()
         .context("tracked projection manifest has no parent")?;
