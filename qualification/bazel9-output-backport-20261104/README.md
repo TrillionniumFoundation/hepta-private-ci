@@ -22,7 +22,11 @@ The upstream destructor waits for the pipe to drain, then bounds cancellation fo
 
 ## Scope and status
 
-This is an isolated research branch, with no pull request or product-default integration yet. The `.bazelrc` override is confined to this branch and requires its prepared directory. Native execution is pending until the actual hosted workflow finishes. Static hunk application and independent source review are not claimed as C++, GTest or Rust execution.
+Original isolated source `f7e1283370bd3e343df09416ae75717f2d558c75` passed native Windows [run41762993935 / job126354758118](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41762993935/job/126354758118): all twenty exact GTests, both unchanged original Robrix cases with the complete 2/0/0/0/0 summary, original Clippy, and the final complete tool/source integrity checks. Full decoded logs and artifact identities are retained in `hosted-f7/`. Independent ZIP replay remains a separate check.
+
+The current wiring successor prepares this exact byte-identical helper from the existing shared `setup-bazel-ci` action on Windows. It runs after pinned Bazelisk and the existing MSVC/PATH setup, before any current Windows Bazel consumer. The repository's 87 current workflows were inspected; the Windows ARM Cargo/GN paths do not call this x64 Bazel preparation. Exact patch inputs use LF in Windows checkouts. The product remains Bazel9.0.0, every original target and test assertion is retained, and no job budget changes.
+
+The research workflow now exercises this shared entry once, without a duplicate manual preparation. The ordinary Robrix qualification also finalizes the original and overridden tool inventories and retains the complete native tool evidence. The shared-entry successor has not yet executed at publication; its fresh bounded native result is required before adoption in the combined source. Protected main and the separate product PR ref remain unchanged.
 
 Posture: **Draft / HOLD_NO_GO / DENY_ALL**. No main merge, deployment, activation or original source deletion.
 

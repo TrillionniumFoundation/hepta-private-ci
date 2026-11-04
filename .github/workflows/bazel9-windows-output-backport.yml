@@ -34,9 +34,6 @@ jobs:
         with:
           target: x86_64-pc-windows-msvc
           cache-scope: bazel9-output-backport
-      - name: Build the exact upstream backport and run all twenty wrapper tests
-        shell: pwsh
-        run: python qualification/bazel9-output-backport-20261104/build.py --work "$env:RUNNER_TEMP/bazel9-output-backport"
       - name: Run the complete original Robrix cases and Clippy
         shell: bash
         run: |

@@ -3,6 +3,11 @@ name: hepta original Robrix runfiles qualification
 on:
   pull_request:
     paths:
+      - .bazelrc
+      - .gitattributes
+      - .github/actions/setup-bazel-ci/**
+      - .github/actions/prepare-bazel-ci/**
+      - qualification/bazel9-output-backport-20261104/**
       - .github/workflows/hepta-robrix-runfiles-qualification.yml
       - qualification/robrix-runfiles-20261104/**
       - codex-rs/hepta-supervisor/**
@@ -85,12 +90,24 @@ jobs:
             export ROBRIX_QUALIFICATION_BASH="$BASH"
           fi
           python3 qualification/robrix-runfiles-20261104/run.py --config "${{ matrix.config }}" --output "$RUNNER_TEMP/robrix-runfiles"
+      - name: Verify the original installed tools and qualified override after Robrix
+        if: always() && !cancelled() && runner.os == 'Windows'
+        shell: pwsh
+        run: python qualification/bazel9-output-backport-20261104/build.py --work "$env:RUNNER_TEMP/bazel9-output-backport" --finalize --robrix "$env:RUNNER_TEMP/robrix-runfiles"
       - name: Retain complete native results and source identities
         if: always() && !cancelled()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: robrix-runfiles-${{ matrix.target }}-${{ github.event.pull_request.head.sha }}
           path: ${{ runner.temp }}/robrix-runfiles
+          if-no-files-found: error
+          retention-days: 7
+      - name: Retain exact native wrapper qualification evidence
+        if: always() && !cancelled() && runner.os == 'Windows'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: bazel9-output-backport-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/bazel9-output-backport/evidence
           if-no-files-found: error
           retention-days: 7
   original-lock:

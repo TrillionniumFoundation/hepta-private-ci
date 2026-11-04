@@ -1,0 +1,592 @@
+{
+  "schema": 1,
+  "scanned_source": "f7e1283370bd3e343df09416ae75717f2d558c75",
+  "scanned_tree": "0865805c2a294afa556d0f2401d9f158f2bee2ec",
+  "workflow_count": 87,
+  "workflow_bytes": 634363,
+  "workflow_inputs": [
+    {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "git_blob": "43269479125e8e8b660cee1ad80666fe017205b8",
+      "bytes": 1691,
+      "sha256": "d3f1a50e4e3d9e7f665092e236382f64f50d766d989be796f2d6dae167662e93"
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "git_blob": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c",
+      "bytes": 20489,
+      "sha256": "7056008137ed9abbe8f29eae95ac4f1a3d771e7a6dba8fd012c11964ddb4221e"
+    },
+    {
+      "path": ".github/workflows/bazel9-windows-output-backport.yml",
+      "git_blob": "322eb1aad233074865bc29136309d544e4835fdd",
+      "bytes": 2217,
+      "sha256": "865d2cc0cd27a9530d06243e4d13e95ff5575a35c3526dd54de033a985a94afb"
+    },
+    {
+      "path": ".github/workflows/blob-size-policy.yml",
+      "git_blob": "d2c4c45ddaff2bf1811ea24d4b2d711900f5cefa",
+      "bytes": 2119,
+      "sha256": "a577a59c14c7c67ac03e506e93d1f09834dfec4918e047d858b636b90139cd3b"
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "git_blob": "c796d7b5597656be0a0f400f3cc272b555c8a421",
+      "bytes": 9230,
+      "sha256": "90bcb69764af9164a970a9b196d81c1e2d670881d9298976f28018b8a4f9fc11"
+    },
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "git_blob": "56d35c7098e5100d16078e604894853c051311b7",
+      "bytes": 890,
+      "sha256": "034ae8c58a0ba81f96ae70b7b86c0a598671ef08f57d45dcf7458e51bf096135"
+    },
+    {
+      "path": ".github/workflows/cla.yml",
+      "git_blob": "8316a3562fb2adeda5deb36a94d7aafa3fc5a8df",
+      "bytes": 2060,
+      "sha256": "ed68d940a662a74dd2566442089e29e958d21192d1728ff81d1ed0e0aea36d3f"
+    },
+    {
+      "path": ".github/workflows/close-stale-contributor-prs.yml",
+      "git_blob": "cbda37e3105bd47fc22dcd46b3edc47db676162f",
+      "bytes": 3615,
+      "sha256": "e28059bb98c7abb8517bf3565353a23684031c6ff50d5830656bfb0a3dded32b"
+    },
+    {
+      "path": ".github/workflows/codespell.yml",
+      "git_blob": "f6940899da3ac0e5d7cc47e9240643732abe31da",
+      "bytes": 862,
+      "sha256": "4bc889fafcd9d8437d16be7e79a3f15b928039a775df26338c759a41a00809c2"
+    },
+    {
+      "path": ".github/workflows/hepta-algorithm-docs.yml",
+      "git_blob": "c324bb5be80d978289ed54fb25d6cf4f2b594acd",
+      "bytes": 4258,
+      "sha256": "dccde05c593074f71011bb0df2af6207e02a204e51027fea4ac566c825b93813"
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "git_blob": "0cd1f3fcf144b2f7d7e229633a1e17404688daf7",
+      "bytes": 19978,
+      "sha256": "a11e9e2aecf3f3a52f51ddba19c38ad0bef362713679431103321a6c07d489dd"
+    },
+    {
+      "path": ".github/workflows/hepta-artifact-storage.yml",
+      "git_blob": "b6e05d76c3ee4b5e94994937bef77278bb6a1c22",
+      "bytes": 2706,
+      "sha256": "8ed36d944999cc62e3923d93c66b11f8f3611f138aea047a9b54838f26c1711b"
+    },
+    {
+      "path": ".github/workflows/hepta-assimilation-discovery.yml",
+      "git_blob": "12c4ffb399949abd6d0f2cf99fd68d7bbd7dfecf",
+      "bytes": 2439,
+      "sha256": "7dc9d4f101ff3ded42f5350941299fbb4153fba809cf518a7795d5b041dd0976"
+    },
+    {
+      "path": ".github/workflows/hepta-audit-remediation.yml",
+      "git_blob": "05b56cd3c6dfff68641a5c9b5e7036140ea760a7",
+      "bytes": 3495,
+      "sha256": "2d4464847cf0fead16ff4e58615f8168ace59df3096d53726a37e8091aa0be07"
+    },
+    {
+      "path": ".github/workflows/hepta-aws-p256-qualification.yml",
+      "git_blob": "1aa3e76a94f3e0ff775bd4b22fe00cf31d9a29ab",
+      "bytes": 3588,
+      "sha256": "0110db48f4c44f2d022b6fc57785f1aec0ce0a5e164954d578fbdfc967eef601"
+    },
+    {
+      "path": ".github/workflows/hepta-browser-agentd-composition.yml",
+      "git_blob": "1c856bc9231633413cadb9b7f70e8fcfdb14d8d8",
+      "bytes": 2333,
+      "sha256": "ec1f4d93dd894edc4a72e55033c8da935b2765d0c8b6d02799852e6a6db0734f"
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
+      "git_blob": "73db9f4a62ab3027c81363c33f1846f99f6dd8f9",
+      "bytes": 7643,
+      "sha256": "71411665d8b355eec9381b1c9e317bf872f7e94fe758142b2c3c2032a1d93387"
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-worker-dev.yml",
+      "git_blob": "f36e53e91ca31b16d5e9202a433f1c7b2ed0a749",
+      "bytes": 8546,
+      "sha256": "4c785c2a5fc5d04735e0562765a14316534d43fe876f90b3be5279ea4485c837"
+    },
+    {
+      "path": ".github/workflows/hepta-cns-embodiment.yml",
+      "git_blob": "fdd4c690d2c46d858c93960a738fc72282a35d2e",
+      "bytes": 5864,
+      "sha256": "c60b59754a81121a70e0ef9eb405dc14215c629a93a3ab387c00a40cc8882561"
+    },
+    {
+      "path": ".github/workflows/hepta-consolidated-source.yml",
+      "git_blob": "c7d7e7acbec213f2380ca2457737bf2e8aae9087",
+      "bytes": 33612,
+      "sha256": "769b27482d6466d2bbf2a8a82b8f2945df9576f0098a8a8324d416906c598593"
+    },
+    {
+      "path": ".github/workflows/hepta-contract-gate.yml",
+      "git_blob": "0eb3d84801cc456b34fa1e33957400c1a00dcb68",
+      "bytes": 2493,
+      "sha256": "61faff97c373308ded3cde266cad512c3f8795db2646f1a77779a7c8b46aa7f9"
+    },
+    {
+      "path": ".github/workflows/hepta-converged-learning.yml",
+      "git_blob": "612b8821d7ff64fb547017845dbed540f838f868",
+      "bytes": 10196,
+      "sha256": "036a29631f8ed4a508085deed537ebd105ce6f2487b429760efd1ccce2c9c88f"
+    },
+    {
+      "path": ".github/workflows/hepta-dependency-union-lock.yml",
+      "git_blob": "8ef53b055654fbb5a5b46bc026f7739125a99617",
+      "bytes": 1656,
+      "sha256": "3faeeb97411fca1cfbac2d215c8a37420b110582c31d5016d8e4d99497e9d4e6"
+    },
+    {
+      "path": ".github/workflows/hepta-deployment-handoff.yml",
+      "git_blob": "484ddf80b8547212f3bfab73cca8249599f9a772",
+      "bytes": 2938,
+      "sha256": "d5da56cd0876a8b749cb595d278b1590ba99b99fac9c041d8b153703d55e1f8b"
+    },
+    {
+      "path": ".github/workflows/hepta-development-docs.yml",
+      "git_blob": "7aab1401243b47d5cd08d91173e477dcc63647c3",
+      "bytes": 5530,
+      "sha256": "6622d6b75446f70a30a90f3a9f34a7f047b134feadffb7b9ebb33b80ea0d0a43"
+    },
+    {
+      "path": ".github/workflows/hepta-diagnostic-source-export.yml",
+      "git_blob": "56c276ee123dc7c050303f79d53c6642cde6e920",
+      "bytes": 8742,
+      "sha256": "b31fac796b0ceca9957e8e0c91989c8c4cae191125212c7d7845cca55e2bfc6c"
+    },
+    {
+      "path": ".github/workflows/hepta-durable-learning-roundtrip.yml",
+      "git_blob": "02d7d00321cf2531e3bd21f7cc0c69b15ba172ca",
+      "bytes": 3104,
+      "sha256": "2a509955792e8be3bde4dd5b57c623837c1756c31d844291f23af206d4301f56"
+    },
+    {
+      "path": ".github/workflows/hepta-fleet-macos-qualification.yml",
+      "git_blob": "1c5c3d3d68f8449de4a9e1092140363726aba704",
+      "bytes": 2105,
+      "sha256": "cf0db4d140380db239f48c56301bf36773a38652233de9546cb9332db8f68cce"
+    },
+    {
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "git_blob": "18a6d4e1108482653ff7560d9e64d91649e41236",
+      "bytes": 8794,
+      "sha256": "f52889571fa8722f0845eb797756e0dfeaf7d50c2fa2b1d992c8408b3e70ae42"
+    },
+    {
+      "path": ".github/workflows/hepta-implementation-readiness.yml",
+      "git_blob": "d79bb1fb105a7ef5258a9c5735abd898845dbe40",
+      "bytes": 3404,
+      "sha256": "fbbd9cdd0033ef5323d83b7ea407f027758ab35e12248c239ce47701f127ab9d"
+    },
+    {
+      "path": ".github/workflows/hepta-inference-maintenance.yml",
+      "git_blob": "f260bd655d0efc9b67daebb3ab24541482caff68",
+      "bytes": 8025,
+      "sha256": "d26062aa88984c1c979653c46dde32b40b4b0acdfd7fadcc6d5bce4ba225a59d"
+    },
+    {
+      "path": ".github/workflows/hepta-integration-diagnostics.yml",
+      "git_blob": "aeaa8491af4dd677c43e0765d89fdc17a81895b3",
+      "bytes": 7034,
+      "sha256": "07aadb97d7def2d0045cc45d7a1008ee230a7e3d2943c6af1b358c1adf360449"
+    },
+    {
+      "path": ".github/workflows/hepta-intuition-qualification.yml",
+      "git_blob": "2c9e9a53d2e7b7ed35318ed9819db1f722d99f02",
+      "bytes": 5245,
+      "sha256": "b3e244d902bc5adc1c970ce026cb40c4e41d3e73b3e4fa87772b05043f830807"
+    },
+    {
+      "path": ".github/workflows/hepta-kernel-evidence-qualification.yml",
+      "git_blob": "0001620b409c257c99a8b4aa61fd25ff737a3770",
+      "bytes": 6479,
+      "sha256": "0cc079f1c017249d3af25683b3981d28cf3a96f37b6ded7e3c6ea2c441f362bf"
+    },
+    {
+      "path": ".github/workflows/hepta-keyring-provider-qualification.yml",
+      "git_blob": "e078ad19450eb8b74a65feb9f698d5d2c0826c9b",
+      "bytes": 7878,
+      "sha256": "5aefb58df205649117278c024959f80a9238d9757615aa10edaf3b530469885f"
+    },
+    {
+      "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
+      "git_blob": "08147efcdd975e662e6268add84af966c5c6ae1d",
+      "bytes": 6684,
+      "sha256": "e928ec8825ab0b7fac3a8f7642ea324d8316a7a58e000df3e5e7594940aa4edd"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-b-truth.yml",
+      "git_blob": "8e28fec00be67547ba1393462abffa810e0181fb",
+      "bytes": 6751,
+      "sha256": "4848c33d7f0f89c584c18f9d8220dc6121912d45bda84bde40dd7824f536bab4"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+      "git_blob": "4756be76b745582520ff66d07fa103048fc6ec5c",
+      "bytes": 4604,
+      "sha256": "479465eda2593e3e8f58b68a1447748b073f38a5c5feeecb720015c44cce8b2b"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-e-gap-closure.yml",
+      "git_blob": "7dd9caccca33698d88a10a61116dfc10af74e0ae",
+      "bytes": 22924,
+      "sha256": "c33dd37b2a0de21d6e1c1af705b750e3da63fed76880fa10602a897030bf035f"
+    },
+    {
+      "path": ".github/workflows/hepta-lane-f-shadow-qualification.yml",
+      "git_blob": "f70c4a3a1f35b1e1e81956d066ff096c42b2e42e",
+      "bytes": 5762,
+      "sha256": "b9d139c0cf98cccbd08011bb73cd8dc163a393482e0d45e0e4ce6f3855694dd6"
+    },
+    {
+      "path": ".github/workflows/hepta-learning-ledger-durable.yml",
+      "git_blob": "30de1cf1befb1a16a412fa0ba91163db88040824",
+      "bytes": 3570,
+      "sha256": "d69d22fe8b2d4764142b564575c4bebd30817f7026e666aca5f5ce937e725510"
+    },
+    {
+      "path": ".github/workflows/hepta-matrix-security-qualification.yml",
+      "git_blob": "8c05a23639d96aa25e73d83ae3e5f1b213fd4646",
+      "bytes": 3461,
+      "sha256": "192c938f8fe5fd28c6617b50523ba557dcb88d4b74edd09ed87f4e2a1bab6c84"
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+      "git_blob": "8d91832441db0cf8f064e27ed8193f9cadbbf462",
+      "bytes": 3798,
+      "sha256": "de965b37c80134f33f8007234242c101fc22b2c0a04235df61b2a99c8b1e6376"
+    },
+    {
+      "path": ".github/workflows/hepta-ndu-recursion.yml",
+      "git_blob": "2d4d44b3e920bc0e025704ddae82054103a8688f",
+      "bytes": 6186,
+      "sha256": "669497f104c4b0da94122d9427ef8d8d7d75a1a6d020483b0fb38e95f21a780c"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-admission.yml",
+      "git_blob": "ef98ab5c6918c38949583ecdb4b089a31cb4ceac",
+      "bytes": 2830,
+      "sha256": "6c59dd41c8e21917bea5202279cdb7219298a02c8821fcfdbe74efa385a5267a"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-product-composition.yml",
+      "git_blob": "cb8ccf4b403aef6aef4825930e4a4a1c5d67cc1c",
+      "bytes": 4712,
+      "sha256": "37871e409d7a53a59a9a53fdc49945f3ed1fd7b21102a1df69f08cab8386dd89"
+    },
+    {
+      "path": ".github/workflows/hepta-offline-build-inputs.yml",
+      "git_blob": "0cc0026516340a27f041af48e01cf3e835140701",
+      "bytes": 9453,
+      "sha256": "f7135d311e96728da029fba302e374e5b7b7258b80cf06e2372ec56ff6e49c8c"
+    },
+    {
+      "path": ".github/workflows/hepta-operator-native-execution.yml",
+      "git_blob": "5580f72afd1ce721e079470d39789d4e1b28b107",
+      "bytes": 2237,
+      "sha256": "8263fad14009ef0700e4efc286bdad2991a0dee4db1b2e12295caadbd2190368"
+    },
+    {
+      "path": ".github/workflows/hepta-organ-implementation.yml",
+      "git_blob": "8c9850af7a5816a1895dcaaa6ebfe848071569a6",
+      "bytes": 5293,
+      "sha256": "9d9020e6645ed6de008bcdf4dce7e2ed0a0f67bc6e0e1661939ce13a50e7799b"
+    },
+    {
+      "path": ".github/workflows/hepta-repository-integrity.yml",
+      "git_blob": "0a2115eac94a7f25bead86e3859fd3a2b9ec90e8",
+      "bytes": 4796,
+      "sha256": "01251fd151cf4cca8f87f56b3e2d4ac1cfc1371487447829a1e2f85feea133d0"
+    },
+    {
+      "path": ".github/workflows/hepta-robrix-runfiles-qualification.yml",
+      "git_blob": "228ff19b8a6cef35753ae3a5e3abda7af7c417bd",
+      "bytes": 4565,
+      "sha256": "85c2dd2da2f17aebe87eb5e2ee2a0375df063a554d6a8e88ada0312329dfe823"
+    },
+    {
+      "path": ".github/workflows/hepta-self-iteration-activation.yml",
+      "git_blob": "ef8fbdbbe33eb1da199df244a86d6a3708130839",
+      "bytes": 1574,
+      "sha256": "5d423ac4c07d70c5d01e724f89b7a76a7c5b1b010282ac9c799f821e3fa55d66"
+    },
+    {
+      "path": ".github/workflows/hepta-temporary-bazel-lock.yml",
+      "git_blob": "108aa9b2380f6693335acf6e79536a6471063414",
+      "bytes": 2984,
+      "sha256": "37286fe2b59045352649b4bb036685e9b07c5df394f15e023ced1f9813827a32"
+    },
+    {
+      "path": ".github/workflows/hepta-vnext-qualification.yml",
+      "git_blob": "ee8aa4249994b82082da14b275fe38b40fb0f16c",
+      "bytes": 6636,
+      "sha256": "0454e38cf612f9e1abbbfeef4e7ddf583e8e0926e962a7d5aa56ebbe5508f791"
+    },
+    {
+      "path": ".github/workflows/hia-ndu-bridge.yml",
+      "git_blob": "4c1f30fe945269574c593ada5c8122d8f972ee81",
+      "bytes": 6402,
+      "sha256": "d48673018909fd74d0f244c602aea56d073d1cce9c51ce8db1d6d2800d843e2e"
+    },
+    {
+      "path": ".github/workflows/hia-sqlite-v1-original-native-diagnostic.yml",
+      "git_blob": "e7e394bfe53b2d145c692674d53fe983872a0237",
+      "bytes": 3938,
+      "sha256": "0e9ffc6ea15a48b45c4763d60b78faa2c18c76fe35e3002771c4fda552a126c0"
+    },
+    {
+      "path": ".github/workflows/hnmf-qualification.yml",
+      "git_blob": "178e47acc1f35b21bda334345f71e95e784481d3",
+      "bytes": 4522,
+      "sha256": "9fb0efb9240a242323e5a06259d82b2464e4f47698480df3b0ea373354979dbd"
+    },
+    {
+      "path": ".github/workflows/issue-deduplicator.yml",
+      "git_blob": "05ef554988de56a6ecb9d033243d7df401227f24",
+      "bytes": 16557,
+      "sha256": "ba5a4bef1ad9eb973130f8cdcd27f7e51d09db6b33c773573153871b956deadb"
+    },
+    {
+      "path": ".github/workflows/issue-labeler.yml",
+      "git_blob": "c9f1a8f1281f9af1dc7998d5d47b604617f4bca9",
+      "bytes": 9404,
+      "sha256": "d021126359a00770ea5d701830213b094435935632849ce6cb0ab4df50e20dbb"
+    },
+    {
+      "path": ".github/workflows/issue-translator.yml",
+      "git_blob": "8fe85ba0d51bdea3e087f9ce874d82bde887fadd",
+      "bytes": 5761,
+      "sha256": "cf4f9034b3928012b179be39ff3e2a66cc742731f4cd707aab5a0e1cba0feac1"
+    },
+    {
+      "path": ".github/workflows/lane-a-foundation.yml",
+      "git_blob": "a3bd267880a6faf81f4b83af4bb5d54765074851",
+      "bytes": 7148,
+      "sha256": "b35d9372299f53a34222942d559cb6b51504fcb8fe4dceae8ab3e29f79875fdd"
+    },
+    {
+      "path": ".github/workflows/memory-federation-v2-final-verify.yml",
+      "git_blob": "5e08c0d7d19c4df1e87b2cae7db83c8a1d4c236b",
+      "bytes": 6628,
+      "sha256": "056d1a9431bb2b0f9141c1d8fbcec25372c7ce235e4ec6e935eb7ecf0663073d"
+    },
+    {
+      "path": ".github/workflows/openbao-compatibility.yml",
+      "git_blob": "bb6875c2a0213e6dfe3e8c73eaee4ed843bee9d4",
+      "bytes": 1194,
+      "sha256": "6d56c3614a44bd7dfe96472648acc8262ea818cbb4e4c120efd112d66c4d49c5"
+    },
+    {
+      "path": ".github/workflows/postmerge-ci.yml",
+      "git_blob": "2a7032e049df0efb8056211f96bc9b41174c10e2",
+      "bytes": 1563,
+      "sha256": "e68ef60919f1d5c73455903092faea02b03921b803c12e547070a1f5816a7c4b"
+    },
+    {
+      "path": ".github/workflows/python-runtime-build.yml",
+      "git_blob": "aa8d6d891daf76b5f13a03db92e2e2c8fc7ca1f4",
+      "bytes": 3986,
+      "sha256": "3ed05402dff33f620ae4321e4f30989af9ee337563b7b231cb464698cefa6d2c"
+    },
+    {
+      "path": ".github/workflows/python-runtime-release.yml",
+      "git_blob": "8316bf911c3e383a54ec7417ec72b035cb32ec73",
+      "bytes": 3393,
+      "sha256": "0cb41b3804598f06e6cae3f393c74bb4c1f5a8e54925b27263d5f5ca75c21bfb"
+    },
+    {
+      "path": ".github/workflows/python-sdk-release.yml",
+      "git_blob": "a322c87c5bc250f7026e2700f92b6edfd45ef6be",
+      "bytes": 8551,
+      "sha256": "a78ff42d81fa709818feaf307a8438a9cae0fad87e4f8f6ca53c614ec345f832"
+    },
+    {
+      "path": ".github/workflows/r2-release.yml",
+      "git_blob": "96a07685cfc41a0383a14fc7bf99d8584d10f865",
+      "bytes": 1553,
+      "sha256": "5e33593a64238d54500700f2c48a4690291b14a0173956f423c6d454dda85670"
+    },
+    {
+      "path": ".github/workflows/repo-checks.yml",
+      "git_blob": "f06c7266990dd4758f9631f86c45ded4d8e84be5",
+      "bytes": 4263,
+      "sha256": "0b14277b86dd5756a9610c331e68ea7bbea2f7cce0c7e3d6d33222aaf9854ad4"
+    },
+    {
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "git_blob": "c83a6b6854ffa2e775e202473ec89e846f6f0781",
+      "bytes": 17640,
+      "sha256": "2a5fb02da83b1705ae26cf95cff59fef47d1cb7e56881dd188764a3930a1d549"
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "git_blob": "f6e022c211e3376b54ca4b1d7f6c5626a040b063",
+      "bytes": 21978,
+      "sha256": "4d4cd344e7ccfeee86fa998ca4e56779f4a93184b888ec47bf3920836e987e6d"
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "git_blob": "221a4235f9003c8930a9dfb2a9b4ec1d53833848",
+      "bytes": 12233,
+      "sha256": "d5dde11e1a5e93befaab6c9427a647d50f3cc87d8841cf75562222fa4c3ff376"
+    },
+    {
+      "path": ".github/workflows/rust-release-argument-comment-lint.yml",
+      "git_blob": "c5a71e1e6f2baa1554e027d18f7d507b70f3f4cb",
+      "bytes": 4716,
+      "sha256": "34b41b0f2847120c8b6b658a3e8d2255804f6f2792cfdd0e7262d74e332acbcd"
+    },
+    {
+      "path": ".github/workflows/rust-release-prepare.yml",
+      "git_blob": "fbdcb2e43f2bae3ce34645a6f5d1556069cd8756",
+      "bytes": 1889,
+      "sha256": "2176116b8b984e4422c3d07dffdb0b7b81114b5d0fa1fdd59af635f46c8bc5ad"
+    },
+    {
+      "path": ".github/workflows/rust-release-windows.yml",
+      "git_blob": "88a7d734d209d3744cab918e759d1505a51a1cf3",
+      "bytes": 16979,
+      "sha256": "b81d30ce91ae3ea49719709269041b7b1420366e13472e3519e0c442449a9b43"
+    },
+    {
+      "path": ".github/workflows/rust-release-zsh.yml",
+      "git_blob": "7c0eab9ee115e68be98202b845d19967fec45b93",
+      "bytes": 5651,
+      "sha256": "83831f162f8c675bea841aa4030a84986b61026aa5424daf9798d111896acc74"
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "git_blob": "2252d54e5523fc5c1150da4ceb0c351e08562190",
+      "bytes": 64085,
+      "sha256": "6fcfd1ae70f8b9f8ba410e4c7ea5a9973441bd7899e347f9f411a2e3cfebc886"
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "git_blob": "cd7c19e88eac5642d779ee76196f7ffbba287d39",
+      "bytes": 16471,
+      "sha256": "1e9a616874bbd96bd6141a21c6d017a08c4cb67f1324aaeacf9edadc47152c55"
+    },
+    {
+      "path": ".github/workflows/sdk.yml",
+      "git_blob": "520d5905b1f3b38c8483490df6d2caf1fdd4e9bb",
+      "bytes": 6850,
+      "sha256": "2ac4937a15b5589d6c075df0f521a4ea46d0727f2cce06a9a3bd25a0358369a3"
+    },
+    {
+      "path": ".github/workflows/self-hosted-desktop-availability.yml",
+      "git_blob": "54fef7f63726fd870974223b2205b73664995f24",
+      "bytes": 1686,
+      "sha256": "228d2c0cf5c87ff7ae791a6b22a93e8dfbe7849caa5d9a0c10efcb7b2cde8606"
+    },
+    {
+      "path": ".github/workflows/self-hosted-fleet-availability.yml",
+      "git_blob": "09d77076acd3a231a3b0245bc946349d7cff2188",
+      "bytes": 3346,
+      "sha256": "25de5bf36e21d196a6ea222a2a84d91cd225be53635ee5ed72bf48b8f9ddd084"
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "git_blob": "0325310f8acd1fe956a4509dc0260fc1767ddce4",
+      "bytes": 6247,
+      "sha256": "8d61412df3db638f0ac33ac4db5a49ff3f895362d856ef56c9970d4f3b04a210"
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "git_blob": "ac78c1e38415c52326ddfcbb0667035f5406781e",
+      "bytes": 9987,
+      "sha256": "0e6c06e8b99fa07f1543e6eb1c0f6c00fb416254f549d6892e70eaa91a30e10e"
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "git_blob": "301490550049309eed591f7ebc016a9329879915",
+      "bytes": 4614,
+      "sha256": "4aa3fa03f2438aebd52264f0779cf96faaf6817985994168d8b05b6142ad4805"
+    },
+    {
+      "path": ".github/workflows/trillionnium-os-attestation-handoff-check.yml",
+      "git_blob": "811964e6d542e70b7dd4cae955f80af76e4f411c",
+      "bytes": 2266,
+      "sha256": "ace90464faa80d769a93a82bee10659a5fe61e1938462c53564b383383f03bb9"
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "git_blob": "40b5ea62235b9ca86435f3874e0c137ae08eb340",
+      "bytes": 18103,
+      "sha256": "674f3e715a8b9f79a90746ef835f35ac568f071f4e45a955bf6ffb13cbd7aaef"
+    },
+    {
+      "path": ".github/workflows/yaml-consumer-qualification.yml",
+      "git_blob": "9f3b23e71830000701ac703c1c7208a9e62b276c",
+      "bytes": 4681,
+      "sha256": "509661a80e797582edc23c743fc3c5ed4fe53573c57216cc7eb3c0890e38651c"
+    }
+  ],
+  "candidate_inputs": [
+    {
+      "path": ".github/actions/setup-bazel-ci/action.yml",
+      "encoding": "utf-8",
+      "bytes": 5612,
+      "git": "ffd3ca66ab02a5d92820f78503ba3a5424c0c921",
+      "sha256": "b045593dac26daf34b66034fdfd645043a7de33d419867275f3091bbb1228a05"
+    },
+    {
+      "path": ".gitattributes",
+      "encoding": "utf-8",
+      "bytes": 667,
+      "git": "04021200e72ff015833d62ff3fbfe61733395a79",
+      "sha256": "f83660b732ed4f53ce01278017b8330e17689841c6234fb1ad84a2893f91486c"
+    },
+    {
+      "path": ".bazelrc",
+      "encoding": "utf-8",
+      "bytes": 13824,
+      "git": "a7e99cb758f821a9b3dd2cf711ea3bba1c6aaee9",
+      "sha256": "8e5380d7831effcdf7f7c2f73b83b45fcc663a06e91ef57a40e4f8023328ff50"
+    },
+    {
+      "path": ".github/workflows/bazel9-windows-output-backport.yml",
+      "encoding": "utf-8",
+      "bytes": 1992,
+      "git": "56914bf6662ed4015714da420c75d5e88a4780da",
+      "sha256": "a585b9efe73c669acfbdd5a968a440725c40084cd67c5f32b4013f577f7e5956"
+    },
+    {
+      "path": ".github/workflows/hepta-robrix-runfiles-qualification.yml",
+      "encoding": "utf-8",
+      "bytes": 5528,
+      "git": "273983f75cf821f5080ea9499eba7ef0eb41d562",
+      "sha256": "700e4dd4462865784c244ad7ac72afcb0b80fb4a57bcb46d976c6967d7a93396"
+    }
+  ],
+  "unchanged_native_helper": {
+    "path": "qualification/bazel9-output-backport-20261104/build.py",
+    "git_blob": "1439f3fe2e7a342a9fe7a0ae1ab17014552c472f",
+    "bytes": 14785,
+    "sha256": "dd5e70f9d434ca552c1654a20ad271f1c990c4bb10e3ea072f5b431d448d8e2f"
+  },
+  "shared_setup_boundary": "Windows host only, after pinned Bazelisk and MSVC environment. Existing Linux/macOS paths unchanged.",
+  "upstream_and_product_targets_unchanged": true,
+  "job_budgets_unchanged": true,
+  "source_native_qualification_before_integration": {
+    "head": "f7e1283370bd3e343df09416ae75717f2d558c75",
+    "run": 41762993935,
+    "job": 126354758118,
+    "result": "passed",
+    "proof_commit": "b3266c4f770b3d416d1b04d750816393beab2999"
+  },
+  "candidate_native_qualification": "pending",
+  "research_execution": "One existing bounded native job, no full-product rerun solely for this wiring check.",
+  "scope": "DRAFT / HOLD_NO_GO / DENY_ALL; no protected main change, deployment or Library deletion",
+  "independent_static_review": {
+    "git_blob": "e15b83cb7ce7ea306fe33514329da4e9f73c0bb4",
+    "bytes": 5698,
+    "sha256": "8853344004d91af946c9535fffa097c492f454da79509eb60de441c53f7e5c60"
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "kind": "independent-static-integration-review",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewer": "hepta_blockers",
+  "reviewed_at_utc": "2026-11-04",
+  "base_commit": "f7e1283370bd3e343df09416ae75717f2d558c75",
+  "candidate_files": [
+    {
+      "path": ".github/actions/setup-bazel-ci/action.yml",
+      "git_blob_sha": "ffd3ca66ab02a5d92820f78503ba3a5424c0c921",
+      "sha256": "b045593dac26daf34b66034fdfd645043a7de33d419867275f3091bbb1228a05",
+      "bytes": 5612
+    },
+    {
+      "path": ".gitattributes",
+      "git_blob_sha": "04021200e72ff015833d62ff3fbfe61733395a79",
+      "sha256": "f83660b732ed4f53ce01278017b8330e17689841c6234fb1ad84a2893f91486c",
+      "bytes": 667
+    },
+    {
+      "path": ".bazelrc",
+      "git_blob_sha": "a7e99cb758f821a9b3dd2cf711ea3bba1c6aaee9",
+      "sha256": "8e5380d7831effcdf7f7c2f73b83b45fcc663a06e91ef57a40e4f8023328ff50",
+      "bytes": 13824
+    },
+    {
+      "path": ".github/workflows/bazel9-windows-output-backport.yml",
+      "git_blob_sha": "56914bf6662ed4015714da420c75d5e88a4780da",
+      "sha256": "a585b9efe73c669acfbdd5a968a440725c40084cd67c5f32b4013f577f7e5956",
+      "bytes": 1992
+    },
+    {
+      "path": ".github/workflows/hepta-robrix-runfiles-qualification.yml",
+      "git_blob_sha": "273983f75cf821f5080ea9499eba7ef0eb41d562",
+      "sha256": "700e4dd4462865784c244ad7ac72afcb0b80fb4a57bcb46d976c6967d7a93396",
+      "bytes": 5528
+    }
+  ],
+  "unchanged_builder": {
+    "path": "qualification/bazel9-output-backport-20261104/build.py",
+    "git_blob_sha": "1439f3fe2e7a342a9fe7a0ae1ab17014552c472f",
+    "sha256": "dd5e70f9d434ca552c1654a20ad271f1c990c4bb10e3ea072f5b431d448d8e2f",
+    "bytes": 14785
+  },
+  "workflow_read_scope": {
+    "count": 87,
+    "bytes": 634363,
+    "inventory_sha256": "83a7566f881a2dffccca16d6fd558f3c5e5628d651dece7ef6fd2f77ad34b79b",
+    "method": "Read every .yml/.yaml file in the exact base commit's .github/workflows directory; inspect Windows/Bazel jobs and shared-action calls. This is a source inspection, not execution or an assertion about future workflow changes."
+  },
+  "findings": [
+    {
+      "id": "shared-consumers",
+      "status": "no-confirmed-blocker",
+      "details": "At this exact commit the main Windows Bazel test, shard, Clippy and release-compile jobs use prepare-bazel-ci, which calls setup-bazel-ci. The rust-ci-full argument-comment Bazel job calls setup-bazel-ci directly. The Robrix and isolated research Windows jobs use prepare-bazel-ci. The appended Windows step therefore precedes these current consumers."
+    },
+    {
+      "id": "arm-scope",
+      "status": "explicitly-limited",
+      "details": "The reviewed Windows ARM jobs in rust-ci-full use Cargo lint/nextest paths; the Windows V8 source jobs use the source/GN path. They do not invoke this Windows Bazel setup. build.py remains strictly Windows x64 and would fail closed on an unsupported host; no ARM qualification is claimed."
+    },
+    {
+      "id": "initial-install-base",
+      "status": "no-confirmed-blocker",
+      "details": "The helper's product bazel info install_base call does not select ci-windows. The override_repository is scoped to ci-windows (and its ci-windows-cross inclusion), not the general Windows platform section. Therefore this initial install-base lookup does not select the nonexistent override destination. No separate local execution was performed in this review."
+    },
+    {
+      "id": "single-prepare",
+      "status": "confirmed-source-delta",
+      "details": "The research workflow removes the explicit prepare call now covered by setup. It invokes the same helper only once to prepare; the later invocation is finalize. The helper rejects an already-existing work/destination."
+    },
+    {
+      "id": "original-gates",
+      "status": "preserved-in-reviewed-delta",
+      "details": "build.py is byte-identical to blob 1439f3fe2e7a342a9fe7a0ae1ab17014552c472f. The strict 20 original-plus-upstream GTest case identities remain required. The original two-case Robrix target and scoped Clippy commands and 30-minute job timeout remain. The candidate .bazelrc changes only the explanatory two-line comment."
+    },
+    {
+      "id": "finalization",
+      "status": "fail-closed-in-source",
+      "details": "Research and Robrix invoke finalize with always() and !cancelled(). A preparation/native/receipt failure cannot become green: finalize requires prepared status, unchanged installed/override inventories, the same product commit, passed complete two-case Robrix receipt, unchanged source inputs and clean tracked checkout. Both retain evidence on a non-cancelled failure."
+    },
+    {
+      "id": "line-endings",
+      "status": "bounded-change",
+      "details": "The new .gitattributes rule fixes top-level helper inputs to LF, including the exact upstream patch. Existing qualification source hashes continue to be checked."
+    }
+  ],
+  "limitations": {
+    "new_native_tests_run_by_reviewer": 0,
+    "reader_controls_run_by_reviewer": 0,
+    "all_consumers_runtime_qualified": false,
+    "ARM_native_qualified": false,
+    "future_workflow_coverage_proven": false,
+    "reviewed_native_success": "The parent reported f7's actual 20 GTest + original Robrix2 + Clippy success. This review does not substitute that result for the new shared-entry execution.",
+    "recommended_next": "Run the existing isolated research workflow through the shared setup entry and retain its actual result before adopting the shared change more broadly."
+  },
+  "conclusion": "No confirmed blocking defect found in the reviewed five-file integration proposal. New shared-entry native qualification remains pending."
+}

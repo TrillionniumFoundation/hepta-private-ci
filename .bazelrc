@@ -164,8 +164,8 @@ build:argument-comment-lint --@rules_rust//rust/toolchain/channel=nightly
 
 # Rearrange caches on Windows so they're on the same volume as the checkout.
 common:ci-windows --config=ci-bazel
-# Exact Bazel9.0.0 Windows test-wrapper backport, prepared and verified by
-# qualification/bazel9-output-backport-20261104/build.py in the bounded native gate.
+# Exact Bazel9.0.0 Windows test-wrapper backport, built and qualified by
+# .github/actions/setup-bazel-ci before any Windows Bazel consumer runs.
 common:ci-windows --override_repository=bazel_tools=%workspace%/bazel-windows-test-tools
 common:ci-windows --build_metadata=TAG_os=windows
 common:ci-windows --repo_contents_cache=D:/a/.cache/bazel-repo-contents-cache
