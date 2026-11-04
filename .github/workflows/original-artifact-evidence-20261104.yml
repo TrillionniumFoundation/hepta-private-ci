@@ -19,26 +19,10 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - key: memory296-windows
-            source: 296e88630b132f05b623f4391c1bbbdeaf79449c
-            script: verify_memory_current.py
-            full_source: false
-          - key: memory296-bazel
-            source: 296e88630b132f05b623f4391c1bbbdeaf79449c
-            script: verify_memory_current.py
-            full_source: false
-          - key: memory296-generation
-            source: 296e88630b132f05b623f4391c1bbbdeaf79449c
-            script: verify_memory_current.py
-            full_source: false
-          - key: memory296-macos
-            source: 296e88630b132f05b623f4391c1bbbdeaf79449c
-            script: verify_memory_current.py
-            full_source: false
-          - key: memory296-linux
-            source: 296e88630b132f05b623f4391c1bbbdeaf79449c
-            script: verify_memory_current.py
-            full_source: false
+          - key: union0cf-metadata
+            source: 0cf81d65646b8907e42e781ea35a28437b5b0054
+            script: verify_union_metadata.py
+            full_source: true
     env:
       GIT_CONFIG_COUNT: 1
       GIT_CONFIG_KEY_0: core.autocrlf
@@ -101,6 +85,13 @@ jobs:
             /qualification/keyring-sync-provider/build_pinned_client.py
       - name: Check verifier syntax
         run: python3 -m py_compile harness/qualification/original-artifact-evidence-20261104/verify.py harness/qualification/original-artifact-evidence-20261104/verify_memory_current.py harness/qualification/original-artifact-evidence-20261104/verify_original_followups.py harness/qualification/original-artifact-evidence-20261104/test_original_followup_reader.py harness/qualification/original-artifact-evidence-20261104/verify_schema_original.py harness/qualification/original-artifact-evidence-20261104/test_schema_original_reader.py
+      - name: Check union metadata reader syntax and optimized-Python refusal
+        run: |
+          python3 -m py_compile harness/qualification/original-artifact-evidence-20261104/verify_union_metadata.py
+          if python3 -O harness/qualification/original-artifact-evidence-20261104/verify_union_metadata.py --help; then
+            echo 'optimized union metadata reader unexpectedly accepted'
+            exit 1
+          fi
       - name: Exercise mixed-output and command-binding reader controls
         run: python3 -m unittest discover -s harness/qualification/original-artifact-evidence-20261104 -p test_reader_boundaries.py -v
       - name: Exercise focused native inventory and JUnit reader controls
