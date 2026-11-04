@@ -1,0 +1,158 @@
+{
+  "schema": 1,
+  "source_commit": "ceb3879e87918c33b723cb6315c1539b2083de75",
+  "original_run": 41766863230,
+  "original_job": 126367146419,
+  "reader_controls": {
+    "executed": 24,
+    "passed": 24,
+    "failed": 0
+  },
+  "result": {
+    "source_commit": "ceb3879e87918c33b723cb6315c1539b2083de75",
+    "base_commit": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+    "status": "generated-needs-adoption",
+    "commands": [
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 0,
+        "seconds": 0.14712181199999463,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "committed-lock-first",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 23.009485975000004,
+        "log_sha256": "db2cfe76c1ab9867b574c0c11e0f7964183c8a4aa675ba6f88687e9bbc33ec7c"
+      },
+      {
+        "name": "original-formatter",
+        "argv": [
+          "just",
+          "fmt",
+          "--base",
+          "230d2d69a8c68ae6f8c502118fd9a8ee33027c37"
+        ],
+        "exit_code": 0,
+        "seconds": 0.5845697099999967,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "original-formatter-check",
+        "argv": [
+          "just",
+          "fmt",
+          "--check",
+          "--base",
+          "230d2d69a8c68ae6f8c502118fd9a8ee33027c37"
+        ],
+        "exit_code": 0,
+        "seconds": 0.5858338310000022,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "actual-cargo-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "seconds": 17.389532670999998,
+        "log_sha256": "7bc0ad3b5eb959b892749fcf199a9725741ab7c80fb85f32952bef851d8b21a3"
+      },
+      {
+        "name": "actual-locked-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--locked",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "seconds": 0.8718207019999937,
+        "log_sha256": "4c170f487c59c5ec88c0101ad37d621f3bb71e0d245d0b4bc985c3d4060ccaa1"
+      },
+      {
+        "name": "original-lock-update",
+        "argv": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "seconds": 32.321906358999996,
+        "log_sha256": "cba0ec3bcb94319eaac33195934036353a7237e44412c8b6fb36285dcdd030c3"
+      },
+      {
+        "name": "original-lock-check",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 3.6133574749999866,
+        "log_sha256": "b4ca6879e490541de94fa75f67846dc763a4c5bd24313e0a89cc3f216d32a82d"
+      }
+    ],
+    "scope": "Real lock generation and formatting; native product qualification is separate.",
+    "cargo_delta": {
+      "packages": 1517,
+      "added_dependencies": {
+        "codex-hepta-memory": [
+          "codex-utils-path"
+        ],
+        "codex-state": [
+          "codex-utils-path"
+        ],
+        "codex-utils-path": [
+          "winapi-util",
+          "windows-sys 0.52.0"
+        ]
+      },
+      "versions_sources_checksums_unchanged": true
+    },
+    "changed_paths": [
+      "codex-rs/state/src/sqlite_recovery_windows_tests.rs"
+    ],
+    "committed_cargo_equals_generated": true,
+    "committed_bazel_equals_generated": true,
+    "source_unchanged": false
+  },
+  "generated": {
+    "path": "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+    "bytes": 11298,
+    "sha256": "afbabdb771b27eb40c04a68585400942b140091798bb1850f1b7b23429e6e327",
+    "chunks": 1,
+    "blob": "2fe7f4c3dde1089373aa8f45a362d0b3357ff401"
+  },
+  "comparison": "All other bytes are unchanged after removing whitespace and optional call trailing commas; every original assertion line is identical.",
+  "artifact": {
+    "id": 13292818287,
+    "bytes": 4297277,
+    "sha256": "b705f05f3ad793fd57bf071cde5f39700a19890944575a9f1dfc010f75a1de46"
+  },
+  "log": {
+    "path": "qualification/windows-memory-recovery-current/generated-ceb/original-generation.log.gz",
+    "encoded_bytes": 150713,
+    "encoded_sha256": "1f3d0bfbb5b52df4da0790ba1315ad3c0f040b98136c2c7388df2edb506e0299",
+    "decoded_utf8_bytes": 150680,
+    "decoded_sha256": "9607a3453cc0f2c480ee63be7c2615924b2897315069a35036213e707fca685a"
+  },
+  "qualification": "generated-needs-adoption; native and original Bazel jobs were skipped, not passed. The successor must pass committed-lock-qualified before running those original jobs."
+}

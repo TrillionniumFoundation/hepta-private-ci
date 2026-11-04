@@ -241,11 +241,13 @@ async fn windows_native_and_verbatim_homes_bind_without_admitting_another_direct
     let read_source_sidecars = || -> std::io::Result<Vec<Option<Vec<u8>>>> {
         ["-wal", "-shm", "-journal"]
             .into_iter()
-            .map(|suffix| match std::fs::read(sqlite_sidecar_path(&fixture.database, suffix)) {
-                Ok(bytes) => Ok(Some(bytes)),
-                Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
-                Err(error) => Err(error),
-            })
+            .map(
+                |suffix| match std::fs::read(sqlite_sidecar_path(&fixture.database, suffix)) {
+                    Ok(bytes) => Ok(Some(bytes)),
+                    Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
+                    Err(error) => Err(error),
+                },
+            )
             .collect()
     };
     let original_sidecars = read_source_sidecars()?;
