@@ -469,6 +469,15 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let response_mock = responses::mount_sse_once(&server, response).await;
 
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
+    // Darwin's long per-user temporary root can exceed the real UDS limit.
+    // Keep a short private TempDir alive through the real host's shutdown.
+    #[cfg(target_os = "macos")]
+    let short_root = tempfile::Builder::new()
+        .prefix("worker-")
+        .tempdir_in("/tmp")?;
+    #[cfg(target_os = "macos")]
+    let root = short_root.path().to_path_buf();
+    #[cfg(not(target_os = "macos"))]
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
     // Resolve real binaries through Cargo/Bazel's declared test inputs. A test
@@ -692,6 +701,8 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let _ = std::fs::remove_file(&journal);
     issuer.await??;
     host.shutdown().await;
+    #[cfg(target_os = "macos")]
+    drop(short_root);
     Ok(())
 }
 

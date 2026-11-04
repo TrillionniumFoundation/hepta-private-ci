@@ -117,6 +117,17 @@ pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
     Ok(directory)
 }
 
+/// Creates one new retained private-state directory with its private descriptor.
+///
+/// An occupied leaf returns `AlreadyExists`; existing state is never adopted,
+/// re-owned, or re-permissioned. Acquisition rejects reparse traversal before
+/// creating the leaf and validates the exact returned handle.
+pub fn create_new_private_state_directory(root: &Path) -> io::Result<File> {
+    let directory = directory::create_new(root)?;
+    validate_handle(&directory, HandleKind::Directory)?;
+    Ok(directory)
+}
+
 /// Opens one normal-name child relative to the retained private directory.
 pub fn open_private_state_child(
     directory: &File,

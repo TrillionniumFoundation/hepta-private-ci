@@ -14,6 +14,8 @@ pub use private_state_windows::canonical_existing_path_without_reparse;
 #[cfg(windows)]
 pub use private_state_windows::create_new_private_state_child;
 #[cfg(windows)]
+pub use private_state_windows::create_new_private_state_directory;
+#[cfg(windows)]
 pub use private_state_windows::open_existing_private_state_directory;
 #[cfg(windows)]
 pub use private_state_windows::open_existing_private_state_directory_for_sync;

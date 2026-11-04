@@ -425,7 +425,9 @@ async fn model_change_appends_model_instructions_developer_message() -> Result<(
     assert_eq!(requests.len(), 2, "expected two model requests");
 
     let second_request = requests.last().expect("expected second request");
-    assert!(second_request.has_content_kinds(&["model_switch.instructions"]));
+    second_request
+        .assert_durable_content_kinds(&test.codex, &["model_switch.instructions"])
+        .await;
     let developer_texts = second_request.message_input_texts("developer");
     let model_switch_text = developer_texts
         .iter()
@@ -992,7 +994,9 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
     assert_eq!(requests.len(), 2, "expected two model requests");
 
     let first_request = requests.first().expect("expected first request");
-    assert!(first_request.has_content_kinds(&["user.image", "user.audio", "user.text"]));
+    first_request
+        .assert_durable_content_kinds(&test.codex, &["user.image", "user.audio", "user.text"])
+        .await;
     assert!(
         !first_request.message_input_image_urls("user").is_empty(),
         "first request should include the uploaded image"
@@ -1003,11 +1007,15 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
     );
 
     let second_request = requests.last().expect("expected second request");
-    assert!(second_request.has_content_kinds(&[
-        "images.unsupported",
-        "audio.unsupported",
-        "user.text",
-    ]));
+    assert_eq!(second_request.body_json()["model"], text_model_slug);
+    second_request
+        .assert_projected_durable_content_kinds(
+            &test.codex,
+            &["images.unsupported", "audio.unsupported", "user.text"],
+            &[InputModality::Text],
+            /*use_responses_lite*/ false,
+        )
+        .await;
     assert!(
         second_request.message_input_image_urls("user").is_empty(),
         "second request should strip unsupported image content"

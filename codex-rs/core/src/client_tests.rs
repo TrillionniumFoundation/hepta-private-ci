@@ -56,8 +56,6 @@ use codex_protocol::error::CodexErr;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::models::BaseInstructions;
 use codex_protocol::models::ContentItem;
-use codex_protocol::models::ContentItemKind;
-use codex_protocol::models::InternalChatMessageMetadataPassthrough;
 use codex_protocol::models::ResponseItem;
 use codex_protocol::openai_models::ModelInfo;
 use codex_protocol::openai_models::ModelsResponse;
@@ -137,7 +135,7 @@ fn test_model_client_with_thread_id(
 
 #[test]
 fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
-    let client = test_model_client(SessionSource::Exec);
+    let mut client = test_model_client(SessionSource::Exec);
     let chatgpt_provider =
         ModelProviderInfo::create_openai_provider(Some(CHATGPT_CODEX_BASE_URL.to_string()))
             .to_api_provider(Some(AuthMode::Chatgpt))
@@ -154,10 +152,14 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
             text: "hello".to_string(),
         }],
         phase: None,
-        internal_chat_message_metadata_passthrough: Some(InternalChatMessageMetadataPassthrough {
-            content_item_kinds: Some(vec![ContentItemKind("user.text".to_string())]),
-            ..Default::default()
-        }),
+        internal_chat_message_metadata_passthrough: Some(
+            serde_json::from_value(serde_json::json!({
+                "content_item_kinds": ["user.text"],
+                "turn_id": "metadata-turn",
+                "create_time": 1.0
+            }))
+            .expect("valid annotated input fixture"),
+        ),
     };
 
     let mut chatgpt_item = item_with_metadata();
@@ -226,6 +228,89 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
             .get("internal_chat_message_metadata_passthrough")
             .is_none()
     );
+
+    // Exercise complete request serialization for both formats and feature states.
+    // No first-party network request is made.
+    let prompt = Prompt {
+        input: vec![item_with_metadata()],
+        base_instructions: codex_protocol::models::BaseInstructions {
+            text: "test instructions".to_string(),
+            ..Default::default()
+        },
+        ..Default::default()
+    };
+    let original_input = serde_json::to_value(&prompt.input).expect("serialize original prompt");
+    let metadata = test_responses_metadata_for_client(
+        &client,
+        Some("metadata-turn"),
+        format!("{}:0", client.state.thread_id),
+        None,
+        TestCodexResponsesRequestKind::Turn,
+    );
+    for content_item_kinds_enabled in [true, false] {
+        Arc::get_mut(&mut client.state)
+            .expect("test owns the model client")
+            .content_item_kinds_enabled = content_item_kinds_enabled;
+        for use_responses_lite in [true, false] {
+            let mut model_info = test_model_info();
+            model_info.use_responses_lite = use_responses_lite;
+            for (provider, keeps_metadata) in [
+                (&chatgpt_provider, false),
+                (&openai_provider, true),
+                (&custom_name_provider, true),
+                (&nonstandard_provider, false),
+            ] {
+                let mut request = client
+                    .build_responses_request(
+                        &prompt,
+                        &model_info,
+                        None,
+                        codex_protocol::config_types::ReasoningSummary::None,
+                        None,
+                        &metadata,
+                        provider,
+                    )
+                    .expect("build actual provider request");
+                client.prepare_response_items_for_request(&mut request.input, provider);
+                let wire = serde_json::to_value(request).expect("serialize actual request");
+                let input = wire["input"].as_array().expect("actual request input");
+                let user_item = input.last().expect("user message remains in request");
+                assert_eq!(
+                    user_item
+                        .get("internal_chat_message_metadata_passthrough")
+                        .is_some(),
+                    keeps_metadata,
+                    "resolved endpoint {}",
+                    provider.base_url
+                );
+                let item_metadata = &user_item["internal_chat_message_metadata_passthrough"];
+                assert_eq!(
+                    item_metadata.get("content_item_kinds").is_some(),
+                    keeps_metadata && content_item_kinds_enabled
+                );
+                if keeps_metadata {
+                    assert_eq!(item_metadata["turn_id"], "metadata-turn");
+                    assert_eq!(item_metadata["create_time"], 1.0);
+                }
+                if use_responses_lite {
+                    assert_eq!(input[0]["type"], "additional_tools");
+                    assert_eq!(input[1]["content"][0]["text"], "test instructions");
+                    let kinds = input[1]
+                        .pointer("/internal_chat_message_metadata_passthrough/content_item_kinds");
+                    if keeps_metadata && content_item_kinds_enabled {
+                        assert_eq!(kinds, Some(&serde_json::json!(["model.base_instructions"])));
+                    } else {
+                        assert!(kinds.is_none());
+                    }
+                }
+                assert_eq!(
+                    serde_json::to_value(&prompt.input).expect("serialize retained prompt"),
+                    original_input,
+                    "provider serialization must not alter local annotations"
+                );
+            }
+        }
+    }
 }
 
 struct TransportSelectionEphemeralContributor {
@@ -367,6 +452,10 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     changed_review.auto_review_enabled = Some(true);
     let mut changed_request_kind = volatile_metadata.clone();
     changed_request_kind.request_kind = Some(CodexResponsesRequestKind::Memory);
+    let mut changed_extra = volatile_metadata.clone();
+    changed_extra
+        .extra
+        .insert("fiber_run_id".to_string(), "another-run".to_string());
     for (field, changed_metadata) in [
         ("sandbox", changed_sandbox),
         ("parent thread", changed_parent),
@@ -374,6 +463,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         ("thread source", changed_source),
         ("review policy", changed_review),
         ("non-turn request kind", changed_request_kind),
+        ("client metadata", changed_extra),
     ] {
         assert_ne!(
             identity_a,

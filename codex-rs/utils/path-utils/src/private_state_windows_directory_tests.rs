@@ -146,3 +146,57 @@ fn rejects_ancestor_substitution_at_retained_open() -> io::Result<()> {
     assert_eq!((denied, redirected), (true, false));
     Ok(())
 }
+
+#[test]
+fn create_new_directory_is_private_and_keeps_its_pin() -> io::Result<()> {
+    let temporary = tempfile::tempdir()?;
+    let root = temporary.path().join("new-registry");
+    let directory = super::super::create_new_private_state_directory(&root)?;
+    drop(super::super::open_existing_private_state_directory(&root)?);
+    let moved = temporary.path().join("moved-registry");
+    assert!(fs::rename(&root, &moved).is_err());
+    drop(directory);
+    fs::rename(&root, &moved)?;
+    drop(super::super::open_existing_private_state_directory(&moved)?);
+    Ok(())
+}
+
+#[test]
+fn create_new_directory_rejects_existing_directory_and_file() -> io::Result<()> {
+    let temporary = tempfile::tempdir()?;
+    let root = temporary.path().join("existing-registry");
+    drop(super::super::create_new_private_state_directory(&root)?);
+    fs::write(root.join("marker"), b"original directory")?;
+    let error = super::super::create_new_private_state_directory(&root)
+        .expect_err("an occupied directory must not be adopted");
+    assert_eq!(error.kind(), io::ErrorKind::AlreadyExists);
+    assert_eq!(fs::read(root.join("marker"))?, b"original directory");
+
+    let file = temporary.path().join("existing-file");
+    fs::write(&file, b"original file")?;
+    let error = super::super::create_new_private_state_directory(&file)
+        .expect_err("an occupied file must not be replaced");
+    assert_eq!(error.kind(), io::ErrorKind::AlreadyExists);
+    assert_eq!(fs::read(&file)?, b"original file");
+    Ok(())
+}
+
+#[test]
+fn create_new_directory_rejects_a_leaf_occupied_at_acquisition() -> io::Result<()> {
+    let temporary = tempfile::tempdir()?;
+    let root = temporary.path().join("raced-registry");
+    let occupied = root.clone();
+    let hook = HookGuard::install(move || {
+        fs::create_dir(&occupied)?;
+        fs::write(occupied.join("marker"), b"occupied before atomic creation")
+    });
+    let result = super::super::create_new_private_state_directory(&root);
+    drop(hook);
+    let error = result.expect_err("create-new must not reopen a competing directory");
+    assert_eq!(error.kind(), io::ErrorKind::AlreadyExists);
+    assert_eq!(
+        fs::read(root.join("marker"))?,
+        b"occupied before atomic creation"
+    );
+    Ok(())
+}

@@ -81,14 +81,21 @@ async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Re
     .await;
 
     let request = request.single_request();
-    assert!(request.has_content_kinds(&["additional_content.automation_info"]));
-    assert!(request.has_content_kinds(&["additional_content.browser_info"]));
-    assert!(request.has_content_kinds(&["user.text"]));
+    let local_input = request.durable_input(&test.codex).await;
+    request
+        .assert_durable_content_kinds(&test.codex, &["additional_content.automation_info"])
+        .await;
+    request
+        .assert_durable_content_kinds(&test.codex, &["additional_content.browser_info"])
+        .await;
+    request
+        .assert_durable_content_kinds(&test.codex, &["user.text"])
+        .await;
     insta::assert_snapshot!(
         "additional_context_simple_input",
-        context_snapshot::format_labeled_requests_snapshot(
+        context_snapshot::format_labeled_items_snapshot(
             "additional context is inserted before the user turn input.",
-            &[("Request", &request)],
+            &[("Request", &local_input)],
             &ContextSnapshotOptions::default()
                 .strip_capability_instructions()
                 .render_mode(ContextSnapshotRenderMode::KindWithTextPrefix { max_chars: 160 }),

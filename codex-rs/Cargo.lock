@@ -3310,13 +3310,13 @@ name = "codex-git-utils"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "base64 0.22.1",
  "chrono",
  "codex-file-system",
  "codex-protocol",
  "codex-utils-absolute-path",
  "codex-utils-path-uri",
  "codex-utils-pty",
+ "ctor 0.6.3",
  "futures",
  "gix",
  "once_cell",
@@ -3656,6 +3656,7 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-paths",
+ "codex-utils-path",
  "ed25519-dalek",
  "pretty_assertions",
  "serde",

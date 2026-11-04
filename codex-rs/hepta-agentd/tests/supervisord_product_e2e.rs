@@ -71,6 +71,12 @@ fn supervisord_child_entry() -> Result<()> {
 #[tokio::test(flavor = "multi_thread", worker_threads = 8)]
 async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes()
 -> Result<()> {
+    // Keep the real Darwin control sockets within the existing kernel limit.
+    #[cfg(target_os = "macos")]
+    let temp = tempfile::Builder::new()
+        .prefix("agentd-")
+        .tempdir_in("/tmp")?;
+    #[cfg(not(target_os = "macos"))]
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;

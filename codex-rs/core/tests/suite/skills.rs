@@ -148,7 +148,9 @@ async fn user_turn_includes_skill_instructions() -> Result<()> {
         }),
         "expected skill instructions in user input, got {user_texts:?}"
     );
-    assert!(request.has_content_kinds(&["skills.selected_skill_instructions"]));
+    request
+        .assert_durable_content_kinds(&test.codex, &["skills.selected_skill_instructions"])
+        .await;
 
     Ok(())
 }

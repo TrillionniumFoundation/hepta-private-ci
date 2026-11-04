@@ -51,6 +51,7 @@ async fn status_keys_coalesce_symlink_aliases_of_the_same_worktree() {
 async fn concurrent_status_requests_share_one_repository_scan() {
     let repository = TempDir::new().expect("create repository");
     let key = GitStatusKey {
+        runtime_id: tokio::runtime::Handle::current().id(),
         git: PathBuf::from("git"),
         repo_root: repository.path().to_path_buf(),
     };
@@ -102,6 +103,7 @@ async fn status_requests_do_not_share_different_repositories() {
 async fn completed_status_requests_start_fresh_scans_and_prune_expired_entries() {
     let first_repository = TempDir::new().expect("create first repository");
     let first_key = GitStatusKey {
+        runtime_id: tokio::runtime::Handle::current().id(),
         git: PathBuf::from("git"),
         repo_root: first_repository.path().to_path_buf(),
     };
@@ -133,6 +135,7 @@ async fn completed_status_requests_start_fresh_scans_and_prune_expired_entries()
     assert_eq!(
         share_git_status_run(
             GitStatusKey {
+                runtime_id: tokio::runtime::Handle::current().id(),
                 git: PathBuf::from("git"),
                 repo_root: second_repository.path().to_path_buf(),
             },
@@ -157,6 +160,7 @@ async fn completed_status_requests_start_fresh_scans_and_prune_expired_entries()
 async fn completed_status_requests_are_not_reused_while_a_consumer_retains_them() {
     let repository = TempDir::new().expect("create repository");
     let key = GitStatusKey {
+        runtime_id: tokio::runtime::Handle::current().id(),
         git: PathBuf::from("git"),
         repo_root: repository.path().to_path_buf(),
     };
@@ -202,6 +206,7 @@ async fn completed_status_requests_are_not_reused_while_a_consumer_retains_them(
 async fn canceling_one_consumer_preserves_the_shared_status_scan() {
     let repository = TempDir::new().expect("create repository");
     let key = GitStatusKey {
+        runtime_id: tokio::runtime::Handle::current().id(),
         git: PathBuf::from("git"),
         repo_root: repository.path().to_path_buf(),
     };
@@ -257,6 +262,7 @@ async fn canceling_one_consumer_preserves_the_shared_status_scan() {
 async fn canceling_the_last_consumer_allows_a_fresh_status_scan() {
     let repository = TempDir::new().expect("create repository");
     let key = GitStatusKey {
+        runtime_id: tokio::runtime::Handle::current().id(),
         git: PathBuf::from("git"),
         repo_root: repository.path().to_path_buf(),
     };
@@ -299,4 +305,82 @@ async fn canceling_the_last_consumer_allows_a_fresh_status_scan() {
             .and_then(WeakShared::upgrade)
             .is_none()
     );
+}
+
+#[test]
+fn status_requests_do_not_share_pending_scans_between_runtimes() {
+    let repository = TempDir::new().expect("create repository");
+    let first_runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .expect("create first runtime");
+    let second_runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .expect("create second runtime");
+    let first_key = first_runtime.block_on(git_status_key(PathBuf::from("git"), repository.path()));
+    let second_key =
+        second_runtime.block_on(git_status_key(PathBuf::from("git"), repository.path()));
+    let scan_count = Arc::new(AtomicUsize::new(0));
+    let first_scan_count = Arc::clone(&scan_count);
+    let mut first_scan = Box::pin(share_git_status_run(first_key, move || async move {
+        first_scan_count.fetch_add(1, Ordering::Relaxed);
+        tokio::time::sleep(Duration::from_secs(60)).await;
+        Some(true)
+    }));
+    first_runtime.block_on(async {
+        assert!(futures::poll!(first_scan.as_mut()).is_pending());
+    });
+
+    let second_scan_count = Arc::clone(&scan_count);
+    let mut second_scan = Box::pin(share_git_status_run(second_key, move || async move {
+        second_scan_count.fetch_add(1, Ordering::Relaxed);
+        Some(false)
+    }));
+    second_runtime.block_on(async {
+        assert_eq!(
+            futures::poll!(second_scan.as_mut()),
+            std::task::Poll::Ready(Some(false)),
+        );
+    });
+
+    assert_eq!(scan_count.load(Ordering::Relaxed), 2);
+}
+
+#[test]
+fn status_requests_do_not_reuse_a_shutdown_runtime_scan() {
+    let repository = TempDir::new().expect("create repository");
+    let first_runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .expect("create first runtime");
+    let second_runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()
+        .expect("create second runtime");
+    let first_key = first_runtime.block_on(git_status_key(PathBuf::from("git"), repository.path()));
+    let second_key =
+        second_runtime.block_on(git_status_key(PathBuf::from("git"), repository.path()));
+    let scan_count = Arc::new(AtomicUsize::new(0));
+    let first_scan_count = Arc::clone(&scan_count);
+    let mut first_scan = Box::pin(share_git_status_run(first_key, move || async move {
+        first_scan_count.fetch_add(1, Ordering::Relaxed);
+        tokio::time::sleep(Duration::from_secs(60)).await;
+        Some(true)
+    }));
+    first_runtime.block_on(async {
+        assert!(futures::poll!(first_scan.as_mut()).is_pending());
+    });
+    drop(first_runtime);
+
+    let second_scan_count = Arc::clone(&scan_count);
+    assert_eq!(
+        second_runtime.block_on(share_git_status_run(second_key, move || async move {
+            second_scan_count.fetch_add(1, Ordering::Relaxed);
+            Some(false)
+        })),
+        Some(false),
+    );
+    assert_eq!(scan_count.load(Ordering::Relaxed), 2);
+    drop(first_scan);
 }

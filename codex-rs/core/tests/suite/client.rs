@@ -237,7 +237,10 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
     let first_input = first["input"].as_array().expect("first input");
     let second_input = second["input"].as_array().expect("second input");
     assert_eq!(&second_input[..first_input.len()], first_input.as_slice());
-    for item in first_input {
+    let first_input = requests[0].durable_input(&test.codex).await;
+    let second_input = requests[1].durable_input(&test.codex).await;
+    assert_eq!(&second_input[..first_input.len()], first_input.as_slice());
+    for item in &first_input {
         assert_eq!(
             item["internal_chat_message_metadata_passthrough"]["turn_id"].as_str(),
             Some(first_turn_id)
@@ -385,7 +388,9 @@ async fn sends_audio_urls_to_responses() {
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.audio"]));
+    request
+        .assert_durable_content_kinds(&codex, &["user.audio"])
+        .await;
     let user_message = request
         .input()
         .into_iter()
@@ -430,7 +435,9 @@ async fn sends_local_audio_to_responses() -> anyhow::Result<()> {
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.text", "user.audio", "user.text"]));
+    request
+        .assert_durable_content_kinds(&codex, &["user.text", "user.audio", "user.text"])
+        .await;
     let user_message = request
         .input()
         .into_iter()
