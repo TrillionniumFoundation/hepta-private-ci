@@ -34,7 +34,9 @@ def inventory(root):
             result[name] = {"kind": "symlink", "target": os.readlink(path)}
         elif path.is_file():
             result[name] = {"kind": "file", **digest(path)}
-        elif not path.is_dir():
+        elif path.is_dir():
+            result[name] = {"kind": "directory"}
+        else:
             raise RuntimeError("unsupported embedded-tools entry: " + name)
     return result
 
