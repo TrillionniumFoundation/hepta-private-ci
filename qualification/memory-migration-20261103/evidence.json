@@ -1,0 +1,27 @@
+{
+  "base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+  "source_file": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+  "before_sha256": "a4199940540f6deca0d1765e87596a23c302f78894e6402f854753b8af40a4d9",
+  "after_sha256": "abb813f058c24c4b36beefc60f60c507d8896368e22553787de3eed6be48315e",
+  "only_change": "Add the already compiled migration 15 to the existing exact ledger assertion. No assertion removed; all preservation and revocation checks retained.",
+  "existing_migration": {
+    "path": "codex-rs/hepta-memory/migrations/0015_shared_experience_use.sql",
+    "sha256": "315941f36c22815c3fd8874783e90cc7d0e104ff988b973462353e53e22bb59b"
+  },
+  "original_job": 126171877870,
+  "original_run": 41701057334,
+  "original_result": {
+    "passed": 271,
+    "failed": 1,
+    "ignored": 7,
+    "filtered": 0
+  },
+  "original_log": {
+    "file": "original-linux-job.log.gz",
+    "decoded_bytes": 2913215,
+    "decoded_sha256": "426331a07d55f574733a1677349f310d35d9a61b2c461bb4ea513bff64b98e2c",
+    "gzip_bytes": 502052,
+    "gzip_sha256": "4580a826493bba98b7b25f889b5831b408bd3548f1d0ccc160a443b9051e3dd7"
+  },
+  "hosted_qualification": "pending"
+}
