@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Behavioral checks for V8 host discovery and fail-closed CI environment writes."""
 
+import json
 import os
 import subprocess
 import sys
@@ -103,23 +104,29 @@ class V8EnvironmentTests(unittest.TestCase):
         self.assertEqual(self.output.read_text(), "EXISTING=preserved\n")
 
     def test_local_run_preserves_command_profile_flags_and_exit_code(self) -> None:
-        command = [
-            "cargo",
-            "build",
-            "--locked",
-            "--offline",
-            "-p",
-            "codex-code-mode-host",
-        ]
+        child_record = self.output.with_name("child.json")
+        child = (
+            "import json, os, pathlib, sys; "
+            "pathlib.Path(sys.argv[1]).write_text(json.dumps({"
+            "'cwd': os.getcwd(), 'argv': sys.argv[1:], "
+            "'environment': {name: os.environ.get(name) for name in "
+            "['CARGO_BUILD_JOBS', 'RUSTY_V8_ARCHIVE', 'RUSTY_V8_SRC_BINDING_PATH']}"
+            "})); raise SystemExit(17)"
+        )
+        arguments = [str(child_record), "argument with spaces", "literal=value"]
+        command = [sys.executable, "-I", "-B", "-c", child, *arguments]
         with mock.patch.dict(os.environ, {"CARGO_BUILD_JOBS": "2"}):
-            expected_environment = dict(os.environ)
-            expected_environment.update(self.resolve.return_value)
-            with mock.patch.object(
-                hepta_ci_v8.subprocess, "call", return_value=17
-            ) as run:
-                self.assertEqual(hepta_ci_v8.run_with_v8(ROOT, command), 17)
-        run.assert_called_once_with(
-            command, cwd=ROOT / "codex-rs", env=expected_environment
+            self.assertEqual(hepta_ci_v8.run_with_v8(ROOT, command), 17)
+        self.assertEqual(
+            json.loads(child_record.read_text()),
+            {
+                "cwd": str(ROOT / "codex-rs"),
+                "argv": arguments,
+                "environment": {
+                    "CARGO_BUILD_JOBS": "2",
+                    **self.resolve.return_value,
+                },
+            },
         )
         self.assertEqual(self.output.read_text(), "EXISTING=preserved\n")
 

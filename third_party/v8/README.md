@@ -133,7 +133,7 @@ CODEX_REPO_ROOT="$PWD" python3 scripts/hepta_ci_v8.py --run \
 ```
 
 The launcher preserves the command, its arguments, inherited Cargo profile
-settings, output streams, and exit code. It only obtains the host-specific
+settings, output streams, and normal-exit status. It only obtains the host-specific
 archive/binding pair using the existing resolver and supplies its two environment
 variables. It does not prepare other test helper binaries or change test
 assertions, retries, or deadlines. A failed resolver never starts the command.
