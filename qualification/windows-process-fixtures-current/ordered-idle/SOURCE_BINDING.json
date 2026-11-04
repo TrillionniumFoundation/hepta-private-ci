@@ -82,14 +82,14 @@
         "bytes": 8206
       },
       "after": {
+        "git_blob_sha": "4fd4e103aa094f8756db25f9f942983322787113",
+        "sha256": "73ad086007cf74949e494b70177a5dcaf42c136e6ee69d4830ca9f571e6bb7f8",
+        "bytes": 10596
+      },
+      "previous_successor_after": {
         "git_blob_sha": "9d6bdfc1e4911043e7abdcdb8d31e2e28ac5e311",
         "sha256": "8588bab3410475127d9b0d8f29a318940a5d6311e29abfcef0258235bbba8402",
         "bytes": 9362
-      },
-      "previous_successor_after": {
-        "git_blob_sha": "9c7dbc3caf7438c13229ad178bd9d8229bf8ea93",
-        "sha256": "258d4fa2209f4bb3c793306f0705a118e4f7bed49c11a7c70eff7eccec7788c1",
-        "bytes": 9035
       }
     },
     {
@@ -100,14 +100,14 @@
         "bytes": 1132
       },
       "after": {
+        "git_blob_sha": "31726c97f1f3b7fbc90527651327131e66a111f5",
+        "sha256": "843987e6f7479b8d51d2d975653e7a920310b52a136b56c19743824b4cf11e21",
+        "bytes": 4300
+      },
+      "previous_successor_after": {
         "git_blob_sha": "4f86bf8bf07618815d9dc606cd8fffb162995c21",
         "sha256": "89ece5e059b44456c0117020b572a644b0b939c8b63feeb7ad3f4d21c022eba9",
         "bytes": 3864
-      },
-      "previous_successor_after": {
-        "git_blob_sha": "2ecd3441e119362de1fbea33178ff9c26586a140",
-        "sha256": "62cc002049d889e99113f74281f942333fd6a3e78b4fe53abae4fe167e1d5ff2",
-        "bytes": 2866
       }
     },
     {
@@ -118,6 +118,11 @@
         "bytes": 5195
       },
       "after": {
+        "git_blob_sha": "75b3837ae567e09b23fc45c019812b15e617854f",
+        "sha256": "6f95ea6cf2b652054a60af46865b88a2c58b599383055d90358b9bcbaa0705ce",
+        "bytes": 6342
+      },
+      "previous_successor_after": {
         "git_blob_sha": "8dc94da655a7350e13d0d81ac8f4ea9171866079",
         "sha256": "87a19ad98efd8f12307c65d2a84d56b8dd649d116f5f7e5d7b9315317a6b9499",
         "bytes": 5220
@@ -168,7 +173,6 @@
   ],
   "checks": {
     "queue_existing_test_file_unchanged": false,
-    "git_original_assertion_and_expect_lines_unchanged": true,
     "task_state_machine_other_than_two_private_module_declarations_unchanged": true,
     "normal_admission_functions_unchanged": true,
     "production_git_and_jobobject_unchanged": true,
@@ -177,7 +181,10 @@
     "original_source_and_merge_matrix_and_timeouts_unchanged": true,
     "queue_all_35_case_names_and_131_assertion_lines_unchanged": true,
     "queue_original_completion_wait_restored_exactly": true,
-    "production_unchanged_from_cfb": true
+    "production_unchanged_from_cfb": true,
+    "git_original_post_launch_lifecycle_and_assertion_bytes_unchanged": true,
+    "git_additional_native_helper_expectations": true,
+    "git_original_33_test_inventory_unchanged": true
   },
   "additional_tests": {
     "old_async_order_and_capacity_controls": 2,
@@ -192,7 +199,7 @@
     "python_tests": false,
     "formatting": false
   },
-  "status": "Fixture-only successor to cfb: restore the original queue completion wait and use direct managed child startup. Exact current-source generation and both full native gates remain required.",
+  "status": "Native Windows fixture successor: original 4db Queue35 and idle3 passed both runs; original Git33 passed source and failed two readiness cases on same-tree merge. Current native fixture and actual no-containment rejection control remain pending.",
   "original_formatter_adoption": {
     "source_commit": "7a1393304a76c45052e538087565c00a135f5a14",
     "run_id": 41767138349,
@@ -262,5 +269,26 @@
       "prewarm": false
     },
     "native_validation_status": "pending on this new successor"
+  },
+  "native_fixture_successor": {
+    "parent": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+    "prior_actual_outcomes": "../native-helper/prior-4db/OBSERVED_RUNTIME.json",
+    "source": {
+      "git_blob_sha": "4fd4e103aa094f8756db25f9f942983322787113",
+      "sha256": "73ad086007cf74949e494b70177a5dcaf42c136e6ee69d4830ca9f571e6bb7f8",
+      "bytes": 10596
+    },
+    "no_new_registered_test": true,
+    "production_unchanged": true,
+    "independent_static_review_blob": "a6551015fd421677959b39a73567b5819c8274a0",
+    "static_review_is_native_evidence": false,
+    "helper_exit_zero_only_in_explicit_child_role": true,
+    "native_execution_claimed": false,
+    "no_containment_negative_script": {
+      "git_blob_sha": "de4b5e506d9fdbae393f13448fb0f10376799898",
+      "sha256": "ba8b5de6b951cc74fcfa9b3a05807fae33012b711770045776c69920d8aa64b9",
+      "bytes": 12011
+    },
+    "no_containment_control_is_separate_from_original_counts": true
   }
 }

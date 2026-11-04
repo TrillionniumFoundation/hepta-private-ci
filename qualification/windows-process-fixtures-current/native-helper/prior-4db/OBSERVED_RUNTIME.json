@@ -1,0 +1,261 @@
+{
+  "schema": "hepta.windows-process-fixture.original-4db.v1",
+  "observed_utc": "2026-11-04T05:02:15.260Z",
+  "source_commit": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+  "actual_merge_commit": "9149d3e01bcc3777b605920cef6bbb166bacf61c",
+  "identical_source_and_merge_tree": "c47bab42807e4f70ec34a6a2c3018d387e0ab61a",
+  "run_id": 41774118682,
+  "run_attempt": 1,
+  "generator": {
+    "job_id": 126390353441,
+    "conclusion": "success",
+    "commands": 8,
+    "all_exit_zero": true,
+    "source_unchanged": true,
+    "committed_cargo_equals_generated": true,
+    "committed_bazel_equals_generated": true,
+    "original_full_log": {
+      "git_blob_sha": "72b31222c0354dd47eada083a28b1ba829b8ca29",
+      "sha256": "f95f76f08c7a553bbf30753a5388f3ad884a015dd653c9cfb62b53e049d4e60b",
+      "bytes": 129178
+    }
+  },
+  "source": {
+    "job_id": 126390992381,
+    "conclusion": "success",
+    "diagnostic": {
+      "status": "passed",
+      "source_commit": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+      "source_unchanged": true,
+      "native": {
+        "git-utils-unit-tests": {
+          "log_present": true,
+          "bytes": 4162,
+          "sha256": "b590c552421534ca1f5083fe0dc4d929a898d7d72a9df878698f97fc22e00312",
+          "summaries": [
+            [
+              1,
+              0,
+              0,
+              0,
+              32
+            ],
+            [
+              33,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "summary_count": 2,
+          "known_failed_cases": [],
+          "other_failed_case_count": 0,
+          "parent_before_child_launch": false,
+          "parent_after_child_launch": false,
+          "child_script_started": false
+        },
+        "queue-queue_service-test": {
+          "log_present": true,
+          "bytes": 2770,
+          "sha256": "f67fa597ad63dc7694abd4dc202b96cb8f53340aa543d1f2fb0881123d7d974f",
+          "summaries": [
+            [
+              35,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "summary_count": 1,
+          "known_failed_cases": [],
+          "other_failed_case_count": 0,
+          "parent_before_child_launch": false,
+          "parent_after_child_launch": false,
+          "child_script_started": false
+        }
+      },
+      "idle_controls": {
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_other_core_cases": 2331,
+        "names": [
+          "tasks::idle_work::tests::cancelled_idle_fence_releases_followers_without_bypassing_their_fence",
+          "tasks::idle_work::tests::deferred_idle_contributors_wait_for_fence_and_preserve_registration_order",
+          "tasks::idle_work::tests::deferred_idle_work_rejects_capacity_overflow"
+        ],
+        "scope": "Only the three selected idle-work controls; not the full core suite.",
+        "log_sha256": "23d9de53266a956d114b252ee3bf4002d2de3616e670282ac062a3c2ae1bac89",
+        "xml_sha256": "016f5667a2e4a8efd068de4294e647a94fb6c9da800976b642b2cb8221a401d0"
+      }
+    },
+    "original_full_log": {
+      "git_blob_sha": "6a076f1f2eb93e826041e7802e0716807f28b331",
+      "sha256": "afbd988114a0f84374cd8b2098b9f9dbab556cb03da5ecf8a825de0f4d134480",
+      "bytes": 181351
+    },
+    "artifact": {
+      "id": 13296269512,
+      "bytes": 4493558,
+      "sha256": "db44136e4ae124836ad942d5f46086f3fb4b2670269897ee66ca26ecfb1bc6ad"
+    }
+  },
+  "merge": {
+    "job_id": 126390992481,
+    "conclusion": "failure",
+    "diagnostic": {
+      "status": "failed",
+      "source_commit": "9149d3e01bcc3777b605920cef6bbb166bacf61c",
+      "source_unchanged": true,
+      "native": {
+        "git-utils-unit-tests": {
+          "log_present": true,
+          "bytes": 6070,
+          "sha256": "0a1968205228cbbf57e5973a1f12e911ce845fd6444a489cd784fd5963c7a235",
+          "summaries": [
+            [
+              1,
+              0,
+              0,
+              0,
+              32
+            ],
+            [
+              31,
+              2,
+              0,
+              0,
+              0
+            ]
+          ],
+          "summary_count": 2,
+          "known_failed_cases": [
+            "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+            "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running"
+          ],
+          "other_failed_case_count": 0,
+          "parent_before_child_launch": true,
+          "parent_after_child_launch": false,
+          "child_script_started": false
+        },
+        "queue-queue_service-test": {
+          "log_present": true,
+          "bytes": 2770,
+          "sha256": "0db7737be0de051393c936b9346072dcba5afe6966545af9b93b73ce9dd4e3e1",
+          "summaries": [
+            [
+              35,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "summary_count": 1,
+          "known_failed_cases": [],
+          "other_failed_case_count": 0,
+          "parent_before_child_launch": false,
+          "parent_after_child_launch": false,
+          "child_script_started": false
+        }
+      },
+      "idle_controls": {
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_other_core_cases": 2331,
+        "names": [
+          "tasks::idle_work::tests::cancelled_idle_fence_releases_followers_without_bypassing_their_fence",
+          "tasks::idle_work::tests::deferred_idle_contributors_wait_for_fence_and_preserve_registration_order",
+          "tasks::idle_work::tests::deferred_idle_work_rejects_capacity_overflow"
+        ],
+        "scope": "Only the three selected idle-work controls; not the full core suite.",
+        "log_sha256": "23d9de53266a956d114b252ee3bf4002d2de3616e670282ac062a3c2ae1bac89",
+        "xml_sha256": "016f5667a2e4a8efd068de4294e647a94fb6c9da800976b642b2cb8221a401d0"
+      }
+    },
+    "original_full_log": {
+      "git_blob_sha": "eded1d2724c3c5e9fa46df1d6efe3b41b8a3940b",
+      "sha256": "08202d69fbfd9d7b49ddb4c734679287c8c9f3f8442164a199b0b9a73feb538a",
+      "bytes": 182324
+    },
+    "artifact": {
+      "id": 13295958902,
+      "bytes": 4470163,
+      "sha256": "d41cdd1f089e068e206e7d01238326ddc00ebb62305fdf428b55f1c4911eed4b"
+    }
+  },
+  "boundaries": {
+    "queue_both_original_35_passed": true,
+    "git_source_33_passed": true,
+    "git_merge_31_passed_2_failed": true,
+    "strong_idle_controls_three_passed_each": true,
+    "full_core_suite_qualified": false,
+    "all_env_blockers_closed": false,
+    "underlying_powershell_stall_cause_proven": false,
+    "artifact_byte_readback_of_this_run_at_record_time": true,
+    "archive_originals_deleted": 0
+  },
+  "independent_readback": {
+    "run": 41776616025,
+    "source_job": 126398351731,
+    "merge_job": 126398351818,
+    "source_inputs_each": 9118,
+    "all_source_bytes_equal_git": true,
+    "all_original_zip_members_crc_verified": true,
+    "before_after_sha256": "c2b873d2992241ec824adfea4056fcfeb81fd0dc3492a89c6be537715e0379e8",
+    "raw_source_bridge_log": {
+      "git_blob_sha": "17269361f0a5ad46ef68aa792d9adc3361b9bfba",
+      "sha256": "47bc9c0dcf89e0b781a9b8bac38b31bc4c1b06e1bf581ac77f19ffc2ce3649c5",
+      "bytes": 215217
+    },
+    "raw_merge_bridge_log": {
+      "git_blob_sha": "e639dc40455dc0df76fbbc4adf89206a4289d58c",
+      "sha256": "6dd0373dbfb07371992f123b6768faf3d8006949193849a718fdb1296656f667",
+      "bytes": 228594
+    },
+    "exact_original_test_logs": [
+      {
+        "path": "source/git-utils-unit-tests-test.log",
+        "git_blob_sha": "e1499bb6222c2dcd9b84592f4aca35b3d574f4ed",
+        "sha256": "b590c552421534ca1f5083fe0dc4d929a898d7d72a9df878698f97fc22e00312",
+        "bytes": 4162
+      },
+      {
+        "path": "source/queue-queue_service-test-test.log",
+        "git_blob_sha": "ca44980fea019109a24759bf0b46d557b27bae0e",
+        "sha256": "f67fa597ad63dc7694abd4dc202b96cb8f53340aa543d1f2fb0881123d7d974f",
+        "bytes": 2770
+      },
+      {
+        "path": "source/deferred-idle-controls-test.log",
+        "git_blob_sha": "ff03f7a91800e176c455d7861fc921e1e15cb05a",
+        "sha256": "23d9de53266a956d114b252ee3bf4002d2de3616e670282ac062a3c2ae1bac89",
+        "bytes": 547
+      },
+      {
+        "path": "merge/git-utils-unit-tests-test.log",
+        "git_blob_sha": "9fddeb85ad522cea7ed1de20e121053c96c64aa9",
+        "sha256": "0a1968205228cbbf57e5973a1f12e911ce845fd6444a489cd784fd5963c7a235",
+        "bytes": 6070
+      },
+      {
+        "path": "merge/queue-queue_service-test-test.log",
+        "git_blob_sha": "41dec74e59713d37c06bef815b6c3c47418eea6d",
+        "sha256": "0db7737be0de051393c936b9346072dcba5afe6966545af9b93b73ce9dd4e3e1",
+        "bytes": 2770
+      },
+      {
+        "path": "merge/deferred-idle-controls-test.log",
+        "git_blob_sha": "ff03f7a91800e176c455d7861fc921e1e15cb05a",
+        "sha256": "23d9de53266a956d114b252ee3bf4002d2de3616e670282ac062a3c2ae1bac89",
+        "bytes": 547
+      }
+    ],
+    "original_product_outcomes_not_promoted_by_readback": true
+  }
+}

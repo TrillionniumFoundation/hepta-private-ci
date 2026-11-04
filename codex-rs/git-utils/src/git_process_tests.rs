@@ -1,7 +1,5 @@
 use super::spawn_git_command;
 use super::wait_for_git_command_with_timeout_output;
-#[cfg(windows)]
-use base64::Engine as _;
 use pretty_assertions::assert_eq;
 #[cfg(windows)]
 use std::process::Stdio;
@@ -14,9 +12,93 @@ enum GitWrapperLifetime {
     ExitBeforeTimeout,
 }
 
+#[cfg(windows)]
+const GIT_WRAPPER_ROLE_ENV: &str = "CODEX_GIT_PROCESS_TREE_TEST_ROLE";
+
+#[cfg(windows)]
+impl GitWrapperLifetime {
+    fn test_name(self) -> &'static str {
+        match self {
+            Self::WaitForChild => {
+                "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running"
+            }
+            Self::ExitBeforeTimeout => {
+                "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running"
+            }
+        }
+    }
+}
+
+/// Run only in an explicitly requested child instance of this test executable.
+/// The real wrapper and descendant inherit their standard handles and Job Object;
+/// they do not create a separate process group, job, or breakaway process.
+#[cfg(windows)]
+fn run_git_wrapper_helper_if_requested(wrapper_lifetime: GitWrapperLifetime) {
+    let role = std::env::var_os(GIT_WRAPPER_ROLE_ENV)
+        .map(|role| role.into_string().expect("valid native Git fixture role"));
+    let Some(role) = role else {
+        return;
+    };
+    let path = |name| {
+        std::path::PathBuf::from(std::env::var_os(name).expect("native Git fixture path"))
+    };
+    match role.as_str() {
+        "child" => {
+            std::fs::write(path("GIT_CHILD_STAGE_FILE"), "child-script-started")
+                .expect("record descendant start");
+            std::fs::write(path("CHILD_READY_FILE"), "ready").expect("record descendant readiness");
+            while !path("RELEASE_CHILD_FILE").exists() {
+                std::thread::sleep(Duration::from_millis(25));
+            }
+            std::thread::sleep(Duration::from_secs(1));
+            std::fs::write(path("CHILD_SURVIVED_FILE"), "survived")
+                .expect("record surviving descendant");
+            std::thread::sleep(Duration::from_secs(60));
+        }
+        "wrapper" => {
+            std::fs::write(path("GIT_WRAPPER_STAGE_FILE"), "parent-before-child-launch")
+                .expect("record wrapper launch");
+            let mut child = std::process::Command::new(
+                std::env::current_exe().expect("find current test executable"),
+            )
+            .args(["--exact", wrapper_lifetime.test_name(), "--quiet"])
+            .env(GIT_WRAPPER_ROLE_ENV, "child")
+            .stdin(Stdio::inherit())
+            .stdout(Stdio::inherit())
+            .stderr(Stdio::inherit())
+            .spawn()
+            .expect("spawn native Git descendant");
+            std::fs::write(path("GIT_WRAPPER_STAGE_FILE"), "parent-after-child-launch")
+                .expect("record descendant launch");
+            std::fs::write(path("CHILD_PID_FILE"), child.id().to_string())
+                .expect("record descendant PID");
+            match wrapper_lifetime {
+                GitWrapperLifetime::WaitForChild => {
+                    let status = child.wait().expect("wait for native Git descendant");
+                    if !status.success() {
+                        std::process::exit(1);
+                    }
+                }
+                GitWrapperLifetime::ExitBeforeTimeout => {
+                    while !path("RELEASE_WRAPPER_FILE").exists() {
+                        std::thread::sleep(Duration::from_millis(25));
+                    }
+                }
+            }
+        }
+        _ => panic!("unknown native Git fixture role"),
+    }
+    // These child instances supply process topology, not extra test results.
+    // Exiting here also models the original wrapper-exits-before-timeout case.
+    std::process::exit(0);
+}
+
 async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     wrapper_lifetime: GitWrapperLifetime,
 ) {
+    #[cfg(windows)]
+    run_git_wrapper_helper_if_requested(wrapper_lifetime);
+
     let temp_dir = tempfile::tempdir().expect("create temp dir");
     let child_pid_file = temp_dir.path().join("child.pid");
     let child_ready_file = temp_dir.path().join("child-ready");
@@ -41,42 +123,11 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     };
     #[cfg(windows)]
     let mut command = {
-        let mut command = Command::new("powershell.exe");
-        let child_command = "[System.IO.File]::WriteAllText($env:GIT_CHILD_STAGE_FILE, 'child-script-started'); Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
-        // Pass the child script as one space-free UTF-16LE argument so it
-        // survives the native Windows command line without another quoting
-        // layer around the script.
-        let encoded_child = base64::engine::general_purpose::STANDARD.encode(
-            child_command
-                .encode_utf16()
-                .flat_map(u16::to_le_bytes)
-                .collect::<Vec<_>>(),
-        );
-        // The retained Windows runs reached Start-Process but it did not return.
-        // Use the direct managed process start for this fixture. Standard streams
-        // and the wrapper's Job Object remain inherited by the real descendant.
-        let launch_child = format!(
-            "[System.IO.File]::WriteAllText($env:GIT_WRAPPER_STAGE_FILE, 'parent-before-child-launch'); $childInfo = New-Object System.Diagnostics.ProcessStartInfo; $childInfo.FileName = 'powershell.exe'; $childInfo.Arguments = '-NoProfile -NonInteractive -EncodedCommand {encoded_child}'; $childInfo.UseShellExecute = $false; $child = [System.Diagnostics.Process]::Start($childInfo); [System.IO.File]::WriteAllText($env:GIT_WRAPPER_STAGE_FILE, 'parent-after-child-launch'); [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); "
-        );
-        let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => {
-                format!("{launch_child}Wait-Process -Id $child.Id")
-            }
-            GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "{launch_child}while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
-            ),
-        };
-        // Encode the parent as well: its child-launch expression contains
-        // quotes and must survive Rust's native Windows argv serialization.
-        let encoded_wrapper = base64::engine::general_purpose::STANDARD.encode(
-            wrapper_command
-                .encode_utf16()
-                .flat_map(u16::to_le_bytes)
-                .collect::<Vec<_>>(),
-        );
+        let mut command =
+            Command::new(std::env::current_exe().expect("find current test executable"));
         command
-            .args(["-NoProfile", "-NonInteractive", "-EncodedCommand"])
-            .arg(encoded_wrapper);
+            .args(["--exact", wrapper_lifetime.test_name(), "--quiet"])
+            .env(GIT_WRAPPER_ROLE_ENV, "wrapper");
         command
     };
     command

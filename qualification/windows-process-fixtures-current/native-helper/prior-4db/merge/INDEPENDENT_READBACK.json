@@ -1,0 +1,218 @@
+{
+  "schema": 1,
+  "key": "env4db-merge-failed",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "9149d3e01bcc3777b605920cef6bbb166bacf61c",
+  "original_run": 41774118682,
+  "artifact_id": 13295958902,
+  "zip_bytes": 4470163,
+  "zip_sha256": "d41cdd1f089e068e206e7d01238326ddc00ebb62305fdf428b55f1c4911eed4b",
+  "crc_all_members": true,
+  "source_verification": {
+    "count": 9118,
+    "before_sha256": "c2b873d2992241ec824adfea4056fcfeb81fd0dc3492a89c6be537715e0379e8",
+    "after_sha256": "c2b873d2992241ec824adfea4056fcfeb81fd0dc3492a89c6be537715e0379e8",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs",
+      ".bazelrc",
+      ".bazelversion",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      "defs.bzl",
+      "bazel",
+      "patches",
+      "third_party",
+      "scripts",
+      "justfile",
+      "workspace_root_test_launcher.bat.tpl",
+      "workspace_root_test_launcher.sh.tpl",
+      ".github/actions",
+      ".github/scripts",
+      "qualification/windows-process-env-current",
+      "qualification/windows-process-fixtures-current",
+      ".github/workflows/hepta-windows-process-env-qualification.yml"
+    ],
+    "symlink_resolution": []
+  },
+  "original_qualification_status": "failed",
+  "result": {
+    "original_tests": {
+      "git-utils-unit-tests": {
+        "status": "failed",
+        "error": "git-utils-unit-tests: missing, failed or skipped original Bazel wrapper"
+      },
+      "queue-queue_service-test": {
+        "outer_passed": 35,
+        "outer_failed": 0,
+        "outer_ignored": 0,
+        "outer_filtered": 0,
+        "names": [
+          "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+          "capacity_rejection_preserves_the_admitted_client_identity",
+          "completion_panic_retains_exact_authority_in_settlement_guardian",
+          "conflicting_queued_client_ids_fail_closed_before_core_submission",
+          "core_error_after_started_never_releases_ambiguous_dispatch",
+          "corrupt_rollout_blocks_queue_replay_and_preserves_the_item",
+          "duplicate_queued_client_ids_dispatch_to_core_once",
+          "editing_reordering_and_deleting_preserve_queue_identity",
+          "exact_and_legacy_bindings_for_the_same_turn_join_once",
+          "exact_reconcile_conflicting_payload_fails_before_second_admission",
+          "exact_reconcile_is_one_idempotent_queue_admission",
+          "exact_reconcile_rejects_expected_digest_drift_without_a_row",
+          "explicitly_started_rejected_queue_messages_remain_durable",
+          "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+          "interrupted_turns_pause_queued_messages_but_failed_turns_drain_them",
+          "invalid_head_is_skipped_and_a_live_user_turn_is_accepted",
+          "invalid_local_attachments_do_not_mutate_queue",
+          "legacy_client_id_without_payload_digest_is_readable_but_cannot_join",
+          "local_attachments_are_snapshotted_before_enqueue_and_update",
+          "non_user_input_cannot_enter_the_user_message_queue",
+          "persisted_admission_reconciles_compressed_rollout",
+          "persisted_client_id_with_conflicting_payload_fails_closed_from_compressed_rollout",
+          "queued_input_and_unique_event_ids_round_trip",
+          "queued_text_limit_counts_characters_and_ignores_non_text_items",
+          "queued_text_limit_is_enforced_across_all_input_items",
+          "raw_queue_store_enqueue_cannot_bypass_reconcile_reservation",
+          "registered_queue_lifecycle_starts_messages_in_fifo_order",
+          "rejected_queue_messages_remain_durable_and_block_followups",
+          "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+          "resumed_idle_dispatches_input_without_a_loaded_manager",
+          "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+          "same_client_id_bound_to_two_turns_is_ambiguous_and_fails_closed",
+          "starting_a_selected_item_preserves_the_remaining_queue",
+          "starting_a_selected_item_while_active_leaves_it_queued",
+          "two_queue_services_across_state_runtimes_submit_one_exact_binding"
+        ],
+        "bazel_wrapper_cases": 1,
+        "original_nested_subprocess_summaries": [],
+        "log_sha256": "0db7737be0de051393c936b9346072dcba5afe6966545af9b93b73ce9dd4e3e1",
+        "xml_sha256": "ac51110070aeb341c16fe22867a9fcc9c76986d65bc68a0e24cdb9577e7a6e3b"
+      }
+    },
+    "original_steps": null,
+    "original_commands": [
+      {
+        "argv": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          ".github/scripts/run-bazel-ci.sh",
+          "--print-failed-action-summary",
+          "--print-failed-test-logs",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--platforms=//:windows_x86_64_msvc",
+          "--skip_incompatible_explicit_targets",
+          "--test_tag_filters=-argument-comment-lint",
+          "--test_verbose_timeout_warnings",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--build_metadata=COMMIT_SHA=9149d3e01bcc3777b605920cef6bbb166bacf61c",
+          "--",
+          "//codex-rs/git-utils:git-utils-unit-tests",
+          "//codex-rs/ext/queue:queue-queue_service-test"
+        ],
+        "exit_code": 3,
+        "seconds": 437.094,
+        "log_sha256": "e9af0cbc50ede0b0e2c537e750cf89792111d64f06ab11bdd6f7a45b659a9ca6"
+      },
+      {
+        "argv": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          ".github/scripts/run-bazel-ci.sh",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--platforms=//:windows_x86_64_msvc",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--test_sharding_strategy=disabled",
+          "--test_arg=tasks::idle_work::tests",
+          "--",
+          "//codex-rs/core:core-unit-tests"
+        ],
+        "exit_code": 0,
+        "seconds": 171.375,
+        "log_sha256": "5fc072dd9da08b4d289531c56ad39d35450d55d5a511388dd83d5edc82cf0fc8"
+      }
+    ],
+    "native_logs": {
+      "deferred-idle-controls-test.log": {
+        "summaries": [
+          [
+            "ok",
+            "3",
+            "0",
+            "0",
+            "0",
+            "2331"
+          ]
+        ],
+        "failed_cases": [],
+        "ignored_cases": [],
+        "panic_blocks": []
+      },
+      "git-utils-unit-tests-test.log": {
+        "summaries": [
+          [
+            "ok",
+            "1",
+            "0",
+            "0",
+            "0",
+            "32"
+          ],
+          [
+            "FAILED",
+            "31",
+            "2",
+            "0",
+            "0",
+            "0"
+          ]
+        ],
+        "failed_cases": [
+          "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+          "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running"
+        ],
+        "ignored_cases": [],
+        "panic_blocks": [
+          "---- git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running stdout ----\n\nthread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (2280) panicked at git-utils/src\\git_process_tests.rs:132:13:\nwait for Git wrapper child readiness: Err(Elapsed(())); wrapper status before cleanup: Ok(None); child PID file \"D:\\\\tmp\\\\.tmpicgdrm\\\\child.pid\": Err(Os { code: 2, kind: NotFound, message: \"The system cannot find the file specified.\" }); child ready file \"D:\\\\tmp\\\\.tmpicgdrm\\\\child-ready\": Ok(false); wrapper stage before cleanup: Ok(\"parent-before-child-launch\"); child stage before cleanup: Err(Os { code: 2, kind: NotFound, message: \"The system cannot find the file specified.\" }); wrapper output after cleanup: status: exit code: 0; stdout:\n\nstderr:\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+          "---- git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running stdout ----\n\nthread 'git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running' (7892) panicked at git-utils/src\\git_process_tests.rs:132:13:\nwait for Git wrapper child readiness: Err(Elapsed(())); wrapper status before cleanup: Ok(None); child PID file \"D:\\\\tmp\\\\.tmpSzSduZ\\\\child.pid\": Err(Os { code: 2, kind: NotFound, message: \"The system cannot find the file specified.\" }); child ready file \"D:\\\\tmp\\\\.tmpSzSduZ\\\\child-ready\": Ok(false); wrapper stage before cleanup: Ok(\"parent-before-child-launch\"); child stage before cleanup: Err(Os { code: 2, kind: NotFound, message: \"The system cannot find the file specified.\" }); wrapper output after cleanup: status: exit code: 0; stdout:\n\nstderr:\n\n\n"
+        ]
+      },
+      "queue-queue_service-test-test.log": {
+        "summaries": [
+          [
+            "ok",
+            "35",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        ],
+        "failed_cases": [],
+        "ignored_cases": [],
+        "panic_blocks": []
+      }
+    },
+    "bash_launcher": {
+      "path": "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+      "bytes": 2449886,
+      "sha256": "5490d0da5e7cf9d92068cc48fcc590f2bcf8564add8ff91c3b5fe541eb2d72e3",
+      "version_exit": 0,
+      "version_log_sha256": "64e0c91e1c0ed648eed7e6f287b24f6b3b77338344f3535cf794bebf5907ec01"
+    }
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only replay of retained evidence; no new product execution or whole-CI admission.",
+  "output_counts": {
+    "recorded_outputs": 0,
+    "retained_outputs": 6,
+    "command_logs": 2
+  },
+  "verified_report_sha256": "6e4cfd1eda063cfac8c09b45d36b313c766e3dbf21a44fff3d68033b8171ae71"
+}

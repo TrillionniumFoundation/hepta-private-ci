@@ -17,3 +17,8 @@ The cfb generation job executed all eight commands successfully with unchanged g
 The current successor must pass the original formatter and committed-lock generator, followed by fresh full Git33/queue35 and the three selected control tests on both source-head and actual base-merge. The original command arguments, test acceptance parser, matrix, deadlines and retry settings are unchanged. No local execution is claimed because this session has no usable executor.
 
 DRAFT / HOLD. Combined owner suites, HIA/HCSN scientific gates and original archive/history clearance remain separate. No original Library item was deleted.
+
+
+## Native fixture follow-up after exact 4db execution
+
+The original 4db source and same-tree merge both passed Queue35 and all three strengthened idle controls. Source-head passed Git33; base-merge retained two readiness failures. See `../native-helper/README.md` and its exact prior logs for the new native fixture and separate no-containment rejection control; current successor execution remains pending.

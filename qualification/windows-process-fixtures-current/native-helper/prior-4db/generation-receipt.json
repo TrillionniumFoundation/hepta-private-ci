@@ -1,0 +1,117 @@
+{
+  "source_commit": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+  "base_commit": "00963996f16c067fbd04517d22d3d7e53d1d09a6",
+  "status": "committed-lock-qualified",
+  "commands": [
+    {
+      "name": "initial-clean-source",
+      "argv": [
+        "git",
+        "--no-replace-objects",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--"
+      ],
+      "exit_code": 0,
+      "seconds": 0.2744075470000027,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "committed-lock-first",
+      "argv": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "exit_code": 0,
+      "seconds": 15.216756574000001,
+      "log_sha256": "4ef835a0035858d6393ea194fc6c21d6db61308702b636ba146764356bafdef5"
+    },
+    {
+      "name": "original-formatter",
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "00963996f16c067fbd04517d22d3d7e53d1d09a6"
+      ],
+      "exit_code": 0,
+      "seconds": 0.5706945560000065,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "original-formatter-check",
+      "argv": [
+        "just",
+        "fmt",
+        "--check",
+        "--base",
+        "00963996f16c067fbd04517d22d3d7e53d1d09a6"
+      ],
+      "exit_code": 0,
+      "seconds": 0.5379279059999931,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "actual-cargo-metadata",
+      "argv": [
+        "cargo",
+        "metadata",
+        "--all-features",
+        "--format-version",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 14.33009511600001,
+      "log_sha256": "c95668b3f1119b544894a4355553d623998ed4ad60ff72eff6ba039a8a4c4b89"
+    },
+    {
+      "name": "actual-locked-metadata",
+      "argv": [
+        "cargo",
+        "metadata",
+        "--locked",
+        "--all-features",
+        "--format-version",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 0.6396631280000094,
+      "log_sha256": "d9e3fbd6fedcc99c0b7cdf1899d27a7cc2959583dca3486aea826c7359e22f1d"
+    },
+    {
+      "name": "original-lock-update",
+      "argv": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "exit_code": 0,
+      "seconds": 21.15588042200001,
+      "log_sha256": "babe1925bd6c58a8f09b50ea50aed423dd6e11342edfeba3f280f8d1e4cc0977"
+    },
+    {
+      "name": "original-lock-check",
+      "argv": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "exit_code": 0,
+      "seconds": 2.8817917030000046,
+      "log_sha256": "7aefff53b94cb5c496e3940b497720fc9f34edfbf6a05a22d819338755625a38"
+    }
+  ],
+  "scope": "Real lock generation and formatting; native product qualification is separate.",
+  "cargo_delta": {
+    "packages": 1517,
+    "added_dependencies": {
+      "codex-git-utils": [
+        "base64 0.22.1"
+      ]
+    },
+    "versions_sources_checksums_unchanged": true
+  },
+  "changed_paths": [],
+  "committed_cargo_equals_generated": true,
+  "committed_bazel_equals_generated": true,
+  "source_unchanged": true
+}
