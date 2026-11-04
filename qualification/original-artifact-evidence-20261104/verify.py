@@ -7,7 +7,7 @@ import hashlib
 import io
 import json
 import os
-from pathlib import Path, PurePosixPath
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import posixpath
 import re
 import secrets
@@ -393,11 +393,14 @@ def inspect_wrapper(spec, receipt, members, git):
                 "--config=" + config, *targets, *hosts, info], "info configuration changed")
     output_base = members["materialized-wrapper-location.stdout"].decode().strip()
     require(output_base and "\n" not in output_base and "\r" not in output_base, "invalid original output base")
-    join = __import__("ntpath" if windows else "posixpath").join
-    expected_test = join(output_base, "external/rules_rs++rules_rust+rules_rust/util/process_wrapper",
-                         "windows_archive_tests.rs")
+    path_type = PureWindowsPath if windows else PurePosixPath
+    expected_test = str(path_type(output_base) /
+                        "external/rules_rs++rules_rust+rules_rust/util/process_wrapper" /
+                        "windows_archive_tests.rs")
     require(steps["native-regression-format"]["command"] == [
-        "rustfmt", "+1.96.0", "--check", expected_test], "real source formatter command changed")
+        "rustfmt", "+1.96.0", "--check", expected_test],
+            "real source formatter command changed: observed=" +
+            repr(steps["native-regression-format"]["command"]) + " expected=" + repr(expected_test))
     require(sha(git.read("patches/rules_rust_windows_process_wrapper_skip_temp_outputs.patch")) ==
             binding["candidate_patch_sha256"], "Git patch differs from source binding")
     materialized = {}

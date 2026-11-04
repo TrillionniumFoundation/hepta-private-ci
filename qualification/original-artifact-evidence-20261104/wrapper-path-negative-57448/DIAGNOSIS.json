@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "source": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+  "original_run": 41758337703,
+  "original_job": 126339688403,
+  "original_status": "passed",
+  "original_formatter": {
+    "name": "native-regression-format",
+    "command": [
+      "rustfmt",
+      "+1.96.0",
+      "--check",
+      "D:\\o\\external\\rules_rs++rules_rust+rules_rust\\util\\process_wrapper\\windows_archive_tests.rs"
+    ],
+    "exit": 0,
+    "elapsed_seconds": 0.9679999999999893
+  },
+  "verifier_source": "57448c18aab5a3ec9cac2c23d9d197305a6fa425",
+  "verifier_run": 41763400427,
+  "verifier_job": 126356061408,
+  "verifier_exit": 1,
+  "diagnosis": "Verifier used ntpath.join with one forward-slash-containing component. That preserves those separators; the original Windows pathlib.Path command uses backslashes. Construct the exact expected command with PureWindowsPath, without accepting a different file or formatter.",
+  "failure_log": {
+    "bytes": 43226,
+    "sha256": "61c23c0d232ffadf767e00803941981764bd094c42bbffa332d54aea1e67a89c"
+  },
+  "scope": "Read-only original ZIP verification; no product rerun, changed test denominator or product qualification claim."
+}
