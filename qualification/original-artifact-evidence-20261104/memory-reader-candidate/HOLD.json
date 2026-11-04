@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "status": "HOLD_NOT_EXECUTED",
+  "base_source": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+  "reason": "Original Linux GNU Bazel target state-unit-tests is four-sharded; the previous reader expected only test.log at the target root. New native diagnostics reveal original JUnit errors without changing acceptance.",
+  "proposal": [
+    {
+      "path": "run_bazel.py",
+      "git_blob": "fa792bc8647622026267cefd3591136a576ecc9e",
+      "bytes": 13423,
+      "sha256": "29da85ef30e689dacb56e5c1d0b728d8dae18baef3e45d538c2d7f5631e073b0"
+    },
+    {
+      "path": "test_readers.py",
+      "git_blob": "62a4caf424d5b1e1abd4a67cee5af419a79f6890",
+      "bytes": 10133,
+      "sha256": "af047b67c8cd01e585cd65ff98a6b378bf27b31cd3dda168a9ec5e95c2c87702"
+    },
+    {
+      "path": "run_native.py",
+      "git_blob": "4f7062a272d776a8aa43da00a068132a63b54e0a",
+      "bytes": 12039,
+      "sha256": "3418ab5e11d237414250212713a0c59e2213e9016701c64e11c2b48566b4fcd3"
+    }
+  ],
+  "reader_controls": 24,
+  "executed_reader_controls": 0,
+  "boundaries": [
+    "No archived or candidate code has been executed by the evidence bridge.",
+    "Original three library target test and scoped Clippy argv remain unchanged.",
+    "The proposed Bazel list invocations enumerate the same original compiled targets; actual hosted compatibility remains untested.",
+    "All current Memory failures remain OPEN until exact candidate original native and Bazel qualification."
+  ]
+}
