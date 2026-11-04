@@ -35,6 +35,14 @@ pub(super) fn create_private_directories(root: &Path) -> Result<(), CognitiveSto
             Err(error) => return Err(unavailable(error)),
         }
     }
+    if crate::cognitive_path::canonical_path_without_redirection(current)
+        .map_err(unavailable)?
+        .is_none()
+    {
+        return Err(CognitiveStoreError::Invalid(
+            "cognitive root ancestry must not contain a reparse point".to_string(),
+        ));
+    }
     for path in missing.into_iter().rev() {
         drop(open_private_state_directory(&path).map_err(unavailable)?);
     }

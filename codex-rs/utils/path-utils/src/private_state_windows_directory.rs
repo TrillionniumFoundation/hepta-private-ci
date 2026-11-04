@@ -6,6 +6,7 @@ use std::io;
 use std::mem::size_of;
 use std::os::windows::io::FromRawHandle;
 use std::path::Path;
+use std::path::PathBuf;
 use std::ptr;
 
 use windows_sys::Win32::Foundation::HANDLE;
@@ -14,8 +15,10 @@ use windows_sys::Win32::Foundation::NTSTATUS;
 use windows_sys::Win32::Foundation::RtlNtStatusToDosError;
 use windows_sys::Win32::Foundation::UNICODE_STRING;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_NORMAL;
+use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
@@ -31,6 +34,7 @@ const FILE_OPEN_IF: u32 = 3;
 const FILE_DIRECTORY_FILE: u32 = 1;
 const FILE_SYNCHRONOUS_IO_NONALERT: u32 = 0x20;
 const FILE_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+const SYNCHRONIZE: u32 = 0x0010_0000;
 const STATUS_REPARSE_POINT_ENCOUNTERED: NTSTATUS = 0xC000_050B_u32 as i32;
 
 // Match the existing windows-sandbox no_reparse_dir NtCreateFile ABI. Keep the
@@ -66,6 +70,24 @@ enum DirectoryOpen {
     Create,
     ExistingRead,
     ExistingReadWrite,
+    ExistingPathIdentity,
+}
+
+/// Return the final spelling of an existing file or directory opened without
+/// reparse traversal. The handle pins the actual object while its name is read;
+/// case and 8.3 aliases are never compared by lowercasing path strings.
+///
+/// This path observation does not qualify a private owner/DACL or retain a
+/// recovery guard for the caller. Those checks remain at the owning API.
+pub fn canonical_existing_path_without_reparse(path: &Path) -> io::Result<PathBuf> {
+    let file = open_with_mode(path, DirectoryOpen::ExistingPathIdentity)?;
+    if winapi_util::file::information(&file)?.file_attributes()
+        & u64::from(FILE_ATTRIBUTE_REPARSE_POINT)
+        != 0
+    {
+        return Err(unsafe_state("identity path is a reparse point"));
+    }
+    super::final_path(&file)
 }
 
 pub(super) fn open(root: &Path) -> io::Result<File> {
@@ -112,7 +134,9 @@ fn open_with_mode(root: &Path, mode: DirectoryOpen) -> io::Result<File> {
             // repaired; the caller validates the exact returned handle.
             security_descriptor: match mode {
                 DirectoryOpen::Create => security.lpSecurityDescriptor,
-                DirectoryOpen::ExistingRead | DirectoryOpen::ExistingReadWrite => ptr::null(),
+                DirectoryOpen::ExistingRead
+                | DirectoryOpen::ExistingReadWrite
+                | DirectoryOpen::ExistingPathIdentity => ptr::null(),
             },
             security_quality_of_service: ptr::null(),
         };
@@ -127,6 +151,7 @@ fn open_with_mode(root: &Path, mode: DirectoryOpen) -> io::Result<File> {
             NtCreateFile(
                 &mut handle,
                 match mode {
+                    DirectoryOpen::ExistingPathIdentity => FILE_READ_ATTRIBUTES | SYNCHRONIZE,
                     DirectoryOpen::ExistingRead => FILE_GENERIC_READ,
                     DirectoryOpen::Create | DirectoryOpen::ExistingReadWrite => {
                         FILE_GENERIC_READ | FILE_GENERIC_WRITE
@@ -140,9 +165,18 @@ fn open_with_mode(root: &Path, mode: DirectoryOpen) -> io::Result<File> {
                 FILE_SHARE_READ | FILE_SHARE_WRITE,
                 match mode {
                     DirectoryOpen::Create => FILE_OPEN_IF,
-                    DirectoryOpen::ExistingRead | DirectoryOpen::ExistingReadWrite => 1, // FILE_OPEN
+                    DirectoryOpen::ExistingRead
+                    | DirectoryOpen::ExistingReadWrite
+                    | DirectoryOpen::ExistingPathIdentity => 1, // FILE_OPEN
                 },
-                FILE_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT | FILE_OPEN_REPARSE_POINT,
+                FILE_SYNCHRONOUS_IO_NONALERT
+                    | FILE_OPEN_REPARSE_POINT
+                    | match mode {
+                        DirectoryOpen::ExistingPathIdentity => 0,
+                        DirectoryOpen::Create
+                        | DirectoryOpen::ExistingRead
+                        | DirectoryOpen::ExistingReadWrite => FILE_DIRECTORY_FILE,
+                    },
                 ptr::null(),
                 /*ea_length*/ 0,
             )

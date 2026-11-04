@@ -77,6 +77,8 @@ jobs:
               "codex-rs/hepta-memory/src/cognitive_store_windows.rs",
               "codex-rs/hepta-memory/src/cognitive_store_windows_tests.rs",
               "codex-rs/hepta-memory/src/cognitive_store_sync.rs",
+              "codex-rs/hepta-memory/src/cognitive_path.rs",
+              "codex-rs/hepta-memory/src/cognitive_path_tests.rs",
               "codex-rs/utils/path-utils/src/private_state_windows.rs",
               "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
               "codex-rs/utils/path-utils/src/private_state_windows_recovery.rs",
@@ -147,6 +149,9 @@ jobs:
               "bootstrap_creates_private_source_and_preserves_existing_bytes",
               "bootstrap_refuses_existing_hard_link_without_adopting_or_changing_it",
               "pointer_stage_collision_preserves_the_original_private_file",
+              "windows_native_temp_and_case_aliases_share_store_identity_and_source_replay",
+              "native_and_os_canonical_roots_share_store_identity_and_source_replay",
+              "junction_and_its_descendants_are_rejected",
           }
           observed = {name for report in receipt["junit"] for name in report["executed"]}
           if result.returncode == 0 and not required <= observed:

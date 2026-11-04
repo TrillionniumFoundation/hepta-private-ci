@@ -83,6 +83,7 @@ use creation_security::with_private_security;
 
 #[path = "private_state_windows_directory.rs"]
 mod directory;
+pub use directory::canonical_existing_path_without_reparse;
 
 #[path = "private_state_windows_recovery.rs"]
 mod recovery;
