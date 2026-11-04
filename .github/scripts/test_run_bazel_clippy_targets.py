@@ -59,10 +59,10 @@ class ClippyTargetSelectionTests(unittest.TestCase):
             with self.subTest(runner=runner):
                 result = self.select(runner)
                 self.assertEqual(result.returncode, 0, result.stderr)
-                self.assertEqual(
-                    result.stdout.splitlines(),
-                    PREFIX + [UNIT, NATIVE] + ([] if runner == "Windows" else [UNIX_ONLY]),
-                )
+                expected = PREFIX + [UNIT, NATIVE]
+                if runner != "Windows":
+                    expected.append(UNIX_ONLY)
+                self.assertEqual(result.stdout.splitlines(), expected)
 
     def test_explicit_windows_cross_leg_preserves_cross_helpers(self):
         result = self.select("Windows", "--windows-cross-compile")
