@@ -1,5 +1,6 @@
 #![allow(clippy::unwrap_used)]
 use anyhow::Context;
+use codex_core::config::Config;
 use codex_core::config::ConfigBuilder;
 use codex_core::init_state_db;
 use codex_protocol::ThreadId;
@@ -244,6 +245,21 @@ async fn exec_resume_last_appends_to_existing_file() -> anyhow::Result<()> {
     Ok(())
 }
 
+// Simulate loss of the SQLite index row while retaining the rollout and its
+// live queue identity. The product delete_thread API permanently seals a thread;
+// using it here tests hard deletion instead of index repair.
+async fn remove_thread_index_row(config: &Config, thread_id: ThreadId) -> anyhow::Result<()> {
+    let sqlite = config.sqlite_config();
+    let pool = sqlite.open_read_write_pool(&sqlite.state_db_path()).await?;
+    let result = sqlx::query("DELETE FROM threads WHERE id = ?")
+        .bind(thread_id.to_string())
+        .execute(&pool)
+        .await?;
+    assert_eq!(result.rows_affected(), 1);
+    pool.close().await;
+    Ok(())
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
@@ -273,7 +289,14 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(thread_id).await?, 1);
+    remove_thread_index_row(&config, thread_id).await?;
+    assert!(state_db.get_thread(thread_id).await?.is_none());
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(thread_id)
+            .await?
+    );
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;
@@ -336,7 +359,14 @@ async fn exec_resume_last_trusts_usable_state_db_candidate() -> anyhow::Result<(
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(newer_thread_id).await?, 1);
+    remove_thread_index_row(&config, newer_thread_id).await?;
+    assert!(state_db.get_thread(newer_thread_id).await?.is_none());
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(newer_thread_id)
+            .await?
+    );
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;

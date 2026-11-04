@@ -1,8 +1,9 @@
+#[cfg(not(windows))]
 use std::fs::OpenOptions;
+#[cfg(not(windows))]
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Command;
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
@@ -127,7 +128,7 @@ impl TrustFixture {
             .canonicalize()
             .expect("canonical trust root");
         let key = root.join("operator-key");
-        let generated = Command::new("/usr/bin/ssh-keygen")
+        let generated = crate::test_support::ssh_keygen()
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
             .status()
@@ -144,7 +145,7 @@ impl TrustFixture {
             format!("operator@example {0} {1}\n", fields[0], fields[1]).as_bytes(),
         );
 
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
+        let fingerprint_output = crate::test_support::ssh_keygen()
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
             .output()
@@ -209,7 +210,7 @@ impl TrustFixture {
     fn sign(&self, statement: &[u8], namespace: &str, name: &str) -> PathBuf {
         let statement_path = self.root.join(name);
         write_private(&statement_path, statement);
-        let signed = Command::new("/usr/bin/ssh-keygen")
+        let signed = crate::test_support::ssh_keygen()
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", namespace])
@@ -233,18 +234,25 @@ fn ssh_string(bytes: &[u8]) -> Vec<u8> {
 }
 
 fn write_private(path: &Path, bytes: &[u8]) {
-    let mut options = OpenOptions::new();
-    options.create_new(true).write(true);
-    #[cfg(unix)]
+    #[cfg(windows)]
+    crate::durable::write_private_new(path, bytes).expect("create private Windows fixture");
+    #[cfg(not(windows))]
     {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
+        let mut options = OpenOptions::new();
+        options.create_new(true).write(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let mut file = options.open(path).expect("create private test file");
+        file.write_all(bytes).expect("write private test file");
     }
-    let mut file = options.open(path).expect("create private test file");
-    file.write_all(bytes).expect("write private test file");
 }
 
 fn set_private_permissions(path: &Path) {
+    #[cfg(windows)]
+    crate::test_support::retain_oracle_output(path);
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;

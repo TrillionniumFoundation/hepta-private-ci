@@ -40,6 +40,16 @@ common:macos --test_env=PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr
 common:windows --test_env=SYSTEMROOT
 common:windows --test_env=COMSPEC
 common:windows --test_env=WINDIR
+# Native Windows child processes need their standard directory environment.
+# Inherit only these OS paths; never forward the full runner environment.
+common:windows --test_env=ProgramFiles
+common:windows --test_env=ProgramFiles(x86)
+common:windows --test_env=USERPROFILE
+common:windows --test_env=APPDATA
+common:windows --test_env=LOCALAPPDATA
+common:windows --test_env=ProgramData
+common:windows --test_env=SystemDrive
+common:windows --test_env=PATHEXT
 # Rust's libtest harness runs test bodies on std-spawned threads. The default
 # 2 MiB stack can be too small for large async test futures on Windows CI; see
 # https://github.com/openai/codex/pull/19067 for the motivating failure.
@@ -184,6 +194,10 @@ common:ci-windows --test_env=CODEX_BAZEL_TEST_SKIP_FILTERS=suite::code_mode::cod
 common:ci-linux --config=ci-bazel
 common:ci-linux --build_metadata=TAG_os=linux
 common:ci-linux --platforms=//:rbe
+# Keep remote execution first for ordinary tests. Tests tagged no-remote use
+# the native host sandbox for declared installed-tool oracles (e.g. OpenSSH).
+# Bazel excludes TestRunner from --strategy_regexp, so select its mnemonic.
+common:ci-linux --strategy=TestRunner=remote,linux-sandbox,local
 
 # On mac, we can run all the build actions remotely but test actions locally.
 common:ci-macos --config=ci-bazel
