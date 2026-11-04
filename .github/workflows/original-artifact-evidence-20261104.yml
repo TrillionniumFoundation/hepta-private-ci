@@ -19,9 +19,9 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - key: wrapper-9fd-windows
-            source: 9fd4fd6bf76449c75b6ead3ff78816b1077f3f11
-            script: verify.py
+          - key: tee-8f-shared-original
+            source: 8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9
+            script: verify_tee_success.py
     env:
       GIT_CONFIG_COUNT: 1
       GIT_CONFIG_KEY_0: core.autocrlf
