@@ -1,0 +1,30 @@
+--- a/research/neuron_learning/laya_cell/current100k_weight_shadow_eval.py
++++ b/research/neuron_learning/laya_cell/current100k_weight_shadow_eval.py
+@@ -96,6 +96,16 @@
+   gain=sum(gains)/len(gains) if gains else None
+   comparisons[arm+' vs '+reference]={'mae_gain_usd':gain,'rmse_gain_usd':summaries[reference]['rmse_usd']-summaries[arm]['rmse_usd'] if obs else None,'half_mae_gain_usd':half_gain,'fee_stress_mae_gain_usd':stresses,'final_cluster_interval':interval,'huber_mixture_evidence':evidence,'comparative_conditions_met':bool(final and not reasons and gain>rule['minimum_mae_improvement_usd'] and all(v is not None and v>0 for v in half_gain) and all(v is not None and v>=0 for v in stresses.values()) and evidence['threshold_met'])}
+  return {'schema':'heptatrader.current100k-weight-shadow-assessment.v1','plan_id':p['plan_id'],'as_of_ms':now,'state':'PENDING' if not final else ('FINAL_INCOMPLETE' if reasons else 'FINAL_RESEARCH_COMPARISON'),'reasons':sorted(set(reasons)),'original_command_count':len(results),'observed_trades':len(obs),'status_counts':dict(Counter(r['status'] for r in results)),'prediction_coverage':coverage,'distinct_utc_days':len(days),'time_blocks':len(groups),'half_counts':halves,'arm_metrics':summaries,'paired_comparisons':comparisons,'family_alpha':rule['family_alpha'],'pair_alpha':alpha,'multiple_comparison_count':len(pairs),'intervals_only_at_fixed_final':True,'cross_producer_transfer':p['cross_producer_transfer'],'source_issues':list(source_issues),'financial_candidate_selected':False,'canonical_agentd_accepted':False,'trade_authority':False,'broker_orders_sent':0,'historical_trials_modified':False,'independence_or_generalization_proven':False}
++
++def current_ledger_replay_issue(report):
++ """Retain a symbolic native cause without publishing arbitrary exception text."""
++ component=report.get('components',{}).get('EUR.USD',{})
++ if component.get('ledger_complete'):return None
++ reason=component.get('reason') or report.get('reason')
++ if not isinstance(reason,str) or not reason:reason='NATIVE_REPLAY_REASON_UNAVAILABLE'
++ elif len(reason)>128 or reason[0] not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' or any(c not in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_' for c in reason):
++  reason='NATIVE_REPLAY_REASON_NOT_SYMBOLIC'
++ return {'reason':'CURRENT_LEDGER_REPLAY_UNAVAILABLE','native_replay_reason':reason}
+ 
+ class Evaluator:
+  """Separate process: reads sealed predictions and current authoritative replay."""
+@@ -134,8 +144,8 @@
+   W.require(W.sha(p['training_dataset_path'])==p['training_dataset_sha256'],'SHADOW_TRAINING_DATA_CHANGED')
+   manifest,requests,bindings,issues=ingress(p['producer_registration'],p['period_sha256'])
+   report=current(self.config,now,event_cutoff_ms=min(now,p['outcome_end_ms']))
+-  if not report.get('components',{}).get('EUR.USD',{}).get('ledger_complete'):
+-   issues.append({'reason':'CURRENT_LEDGER_REPLAY_UNAVAILABLE'})
++  replay_issue=current_ledger_replay_issue(report)
++  if replay_issue is not None:issues.append(replay_issue)
+   # A partial final replay cannot establish the population denominator. Keep
+   # the last completed assessment intact; main publishes a separate failure.
+   if now>=p['outcome_end_ms'] and issues and not self.strict_review:

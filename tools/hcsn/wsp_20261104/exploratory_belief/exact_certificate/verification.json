@@ -1,0 +1,22 @@
+{
+  "verified": true,
+  "fit": 71,
+  "margins": [
+    0.0,
+    0.001
+  ],
+  "exactly_infeasible_cases": 2,
+  "source_verification": "not requested; standalone evidence verification completed",
+  "arithmetic_self_checks": {
+    "passed": true,
+    "cases": [
+      "catastrophic float cancellation",
+      "smallest binary64 subnormal",
+      "signed cancellation",
+      "negative zero"
+    ]
+  },
+  "optimizer_called": false,
+  "verification_process_cwd": "isolated temporary directory",
+  "verification_does_not_read_original_sources": true
+}

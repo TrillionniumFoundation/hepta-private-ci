@@ -1,0 +1,75 @@
+{
+  "belief_budget": "rho=.5*||original_belief_row||2; L1(delta)<=rho implies L2(delta)<=rho",
+  "budget_fraction": 0.5,
+  "candidate_gating": "original validation exact-law mean utility gain versus original base>=.005; no test selection; numeric/budget failures rejected; raw arms retained separately",
+  "do_not_claim": [
+    "full-model retraining fairness",
+    "equal hyperparameter search",
+    "global NDU optimum",
+    "general model circuit understanding",
+    "actual FullHX or trading improvement"
+  ],
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "editable_parameters": 49,
+  "evaluation": "exact expectation under original declared finite law and TRAIN-fitted confusion; no new FullHX packet decoding or HeptaTrader execution",
+  "exploratory": true,
+  "external_preregistration": false,
+  "frozen_parameters": "all representation, physical transitions and the 3 continuation rows except reuse of the prior separately fixed continuation edit in factorial arms",
+  "gated_arms": [
+    "gated10_old_continuation",
+    "gated01_belief",
+    "gated11_both",
+    "gated01_random_belief"
+  ],
+  "holdout_comparisons": [
+    "raw01-base",
+    "raw11-base",
+    "raw11-raw10",
+    "raw01-raw_random",
+    "raw factorial interaction",
+    "same gated contrasts"
+  ],
+  "linear_program": "minimize sum_j t_j; -t_j<=delta_j<=t_j; target_sign_i*x_i dot (base_belief+delta)>=1e-4; sum_j t_j<=rho",
+  "logit_margin": 0.0001,
+  "lp_environment": {
+    "numpy": "2.3.5",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "scipy": "1.17.0"
+  },
+  "lp_infeasible_or_numerical_failure": "record no proposal; effective belief delta0; raw01 becomes base and raw11 becomes old continuation; keep all5 fits and flag the failed B intervention",
+  "new_world_ids": "wsp_belief_followup_{seed}_{domain}_{fit}_{index}",
+  "no_budget_relaxation": true,
+  "numerical_constraint_tolerance": 1e-08,
+  "parent_study_protocol_changed": false,
+  "primary_mechanism": "repair immutable wrong terminal orderings while preserving originally correct unique oracle-terminal TRAIN signs",
+  "random_control": "ONE signed permutation of the LP delta, deterministic RNG(seed+1000*fit+7331), preserving L1 and L2 norms; no search; report sign-constraint violations; raw diagnostic is not a valid mechanism repair when signs fail",
+  "raw_arms": [
+    "raw00_base",
+    "raw10_old_continuation",
+    "raw01_belief",
+    "raw11_both",
+    "raw01_random_belief"
+  ],
+  "schema": "hepta-belief-targeted-exploratory-followup-v1",
+  "seed": 870140000,
+  "solver": "scipy.optimize.linprog(method=highs); stable row order; one LP per fit; no hyperparameter/candidate search",
+  "source_commit": "5b69a046d886cf4c2a73c50e58197360ea15d8f5",
+  "source_fits": [
+    11,
+    23,
+    37,
+    53,
+    71
+  ],
+  "source_geometry_sha256": "2928beeceabd3c6b48cda7d1b5df2de4ddbbaecc2ebedb23d2a8ce75df1816d5",
+  "source_original_experiment_sha256": "fe0681ef732b660db0b195bda21cf9ab40b0d6cd8b7fe0c69ade7b9e67198b6f",
+  "source_original_results_sha256": "a55a8136842d366f3d3663b05028bae8fa7eedad63bfa731662fb692104eedb4",
+  "statistical_units": "5 original independent training fits; descriptive paired Student-t95% CIs, no multiplicity-qualified superiority claim",
+  "training_selection": "ALL original TRAIN rows with a unique legal oracle best action (tie tolerance1e-10) equal to SUBMIT0 or SUBMIT1; originally correct signs also constrained",
+  "validation_acceptance_improvement": 0.005,
+  "worlds_per_fit_per_domain": 32,
+  "written_utc": "2026-11-04T03:39:28.154202+00:00"
+}

@@ -1,0 +1,62 @@
+{
+  "as_of_utc": "2026-11-04T03:26:29.430000+00:00",
+  "current_eligibility": "UNKNOWN",
+  "diagnostic_earlier_prefix": {
+    "bytes": 53082107,
+    "events": 47508,
+    "not_used_for_current_credit": true,
+    "replay_complete": true
+  },
+  "diagnostic_patch_deployed": false,
+  "driver_pending_matches_failing_command": true,
+  "existing_proof_search": {
+    "authoritative_oms": "NO_FILL_OR_TERMINAL_FOR_BOUND_COMMAND",
+    "driver_state": "SAME_COMMAND_PENDING",
+    "new_broker_requests": 0,
+    "observability_journal_exact_identity_matches": 0,
+    "owner_journal": "PENDING_NATIVE_EVIDENCE_AND_INCOMPLETE_RECOVERY_BARRIER"
+  },
+  "failing_command": {
+    "exact_frozen_input_binding_count": 1,
+    "last_original_status": "PreSubmitted",
+    "original_event_sequence": [
+      "order_intent",
+      "place_send_attempt",
+      "broker_order_accepted",
+      "place_sent",
+      "broker_order_status"
+    ],
+    "private_identity_disclosed": false,
+    "source_ingress_issues": [],
+    "validated_fill_points": 0,
+    "validated_terminal_statuses": 0,
+    "within_frozen_input_window": true
+  },
+  "individual_rows_weights_accounts_commands_or_host_paths_disclosed": false,
+  "native_cause": "SUBMITTED_COMMAND_WITHOUT_FILL_OR_ZERO_FILL_PROOF",
+  "orders_cancelled_retried_or_submitted": 0,
+  "original_ledger_or_protocol_changed": false,
+  "original_source_intact": {
+    "bytes": 53087317,
+    "content_address_retained_privately": true,
+    "event_count": 47513,
+    "trailing_uncommitted_bytes": 0
+  },
+  "owner_readback": {
+    "authorization_effect": "NONE",
+    "connected": true,
+    "event_overflow_generation": 0,
+    "event_stream_authoritative": true,
+    "observed_at_ms": 1793762785420,
+    "recovery_barrier_complete": false,
+    "recovery_reason": "IB_RECOVERY_AUDIT_PLACE_MUTATION",
+    "schema": "heptatrader.ib-runtime-observation.v1",
+    "terminal_transport_halted": false
+  },
+  "recovery_requirement": "Original native fill and required settlement evidence, or exact-subject native terminal status establishing zero fill. PreSubmitted qty=0 and absence of execution do not prove zero-fill termination.",
+  "restored_current_credit": false,
+  "schema": "hepta.wsp.source-replay-blocker-aggregate.v1",
+  "scope": "READ_ONLY_DIAGNOSIS_AND_ISOLATED_DIAGNOSTICS_ONLY_REGRESSION; SUBSTANTIVE_EVIDENCE_BLOCKER_REMAINS",
+  "two_families_share_identical_replay_implementation": true,
+  "wrapper_cause": "STRICT_SOURCE_REPLAY_INCOMPLETE"
+}

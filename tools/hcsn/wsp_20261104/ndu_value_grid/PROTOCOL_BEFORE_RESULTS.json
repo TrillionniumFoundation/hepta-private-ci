@@ -1,0 +1,102 @@
+{
+  "arms": [
+    "A_original",
+    "C_incumbent",
+    "V_grid_raw",
+    "V_grid_gated",
+    "R_permutation_raw",
+    "R_permutation_gated"
+  ],
+  "budget": "For each stored candidate, compute exact Fraction sum of squared differences of all147 continuation parameters from original A. Require <= exact square of the originally recorded binary64 rho=.5*norm(A continuation). No relaxation or projection.",
+  "budget_failure": "Preserve completed and partial tables, report blocked; no budget expansion, second grid, hyperparameter change, or test-based reselection",
+  "candidate_float_semantics": "Create binary64 C copy; set three biases to binary64 C bias plus binary64 grid offset; recorded actual target parameters define candidate",
+  "candidate_order": "itertools.product(grid, repeat=3), lexicographic WAIT/READ/REPAIR; zero offset index62",
+  "cpu_graceful_check_seconds": 290,
+  "cpu_hard_limit_seconds": 300,
+  "cpu_soft_signal_seconds": 295,
+  "descriptive_probes": "Original fixed TRAIN/VAL row Q-MSE, continuation Q-MSE, belief Brier, and behavior regret for A/C/V/R; never used for candidate choice or gate. Bias-optimized action scores need not be Bellman-consistent calibrated Q.",
+  "do_not_claim": [
+    "FullHX packet decoding or real trading effect",
+    "gradient/full-model compute superiority",
+    "new GPT/Astra discovery",
+    "general neural-circuit understanding",
+    "Bellman-calibrated Q from utility selection"
+  ],
+  "domains": [
+    "iid",
+    "ood"
+  ],
+  "driver_sha256": "5d306747d36d85662964f5f8a14fa9b404826d5dfe55b0a65ef668af881cadb4",
+  "editable": "Only three continuation biases WAIT/READ/REPAIR, added to separately frozen original C; all other C head coordinates, original Belief and representation unchanged",
+  "evaluator": "Reuse original policy_value/eval_worlds recursive expectation and explicit-reduction checked matrix products; np.errstate over/invalid/divide=raise",
+  "exploratory": true,
+  "external_preregistration": false,
+  "feasibility_pilot": {
+    "naive_625_warm_candidate_cpu_seconds": 30.848125000000024,
+    "numpy": "2.0.2",
+    "runs": [
+      {
+        "cpu_seconds": 0.271546,
+        "feature_cache_states": 856,
+        "mode": "cold",
+        "visited_nodes": 856,
+        "wall_seconds": 0.271864167,
+        "worlds": 64
+      },
+      {
+        "cpu_seconds": 0.04935700000000004,
+        "feature_cache_states": 856,
+        "mode": "warm",
+        "visited_nodes": 856,
+        "wall_seconds": 0.04938100000000001,
+        "worlds": 64
+      }
+    ],
+    "scope": "Only frozen C on fit11 TRAIN; no candidate comparison or fresh test generation; warm-cache extrapolation is not observed total cost"
+  },
+  "fits": [
+    11,
+    23,
+    37,
+    53,
+    71
+  ],
+  "grid": [
+    -0.1,
+    -0.05,
+    0.0,
+    0.05,
+    0.1
+  ],
+  "grid_size_per_fit": 125,
+  "holdout_order": "Complete all five TRAIN selections and VAL decisions, persist all tables and ALL_SELECTIONS_AND_VAL_BEFORE_TEST before generating any fresh holdout world",
+  "incumbent": "Old selected continuation edit C, exact frozen model identities reconstructed from published last-layer arrays",
+  "incumbent_budget_gate": "Check all five C total exact squared changes before any candidate scoring; if any is outside its original radius, block whole run without search",
+  "no_op_preserved": "Original A is unchanged; C is original frozen incumbent and grid zero candidate; rejected edits return exactly to C.",
+  "objective": "Equal-world mean full expected terminal utility minus all action/latency/repair costs on ALL 64 original TRAIN public worlds per fit, using original law and TRAIN-fitted decoder confusion; no Q-MSE proxy",
+  "old_heads_gzip_sha256": "d4f220739bc5b76d19ab02e1440e48b2ef82f6098a7ff78516284e61d32518e1",
+  "operator_wall_limit_seconds": 360,
+  "optimality_scope": "Global selection only over the declared feasible finite grid for the evaluated numerical TRAIN objective. Not continuous-weight, unseen-environment, global NDU, or exact real-arithmetic optimum.",
+  "original_results_uncompressed_sha256": "a55a8136842d366f3d3663b05028bae8fa7eedad63bfa731662fb692104eedb4",
+  "random_control": "One fixed PCG64 RNG(seed+1000*fit+881) signed permutation of selected nominal three-bias grid offsets; nominal L2 norm exactly equal. Record exact realized squared-norm discrepancy due to binary64 addition. No utility search or retries. If original-radius constraint fails, record infeasible and use effective no-op C.",
+  "sampled_peak_rss_limit_bytes": 4294967296,
+  "schema": "hepta-ndu-value-grid-protocol-v1",
+  "seed": 870150000,
+  "selection": "Among feasible candidates minimize (-computed TRAIN full utility, exact squared change from C, nominal offset lexicographically); exact binary64 utility equality defines ties. Score and retain all125 candidates including infeasible ones.",
+  "source_commit": "5b69a046d886cf4c2a73c50e58197360ea15d8f5",
+  "source_sha256": {
+    "checked_replay.py": "d0922ab0c458d9d382e1f9c851c52731c4a71256870000862dbebf5d38366b24",
+    "joint_deploy.py": "c91ef40c484000e2a2b923425467c03fbbfb4e15a1f54856f6c850f9242c8e26",
+    "joint_law.py": "2e7f19a2534567e31370eea24dec096a309e4db4aa42770efbf544bed84bcf65",
+    "joint_protocol.json": "1c6ffc51d8d9df8f57bb350dd9d80a264b889a14882da553c63e60c547a18606",
+    "joint_task.py": "51139ba57004f2a5d69381af2f781b3717404318f122d8b6bec8416004efffa5",
+    "legacy_task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+    "run_head_edit.py": "fe0681ef732b660db0b195bda21cf9ab40b0d6cd8b7fe0c69ade7b9e67198b6f",
+    "truth_transitions.npz": "3a62c48272d90b459622ed8818fddf36de983831fbc0c1306fc39b27345228f0"
+  },
+  "statistical_reporting": "V-C per fit and descriptive unadjusted paired Student-t95% CI across five original independent fits, plus A/C and random contrasts. No multiplicity-corrected superiority claim.",
+  "test_worlds_per_fit_domain": 32,
+  "validation_gain_threshold": 0.005,
+  "validation_reference": "Current frozen C, not original A; V and one random control gated independently with gain>=.005; rejected effective arm is exact C",
+  "written_utc": "2026-11-04T05:10:34.189300+00:00"
+}

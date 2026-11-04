@@ -1,0 +1,4643 @@
+{
+  "candidate_serialization_scope": "Actual full candidate JSON roundtrip/restore check executed in pinned scientific driver; record helper independently validates head recipe/identity, does not reconstruct entire source checkpoint again.",
+  "convex_problem": {
+    "PGD_all_independently_converged": true,
+    "direct_all_numerically_qualified": true,
+    "exact_analytic_bypass_implemented": false,
+    "exact_outward_real_global_certificate": false,
+    "exact_stored_IEEE_original_and_safe_radius_checks_passed": true,
+    "fixed_feature_problem_only": true,
+    "numeric_FW_tolerance": 1e-08,
+    "original_radius_fraction": 0.5,
+    "regularization": 0.0001,
+    "safe_radius_factor": 0.99999999
+  },
+  "cost": {
+    "PGD_including_features_and_Gram_cpu_seconds": 1.7277579999999997,
+    "PGD_including_shared_Gram_cpu_seconds": 1.2750019999999995,
+    "PGD_solver_cpu_seconds": 1.2709959999999998,
+    "direct_including_features_and_Gram_cpu_seconds": 0.4698410000000003,
+    "direct_including_shared_Gram_cpu_seconds": 0.017085000000000267,
+    "direct_solver_cpu_seconds": 0.013079000000000618,
+    "observed_single_run_ratios": {
+      "including_Gram_spectrum": 74.62698273339068,
+      "including_features_and_Gram": 3.6773248822473956,
+      "solver_only": 97.17837755179599
+    },
+    "scope": "Single-run same-convex-FW-precision phase timing for49-parameter self-target problems; not task-quality,whole-study,inference,full-model-training,or repeated-benchmark speedup.",
+    "shared_Gram_spectrum_cpu_seconds": 0.004005999999999649,
+    "shared_TRAIN_features_cpu_seconds": 0.45275600000000005
+  },
+  "edit_scope": "49 existing Belief coefficients+bias per direct/PGD candidate relative to paired A or C; W1/core/decoder/continuation unchanged.",
+  "execution_graph_changed": false,
+  "fit_data_scope": "All and only original TRAIN hidden+bias and own bank7; independent H/probability source chain verified against previous TRAIN evidence.",
+  "fit_seeds": [
+    11,
+    23,
+    37,
+    53,
+    71
+  ],
+  "frozen_identities": {
+    "DESIGN_BEFORE_RESULTS.json": "da512b0ac3a1fc9c67e8d004456f2c8605dcbddb3ec64888f3431627ec77b18c",
+    "HISTORICAL_SEED_REGISTRY.json": "397b3a5f4609052d743b5f456b7af5b476678fa50841289b0aad9cbd66ae718b",
+    "HISTORY_REGISTRY.json.gz": "e29228a4b6858b6aea4d4fd623bb5ac26db450dab61bc660e148493d97fd9163",
+    "PREVIOUS_177_BEFORE.json": "2ccea98e0cc287a20f7e637eaad5333a5607799902204a0989302c0eb3469cad",
+    "PROTOCOL_BEFORE_RESULTS.json": "f0b35b698c3da2738ef187fa6dea1f402a418d5cbf317f3fa425c5097fe26e90",
+    "belief_convex.py": "79fe3006b4ccebf765ab4160d67c17690330d4a4cd128f3d3f1050fb53af5444",
+    "prepare_history_registry.py": "72f7c853b39a05775de1d26108a68dc99fec8159f3f02787b88eadfccf8a4aa5",
+    "records/ALL_SOLVERS_AND_GATES_BEFORE_TEST.json": "35f198fef38058d37d72777bec5777e608b65020cf476cf1740ec37e542c9738",
+    "records/ALL_TEST_WORLDS_DEDUP_BEFORE_SCORING.json": "83c34d0b2edae732f0cade22796fec92cb9579992141e890905670edb9e41bb4",
+    "records/QUALIFICATION.json": "3025ac912d82a67be22e982c12f89e0d74c4704d72dfd226989e6ae51eaf29a4",
+    "records/RESULTS.json.gz": "63ae9ff85631fd53c70f4dc69a82dc59feaaa84e37a19ed1efcb19e8316babd6",
+    "run_belief_compile.py": "2472219f9d94fda23b74852ef4b09a0377e70c4211bb43bdd67aab6c4304e2f6"
+  },
+  "independent_verification": {
+    "INDEPENDENT_RECORD_VERIFICATION.json": {
+      "output": {
+        "arm_split_records_verified": 160,
+        "contrast_metric_CIs_verified": 154,
+        "history_unique_schedules": 1616,
+        "new_model_calls": 0,
+        "previous_frozen_files_verified": 177,
+        "probes_verified": 20,
+        "random_draws": 0,
+        "results_sha256": "63ae9ff85631fd53c70f4dc69a82dc59feaaa84e37a19ed1efcb19e8316babd6",
+        "scope": "Scalar record arithmetic, source/parameter identity, exact registered-content dedup and recorded freeze chain only. Convex numerical-source verification is independently handled by verify_belief_solver_records.py; no global external-history freshness claim.",
+        "status": "passed_record_identity_metrics_dedup",
+        "test_worlds_verified": 320,
+        "transferred_raw_files_verified": 49,
+        "verifier_sha256": "716f7910ccd8224afd7c38fe5276d7fc7f04b7959087cd5d1f303d0aa5497c02"
+      },
+      "receipt_sha256": "c43ea8c1d310f4a9eb19381eea0f19a5cf01c66ec54ad890117a7296ef4cdde6"
+    },
+    "INDEPENDENT_SOLVER_VERIFICATION.json": {
+      "output": {
+        "candidate_solves": 0,
+        "fits": [
+          {
+            "H_max_difference_from_frozen_geometry": 3.469446951953614e-16,
+            "PGD_FW_gap_recomputed": 9.99554273790719e-09,
+            "PGD_converged": true,
+            "PGD_objective_recomputed": 0.00898995942694088,
+            "PGD_steps": 6549,
+            "TRAIN_rows": 308,
+            "direct_FW_gap_recomputed": 1.3333518317226734e-15,
+            "direct_KKT_stationarity_linf_recomputed": 1.2634750017059826e-14,
+            "direct_mu": 0.0018490855254551996,
+            "direct_objective_recomputed": 0.00898995229882489,
+            "equal_objective_precision_gate_passed": true,
+            "fit": 11,
+            "own_bank_exactly_matches_prior_TRAIN_probe": true
+          },
+          {
+            "H_max_difference_from_frozen_geometry": 4.579669976578771e-16,
+            "PGD_FW_gap_recomputed": 9.997648191522462e-09,
+            "PGD_converged": true,
+            "PGD_objective_recomputed": 0.006889301384545157,
+            "PGD_steps": 9624,
+            "TRAIN_rows": 290,
+            "direct_FW_gap_recomputed": 1.0581813203458523e-15,
+            "direct_KKT_stationarity_linf_recomputed": 4.8638393659872214e-14,
+            "direct_mu": 0.0017185748702202588,
+            "direct_objective_recomputed": 0.006889293601658943,
+            "equal_objective_precision_gate_passed": true,
+            "fit": 23,
+            "own_bank_exactly_matches_prior_TRAIN_probe": true
+          },
+          {
+            "H_max_difference_from_frozen_geometry": 3.7470027081099033e-16,
+            "PGD_FW_gap_recomputed": 9.990430069372128e-09,
+            "PGD_converged": true,
+            "PGD_objective_recomputed": 0.008064128313885479,
+            "PGD_steps": 5713,
+            "TRAIN_rows": 299,
+            "direct_FW_gap_recomputed": 0,
+            "direct_KKT_stationarity_linf_recomputed": 4.2099570357612137e-16,
+            "direct_mu": 0.0026230858354775563,
+            "direct_objective_recomputed": 0.008064120694192057,
+            "equal_objective_precision_gate_passed": true,
+            "fit": 37,
+            "own_bank_exactly_matches_prior_TRAIN_probe": true
+          },
+          {
+            "H_max_difference_from_frozen_geometry": 3.885780586188048e-16,
+            "PGD_FW_gap_recomputed": 9.998616387640359e-09,
+            "PGD_converged": true,
+            "PGD_objective_recomputed": 0.0026068999198413548,
+            "PGD_steps": 18039,
+            "TRAIN_rows": 341,
+            "direct_FW_gap_recomputed": 0,
+            "direct_KKT_stationarity_linf_recomputed": 2.1595274396837838e-16,
+            "direct_mu": 0.000752272610126052,
+            "direct_objective_recomputed": 0.0026068929634558927,
+            "equal_objective_precision_gate_passed": true,
+            "fit": 53,
+            "own_bank_exactly_matches_prior_TRAIN_probe": true
+          },
+          {
+            "H_max_difference_from_frozen_geometry": 3.3306690738754696e-16,
+            "PGD_FW_gap_recomputed": 9.995786450726213e-09,
+            "PGD_converged": true,
+            "PGD_objective_recomputed": 0.005211842051466542,
+            "PGD_steps": 15776,
+            "TRAIN_rows": 344,
+            "direct_FW_gap_recomputed": 0,
+            "direct_KKT_stationarity_linf_recomputed": 2.799952110443815e-16,
+            "direct_mu": 0.0008881769438701597,
+            "direct_objective_recomputed": 0.005211835394615992,
+            "equal_objective_precision_gate_passed": true,
+            "fit": 71,
+            "own_bank_exactly_matches_prior_TRAIN_probe": true
+          }
+        ],
+        "gradient_updates": 0,
+        "new_model_forwards": 0,
+        "results_sha256": "63ae9ff85631fd53c70f4dc69a82dc59feaaa84e37a19ed1efcb19e8316babd6",
+        "scope": "Independent scalar reconstruction of recorded objective/gradient/Gram/FW/KKT and exact stored-IEEE radius, with previously frozen TRAIN H and own-bank target provenance. Eigenvalues checked for L only; no new candidate solve or PGD replay. Numerical diagnostics are not rigorous outward-rounded real optimality certificates. Matching this small self-target objective does not establish full-model-training or task-quality equivalence.",
+        "status": "passed_recorded_convex_numerics",
+        "verifier_sha256": "82a1dd83a63adc9861cb6f961df4a842a78f0d06d0812feae04c812c2e4c23c9"
+      },
+      "receipt_sha256": "249767be640f31cd169aab7998b1c18d4841846662bf72a48c9e2cb5383310a7"
+    }
+  },
+  "interpretation": {
+    "FullHX_or_Trader_validated": false,
+    "all_primary_candidate_utility_descriptive_CIs_include_zero": true,
+    "confirmed_task_utility_superiority": false,
+    "exploratory": true,
+    "external_preregistration": false,
+    "full_model_training_efficiency_superiority_claim": false,
+    "global_NDU_optimum_claim": false,
+    "multiplicity_adjustment": false,
+    "pure_weight_compilation_feasible": true,
+    "task_quality_equivalent_speed_claim": false
+  },
+  "matrix_audit": {
+    "count": 797035,
+    "max_abs_difference": 1.1546319456101628e-14,
+    "max_input_abs": 1.6452451767963467,
+    "max_output_abs": 344.0,
+    "nonfinite_count": 0
+  },
+  "measurement": {
+    "cpu_seconds": 22.61468,
+    "endpoint": "Before final results compression and qualification write;180CPU hard cap covers whole process.",
+    "peak_rss_bytes": 128598016,
+    "process_cpu_seconds_at_measurement": 22.673103,
+    "wall_seconds": 22.7039915
+  },
+  "metric_scope": {
+    "belief_brier": "Mean squared error against Oracle posterior, Brier excess risk excluding Bernoulli irreducible term; not observed label/trading Brier.",
+    "expected_utility": "Complete finite-law policy expectation including original costs/observations; no FullHX/trading.",
+    "own_bank_logit_mse": "Compilation target approximation only, distinct from truth, Bellman consistency and task value."
+  },
+  "old177_unchanged": true,
+  "original_train_validation_means": {
+    "train": {
+      "A": {
+        "belief_brier": 0.0002682475816673296,
+        "continuation_q_mse": 0.010510176356739542,
+        "expected_utility": 0.24120002549792088,
+        "own_bank_logit_mse": 0.011557023704603517,
+        "own_bank_probability_mse": 0.0004723871763448873,
+        "q_mse": 0.00400763451121738,
+        "teacher_behavior_regret": 0.012726391533420688
+      },
+      "C": {
+        "belief_brier": 0.0002682475816673296,
+        "continuation_q_mse": 0.007692216779648726,
+        "expected_utility": 0.2513658602428553,
+        "own_bank_logit_mse": 0.011557023704603517,
+        "own_bank_probability_mse": 0.0004723871763448873,
+        "q_mse": 0.0030736502196449045,
+        "teacher_behavior_regret": 0.00926377644160142
+      },
+      "CD": {
+        "belief_brier": 0.00029103636999404554,
+        "continuation_q_mse": 0.007692216779648726,
+        "expected_utility": 0.24954091818424048,
+        "own_bank_logit_mse": 0.006317287687066327,
+        "own_bank_probability_mse": 0.00021281895977973557,
+        "q_mse": 0.0031194355105373583,
+        "teacher_behavior_regret": 0.00906563580762627
+      },
+      "CG": {
+        "belief_brier": 0.00029106610578131533,
+        "continuation_q_mse": 0.007692216779648726,
+        "expected_utility": 0.24954091818424048,
+        "own_bank_logit_mse": 0.006317294915852642,
+        "own_bank_probability_mse": 0.00021282731428527656,
+        "q_mse": 0.003119482724326592,
+        "teacher_behavior_regret": 0.00906563580762627
+      },
+      "D": {
+        "belief_brier": 0.00029103636999404554,
+        "continuation_q_mse": 0.010510176356739542,
+        "expected_utility": 0.2398178023961185,
+        "own_bank_logit_mse": 0.006317287687066327,
+        "own_bank_probability_mse": 0.00021281895977973557,
+        "q_mse": 0.004053419802109833,
+        "teacher_behavior_regret": 0.012089101299489665
+      },
+      "G": {
+        "belief_brier": 0.00029106610578131533,
+        "continuation_q_mse": 0.010510176356739542,
+        "expected_utility": 0.2398178023961185,
+        "own_bank_logit_mse": 0.006317294915852642,
+        "own_bank_probability_mse": 0.00021282731428527656,
+        "q_mse": 0.0040534670158990675,
+        "teacher_behavior_regret": 0.012089101299489665
+      }
+    },
+    "validation": {
+      "A": {
+        "belief_brier": 0.0006109115232716295,
+        "continuation_q_mse": 0.023642825356215827,
+        "expected_utility": 0.203540689858617,
+        "own_bank_logit_mse": 0.015826723007558358,
+        "own_bank_probability_mse": 0.0007178321395576126,
+        "q_mse": 0.008963977574569666,
+        "teacher_behavior_regret": 0.014908544344015819
+      },
+      "C": {
+        "belief_brier": 0.0006109115232716295,
+        "continuation_q_mse": 0.02048589220453192,
+        "expected_utility": 0.237267384369058,
+        "own_bank_logit_mse": 0.015826723007558358,
+        "own_bank_probability_mse": 0.0007178321395576126,
+        "q_mse": 0.007910036154112208,
+        "teacher_behavior_regret": 0.01136580243824447
+      },
+      "CD": {
+        "belief_brier": 0.0005630964029164602,
+        "continuation_q_mse": 0.02048589220453192,
+        "expected_utility": 0.2370107834322601,
+        "own_bank_logit_mse": 0.011796575317916643,
+        "own_bank_probability_mse": 0.0005067602908914134,
+        "q_mse": 0.007827856278704382,
+        "teacher_behavior_regret": 0.011945703405450772
+      },
+      "CG": {
+        "belief_brier": 0.0005631684903701524,
+        "continuation_q_mse": 0.02048589220453192,
+        "expected_utility": 0.2370107834322601,
+        "own_bank_logit_mse": 0.011797934616069428,
+        "own_bank_probability_mse": 0.0005068357889399341,
+        "q_mse": 0.007827985853322025,
+        "teacher_behavior_regret": 0.011945703405450772
+      },
+      "D": {
+        "belief_brier": 0.0005630964029164602,
+        "continuation_q_mse": 0.023642825356215827,
+        "expected_utility": 0.20515718708168806,
+        "own_bank_logit_mse": 0.011796575317916643,
+        "own_bank_probability_mse": 0.0005067602908914134,
+        "q_mse": 0.00888179769916184,
+        "teacher_behavior_regret": 0.015994494872442405
+      },
+      "G": {
+        "belief_brier": 0.0005631684903701524,
+        "continuation_q_mse": 0.023642825356215827,
+        "expected_utility": 0.20515718708168806,
+        "own_bank_logit_mse": 0.011797934616069428,
+        "own_bank_probability_mse": 0.0005068357889399341,
+        "q_mse": 0.008881927273779483,
+        "teacher_behavior_regret": 0.015994494872442405
+      }
+    }
+  },
+  "publication_scope": "Public checkpoint-derived synthetic joint task inputs/results/edited heads; no newly private HeptaTrader data,account/order identifiers,host operation paths,original full model copies or transfer caches.",
+  "schema": "hepta-analytic-belief-compile-package-qualification-v1",
+  "scientific_run_status": "completed_once_exit0_stderr0",
+  "scientific_runs": 1,
+  "solver_diagnostics": [
+    {
+      "direct": {
+        "certificate": {
+          "actual_squared_delta": {
+            "denominator": "166153499473114484112975882535043072",
+            "numerator": "59901619812658597501925104681092945"
+          },
+          "original_radius_squared": {
+            "denominator": "664613997892457936451903530140172288",
+            "numerator": "239606484043243205506004017755265307"
+          },
+          "safe_radius_squared": {
+            "denominator": "81129638414606681695789005144064",
+            "numerator": "29248837799208197112227492796681"
+          },
+          "scope": "Exact stored-IEEE real vector difference; no continuous-law claim.",
+          "within_original": true,
+          "within_safe": true
+        },
+        "complementarity_absolute": 1.3330488778987947e-15,
+        "independent_cholesky_delta_l2_difference": 6.181965974622128e-13,
+        "kkt_stationarity_linf": 1.2620926439360636e-14,
+        "lagrange_mu": 0.0018490855254551996,
+        "linear_equation_residual_linf": 6.3221997081974735e-15,
+        "numerical_fw_gap": 1.3331349912881763e-15,
+        "objective": 0.00898995229882489,
+        "own_bank_logit_mse": 0.008953900322789109,
+        "solver_cpu_seconds": 0.0038120000000000376,
+        "storage_inward_guard_applied": true
+      },
+      "fit": 11,
+      "gradient": {
+        "certificate": {
+          "actual_squared_delta": {
+            "denominator": "166153499473114484112975882535043072",
+            "numerator": "59901619812778382602364108419412631"
+          },
+          "original_radius_squared": {
+            "denominator": "664613997892457936451903530140172288",
+            "numerator": "239606484043243205506004017755265307"
+          },
+          "safe_radius_squared": {
+            "denominator": "81129638414606681695789005144064",
+            "numerator": "29248837799208197112227492796681"
+          },
+          "scope": "Exact stored-IEEE real vector difference; no continuous-law claim.",
+          "within_original": true,
+          "within_safe": true
+        },
+        "converged_to_declared_FW_tolerance": true,
+        "numerical_fw_gap": 9.99554273790719e-09,
+        "objective": 0.00898995942694088,
+        "own_bank_logit_mse": 0.008953907450905027,
+        "solver_cpu_seconds": 0.147752,
+        "steps": 6549,
+        "stop_reason": "own_stored_parameter_FW_gap",
+        "storage_inward_guard_applications": 0
+      },
+      "rows": 308,
+      "shared_setup_cpu_seconds": 0.001469999999999999
+    },
+    {
+      "direct": {
+        "certificate": {
+          "actual_squared_delta": {
+            "denominator": "5316911983139663491615228241121378304",
+            "numerator": "1637318467707425718397914412260090433"
+          },
+          "original_radius_squared": {
+            "denominator": "21267647932558653966460912964485513216",
+            "numerator": "6549274001828280797587642586272097345"
+          },
+          "safe_radius_squared": {
+            "denominator": "81129638414606681695789005144064",
+            "numerator": "24983497126933289986553905167889"
+          },
+          "scope": "Exact stored-IEEE real vector difference; no continuous-law claim.",
+          "within_original": true,
+          "within_safe": true
+        },
+        "complementarity_absolute": 1.0582729712190392e-15,
+        "independent_cholesky_delta_l2_difference": 5.707804082241375e-13,
+        "kkt_stationarity_linf": 4.8636116835309995e-14,
+        "lagrange_mu": 0.0017185748702202588,
+        "linear_equation_residual_linf": 2.4317353686242882e-14,
+        "numerical_fw_gap": 1.0586150012148465e-15,
+        "objective": 0.006889293601658943,
+        "own_bank_logit_mse": 0.006858499063910349,
+        "solver_cpu_seconds": 0.002531000000000061,
+        "storage_inward_guard_applied": true
+      },
+      "fit": 23,
+      "gradient": {
+        "certificate": {
+          "actual_squared_delta": {
+            "denominator": "5316911983139663491615228241121378304",
+            "numerator": "1637318467710699943124258570903973441"
+          },
+          "original_radius_squared": {
+            "denominator": "21267647932558653966460912964485513216",
+            "numerator": "6549274001828280797587642586272097345"
+          },
+          "safe_radius_squared": {
+            "denominator": "81129638414606681695789005144064",
+            "numerator": "24983497126933289986553905167889"
+          },
+          "scope": "Exact stored-IEEE real vector difference; no continuous-law claim.",
+          "within_original": true,
+          "within_safe": true
+        },
+        "converged_to_declared_FW_tolerance": true,
+        "numerical_fw_gap": 9.997648191522462e-09,
+        "objective": 0.006889301384545157,
+        "own_bank_logit_mse": 0.006858506846796501,
+        "solver_cpu_seconds": 0.21673799999999988,
+        "steps": 9624,
+        "stop_reason": "own_stored_parameter_FW_gap",
+        "storage_inward_guard_applications": 0
+      },
+      "rows": 290,
+      "shared_setup_cpu_seconds": 0.0006249999999998757
+    },
+    {
+      "direct": {
+        "certificate": {
+          "actual_squared_delta": {
+            "denominator": "1329227995784915872903807060280344576",
+            "numerator": "393314414199812316257041146523556409"
+          },
+          "original_radius_squared": {
+            "denominator": "5316911983139663491615228241121378304",
+            "numerator": "1573257688264403264828297190368450985"
+          },
+          "safe_radius_squared": {
+            "denominator": "81129638414606681695789005144064",
+            "numerator": "24006006726062764684753758646129"
+          },
+          "scope": "Exact stored-IEEE real vector difference; no continuous-law claim.",
+          "within_original": true,
+          "within_safe": true
+        },
+        "complementarity_absolute": 1.4561051450576492e-19,
+        "independent_cholesky_delta_l2_difference": 7.83270574447752e-14,
+        "kkt_stationarity_linf": 4.2240516640035253e-16,
+        "lagrange_mu": 0.0026230858354775563,
+        "linear_equation_residual_linf": 1.5612511283791264e-16,
+        "numerical_fw_gap": 0.0,
+        "objective": 0.008064120694192059,
+        "own_bank_logit_mse": 0.008034531006384772,
+        "solver_cpu_seconds": 0.0022290000000002586,
+        "storage_inward_guard_applied": false
+      },
+      "fit": 37,
+      "gradient": {
+        "certificate": {
+          "actual_squared_delta": {
+            "denominator": "1329227995784915872903807060280344576",
+            "numerator": "393314414199812232662908206088992249"
+          },
+          "original_radius_squared": {
+            "denominator": "5316911983139663491615228241121378304",
+            "numerator": "1573257688264403264828297190368450985"
+          },
+          "safe_radius_squared": {
+            "denominator": "81129638414606681695789005144064",
+            "numerator": "24006006726062764684753758646129"
+          },
+          "scope": "Exact stored-IEEE real vector difference; no continuous-law claim.",
+          "within_original": true,
+          "within_safe": true
+        },
+        "converged_to_declared_FW_tolerance": true,
+        "numerical_fw_gap": 9.990430069372128e-09,
+        "objective": 0.008064128313885479,
+        "own_bank_logit_mse": 0.008034538626078192,
+        "solver_cpu_seconds": 0.13142599999999982,
+        "steps": 5713,
+        "stop_reason": "own_stored_parameter_FW_gap",
+        "storage_inward_guard_applications": 0
+      },
+      "rows": 299,
+      "shared_setup_cpu_seconds": 0.0006309999999998261
+    },
+    {
+      "direct": {
+        "certificate": {
+          "actual_squared_delta": {
+            "denominator": "1361129467683753853853498429727072845824",
+            "numerator": "495996613928796542617060309571512266905"
+          },
+          "original_radius_squared": {
+            "denominator": "5444517870735015415413993718908291383296",
+            "numerator": "1983986495394916061717739801281751546009"
+          },
+          "safe_radius_squared": {
+            "denominator": "1267650600228229401496703205376",
+            "numerator": "461932843484726352683104697289"
+          },
+          "scope": "Exact stored-IEEE real vector difference; no continuous-law claim.",
+          "within_original": true,
+          "within_safe": true
+        },
+        "complementarity_absolute": 4.175951862784033e-20,
+        "independent_cholesky_delta_l2_difference": 1.893327549000212e-13,
+        "kkt_stationarity_linf": 2.1616958440287548e-16,
+        "lagrange_mu": 0.000752272610126052,
+        "linear_equation_residual_linf": 9.150666335777657e-17,
+        "numerical_fw_gap": -1.0842021724855044e-19,
+        "objective": 0.0026068929634558927,
+        "own_bank_logit_mse": 0.002570452887349625,
+        "solver_cpu_seconds": 0.0022809999999999775,
+        "storage_inward_guard_applied": false
+      },
+      "fit": 53,
+      "gradient": {
+        "certificate": {
+          "actual_squared_delta": {
+            "denominator": "1361129467683753853853498429727072845824",
+            "numerator": "495996613927804606690007491826478255257"
+          },
+          "original_radius_squared": {
+            "denominator": "5444517870735015415413993718908291383296",
+            "numerator": "1983986495394916061717739801281751546009"
+          },
+          "safe_radius_squared": {
+            "denominator": "1267650600228229401496703205376",
+            "numerator": "461932843484726352683104697289"
+          },
+          "scope": "Exact stored-IEEE real vector difference; no continuous-law claim.",
+          "within_original": true,
+          "within_safe": true
+        },
+        "converged_to_declared_FW_tolerance": true,
+        "numerical_fw_gap": 9.998616387640359e-09,
+        "objective": 0.0026068999198413543,
+        "own_bank_logit_mse": 0.0025704598437351596,
+        "solver_cpu_seconds": 0.42328600000000005,
+        "steps": 18039,
+        "stop_reason": "own_stored_parameter_FW_gap",
+        "storage_inward_guard_applications": 1
+      },
+      "rows": 341,
+      "shared_setup_cpu_seconds": 0.0006460000000001465
+    },
+    {
+      "direct": {
+        "certificate": {
+          "actual_squared_delta": {
+            "denominator": "5316911983139663491615228241121378304",
+            "numerator": "2274587691993444709405104991728064865"
+          },
+          "original_radius_squared": {
+            "denominator": "21267647932558653966460912964485513216",
+            "numerator": "9098350949940796398327300929553545569"
+          },
+          "safe_radius_squared": {
+            "denominator": "1267650600228229401496703205376",
+            "numerator": "542303965566979604298445961401"
+          },
+          "scope": "Exact stored-IEEE real vector difference; no continuous-law claim.",
+          "within_original": true,
+          "within_safe": true
+        },
+        "complementarity_absolute": 4.930372465129283e-20,
+        "independent_cholesky_delta_l2_difference": 1.2562540624520064e-13,
+        "kkt_stationarity_linf": 2.674049133163936e-16,
+        "lagrange_mu": 0.0008881769438701597,
+        "linear_equation_residual_linf": 1.5265566588595902e-16,
+        "numerical_fw_gap": -1.0842021724855044e-19,
+        "objective": 0.005211835394615991,
+        "own_bank_logit_mse": 0.005169055154897779,
+        "solver_cpu_seconds": 0.0022260000000002833,
+        "storage_inward_guard_applied": false
+      },
+      "fit": 71,
+      "gradient": {
+        "certificate": {
+          "actual_squared_delta": {
+            "denominator": "5316911983139663491615228241121378304",
+            "numerator": "2274587691993444413867181161571724705"
+          },
+          "original_radius_squared": {
+            "denominator": "21267647932558653966460912964485513216",
+            "numerator": "9098350949940796398327300929553545569"
+          },
+          "safe_radius_squared": {
+            "denominator": "1267650600228229401496703205376",
+            "numerator": "542303965566979604298445961401"
+          },
+          "scope": "Exact stored-IEEE real vector difference; no continuous-law claim.",
+          "within_original": true,
+          "within_safe": true
+        },
+        "converged_to_declared_FW_tolerance": true,
+        "numerical_fw_gap": 9.995786450834633e-09,
+        "objective": 0.005211842051466542,
+        "own_bank_logit_mse": 0.005169061811748331,
+        "solver_cpu_seconds": 0.35179399999999994,
+        "steps": 15776,
+        "stop_reason": "own_stored_parameter_FW_gap",
+        "storage_inward_guard_applications": 0
+      },
+      "rows": 344,
+      "shared_setup_cpu_seconds": 0.0006339999999998014
+    }
+  ],
+  "source_commit": "5b69a046d886cf4c2a73c50e58197360ea15d8f5",
+  "source_repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_repository_visibility": "public",
+  "teacher_target_used_for_fitting": false,
+  "test_identity": {
+    "all320_content_dedup_before_any_test_scoring": true,
+    "all_solver_and_gate_records_before_generation": true,
+    "domains": [
+      "iid",
+      "ood"
+    ],
+    "entropy": "Full SHA256 labelled-domain entropy from frozen design digest,fit,domain,purpose,generator identity; 20 streams.",
+    "global_unseen_beyond_registered_history_claim": false,
+    "known_coverage_gap": "Original formal-confirmation content and unknown/external history unavailable; source seed definitions are not content proof.",
+    "known_history_occurrences": 1680,
+    "known_history_unique_schedules": 1616,
+    "known_or_internal_duplicates": 0,
+    "resampling_or_seed_retry": false,
+    "worlds_per_fit_per_domain": 32,
+    "worlds_total": 320
+  },
+  "test_summary": {
+    "iid": {
+      "arms": {
+        "A": {
+          "belief_brier": {
+            "mean": 0.0005018681260459421,
+            "per_fit": [
+              0.0007317323109816181,
+              0.0005460226911566952,
+              0.000489893760595372,
+              0.00030650859849661423,
+              0.0004351832689994111
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.022623699136848894,
+            "per_fit": [
+              0.0261961002888164,
+              0.01921833407542241,
+              0.023382163408868076,
+              0.021253109175873065,
+              0.023068788735264505
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.2164845447268028,
+            "per_fit": [
+              0.2527427018441506,
+              0.2586483487213429,
+              0.1861577380660168,
+              0.2075086688980812,
+              0.17736526610442252
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.01672725310544355,
+            "per_fit": [
+              0.0157220976768846,
+              0.0237338957192431,
+              0.019990266874513635,
+              0.00938047722391187,
+              0.01480952803266456
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0007419555504947643,
+            "per_fit": [
+              0.00080525793123797,
+              0.00087503976544033,
+              0.0008677547131170527,
+              0.0004364964597306858,
+              0.0007252288829477835
+            ]
+          },
+          "q_mse": {
+            "mean": 0.008326007866874225,
+            "per_fit": [
+              0.009921970228373586,
+              0.007428770113101697,
+              0.008437801904980356,
+              0.0075689958398095815,
+              0.008272501248105895
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.01663472834661375,
+            "per_fit": [
+              0.023250191516774512,
+              0.009997141504809706,
+              0.014600418203050736,
+              0.010250526754551023,
+              0.025075363753882772
+            ]
+          }
+        },
+        "C": {
+          "belief_brier": {
+            "mean": 0.0005018681260459421,
+            "per_fit": [
+              0.0007317323109816181,
+              0.0005460226911566952,
+              0.000489893760595372,
+              0.00030650859849661423,
+              0.0004351832689994111
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.019674266754427086,
+            "per_fit": [
+              0.01799913108995426,
+              0.018937193902485955,
+              0.02281155813770344,
+              0.020067979489606144,
+              0.018555471152385625
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.24059809622060863,
+            "per_fit": [
+              0.2482031416861091,
+              0.2520621886323999,
+              0.2049550064685282,
+              0.2576748064794176,
+              0.24009533783658843
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.01672725310544355,
+            "per_fit": [
+              0.0157220976768846,
+              0.0237338957192431,
+              0.019990266874513635,
+              0.00938047722391187,
+              0.01480952803266456
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0007419555504947643,
+            "per_fit": [
+              0.00080525793123797,
+              0.00087503976544033,
+              0.0008677547131170527,
+              0.0004364964597306858,
+              0.0007252288829477835
+            ]
+          },
+          "q_mse": {
+            "mean": 0.007364280702642885,
+            "per_fit": [
+              0.007220251378272689,
+              0.007343460461637584,
+              0.008249121235654378,
+              0.007216511405491222,
+              0.006792059032158556
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.018062934117388213,
+            "per_fit": [
+              0.020759998965994314,
+              0.014389903059850101,
+              0.016064297442923658,
+              0.01699036682045481,
+              0.02211010429771819
+            ]
+          }
+        },
+        "CD": {
+          "belief_brier": {
+            "mean": 0.0005207784545707296,
+            "per_fit": [
+              0.0006927183032376269,
+              0.0005453208788579847,
+              0.0005908357157212121,
+              0.0003403310293605958,
+              0.0004346863456762286
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.019674266754427086,
+            "per_fit": [
+              0.01799913108995426,
+              0.018937193902485955,
+              0.02281155813770344,
+              0.020067979489606144,
+              0.018555471152385625
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.23839905890701596,
+            "per_fit": [
+              0.2443957019054484,
+              0.2521359277226387,
+              0.20231843736024996,
+              0.2574390988236089,
+              0.235706128723134
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.01190608258293957,
+            "per_fit": [
+              0.011535837261524752,
+              0.019092198599784956,
+              0.015642221763889033,
+              0.0055257556586481805,
+              0.007734399630850927
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0004965536963701391,
+            "per_fit": [
+              0.0006015420814855188,
+              0.0006733734395742454,
+              0.0006051111081718029,
+              0.00025707738866720273,
+              0.0003456644639519264
+            ]
+          },
+          "q_mse": {
+            "mean": 0.007403330458269529,
+            "per_fit": [
+              0.007131618711368724,
+              0.007327028363727136,
+              0.008439512808173242,
+              0.007288908656959002,
+              0.006829583751119544
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.015370298581427935,
+            "per_fit": [
+              0.01951143276036307,
+              0.010113745386852627,
+              0.015318626531648971,
+              0.015546084971908044,
+              0.016361603256366968
+            ]
+          }
+        },
+        "CD_gated": {
+          "belief_brier": {
+            "mean": 0.0005018681260459421,
+            "per_fit": [
+              0.0007317323109816181,
+              0.0005460226911566952,
+              0.000489893760595372,
+              0.00030650859849661423,
+              0.0004351832689994111
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.019674266754427086,
+            "per_fit": [
+              0.01799913108995426,
+              0.018937193902485955,
+              0.02281155813770344,
+              0.020067979489606144,
+              0.018555471152385625
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.24059809622060863,
+            "per_fit": [
+              0.2482031416861091,
+              0.2520621886323999,
+              0.2049550064685282,
+              0.2576748064794176,
+              0.24009533783658843
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.01672725310544355,
+            "per_fit": [
+              0.0157220976768846,
+              0.0237338957192431,
+              0.019990266874513635,
+              0.00938047722391187,
+              0.01480952803266456
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0007419555504947643,
+            "per_fit": [
+              0.00080525793123797,
+              0.00087503976544033,
+              0.0008677547131170527,
+              0.0004364964597306858,
+              0.0007252288829477835
+            ]
+          },
+          "q_mse": {
+            "mean": 0.007364280702642885,
+            "per_fit": [
+              0.007220251378272689,
+              0.007343460461637584,
+              0.008249121235654378,
+              0.007216511405491222,
+              0.006792059032158556
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.018062934117388213,
+            "per_fit": [
+              0.020759998965994314,
+              0.014389903059850101,
+              0.016064297442923658,
+              0.01699036682045481,
+              0.02211010429771819
+            ]
+          }
+        },
+        "CG": {
+          "belief_brier": {
+            "mean": 0.0005208626790061424,
+            "per_fit": [
+              0.0006928185270190163,
+              0.0005453464788796264,
+              0.0005909089289724826,
+              0.0003403883725813694,
+              0.00043485108757821724
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.019674266754427086,
+            "per_fit": [
+              0.01799913108995426,
+              0.018937193902485955,
+              0.02281155813770344,
+              0.020067979489606144,
+              0.018555471152385625
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.23839905890701596,
+            "per_fit": [
+              0.2443957019054484,
+              0.2521359277226387,
+              0.20231843736024996,
+              0.2574390988236089,
+              0.235706128723134
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.011907729699054653,
+            "per_fit": [
+              0.011539268259218778,
+              0.01909224614527851,
+              0.01564451105113792,
+              0.005524399749437282,
+              0.007738223290200773
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0004966416353865709,
+            "per_fit": [
+              0.0006017421318830613,
+              0.0006734169593516875,
+              0.0006051681925095891,
+              0.00025701279957493977,
+              0.0003458680936135768
+            ]
+          },
+          "q_mse": {
+            "mean": 0.007403478880743351,
+            "per_fit": [
+              0.007131784588454915,
+              0.007327090828110303,
+              0.008439639426395692,
+              0.007288996342887364,
+              0.00682988321786848
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.015370298581427935,
+            "per_fit": [
+              0.01951143276036307,
+              0.010113745386852627,
+              0.015318626531648971,
+              0.015546084971908044,
+              0.016361603256366968
+            ]
+          }
+        },
+        "CG_gated": {
+          "belief_brier": {
+            "mean": 0.0005018681260459421,
+            "per_fit": [
+              0.0007317323109816181,
+              0.0005460226911566952,
+              0.000489893760595372,
+              0.00030650859849661423,
+              0.0004351832689994111
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.019674266754427086,
+            "per_fit": [
+              0.01799913108995426,
+              0.018937193902485955,
+              0.02281155813770344,
+              0.020067979489606144,
+              0.018555471152385625
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.24059809622060863,
+            "per_fit": [
+              0.2482031416861091,
+              0.2520621886323999,
+              0.2049550064685282,
+              0.2576748064794176,
+              0.24009533783658843
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.01672725310544355,
+            "per_fit": [
+              0.0157220976768846,
+              0.0237338957192431,
+              0.019990266874513635,
+              0.00938047722391187,
+              0.01480952803266456
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0007419555504947643,
+            "per_fit": [
+              0.00080525793123797,
+              0.00087503976544033,
+              0.0008677547131170527,
+              0.0004364964597306858,
+              0.0007252288829477835
+            ]
+          },
+          "q_mse": {
+            "mean": 0.007364280702642885,
+            "per_fit": [
+              0.007220251378272689,
+              0.007343460461637584,
+              0.008249121235654378,
+              0.007216511405491222,
+              0.006792059032158556
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.018062934117388213,
+            "per_fit": [
+              0.020759998965994314,
+              0.014389903059850101,
+              0.016064297442923658,
+              0.01699036682045481,
+              0.02211010429771819
+            ]
+          }
+        },
+        "D": {
+          "belief_brier": {
+            "mean": 0.0005207784545707296,
+            "per_fit": [
+              0.0006927183032376269,
+              0.0005453208788579847,
+              0.0005908357157212121,
+              0.0003403310293605958,
+              0.0004346863456762286
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.022623699136848894,
+            "per_fit": [
+              0.0261961002888164,
+              0.01921833407542241,
+              0.023382163408868076,
+              0.021253109175873065,
+              0.023068788735264505
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.2183081400111488,
+            "per_fit": [
+              0.2535043258298676,
+              0.25944255433321,
+              0.1832642142198648,
+              0.2107987619651014,
+              0.18453084370770015
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.01190608258293957,
+            "per_fit": [
+              0.011535837261524752,
+              0.019092198599784956,
+              0.015642221763889033,
+              0.0055257556586481805,
+              0.007734399630850927
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0004965536963701391,
+            "per_fit": [
+              0.0006015420814855188,
+              0.0006733734395742454,
+              0.0006051111081718029,
+              0.00025707738866720273,
+              0.0003456644639519264
+            ]
+          },
+          "q_mse": {
+            "mean": 0.008365057622500865,
+            "per_fit": [
+              0.009833337561469617,
+              0.00741233801519125,
+              0.008628193477499215,
+              0.007641393091277362,
+              0.008310025967066884
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.015977951199046346,
+            "per_fit": [
+              0.02330257567796943,
+              0.009396438347015602,
+              0.012699669204710903,
+              0.011363285997868892,
+              0.023127786767666896
+            ]
+          }
+        },
+        "D_gated": {
+          "belief_brier": {
+            "mean": 0.0005017687413813056,
+            "per_fit": [
+              0.0007317323109816181,
+              0.0005460226911566952,
+              0.000489893760595372,
+              0.00030650859849661423,
+              0.0004346863456762286
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.022623699136848894,
+            "per_fit": [
+              0.0261961002888164,
+              0.01921833407542241,
+              0.023382163408868076,
+              0.021253109175873065,
+              0.023068788735264505
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.21791766024745832,
+            "per_fit": [
+              0.2527427018441506,
+              0.2586483487213429,
+              0.1861577380660168,
+              0.2075086688980812,
+              0.18453084370770015
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.015312227425080826,
+            "per_fit": [
+              0.0157220976768846,
+              0.0237338957192431,
+              0.019990266874513635,
+              0.00938047722391187,
+              0.007734399630850927
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0006660426666955929,
+            "per_fit": [
+              0.00080525793123797,
+              0.00087503976544033,
+              0.0008677547131170527,
+              0.0004364964597306858,
+              0.0003456644639519264
+            ]
+          },
+          "q_mse": {
+            "mean": 0.00833351281066642,
+            "per_fit": [
+              0.009921970228373586,
+              0.007428770113101697,
+              0.008437801904980356,
+              0.0075689958398095815,
+              0.008310025967066884
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.016245212949370574,
+            "per_fit": [
+              0.023250191516774512,
+              0.009997141504809706,
+              0.014600418203050736,
+              0.010250526754551023,
+              0.023127786767666896
+            ]
+          }
+        },
+        "G": {
+          "belief_brier": {
+            "mean": 0.0005208626790061424,
+            "per_fit": [
+              0.0006928185270190163,
+              0.0005453464788796264,
+              0.0005909089289724826,
+              0.0003403883725813694,
+              0.00043485108757821724
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.022623699136848894,
+            "per_fit": [
+              0.0261961002888164,
+              0.01921833407542241,
+              0.023382163408868076,
+              0.021253109175873065,
+              0.023068788735264505
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.2183081400111488,
+            "per_fit": [
+              0.2535043258298676,
+              0.25944255433321,
+              0.1832642142198648,
+              0.2107987619651014,
+              0.18453084370770015
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.011907729699054653,
+            "per_fit": [
+              0.011539268259218778,
+              0.01909224614527851,
+              0.01564451105113792,
+              0.005524399749437282,
+              0.007738223290200773
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0004966416353865709,
+            "per_fit": [
+              0.0006017421318830613,
+              0.0006734169593516875,
+              0.0006051681925095891,
+              0.00025701279957493977,
+              0.0003458680936135768
+            ]
+          },
+          "q_mse": {
+            "mean": 0.008365206044974687,
+            "per_fit": [
+              0.00983350343855581,
+              0.007412400479574417,
+              0.008628320095721667,
+              0.007641480777205723,
+              0.008310325433815819
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.015977951199046346,
+            "per_fit": [
+              0.02330257567796943,
+              0.009396438347015602,
+              0.012699669204710903,
+              0.011363285997868892,
+              0.023127786767666896
+            ]
+          }
+        },
+        "G_gated": {
+          "belief_brier": {
+            "mean": 0.0005018016897617033,
+            "per_fit": [
+              0.0007317323109816181,
+              0.0005460226911566952,
+              0.000489893760595372,
+              0.00030650859849661423,
+              0.00043485108757821724
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.022623699136848894,
+            "per_fit": [
+              0.0261961002888164,
+              0.01921833407542241,
+              0.023382163408868076,
+              0.021253109175873065,
+              0.023068788735264505
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.21791766024745832,
+            "per_fit": [
+              0.2527427018441506,
+              0.2586483487213429,
+              0.1861577380660168,
+              0.2075086688980812,
+              0.18453084370770015
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.015312992156950794,
+            "per_fit": [
+              0.0157220976768846,
+              0.0237338957192431,
+              0.019990266874513635,
+              0.00938047722391187,
+              0.007738223290200773
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.000666083392627923,
+            "per_fit": [
+              0.00080525793123797,
+              0.00087503976544033,
+              0.0008677547131170527,
+              0.0004364964597306858,
+              0.0003458680936135768
+            ]
+          },
+          "q_mse": {
+            "mean": 0.008333572704016207,
+            "per_fit": [
+              0.009921970228373586,
+              0.007428770113101697,
+              0.008437801904980356,
+              0.0075689958398095815,
+              0.008310325433815819
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.016245212949370574,
+            "per_fit": [
+              0.023250191516774512,
+              0.009997141504809706,
+              0.014600418203050736,
+              0.010250526754551023,
+              0.023127786767666896
+            ]
+          }
+        }
+      },
+      "contrasts": {
+        "CD_gated_minus_C": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "CD_minus_C": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -4.640422156132646e-05,
+              8.422487861090147e-05
+            ],
+            "independent_fits": 5,
+            "mean": 1.8910328524787507e-05,
+            "per_fit": [
+              -3.901400774399119e-05,
+              -7.018122987104787e-07,
+              0.00010094195512584008,
+              3.382243086398157e-05,
+              -4.969233231824546e-07
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.004728150294143062,
+              0.0003300756669577616
+            ],
+            "independent_fits": 5,
+            "mean": -0.00219903731359265,
+            "per_fit": [
+              -0.0038074397806606985,
+              7.373909023883352e-05,
+              -0.0026365691082782527,
+              -0.00023570765580871456,
+              -0.0043892091134544176
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -0.006424975441233832,
+              -0.0032173656037741347
+            ],
+            "independent_fits": 5,
+            "mean": -0.004821170522503983,
+            "per_fit": [
+              -0.00418626041535985,
+              -0.004641697119458145,
+              -0.0043480451106246015,
+              -0.0038547215652636893,
+              -0.007075128401813632
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0003460860266457198,
+              -0.00014471768160353052
+            ],
+            "independent_fits": 5,
+            "mean": -0.00024540185412462516,
+            "per_fit": [
+              -0.00020371584975245117,
+              -0.00020166632586608464,
+              -0.00026264360494524983,
+              -0.00017941907106348306,
+              -0.00037956441899585715
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -9.028575336724712e-05,
+              0.00016838526462053497
+            ],
+            "independent_fits": 5,
+            "mean": 3.904975562664392e-05,
+            "per_fit": [
+              -8.863266690396516e-05,
+              -1.6432097910447363e-05,
+              0.00019039157251886374,
+              7.239725146777985e-05,
+              3.752471896098855e-05
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -0.005418664289305373,
+              3.339321738481506e-05
+            ],
+            "independent_fits": 5,
+            "mean": -0.002692635535960279,
+            "per_fit": [
+              -0.0012485662056312442,
+              -0.004276157672997475,
+              -0.0007456709112746863,
+              -0.001444281848546768,
+              -0.005748501041351221
+            ]
+          }
+        },
+        "CD_minus_CG": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -1.4939615220653426e-07,
+              -1.9052718619022227e-08
+            ],
+            "independent_fits": 5,
+            "mean": -8.422443541277824e-08,
+            "per_fit": [
+              -1.0022378138941756e-07,
+              -2.5600021641707278e-08,
+              -7.321325127054856e-08,
+              -5.734322077360953e-08,
+              -1.647419019886083e-07
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -4.417219865173202e-06,
+              1.1229876350062952e-06
+            ],
+            "independent_fits": 5,
+            "mean": -1.6471161150834537e-06,
+            "per_fit": [
+              -3.4309976940267994e-06,
+              -4.7545493556122587e-08,
+              -2.28928724888694e-06,
+              1.3559092108981693e-06,
+              -3.823659349845576e-06
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -2.2970528103889715e-07,
+              5.382724817557399e-08
+            ],
+            "independent_fits": 5,
+            "mean": -8.793901643166158e-08,
+            "per_fit": [
+              -2.0005039754248093e-07,
+              -4.351977744214246e-08,
+              -5.7084337786242334e-08,
+              6.4589092262958e-08,
+              -2.0362966165040014e-07
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -2.6402429815665205e-07,
+              -3.282064948608056e-08
+            ],
+            "independent_fits": 5,
+            "mean": -1.484224738213663e-07,
+            "per_fit": [
+              -1.658770861917569e-07,
+              -6.246438316679509e-08,
+              -1.2661822245026155e-07,
+              -8.768592836203015e-08,
+              -2.9946674893598785e-07
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "CG_gated_minus_C": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "CG_minus_C": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -4.630442659294129e-05,
+              8.429353251334185e-05
+            ],
+            "independent_fits": 5,
+            "mean": 1.8994552960200284e-05,
+            "per_fit": [
+              -3.891378396260177e-05,
+              -6.762122770687714e-07,
+              0.00010101516837711063,
+              3.3879774084755176e-05,
+              -3.3218142119384626e-07
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.004728150294143062,
+              0.0003300756669577616
+            ],
+            "independent_fits": 5,
+            "mean": -0.00219903731359265,
+            "per_fit": [
+              -0.0038074397806606985,
+              7.373909023883352e-05,
+              -0.0026365691082782527,
+              -0.00023570765580871456,
+              -0.0043892091134544176
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -0.006421729663600312,
+              -0.0032173171491774863
+            ],
+            "independent_fits": 5,
+            "mean": -0.004819523406388899,
+            "per_fit": [
+              -0.004182829417665823,
+              -0.004641649573964589,
+              -0.004345755823375715,
+              -0.0038560774744745875,
+              -0.007071304742463786
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -0.00034591269651726366,
+              -0.00014471513369912343
+            ],
+            "independent_fits": 5,
+            "mean": -0.00024531391510819353,
+            "per_fit": [
+              -0.0002035157993549087,
+              -0.0002016228060886425,
+              -0.0002625865206074636,
+              -0.00017948366015574602,
+              -0.00037936078933420675
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -9.012839669585547e-05,
+              0.00016852475289678604
+            ],
+            "independent_fits": 5,
+            "mean": 3.919817810046529e-05,
+            "per_fit": [
+              -8.84667898177734e-05,
+              -1.6369633527280568e-05,
+              0.000190518190741314,
+              7.248493739614188e-05,
+              3.782418570992454e-05
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -0.005418664289305373,
+              3.339321738481506e-05
+            ],
+            "independent_fits": 5,
+            "mean": -0.002692635535960279,
+            "per_fit": [
+              -0.0012485662056312442,
+              -0.004276157672997475,
+              -0.0007456709112746863,
+              -0.001444281848546768,
+              -0.005748501041351221
+            ]
+          }
+        },
+        "C_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0071543374258499545,
+              0.0012554726610063418
+            ],
+            "independent_fits": 5,
+            "mean": -0.0029494323824218066,
+            "per_fit": [
+              -0.00819696919886214,
+              -0.000281140172936456,
+              -0.0005706052711646342,
+              -0.0011851296862669218,
+              -0.00451331758287888
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.014962922662499982,
+              0.06319002565011167
+            ],
+            "independent_fits": 5,
+            "mean": 0.02411355149380584,
+            "per_fit": [
+              -0.004539560158041495,
+              -0.006586160088943027,
+              0.01879726840251142,
+              0.050166137581336395,
+              0.06273007173216591
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0023545954894382305,
+              0.0004311411609755557
+            ],
+            "independent_fits": 5,
+            "mean": -0.0009617271642313374,
+            "per_fit": [
+              -0.0027017188501008973,
+              -8.530965146411312e-05,
+              -0.00018868066932597842,
+              -0.0003524844343183592,
+              -0.0014804422159473392
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -0.0038272646983326625,
+              0.0066836762398815915
+            ],
+            "independent_fits": 5,
+            "mean": 0.0014282057707744648,
+            "per_fit": [
+              -0.002490192550780198,
+              0.004392761555040396,
+              0.0014638792398729214,
+              0.006739840065903788,
+              -0.002965259456164583
+            ]
+          }
+        },
+        "D_gated_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -3.7532073029820086e-07,
+              1.7655140102521906e-07
+            ],
+            "independent_fits": 5,
+            "mean": -9.938466463649092e-08,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -4.969233231824546e-07
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.0025458510518515036,
+              0.005412082093162554
+            ],
+            "independent_fits": 5,
+            "mean": 0.0014331155206555256,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.007165577603277629
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -0.005343766804335003,
+              0.00251371544360955
+            ],
+            "independent_fits": 5,
+            "mean": -0.0014150256803627263,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.007075128401813632
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -0.00028668083844483026,
+              0.00013485507084648736
+            ],
+            "independent_fits": 5,
+            "mean": -7.591288379917143e-05,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.00037956441899585715
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -1.3332120664434227e-05,
+              2.8342008248829646e-05
+            ],
+            "independent_fits": 5,
+            "mean": 7.504943792197711e-06,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              3.752471896098855e-05
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -0.001470983515318165,
+              0.0006919527208318146
+            ],
+            "independent_fits": 5,
+            "mean": -0.00038951539724317515,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0019475769862158758
+            ]
+          }
+        },
+        "D_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -4.640422156132646e-05,
+              8.422487861090147e-05
+            ],
+            "independent_fits": 5,
+            "mean": 1.8910328524787507e-05,
+            "per_fit": [
+              -3.901400774399119e-05,
+              -7.018122987104787e-07,
+              0.00010094195512584008,
+              3.382243086398157e-05,
+              -4.969233231824546e-07
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.002785890197010913,
+              0.006433080765702885
+            ],
+            "independent_fits": 5,
+            "mean": 0.0018235952843459857,
+            "per_fit": [
+              0.0007616239857169971,
+              0.0007942056118671048,
+              -0.0028935238461519908,
+              0.003290093067020189,
+              0.007165577603277629
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -0.006424975441233832,
+              -0.0032173656037741347
+            ],
+            "independent_fits": 5,
+            "mean": -0.004821170522503983,
+            "per_fit": [
+              -0.00418626041535985,
+              -0.004641697119458145,
+              -0.0043480451106246015,
+              -0.0038547215652636893,
+              -0.007075128401813632
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0003460860266457198,
+              -0.00014471768160353052
+            ],
+            "independent_fits": 5,
+            "mean": -0.00024540185412462516,
+            "per_fit": [
+              -0.00020371584975245117,
+              -0.00020166632586608464,
+              -0.00026264360494524983,
+              -0.00017941907106348306,
+              -0.00037956441899585715
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -9.028575336724795e-05,
+              0.0001683852646205327
+            ],
+            "independent_fits": 5,
+            "mean": 3.9049755626642364e-05,
+            "per_fit": [
+              -8.86326669039695e-05,
+              -1.6432097910446496e-05,
+              0.00019039157251885853,
+              7.239725146778071e-05,
+              3.752471896098855e-05
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -0.00228176185932336,
+              0.0009682075641885498
+            ],
+            "independent_fits": 5,
+            "mean": -0.0006567771475674052,
+            "per_fit": [
+              5.2384161194917594e-05,
+              -0.0006007031577941035,
+              -0.0019007489983398334,
+              0.001112759243317869,
+              -0.0019475769862158758
+            ]
+          }
+        },
+        "D_minus_G": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -1.4939615220653426e-07,
+              -1.9052718619022227e-08
+            ],
+            "independent_fits": 5,
+            "mean": -8.422443541277824e-08,
+            "per_fit": [
+              -1.0022378138941756e-07,
+              -2.5600021641707278e-08,
+              -7.321325127054856e-08,
+              -5.734322077360953e-08,
+              -1.647419019886083e-07
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -4.417219865173202e-06,
+              1.1229876350062952e-06
+            ],
+            "independent_fits": 5,
+            "mean": -1.6471161150834537e-06,
+            "per_fit": [
+              -3.4309976940267994e-06,
+              -4.7545493556122587e-08,
+              -2.28928724888694e-06,
+              1.3559092108981693e-06,
+              -3.823659349845576e-06
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -2.2970528103889715e-07,
+              5.382724817557399e-08
+            ],
+            "independent_fits": 5,
+            "mean": -8.793901643166158e-08,
+            "per_fit": [
+              -2.0005039754248093e-07,
+              -4.351977744214246e-08,
+              -5.7084337786242334e-08,
+              6.4589092262958e-08,
+              -2.0362966165040014e-07
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -2.640242981567127e-07,
+              -3.282064948671381e-08
+            ],
+            "independent_fits": 5,
+            "mean": -1.4842247382171325e-07,
+            "per_fit": [
+              -1.6587708619349162e-07,
+              -6.246438316679509e-08,
+              -1.2661822245199628e-07,
+              -8.768592836116279e-08,
+              -2.994667489351205e-07
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "G_gated_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -2.508929804210298e-07,
+              1.180204119434913e-07
+            ],
+            "independent_fits": 5,
+            "mean": -6.643628423876926e-08,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -3.3218142119384626e-07
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.0025458510518515036,
+              0.005412082093162554
+            ],
+            "independent_fits": 5,
+            "mean": 0.0014331155206555256,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.007165577603277629
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -0.005340878836407869,
+              0.0025123569394223545
+            ],
+            "independent_fits": 5,
+            "mean": -0.0014142609484927573,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.007071304742463786
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0002865270391970277,
+              0.00013478272346334496
+            ],
+            "independent_fits": 5,
+            "mean": -7.587215786684135e-05,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.00037936078933420675
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -1.3438517912497284e-05,
+              2.8568192196466755e-05
+            ],
+            "independent_fits": 5,
+            "mean": 7.564837141984734e-06,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              3.782418570992367e-05
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -0.001470983515318165,
+              0.0006919527208318146
+            ],
+            "independent_fits": 5,
+            "mean": -0.00038951539724317515,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0019475769862158758
+            ]
+          }
+        },
+        "G_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -4.630442659294129e-05,
+              8.429353251334185e-05
+            ],
+            "independent_fits": 5,
+            "mean": 1.8994552960200284e-05,
+            "per_fit": [
+              -3.891378396260177e-05,
+              -6.762122770687714e-07,
+              0.00010101516837711063,
+              3.3879774084755176e-05,
+              -3.3218142119384626e-07
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.002785890197010913,
+              0.006433080765702885
+            ],
+            "independent_fits": 5,
+            "mean": 0.0018235952843459857,
+            "per_fit": [
+              0.0007616239857169971,
+              0.0007942056118671048,
+              -0.0028935238461519908,
+              0.003290093067020189,
+              0.007165577603277629
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -0.006421729663600312,
+              -0.0032173171491774863
+            ],
+            "independent_fits": 5,
+            "mean": -0.004819523406388899,
+            "per_fit": [
+              -0.004182829417665823,
+              -0.004641649573964589,
+              -0.004345755823375715,
+              -0.0038560774744745875,
+              -0.007071304742463786
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -0.00034591269651726366,
+              -0.00014471513369912343
+            ],
+            "independent_fits": 5,
+            "mean": -0.00024531391510819353,
+            "per_fit": [
+              -0.0002035157993549087,
+              -0.0002016228060886425,
+              -0.0002625865206074636,
+              -0.00017948366015574602,
+              -0.00037936078933420675
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -9.0128396695856e-05,
+              0.00016852475289678417
+            ],
+            "independent_fits": 5,
+            "mean": 3.919817810046408e-05,
+            "per_fit": [
+              -8.8466789817776e-05,
+              -1.63696335272797e-05,
+              0.00019051819074131053,
+              7.248493739614188e-05,
+              3.782418570992367e-05
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -0.00228176185932336,
+              0.0009682075641885498
+            ],
+            "independent_fits": 5,
+            "mean": -0.0006567771475674052,
+            "per_fit": [
+              5.2384161194917594e-05,
+              -0.0006007031577941035,
+              -0.0019007489983398334,
+              0.001112759243317869,
+              -0.0019475769862158758
+            ]
+          }
+        }
+      }
+    },
+    "ood": {
+      "arms": {
+        "A": {
+          "belief_brier": {
+            "mean": 0.0040396050685582875,
+            "per_fit": [
+              0.004690842488976799,
+              0.0029594525136751406,
+              0.002997267779344746,
+              0.006231200674373628,
+              0.003319261886421121
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.07435800148810372,
+            "per_fit": [
+              0.04797059004865668,
+              0.047131448735297114,
+              0.04515117829309712,
+              0.10180212021412051,
+              0.1297346701493472
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.1039622725781161,
+            "per_fit": [
+              0.14550476158540393,
+              0.1046074303406246,
+              0.058430422537880264,
+              0.08858298014414784,
+              0.12268576828252384
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.08497779484038692,
+            "per_fit": [
+              0.12779776283220406,
+              0.04109962017944487,
+              0.0811124950231143,
+              0.10468005306486763,
+              0.07019904310230374
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0037143472537366244,
+            "per_fit": [
+              0.0044698797515015515,
+              0.0023572219455645204,
+              0.0031509542186664045,
+              0.00569198393780584,
+              0.0029016964151448044
+            ]
+          },
+          "q_mse": {
+            "mean": 0.03123113732551719,
+            "per_fit": [
+              0.02448412174200028,
+              0.02072524979182095,
+              0.02006033767534592,
+              0.04351339788277624,
+              0.04737257953564256
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.05877678830113323,
+            "per_fit": [
+              0.04265843955381118,
+              0.030309878402689054,
+              0.01513838609926002,
+              0.08673571384235722,
+              0.11904152360754869
+            ]
+          }
+        },
+        "C": {
+          "belief_brier": {
+            "mean": 0.0040396050685582875,
+            "per_fit": [
+              0.004690842488976799,
+              0.0029594525136751406,
+              0.002997267779344746,
+              0.006231200674373628,
+              0.003319261886421121
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.06855990250354597,
+            "per_fit": [
+              0.038628237001808376,
+              0.048010310973995204,
+              0.04680058929365502,
+              0.10290598661642734,
+              0.1064543886318439
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.12576180552004707,
+            "per_fit": [
+              0.1421073931117714,
+              0.139686098638736,
+              0.10835210638676487,
+              0.09322006365757918,
+              0.145443365805384
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.08497779484038692,
+            "per_fit": [
+              0.12779776283220406,
+              0.04109962017944487,
+              0.0811124950231143,
+              0.10468005306486763,
+              0.07019904310230374
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0037143472537366244,
+            "per_fit": [
+              0.0044698797515015515,
+              0.0023572219455645204,
+              0.0031509542186664045,
+              0.00569198393780584,
+              0.0029016964151448044
+            ]
+          },
+          "q_mse": {
+            "mean": 0.029347745135333992,
+            "per_fit": [
+              0.021387614996281747,
+              0.02106779370503906,
+              0.020541817602044946,
+              0.043923569542168604,
+              0.03981792983113562
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.05347777569503638,
+            "per_fit": [
+              0.03366277393858625,
+              0.027657992080217964,
+              0.01732307441432198,
+              0.08664300313534284,
+              0.10210203490671288
+            ]
+          }
+        },
+        "CD": {
+          "belief_brier": {
+            "mean": 0.0033341772490668325,
+            "per_fit": [
+              0.003510374929908906,
+              0.003252978234619673,
+              0.0025139903496410668,
+              0.005018435096151791,
+              0.0023751076350127256
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.06855990250354597,
+            "per_fit": [
+              0.038628237001808376,
+              0.048010310973995204,
+              0.04680058929365502,
+              0.10290598661642734,
+              0.1064543886318439
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.13150823881892348,
+            "per_fit": [
+              0.15946127451145226,
+              0.1374129075497573,
+              0.10986846877876866,
+              0.09769695066667315,
+              0.15310159258796602
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.06619199235326391,
+            "per_fit": [
+              0.10249439713651243,
+              0.03894970012264859,
+              0.06401491422432753,
+              0.07591965800674859,
+              0.049581292276082364
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.002773617228486282,
+            "per_fit": [
+              0.003263696757692957,
+              0.0022604500485116233,
+              0.0024238693490532008,
+              0.004255542721622932,
+              0.0016645272655506959
+            ]
+          },
+          "q_mse": {
+            "mean": 0.028120185419072817,
+            "per_fit": [
+              0.019304755481629507,
+              0.021615662051479835,
+              0.019680515350358075,
+              0.04178698547912849,
+              0.03821300873276817
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.048197135999102046,
+            "per_fit": [
+              0.026048994205864807,
+              0.02347938478991726,
+              0.016378541683635662,
+              0.0867028833748638,
+              0.0883758759412287
+            ]
+          }
+        },
+        "CD_gated": {
+          "belief_brier": {
+            "mean": 0.0040396050685582875,
+            "per_fit": [
+              0.004690842488976799,
+              0.0029594525136751406,
+              0.002997267779344746,
+              0.006231200674373628,
+              0.003319261886421121
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.06855990250354597,
+            "per_fit": [
+              0.038628237001808376,
+              0.048010310973995204,
+              0.04680058929365502,
+              0.10290598661642734,
+              0.1064543886318439
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.12576180552004707,
+            "per_fit": [
+              0.1421073931117714,
+              0.139686098638736,
+              0.10835210638676487,
+              0.09322006365757918,
+              0.145443365805384
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.08497779484038692,
+            "per_fit": [
+              0.12779776283220406,
+              0.04109962017944487,
+              0.0811124950231143,
+              0.10468005306486763,
+              0.07019904310230374
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0037143472537366244,
+            "per_fit": [
+              0.0044698797515015515,
+              0.0023572219455645204,
+              0.0031509542186664045,
+              0.00569198393780584,
+              0.0029016964151448044
+            ]
+          },
+          "q_mse": {
+            "mean": 0.029347745135333992,
+            "per_fit": [
+              0.021387614996281747,
+              0.02106779370503906,
+              0.020541817602044946,
+              0.043923569542168604,
+              0.03981792983113562
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.05347777569503638,
+            "per_fit": [
+              0.03366277393858625,
+              0.027657992080217964,
+              0.01732307441432198,
+              0.08664300313534284,
+              0.10210203490671288
+            ]
+          }
+        },
+        "CG": {
+          "belief_brier": {
+            "mean": 0.0033340299202219066,
+            "per_fit": [
+              0.00351187289607265,
+              0.003253139223618757,
+              0.0025136334468795225,
+              0.005016184138465685,
+              0.0023753198960729176
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.06855990250354597,
+            "per_fit": [
+              0.038628237001808376,
+              0.048010310973995204,
+              0.04680058929365502,
+              0.10290598661642734,
+              0.1064543886318439
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.13152582032314425,
+            "per_fit": [
+              0.15946127451145226,
+              0.1374129075497573,
+              0.10986846877876866,
+              0.09778485818777694,
+              0.15310159258796602
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.06619111012487504,
+            "per_fit": [
+              0.1025158496140186,
+              0.03895465492402928,
+              0.06401403140905533,
+              0.07588322202827454,
+              0.049587792648997514
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0027735838044130098,
+            "per_fit": [
+              0.003265127065595834,
+              0.002260730169582115,
+              0.0024238449724768374,
+              0.004253511643429117,
+              0.001664705170981147
+            ]
+          },
+          "q_mse": {
+            "mean": 0.0281199326653347,
+            "per_fit": [
+              0.019307445577752602,
+              0.02161598427432264,
+              0.01967984662225051,
+              0.041782961872526114,
+              0.03821342497982164
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.048197135999102046,
+            "per_fit": [
+              0.026048994205864807,
+              0.02347938478991726,
+              0.016378541683635662,
+              0.0867028833748638,
+              0.0883758759412287
+            ]
+          }
+        },
+        "CG_gated": {
+          "belief_brier": {
+            "mean": 0.0040396050685582875,
+            "per_fit": [
+              0.004690842488976799,
+              0.0029594525136751406,
+              0.002997267779344746,
+              0.006231200674373628,
+              0.003319261886421121
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.06855990250354597,
+            "per_fit": [
+              0.038628237001808376,
+              0.048010310973995204,
+              0.04680058929365502,
+              0.10290598661642734,
+              0.1064543886318439
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.12576180552004707,
+            "per_fit": [
+              0.1421073931117714,
+              0.139686098638736,
+              0.10835210638676487,
+              0.09322006365757918,
+              0.145443365805384
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.08497779484038692,
+            "per_fit": [
+              0.12779776283220406,
+              0.04109962017944487,
+              0.0811124950231143,
+              0.10468005306486763,
+              0.07019904310230374
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0037143472537366244,
+            "per_fit": [
+              0.0044698797515015515,
+              0.0023572219455645204,
+              0.0031509542186664045,
+              0.00569198393780584,
+              0.0029016964151448044
+            ]
+          },
+          "q_mse": {
+            "mean": 0.029347745135333992,
+            "per_fit": [
+              0.021387614996281747,
+              0.02106779370503906,
+              0.020541817602044946,
+              0.043923569542168604,
+              0.03981792983113562
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.05347777569503638,
+            "per_fit": [
+              0.03366277393858625,
+              0.027657992080217964,
+              0.01732307441432198,
+              0.08664300313534284,
+              0.10210203490671288
+            ]
+          }
+        },
+        "D": {
+          "belief_brier": {
+            "mean": 0.0033341772490668325,
+            "per_fit": [
+              0.003510374929908906,
+              0.003252978234619673,
+              0.0025139903496410668,
+              0.005018435096151791,
+              0.0023751076350127256
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.07435800148810372,
+            "per_fit": [
+              0.04797059004865668,
+              0.047131448735297114,
+              0.04515117829309712,
+              0.10180212021412051,
+              0.1297346701493472
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.10635360049476339,
+            "per_fit": [
+              0.164841534339276,
+              0.09968162248415184,
+              0.05809912519554558,
+              0.08034470690987024,
+              0.12880101354497323
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.06619199235326391,
+            "per_fit": [
+              0.10249439713651243,
+              0.03894970012264859,
+              0.06401491422432753,
+              0.07591965800674859,
+              0.049581292276082364
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.002773617228486282,
+            "per_fit": [
+              0.003263696757692957,
+              0.0022604500485116233,
+              0.0024238693490532008,
+              0.004255542721622932,
+              0.0016645272655506959
+            ]
+          },
+          "q_mse": {
+            "mean": 0.03000357760925601,
+            "per_fit": [
+              0.02240126222734804,
+              0.021273118138261722,
+              0.01919903542365905,
+              0.041376813819736145,
+              0.0457676584372751
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.05276710936244559,
+            "per_fit": [
+              0.03225934000418125,
+              0.028537297143764077,
+              0.014792691789538825,
+              0.08448147566598686,
+              0.10376474220875694
+            ]
+          }
+        },
+        "D_gated": {
+          "belief_brier": {
+            "mean": 0.0038507742182766077,
+            "per_fit": [
+              0.004690842488976799,
+              0.0029594525136751406,
+              0.002997267779344746,
+              0.006231200674373628,
+              0.0023751076350127256
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.07435800148810372,
+            "per_fit": [
+              0.04797059004865668,
+              0.047131448735297114,
+              0.04515117829309712,
+              0.10180212021412051,
+              0.1297346701493472
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.10518532163060597,
+            "per_fit": [
+              0.14550476158540393,
+              0.1046074303406246,
+              0.058430422537880264,
+              0.08858298014414784,
+              0.12880101354497323
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.08085424467514266,
+            "per_fit": [
+              0.12779776283220406,
+              0.04109962017944487,
+              0.0811124950231143,
+              0.10468005306486763,
+              0.049581292276082364
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0034669134238178023,
+            "per_fit": [
+              0.0044698797515015515,
+              0.0023572219455645204,
+              0.0031509542186664045,
+              0.00569198393780584,
+              0.0016645272655506959
+            ]
+          },
+          "q_mse": {
+            "mean": 0.030910153105843698,
+            "per_fit": [
+              0.02448412174200028,
+              0.02072524979182095,
+              0.02006033767534592,
+              0.04351339788277624,
+              0.0457676584372751
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.05572143202137488,
+            "per_fit": [
+              0.04265843955381118,
+              0.030309878402689054,
+              0.01513838609926002,
+              0.08673571384235722,
+              0.10376474220875694
+            ]
+          }
+        },
+        "G": {
+          "belief_brier": {
+            "mean": 0.0033340299202219066,
+            "per_fit": [
+              0.00351187289607265,
+              0.003253139223618757,
+              0.0025136334468795225,
+              0.005016184138465685,
+              0.0023753198960729176
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.07435800148810372,
+            "per_fit": [
+              0.04797059004865668,
+              0.047131448735297114,
+              0.04515117829309712,
+              0.10180212021412051,
+              0.1297346701493472
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.10635360049476339,
+            "per_fit": [
+              0.164841534339276,
+              0.09968162248415184,
+              0.05809912519554558,
+              0.08034470690987024,
+              0.12880101354497323
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.06619111012487504,
+            "per_fit": [
+              0.1025158496140186,
+              0.03895465492402928,
+              0.06401403140905533,
+              0.07588322202827454,
+              0.049587792648997514
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.0027735838044130098,
+            "per_fit": [
+              0.003265127065595834,
+              0.002260730169582115,
+              0.0024238449724768374,
+              0.004253511643429117,
+              0.001664705170981147
+            ]
+          },
+          "q_mse": {
+            "mean": 0.030003324855517897,
+            "per_fit": [
+              0.022403952323471133,
+              0.021273440361104533,
+              0.01919836669555148,
+              0.04137279021313377,
+              0.04576807468432857
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.052779014124350355,
+            "per_fit": [
+              0.03225934000418125,
+              0.028537297143764077,
+              0.014792691789538825,
+              0.08448147566598686,
+              0.10382426601828074
+            ]
+          }
+        },
+        "G_gated": {
+          "belief_brier": {
+            "mean": 0.0038508166704886463,
+            "per_fit": [
+              0.004690842488976799,
+              0.0029594525136751406,
+              0.002997267779344746,
+              0.006231200674373628,
+              0.0023753198960729176
+            ]
+          },
+          "continuation_q_mse": {
+            "mean": 0.07435800148810372,
+            "per_fit": [
+              0.04797059004865668,
+              0.047131448735297114,
+              0.04515117829309712,
+              0.10180212021412051,
+              0.1297346701493472
+            ]
+          },
+          "expected_utility": {
+            "mean": 0.10518532163060597,
+            "per_fit": [
+              0.14550476158540393,
+              0.1046074303406246,
+              0.058430422537880264,
+              0.08858298014414784,
+              0.12880101354497323
+            ]
+          },
+          "own_bank_logit_mse": {
+            "mean": 0.08085554474972567,
+            "per_fit": [
+              0.12779776283220406,
+              0.04109962017944487,
+              0.0811124950231143,
+              0.10468005306486763,
+              0.049587792648997514
+            ]
+          },
+          "own_bank_probability_mse": {
+            "mean": 0.003466949004903893,
+            "per_fit": [
+              0.0044698797515015515,
+              0.0023572219455645204,
+              0.0031509542186664045,
+              0.00569198393780584,
+              0.001664705170981147
+            ]
+          },
+          "q_mse": {
+            "mean": 0.030910236355254396,
+            "per_fit": [
+              0.02448412174200028,
+              0.02072524979182095,
+              0.02006033767534592,
+              0.04351339788277624,
+              0.04576807468432857
+            ]
+          },
+          "teacher_behavior_regret": {
+            "mean": 0.055733336783279644,
+            "per_fit": [
+              0.04265843955381118,
+              0.030309878402689054,
+              0.01513838609926002,
+              0.08673571384235722,
+              0.10382426601828074
+            ]
+          }
+        }
+      },
+      "contrasts": {
+        "CD_gated_minus_C": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "CD_minus_C": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -0.001487603122285389,
+              7.674748330248045e-05
+            ],
+            "independent_fits": 5,
+            "mean": -0.0007054278194914543,
+            "per_fit": [
+              -0.0011804675590678928,
+              0.0002935257209445326,
+              -0.00048327742970367916,
+              -0.001212765578221837,
+              -0.0009441542514083954
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.0035080756631913927,
+              0.015000942260944169
+            ],
+            "independent_fits": 5,
+            "mean": 0.0057464332988763885,
+            "per_fit": [
+              0.01735388139968086,
+              -0.0022731910889786933,
+              0.0015163623920037839,
+              0.004476887009093974,
+              0.007658226782582017
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -0.031583525535769055,
+              -0.0059880794384769825
+            ],
+            "independent_fits": 5,
+            "mean": -0.01878580248712302,
+            "per_fit": [
+              -0.025303365695691638,
+              -0.0021499200567962826,
+              -0.01709758079878676,
+              -0.028760395058119045,
+              -0.020617750826221373
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -0.001609957142850253,
+              -0.0002715029076504319
+            ],
+            "independent_fits": 5,
+            "mean": -0.0009407300252503425,
+            "per_fit": [
+              -0.0012061829938085945,
+              -9.677189705289708e-05,
+              -0.0007270848696132037,
+              -0.0014364412161829085,
+              -0.0012371691495941086
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0026139144022381115,
+              0.0001587949697157533
+            ],
+            "independent_fits": 5,
+            "mean": -0.001227559716261179,
+            "per_fit": [
+              -0.0020828595146522404,
+              0.0005478683464407753,
+              -0.0008613022516868706,
+              -0.0021365840630401117,
+              -0.0016049210983674483
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -0.012230292835857238,
+              0.0016690134439885616
+            ],
+            "independent_fits": 5,
+            "mean": -0.005280639695934338,
+            "per_fit": [
+              -0.007613779732721444,
+              -0.0041786072903007045,
+              -0.0009445327306863184,
+              5.988023952095689e-05,
+              -0.013726158965484181
+            ]
+          }
+        },
+        "CD_minus_CG": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -1.541577941336953e-06,
+              1.8362356311891737e-06
+            ],
+            "independent_fits": 5,
+            "mean": 1.4732884492611038e-07,
+            "per_fit": [
+              -1.497966163744105e-06,
+              -1.6098899908393444e-07,
+              3.56902761544306e-07,
+              2.2509576861062808e-06,
+              -2.1226106019199553e-07
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -6.639558555649093e-05,
+              3.12325771149776e-05
+            ],
+            "independent_fits": 5,
+            "mean": -1.758150422075666e-05,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              -8.79075211037833e-05,
+              0.0
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -2.5831458713532183e-05,
+              2.759591549122695e-05
+            ],
+            "independent_fits": 5,
+            "mean": 8.822283888473837e-07,
+            "per_fit": [
+              -2.1452477506178624e-05,
+              -4.954801380692431e-06,
+              8.828152722045735e-07,
+              3.643597847405311e-05,
+              -6.50037291514971e-06
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -1.521903929537848e-06,
+              1.5887520760810781e-06
+            ],
+            "independent_fits": 5,
+            "mean": 3.342407327161512e-08,
+            "per_fit": [
+              -1.4303079028769872e-06,
+              -2.8012107049181154e-07,
+              2.4376576363352442e-08,
+              2.031078193814699e-06,
+              -1.779054304511772e-07
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -2.777955253323917e-06,
+              3.2834627295536552e-06
+            ],
+            "independent_fits": 5,
+            "mean": 2.5275373811486925e-07,
+            "per_fit": [
+              -2.6900961230952314e-06,
+              -3.2222284280375435e-07,
+              6.687281075661022e-07,
+              4.023606602378271e-06,
+              -4.1624705347104163e-07
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "CG_gated_minus_C": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          }
+        },
+        "CG_minus_C": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -0.0014879795381745474,
+              7.682924150178639e-05
+            ],
+            "independent_fits": 5,
+            "mean": -0.0007055751483363805,
+            "per_fit": [
+              -0.0011789695929041487,
+              0.0002936867099436165,
+              -0.00048363433246522347,
+              -0.0012150165359079432,
+              -0.0009439419903482034
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.003485973758095802,
+              0.015014003364290093
+            ],
+            "independent_fits": 5,
+            "mean": 0.005764014803097145,
+            "per_fit": [
+              0.01735388139968086,
+              -0.0022731910889786933,
+              0.0015163623920037839,
+              0.004564794530197758,
+              0.007658226782582017
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -0.03159324625644806,
+              -0.005980123174575674
+            ],
+            "independent_fits": 5,
+            "mean": -0.018786684715511866,
+            "per_fit": [
+              -0.02528191321818546,
+              -0.00214496525541559,
+              -0.017098463614058965,
+              -0.0287968310365931,
+              -0.020611250453306224
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0016104561943266612,
+              -0.00027107070432056703
+            ],
+            "independent_fits": 5,
+            "mean": -0.0009407634493236141,
+            "per_fit": [
+              -0.0012047526859057175,
+              -9.649177598240527e-05,
+              -0.0007271092461895671,
+              -0.0014384722943767232,
+              -0.0012369912441636574
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0026145948811951165,
+              0.0001589699411965286
+            ],
+            "independent_fits": 5,
+            "mean": -0.001227812469999294,
+            "per_fit": [
+              -0.002080169418529145,
+              0.0005481905692835791,
+              -0.0008619709797944367,
+              -0.00214060766964249,
+              -0.0016045048513139773
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -0.012230292835857238,
+              0.0016690134439885616
+            ],
+            "independent_fits": 5,
+            "mean": -0.005280639695934338,
+            "per_fit": [
+              -0.007613779732721444,
+              -0.0041786072903007045,
+              -0.0009445327306863184,
+              5.988023952095689e-05,
+              -0.013726158965484181
+            ]
+          }
+        },
+        "C_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.01919819048741071,
+              0.007601992518295193
+            ],
+            "independent_fits": 5,
+            "mean": -0.005798098984557758,
+            "per_fit": [
+              -0.009342353046848308,
+              0.0008788622386980902,
+              0.0016494110005578974,
+              0.0011038664023068356,
+              -0.023280281517503304
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.005244397836263095,
+              0.04884346372012509
+            ],
+            "independent_fits": 5,
+            "mean": 0.021799532941930995,
+            "per_fit": [
+              -0.003397368473632534,
+              0.03507866829811139,
+              0.04992168384888461,
+              0.004637083513431339,
+              0.022757597522860162
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.006248801672646389,
+              0.0024820172922799975
+            ],
+            "independent_fits": 5,
+            "mean": -0.001883392190183196,
+            "per_fit": [
+              -0.0030965067457185344,
+              0.0003425439132181095,
+              0.0004814799266990265,
+              0.000410171659392361,
+              -0.0075546497045069425
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -0.014902554491826602,
+              0.004304529279632906
+            ],
+            "independent_fits": 5,
+            "mean": -0.005299012606096848,
+            "per_fit": [
+              -0.008995665615224926,
+              -0.0026518863224710906,
+              0.0021846883150619598,
+              -9.271070701437345e-05,
+              -0.01693948870083581
+            ]
+          }
+        },
+        "D_gated_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -0.0007131093402565852,
+              0.00033544763969322716
+            ],
+            "independent_fits": 5,
+            "mean": -0.00018883085028167907,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0009441542514083954
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.0021726795027124483,
+              0.004618777607692203
+            ],
+            "independent_fits": 5,
+            "mean": 0.0012230490524898774,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.006115245262449387
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -0.015572360837574314,
+              0.007325260507085764
+            ],
+            "independent_fits": 5,
+            "mean": -0.004123550165244275,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.020617750826221373
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0009344202758572788,
+              0.0004395526160196353
+            ],
+            "independent_fits": 5,
+            "mean": -0.00024743382991882174,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0012371691495941086
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0012121792852316953,
+              0.0005702108458847105
+            ],
+            "independent_fits": 5,
+            "mean": -0.00032098421967349247,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0016049210983674622
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -0.011538385267328779,
+              0.005427672707812078
+            ],
+            "independent_fits": 5,
+            "mean": -0.0030553562797583506,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.015276781398791753
+            ]
+          }
+        },
+        "D_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -0.001487603122285389,
+              7.674748330248045e-05
+            ],
+            "independent_fits": 5,
+            "mean": -0.0007054278194914543,
+            "per_fit": [
+              -0.0011804675590678928,
+              0.0002935257209445326,
+              -0.00048327742970367916,
+              -0.001212765578221837,
+              -0.0009441542514083954
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.011138782855022313,
+              0.015921438688316882
+            ],
+            "independent_fits": 5,
+            "mean": 0.0023913279166472845,
+            "per_fit": [
+              0.019336772753872078,
+              -0.004925807856472758,
+              -0.00033129734233468267,
+              -0.008238273234277602,
+              0.006115245262449387
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -0.031583525535769055,
+              -0.0059880794384769825
+            ],
+            "independent_fits": 5,
+            "mean": -0.01878580248712302,
+            "per_fit": [
+              -0.025303365695691638,
+              -0.0021499200567962826,
+              -0.01709758079878676,
+              -0.028760395058119045,
+              -0.020617750826221373
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -0.001609957142850253,
+              -0.0002715029076504319
+            ],
+            "independent_fits": 5,
+            "mean": -0.0009407300252503425,
+            "per_fit": [
+              -0.0012061829938085945,
+              -9.677189705289708e-05,
+              -0.0007270848696132037,
+              -0.0014364412161829085,
+              -0.0012371691495941086
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0026139144022381084,
+              0.00015879496971574897
+            ],
+            "independent_fits": 5,
+            "mean": -0.0012275597162611797,
+            "per_fit": [
+              -0.0020828595146522404,
+              0.0005478683464407719,
+              -0.0008613022516868706,
+              -0.002136584063040098,
+              -0.0016049210983674622
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -0.014087255707748946,
+              0.002067897830373664
+            ],
+            "independent_fits": 5,
+            "mean": -0.006009678938687642,
+            "per_fit": [
+              -0.010399099549629927,
+              -0.0017725812589249774,
+              -0.00034569430972119543,
+              -0.0022542381763703545,
+              -0.015276781398791753
+            ]
+          }
+        },
+        "D_minus_G": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -1.541577941336953e-06,
+              1.8362356311891737e-06
+            ],
+            "independent_fits": 5,
+            "mean": 1.4732884492611038e-07,
+            "per_fit": [
+              -1.497966163744105e-06,
+              -1.6098899908393444e-07,
+              3.56902761544306e-07,
+              2.2509576861062808e-06,
+              -2.1226106019199553e-07
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -2.5831458713532183e-05,
+              2.759591549122695e-05
+            ],
+            "independent_fits": 5,
+            "mean": 8.822283888473837e-07,
+            "per_fit": [
+              -2.1452477506178624e-05,
+              -4.954801380692431e-06,
+              8.828152722045735e-07,
+              3.643597847405311e-05,
+              -6.50037291514971e-06
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -1.521903929537848e-06,
+              1.5887520760810781e-06
+            ],
+            "independent_fits": 5,
+            "mean": 3.342407327161512e-08,
+            "per_fit": [
+              -1.4303079028769872e-06,
+              -2.8012107049181154e-07,
+              2.4376576363352442e-08,
+              2.031078193814699e-06,
+              -1.779054304511772e-07
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -2.777955253323309e-06,
+              3.2834627295530475e-06
+            ],
+            "independent_fits": 5,
+            "mean": 2.5275373811486925e-07,
+            "per_fit": [
+              -2.690096123091762e-06,
+              -3.2222284281069324e-07,
+              6.687281075695717e-07,
+              4.023606602378271e-06,
+              -4.1624705347104163e-07
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -4.4957679823776866e-05,
+              2.1148156014256474e-05
+            ],
+            "independent_fits": 5,
+            "mean": -1.1904761904760197e-05,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -5.9523809523800986e-05
+            ]
+          }
+        },
+        "G_gated_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -0.0007129490218082281,
+              0.00033537222566894676
+            ],
+            "independent_fits": 5,
+            "mean": -0.00018878839806964068,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0009439419903482034
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.0021726795027124483,
+              0.004618777607692203
+            ],
+            "independent_fits": 5,
+            "mean": 0.0012230490524898774,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.006115245262449387
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -0.015567451177278839,
+              0.007322950995956349
+            ],
+            "independent_fits": 5,
+            "mean": -0.004122250090661245,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.020611250453306224
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0009342859058388758,
+              0.00043948940817341287
+            ],
+            "independent_fits": 5,
+            "mean": -0.00024739824883273146,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0012369912441636574
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0012118648984021686,
+              0.0005700629578765722
+            ],
+            "independent_fits": 5,
+            "mean": -0.0003209009702627982,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.0016045048513139912
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -0.011493427587505002,
+              0.00540652455179782
+            ],
+            "independent_fits": 5,
+            "mean": -0.0030434515178535903,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -0.015217257589267952
+            ]
+          }
+        },
+        "G_minus_A": {
+          "belief_brier": {
+            "descriptive_paired_95_ci": [
+              -0.0014879795381745474,
+              7.682924150178639e-05
+            ],
+            "independent_fits": 5,
+            "mean": -0.0007055751483363805,
+            "per_fit": [
+              -0.0011789695929041487,
+              0.0002936867099436165,
+              -0.00048363433246522347,
+              -0.0012150165359079432,
+              -0.0009439419903482034
+            ]
+          },
+          "continuation_q_mse": {
+            "descriptive_paired_95_ci": [
+              0.0,
+              0.0
+            ],
+            "independent_fits": 5,
+            "mean": 0.0,
+            "per_fit": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ]
+          },
+          "expected_utility": {
+            "descriptive_paired_95_ci": [
+              -0.011138782855022313,
+              0.015921438688316882
+            ],
+            "independent_fits": 5,
+            "mean": 0.0023913279166472845,
+            "per_fit": [
+              0.019336772753872078,
+              -0.004925807856472758,
+              -0.00033129734233468267,
+              -0.008238273234277602,
+              0.006115245262449387
+            ]
+          },
+          "own_bank_logit_mse": {
+            "descriptive_paired_95_ci": [
+              -0.03159324625644806,
+              -0.005980123174575674
+            ],
+            "independent_fits": 5,
+            "mean": -0.018786684715511866,
+            "per_fit": [
+              -0.02528191321818546,
+              -0.00214496525541559,
+              -0.017098463614058965,
+              -0.0287968310365931,
+              -0.020611250453306224
+            ]
+          },
+          "own_bank_probability_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0016104561943266612,
+              -0.00027107070432056703
+            ],
+            "independent_fits": 5,
+            "mean": -0.0009407634493236141,
+            "per_fit": [
+              -0.0012047526859057175,
+              -9.649177598240527e-05,
+              -0.0007271092461895671,
+              -0.0014384722943767232,
+              -0.0012369912441636574
+            ]
+          },
+          "q_mse": {
+            "descriptive_paired_95_ci": [
+              -0.0026145948811951173,
+              0.00015896994119652796
+            ],
+            "independent_fits": 5,
+            "mean": -0.0012278124699992947,
+            "per_fit": [
+              -0.0020801694185291486,
+              0.0005481905692835826,
+              -0.0008619709797944401,
+              -0.002140607669642476,
+              -0.0016045048513139912
+            ]
+          },
+          "teacher_behavior_regret": {
+            "descriptive_paired_95_ci": [
+              -0.014049054805112506,
+              0.0020535064515467437
+            ],
+            "independent_fits": 5,
+            "mean": -0.005997774176782882,
+            "per_fit": [
+              -0.010399099549629927,
+              -0.0017725812589249774,
+              -0.00034569430972119543,
+              -0.0022542381763703545,
+              -0.015217257589267952
+            ]
+          }
+        }
+      }
+    }
+  },
+  "validation": {
+    "accepted_fits": {
+      "CD": [],
+      "CG": [],
+      "D": [
+        71
+      ],
+      "G": [
+        71
+      ]
+    },
+    "incumbents": {
+      "CD": "C",
+      "CG": "C",
+      "D": "A",
+      "G": "A"
+    },
+    "per_fit": {
+      "11": {
+        "CD": {
+          "accepted": false,
+          "gated_parent_hash": "0036c9bc8333f74387c598dac56559490d8bd7c7756cef293713827572f0a6ee",
+          "incumbent": "C",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": -0.0002904027344608484
+        },
+        "CG": {
+          "accepted": false,
+          "gated_parent_hash": "0036c9bc8333f74387c598dac56559490d8bd7c7756cef293713827572f0a6ee",
+          "incumbent": "C",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": -0.0002904027344608484
+        },
+        "D": {
+          "accepted": false,
+          "gated_parent_hash": "7118fb02a681cf8a4420eede246514bba847278c7b05a12cc9e3d11b73b20d53",
+          "incumbent": "A",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": -0.0007246181230965987
+        },
+        "G": {
+          "accepted": false,
+          "gated_parent_hash": "7118fb02a681cf8a4420eede246514bba847278c7b05a12cc9e3d11b73b20d53",
+          "incumbent": "A",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": -0.0007246181230965987
+        }
+      },
+      "23": {
+        "CD": {
+          "accepted": false,
+          "gated_parent_hash": "23270de60ff91315d33ef971432f8507b7ebc2e0beaf7e5ebcd74a98801088c6",
+          "incumbent": "C",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": 0.002670078082407351
+        },
+        "CG": {
+          "accepted": false,
+          "gated_parent_hash": "23270de60ff91315d33ef971432f8507b7ebc2e0beaf7e5ebcd74a98801088c6",
+          "incumbent": "C",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": 0.002670078082407351
+        },
+        "D": {
+          "accepted": false,
+          "gated_parent_hash": "84db733a38e01dd3b885a4c220d8b5c1f109f46d1ad69b980af5c028186f15f5",
+          "incumbent": "A",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": -0.00415557533908445
+        },
+        "G": {
+          "accepted": false,
+          "gated_parent_hash": "84db733a38e01dd3b885a4c220d8b5c1f109f46d1ad69b980af5c028186f15f5",
+          "incumbent": "A",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": -0.00415557533908445
+        }
+      },
+      "37": {
+        "CD": {
+          "accepted": false,
+          "gated_parent_hash": "bec3a77279e69946d56b1ee43c50766eb7b0b74221bee1a35dbc89426e7bffa8",
+          "incumbent": "C",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": -0.0020275527790434844
+        },
+        "CG": {
+          "accepted": false,
+          "gated_parent_hash": "bec3a77279e69946d56b1ee43c50766eb7b0b74221bee1a35dbc89426e7bffa8",
+          "incumbent": "C",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": -0.0020275527790434844
+        },
+        "D": {
+          "accepted": false,
+          "gated_parent_hash": "3e9905fc3be97533fb5ae136c2afde892975f076292cbec34a94947167d8244f",
+          "incumbent": "A",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": 0.0
+        },
+        "G": {
+          "accepted": false,
+          "gated_parent_hash": "3e9905fc3be97533fb5ae136c2afde892975f076292cbec34a94947167d8244f",
+          "incumbent": "A",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": 0.0
+        }
+      },
+      "53": {
+        "CD": {
+          "accepted": false,
+          "gated_parent_hash": "ad740d3f2de6e6595a1ff831dda1e8b1ded61f396c9341fa387bf4efb3703928",
+          "incumbent": "C",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": -0.0003822395422181102
+        },
+        "CG": {
+          "accepted": false,
+          "gated_parent_hash": "ad740d3f2de6e6595a1ff831dda1e8b1ded61f396c9341fa387bf4efb3703928",
+          "incumbent": "C",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": -0.0003822395422181102
+        },
+        "D": {
+          "accepted": false,
+          "gated_parent_hash": "cd5aaef2fef36f1185d6f433c01c6fd538e49342d1311824aae24422948f9e44",
+          "incumbent": "A",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": -0.0005798342183321314
+        },
+        "G": {
+          "accepted": false,
+          "gated_parent_hash": "cd5aaef2fef36f1185d6f433c01c6fd538e49342d1311824aae24422948f9e44",
+          "incumbent": "A",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": -0.0005798342183321314
+        }
+      },
+      "71": {
+        "CD": {
+          "accepted": false,
+          "gated_parent_hash": "522ca68f8f99ef74015218f3657aaea9fd78ee3f10517a240defb6ee5f481d91",
+          "incumbent": "C",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": -0.0012528877106744996
+        },
+        "CG": {
+          "accepted": false,
+          "gated_parent_hash": "522ca68f8f99ef74015218f3657aaea9fd78ee3f10517a240defb6ee5f481d91",
+          "incumbent": "C",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": -0.0012528877106744996
+        },
+        "D": {
+          "accepted": true,
+          "gated_parent_hash": "44620ba2a14a68d5c8d9e341969d9b0819e3b117164847915a4da3c2e36c7ba7",
+          "incumbent": "A",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": 0.01354251379586846
+        },
+        "G": {
+          "accepted": true,
+          "gated_parent_hash": "44620ba2a14a68d5c8d9e341969d9b0819e3b117164847915a4da3c2e36c7ba7",
+          "incumbent": "A",
+          "restore_if_rejected_verified": true,
+          "reused_original_validation": true,
+          "validation_gain": 0.01354251379586846
+        }
+      }
+    },
+    "previously_used_to_select_C": true,
+    "reused_original_validation": true,
+    "threshold": 0.005
+  }
+}

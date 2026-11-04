@@ -1,0 +1,137 @@
+{
+  "R_accepted_fits": 0,
+  "V_accepted_fits": 0,
+  "all_rejected_arms_exactly_equal_C": true,
+  "all_selections_and_original_validation_fixed_before_new_test": true,
+  "candidate_count": 625,
+  "cost_scope": "Recorded study/process CPU endpoints precede final RESULTS compression and qualification write; 300 CPU-second hard limit covers entire process. Pilot, transfer, Agent work and original training are separate.",
+  "date_utc": "2026-11-04",
+  "driver_sha256": "5d306747d36d85662964f5f8a14fa9b404826d5dfe55b0a65ef668af881cadb4",
+  "execution_and_record_verification": "passed",
+  "exploratory": true,
+  "feasible_candidate_count": 625,
+  "fits": [
+    11,
+    23,
+    37,
+    53,
+    71
+  ],
+  "five_C_checked_before_search": true,
+  "limits": [
+    "Finite numerical TRAIN grid optimum only, not continuous-weight or full-NDU optimum",
+    "No full-model or compute-matched gradient-training comparison",
+    "No new FullHX packets or private HeptaTrader data",
+    "C-A IID descriptive CI is positive on this new seed; this is not a new V efficacy result and does not revise prior frozen conclusions",
+    "Utility-oriented action scores are not certified Bellman-consistent calibrated Q"
+  ],
+  "measurement": {
+    "cpu_seconds": 62.480971000000004,
+    "peak_rss_bytes": 163430400,
+    "pilot_cpu_seconds_separate": 0.32090300000000005,
+    "pilot_is_not_total_cost": true,
+    "process_cpu_seconds_at_finish": 62.553426,
+    "wall_seconds": 62.616643624999995
+  },
+  "new_test_worlds": 320,
+  "nominal_permutation_norm_equal": true,
+  "old88_payload_preservation_record": "records/OLD_FROZEN_88_VERIFICATION.json",
+  "pilot_cpu_seconds_separate": 0.32090300000000005,
+  "protocol_sha256": "3c20de99d8a5a141d0cac9fb63d3c03219bde8d675a91306f412ae12e106eca7",
+  "realized_squared_norm_discrepancies_recorded": true,
+  "required_independent_inputs": [
+    "../joint",
+    "../exploratory_belief/OLD_CONTINUATION_HEADS.json.gz"
+  ],
+  "results_sha256": "dd3ec5fad2b426b7257acff67b5048488e8cbc5476980e64f8559fb31ddc5b1e",
+  "schema": "hepta-ndu-value-grid-public-package-qualification-v1",
+  "scientific_acceptance": "NO_NEW_V_ACCEPTED; NOT_AN_EFFICACY_SUCCESS",
+  "seed": 870150000,
+  "strict_reference_matmul_audit": {
+    "count": 1917311,
+    "max_abs_difference": 1.3322676295501878e-15,
+    "max_input_abs": 1.0,
+    "max_output_abs": 3.385989085334416,
+    "nonfinite_count": 0
+  },
+  "summary": {
+    "iid": {
+      "A_mean": 0.22646385381699408,
+      "C_mean": 0.24487911854943709,
+      "C_minus_A": {
+        "descriptive_paired_95_ci": [
+          0.0007188865480420199,
+          0.036111642916844114
+        ],
+        "independent_fits": 5,
+        "mean": 0.018415264732443065,
+        "per_fit": [
+          -0.00442236831087528,
+          0.033349487442264625,
+          0.023585218604204317,
+          0.02410877023620167,
+          0.015455215690419993
+        ]
+      },
+      "R_gated_mean": 0.24487911854943709,
+      "R_raw_mean": 0.11788869609040764,
+      "V_gated_mean": 0.24487911854943709,
+      "V_raw_mean": 0.24866070841545734,
+      "V_raw_minus_C": {
+        "descriptive_paired_95_ci": [
+          -0.011999380377727496,
+          0.019562560109767823
+        ],
+        "independent_fits": 5,
+        "mean": 0.003781589866020163,
+        "per_fit": [
+          0.006189626431167272,
+          -0.010151404597918301,
+          -0.0002446998139305767,
+          -0.0008740038684462714,
+          0.023988431179228692
+        ]
+      }
+    },
+    "ood": {
+      "A_mean": 0.09775067704902311,
+      "C_mean": 0.10570264214015648,
+      "C_minus_A": {
+        "descriptive_paired_95_ci": [
+          -0.02957656802541876,
+          0.04548049820768546
+        ],
+        "independent_fits": 5,
+        "mean": 0.007951965091133353,
+        "per_fit": [
+          -0.017471740305622235,
+          0.05950644205059511,
+          -0.006985335709234965,
+          0.00801453713349913,
+          -0.003304077713570275
+        ]
+      },
+      "R_gated_mean": 0.10570264214015648,
+      "R_raw_mean": 0.04406934000310397,
+      "V_gated_mean": 0.10570264214015648,
+      "V_raw_mean": 0.12124171902538135,
+      "V_raw_minus_C": {
+        "descriptive_paired_95_ci": [
+          -0.008463980979373977,
+          0.039542134749823765
+        ],
+        "independent_fits": 5,
+        "mean": 0.015539076885224896,
+        "per_fit": [
+          0.02677228821436338,
+          0.012143490946809415,
+          0.00136956740887903,
+          -0.00513056385295986,
+          0.04254060170903251
+        ]
+      }
+    }
+  },
+  "validation_reference": "C_incumbent",
+  "validation_threshold": 0.005
+}

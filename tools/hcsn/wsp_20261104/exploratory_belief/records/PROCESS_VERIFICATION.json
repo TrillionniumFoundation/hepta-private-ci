@@ -1,0 +1,91 @@
+{
+  "schema": "hepta-followup-process-verification-v1",
+  "stderr_empty": true,
+  "strict_fp_execution": true,
+  "original_live_files_modified": false,
+  "completion": {
+    "complete": true,
+    "cpu_seconds": 31.622371,
+    "wall_seconds": 31.728064667,
+    "matmul_audit": {
+      "count": 933777,
+      "max_abs_difference": 8.881784197001252e-16,
+      "max_input_abs": 1,
+      "max_output_abs": 3.4378577222186353,
+      "nonfinite_count": 0
+    }
+  },
+  "fit_stdout_summaries": [
+    {
+      "fit": 11,
+      "nonzero_belief_edit": false,
+      "wrong_terminal_before": 0,
+      "wrong_terminal_after": 0,
+      "gate_accepts": {
+        "gated10_old_continuation": true,
+        "gated01_belief": false,
+        "gated11_both": true,
+        "gated01_random_belief": false
+      },
+      "iid_raw_belief_delta": 0,
+      "ood_raw_belief_delta": 0
+    },
+    {
+      "fit": 23,
+      "nonzero_belief_edit": true,
+      "wrong_terminal_before": 1,
+      "wrong_terminal_after": 0,
+      "gate_accepts": {
+        "gated10_old_continuation": true,
+        "gated01_belief": false,
+        "gated11_both": true,
+        "gated01_random_belief": false
+      },
+      "iid_raw_belief_delta": 0,
+      "ood_raw_belief_delta": 0
+    },
+    {
+      "fit": 37,
+      "nonzero_belief_edit": true,
+      "wrong_terminal_before": 4,
+      "wrong_terminal_after": 0,
+      "gate_accepts": {
+        "gated10_old_continuation": true,
+        "gated01_belief": false,
+        "gated11_both": true,
+        "gated01_random_belief": false
+      },
+      "iid_raw_belief_delta": -0.0009384199865318521,
+      "ood_raw_belief_delta": -0.020423338267381352
+    },
+    {
+      "fit": 53,
+      "nonzero_belief_edit": true,
+      "wrong_terminal_before": 1,
+      "wrong_terminal_after": 0,
+      "gate_accepts": {
+        "gated10_old_continuation": true,
+        "gated01_belief": false,
+        "gated11_both": true,
+        "gated01_random_belief": false
+      },
+      "iid_raw_belief_delta": 0.0000044493668184542035,
+      "ood_raw_belief_delta": 0.00325683855232968
+    },
+    {
+      "fit": 71,
+      "nonzero_belief_edit": false,
+      "wrong_terminal_before": 0,
+      "wrong_terminal_after": 0,
+      "gate_accepts": {
+        "gated10_old_continuation": true,
+        "gated01_belief": false,
+        "gated11_both": true,
+        "gated01_random_belief": false
+      },
+      "iid_raw_belief_delta": 0,
+      "ood_raw_belief_delta": 0
+    }
+  ],
+  "provenance": "read from durable isolated execution stdout/stderr after completion"
+}

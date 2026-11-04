@@ -1,0 +1,103 @@
+{
+  "automatic_retry": false,
+  "cancelled": false,
+  "events": [
+    {
+      "accepted": false,
+      "cpu": 12.04653,
+      "feasible": 125,
+      "fit": 11,
+      "selected_index": 34,
+      "stage": "selection_and_val_fixed",
+      "val_gain_vs_C": -0.006093319205428771
+    },
+    {
+      "accepted": false,
+      "cpu": 23.87359,
+      "feasible": 125,
+      "fit": 23,
+      "selected_index": 34,
+      "stage": "selection_and_val_fixed",
+      "val_gain_vs_C": 0.004924965659467956
+    },
+    {
+      "accepted": false,
+      "cpu": 35.472431,
+      "feasible": 125,
+      "fit": 37,
+      "selected_index": 64,
+      "stage": "selection_and_val_fixed",
+      "val_gain_vs_C": 0.000272441222244596
+    },
+    {
+      "accepted": false,
+      "cpu": 46.099338,
+      "feasible": 125,
+      "fit": 53,
+      "selected_index": 34,
+      "stage": "selection_and_val_fixed",
+      "val_gain_vs_C": 0.0029656662968276792
+    },
+    {
+      "accepted": false,
+      "cpu": 57.583801,
+      "feasible": 125,
+      "fit": 71,
+      "selected_index": 59,
+      "stage": "selection_and_val_fixed",
+      "val_gain_vs_C": -0.025065350941133963
+    },
+    {
+      "receipt_sha256": "32715a76fccf9715d7777c882bd1a405922da3ad3853af74ff3a36f92aef9e64",
+      "stage": "all_five_frozen_before_new_test"
+    },
+    {
+      "cpu": 58.014083,
+      "fit": 11,
+      "stage": "fresh_test_complete"
+    },
+    {
+      "cpu": 58.660958,
+      "fit": 23,
+      "stage": "fresh_test_complete"
+    },
+    {
+      "cpu": 60.278286,
+      "fit": 37,
+      "stage": "fresh_test_complete"
+    },
+    {
+      "cpu": 61.286968,
+      "fit": 53,
+      "stage": "fresh_test_complete"
+    },
+    {
+      "cpu": 62.468019,
+      "fit": 71,
+      "stage": "fresh_test_complete"
+    },
+    {
+      "error": null,
+      "measurement": {
+        "cpu_seconds": 62.480971000000004,
+        "peak_rss_bytes": 163430400,
+        "pilot_cpu_seconds_separate": 0.32090300000000005,
+        "pilot_is_not_total_cost": true,
+        "process_cpu_seconds_at_finish": 62.553426,
+        "wall_seconds": 62.616643624999995
+      },
+      "results_sha256": "dd3ec5fad2b426b7257acff67b5048488e8cbc5476980e64f8559fb31ddc5b1e",
+      "stage": "finished",
+      "status": "completed"
+    }
+  ],
+  "exit_code": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "privacy": "Host, job identifiers, absolute operational paths and raw process envelope omitted.",
+  "schema": "hepta-ndu-value-grid-process-verification-v1",
+  "state": "succeeded",
+  "stderr_bytes": 0,
+  "stdout_bytes": 1648,
+  "timed_out": false
+}

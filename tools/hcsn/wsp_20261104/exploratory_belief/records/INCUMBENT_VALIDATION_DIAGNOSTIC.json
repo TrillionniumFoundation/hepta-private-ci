@@ -1,0 +1,53 @@
+{
+  "schema": "hepta-later-incumbent-validation-diagnostic-v1",
+  "post_hoc_diagnostic": true,
+  "original_protocol_changed": false,
+  "new_policy_candidate_created": false,
+  "new_holdout_selection_or_evaluation": false,
+  "comparison": "existing validation CB-C only; no retrospective claim of a new qualified holdout policy",
+  "fixed_threshold": 0.005,
+  "fits": [
+    {
+      "fit": 11,
+      "original_continuation_candidate_sha256": "a561706ebbad90353f8f7558041a5836fed9ec43fadbb2f09c5258a33ef0fe02",
+      "validation_C": 0.30692019212478494,
+      "validation_CB": 0.30692019212478494,
+      "validation_CB_minus_C": 0.0,
+      "fixed_plus_0p005_incumbent_gate_would_accept": false
+    },
+    {
+      "fit": 23,
+      "original_continuation_candidate_sha256": "24896f08138195b513c4ba43f59d3bc3600004d592df0435370399d9fe0dd9fd",
+      "validation_C": 0.24841556159759362,
+      "validation_CB": 0.24841556159759362,
+      "validation_CB_minus_C": 0.0,
+      "fixed_plus_0p005_incumbent_gate_would_accept": false
+    },
+    {
+      "fit": 37,
+      "original_continuation_candidate_sha256": "cc849236225ba68c6e4c882dde665fa598c924386a8029bacdd35bac3cb8b668",
+      "validation_C": 0.18134117212138423,
+      "validation_CB": 0.18045045471058252,
+      "validation_CB_minus_C": -0.0008907174108017113,
+      "fixed_plus_0p005_incumbent_gate_would_accept": false
+    },
+    {
+      "fit": 53,
+      "original_continuation_candidate_sha256": "56f1440b6ac62ed8c35edbeabfff7503e8aab4c5d739f9dc1487f6845890e437",
+      "validation_C": 0.18745925211739284,
+      "validation_CB": 0.18747375211739284,
+      "validation_CB_minus_C": 1.4500000000000624e-05,
+      "fixed_plus_0p005_incumbent_gate_would_accept": false
+    },
+    {
+      "fit": 71,
+      "original_continuation_candidate_sha256": "3d4ebabbccc995f632d7e23e2c904e5e5ee38b50ce6b8df8eb57be8633b5e15b",
+      "validation_C": 0.2622007438841344,
+      "validation_CB": 0.2622007438841344,
+      "validation_CB_minus_C": 0.0,
+      "fixed_plus_0p005_incumbent_gate_would_accept": false
+    }
+  ],
+  "accepts": 0,
+  "implication": "when composing an edit, a future protocol should bind its source identity and comparator to the current incumbent; passing versus the old original baseline does not establish incremental value"
+}

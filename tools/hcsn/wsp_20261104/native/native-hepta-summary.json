@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.real-continuation-head.native-qualification.v1",
+  "fixture_sha256": "6230881d25b9511d176fefd31778a6552444e22d2c0d8a8afaa7ad40eb3975c1",
+  "source_model_sha256": "84c4386d0c8725959da10862cdfaad73b654b80e908f3de8d2383530767a38ac",
+  "source_commit": "5b69a046d886cf4c2a73c50e58197360ea15d8f5",
+  "binary_sha256": "61170e9ba6c6cd17d907f11e2c3e3b01e59d3855ca3ab11de26205c8ba996228",
+  "executed_binary_unchanged": true,
+  "driver_sha256": "b9b3ad4f51b592cd18b86a7e7cd834863604269801ee356f58d1f32b2cac42a2",
+  "original_train_rows": 64,
+  "helper_sha256": "129843bb12556fadb69b4df2035df1f6ca97effd4cfdbcf9c98b60315eee0bcc",
+  "features_with_explicit_bias": 49,
+  "edited_heads": [
+    "WAIT",
+    "READ",
+    "REPAIR"
+  ],
+  "native_f64_vs_numpy_weights_max_absolute": 9.766493169749424e-16,
+  "planner_diagnostics": [
+    {
+      "f32_objective_strictly_improved": true,
+      "objective_after_f32": 0.0012840893956255269,
+      "objective_after_f64": 0.0012840893956255121,
+      "objective_before_f32": 0.0020409677247968223,
+      "objective_before_f64": 0.0020409675169359848,
+      "output": 0,
+      "positive_weight_rows": 58,
+      "relative_normal_equation_residual_f32": 1.7817884431841492e-09,
+      "relative_normal_equation_residual_f64": 4.820842750872799e-17
+    },
+    {
+      "f32_objective_strictly_improved": true,
+      "objective_after_f32": 0.0006004935217430751,
+      "objective_after_f64": 0.0006004935217430702,
+      "objective_before_f32": 0.0014703674683413967,
+      "objective_before_f64": 0.0014703673457767883,
+      "output": 1,
+      "positive_weight_rows": 38,
+      "relative_normal_equation_residual_f32": 9.387244424023347e-10,
+      "relative_normal_equation_residual_f64": 2.2604918211217738e-17
+    },
+    {
+      "f32_objective_strictly_improved": true,
+      "objective_after_f32": 1.8960189440363534e-05,
+      "objective_after_f64": 1.896018944035871e-05,
+      "objective_before_f32": 8.168757839801874e-05,
+      "objective_before_f64": 8.168758477754366e-05,
+      "output": 2,
+      "positive_weight_rows": 2,
+      "relative_normal_equation_residual_f32": 4.28482034048266e-09,
+      "relative_normal_equation_residual_f64": 5.317969462610489e-17
+    }
+  ],
+  "changed_f32_elements": 147,
+  "base_f32_rounding_max_absolute": 7.435092846952429e-09,
+  "candidate_f32_rounding_max_absolute": 7.111468525167197e-09,
+  "native_plan_wall_seconds": 0.00778185,
+  "native_guard_wall_seconds": [
+    0.138216352,
+    0.888334165
+  ],
+  "accepted_on_supplied_train_rows": true,
+  "unweighted_four_output_mse_before": 0.041691370788794466,
+  "unweighted_four_output_mse_after": 0.03559056905374136,
+  "unweighted_mse_scope": "3 continuation targets plus unchanged raw belief-logit target; different from per-head weighted proximal fitting objective",
+  "frozen_belief_row_bytes_preserved": true,
+  "source_bytes_unchanged": true,
+  "forced_constraint_failure_rejected_and_bytes_restored": true,
+  "forced_failure_is_natural_model_failure": false,
+  "lowered_parent_sha256": "039b8c7fbbd4941e1cfc4e5808f731df311bf0af6f663f9bce78539838733115",
+  "lowered_candidate_sha256": "49f4c9f09f9fa7517eb33bfa0940d43e72b559bedc6933202a0922f351699fa9",
+  "driver_wall_seconds": 12.17474069900345,
+  "independent_holdout_verified": false,
+  "production_eligible": false,
+  "new_end_to_end_utility_evidence": false,
+  "scope": "actual published F64 head numerical fixture explicitly rounded to F32; no full CTMC graph, new episodes, live update or task-utility claim",
+  "cost_excludes": [
+    "original training",
+    "feature construction",
+    "teacher construction",
+    "candidate selection",
+    "compilation",
+    "LLM usage",
+    "energy"
+  ]
+}

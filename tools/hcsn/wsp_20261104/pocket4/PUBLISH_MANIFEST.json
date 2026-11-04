@@ -1,0 +1,89 @@
+{
+  "exclude_all_other_parent_directory_files": true,
+  "files": [
+    {
+      "bytes": 7548,
+      "name": "CAPACITY_CERTIFICATE.md",
+      "sha256": "0da0f09fac840567ad9423b0878fc6fd83e0b476a886d71e5307f2476ee21d86"
+    },
+    {
+      "bytes": 4977,
+      "name": "SOURCE_REPLAY_BLOCKER.md",
+      "sha256": "97c6c0c8c2366ff117bac6f28068f22e4cb4811a24d121dfde366fd6b11a3edd"
+    },
+    {
+      "bytes": 36727,
+      "name": "checkpoint_audit_aggregate.json",
+      "sha256": "78eb332ecb72a74051046d8c5a70c352e27305a3fb6db2ae02e4f786c542efea"
+    },
+    {
+      "bytes": 1540,
+      "name": "finite_capacity_certificate.json",
+      "sha256": "78e993d91fcaa3c03ef5f5c64a60dea487c7e5ec69df1e3c19c55521deaacfd2"
+    },
+    {
+      "bytes": 1550,
+      "name": "finite_capacity_certificate_operational.json",
+      "sha256": "b95cc7d5328cbe6a06928a710aa4f51ab0d1796fa33b308f8f6c1b5bf4c3707c"
+    },
+    {
+      "bytes": 7659,
+      "name": "finite_readout_capacity_certificate.py",
+      "sha256": "e080ada7c8e218454d43fe60a34f30e0a477889466ce60209c0083c8ddee6b2c"
+    },
+    {
+      "bytes": 3123,
+      "name": "head_norm_scope_verification.json",
+      "sha256": "cd0a11fb2fdd8c1871f1c272f679fc02632f42d72efcc7e93092df3a74a803f0"
+    },
+    {
+      "bytes": 10847,
+      "name": "independent_checkpoint_audit.py",
+      "sha256": "0010277e4c43685b4b32f4da2fe12eb8f7d58391c5ad19ecb95cca165a3a05cf"
+    },
+    {
+      "bytes": 3237,
+      "name": "native_replay_diagnostics.patch",
+      "sha256": "41c4328163bb3ecd37c6e940a0e269115a0b131fbb1368fad75b96aa3867388d"
+    },
+    {
+      "bytes": 1563,
+      "name": "native_replay_diagnostics_verification.json",
+      "sha256": "815d11ab215269e8118df67c5960c95c7d320b63709d20eef348c55154a41ce8"
+    },
+    {
+      "bytes": 1587,
+      "name": "norm_admission_scope.json",
+      "sha256": "d2478c18134e0ef7509bec3583ad45825c9d7cb17207ff1e03ba20daaa469522"
+    },
+    {
+      "bytes": 2308,
+      "name": "private_input_manifest.json",
+      "sha256": "cbc0df764f3d395d8a247ddfca0371d42be308ad525099165a7307fb6403e5ed"
+    },
+    {
+      "bytes": 2460,
+      "name": "source_replay_blocker_aggregate.json",
+      "sha256": "0623d8eacab58daf143dd2743cb8c6b25faef4993f21d0c0b8452c02451eaae3"
+    },
+    {
+      "bytes": 2329,
+      "name": "test_finite_readout_capacity_certificate.py",
+      "sha256": "02ba911b79bc898fa591453dbdd2a4ada071364155e9e2fd97fd650a1f3de908"
+    },
+    {
+      "bytes": 3167,
+      "name": "verify_fixture_head_norms.py",
+      "sha256": "c3738febffb5e65ef4e7c1be2b06c02a3249d6bafb7504afe3dbc7b91d848977"
+    },
+    {
+      "bytes": 7118,
+      "name": "verify_native_replay_diagnostics.py",
+      "sha256": "a359ca2baeacdb1aec9b8dce191663ca0e57f7f03cf0c70a6666658a68f6dd68"
+    }
+  ],
+  "note": "Both destination repositories are public; publish only these reviewed aggregate/code files. Never recursively add the parent audit directory.",
+  "private_source_paths_or_identifiers_included": false,
+  "raw_private_fixture_included": false,
+  "schema": "hepta.wsp.sanitized-publish-allowlist.v1"
+}

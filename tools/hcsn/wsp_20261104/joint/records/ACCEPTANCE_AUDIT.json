@@ -1,0 +1,90 @@
+{
+  "source_commit": "5b69a046d886cf4c2a73c50e58197360ea15d8f5",
+  "real_models_verified": 5,
+  "train_states": 1582,
+  "validation_states": 366,
+  "independent_test_public_worlds": 320,
+  "fit_statistical_units": 5,
+  "closed_form_scope": "fixed frozen features convex penalized continuation head only",
+  "runtime_utility_improvement_qualified": false,
+  "full_model_superiority_qualified": false,
+  "production_activation": false,
+  "fullhx_actual_new_episodes": 0,
+  "matmul_audit": {
+    "count": 1079307,
+    "max_abs_difference": 8.881784197001252e-16,
+    "nonfinite_count": 0,
+    "audit_cpu_seconds": 30.144813
+  },
+  "linux_fixture_max_abs_error": 2.0816681711721685e-16,
+  "max_utility_replay_difference": 8.326672684688674e-17,
+  "direct_gated_summary": {
+    "iid": {
+      "ci_scope": "descriptive unadjusted paired Student-t over original training fits; secondary gates not passed by these CIs",
+      "independent_units": 5,
+      "mean_delta": 0.014181989687177371,
+      "mean_utility": 0.22727900106899232,
+      "paired_95_ci": [
+        -0.01849574600388163,
+        0.04685972537823637
+      ],
+      "per_fit_delta": [
+        0.024710924981470567,
+        -0.01397096321749447,
+        0.052734234827019555,
+        -0.0052756302090294915,
+        0.012711382053920695
+      ],
+      "per_fit_utility": [
+        0.2437562120925125,
+        0.1819857249029258,
+        0.24111783081201632,
+        0.2395499000435813,
+        0.22998533749392586
+      ]
+    },
+    "ood": {
+      "ci_scope": "descriptive unadjusted paired Student-t over original training fits; secondary gates not passed by these CIs",
+      "independent_units": 5,
+      "mean_delta": 0.026934095884995957,
+      "mean_utility": 0.14490748655807756,
+      "paired_95_ci": [
+        -0.02344962884593646,
+        0.07731782061592837
+      ],
+      "per_fit_delta": [
+        -0.00851663939372474,
+        0.04849200050498846,
+        0.08614897331326757,
+        -0.008595836155148917,
+        0.017141981155597397
+      ],
+      "per_fit_utility": [
+        0.09536116069816954,
+        0.17032055034898652,
+        0.1372001350020522,
+        0.14151131253819338,
+        0.18014427420298615
+      ]
+    }
+  },
+  "candidate_acceptance_count": 5,
+  "natural_failed_candidate_rollback_exercised": false,
+  "original_model_semantic_restore_checks": 5,
+  "strict_fp_execution_passed": true,
+  "strict_replay_max_utility_difference": 0.0,
+  "all_archive_member_hashes_verified": 3550,
+  "common_selected_method_gate_accepts": 15,
+  "repository_visibility": "public",
+  "new_private_heptatrader_data_included": false,
+  "train_policy_feasibility": {
+    "immutable_terminal_conflict_fits": [
+      23,
+      37,
+      53
+    ],
+    "trust_region_infeasible_additional_fit": 71,
+    "fit11_l2_ball_feasibility": "unresolved",
+    "no_lp_efficacy_candidate_evaluated": true
+  }
+}
