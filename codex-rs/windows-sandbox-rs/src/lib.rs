@@ -542,13 +542,12 @@ mod windows_impl {
         let current_dir = common.current_dir;
         let logs_base_dir = common.logs_base_dir.as_deref();
         let uses_write_capabilities = common.uses_write_capabilities;
-        if !permissions.has_full_disk_read_access() {
+        if !uses_write_capabilities && !permissions.has_full_disk_read_access() {
             anyhow::bail!(
                 "Restricted read-only access requires the elevated Windows sandbox backend"
             );
         }
-        // WRITE_RESTRICTED tokens consult restricting SIDs only for writes, so this
-        // backend cannot make capability-SID deny-read ACLs authoritative.
+        // Deny-read overlays require the elevated backend's complete resolver.
         if !additional_deny_read_paths.is_empty() {
             anyhow::bail!("deny-read overrides require the elevated Windows sandbox backend");
         }
@@ -559,6 +558,7 @@ mod windows_impl {
             codex_home,
             cwd,
             capability_roots,
+            super::setup::gather_read_roots(&current_dir, &permissions, &env_map, codex_home),
         )?;
         allow_null_device_for_workspace_write(uses_write_capabilities);
         if let Err(err) = apply_legacy_session_acl_rules(
@@ -572,6 +572,7 @@ mod windows_impl {
                 readonly_sid: security.readonly_sid.as_ref(),
                 readonly_sid_str: security.readonly_sid_str.as_deref(),
                 write_root_sids: &security.write_root_sids,
+                read_root_sids: &security.read_root_sids,
             },
         ) {
             unsafe {
@@ -749,6 +750,11 @@ mod windows_impl {
             return Ok(());
         }
 
+        if permissions.has_full_disk_read_access() || permissions.has_read_denials() {
+            anyhow::bail!(
+                "legacy workspace writes require an explicit read plan without deny-read entries; use the elevated Windows sandbox backend"
+            );
+        }
         ensure_codex_home_exists(codex_home)?;
         let current_dir = cwd.to_path_buf();
         let capability_roots =
@@ -765,6 +771,7 @@ mod windows_impl {
                 readonly_sid: None,
                 readonly_sid_str: None,
                 write_root_sids: &write_root_sids,
+                read_root_sids: &[],
             },
         )?;
 

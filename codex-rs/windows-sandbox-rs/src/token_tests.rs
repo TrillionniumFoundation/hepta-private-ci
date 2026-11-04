@@ -3,6 +3,7 @@ use crate::acl::add_deny_write_ace;
 use crate::acl::ensure_allow_mask_aces;
 use crate::acl::ensure_allow_write_aces;
 use crate::acl::fetch_dacl_handle;
+use anyhow::Context;
 use pretty_assertions::assert_eq;
 use windows_sys::Win32::Security::Authorization::DENY_ACCESS;
 use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
@@ -121,6 +122,22 @@ fn elevated_token_includes_network_proxy_restricting_sid() -> Result<()> {
 
 #[test]
 fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()> {
+    native_write_deny_repair(DELETE)
+}
+
+#[test]
+fn legacy_generic_write_deny_keeps_mutations_denied_without_blocking_reads() -> Result<()> {
+    use windows_sys::Win32::Foundation::GENERIC_WRITE;
+    use windows_sys::Win32::Storage::FileSystem::FILE_DELETE_CHILD;
+    use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
+
+    for write in [GENERIC_WRITE, FILE_GENERIC_WRITE] {
+        native_write_deny_repair(write | DELETE | FILE_DELETE_CHILD)?;
+    }
+    Ok(())
+}
+
+fn native_write_deny_repair(seed_mask: u32) -> Result<()> {
     let fixture = tempfile::tempdir()?;
     let capability = LocalSid::from_string("S-1-5-21-171-272-373-474")?;
     let everyone = LocalSid::from_string("S-1-1-0")?;
@@ -133,7 +150,7 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
     let created = fixture.path().join("created.txt");
     std::fs::write(&existing, "original")?;
     let entry = EXPLICIT_ACCESS_W {
-        grfAccessPermissions: DELETE,
+        grfAccessPermissions: seed_mask,
         grfAccessMode: DENY_ACCESS,
         grfInheritance: OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE,
         Trustee: TRUSTEE_W {
@@ -185,7 +202,21 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
     {
         // SAFETY: token remains owned throughout this impersonation scope.
         let _impersonation = unsafe { Impersonation::enter(token.0)? };
-        std::fs::write(&existing, "before repair")?;
+        let write = std::fs::write(&existing, "before repair");
+        if seed_mask == DELETE {
+            write?;
+        } else {
+            assert_eq!(
+                write.err().map(|error| error.kind()),
+                Some(std::io::ErrorKind::PermissionDenied),
+            );
+            assert_eq!(
+                std::fs::read_to_string(&existing)
+                    .err()
+                    .map(|error| error.kind()),
+                Some(std::io::ErrorKind::PermissionDenied),
+            );
+        }
     }
     // SAFETY: the fixture and validated capability SID are live for the repair.
     let repaired = unsafe { add_deny_write_ace(fixture.path(), capability.as_ptr())? };
@@ -214,10 +245,15 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
         (true, [Some(std::io::ErrorKind::PermissionDenied); 2]),
     );
     assert_eq!(repeated_repairs, (false, true, false));
-    assert_eq!(read, "before repair");
+    let expected = if seed_mask == DELETE {
+        "before repair"
+    } else {
+        "original"
+    };
+    assert_eq!(read, expected);
     assert_eq!(
         (std::fs::read_to_string(&existing)?, created.exists()),
-        ("before repair".to_owned(), false),
+        (expected.to_owned(), false),
     );
     Ok(())
 }
@@ -229,6 +265,7 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     let cap_a = LocalSid::from_string("S-1-5-21-101-202-303-404")?;
     let cap_b = LocalSid::from_string("S-1-5-21-111-222-333-444")?;
     let other_cap = LocalSid::from_string("S-1-5-21-121-232-343-454")?;
+    let read_cap = LocalSid::from_string("S-1-5-21-131-242-353-464")?;
     let mut logon = unsafe { get_logon_sid_bytes(base.0)? };
     let mut everyone = unsafe { world_sid()? };
     // Deliberately grant broad inherited DELETE and parent DELETE_CHILD inside
@@ -257,11 +294,21 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     // A stale capability for another root must not authorize this token either.
     unsafe {
         ensure_allow_write_aces(&outside, &[other_cap.as_ptr()])?;
+        ensure_allow_mask_aces(
+            &outside,
+            &[read_cap.as_ptr()],
+            windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ
+                | windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE,
+        )?;
     }
     std::fs::write(outside.join("keep.txt"), "outside")?;
     std::fs::create_dir(outside.join("keep-dir"))?;
     let token = OwnedToken(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr(), cap_b.as_ptr()])?
+        create_workspace_write_token_with_read_caps_from(
+            base.0,
+            &[cap_a.as_ptr(), cap_b.as_ptr()],
+            &[read_cap.as_ptr()],
+        )?
     });
     let (outside_read, refused) = {
         let _impersonation = unsafe { Impersonation::enter(token.0)? };
@@ -300,5 +347,411 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
             ("allowed".to_owned(), false, false)
         );
     }
+    Ok(())
+}
+
+struct OwnedEvent(HANDLE);
+
+impl Drop for OwnedEvent {
+    fn drop(&mut self) {
+        unsafe { CloseHandle(self.0) };
+    }
+}
+
+fn describe_actual_event_descriptor(label: &str, descriptor: *mut c_void) -> Result<(bool, bool)> {
+    use windows_sys::Win32::Security::GetSecurityDescriptorControl;
+    use windows_sys::Win32::Security::GetSecurityDescriptorGroup;
+    use windows_sys::Win32::Security::GetSecurityDescriptorLength;
+    use windows_sys::Win32::Security::GetSecurityDescriptorOwner;
+    use windows_sys::Win32::Security::IsValidSecurityDescriptor;
+    use windows_sys::Win32::Security::IsValidSid;
+
+    let valid = unsafe { IsValidSecurityDescriptor(descriptor) } != 0;
+    let mut control = 0;
+    let mut revision = 0;
+    let control_ok =
+        unsafe { GetSecurityDescriptorControl(descriptor, &mut control, &mut revision) };
+    let mut owner = std::ptr::null_mut();
+    let mut group = std::ptr::null_mut();
+    let mut owner_defaulted = 0;
+    let mut group_defaulted = 0;
+    let owner_ok =
+        unsafe { GetSecurityDescriptorOwner(descriptor, &mut owner, &mut owner_defaulted) };
+    let group_ok =
+        unsafe { GetSecurityDescriptorGroup(descriptor, &mut group, &mut group_defaulted) };
+    let owner_valid = !owner.is_null() && unsafe { IsValidSid(owner) } != 0;
+    let group_valid = !group.is_null() && unsafe { IsValidSid(group) } != 0;
+    let length = if valid {
+        unsafe { GetSecurityDescriptorLength(descriptor) }
+    } else {
+        0
+    };
+    eprintln!(
+        "actual Event SD {label}: valid={valid} length={length} control_ok={control_ok} control={control:#x} revision={revision} owner_ok={owner_ok} owner_present={} owner_valid={owner_valid} owner_defaulted={owner_defaulted} group_ok={group_ok} group_present={} group_valid={group_valid} group_defaulted={group_defaulted}",
+        !owner.is_null(),
+        !group.is_null(),
+    );
+    anyhow::ensure!(
+        valid && control_ok != 0 && owner_ok != 0 && group_ok != 0,
+        "actual Event descriptor inspection failed"
+    );
+    Ok((!owner.is_null(), !group.is_null()))
+}
+
+fn assert_event_access(descriptor: *mut c_void, token: HANDLE, expected: bool) -> Result<()> {
+    use windows_sys::Win32::Security::AccessCheck;
+    use windows_sys::Win32::Security::DuplicateToken;
+    use windows_sys::Win32::Security::GENERIC_MAPPING;
+    use windows_sys::Win32::Security::PRIVILEGE_SET;
+    use windows_sys::Win32::Security::SecurityImpersonation;
+    use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
+    use windows_sys::Win32::Storage::FileSystem::SYNCHRONIZE;
+    use windows_sys::Win32::System::Threading::EVENT_ALL_ACCESS;
+    use windows_sys::Win32::System::Threading::EVENT_MODIFY_STATE;
+
+    let mut impersonation = 0;
+    anyhow::ensure!(
+        unsafe { DuplicateToken(token, SecurityImpersonation, &mut impersonation) } != 0,
+        "duplicate AccessCheck impersonation token: {}",
+        unsafe { GetLastError() }
+    );
+    let impersonation = OwnedToken(impersonation);
+    let desired = EVENT_MODIFY_STATE | SYNCHRONIZE;
+    let mapping = GENERIC_MAPPING {
+        GenericRead: READ_CONTROL | 0x0001,
+        GenericWrite: READ_CONTROL | EVENT_MODIFY_STATE,
+        GenericExecute: READ_CONTROL | SYNCHRONIZE,
+        GenericAll: EVENT_ALL_ACCESS,
+    };
+    let mut privileges: PRIVILEGE_SET = unsafe { std::mem::zeroed() };
+    let mut privilege_bytes = std::mem::size_of::<PRIVILEGE_SET>() as u32;
+    let mut granted = 0;
+    let mut allowed = 0;
+    // This is the descriptor of an actual object created with the production
+    // token's default DACL. API failure is never interpreted as access denial.
+    let ok = unsafe {
+        AccessCheck(
+            descriptor,
+            impersonation.0,
+            desired,
+            &mapping,
+            &mut privileges,
+            &mut privilege_bytes,
+            &mut granted,
+            &mut allowed,
+        )
+    };
+    if ok == 0 {
+        return Err(std::io::Error::last_os_error()).context("Event AccessCheck API failed");
+    }
+    assert_eq!(
+        (allowed != 0, granted),
+        (expected, if expected { desired } else { 0 }),
+    );
+    Ok(())
+}
+
+#[derive(Clone, Copy)]
+enum EventSecurity {
+    Implicit,
+    TokenDefault,
+}
+
+fn token_information(token: HANDLE, class: i32) -> Result<Vec<u64>> {
+    let mut needed = 0;
+    let ok = unsafe { GetTokenInformation(token, class, std::ptr::null_mut(), 0, &mut needed) };
+    anyhow::ensure!(
+        ok == 0
+            && unsafe { GetLastError() }
+                == windows_sys::Win32::Foundation::ERROR_INSUFFICIENT_BUFFER
+            && (8..=1_048_576).contains(&needed),
+        "bound token information: class={class} bytes={needed}"
+    );
+    let mut bytes = vec![0_u64; (needed as usize).div_ceil(8)];
+    let size = (bytes.len() * std::mem::size_of::<u64>()) as u32;
+    anyhow::ensure!(
+        unsafe { GetTokenInformation(token, class, bytes.as_mut_ptr().cast(), size, &mut needed) }
+            != 0,
+        "read token information: class={class} error={}",
+        unsafe { GetLastError() }
+    );
+    Ok(bytes)
+}
+
+#[test]
+fn actual_unnamed_event_without_attributes_has_no_accesscheck_owner_or_group() -> Result<()> {
+    check_actual_event_descriptor(EventSecurity::Implicit)
+}
+
+#[test]
+fn actual_event_with_token_default_dacl_keeps_shared_read_capabilities_nonwriting() -> Result<()> {
+    check_actual_event_descriptor(EventSecurity::TokenDefault)
+}
+
+fn check_actual_event_descriptor(security: EventSecurity) -> Result<()> {
+    use windows_sys::Win32::Security::Authorization::GetSecurityInfo;
+    use windows_sys::Win32::Security::Authorization::SE_KERNEL_OBJECT;
+    use windows_sys::Win32::Security::GROUP_SECURITY_INFORMATION;
+    use windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
+    use windows_sys::Win32::System::Threading::CreateEventW;
+    use windows_sys::Win32::System::Threading::SetEvent;
+    use windows_sys::Win32::System::Threading::WaitForSingleObject;
+
+    struct Descriptor(*mut c_void);
+    impl Drop for Descriptor {
+        fn drop(&mut self) {
+            unsafe { LocalFree(self.0 as HLOCAL) };
+        }
+    }
+
+    let fixture = tempfile::tempdir()?;
+    let caps = crate::cap::load_or_create_cap_sids(fixture.path())?;
+    let first = LocalSid::from_string(&caps.workspace)?;
+    let second = LocalSid::from_string(&caps.readonly)?;
+    let read = LocalSid::from_string(&crate::cap::readable_root_cap_sid_for_path(
+        fixture.path(),
+        fixture.path(),
+    )?)?;
+    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    let first_token = OwnedToken(unsafe {
+        create_workspace_write_token_with_read_caps_from(
+            base.0,
+            &[first.as_ptr()],
+            &[read.as_ptr()],
+        )?
+    });
+    let second_token = OwnedToken(unsafe {
+        create_workspace_write_token_with_read_caps_from(
+            base.0,
+            &[second.as_ptr()],
+            &[read.as_ptr()],
+        )?
+    });
+    // An access-check-only token isolates the shared read SID. It creates no
+    // objects and receives neither workspace SID nor a default write grant.
+    let mut read_entry = SID_AND_ATTRIBUTES {
+        Sid: read.as_ptr(),
+        Attributes: 0,
+    };
+    let mut read_token = 0;
+    anyhow::ensure!(
+        unsafe {
+            CreateRestrictedToken(
+                base.0,
+                DISABLE_MAX_PRIVILEGE | LUA_TOKEN,
+                0,
+                std::ptr::null(),
+                0,
+                std::ptr::null(),
+                1,
+                &read_entry,
+                &mut read_token,
+            )
+        } != 0,
+        "create shared-read-only AccessCheck token: {}",
+        unsafe { GetLastError() }
+    );
+    let read_token = OwnedToken(read_token);
+    // This explicit control creates a different object atomically from the
+    // actual token's identity and default DACL. It never repairs the descriptor
+    // returned for the implicit unnamed object.
+    let mut user = token_information(first_token.0, TokenUser)?;
+    let mut group = token_information(
+        first_token.0,
+        windows_sys::Win32::Security::TokenPrimaryGroup,
+    )?;
+    let mut default_dacl = token_information(first_token.0, TokenDefaultDacl)?;
+    let mut native_descriptor: windows_sys::Win32::Security::SECURITY_DESCRIPTOR =
+        unsafe { std::mem::zeroed() };
+    let descriptor_pointer =
+        (&mut native_descriptor as *mut windows_sys::Win32::Security::SECURITY_DESCRIPTOR).cast();
+    unsafe {
+        anyhow::ensure!(
+            windows_sys::Win32::Security::InitializeSecurityDescriptor(descriptor_pointer, 1) != 0,
+            "initialize explicit Event descriptor"
+        );
+        let user = &*user.as_mut_ptr().cast::<TOKEN_USER>();
+        let group = &*group
+            .as_mut_ptr()
+            .cast::<windows_sys::Win32::Security::TOKEN_PRIMARY_GROUP>();
+        let dacl = &*default_dacl.as_mut_ptr().cast::<TokenDefaultDaclInfo>();
+        anyhow::ensure!(
+            !dacl.default_dacl.is_null(),
+            "production token default DACL is absent"
+        );
+        anyhow::ensure!(
+            windows_sys::Win32::Security::SetSecurityDescriptorOwner(
+                descriptor_pointer,
+                user.User.Sid,
+                0,
+            ) != 0
+                && windows_sys::Win32::Security::SetSecurityDescriptorGroup(
+                    descriptor_pointer,
+                    group.PrimaryGroup,
+                    0,
+                ) != 0
+                && windows_sys::Win32::Security::SetSecurityDescriptorDacl(
+                    descriptor_pointer,
+                    1,
+                    dacl.default_dacl,
+                    0,
+                ) != 0,
+            "bind the actual token identity and default DACL to Event creation"
+        );
+    }
+    let attributes = windows_sys::Win32::Security::SECURITY_ATTRIBUTES {
+        nLength: std::mem::size_of::<windows_sys::Win32::Security::SECURITY_ATTRIBUTES>() as u32,
+        lpSecurityDescriptor: descriptor_pointer,
+        bInheritHandle: 0,
+    };
+    let event = {
+        let _identity = unsafe { Impersonation::enter(first_token.0)? };
+        let attributes = match security {
+            EventSecurity::Implicit => std::ptr::null(),
+            EventSecurity::TokenDefault => &attributes as *const _,
+        };
+        let handle = unsafe { CreateEventW(attributes, 1, 0, std::ptr::null()) };
+        anyhow::ensure!(handle != 0, "create actual unnamed event: {}", unsafe {
+            GetLastError()
+        });
+        let event = OwnedEvent(handle);
+        anyhow::ensure!(
+            unsafe { SetEvent(event.0) } != 0,
+            "signal actual unnamed event"
+        );
+        assert_eq!(
+            unsafe { WaitForSingleObject(event.0, 0) },
+            windows_sys::Win32::Foundation::WAIT_OBJECT_0,
+        );
+        event
+    };
+    let mut descriptor = std::ptr::null_mut();
+    let code = unsafe {
+        GetSecurityInfo(
+            event.0,
+            SE_KERNEL_OBJECT,
+            OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            &mut descriptor,
+        )
+    };
+    anyhow::ensure!(
+        code == ERROR_SUCCESS,
+        "read actual Event descriptor: {code}"
+    );
+    anyhow::ensure!(!descriptor.is_null(), "missing actual Event descriptor");
+    let descriptor = Descriptor(descriptor);
+    let info_presence = describe_actual_event_descriptor("GetSecurityInfo", descriptor.0)?;
+
+    // Independently inspect the same real object; do not add or synthesize a
+    // missing owner/group to make AccessCheck accept a different descriptor.
+    let information =
+        OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION;
+    let mut required = 0;
+    let first = unsafe {
+        windows_sys::Win32::Security::GetKernelObjectSecurity(
+            event.0,
+            information,
+            std::ptr::null_mut(),
+            0,
+            &mut required,
+        )
+    };
+    anyhow::ensure!(
+        first == 0
+            && unsafe { GetLastError() }
+                == windows_sys::Win32::Foundation::ERROR_INSUFFICIENT_BUFFER
+            && (20..=1_048_576).contains(&required),
+        "bound actual kernel Event descriptor: {} bytes={required}",
+        unsafe { GetLastError() },
+    );
+    let mut kernel = vec![0_u64; (required as usize).div_ceil(8)];
+    let ok = unsafe {
+        windows_sys::Win32::Security::GetKernelObjectSecurity(
+            event.0,
+            information,
+            kernel.as_mut_ptr().cast(),
+            (kernel.len() * std::mem::size_of::<u64>()) as u32,
+            &mut required,
+        )
+    };
+    anyhow::ensure!(ok != 0, "read actual kernel Event descriptor: {}", unsafe {
+        GetLastError()
+    });
+    let kernel_descriptor = kernel.as_mut_ptr().cast();
+    let kernel_presence =
+        describe_actual_event_descriptor("GetKernelObjectSecurity", kernel_descriptor)?;
+    let info_check = assert_event_access(descriptor.0, first_token.0, true);
+    let kernel_check = assert_event_access(kernel_descriptor, first_token.0, true);
+    eprintln!(
+        "same real Event AccessCheck: GetSecurityInfo={info_check:?}, GetKernelObjectSecurity={kernel_check:?}"
+    );
+    match security {
+        EventSecurity::Implicit => {
+            assert_eq!(
+                (info_presence, kernel_presence),
+                ((false, false), (false, false))
+            );
+            for result in [info_check, kernel_check] {
+                let error = result.expect_err("missing real owner/group is not an access denial");
+                let native = error
+                    .downcast_ref::<std::io::Error>()
+                    .context("AccessCheck must fail with the original native error")?;
+                assert_eq!(
+                    native.raw_os_error(),
+                    Some(windows_sys::Win32::Foundation::ERROR_INVALID_SECURITY_DESCR as i32)
+                );
+            }
+        }
+        EventSecurity::TokenDefault => {
+            assert_eq!(
+                (info_presence, kernel_presence),
+                ((true, true), (true, true))
+            );
+            info_check?;
+            kernel_check?;
+            assert_event_access(descriptor.0, read_token.0, false)?;
+            assert_event_access(descriptor.0, second_token.0, false)?;
+            assert_event_access(kernel_descriptor, read_token.0, false)?;
+            assert_event_access(kernel_descriptor, second_token.0, false)?;
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn strict_token_refuses_unprovisioned_local_named_event_namespace() -> Result<()> {
+    use windows_sys::Win32::System::Threading::CreateEventW;
+
+    let fixture = tempfile::tempdir()?;
+    let caps = crate::cap::load_or_create_cap_sids(fixture.path())?;
+    let write = LocalSid::from_string(&caps.workspace)?;
+    let read = LocalSid::from_string(&crate::cap::readable_root_cap_sid_for_path(
+        fixture.path(),
+        fixture.path(),
+    )?)?;
+    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    let token = OwnedToken(unsafe {
+        create_workspace_write_token_with_read_caps_from(
+            base.0,
+            &[write.as_ptr()],
+            &[read.as_ptr()],
+        )?
+    });
+    let name = to_wide(format!("Local\\codex-read-cap-ipc-{}", caps.workspace));
+    let (handle, error) = {
+        let _identity = unsafe { Impersonation::enter(token.0)? };
+        let handle = unsafe { CreateEventW(std::ptr::null(), 1, 0, name.as_ptr()) };
+        let error = (handle == 0).then(|| unsafe { GetLastError() });
+        (handle, error)
+    };
+    let _event = (handle != 0).then(|| OwnedEvent(handle));
+    assert_eq!(
+        (handle, error),
+        (0, Some(windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED)),
+    );
     Ok(())
 }

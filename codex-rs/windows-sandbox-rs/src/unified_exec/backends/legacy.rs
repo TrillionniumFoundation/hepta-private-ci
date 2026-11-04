@@ -318,6 +318,8 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
     stdin_open: bool,
     use_private_desktop: bool,
 ) -> Result<SpawnedProcess> {
+    #[cfg(test)]
+    eprintln!("strict legacy phase: prepare context");
     let common = prepare_legacy_spawn_context(
         permission_profile,
         workspace_roots,
@@ -330,11 +332,10 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
             add_git_safe_directory: false,
         },
     )?;
-    if !common.permissions.has_full_disk_read_access() {
+    if !common.uses_write_capabilities && !common.permissions.has_full_disk_read_access() {
         anyhow::bail!("Restricted read-only access requires the elevated Windows sandbox backend");
     }
-    // WRITE_RESTRICTED tokens consult restricting SIDs only for writes, so this
-    // backend cannot make capability-SID deny-read ACLs authoritative.
+    // Deny-read overlays require the elevated backend's complete resolver.
     if !additional_deny_read_paths.is_empty() {
         anyhow::bail!("deny-read overrides require the elevated Windows sandbox backend");
     }
@@ -348,12 +349,22 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
         &env_map,
         codex_home,
     );
+    #[cfg(test)]
+    eprintln!("strict legacy phase: prepare token and capability identities");
     let security = prepare_legacy_session_security(
         common.uses_write_capabilities,
         codex_home,
         cwd,
         capability_roots,
+        crate::setup::gather_read_roots(
+            &common.current_dir,
+            &common.permissions,
+            &env_map,
+            codex_home,
+        ),
     )?;
+    #[cfg(test)]
+    eprintln!("strict legacy phase: token ready");
     allow_null_device_for_workspace_write(common.uses_write_capabilities);
 
     if let Err(err) = apply_legacy_session_acl_rules(
@@ -367,6 +378,7 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
             readonly_sid: security.readonly_sid.as_ref(),
             readonly_sid_str: security.readonly_sid_str.as_deref(),
             write_root_sids: &security.write_root_sids,
+            read_root_sids: &security.read_root_sids,
         },
     ) {
         unsafe {
@@ -375,6 +387,8 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
         return Err(err);
     }
 
+    #[cfg(test)]
+    eprintln!("strict legacy phase: ACL plan installed");
     let (writer_tx, writer_rx) = mpsc::channel::<Vec<u8>>(128);
     let (stdout_tx, stdout_rx) = broadcast::channel::<Vec<u8>>(256);
     let stderr_rx = if tty {
@@ -384,6 +398,8 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
     };
     let (exit_tx, exit_rx) = oneshot::channel::<i32>();
 
+    #[cfg(test)]
+    eprintln!("strict legacy phase: native child creation");
     let LegacyProcessHandles {
         process: pi,
         job,
@@ -414,6 +430,8 @@ pub(crate) async fn spawn_windows_sandbox_session_legacy(
             return Err(err);
         }
     };
+    #[cfg(test)]
+    eprintln!("strict legacy phase: native child created");
     let hpc_handle = hpc.map(|hpc| Arc::new(StdMutex::new(Some(hpc))));
 
     let process_handle = Arc::new(StdMutex::new(Some(pi.hProcess)));

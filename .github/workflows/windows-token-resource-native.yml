@@ -1,0 +1,99 @@
+name: Native Windows token descriptor and resource observations
+
+on:
+  push:
+    branches: [fix/windows-strict-read-plan-20261103]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-token-resource-native-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  token-resources:
+    runs-on: windows-2025
+    timeout-minutes: 30
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      PYTHONIOENCODING: "utf-8"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Record exact source and observed command resources
+        shell: pwsh
+        run: |
+          $out = Join-Path $env:RUNNER_TEMP "windows-token-resource-evidence"
+          New-Item -ItemType Directory -Path $out | Out-Null
+          $head = (git rev-parse HEAD).Trim()
+          if ($head -ne $env:GITHUB_SHA) { throw "Source identity mismatch" }
+          @{
+            source_head = $head
+            source_tree = (git rev-parse 'HEAD^{tree}').Trim()
+            run_id = $env:GITHUB_RUN_ID
+            run_attempt = $env:GITHUB_RUN_ATTEMPT
+            scope = "Native token controls and actual PE resource observation; full sandbox/Core gates remain independent"
+          } | ConvertTo-Json | Set-Content -Encoding utf8 (Join-Path $out "source.json")
+          & .github/scripts/windows_observe_command_resources.ps1 -OutputDirectory $out
+      - name: Prepare native Windows Bazel
+        id: prepare
+        if: ${{ !cancelled() }}
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Run original token boundary tests and actual Event descriptors
+        if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          output="$(cygpath -u "$RUNNER_TEMP")/windows-token-resource-evidence"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary --print-failed-test-logs \
+            --windows-msvc-host-platform -- \
+            test --platforms=//:windows_x86_64_msvc \
+            --cache_test_results=no --flaky_test_attempts=1 \
+            --test_sharding_strategy=disabled --test_output=all \
+            --test_env=ProgramFiles --test_env=SystemRoot \
+            --test_arg=token::tests:: \
+            --test_arg=unified_exec::tests::private_cmd_bundle::fixed_cmd_bundle_executes_with_explicit_private_read_roots \
+            --test_arg=--nocapture -- \
+            //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests \
+            2>&1 | tee "$output/token-controls.log"
+          python - "$output/token-controls.log" <<'PY'
+          from pathlib import Path
+          import sys
+          log = Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace")
+          required = (
+              "actual_unnamed_event_without_attributes_has_no_accesscheck_owner_or_group",
+              "actual_event_with_token_default_dacl_keeps_shared_read_capabilities_nonwriting",
+              "strict_token_refuses_unprovisioned_local_named_event_namespace",
+          )
+          for name in required:
+              if f"test token::tests::{name} ... ok" not in log:
+                  raise RuntimeError(f"required native control did not pass: {name}")
+          bundle = "unified_exec::tests::private_cmd_bundle::fixed_cmd_bundle_executes_with_explicit_private_read_roots"
+          if f"test {bundle} ... ok" not in log:
+              raise RuntimeError("private pinned cmd challenge did not pass")
+          PY
+      - name: Preserve observations and real failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-token-resources-${{ github.sha }}
+          path: ${{ runner.temp }}/windows-token-resource-evidence/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Check unchanged tracked source
+        if: ${{ always() && !cancelled() }}
+        uses: ./.github/actions/check-clean-worktree
