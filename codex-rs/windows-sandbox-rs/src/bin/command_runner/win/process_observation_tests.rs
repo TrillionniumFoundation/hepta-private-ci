@@ -21,6 +21,7 @@ use std::time::Instant;
 use windows_sys::Win32::Foundation::DuplicateHandle;
 use windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED;
 use windows_sys::Win32::Foundation::HANDLE;
+use windows_sys::Win32::System::Pipes::PeekNamedPipe;
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
 use windows_sys::Win32::System::Threading::PROCESS_NAME_WIN32;
 use windows_sys::Win32::System::Threading::PROCESS_QUERY_LIMITED_INFORMATION;
@@ -35,7 +36,7 @@ fn command(script: &str) -> Result<Command> {
     command
         .stdin(Stdio::piped())
         .stdout(Stdio::null())
-        .stderr(Stdio::null());
+        .stderr(Stdio::piped());
     Ok(command)
 }
 
@@ -53,6 +54,32 @@ fn with_child(
     // Capture the original deadline before birth and retain the actual Child during checks.
     let deadline = Instant::now() + Duration::from_secs(/*secs*/ 8);
     let mut child = command.spawn()?;
+    // Read only this original owned handle before the check can reap the child.
+    // A short-lived child can already be gone; a query failure remains UNKNOWN.
+    let mut image = [0u16; 32768];
+    let mut image_length = image.len() as u32;
+    let queried = unsafe {
+        QueryFullProcessImageNameW(
+            child.as_handle().as_raw_handle() as HANDLE,
+            PROCESS_NAME_WIN32,
+            image.as_mut_ptr(),
+            &mut image_length,
+        )
+    };
+    let (image_state, actual_image, image_error) = if queried == 0 {
+        (
+            "UNKNOWN_QUERY_FAILED",
+            None,
+            io::Error::last_os_error().raw_os_error(),
+        )
+    } else if let Some(image) = image.get(..image_length as usize)
+        && !image.is_empty()
+    {
+        ("OBSERVED", Some(std::ffi::OsString::from_wide(image)), None)
+    } else {
+        ("UNKNOWN_INVALID_LENGTH", None, None)
+    };
+
     let checked =
         std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| check(&mut child, deadline)));
     drop(child.stdin.take());
@@ -72,38 +99,52 @@ fn with_child(
         eprintln!("owned observation test child wait failed: {error}");
     }
     if !matches!(&checked, Ok(Ok(()))) || reaped.is_err() {
-        // Read only this original owned handle after its original cleanup. A failed
-        // image query is UNKNOWN and cannot replace the original test failure.
-        let mut image = [0u16; 32768];
-        let mut image_length = image.len() as u32;
-        let queried = unsafe {
-            QueryFullProcessImageNameW(
-                child.as_handle().as_raw_handle() as HANDLE,
-                PROCESS_NAME_WIN32,
-                image.as_mut_ptr(),
-                &mut image_length,
-            )
-        };
-        let (image_state, actual_image, image_error) = if queried == 0 {
-            (
-                "UNKNOWN_QUERY_FAILED",
-                None,
-                io::Error::last_os_error().raw_os_error(),
-            )
-        } else if let Some(image) = image.get(..image_length as usize)
-            && !image.is_empty()
-        {
-            ("OBSERVED", Some(std::ffi::OsString::from_wide(image)), None)
-        } else {
-            ("UNKNOWN_INVALID_LENGTH", None, None)
-        };
+        // Inspect only already available bytes after the original owned-child wait.
+        // The pinned Rust std creates the parent Stdio::piped handle for overlapped
+        // access. One PeekNamedPipe copies a bounded snapshot; do not drain or wait.
+        let mut stderr_bytes = [0u8; 1536];
+        let mut stderr_read = 0u32;
+        let mut stderr_available = 0u32;
+        let (stderr_state, captured_stderr, stderr_error): (&str, &[u8], Option<i32>) =
+            if reaped.is_err() {
+                ("UNKNOWN_UNREAPED", &[], None)
+            } else if let Some(stderr) = child.stderr.as_ref() {
+                let peeked = unsafe {
+                    PeekNamedPipe(
+                        stderr.as_raw_handle() as HANDLE,
+                        stderr_bytes.as_mut_ptr().cast(),
+                        stderr_bytes.len() as u32,
+                        &mut stderr_read,
+                        &mut stderr_available,
+                        std::ptr::null_mut(),
+                    )
+                };
+                if peeked == 0 {
+                    (
+                        "UNKNOWN_PEEK_FAILED",
+                        &[],
+                        io::Error::last_os_error().raw_os_error(),
+                    )
+                } else if let Some(bytes) = stderr_bytes.get(..stderr_read as usize)
+                    && stderr_available >= stderr_read
+                {
+                    ("OBSERVED", bytes, None)
+                } else {
+                    ("UNKNOWN_INVALID_LENGTH", &[], None)
+                }
+            } else {
+                ("UNKNOWN_NOT_PIPED", &[], None)
+            };
+        // The encoding is unknown; label this bounded display as lossy UTF-8.
+        let stderr_lossy_utf8 = String::from_utf8_lossy(captured_stderr);
+        let stderr_truncated = stderr_state == "OBSERVED" && stderr_available > stderr_read;
 
         // Bound new diagnostic output, including escaped paths, to 4096 bytes.
         // The arguments below are the parent builder's view, not child wire proof.
         let mut diagnostic = io::Cursor::new([0u8; 4096]);
         let formatted = write!(
             diagnostic,
-            "owned observation failure truncated=0: pre_cleanup={pre_cleanup:?} cleanup_kill={cleanup_kill:?} wait={reaped:?} image_state={image_state} actual_image={actual_image:?} image_error={image_error:?} parent_program={:?} parent_args_not_wire={:?}\n",
+            "owned observation failure truncated=0: pre_cleanup={pre_cleanup:?} cleanup_kill={cleanup_kill:?} wait={reaped:?} stderr_state={stderr_state} stderr_read={stderr_read} stderr_available={stderr_available} stderr_error={stderr_error:?} stderr_truncated={stderr_truncated} stderr_lossy_utf8={stderr_lossy_utf8:?} image_state={image_state} actual_image={actual_image:?} image_error={image_error:?} parent_program={:?} parent_args_not_wire={:?}\n",
             command.get_program(),
             command.get_args().collect::<Vec<_>>(),
         );
