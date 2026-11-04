@@ -1,0 +1,52 @@
+{
+  "source_commit": "903946f15dd79bc53a39a479230e366df04a371f",
+  "input_transport_sha256": "ff0cdbb11ea4df84e32b952139772eb1dc3e21dbb29e4458aa48c7b95f085825",
+  "passed": true,
+  "independent_primary_checks": [
+    {
+      "split": "iid",
+      "contrast": "fpt_feedback",
+      "independent_mean": -0.011212158203125006,
+      "independent_interval": [
+        -0.07773520393918493,
+        0.05531088753293492
+      ],
+      "maximum_difference": 1.3877787807814457e-17
+    },
+    {
+      "split": "iid",
+      "contrast": "ordinary_feedback",
+      "independent_mean": -0.022689208984375004,
+      "independent_interval": [
+        -0.10893719926018296,
+        0.06355878129143296
+      ],
+      "maximum_difference": 1.3877787807814457e-17
+    },
+    {
+      "split": "ood",
+      "contrast": "fpt_feedback",
+      "independent_mean": 0.0038769531249999985,
+      "independent_interval": [
+        -0.052562450078826026,
+        0.060316356328826023
+      ],
+      "maximum_difference": 1.3877787807814457e-17
+    },
+    {
+      "split": "ood",
+      "contrast": "ordinary_feedback",
+      "independent_mean": 0.00931152343750001,
+      "independent_interval": [
+        -0.04519463061300337,
+        0.06381767748800339
+      ],
+      "maximum_difference": 1.3877787807814457e-17
+    }
+  ],
+  "asserted_report_counts": true,
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "scope": "Direct scalar mean/sample-variance/Student-t computation from all256 primary summary rows; no project statistics implementation invoked in this check. Raw collection is separate."
+}
