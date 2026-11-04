@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "source_commit": "5a4aaa1e1d8c7d2a092806e25d4fdc2c898036e8",
+  "original_run": 41757363173,
+  "original_job": 126336520416,
+  "artifact": {
+    "id": 13289635903,
+    "name": "windows-process-fixtures-generated-5a4aaa1e1d8c7d2a092806e25d4fdc2c898036e8",
+    "size_in_bytes": 4385466,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13289635903",
+    "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13289635903/zip",
+    "expired": false,
+    "created_at": "2026-11-04T02:05:14Z",
+    "expires_at": "2026-11-18T02:05:13Z",
+    "updated_at": "2026-11-04T02:05:14Z",
+    "digest": "sha256:e54c01386c4a99b978c4dbc0689200a6a1dcec82b2342984f171fda1dc0f03a5",
+    "workflow_run": {
+      "id": 41757363173,
+      "repository_id": 1320694176,
+      "head_repository_id": 1320694176,
+      "head_branch": "fix/private-ci-windows-process-fixtures-20261104",
+      "head_sha": "5a4aaa1e1d8c7d2a092806e25d4fdc2c898036e8"
+    }
+  },
+  "actual_generation": {
+    "source_commit": "5a4aaa1e1d8c7d2a092806e25d4fdc2c898036e8",
+    "base_commit": "00963996f16c067fbd04517d22d3d7e53d1d09a6",
+    "status": "generated-needs-adoption",
+    "commands": [
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 0,
+        "seconds": 0.37198667799998475,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "committed-lock-first",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 17.086670583,
+        "log_sha256": "67f6642a9056612f98581e7bf0fdc016661312a227ee5d8dfbc928db2044388d"
+      },
+      {
+        "name": "original-formatter",
+        "argv": [
+          "just",
+          "fmt",
+          "--base",
+          "00963996f16c067fbd04517d22d3d7e53d1d09a6"
+        ],
+        "exit_code": 0,
+        "seconds": 0.5317766540000548,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "original-formatter-check",
+        "argv": [
+          "just",
+          "fmt",
+          "--check",
+          "--base",
+          "00963996f16c067fbd04517d22d3d7e53d1d09a6"
+        ],
+        "exit_code": 0,
+        "seconds": 0.5247940799999924,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "actual-cargo-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "seconds": 16.791412860000037,
+        "log_sha256": "21a22f497631650471a654ca44faefb1f7e816186e0126f2f53b89ad251e0158"
+      },
+      {
+        "name": "actual-locked-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--locked",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "seconds": 0.8370416630000364,
+        "log_sha256": "d9e3fbd6fedcc99c0b7cdf1899d27a7cc2959583dca3486aea826c7359e22f1d"
+      },
+      {
+        "name": "original-lock-update",
+        "argv": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "seconds": 21.907836619000022,
+        "log_sha256": "5ac27650e2be48d57186e2181a8af8d1026800473b9a99f28ad9d5ccec8e9b43"
+      },
+      {
+        "name": "original-lock-check",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 3.5083278780000455,
+        "log_sha256": "69e0e1b2c13f03a96e5908c9d744eca911ebfec6de7584a40f678b5ba5c2d28b"
+      }
+    ],
+    "scope": "Real lock generation and formatting; native product qualification is separate.",
+    "cargo_delta": {
+      "packages": 1517,
+      "added_dependencies": {
+        "codex-git-utils": [
+          "base64 0.22.1"
+        ]
+      },
+      "versions_sources_checksums_unchanged": true
+    },
+    "changed_paths": [
+      "codex-rs/Cargo.lock"
+    ],
+    "committed_cargo_equals_generated": false,
+    "committed_bazel_equals_generated": true,
+    "source_unchanged": false
+  },
+  "adopted": {
+    "path": "codex-rs/Cargo.lock",
+    "bytes": 416711,
+    "sha256": "25c229461ad91e433685c6f39c9c240354be47c33a2bbffae45ccf9f5afee85b",
+    "source": "Exact base64 chunks emitted by the original hosted generation, independently decoded and SHA256 verified.",
+    "independent_delta": "Entire Cargo.lock is byte-identical to the committed baseline except one base64 0.22.1 edge in codex-git-utils, after anyhow in Cargo's sorted order."
+  },
+  "native_qualification": "Pending new-head original source-head and base-merge Windows 33+35 suites; prior results do not qualify this source."
+}
