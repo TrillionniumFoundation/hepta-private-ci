@@ -290,9 +290,9 @@
     "helper_exit_zero_only_in_explicit_child_role": true,
     "native_execution_claimed": true,
     "no_containment_negative_script": {
-      "git_blob_sha": "b89cf9140d8faf912d63386c23e285ba648ca4a9",
-      "sha256": "37ee03979e851eebad13a43771b76387e031580ef3cb04f67dbfd19e0d9f064c",
-      "bytes": 14429
+      "git_blob_sha": "09fcbb0b49b5a69e0cdfd439db72e1d4f809acd4",
+      "sha256": "cb977cd617c1426d2694c6fd4825dcabf860b7613a616b089521a582eab0cf0e",
+      "bytes": 18356
     },
     "no_containment_control_is_separate_from_original_counts": true,
     "before_original_formatter": {
@@ -328,6 +328,48 @@
       "sha256": "ba8b5de6b951cc74fcfa9b3a05807fae33012b711770045776c69920d8aa64b9",
       "bytes": 12011
     },
-    "no_containment_control_demonstrated": false
+    "no_containment_control_demonstrated": false,
+    "no_containment_negative_script_before_xml": {
+      "git_blob_sha": "b89cf9140d8faf912d63386c23e285ba648ca4a9",
+      "sha256": "37ee03979e851eebad13a43771b76387e031580ef3cb04f67dbfd19e0d9f064c",
+      "bytes": 14429
+    },
+    "xml_reader_successor": {
+      "original_source": "d6e18bbecd78e061785283eb3171729aded28367",
+      "run_id": 41779589324,
+      "job_id": 126408511161,
+      "original_job_conclusion": "failure",
+      "original_mutant_ran": true,
+      "raw_failed_cases": 2,
+      "distinct_surviving_descendants": 2,
+      "original_wrapper": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 1,
+        "error_message": "exited with error code 101"
+      },
+      "original_independent_readback": {
+        "commit": "6273fa876d6c7242a0f75032e071c117e81957c7",
+        "run_id": 41781761858,
+        "job_id": 126414683443,
+        "conclusion": "success"
+      },
+      "candidate_replay": {
+        "commit": "777c418ee2ca30187d7ac10c2d44a6746c5e8f15",
+        "run_id": 41782498003,
+        "job_id": 126417048793,
+        "conclusion": "success",
+        "original_xml_old_predicate_accepted": false,
+        "original_xml_candidate_reader_accepted": true,
+        "synthetic_xml_positive": 2,
+        "synthetic_xml_negative": 18,
+        "native_rerun": false
+      },
+      "review_blob": "34c751896500cb9d96ec4d79156efb7698fb8e84",
+      "production_and_native_fixture_unchanged": true,
+      "positive_suite_arguments_and_deadlines_unchanged": true,
+      "new_candidate_full_original_windows_and_mutant_qualification_pending": true,
+      "original_failed_receipt_reclassified": false
+    }
   }
 }

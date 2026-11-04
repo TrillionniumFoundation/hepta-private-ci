@@ -1,0 +1,198 @@
+﻿2026-11-04T05:53:06.5910744Z Current runner version: '2.338.2'
+2026-11-04T05:53:06.5947843Z ##[group]Runner Image Provisioner
+2026-11-04T05:53:06.5949614Z Hosted Compute Agent
+2026-11-04T05:53:06.5951072Z Version: 20261028.624
+2026-11-04T05:53:06.5952330Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-04T05:53:06.5953714Z Build Date: 2026-10-28T21:51:42Z
+2026-11-04T05:53:06.5955179Z Worker ID: {8d45ffe8-860f-4dc1-ad77-46dc4293874e}
+2026-11-04T05:53:06.5956497Z Region: eastus2
+2026-11-04T05:53:06.5957593Z Cloud: Azure
+2026-11-04T05:53:06.5958640Z ##[endgroup]
+2026-11-04T05:53:06.5962022Z ##[group]Operating System
+2026-11-04T05:53:06.5963353Z Ubuntu
+2026-11-04T05:53:06.5964275Z 24.04.5
+2026-11-04T05:53:06.5965227Z LTS
+2026-11-04T05:53:06.5966148Z ##[endgroup]
+2026-11-04T05:53:06.5967184Z ##[group]Runner Image
+2026-11-04T05:53:06.5968330Z Image: ubuntu-24.04
+2026-11-04T05:53:06.5969282Z Version: 20261101.360.1
+2026-11-04T05:53:06.5971724Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-04T05:53:06.5974505Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-04T05:53:06.5976367Z ##[endgroup]
+2026-11-04T05:53:06.5978399Z ##[group]GITHUB_TOKEN Permissions
+2026-11-04T05:53:06.5982004Z Actions: read
+2026-11-04T05:53:06.5983036Z Contents: read
+2026-11-04T05:53:06.5984145Z Metadata: read
+2026-11-04T05:53:06.5985177Z ##[endgroup]
+2026-11-04T05:53:06.5988433Z Secret source: Actions
+2026-11-04T05:53:06.5990260Z Cache mode: write
+2026-11-04T05:53:06.5992407Z Prepare workflow directory
+2026-11-04T05:53:06.6474334Z Prepare all required actions
+2026-11-04T05:53:06.6545995Z Getting action download info
+2026-11-04T05:53:06.8706050Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-04T05:53:07.0286347Z Download action repository 'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f' (SHA:bbbca2ddaa5d8feaa63e36b76fdaad77386f024f)
+2026-11-04T05:53:07.3115168Z Complete job name: read-original
+2026-11-04T05:53:07.4001875Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-04T05:53:07.4003070Z with:
+2026-11-04T05:53:07.4003517Z   fetch-depth: 1
+2026-11-04T05:53:07.4003971Z   filter: blob:none
+2026-11-04T05:53:07.4004615Z   sparse-checkout: qualification/env-d6-negative-artifact-20261104
+
+2026-11-04T05:53:07.4005376Z   persist-credentials: false
+2026-11-04T05:53:07.4005979Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-04T05:53:07.4009748Z   token: ***
+2026-11-04T05:53:07.4010202Z   ssh-strict: true
+2026-11-04T05:53:07.4010658Z   ssh-user: git
+2026-11-04T05:53:07.4011335Z   clean: true
+2026-11-04T05:53:07.4011809Z   sparse-checkout-cone-mode: true
+2026-11-04T05:53:07.4012351Z   fetch-tags: false
+2026-11-04T05:53:07.4012820Z   show-progress: true
+2026-11-04T05:53:07.4013283Z   lfs: false
+2026-11-04T05:53:07.4013719Z   submodules: false
+2026-11-04T05:53:07.4014186Z   set-safe-directory: true
+2026-11-04T05:53:07.4014989Z ##[endgroup]
+2026-11-04T05:53:07.9172974Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-04T05:53:07.9176179Z ##[group]Getting Git version info
+2026-11-04T05:53:07.9177167Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-04T05:53:07.9178412Z [command]/usr/bin/git version
+2026-11-04T05:53:07.9431114Z git version 2.56.0
+2026-11-04T05:53:07.9457684Z ##[endgroup]
+2026-11-04T05:53:07.9473508Z Temporarily overriding HOME='/home/runner/work/_temp/f0bb31f4-b669-4ac0-aa3c-ba1e6ffdabed' before making global git config changes
+2026-11-04T05:53:07.9475840Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T05:53:07.9479447Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T05:53:07.9573748Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-04T05:53:07.9578206Z ##[group]Initializing the repository
+2026-11-04T05:53:07.9584577Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T05:53:07.9726158Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-04T05:53:07.9727404Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-04T05:53:07.9728585Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-04T05:53:07.9729465Z hint: call:
+2026-11-04T05:53:07.9729927Z hint:
+2026-11-04T05:53:07.9730514Z hint: 	git config --global init.defaultBranch <name>
+2026-11-04T05:53:07.9731534Z hint:
+2026-11-04T05:53:07.9732209Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-04T05:53:07.9733268Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-04T05:53:07.9734141Z hint:
+2026-11-04T05:53:07.9734621Z hint: 	git branch -m <name>
+2026-11-04T05:53:07.9735178Z hint:
+2026-11-04T05:53:07.9735893Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-04T05:53:07.9851634Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-04T05:53:07.9867878Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-04T05:53:07.9926393Z ##[endgroup]
+2026-11-04T05:53:07.9927304Z ##[group]Disabling automatic garbage collection
+2026-11-04T05:53:07.9931984Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-04T05:53:07.9991232Z ##[endgroup]
+2026-11-04T05:53:07.9993202Z ##[group]Setting up auth
+2026-11-04T05:53:07.9994480Z Removing SSH command configuration
+2026-11-04T05:53:07.9996696Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T05:53:08.0032764Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T05:53:08.0515852Z Removing HTTP extra header
+2026-11-04T05:53:08.0523139Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T05:53:08.0567490Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T05:53:08.0807193Z Removing includeIf entries pointing to credentials config files
+2026-11-04T05:53:08.0814950Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T05:53:08.0862091Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T05:53:08.1109046Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-364a6b44-6fab-4322-9852-5f1d5aa33230.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-04T05:53:08.1159370Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-364a6b44-6fab-4322-9852-5f1d5aa33230.config
+2026-11-04T05:53:08.1202004Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-364a6b44-6fab-4322-9852-5f1d5aa33230.config
+2026-11-04T05:53:08.1253236Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-364a6b44-6fab-4322-9852-5f1d5aa33230.config
+2026-11-04T05:53:08.1954791Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-364a6b44-6fab-4322-9852-5f1d5aa33230.config
+2026-11-04T05:53:08.2420512Z ##[endgroup]
+2026-11-04T05:53:08.2421881Z ##[group]Fetching the repository
+2026-11-04T05:53:08.2424300Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin +6273fa876d6c7242a0f75032e071c117e81957c7:refs/remotes/origin/checkpoint/env-d6-negative-artifact-20261104-gpt6
+2026-11-04T05:53:08.6482435Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-04T05:53:08.6485139Z  * [new ref]         6273fa876d6c7242a0f75032e071c117e81957c7 -> origin/checkpoint/env-d6-negative-artifact-20261104-gpt6
+2026-11-04T05:53:08.6497524Z [command]/usr/bin/git branch --list --remote origin/checkpoint/env-d6-negative-artifact-20261104-gpt6
+2026-11-04T05:53:08.6535839Z   origin/checkpoint/env-d6-negative-artifact-20261104-gpt6
+2026-11-04T05:53:08.6545737Z [command]/usr/bin/git rev-parse refs/remotes/origin/checkpoint/env-d6-negative-artifact-20261104-gpt6
+2026-11-04T05:53:08.6578279Z 6273fa876d6c7242a0f75032e071c117e81957c7
+2026-11-04T05:53:08.6585495Z ##[endgroup]
+2026-11-04T05:53:08.6587071Z ##[group]Determining the checkout info
+2026-11-04T05:53:08.6588991Z ##[endgroup]
+2026-11-04T05:53:08.6591291Z ##[group]Setting up sparse checkout
+2026-11-04T05:53:08.6593156Z [command]/usr/bin/git sparse-checkout set qualification/env-d6-negative-artifact-20261104
+2026-11-04T05:53:08.6658526Z ##[endgroup]
+2026-11-04T05:53:08.6660986Z ##[group]Checking out the ref
+2026-11-04T05:53:08.6665548Z [command]/usr/bin/git checkout --progress --force -B checkpoint/env-d6-negative-artifact-20261104-gpt6 refs/remotes/origin/checkpoint/env-d6-negative-artifact-20261104-gpt6
+2026-11-04T05:53:08.9727562Z Switched to a new branch 'checkpoint/env-d6-negative-artifact-20261104-gpt6'
+2026-11-04T05:53:08.9736022Z branch 'checkpoint/env-d6-negative-artifact-20261104-gpt6' set up to track 'origin/checkpoint/env-d6-negative-artifact-20261104-gpt6'.
+2026-11-04T05:53:08.9745694Z ##[endgroup]
+2026-11-04T05:53:08.9803508Z [command]/usr/bin/git log -1 --format=%H
+2026-11-04T05:53:08.9840033Z 6273fa876d6c7242a0f75032e071c117e81957c7
+2026-11-04T05:53:08.9851050Z ##[group]Removing auth
+2026-11-04T05:53:08.9852968Z Removing SSH command configuration
+2026-11-04T05:53:08.9856025Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T05:53:08.9896884Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T05:53:09.0164117Z Removing HTTP extra header
+2026-11-04T05:53:09.0169515Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T05:53:09.0220691Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T05:53:09.0481293Z Removing includeIf entries pointing to credentials config files
+2026-11-04T05:53:09.0483638Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T05:53:09.0519057Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-04T05:53:09.0523074Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-04T05:53:09.0526877Z includeif.gitdir:/github/workspace/.git.path
+2026-11-04T05:53:09.0529708Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-04T05:53:09.0534916Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-04T05:53:09.0568913Z /home/runner/work/_temp/git-credentials-364a6b44-6fab-4322-9852-5f1d5aa33230.config
+2026-11-04T05:53:09.0585295Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-364a6b44-6fab-4322-9852-5f1d5aa33230.config
+2026-11-04T05:53:09.0635199Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-04T05:53:09.0669604Z /home/runner/work/_temp/git-credentials-364a6b44-6fab-4322-9852-5f1d5aa33230.config
+2026-11-04T05:53:09.0724921Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-364a6b44-6fab-4322-9852-5f1d5aa33230.config
+2026-11-04T05:53:09.0734507Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-04T05:53:09.0767711Z /github/runner_temp/git-credentials-364a6b44-6fab-4322-9852-5f1d5aa33230.config
+2026-11-04T05:53:09.0777591Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-364a6b44-6fab-4322-9852-5f1d5aa33230.config
+2026-11-04T05:53:09.0830456Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-04T05:53:09.0864915Z /github/runner_temp/git-credentials-364a6b44-6fab-4322-9852-5f1d5aa33230.config
+2026-11-04T05:53:09.0874917Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-364a6b44-6fab-4322-9852-5f1d5aa33230.config
+2026-11-04T05:53:09.0920670Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T05:53:09.1178433Z Removing credentials config '/home/runner/work/_temp/git-credentials-364a6b44-6fab-4322-9852-5f1d5aa33230.config'
+2026-11-04T05:53:09.1187261Z ##[endgroup]
+2026-11-04T05:53:09.1492611Z ##[group]Run test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+2026-11-04T05:53:09.1494237Z [36;1mtest "$(git rev-parse HEAD)" = "$GITHUB_SHA"[0m
+2026-11-04T05:53:09.1495795Z [36;1mgit --no-replace-objects diff --exit-code HEAD --[0m
+2026-11-04T05:53:09.1498281Z [36;1mpython3 qualification/env-d6-negative-artifact-20261104/readback.py --output "$RUNNER_TEMP/env-d6-negative-readback"[0m
+2026-11-04T05:53:09.1501031Z [36;1mgit --no-replace-objects diff --exit-code HEAD --[0m
+2026-11-04T05:53:09.1526459Z shell: /usr/bin/bash -e {0}
+2026-11-04T05:53:09.1527508Z env:
+2026-11-04T05:53:09.1536264Z   GH_TOKEN: ***
+2026-11-04T05:53:09.1537197Z ##[endgroup]
+2026-11-04T05:53:11.1374507Z ENV_D6_READBACK_JSON={"all_six_members_crc_verified": true, "archive_bytes": 4431, "archive_sha256": "f2ecef472cb37e5909849330d7e72e317c7713d7aad8a34e148b1198e75c349a", "artifact_code_executed": false, "artifact_id": 13298389026, "exact_safe_files_base64": {"mutant-test.log": "RXhlY3V0aW5nIHRlc3RzIGZyb20gLy9jb2RleC1ycy9naXQtdXRpbHM6Z2l0LXV0aWxzLXVuaXQtdGVzdHMKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCnJ1bm5pbmcgMiB0ZXN0cwp0ZXN0IGdpdF9wcm9jZXNzOjp0ZXN0czo6dGltZWRfb3V0X2V4aXRlZF9naXRfd3JhcHBlcl9kb2VzX25vdF9sZWF2ZV9jaGlsZF9wcm9jZXNzX3J1bm5pbmcgLi4uIEZBSUxFRAp0ZXN0IGdpdF9wcm9jZXNzOjp0ZXN0czo6dGltZWRfb3V0X2dpdF93cmFwcGVyX2RvZXNfbm90X2xlYXZlX2NoaWxkX3Byb2Nlc3NfcnVubmluZyAuLi4gRkFJTEVECgpmYWlsdXJlczoKCi0tLS0gZ2l0X3Byb2Nlc3M6OnRlc3RzOjp0aW1lZF9vdXRfZXhpdGVkX2dpdF93cmFwcGVyX2RvZXNfbm90X2xlYXZlX2NoaWxkX3Byb2Nlc3NfcnVubmluZyBzdGRvdXQgLS0tLQoKdGhyZWFkICdnaXRfcHJvY2Vzczo6dGVzdHM6OnRpbWVkX291dF9leGl0ZWRfZ2l0X3dyYXBwZXJfZG9lc19ub3RfbGVhdmVfY2hpbGRfcHJvY2Vzc19ydW5uaW5nJyAoMzQ3NikgcGFuaWNrZWQgYXQgZ2l0LXV0aWxzL3NyY1xnaXRfcHJvY2Vzc190ZXN0cy5yczoyMzQ6NToKR2l0IHdyYXBwZXIgY2hpbGQgcHJvY2VzcyA3NjMyIHN1cnZpdmVkIHRpbWVvdXQgY2xlYW51cApub3RlOiBydW4gd2l0aCBgUlVTVF9CQUNLVFJBQ0U9MWAgZW52aXJvbm1lbnQgdmFyaWFibGUgdG8gZGlzcGxheSBhIGJhY2t0cmFjZQoKLS0tLSBnaXRfcHJvY2Vzczo6dGVzdHM6OnRpbWVkX291dF9naXRfd3JhcHBlcl9kb2VzX25vdF9sZWF2ZV9jaGlsZF9wcm9jZXNzX3J1bm5pbmcgc3Rkb3V0IC0tLS0KCnRocmVhZCAnZ2l0X3Byb2Nlc3M6OnRlc3RzOjp0aW1lZF9vdXRfZ2l0X3dyYXBwZXJfZG9lc19ub3RfbGVhdmVfY2hpbGRfcHJvY2Vzc19ydW5uaW5nJyAoOTgwMCkgcGFuaWNrZWQgYXQgZ2l0LXV0aWxzL3NyY1xnaXRfcHJvY2Vzc190ZXN0cy5yczoyMzQ6NToKR2l0IHdyYXBwZXIgY2hpbGQgcHJvY2VzcyA4NTIgc3Vydml2ZWQgdGltZW91dCBjbGVhbnVwCgoKZmFpbHVyZXM6CiAgICBnaXRfcHJvY2Vzczo6dGVzdHM6OnRpbWVkX291dF9leGl0ZWRfZ2l0X3dyYXBwZXJfZG9lc19ub3RfbGVhdmVfY2hpbGRfcHJvY2Vzc19ydW5uaW5nCiAgICBnaXRfcHJvY2Vzczo6dGVzdHM6OnRpbWVkX291dF9naXRfd3JhcHBlcl9kb2VzX25vdF9sZWF2ZV9jaGlsZF9wcm9jZXNzX3J1bm5pbmcKCnRlc3QgcmVzdWx0OiBGQUlMRUQuIDAgcGFzc2VkOyAyIGZhaWxlZDsgMCBpZ25vcmVkOyAwIG1lYXN1cmVkOyAzMSBmaWx0ZXJlZCBvdXQ7IGZpbmlzaGVkIGluIDMuMjdzCgo=", "mutant-test.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHRlc3RzdWl0ZXM+Cjx0ZXN0c3VpdGUgbmFtZT0iY29kZXgtcnNcZ2l0LXV0aWxzXGdpdC11dGlscy11bml0LXRlc3RzLmJhdCIgdGVzdHM9IjEiIGZhaWx1cmVzPSIwIiBlcnJvcnM9IjEiPgo8dGVzdGNhc2UgbmFtZT0iY29kZXgtcnNcZ2l0LXV0aWxzXGdpdC11dGlscy11bml0LXRlc3RzLmJhdCIgc3RhdHVzPSJydW4iIGR1cmF0aW9uPSIzIiB0aW1lPSIzIj48ZXJyb3IgbWVzc2FnZT0iZXhpdGVkIHdpdGggZXJyb3IgY29kZSAxMDEiPjwvZXJyb3I+PC90ZXN0Y2FzZT4KPHN5c3RlbS1vdXQ+PCFbQ0RBVEFbRXhlY3V0aW5nIHRlc3RzIGZyb20gLy9jb2RleC1ycy9naXQtdXRpbHM6Z2l0LXV0aWxzLXVuaXQtdGVzdHMKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCnJ1bm5pbmcgMiB0ZXN0cwp0ZXN0IGdpdF9wcm9jZXNzOjp0ZXN0czo6dGltZWRfb3V0X2V4aXRlZF9naXRfd3JhcHBlcl9kb2VzX25vdF9sZWF2ZV9jaGlsZF9wcm9jZXNzX3J1bm5pbmcgLi4uIEZBSUxFRAp0ZXN0IGdpdF9wcm9jZXNzOjp0ZXN0czo6dGltZWRfb3V0X2dpdF93cmFwcGVyX2RvZXNfbm90X2xlYXZlX2NoaWxkX3Byb2Nlc3NfcnVubmluZyAuLi4gRkFJTEVECgpmYWlsdXJlczoKCi0tLS0gZ2l0X3Byb2Nlc3M6OnRlc3RzOjp0aW1lZF9vdXRfZXhpdGVkX2dpdF93cmFwcGVyX2RvZXNfbm90X2xlYXZlX2NoaWxkX3Byb2Nlc3NfcnVubmluZyBzdGRvdXQgLS0tLQoKdGhyZWFkICdnaXRfcHJvY2Vzczo6dGVzdHM6OnRpbWVkX291dF9leGl0ZWRfZ2l0X3dyYXBwZXJfZG9lc19ub3RfbGVhdmVfY2hpbGRfcHJvY2Vzc19ydW5uaW5nJyAoMzQ3NikgcGFuaWNrZWQgYXQgZ2l0LXV0aWxzL3NyY1xnaXRfcHJvY2Vzc190ZXN0cy5yczoyMzQ6NToKR2l0IHdyYXBwZXIgY2hpbGQgcHJvY2VzcyA3NjMyIHN1cnZpdmVkIHRpbWVvdXQgY2xlYW51cApub3RlOiBydW4gd2l0aCBgUlVTVF9CQUNLVFJBQ0U9MWAgZW52aXJvbm1lbnQgdmFyaWFibGUgdG8gZGlzcGxheSBhIGJhY2t0cmFjZQoKLS0tLSBnaXRfcHJvY2Vzczo6dGVzdHM6OnRpbWVkX291dF9naXRfd3JhcHBlcl9kb2VzX25vdF9sZWF2ZV9jaGlsZF9wcm9jZXNzX3J1bm5pbmcgc3Rkb3V0IC0tLS0KCnRocmVhZCAnZ2l0X3Byb2Nlc3M6OnRlc3RzOjp0aW1lZF9vdXRfZ2l0X3dyYXBwZXJfZG9lc19ub3RfbGVhdmVfY2hpbGRfcHJvY2Vzc19ydW5uaW5nJyAoOTgwMCkgcGFuaWNrZWQgYXQgZ2l0LXV0aWxzL3NyY1xnaXRfcHJvY2Vzc190ZXN0cy5yczoyMzQ6NToKR2l0IHdyYXBwZXIgY2hpbGQgcHJvY2VzcyA4NTIgc3Vydml2ZWQgdGltZW91dCBjbGVhbnVwCgoKZmFpbHVyZXM6CiAgICBnaXRfcHJvY2Vzczo6dGVzdHM6OnRpbWVkX291dF9leGl0ZWRfZ2l0X3dyYXBwZXJfZG9lc19ub3RfbGVhdmVfY2hpbGRfcHJvY2Vzc19ydW5uaW5nCiAgICBnaXRfcHJvY2Vzczo6dGVzdHM6OnRpbWVkX291dF9naXRfd3JhcHBlcl9kb2VzX25vdF9sZWF2ZV9jaGlsZF9wcm9jZXNzX3J1bm5pbmcKCnRlc3QgcmVzdWx0OiBGQUlMRUQuIDAgcGFzc2VkOyAyIGZhaWxlZDsgMCBpZ25vcmVkOyAwIG1lYXN1cmVkOyAzMSBmaWx0ZXJlZCBvdXQ7IGZpbmlzaGVkIGluIDMuMjdzCgpdXT48L3N5c3RlbS1vdXQ+CjwvdGVzdHN1aXRlPgo8L3Rlc3RzdWl0ZXM+Cg=="}, "job_id": 126408511161, "limits": {"compressed": 65536, "limits_are_not_rss_guarantees": true, "member": 131072, "members": 6, "output": 131072, "returned_decoded": 524288}, "members": [{"bytes": 5524, "path": "mutant-command.log", "sha256": "d11a439baea32f0cf9a9f2ee7480c7568e3ab6fefc06105dd71b5efaa08457c0"}, {"bytes": 1349, "path": "mutant-test.log", "sha256": "e05159953dd97ffeca2a5082937a056e8a32f7e1139bbb688f0935e02fd6e6f0"}, {"bytes": 1723, "path": "mutant-test.xml", "sha256": "81a29987e3a11dff3b4288c6378ecd38936ac12b4c7e7113d7a1b33ac6a31abd"}, {"bytes": 3274, "path": "receipt.json", "sha256": "81bf744167ea2546ac058abba5c98228b5a89244ca6793e44eb05c2216665e02"}, {"bytes": 0, "path": "restored-worktree.stderr", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}, {"bytes": 0, "path": "restored-worktree.stdout", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}], "native_executed_by_reader": false, "original_failure_reclassified": false, "original_git_clean_exit": 0, "original_job_conclusion": "failure", "original_receipt_status": "failed", "original_source_restored": true, "product_qualification": false, "raw_rejection": {"distinct_survivor_pids": 2, "failed": 2, "failed_cases": ["git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running", "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running"], "filtered": 31, "passed": 0}, "reader": {"bytes": 13875, "commit": "6273fa876d6c7242a0f75032e071c117e81957c7", "git_blob_sha": "1a239b98b821c4e7cde4f8f3db0d606fb1082a82", "sha256": "96443b835026eb2ae9a11dd59023a5ed7a5c02d4836bd704c863e11dfcaa555d"}, "run_attempt": 1, "run_id": 41779589324, "schema": "hepta.env.d6.failed-negative-artifact-readback.v1", "source": "d6e18bbecd78e061785283eb3171729aded28367", "source_binding_is_entire_transitive_tree": false, "source_inputs": [{"bytes": 14429, "git_blob_sha": "b89cf9140d8faf912d63386c23e285ba648ca4a9", "path": "qualification/windows-process-fixtures-current/native-helper/run_negative.py", "sha256": "37ee03979e851eebad13a43771b76387e031580ef3cb04f67dbfd19e0d9f064c"}, {"bytes": 2716, "git_blob_sha": "3ce0431434d0c0e4bbde65eb68bce27cc572d9c6", "path": "codex-rs/git-utils/src/git_process.rs", "sha256": "8961e2748659fca01ea0a4b51baff983b76207e3ca3222f6a637a91360288d06"}, {"bytes": 10588, "git_blob_sha": "01fd218228d447b6c0094e73030da0361e4d0693", "path": "codex-rs/git-utils/src/git_process_tests.rs", "sha256": "9149f11264feb27427bcfbb5571182be8aec6daf62816fc65e9167f0442556d4"}], "tree": "a7ce66c67a06d3b481d254b76d3343189e421408", "xml_shape": [{"attributes": {}, "children": ["testsuite"], "tag": "testsuites", "text_bytes": 1, "text_equals_original_log": false, "text_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"}, {"attributes": {"82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89": {"value_bytes": 43, "value_sha256": "073390eefb7e8c5428591a0a02290071aab44fe6658e3bafb4201978ffe27eda"}, "errors": 1, "failures": 0, "tests": 1}, "children": ["testcase", "system-out"], "tag": "testsuite", "text_bytes": 1, "text_equals_original_log": false, "text_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"}, {"attributes": {"073c1634c496cdb649d1afe0a312bbb4b7e1741b271542e4a436c3b8824b1761": {"value_bytes": 3, "value_sha256": "acba25512100f80b56fc3ccd14c65be55d94800cda77585c5f41a887e398f9be"}, "336074805fc853987abe6f7fe3ad97a6a6f3077a16391fec744f671a015fbd7e": {"value_bytes": 1, "value_sha256": "4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce"}, "82a3537ff0dbce7eec35d69edc3a189ee6f17d82f353a553f9aa96cb0be3ce89": {"value_bytes": 43, "value_sha256": "073390eefb7e8c5428591a0a02290071aab44fe6658e3bafb4201978ffe27eda"}, "caa79af4db67695cce51988cda2f98423bb7420fbaee8968cd4aca151f55d3a2": {"value_bytes": 1, "value_sha256": "4e07408562bedb8b60ce05c1decfe3ad16b72230967de01f640b7e4729b49fce"}}, "children": ["error"], "tag": "testcase", "text_bytes": 0, "text_equals_original_log": false, "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}, {"attributes": {"ab530a13e45914982b79f9b7e3fba994cfd1f3fb22f71cea1afbf02b460c6d1d": {"value_bytes": 26, "value_sha256": "799405eb81aefb4677ff67caa5de476d52ac9fc9b3b6f90a89c4cb2a0b043738"}}, "children": [], "tag": "error", "text_bytes": 0, "text_equals_original_log": false, "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}, {"attributes": {}, "children": [], "tag": "system-out", "text_bytes": 1349, "text_equals_original_log": true, "text_sha256": "e05159953dd97ffeca2a5082937a056e8a32f7e1139bbb688f0935e02fd6e6f0"}]}
+2026-11-04T05:53:11.1690049Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-11-04T05:53:11.1690484Z with:
+2026-11-04T05:53:11.1691209Z   name: env-d6-negative-readback-6273fa876d6c7242a0f75032e071c117e81957c7
+2026-11-04T05:53:11.1691729Z   path: /home/runner/work/_temp/env-d6-negative-readback
+2026-11-04T05:53:11.1692059Z   if-no-files-found: error
+2026-11-04T05:53:11.1692299Z   retention-days: 14
+2026-11-04T05:53:11.1692630Z   compression-level: 6
+2026-11-04T05:53:11.1692845Z   overwrite: false
+2026-11-04T05:53:11.1693161Z   include-hidden-files: false
+2026-11-04T05:53:11.1693570Z   archive: true
+2026-11-04T05:53:11.1693919Z ##[endgroup]
+2026-11-04T05:53:11.3293013Z With the provided path, there will be 1 file uploaded
+2026-11-04T05:53:11.3300200Z Artifact name is valid!
+2026-11-04T05:53:11.3301648Z Root directory input is valid!
+2026-11-04T05:53:11.5410235Z Uploading artifact: env-d6-negative-readback-6273fa876d6c7242a0f75032e071c117e81957c7.zip
+2026-11-04T05:53:11.5456762Z Beginning upload of artifact content to blob storage
+2026-11-04T05:53:11.6104200Z Uploaded bytes 3342
+2026-11-04T05:53:11.6225972Z Finished uploading artifact content to blob storage!
+2026-11-04T05:53:11.6227021Z SHA256 digest of uploaded artifact is 06a08253ae86ce6a6cde97f9f17bff6790bbf822448436b373c909e37fd08729
+2026-11-04T05:53:11.6228345Z Finalizing artifact upload
+2026-11-04T05:53:12.0614948Z Artifact env-d6-negative-readback-6273fa876d6c7242a0f75032e071c117e81957c7 successfully finalized. Artifact ID 13299298442
+2026-11-04T05:53:12.0617043Z Artifact env-d6-negative-readback-6273fa876d6c7242a0f75032e071c117e81957c7 has been successfully uploaded! Final size is 3342 bytes. Artifact ID is 13299298442
+2026-11-04T05:53:12.0619114Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41781761858/artifacts/13299298442
+2026-11-04T05:53:12.0842544Z Post job cleanup.
+2026-11-04T05:53:12.1730346Z [command]/usr/bin/git version
+2026-11-04T05:53:12.1777791Z git version 2.56.0
+2026-11-04T05:53:12.1819859Z Temporarily overriding HOME='/home/runner/work/_temp/f94c99c7-66c6-4806-8ebb-f763575cfdb7' before making global git config changes
+2026-11-04T05:53:12.1821881Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-04T05:53:12.1826090Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-04T05:53:12.1862778Z Removing SSH command configuration
+2026-11-04T05:53:12.1869574Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-04T05:53:12.1914698Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-04T05:53:12.2222672Z Removing HTTP extra header
+2026-11-04T05:53:12.2233378Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-04T05:53:12.2277298Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-04T05:53:12.2573556Z Removing includeIf entries pointing to credentials config files
+2026-11-04T05:53:12.2581702Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-04T05:53:12.2635419Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-04T05:53:12.3071154Z Cleaning up orphan processes

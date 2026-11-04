@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.windows-mutant-wrapper-xml-independent-review.v1",
+  "reviewer": "chain_blockers",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "input": {
+    "git_blob": "09fcbb0b49b5a69e0cdfd439db72e1d4f809acd4",
+    "bytes": 18356,
+    "sha256": "cb977cd617c1426d2694c6fd4825dcabf860b7613a616b089521a582eab0cf0e"
+  },
+  "prior_input": {
+    "git_blob": "b89cf9140d8faf912d63386c23e285ba648ca4a9",
+    "bytes": 14429,
+    "sha256": "37ee03979e851eebad13a43771b76387e031580ef3cb04f67dbfd19e0d9f064c"
+  },
+  "scope": "Only the new strict Bazel Windows XML error wrapper reader, its synthetic controls and main-call wiring; read the retained raw-log validator and cleanup for context.",
+  "conclusion": "No confirmed new false-positive acceptance found in this narrow static scope.",
+  "findings": [
+    "The XML reader first reruns the unchanged raw-log validator requiring exactly the original two failed cases, 0 passed, 0 ignored, 31 filtered and two distinct bounded positive descendant PIDs at the original survival assertions.",
+    "It requires one testsuites root with exactly one testsuite child, exact suite name and counters tests=1/failures=0/errors=1, exactly one running testcase and one error with the literal exit code 101. Extra failure, skipped, testcase or wrapper children are rejected.",
+    "The sole system-out must match the actual validated raw log after only UTF-8 BOM decoding, CRLF normalization and edge whitespace normalization. XML counters alone cannot turn a different raw test outcome into a rejection demonstration.",
+    "Main still requires Bazel exit 3, exact fresh log/XML report selection, and the original source restoration plus Git-clean finalizer. No native test selector, timeout or production source was changed by this XML adaptation.",
+    "The new controls define two accepted encodings and eighteen rejected synthetic structures/log mismatches. They are separate synthetic reader controls, not native evidence."
+  ],
+  "unchanged_functions": [
+    "validate_rejection",
+    "reader_controls",
+    "remove_generated_report",
+    "report_cleanup_controls"
+  ],
+  "boundaries": [
+    "This reviewer did not run the controls, download the original ZIP or execute any native test.",
+    "The peer's reported original Bazel Windows wrapper shape and its prior source-bound replay are not independently re-proven by this static review.",
+    "The supplied bytes must be revalidated in the actual hosted Windows path; the review does not qualify the native production behavior or arbitrary future Bazel XML layouts."
+  ],
+  "native_executions": 0,
+  "synthetic_executions": 0,
+  "source_modified": false
+}

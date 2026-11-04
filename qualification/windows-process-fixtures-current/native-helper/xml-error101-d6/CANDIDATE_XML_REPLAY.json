@@ -1,0 +1,43 @@
+{
+  "actual_original_xml_new_reader_accepted": true,
+  "actual_original_xml_old_predicate_accepted": false,
+  "artifact_source_or_binaries_executed": false,
+  "candidate_product_qualification": false,
+  "candidate_sha256": "cb977cd617c1426d2694c6fd4825dcabf860b7613a616b089521a582eab0cf0e",
+  "native_full_original_suites_and_negative_control_still_required": true,
+  "native_rerun": false,
+  "original_artifact_id": 13298389026,
+  "original_job_and_receipt_still_failed": true,
+  "original_source": "d6e18bbecd78e061785283eb3171729aded28367",
+  "raw_reader_controls": {
+    "synthetic_accepted": 1,
+    "synthetic_cases_are_native_evidence": false,
+    "synthetic_rejected": 7
+  },
+  "raw_rejection": {
+    "failed": 2,
+    "failed_cases": [
+      "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+      "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running"
+    ],
+    "ignored": 0,
+    "measured": 0,
+    "other_original_cases_filtered": 31,
+    "passed": 0,
+    "scope": "Two separate negative controls, not product pass counts.",
+    "surviving_descendants": 2
+  },
+  "schema": "hepta.env.original-xml.candidate-reader-replay.v1",
+  "wrapper": {
+    "exact_original_log_bound": true,
+    "rust_exit_code": 101,
+    "wrapper_errors": 1,
+    "wrapper_failures": 0,
+    "wrapper_tests": 1
+  },
+  "xml_reader_controls": {
+    "synthetic_accepted": 2,
+    "synthetic_cases_are_native_evidence": false,
+    "synthetic_rejected": 18
+  }
+}

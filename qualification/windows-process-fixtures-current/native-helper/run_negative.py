@@ -88,6 +88,86 @@ def reader_controls():
             "synthetic_cases_are_native_evidence": False}
 
 
+def validate_mutant_wrapper_xml(raw, log_raw):
+    # Bazel 9's Windows wrapper represents Rust exit 101 as an XML error.
+    # Require that exact wrapper and independently require both original panics.
+    validate_rejection(log_raw)
+    text = raw.decode("utf-8-sig")
+    require("<!DOCTYPE" not in text.upper() and "<!ENTITY" not in text.upper(),
+            "mutant XML contains a document type")
+    xml = ET.fromstring(text)
+    require(xml.tag == "testsuites" and not xml.attrib
+            and len(xml) == 1 and xml[0].tag == "testsuite",
+            "mutant XML must contain one wrapper suite")
+    suite = xml[0]
+    name = r"codex-rs\git-utils\git-utils-unit-tests.bat"
+    require(suite.attrib == {"name": name, "tests": "1", "failures": "0", "errors": "1"}
+            and [child.tag for child in suite] == ["testcase", "system-out"],
+            "mutant Bazel wrapper counters differ from the actual Windows error shape")
+    case, stdout = suite
+    require(set(case.attrib) == {"name", "status", "duration", "time"}
+            and case.get("name") == name and case.get("status") == "run"
+            and all(re.fullmatch(r"\d+(?:\.\d+)?", case.get(field, ""))
+                    for field in ("duration", "time"))
+            and len(case) == 1 and case[0].tag == "error"
+            and case[0].attrib == {"message": "exited with error code 101"}
+            and not list(case[0]) and case[0].text in (None, ""),
+            "mutant wrapper must record exactly the original Rust failure exit 101")
+    require(not stdout.attrib and not list(stdout)
+            and (stdout.text or "").replace("\r\n", "\n").strip()
+                == log_raw.decode("utf-8-sig").replace("\r\n", "\n").strip(),
+            "mutant XML and raw log differ")
+    return {"wrapper_tests": 1, "wrapper_failures": 0, "wrapper_errors": 1,
+            "rust_exit_code": 101, "exact_original_log_bound": True}
+
+
+def xml_reader_controls():
+    rows = "".join("test " + name + " ... FAILED\n" for name in sorted(CASES))
+    log = (rows + "Git wrapper child process 101 survived timeout cleanup\n"
+           + "Git wrapper child process 102 survived timeout cleanup\n"
+           + "test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 31 filtered out;\n").encode()
+    name = r"codex-rs\git-utils\git-utils-unit-tests.bat"
+    root = ET.Element("testsuites")
+    suite = ET.SubElement(root, "testsuite", {
+        "name": name, "tests": "1", "failures": "0", "errors": "1"})
+    case = ET.SubElement(suite, "testcase", {
+        "name": name, "status": "run", "duration": "3", "time": "3"})
+    error = ET.SubElement(case, "error", {"message": "exited with error code 101"})
+    ET.SubElement(suite, "system-out").text = log.decode()
+    good = ET.tostring(root)
+    validate_mutant_wrapper_xml(good, log)
+    validate_mutant_wrapper_xml(good.replace(b"\n", b"\r\n"), log.replace(b"\n", b"\r\n"))
+    case_raw, error_raw, suite_raw = (ET.tostring(node) for node in (case, error, suite))
+    bad = [
+        (good.replace(b'errors="1"', b'errors="0"'), log),
+        (good.replace(b'failures="0"', b'failures="1"'), log),
+        (good.replace(b'tests="1"', b'tests="2"'), log),
+        (good.replace(b"error code 101", b"error code 1"), log),
+        (good.replace(b'status="run"', b'status="notrun"'), log),
+        (good.replace(name.encode(), b"unrelated-wrapper"), log),
+        (good.replace(case_raw, case_raw + case_raw), log),
+        (good.replace(suite_raw, suite_raw + suite_raw), log),
+        (good.replace(error_raw, b""), log),
+        (good.replace(error_raw, error_raw + b"<failure/>"), log),
+        (good.replace(error_raw, error_raw + b"<skipped/>"), log),
+        (good.replace(b"</testsuite>", b"<system-err/></testsuite>"), log),
+        (good.replace(b"101 survived", b"999 survived"), log),
+        (good, b""),
+        (good, log.replace(b"31 filtered", b"32 filtered")),
+        (good.replace(b"</testsuites>", b"<testcase/></testsuites>"), log),
+        (suite_raw, log),
+        (b'<!DOCTYPE testsuites [<!ENTITY x "bad">]>' + good, log),
+    ]
+    for xml, raw_log in bad:
+        try:
+            validate_mutant_wrapper_xml(xml, raw_log)
+        except (RuntimeError, ET.ParseError):
+            continue
+        raise RuntimeError("mutant XML reader accepted a synthetic counterexample")
+    return {"synthetic_accepted": 2, "synthetic_rejected": len(bad),
+            "synthetic_cases_are_native_evidence": False}
+
+
 def reports(base, suffix):
     return sorted(base.glob(
         "*/bazel-out/*/testlogs/codex-rs/git-utils/git-utils-unit-tests/test." + suffix
@@ -156,6 +236,7 @@ def main():
     try:
         require(os.name == "nt", "native Windows required")
         receipt["reader_controls"] = reader_controls()
+        receipt["xml_reader_controls"] = xml_reader_controls()
         receipt["report_cleanup_controls"] = report_cleanup_controls(output)
         head = subprocess.check_output(
             ["git", "--no-replace-objects", "rev-parse", "HEAD"], cwd=ROOT, text=True
@@ -243,18 +324,7 @@ def main():
             retained[suffix] = raw
         require(command.returncode == 3, "Bazel did not report an actual test failure")
         receipt["rejection"] = validate_rejection(retained["log"])
-        xml = ET.fromstring(retained["xml"])
-        suites = xml.findall("testsuite")
-        cases = xml.findall(".//testcase")
-        require(len(suites) == 1 and len(cases) == 1
-                and suites[0].get("tests") == "1" and suites[0].get("failures") == "1"
-                and suites[0].get("errors") == "0" and cases[0].find("failure") is not None
-                and cases[0].find("skipped") is None and cases[0].find("error") is None,
-                "mutant Bazel wrapper does not record one actual failure")
-        stdout = suites[0].find("system-out")
-        require(stdout is not None and (stdout.text or "").replace("\r\n", "\n").strip()
-                == retained["log"].decode("utf-8-sig").replace("\r\n", "\n").strip(),
-                "mutant XML and raw log differ")
+        receipt["wrapper"] = validate_mutant_wrapper_xml(retained["xml"], retained["log"])
         receipt["retained"] = {
             suffix: {"bytes": len(raw), "sha256": digest(raw)}
             for suffix, raw in retained.items()
@@ -282,9 +352,11 @@ def main():
             "source_restored": receipt["source_restored"],
             "clean_exit_code": clean.returncode,
             "reader_controls": receipt.get("reader_controls"),
+            "xml_reader_controls": receipt.get("xml_reader_controls"),
             "report_cleanup_controls": receipt.get("report_cleanup_controls"),
             "removed_prior_reports": receipt.get("removed_prior_reports"),
             "rejection": receipt.get("rejection"),
+            "wrapper": receipt.get("wrapper"),
             "native_product_acceptance": False,
         }), flush=True)
     require(receipt["status"] == "rejection-demonstrated", "rejection control did not qualify")
