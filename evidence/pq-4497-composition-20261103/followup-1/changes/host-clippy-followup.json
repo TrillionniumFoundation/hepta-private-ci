@@ -1,0 +1,38 @@
+{
+  "base_head": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "before_source": "published head plus previously coordinated follow-up; exact per-file before hashes recorded",
+  "files": [
+    {
+      "path": "codex-rs/hepta-contracts/src/lib.rs",
+      "before_sha256": "866eeaffa063e10bc4feed2d24e259c6db07be4084f5c85f7e760e4e8b45a206",
+      "after_sha256": "4733e73741dd867ca5ca6ea5f54aa7832a62a45910bb21d941952e0254b4fbdd"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "before_sha256": "d6b30c2eecd3d1ef711de0d15330b4512241875ebc4435377823fea9bc637060",
+      "after_sha256": "f07428f4d4eeb93f64ff038cfd604d02d2910ccf1d1e8177f338f288e4c41074"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs",
+      "before_sha256": "33eb0ea4a1643610268768bc7b8333b42673e4832140b3df4be373c20886ab43",
+      "after_sha256": "d25359981a0274f25581f13195b17fee281d39fa239683f4e4838d6cfbb2d83d"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_tests.rs",
+      "before_sha256": "81c8544646aa62516c031ad6a37993e1e4bf678740ee12dfd3ca6d055698a6bf",
+      "after_sha256": "42a1112b92750a31042e242e92a3f3eed7e22161226ed80a6f90d515259d5298"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_pq_test_support.rs",
+      "before_sha256": "d3e5e562d940e780643281e64ed4ac3d645544887b1d7aa76591ecb1c5a397b7",
+      "after_sha256": "7ddb7374246b5267144497f8d8c8967cf156e5dbe22ff152c13b0e1f8bfdad90"
+    },
+    {
+      "path": "CALLERS.toml",
+      "before_sha256": "4d232f99011453793bb00a5c7eb5f4c39c970badcde78df9a398ead0ce53c88d",
+      "after_sha256": "ad52e8addfc2bbcf69505800c3f0f3d52ba534f1bc013ee9d506441468dfb216"
+    }
+  ],
+  "reason": "preserve Windows alias; fallible test-service helpers instead of unwrap/expect; private test-only hook type alias; exact protected pin refresh",
+  "tests": "pending original strict no-fix Clippy and native CI; no lint attributes or runtime gate changes"
+}

@@ -294,7 +294,7 @@ impl SigningFixture {
                 .map(|(index, (principal, key))| TrustedLearningSignerV1 {
                     principal: principal.clone(),
                     controller_id: id(&format!("plasticity-controller-{index}")),
-                    verifying_key: key.verifying_key().to_bytes(),
+                    verifying_key: key.verifying_key().to_bytes().into(),
                     roles: vec![match index {
                         0 => LearningEvidenceRoleV1::Generator,
                         1 => LearningEvidenceRoleV1::Observer,
@@ -327,9 +327,12 @@ impl SigningFixture {
             issued_at: 20,
             expires_at: 90,
             payload_digest: Digest32::of_bytes(payload),
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        evidence.signature = self.keys[signer].sign(&evidence.signing_bytes()).to_bytes();
+        evidence.signature = self.keys[signer]
+            .sign(&evidence.signing_bytes())
+            .to_bytes()
+            .into();
         evidence
     }
 }

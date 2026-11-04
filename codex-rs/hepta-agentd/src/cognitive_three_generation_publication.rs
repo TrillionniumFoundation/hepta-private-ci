@@ -7,6 +7,32 @@ use super::*;
 use codex_hepta_learning_artifacts as artifacts;
 use serde_json::json;
 
+/// Test-only signing boundary; every publication still uses the original owner.
+pub(super) trait Publisher {
+    fn key(&self) -> artifacts::LearningVerificationKey;
+    fn window(&self) -> (u64, u64);
+    fn sign(&mut self, message: &[u8]) -> artifacts::LearningSignature;
+    fn placeholder(&self) -> artifacts::LearningSignature {
+        match self.key().profile() {
+            LearningAuthenticationProfile::ClassicalV1 => [0; 64].into(),
+            LearningAuthenticationProfile::MlDsa65V2 => {
+                artifacts::LearningSignature::MlDsa65V2(Vec::new())
+            }
+        }
+    }
+}
+impl Publisher for Roles {
+    fn key(&self) -> artifacts::LearningVerificationKey {
+        self.processes[4].key.into()
+    }
+    fn window(&self) -> (u64, u64) {
+        (self.from, self.until)
+    }
+    fn sign(&mut self, message: &[u8]) -> artifacts::LearningSignature {
+        self.processes[4].sign(message).into()
+    }
+}
+
 pub(super) struct Published {
     pub selected: artifacts::PinnedCandidateSpec,
     pub source: artifacts::LearningArtifactManifestV2,
@@ -31,16 +57,16 @@ impl CurrentCognitiveRegistry for StudyView {
     }
 }
 impl StudyView {
-    pub fn new(root: PathBuf, roles: &mut Roles) -> Self {
+    pub fn new(root: PathBuf, roles: &mut impl Publisher) -> Self {
         let namespace = Digest32::of_bytes(root.to_string_lossy().as_bytes());
-        let key = roles.processes[4].key;
+        let key = roles.key();
         let signer = artifacts::TrustedArtifactSignerV1 {
             signer_id: id("publisher"),
-            verifying_key: key,
+            verifying_key: key.clone(),
             minimum_authority_epoch: 1,
             maximum_authority_epoch: 1,
-            valid_from: roles.from / 1_000_000,
-            expires_at: roles.until / 1_000_000,
+            valid_from: roles.window().0 / 1_000_000,
+            expires_at: roles.window().1 / 1_000_000,
             revoked_at: None,
         };
         let withdrawals =
@@ -67,11 +93,11 @@ impl StudyView {
             signing_key_digest: Digest32::of_bytes(&key),
             authority_epoch: 1,
             lease_generation: 1,
-            issued_at: roles.from / 1_000_000,
-            expires_at: roles.until / 1_000_000,
-            signature: [0; 64],
+            issued_at: roles.window().0 / 1_000_000,
+            expires_at: roles.window().1 / 1_000_000,
+            signature: roles.placeholder(),
         };
-        lease.signature = roles.processes[4].sign(&lease.signing_bytes());
+        lease.signature = roles.sign(&lease.signing_bytes());
         let config = artifacts::LearningArtifactOwnerServiceConfigV1 {
             root: root.clone(),
             trust: trust.clone(),
@@ -99,7 +125,7 @@ impl StudyView {
         head: Digest32,
         predecessor: Digest32,
         records: usize,
-        roles: &mut Roles,
+        roles: &mut impl Publisher,
     ) -> artifacts::SignedCurrentArtifactHeadV1 {
         let mut signed = artifacts::SignedCurrentArtifactHeadV1 {
             withdrawal_scope_digest: self.trust.withdrawal_scope_digest,
@@ -111,13 +137,13 @@ impl StudyView {
                 predecessor_head_digest: predecessor,
                 authority_epoch: 1,
                 signer_id: id("publisher"),
-                signing_key_digest: Digest32::of_bytes(&roles.processes[4].key),
+                signing_key_digest: Digest32::of_bytes(&roles.key()),
                 issued_at: micros() / 1_000_000,
-                expires_at: roles.until / 1_000_000,
+                expires_at: roles.window().1 / 1_000_000,
             },
-            signature: [0; 64],
+            signature: roles.placeholder(),
         };
-        signed.signature = roles.processes[4].sign(&signed.signing_bytes());
+        signed.signature = roles.sign(&signed.signing_bytes());
         signed
     }
     pub fn publish(
@@ -125,7 +151,7 @@ impl StudyView {
         root: &std::path::Path,
         fitted: &Fitted,
         predecessor: Option<&ArtifactManifest>,
-        roles: &mut Roles,
+        roles: &mut impl Publisher,
     ) -> Published {
         self.publish_declared_dataset(root, fitted, predecessor, fitted.pin.dataset_digest, roles)
     }
@@ -135,7 +161,7 @@ impl StudyView {
         fitted: &Fitted,
         predecessor: Option<&ArtifactManifest>,
         source_dataset: Digest32,
-        roles: &mut Roles,
+        roles: &mut impl Publisher,
     ) -> Published {
         let now = micros() / 1_000_000;
         let source = artifacts::LearningArtifactManifestV2 {
@@ -160,7 +186,7 @@ impl StudyView {
             normalization_digest: hash("native-q32-observed-correctness"),
             producer_id: id("generator"),
             created_at: now,
-            expires_at: roles.until / 1_000_000,
+            expires_at: roles.window().1 / 1_000_000,
         };
         let mut guard = self.service.lock().unwrap();
         let service = guard.as_mut().unwrap();
@@ -283,7 +309,7 @@ impl StudyView {
     pub fn config(&self) -> artifacts::LearningArtifactOwnerServiceConfigV1 {
         self.config.lock().unwrap().clone()
     }
-    pub fn revoke(&self, root: &std::path::Path, artifact: StableId, roles: &mut Roles) {
+    pub fn revoke(&self, root: &std::path::Path, artifact: StableId, roles: &mut impl Publisher) {
         let mut guard = self.service.lock().unwrap();
         let service = guard.as_mut().unwrap();
         let mut projected = service.registry().clone();

@@ -25,6 +25,9 @@
     {
       "typeName": "FinalUseAuthority",
       "sourcePath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "extensionSourcePaths": [
+        "codex-rs/hepta-contracts/src/final_use_pq.rs"
+      ],
       "privilegedMethods": {
         "open_state_dir": "final_use_open_state",
         "open_state_dir_with_clock": "final_use_open_state",
@@ -36,9 +39,11 @@
         "open_state_dir_with_issuer_keys": "final_use_open_state",
         "with_verified_effect": "final_use_guarded_effect",
         "with_verified_use_async": "final_use_async_dispatch_fence",
-        "enter_verified_use": "final_use_delivery_raw"
+        "enter_verified_use": "final_use_delivery_raw",
+        "open_pq_state_dir_with_issuer_keys": "final_use_pq_open_state"
       },
       "nonPrivilegedMethods": [
+        "authentication_profile",
         "issuer_key_ids",
         "frontier",
         "capacity",
@@ -88,30 +93,43 @@
     {
       "typeName": "FinalUseApprovalVerifier",
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "extensionSourcePaths": [
+        "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+      ],
       "privilegedMethods": {
         "new": "final_use_approval_trust",
         "new_with_keys": "final_use_approval_trust",
         "verify": "final_use_approval_verify",
-        "verify_with_key_id": "final_use_approval_verify"
+        "verify_with_key_id": "final_use_approval_verify",
+        "new_pq_with_keys": "final_use_pq_approval_trust"
       },
       "nonPrivilegedMethods": []
     },
     {
       "typeName": "FinalUseRevocationFeedVerifier",
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "extensionSourcePaths": [
+        "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+      ],
       "privilegedMethods": {
         "new": "final_use_revocation_feed_trust",
         "new_with_keys": "final_use_revocation_feed_trust",
-        "apply": "final_use_revocation_feed_apply"
+        "apply": "final_use_revocation_feed_apply",
+        "new_pq_with_keys": "final_use_pq_revocation_feed_trust",
+        "apply_or_confirm_current": "final_use_pq_revocation_feed_confirm"
       },
       "nonPrivilegedMethods": []
     },
     {
       "typeName": "FinalUseRevocationConvergenceVerifier",
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "extensionSourcePaths": [
+        "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+      ],
       "privilegedMethods": {
         "new": "final_use_revocation_convergence_trust",
-        "verify": "final_use_revocation_convergence_verify"
+        "verify": "final_use_revocation_convergence_verify",
+        "new_pq": "final_use_pq_revocation_convergence_trust"
       },
       "nonPrivilegedMethods": []
     },
@@ -153,6 +171,59 @@
   ],
   "boundaries": [
     {
+      "id": "final_use_pq_open_state",
+      "typeMarker": "FinalUseAuthority",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use_pq.rs",
+      "callPatterns": [
+        "FinalUseAuthority\\s*::\\s*open_pq_state_dir_with_issuer_keys\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"
+      ]
+    },
+    {
+      "id": "final_use_pq_approval_trust",
+      "typeMarker": "FinalUseApprovalVerifier",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+      "callPatterns": [
+        "FinalUseApprovalVerifier\\s*::\\s*new_pq_with_keys\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
+      "id": "final_use_pq_revocation_feed_trust",
+      "typeMarker": "FinalUseRevocationFeedVerifier",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+      "callPatterns": [
+        "FinalUseRevocationFeedVerifier\\s*::\\s*new_pq_with_keys\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"
+      ]
+    },
+    {
+      "id": "final_use_pq_revocation_feed_confirm",
+      "typeMarker": "FinalUseRevocationFeedVerifier",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+      "callPatterns": [
+        "\\.\\s*apply_or_confirm_current\\s*\\(",
+        "FinalUseRevocationFeedVerifier\\s*::\\s*apply_or_confirm_current\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"
+      ]
+    },
+    {
+      "id": "final_use_pq_revocation_convergence_trust",
+      "typeMarker": "FinalUseRevocationConvergenceVerifier",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+      "callPatterns": [
+        "FinalUseRevocationConvergenceVerifier\\s*::\\s*new_pq\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
       "id": "final_use_open_state",
       "typeMarker": "FinalUseAuthority",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
@@ -188,6 +259,7 @@
       "allowedCallers": [
         "codex-rs/hepta-automation/src/authorized_effect.rs",
         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+        "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs",
         "codex-rs/hepta-memory/src/production_writer.rs",
         "codex-rs/hepta-ndu/src/owner.rs",
         "codex-rs/hepta-operations/src/durable_store.rs",
@@ -277,6 +349,7 @@
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
         "codex-rs/hepta-contracts/src/final_use_control.rs",
+        "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
       ]
     },

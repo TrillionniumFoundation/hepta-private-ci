@@ -84,6 +84,9 @@ common --jobs=30
 # configurations include this group; CI configs override TestRunner below
 # when tests must remain local on their runner.
 common:remote --strategy=remote
+# Tests that require trusted system tools may explicitly disable remote execution.
+# Keep remote first; this list selects eligibility before execution, not a retry.
+common:remote --strategy=TestRunner=remote,sandboxed,local
 common:remote --extra_execution_platforms=//:rbe
 common:remote --jobs=800
 # TODO(team): Evaluate if this actually helps, zbarsky is not sure, everything seems bottlenecked on `core` either way.

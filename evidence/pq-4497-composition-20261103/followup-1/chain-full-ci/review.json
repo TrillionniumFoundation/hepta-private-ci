@@ -1,0 +1,690 @@
+{
+  "schema": "chain-full-regression-retention-v1",
+  "repository": "TrillionniumFoundation/Trillionnium-Chain",
+  "run_id": 41594378689,
+  "run_attempt": 1,
+  "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+  "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+  "prospective_merge": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+  "base": "2e72a989d001cf51bd0aed0e1401526e45db31f1",
+  "overall_assessment": "HOLD",
+  "whole_chain_quantum_security_qualified": false,
+  "source_or_ref_changed_by_retention": false,
+  "reruns_or_budget_changes": false,
+  "signed_download_urls_retained": false,
+  "blob_size_gate_bytes": 512000,
+  "compression": {
+    "format": "XZ",
+    "preset": 6,
+    "one_original_complete_log_per_file": true,
+    "splitting_or_truncation": false
+  },
+  "scope": "full node-lib and Clippy commands, distinct from earlier 43-control native stage",
+  "earlier_control_failure_not_this_failure": "store::pq_rollback_witness::tests::committed_expiry_retirement_publishes_epoch_even_when_live_callback_refuses",
+  "full_suite_x64_merge_failure": "pq_rollback_witness::tests::cancellation_after_signing_before_send_preserves_same_client",
+  "official_metadata_file": "official-artifact-metadata.json",
+  "official_metadata_sha256": "e5c9c44b9b2cb5c5d3e8c59a5f1576f9d2e60e2d2e20fe718e0c3550aa4e9d7a",
+  "prior_review_input_sha256": {
+    "download-review.json": "6481eb185b50eabf80951d3b0af7c411c389f6a56836a761709b1ed8c3de80ac",
+    "full-regression-review.json": "b60b9c648455db033595b886db365b60d7f56a9cf168a61d868853c545cfaf56"
+  },
+  "records": [
+    {
+      "lane": "x64-head",
+      "arch": "X64",
+      "kind": "head",
+      "artifact_id": 13213826118,
+      "artifact_name": "pq-system-ubuntu-24.04-head-1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c-1",
+      "archive_file": "13213826118.zip",
+      "archive_bytes": 951432,
+      "archive_sha256": "510d5f3783b86c2d134c5c931921943a4939744f9f13fafb68d0616bb059dea6",
+      "github_digest": "sha256:510d5f3783b86c2d134c5c931921943a4939744f9f13fafb68d0616bb059dea6",
+      "github_digest_verified": true,
+      "commands": {
+        "node-lib": {
+          "receipt_file": "x64-head/node-lib.json",
+          "receipt_sha256": "c43c49f99f5dc13cca5f0bdca7bf9b562db7c45eb60a8968d0e4906e279abff5",
+          "receipt_bytes": 2367,
+          "receipt_unmodified_from_archive": true,
+          "argv": [
+            "cargo",
+            "+1.95.0",
+            "test",
+            "--locked",
+            "--manifest-path",
+            "trillionnium/Cargo.toml",
+            "-p",
+            "trnm-pon-node",
+            "--lib",
+            "--all-features",
+            "--",
+            "--show-output",
+            "--test-threads=1"
+          ],
+          "before": {
+            "base": null,
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "head",
+            "prospective_merge": null,
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "after": {
+            "base": null,
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "head",
+            "prospective_merge": null,
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "source_identity_unchanged": true,
+          "exit_code": 0,
+          "status": "command_succeeded",
+          "original_log_file": "node-lib.log",
+          "original_log_bytes": 6969730,
+          "original_log_sha256": "55a2ddf5ad416762f0fbd32c856ff78dac11d1e764a787c158737c10f4da19b9",
+          "compressed_log_file": "x64-head/node-lib.log.xz",
+          "compressed_log_bytes": 144296,
+          "compressed_log_sha256": "c22709090befac49b1cb5944389e1b33907486327cb75ad039c97253b515a73e",
+          "byte_exact_decompression_verified": true,
+          "original_receipt_log_file_mapping": {
+            "node-lib.log": "x64-head/node-lib.log.xz"
+          },
+          "assessment": "PASS",
+          "top_level_summary": "test result: ok. 895 passed; 0 failed; 22 ignored; 0 measured; 0 filtered out; finished in 1365.04s",
+          "test_counts": {
+            "passed": 895,
+            "failed": 0,
+            "ignored": 22,
+            "measured": 0,
+            "filtered_out": 0
+          },
+          "summary_selection": "unique terminal zero-filtered summary; nested child summaries with 916 filtered out excluded",
+          "all_summary_lines": [
+            "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 916 filtered out; finished in 0.00s",
+            "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 916 filtered out; finished in 0.00s",
+            "test result: ok. 895 passed; 0 failed; 22 ignored; 0 measured; 0 filtered out; finished in 1365.04s"
+          ],
+          "failed_tests": [],
+          "failure_details": []
+        },
+        "clippy": {
+          "receipt_file": "x64-head/clippy.json",
+          "receipt_sha256": "c4c4b4df9ed65e3bd864432f31585c1efef9e36268a9cf132c7ba7215a75647d",
+          "receipt_bytes": 2358,
+          "receipt_unmodified_from_archive": true,
+          "argv": [
+            "cargo",
+            "+1.95.0",
+            "clippy",
+            "--locked",
+            "--manifest-path",
+            "trillionnium/Cargo.toml",
+            "-p",
+            "trnm-pon-node",
+            "--lib",
+            "--tests",
+            "--all-features",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "before": {
+            "base": null,
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "head",
+            "prospective_merge": null,
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "after": {
+            "base": null,
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "head",
+            "prospective_merge": null,
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "source_identity_unchanged": true,
+          "exit_code": 0,
+          "status": "command_succeeded",
+          "original_log_file": "clippy.log",
+          "original_log_bytes": 3314,
+          "original_log_sha256": "33b39e0ba923cf23826c348219b8b271bad7413f1afd58ae9013a416c0dffac3",
+          "compressed_log_file": "x64-head/clippy.log.xz",
+          "compressed_log_bytes": 940,
+          "compressed_log_sha256": "97c6ce43bc01281756ba811bec2d3b45da3974192dc5b108127d408700386a0d",
+          "byte_exact_decompression_verified": true,
+          "original_receipt_log_file_mapping": {
+            "clippy.log": "x64-head/clippy.log.xz"
+          },
+          "assessment": "PASS"
+        }
+      },
+      "archive_entries": 164
+    },
+    {
+      "lane": "x64-prospective-merge",
+      "arch": "X64",
+      "kind": "prospective-merge",
+      "artifact_id": 13212424761,
+      "artifact_name": "pq-system-ubuntu-24.04-prospective-merge-1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c-1",
+      "archive_file": "13212424761.zip",
+      "archive_bytes": 955264,
+      "archive_sha256": "f3caf144791a869e51cc286e341ba71e1d58653b4c60d4616bf98f969858d544",
+      "github_digest": "sha256:f3caf144791a869e51cc286e341ba71e1d58653b4c60d4616bf98f969858d544",
+      "github_digest_verified": true,
+      "commands": {
+        "node-lib": {
+          "receipt_file": "x64-prospective-merge/node-lib.json",
+          "receipt_sha256": "11c197638a62805463420417dfd7903db6e4ce43029b0e115548f8443bc8377c",
+          "receipt_bytes": 2544,
+          "receipt_unmodified_from_archive": true,
+          "argv": [
+            "cargo",
+            "+1.95.0",
+            "test",
+            "--locked",
+            "--manifest-path",
+            "trillionnium/Cargo.toml",
+            "-p",
+            "trnm-pon-node",
+            "--lib",
+            "--all-features",
+            "--",
+            "--show-output",
+            "--test-threads=1"
+          ],
+          "before": {
+            "base": "2e72a989d001cf51bd0aed0e1401526e45db31f1",
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "prospective-merge",
+            "prospective_merge": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "after": {
+            "base": "2e72a989d001cf51bd0aed0e1401526e45db31f1",
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "prospective-merge",
+            "prospective_merge": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "source_identity_unchanged": true,
+          "exit_code": 101,
+          "status": "command_failed",
+          "original_log_file": "node-lib.log",
+          "original_log_bytes": 6970385,
+          "original_log_sha256": "a366a14c98803ced88aeba703b9124b799b5a8b3d2aff7ac2e0668f084b58cbf",
+          "compressed_log_file": "x64-prospective-merge/node-lib.log.xz",
+          "compressed_log_bytes": 144776,
+          "compressed_log_sha256": "e34cd32bfe9fd925171f6d9547718cdf4e8c08934e144afff85e986d7893430d",
+          "byte_exact_decompression_verified": true,
+          "original_receipt_log_file_mapping": {
+            "node-lib.log": "x64-prospective-merge/node-lib.log.xz"
+          },
+          "assessment": "HOLD",
+          "top_level_summary": "test result: FAILED. 894 passed; 1 failed; 22 ignored; 0 measured; 0 filtered out; finished in 1225.70s",
+          "test_counts": {
+            "passed": 894,
+            "failed": 1,
+            "ignored": 22,
+            "measured": 0,
+            "filtered_out": 0
+          },
+          "summary_selection": "unique terminal zero-filtered summary; nested child summaries with 916 filtered out excluded",
+          "all_summary_lines": [
+            "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 916 filtered out; finished in 0.00s",
+            "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 916 filtered out; finished in 0.00s",
+            "test result: FAILED. 894 passed; 1 failed; 22 ignored; 0 measured; 0 filtered out; finished in 1225.70s"
+          ],
+          "failed_tests": [
+            "pq_rollback_witness::tests::cancellation_after_signing_before_send_preserves_same_client"
+          ],
+          "failure_details": [
+            {
+              "test": "pq_rollback_witness::tests::cancellation_after_signing_before_send_preserves_same_client",
+              "error": "PQ_WITNESS_DEADLINE",
+              "panic_excerpt": "thread 'pq_rollback_witness::tests::cancellation_after_signing_before_send_preserves_same_client' (22234) panicked at crates/trnm-pon-node/src/pq_rollback_witness/tests.rs:98:35:\ncalled `Result::unwrap()` on an `Err` value: Error { code: None, kind: Unclassified, message: \"PQ_WITNESS_DEADLINE\", source: None, request_history_budget: false }"
+            }
+          ]
+        },
+        "clippy": {
+          "receipt_file": "x64-prospective-merge/clippy.json",
+          "receipt_sha256": "d1a1c1cd33e5bfd47146515bc3bf50a7e56e0e5d25940ecdc6843de10f96d32d",
+          "receipt_bytes": 2536,
+          "receipt_unmodified_from_archive": true,
+          "argv": [
+            "cargo",
+            "+1.95.0",
+            "clippy",
+            "--locked",
+            "--manifest-path",
+            "trillionnium/Cargo.toml",
+            "-p",
+            "trnm-pon-node",
+            "--lib",
+            "--tests",
+            "--all-features",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "before": {
+            "base": "2e72a989d001cf51bd0aed0e1401526e45db31f1",
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "prospective-merge",
+            "prospective_merge": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "after": {
+            "base": "2e72a989d001cf51bd0aed0e1401526e45db31f1",
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "prospective-merge",
+            "prospective_merge": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "source_identity_unchanged": true,
+          "exit_code": 0,
+          "status": "command_succeeded",
+          "original_log_file": "clippy.log",
+          "original_log_bytes": 3314,
+          "original_log_sha256": "35be53230c98ca166dc59b3250fe2c8c6cdace2bab9cc267e32f8e9630dc907b",
+          "compressed_log_file": "x64-prospective-merge/clippy.log.xz",
+          "compressed_log_bytes": 936,
+          "compressed_log_sha256": "48ca41e97265eac84c84ae19520feb8ed43a657c9d7488793a9f5080e0edceb4",
+          "byte_exact_decompression_verified": true,
+          "original_receipt_log_file_mapping": {
+            "clippy.log": "x64-prospective-merge/clippy.log.xz"
+          },
+          "assessment": "PASS"
+        }
+      },
+      "archive_entries": 163
+    },
+    {
+      "lane": "arm64-head",
+      "arch": "ARM64",
+      "kind": "head",
+      "artifact_id": 13214400210,
+      "artifact_name": "pq-system-ubuntu-24.04-arm-head-1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c-1",
+      "archive_file": "13214400210.zip",
+      "archive_bytes": 951546,
+      "archive_sha256": "8d66270161377b152c33b68d51c274059738599b66948078d3b54ab9573545ed",
+      "github_digest": "sha256:8d66270161377b152c33b68d51c274059738599b66948078d3b54ab9573545ed",
+      "github_digest_verified": true,
+      "commands": {
+        "node-lib": {
+          "receipt_file": "arm64-head/node-lib.json",
+          "receipt_sha256": "819503f4c944ae034cd594309dc23076c0393887e6063753dd25912f4b5e0c0e",
+          "receipt_bytes": 2368,
+          "receipt_unmodified_from_archive": true,
+          "argv": [
+            "cargo",
+            "+1.95.0",
+            "test",
+            "--locked",
+            "--manifest-path",
+            "trillionnium/Cargo.toml",
+            "-p",
+            "trnm-pon-node",
+            "--lib",
+            "--all-features",
+            "--",
+            "--show-output",
+            "--test-threads=1"
+          ],
+          "before": {
+            "base": null,
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "head",
+            "prospective_merge": null,
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "after": {
+            "base": null,
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "head",
+            "prospective_merge": null,
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "source_identity_unchanged": true,
+          "exit_code": 101,
+          "status": "command_failed",
+          "original_log_file": "node-lib.log",
+          "original_log_bytes": 6970731,
+          "original_log_sha256": "85a403f3cdf531f3300fdcf3beb5c6bb9d6826de01ff48f7be1df3e0d1e432f7",
+          "compressed_log_file": "arm64-head/node-lib.log.xz",
+          "compressed_log_bytes": 144748,
+          "compressed_log_sha256": "3df10a6aadde722208255ed284c8d8d07c42c68ae850551da16d7cb4fb1be6a4",
+          "byte_exact_decompression_verified": true,
+          "original_receipt_log_file_mapping": {
+            "node-lib.log": "arm64-head/node-lib.log.xz"
+          },
+          "assessment": "HOLD",
+          "top_level_summary": "test result: FAILED. 893 passed; 2 failed; 22 ignored; 0 measured; 0 filtered out; finished in 2162.53s",
+          "test_counts": {
+            "passed": 893,
+            "failed": 2,
+            "ignored": 22,
+            "measured": 0,
+            "filtered_out": 0
+          },
+          "summary_selection": "unique terminal zero-filtered summary; nested child summaries with 916 filtered out excluded",
+          "all_summary_lines": [
+            "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 916 filtered out; finished in 0.00s",
+            "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 916 filtered out; finished in 0.00s",
+            "test result: FAILED. 893 passed; 2 failed; 22 ignored; 0 measured; 0 filtered out; finished in 2162.53s"
+          ],
+          "failed_tests": [
+            "store::detached_admission::tests::admitted_custom_genesis_over_eight_mib_keeps_original_held_schedule_and_cpu_owner",
+            "store::detached_admission::tests::authenticated_large_parent_original_schedule_supplementary_denominator"
+          ],
+          "failure_details": [
+            {
+              "test": "store::detached_admission::tests::admitted_custom_genesis_over_eight_mib_keeps_original_held_schedule_and_cpu_owner",
+              "error": "PUBLIC_MUTATION_CPU_BUDGET",
+              "panic_excerpt": "thread 'store::detached_admission::tests::admitted_custom_genesis_over_eight_mib_keeps_original_held_schedule_and_cpu_owner' (22508) panicked at crates/trnm-pon-node/src/store/detached_admission/tests.rs:724:31:\ncalled `Result::unwrap()` on an `Err` value: Error { code: Some(PublicMutationCpuBudget), kind: Capacity, message: \"PUBLIC_MUTATION_CPU_BUDGET\", source: None, request_history_budget: false }"
+            },
+            {
+              "test": "store::detached_admission::tests::authenticated_large_parent_original_schedule_supplementary_denominator",
+              "error": "PUBLIC_MUTATION_CPU_BUDGET",
+              "panic_excerpt": "thread 'store::detached_admission::tests::authenticated_large_parent_original_schedule_supplementary_denominator' (22522) panicked at crates/trnm-pon-node/src/store/detached_admission/tests.rs:724:31:\ncalled `Result::unwrap()` on an `Err` value: Error { code: Some(PublicMutationCpuBudget), kind: Capacity, message: \"PUBLIC_MUTATION_CPU_BUDGET\", source: None, request_history_budget: false }"
+            }
+          ]
+        },
+        "clippy": {
+          "receipt_file": "arm64-head/clippy.json",
+          "receipt_sha256": "c20fe87cc1f67c8806a3afe396f8d2ef578f1842f6e0b73514a78dba6a0a5547",
+          "receipt_bytes": 2360,
+          "receipt_unmodified_from_archive": true,
+          "argv": [
+            "cargo",
+            "+1.95.0",
+            "clippy",
+            "--locked",
+            "--manifest-path",
+            "trillionnium/Cargo.toml",
+            "-p",
+            "trnm-pon-node",
+            "--lib",
+            "--tests",
+            "--all-features",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "before": {
+            "base": null,
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "head",
+            "prospective_merge": null,
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "after": {
+            "base": null,
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "head",
+            "prospective_merge": null,
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "source_identity_unchanged": true,
+          "exit_code": 0,
+          "status": "command_succeeded",
+          "original_log_file": "clippy.log",
+          "original_log_bytes": 3346,
+          "original_log_sha256": "4d242baa9565c6088f7fcd3850c22f63e55e77bc6da2c3fe0e76a7f87f67ac2d",
+          "compressed_log_file": "arm64-head/clippy.log.xz",
+          "compressed_log_bytes": 948,
+          "compressed_log_sha256": "52d90a9abad94ad71dd0780af5f0f429152db6556ab89f460be376fe09db4060",
+          "byte_exact_decompression_verified": true,
+          "original_receipt_log_file_mapping": {
+            "clippy.log": "arm64-head/clippy.log.xz"
+          },
+          "assessment": "PASS"
+        }
+      },
+      "archive_entries": 164
+    },
+    {
+      "lane": "arm64-prospective-merge",
+      "arch": "ARM64",
+      "kind": "prospective-merge",
+      "artifact_id": 13213237805,
+      "artifact_name": "pq-system-ubuntu-24.04-arm-prospective-merge-1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c-1",
+      "archive_file": "13213237805.zip",
+      "archive_bytes": 954972,
+      "archive_sha256": "89de6e7ef1240e31fc7af1e83e8521675f3dfed4c7f1cf59f972962fed7fb60f",
+      "github_digest": "sha256:89de6e7ef1240e31fc7af1e83e8521675f3dfed4c7f1cf59f972962fed7fb60f",
+      "github_digest_verified": true,
+      "commands": {
+        "node-lib": {
+          "receipt_file": "arm64-prospective-merge/node-lib.json",
+          "receipt_sha256": "accb38b6ed0bf8d6fb88a82751512524cfdfb2b3c60a6043055da228c10a0344",
+          "receipt_bytes": 2546,
+          "receipt_unmodified_from_archive": true,
+          "argv": [
+            "cargo",
+            "+1.95.0",
+            "test",
+            "--locked",
+            "--manifest-path",
+            "trillionnium/Cargo.toml",
+            "-p",
+            "trnm-pon-node",
+            "--lib",
+            "--all-features",
+            "--",
+            "--show-output",
+            "--test-threads=1"
+          ],
+          "before": {
+            "base": "2e72a989d001cf51bd0aed0e1401526e45db31f1",
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "prospective-merge",
+            "prospective_merge": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "after": {
+            "base": "2e72a989d001cf51bd0aed0e1401526e45db31f1",
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "prospective-merge",
+            "prospective_merge": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "source_identity_unchanged": true,
+          "exit_code": 101,
+          "status": "command_failed",
+          "original_log_file": "node-lib.log",
+          "original_log_bytes": 6970733,
+          "original_log_sha256": "fc2aaa7330fe9fbe97f943c8eea9ecad1506a389825dda87c64678abed72ab5b",
+          "compressed_log_file": "arm64-prospective-merge/node-lib.log.xz",
+          "compressed_log_bytes": 144764,
+          "compressed_log_sha256": "6741d49742aa9dd247d436527787a90f16c7534b53b22388b4ee42924470153f",
+          "byte_exact_decompression_verified": true,
+          "original_receipt_log_file_mapping": {
+            "node-lib.log": "arm64-prospective-merge/node-lib.log.xz"
+          },
+          "assessment": "HOLD",
+          "top_level_summary": "test result: FAILED. 893 passed; 2 failed; 22 ignored; 0 measured; 0 filtered out; finished in 2167.16s",
+          "test_counts": {
+            "passed": 893,
+            "failed": 2,
+            "ignored": 22,
+            "measured": 0,
+            "filtered_out": 0
+          },
+          "summary_selection": "unique terminal zero-filtered summary; nested child summaries with 916 filtered out excluded",
+          "all_summary_lines": [
+            "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 916 filtered out; finished in 0.00s",
+            "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 916 filtered out; finished in 0.00s",
+            "test result: FAILED. 893 passed; 2 failed; 22 ignored; 0 measured; 0 filtered out; finished in 2167.16s"
+          ],
+          "failed_tests": [
+            "store::detached_admission::tests::admitted_custom_genesis_over_eight_mib_keeps_original_held_schedule_and_cpu_owner",
+            "store::detached_admission::tests::authenticated_large_parent_original_schedule_supplementary_denominator"
+          ],
+          "failure_details": [
+            {
+              "test": "store::detached_admission::tests::admitted_custom_genesis_over_eight_mib_keeps_original_held_schedule_and_cpu_owner",
+              "error": "PUBLIC_MUTATION_CPU_BUDGET",
+              "panic_excerpt": "thread 'store::detached_admission::tests::admitted_custom_genesis_over_eight_mib_keeps_original_held_schedule_and_cpu_owner' (22568) panicked at crates/trnm-pon-node/src/store/detached_admission/tests.rs:724:31:\ncalled `Result::unwrap()` on an `Err` value: Error { code: Some(PublicMutationCpuBudget), kind: Capacity, message: \"PUBLIC_MUTATION_CPU_BUDGET\", source: None, request_history_budget: false }"
+            },
+            {
+              "test": "store::detached_admission::tests::authenticated_large_parent_original_schedule_supplementary_denominator",
+              "error": "PUBLIC_MUTATION_CPU_BUDGET",
+              "panic_excerpt": "thread 'store::detached_admission::tests::authenticated_large_parent_original_schedule_supplementary_denominator' (22582) panicked at crates/trnm-pon-node/src/store/detached_admission/tests.rs:724:31:\ncalled `Result::unwrap()` on an `Err` value: Error { code: Some(PublicMutationCpuBudget), kind: Capacity, message: \"PUBLIC_MUTATION_CPU_BUDGET\", source: None, request_history_budget: false }"
+            }
+          ]
+        },
+        "clippy": {
+          "receipt_file": "arm64-prospective-merge/clippy.json",
+          "receipt_sha256": "b5ed7ac91c1295df564ed7c5a126ca22af7131afbeaac51cc1e16ca10c1af164",
+          "receipt_bytes": 2538,
+          "receipt_unmodified_from_archive": true,
+          "argv": [
+            "cargo",
+            "+1.95.0",
+            "clippy",
+            "--locked",
+            "--manifest-path",
+            "trillionnium/Cargo.toml",
+            "-p",
+            "trnm-pon-node",
+            "--lib",
+            "--tests",
+            "--all-features",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "before": {
+            "base": "2e72a989d001cf51bd0aed0e1401526e45db31f1",
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "prospective-merge",
+            "prospective_merge": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "after": {
+            "base": "2e72a989d001cf51bd0aed0e1401526e45db31f1",
+            "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+            "kind": "prospective-merge",
+            "prospective_merge": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "schema": "trnm-ci-source-v1",
+            "tested_commit": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+            "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+            "tests_executed_by_identity_check": false,
+            "tracked_bytes": 782153776,
+            "tracked_entries": 6831,
+            "tracked_worktree_verified": true
+          },
+          "source_identity_unchanged": true,
+          "exit_code": 0,
+          "status": "command_succeeded",
+          "original_log_file": "clippy.log",
+          "original_log_bytes": 3346,
+          "original_log_sha256": "b0c5a7db8abf99e53d61c4a69ce0eb33efafd0725a6ebfec86dd706b3adb7c91",
+          "compressed_log_file": "arm64-prospective-merge/clippy.log.xz",
+          "compressed_log_bytes": 948,
+          "compressed_log_sha256": "f5d13367f79fe9ca99865b1732361fe2fc15587f784a46b597635cc8bcb1e8b9",
+          "byte_exact_decompression_verified": true,
+          "original_receipt_log_file_mapping": {
+            "clippy.log": "arm64-prospective-merge/clippy.log.xz"
+          },
+          "assessment": "PASS"
+        }
+      },
+      "archive_entries": 164
+    }
+  ],
+  "limits": [
+    "Identical tested trees do not establish an environmental cause for the failed gates.",
+    "Actual deadline and CPU-budget failures remain HOLD; no rerun or relaxed threshold is substituted.",
+    "Original receipts preserve complete argv, environment and before/after tracked identity; retention does not execute tests again."
+  ]
+}

@@ -19,6 +19,14 @@ fn prepared(directory: &Path, runtime: &tokio::runtime::Runtime) -> Session {
 
 #[test]
 fn terminal_unload_requires_successful_supervisor_and_original_child_receipt() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(terminal_unload_requires_successful_supervisor_and_original_child_receipt)
+    )) {
+        return;
+    }
+
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
@@ -85,6 +93,13 @@ fn terminal_unload_requires_successful_supervisor_and_original_child_receipt() {
 #[test]
 fn dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper() {
     use std::os::unix::net::UnixListener;
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper)
+    )) {
+        return;
+    }
 
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
@@ -150,6 +165,13 @@ fn dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper() {
 #[test]
 fn dropped_session_does_not_extend_its_expired_stop_window() {
     use std::os::unix::net::UnixListener;
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(dropped_session_does_not_extend_its_expired_stop_window)
+    )) {
+        return;
+    }
 
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
@@ -198,6 +220,14 @@ fn dropped_session_does_not_extend_its_expired_stop_window() {
 #[test]
 fn cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor() {
     use std::os::unix::net::UnixListener;
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor)
+    )) {
+        return;
+    }
+
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .worker_threads(2)
         .enable_all()
@@ -281,6 +311,14 @@ fn cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor() {
 
 #[test]
 fn ready_published_after_original_startup_window_cannot_be_adopted() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(ready_published_after_original_startup_window_cannot_be_adopted)
+    )) {
+        return;
+    }
+
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
@@ -325,6 +363,14 @@ fn ready_published_after_original_startup_window_cannot_be_adopted() {
 
 #[test]
 fn cancelled_original_startup_cannot_adopt_an_already_published_ready() {
+    if crate::test_process::completed_in_fresh_process(concat!(
+        module_path!(),
+        "::",
+        stringify!(cancelled_original_startup_cannot_adopt_an_already_published_ready)
+    )) {
+        return;
+    }
+
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()

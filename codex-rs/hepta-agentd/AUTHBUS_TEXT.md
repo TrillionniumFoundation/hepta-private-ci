@@ -47,6 +47,30 @@ a thread, then install its ID. Replace the complete file atomically while
 preserving its permissions. The daemon reloads it for admission and dispatch
 stages. Keep the private signing key with the independent producer.
 
+For the explicitly selected ML-DSA-65 profile, use `schema_version: 2`, the
+canonical 1,974-byte SPKI as `public_key_hex`, and a positive, explicit
+`policy_revision`. Requests use `auth_version: 2`. Increase the policy revision
+whenever changing the issuer, key epoch, revocation flag, or set of thread IDs.
+The revision spans issuer names and key generations within this Agent's text
+authority domain; it must not reset when rotating keys. Thread ordering and
+duplicate entries do not change the committed set. Classical schema-1 files
+retain their existing format and omit `policy_revision`.
+
+The host commits the complete policy digest with the issuer floor and publishes
+the existing external AuthBus checkpoint before using a newly read policy.
+After that observation, an older revision or changed contents at the same
+revision are rejected, including after reopen. A higher revision can legitimately
+remove or add threads; removing a thread does not freeze the allowlist forever.
+The checkpoint must survive independently of the Agent home being restored.
+This does not make owner-file replacement atomic with a target queue request.
+
+A PQ owner file without a nonzero revision is rejected. Initial policy pinning
+requires a checkpointed, unused PQ domain. An already used PQ database whose
+new policy table is empty is refused: its historical policy cannot be inferred
+from the current file, and this change provides no authenticated in-place
+bootstrap for that migration. Keep the existing state and retained checkpoint;
+do not clear them or recapture a frontier from a suspect backup to force startup.
+
 Revocation uses `revoked: true`; removing a thread also prevents subsequent
 admission/dispatch to that thread. Neither operation cancels work already
 accepted by the target queue. Registry reads are current snapshots, not an

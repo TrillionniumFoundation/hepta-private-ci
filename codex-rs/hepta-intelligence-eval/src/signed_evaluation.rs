@@ -128,11 +128,18 @@ pub(crate) fn authenticate(
         return Err(SignedEvaluationError::IdentityBinding);
     }
     verify_signed_role_separation(&generator, &evaluator, now)?;
-    let mut bytes = b"hepta.intelligence-eval.authenticated-decision.v1".to_vec();
+    let mut bytes = verifier.authentication_profile().learning_domain(
+        b"hepta.intelligence-eval.authenticated-decision.v1",
+        b"hepta.intelligence-eval.authenticated-decision.pq.v2\0",
+    );
     bytes.extend_from_slice(verifier.trust_digest().as_array());
     for attestation in [&evidence.generator_plan, &evidence.evaluator_bundle] {
         bytes.extend_from_slice(Digest32::of_bytes(&attestation.signing_bytes()).as_array());
-        bytes.extend_from_slice(&attestation.signature);
+        if attestation.signature.profile()
+            == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1
+        {
+            bytes.extend_from_slice(&attestation.signature);
+        }
     }
     Ok(Digest32::of_bytes(&bytes))
 }

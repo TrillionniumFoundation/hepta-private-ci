@@ -1,0 +1,298 @@
+{
+  "run_id": 41594378689,
+  "run_attempt": 1,
+  "reviewed_utc": "2026-11-03T07:27:47.244314+00:00",
+  "artifacts": [
+    {
+      "artifact_id": 13211528554,
+      "lane": "arm-head",
+      "job_id": 125778184781,
+      "archive_sha256": "ed61312779b6cc6f48e5c500f4dd1790510923a294dfa9b9295bbe2c64e0355e",
+      "archive_bytes": 213161,
+      "archive_digest_matches_github_metadata": true,
+      "source": {
+        "base": null,
+        "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+        "kind": "head",
+        "prospective_merge": null,
+        "schema": "trnm-ci-source-v1",
+        "tested_commit": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+        "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+        "tests_executed_by_identity_check": false,
+        "tracked_bytes": 782153776,
+        "tracked_entries": 6831,
+        "tracked_worktree_verified": true
+      },
+      "required_case_records": 43,
+      "execution_receipts": {
+        "PASS": 43
+      },
+      "unique_passed_names": 43,
+      "all_native_log_hashes_verified": true,
+      "validation_errors": [],
+      "new_six_receipts": [
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::malformed_local_checkpoints_never_enter_transport_or_poison_client"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::signed_current_cannot_regress_or_change_an_observed_generation"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::independent_clients_accept_other_writers_advances_and_cold_reopen"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::active_owner_requires_its_known_head_for_current_and_cas"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::failed_local_commit_fences_owner_until_explicit_reopen"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::durable_predecessor_shape_distinguishes_registration_from_advancement"
+        }
+      ]
+    },
+    {
+      "artifact_id": 13211692566,
+      "lane": "x64-head",
+      "job_id": 125778184727,
+      "archive_sha256": "a29bb02fd63aa263020ee54aff542fb5b09c4a0d4d0719dddd87b3b94bff64f4",
+      "archive_bytes": 214461,
+      "archive_digest_matches_github_metadata": true,
+      "source": {
+        "base": null,
+        "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+        "kind": "head",
+        "prospective_merge": null,
+        "schema": "trnm-ci-source-v1",
+        "tested_commit": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+        "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+        "tests_executed_by_identity_check": false,
+        "tracked_bytes": 782153776,
+        "tracked_entries": 6831,
+        "tracked_worktree_verified": true
+      },
+      "required_case_records": 43,
+      "execution_receipts": {
+        "PASS": 43
+      },
+      "unique_passed_names": 43,
+      "all_native_log_hashes_verified": true,
+      "validation_errors": [],
+      "new_six_receipts": [
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::malformed_local_checkpoints_never_enter_transport_or_poison_client"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::signed_current_cannot_regress_or_change_an_observed_generation"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::independent_clients_accept_other_writers_advances_and_cold_reopen"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::active_owner_requires_its_known_head_for_current_and_cas"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::failed_local_commit_fences_owner_until_explicit_reopen"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::durable_predecessor_shape_distinguishes_registration_from_advancement"
+        }
+      ]
+    },
+    {
+      "artifact_id": 13212091755,
+      "lane": "x64-prospective-merge",
+      "job_id": 125778184521,
+      "archive_sha256": "be70be0680dd28b2af7cc8b4db6ac293257d681d639bc45801bc3f7d8a7f50c0",
+      "archive_bytes": 217853,
+      "archive_digest_matches_github_metadata": true,
+      "source": {
+        "base": "2e72a989d001cf51bd0aed0e1401526e45db31f1",
+        "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+        "kind": "prospective-merge",
+        "prospective_merge": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+        "schema": "trnm-ci-source-v1",
+        "tested_commit": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+        "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+        "tests_executed_by_identity_check": false,
+        "tracked_bytes": 782153776,
+        "tracked_entries": 6831,
+        "tracked_worktree_verified": true
+      },
+      "required_case_records": 43,
+      "execution_receipts": {
+        "PASS": 42,
+        "no_passing_execution_receipt": 1
+      },
+      "unique_passed_names": 42,
+      "all_native_log_hashes_verified": true,
+      "validation_errors": [],
+      "new_six_receipts": [
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::malformed_local_checkpoints_never_enter_transport_or_poison_client"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::signed_current_cannot_regress_or_change_an_observed_generation"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::independent_clients_accept_other_writers_advances_and_cold_reopen"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::active_owner_requires_its_known_head_for_current_and_cas"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::failed_local_commit_fences_owner_until_explicit_reopen"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::durable_predecessor_shape_distinguishes_registration_from_advancement"
+        }
+      ]
+    },
+    {
+      "artifact_id": 13212615630,
+      "lane": "arm-prospective-merge",
+      "job_id": 125778184723,
+      "archive_sha256": "226ef3149ffc4cadcaf6aac0387d02aac63b2698cf5e58bd0600d6c884df9720",
+      "archive_bytes": 216470,
+      "archive_digest_matches_github_metadata": true,
+      "source": {
+        "base": "2e72a989d001cf51bd0aed0e1401526e45db31f1",
+        "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+        "kind": "prospective-merge",
+        "prospective_merge": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+        "schema": "trnm-ci-source-v1",
+        "tested_commit": "39f9195a2bf192ac93e28fbfc1bd4e9ef7388cf9",
+        "tested_tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+        "tests_executed_by_identity_check": false,
+        "tracked_bytes": 782153776,
+        "tracked_entries": 6831,
+        "tracked_worktree_verified": true
+      },
+      "required_case_records": 43,
+      "execution_receipts": {
+        "PASS": 43
+      },
+      "unique_passed_names": 43,
+      "all_native_log_hashes_verified": true,
+      "validation_errors": [],
+      "new_six_receipts": [
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::malformed_local_checkpoints_never_enter_transport_or_poison_client"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::signed_current_cannot_regress_or_change_an_observed_generation"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::independent_clients_accept_other_writers_advances_and_cold_reopen"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::active_owner_requires_its_known_head_for_current_and_cas"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::failed_local_commit_fences_owner_until_explicit_reopen"
+        },
+        {
+          "executed_tests": 1,
+          "result": "PASS",
+          "scope": "named-libtest-execution-only",
+          "test": "pq_rollback_witness::tests::durable_predecessor_shape_distinguishes_registration_from_advancement"
+        }
+      ]
+    }
+  ],
+  "failure": {
+    "artifact_id": 13212091755,
+    "job_id": 125778184521,
+    "record": "native-32.json",
+    "test": "store::pq_rollback_witness::tests::committed_expiry_retirement_publishes_epoch_even_when_live_callback_refuses",
+    "source_line": 718,
+    "error": "PQ_WITNESS_DEADLINE",
+    "cargo_exit_code": 101,
+    "log_sha256": "76d4e9d2f8a88f774e73ae793e161f94b5903252070355cef7ea9bceb3b0116d",
+    "observed_test_result": {
+      "passed": 0,
+      "failed": 1,
+      "ignored": 0,
+      "measured": 0,
+      "filtered_out": 916,
+      "test_elapsed_seconds": 2.45
+    },
+    "original_per_exchange_ms": 250,
+    "store_test_file_identical_to_base_47a7": true,
+    "exact_internal_boundary": "not recorded",
+    "environmental_or_change_causation": "not established"
+  },
+  "classification": "Actual deadline gate failed; retained without waiver or replacement",
+  "reruns_performed": false,
+  "source_files_changed": false,
+  "full_suite_pass_not_claimed": true
+}
