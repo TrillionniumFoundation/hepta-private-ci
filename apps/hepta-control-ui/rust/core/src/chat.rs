@@ -112,30 +112,29 @@ impl ChatWorkspace {
     /// Both host renderers consume this real adapter availability. A prepared
     /// envelope still requires a configured independent host to dispatch it.
     pub fn owner_status(&self, now_ms: u64) -> &'static str {
-        if let Some(observed) = &self.objective_observation {
-            if observed.binding.room == self.active
-                && observed.binding.presentation_epoch == self.presentation_epoch
-            {
-                if self.owner.current_session(now_ms).is_err() {
-                    return "The original owner session is no longer current.";
-                }
-                if observed.phase == crate::objective_ui::ObjectiveUiPhase::Unknown {
-                    use crate::objective_ui::ObjectiveUiPublication;
-                    match observed.retained_publication {
-                        Some(ObjectiveUiPublication::Compiled) => {
-                            return "The request was admitted; its current runtime outcome is unknown.";
-                        }
-                        Some(ObjectiveUiPublication::Abstained) => {
-                            return "The prior refusal is retained; the current owner observation is unavailable.";
-                        }
-                        Some(ObjectiveUiPublication::Conflict) => {
-                            return "The prior conflict is retained; the current owner observation is unavailable.";
-                        }
-                        None => {}
-                    }
-                }
-                return observed.phase.label();
+        if let Some(observed) = &self.objective_observation
+            && observed.binding.room == self.active
+            && observed.binding.presentation_epoch == self.presentation_epoch
+        {
+            if self.owner.current_session(now_ms).is_err() {
+                return "The original owner session is no longer current.";
             }
+            if observed.phase == crate::objective_ui::ObjectiveUiPhase::Unknown {
+                use crate::objective_ui::ObjectiveUiPublication;
+                match observed.retained_publication {
+                    Some(ObjectiveUiPublication::Compiled) => {
+                        return "The request was admitted; its current runtime outcome is unknown.";
+                    }
+                    Some(ObjectiveUiPublication::Abstained) => {
+                        return "The prior refusal is retained; the current owner observation is unavailable.";
+                    }
+                    Some(ObjectiveUiPublication::Conflict) => {
+                        return "The prior conflict is retained; the current owner observation is unavailable.";
+                    }
+                    None => {}
+                }
+            }
+            return observed.phase.label();
         }
         use crate::chat_owner::ChatCapability;
         use crate::chat_owner::ChatOwnerError;
@@ -522,10 +521,10 @@ impl ChatWorkspace {
             return Err(E::Binding);
         }
         self.close_objective_owner();
-        if let Some(draft) = self.drafts.get_mut(&binding.room) {
-            if draft.status == ComposeStatus::TransportUnavailable {
-                draft.status = ComposeStatus::LocalDraft;
-            }
+        if let Some(draft) = self.drafts.get_mut(&binding.room)
+            && draft.status == ComposeStatus::TransportUnavailable
+        {
+            draft.status = ComposeStatus::LocalDraft;
         }
         self.objective_binding = Some(binding);
         self.objective_port = Some(port);
@@ -616,10 +615,10 @@ impl ChatWorkspace {
         match port.request(command, self.presentation_epoch, self.active, &draft) {
             Ok(_) => {
                 self.presentation_note = None;
-                if let Some(draft) = self.drafts.get_mut(&self.active) {
-                    if draft.status == ComposeStatus::TransportUnavailable {
-                        draft.status = ComposeStatus::LocalDraft;
-                    }
+                if let Some(draft) = self.drafts.get_mut(&self.active)
+                    && draft.status == ComposeStatus::TransportUnavailable
+                {
+                    draft.status = ComposeStatus::LocalDraft;
                 }
                 self.poll_objective_owner();
                 true
