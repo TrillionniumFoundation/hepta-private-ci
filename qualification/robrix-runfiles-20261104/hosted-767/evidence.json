@@ -1,0 +1,389 @@
+{
+  "schema_version": 1,
+  "status": "WINDOWS_COMPLETE_CASE_EVIDENCE_MISSING",
+  "source_commit": "767f069c96a6cd2735b3a4166799a1de79017d25",
+  "source_tree": "f9e8e902d456e5bb98fbab612857c11974775011",
+  "workflow_run": 41754188875,
+  "reports": [
+    {
+      "key": "mac",
+      "job_id": 126326282656,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41754188875/job/126326282656",
+      "reported_qualification_status": "passed",
+      "original_receipt": {
+        "commit": "767f069c96a6cd2735b3a4166799a1de79017d25",
+        "status": "passed",
+        "config": "ci-macos",
+        "steps": [
+          {
+            "name": "committed-inputs-clean-before",
+            "command": [
+              "git",
+              "diff",
+              "--exit-code",
+              "HEAD",
+              "--"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 0.5631908339999967
+          },
+          {
+            "name": "original-robrix-corpus-tests",
+            "command": [
+              "/bin/bash",
+              "./.github/scripts/run-bazel-ci.sh",
+              "--print-failed-test-logs",
+              "--print-failed-action-summary",
+              "--remote-download-toplevel",
+              "--",
+              "test",
+              "--keep_going",
+              "--nocache_test_results",
+              "--test_output=all",
+              "--",
+              "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 139.742271625
+          },
+          {
+            "name": "original-testlog-location",
+            "command": [
+              "python3",
+              "./.github/scripts/run_bazel_with_buildbuddy.py",
+              "--output_user_root=/Users/runner/.cache/codex-ci/b",
+              "--noexperimental_remote_repo_contents_cache",
+              "info",
+              "--config=ci-macos",
+              "bazel-testlogs"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 2.6488024589999952
+          },
+          {
+            "name": "original-clippy-selector",
+            "command": [
+              "/bin/bash",
+              "./scripts/list-bazel-clippy-targets.sh"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 3.0646445419999964
+          },
+          {
+            "name": "original-clippy",
+            "command": [
+              "/bin/bash",
+              "./.github/scripts/run-bazel-ci.sh",
+              "--print-failed-test-logs",
+              "--print-failed-action-summary",
+              "--remote-download-toplevel",
+              "--",
+              "build",
+              "--config=clippy",
+              "--",
+              "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 23.92912750000002
+          },
+          {
+            "name": "committed-inputs-clean-after",
+            "command": [
+              "git",
+              "diff",
+              "--exit-code",
+              "HEAD",
+              "--"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 0.8555404580000072
+          }
+        ],
+        "source_inputs_unchanged": true
+      },
+      "decoded_log_bytes": 71974,
+      "decoded_log_sha256": "b377fae5b208a54ebed9b7a8f904fb88616cc0fa14acc924cd86015ab34c652d",
+      "retained_gzip": {
+        "path": "qualification/robrix-runfiles-20261104/hosted-767/mac-original-job.log.gz",
+        "bytes": 72002,
+        "sha256": "25e41a136ed82ed21c2ae241d515091ef497cda10a202706b784a56bacf61810"
+      }
+    },
+    {
+      "key": "linux",
+      "job_id": 126326282400,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41754188875/job/126326282400",
+      "reported_qualification_status": "passed",
+      "original_receipt": {
+        "commit": "767f069c96a6cd2735b3a4166799a1de79017d25",
+        "status": "passed",
+        "config": "ci-linux",
+        "steps": [
+          {
+            "name": "committed-inputs-clean-before",
+            "command": [
+              "git",
+              "diff",
+              "--exit-code",
+              "HEAD",
+              "--"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 0.0881144200000108
+          },
+          {
+            "name": "committed-lock-check",
+            "command": [
+              "/usr/bin/bash",
+              "./scripts/check-module-bazel-lock.sh"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 19.403840598000002
+          },
+          {
+            "name": "original-robrix-corpus-tests",
+            "command": [
+              "/usr/bin/bash",
+              "./.github/scripts/run-bazel-ci.sh",
+              "--print-failed-test-logs",
+              "--print-failed-action-summary",
+              "--remote-download-toplevel",
+              "--",
+              "test",
+              "--keep_going",
+              "--nocache_test_results",
+              "--test_output=all",
+              "--",
+              "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 87.58756325
+          },
+          {
+            "name": "original-testlog-location",
+            "command": [
+              "python3",
+              "./.github/scripts/run_bazel_with_buildbuddy.py",
+              "--output_user_root=/home/runner/.cache/codex-ci/b",
+              "--noexperimental_remote_repo_contents_cache",
+              "info",
+              "--config=ci-linux",
+              "bazel-testlogs"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 1.503712964000016
+          },
+          {
+            "name": "original-clippy-selector",
+            "command": [
+              "/usr/bin/bash",
+              "./scripts/list-bazel-clippy-targets.sh"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 3.3660383809999814
+          },
+          {
+            "name": "original-clippy",
+            "command": [
+              "/usr/bin/bash",
+              "./.github/scripts/run-bazel-ci.sh",
+              "--print-failed-test-logs",
+              "--print-failed-action-summary",
+              "--remote-download-toplevel",
+              "--",
+              "build",
+              "--config=clippy",
+              "--",
+              "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 32.160808718
+          },
+          {
+            "name": "committed-inputs-clean-after",
+            "command": [
+              "git",
+              "diff",
+              "--exit-code",
+              "HEAD",
+              "--"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 0.09020782900000768
+          }
+        ],
+        "source_inputs_unchanged": true
+      },
+      "decoded_log_bytes": 75489,
+      "decoded_log_sha256": "f451d491d527f85e614b155d48f1b4fff0f77384277f5262f9457f29220ea3e2",
+      "retained_gzip": {
+        "path": "qualification/robrix-runfiles-20261104/hosted-767/linux-original-job.log.gz",
+        "bytes": 75517,
+        "sha256": "5e3a36ee25d083ac006742bcde371f14fcd4022552d8d0c1cbf6e15b35fd5d3f"
+      }
+    },
+    {
+      "key": "windows",
+      "job_id": 126326282282,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41754188875/job/126326282282",
+      "reported_qualification_status": "failed",
+      "original_receipt": {
+        "commit": "767f069c96a6cd2735b3a4166799a1de79017d25",
+        "status": "failed",
+        "config": "ci-windows",
+        "steps": [
+          {
+            "name": "committed-inputs-clean-before",
+            "command": [
+              "git",
+              "diff",
+              "--exit-code",
+              "HEAD",
+              "--"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 0.18799999999998818
+          },
+          {
+            "name": "original-robrix-corpus-tests",
+            "command": [
+              "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+              "./.github/scripts/run-bazel-ci.sh",
+              "--print-failed-test-logs",
+              "--print-failed-action-summary",
+              "--windows-msvc-host-platform",
+              "--remote-download-toplevel",
+              "--",
+              "test",
+              "--platforms=//:windows_x86_64_msvc",
+              "--keep_going",
+              "--nocache_test_results",
+              "--test_output=all",
+              "--",
+              "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 149.531
+          },
+          {
+            "name": "original-testlog-location",
+            "command": [
+              "python3",
+              "./.github/scripts/run_bazel_with_buildbuddy.py",
+              "--output_user_root=D:/b",
+              "--noexperimental_remote_repo_contents_cache",
+              "info",
+              "--config=ci-windows",
+              "--platforms=//:windows_x86_64_msvc",
+              "--host_platform=//:local_windows_msvc",
+              "bazel-testlogs"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 3.6719999999999686
+          }
+        ],
+        "source_inputs_unchanged": true
+      },
+      "decoded_log_bytes": 139892,
+      "decoded_log_sha256": "e5b9b81cfd77fc5c4dc90841db767971fcb061db0a21c0abba4cf0d4acacea15",
+      "retained_gzip": {
+        "path": "qualification/robrix-runfiles-20261104/hosted-767/windows-original-job.log.gz",
+        "bytes": 139925,
+        "sha256": "c6852b2e9764aac4f551621c1c15614124014c2f876e84f901fa4cdc59c282c2"
+      }
+    },
+    {
+      "key": "lock",
+      "job_id": 126326282360,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41754188875/job/126326282360",
+      "reported_qualification_status": "passed",
+      "original_receipt": {
+        "commit": "767f069c96a6cd2735b3a4166799a1de79017d25",
+        "index_tree": "f9e8e902d456e5bb98fbab612857c11974775011",
+        "committed_lock_required": true,
+        "status": "passed",
+        "steps": [
+          {
+            "name": "committed-lock-check",
+            "command": [
+              "./scripts/check-module-bazel-lock.sh"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 18.029042587999996
+          },
+          {
+            "name": "original-lock-update",
+            "command": [
+              "just",
+              "bazel-lock-update"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 16.185856305
+          },
+          {
+            "name": "original-lock-check",
+            "command": [
+              "./scripts/check-module-bazel-lock.sh"
+            ],
+            "exit": 0,
+            "elapsed_seconds": 3.1547520140000103
+          }
+        ],
+        "checkout_checks": [
+          {
+            "stage": "before",
+            "command": [
+              "git",
+              "diff",
+              "--exit-code",
+              "HEAD",
+              "--"
+            ],
+            "exit": 0
+          },
+          {
+            "stage": "after",
+            "command": [
+              "git",
+              "diff",
+              "--exit-code",
+              "HEAD",
+              "--"
+            ],
+            "exit": 0
+          }
+        ],
+        "source_inputs_unchanged": true
+      },
+      "decoded_log_bytes": 71761,
+      "decoded_log_sha256": "d82b9aef5add0f3c3dbdc395cac09cd563290e1dc89c7307bcd5ab44b94cb850",
+      "retained_gzip": {
+        "path": "qualification/robrix-runfiles-20261104/hosted-767/lock-original-job.log.gz",
+        "bytes": 71789,
+        "sha256": "a5df940dd70671546859f1b1730ac2ea98c0caa5da8e64e93bfcc0b610e78c75"
+      }
+    },
+    {
+      "key": "format",
+      "job_id": 126326282098,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41754188875/job/126326282098",
+      "reported_qualification_status": "success",
+      "original_receipt": null,
+      "decoded_log_bytes": 79142,
+      "decoded_log_sha256": "ee9e36a56e82c1537a2e3e13f9e732e435a3f3f4b924a9baeacf7db85096531e",
+      "retained_gzip": {
+        "path": "qualification/robrix-runfiles-20261104/hosted-767/format-original-job.log.gz",
+        "bytes": 79170,
+        "sha256": "19f2c071cf40a05f0172492e867e6c8695cfc1d61c7c4edc22e23e5cfa72be53"
+      }
+    }
+  ],
+  "scope": "Mac/Linux original complete two-case target, scoped Clippy, formatter and committed lock pass on this source. Windows remains failed: Bazel command exited zero but the retained native log has one named case and no complete result summary; Clippy did not run. Independent artifact inspection is pending. No denominator or parser acceptance is relaxed.",
+  "independent_harness_review": {
+    "path": "qualification/robrix-runfiles-20261104/hosted-767/independent-harness-review.json",
+    "reviewed_source": "a488f1d0f5a02a8604703f50b1a6e18f179b14d1",
+    "scope": "Entry lock equals HEAD and initial/final tracked checkout checks; original three gate results retained. This is static review, not a native run."
+  },
+  "posture": "Draft / HOLD_NO_GO / DENY_ALL",
+  "local_execution": false
+}

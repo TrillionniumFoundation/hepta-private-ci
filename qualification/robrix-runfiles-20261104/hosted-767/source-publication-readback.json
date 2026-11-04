@@ -1,0 +1,141 @@
+{
+  "initial": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "a488f1d0f5a02a8604703f50b1a6e18f179b14d1",
+    "tree": "7fa72c0f6b50ba98efd7a9f1481cc459cfb91472",
+    "parent": "9b3521c42d4a81dd814a364d02e77d89be2e0a7d",
+    "author": "273673612+Tomasrgbsf@users.noreply.github.com",
+    "committer": "273673612+Tomasrgbsf@users.noreply.github.com",
+    "all_actual_bytes_read_back": true,
+    "total_files": 10,
+    "total_bytes": 464647,
+    "files": [
+      {
+        "path": "codex-rs/hepta-supervisor/BUILD.bazel",
+        "blob": "b9ad95d989d193699b8cc43ee1ec9bb182905ca0",
+        "sha256": "4b3f4fc83bd81e7aba44f942941dc485a76bd1d2900d55d6e539b5f4f5f92fe2",
+        "bytes": 609
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/Cargo.toml",
+        "blob": "3a5c9f790aca3e0ee660d69d6d8f592b28e76abc",
+        "sha256": "16c8f5bb4a0f8681198c35a14970f918a716f48d89d305d0dade7d0496df0a5c",
+        "bytes": 2755
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+        "blob": "260b692aecb85bed9117be38db8027e8e5f553b5",
+        "sha256": "661af82634cf02037bb6ea932f73a8b3252f6cb11ad6e3037f187d589ec85cc5",
+        "bytes": 13194
+      },
+      {
+        "path": "codex-rs/Cargo.lock",
+        "blob": "186a92cfef199e15ea9cf4897c5776f22d6b2227",
+        "sha256": "11d045e6e94e53dbcbe289bd1004ae559a4be48522eca2baa7f637cd3fb7e0a0",
+        "bytes": 416719
+      },
+      {
+        "path": "qualification/robrix-runfiles-20261104/run.py",
+        "blob": "7973fd6166cc5f9487797eee8b9ce863c7b3ede6",
+        "sha256": "9d2d538747e0248531020bcdfecbbb1fe7b681c8e9f29e93abff9403ebfb6807",
+        "bytes": 7985
+      },
+      {
+        "path": "qualification/robrix-runfiles-20261104/run_lock.py",
+        "blob": "ea98d20dc1ed4562944625d5f91238504b06ba7d",
+        "sha256": "6f1fb7887155be84fa1d5e02ed55fe94e77711b6648704adfa31464a2fe146bb",
+        "bytes": 6925
+      },
+      {
+        "path": ".github/workflows/hepta-robrix-runfiles-qualification.yml",
+        "blob": "228ff19b8a6cef35753ae3a5e3abda7af7c417bd",
+        "sha256": "85c2dd2da2f17aebe87eb5e2ee2a0375df063a554d6a8e88ada0312329dfe823",
+        "bytes": 4565
+      },
+      {
+        "path": "qualification/robrix-runfiles-20261104/original-negative-target.log.gz",
+        "blob": "4106889cddcf832fb6f6a5b95c88b7faabbb24e7",
+        "sha256": "c98832d7eec05f4d325b9f3ee7adaf82107c4b2d21512c698fe0f55614b71774",
+        "bytes": 2313
+      },
+      {
+        "path": "qualification/robrix-runfiles-20261104/evidence.json",
+        "blob": "28be7d982eb664926af96be30ebcdcd404f80b61",
+        "sha256": "01e29d3a51a4f9f5a5599a34d918c77776fa519d4fb82e42f53c20b9dce6a714",
+        "bytes": 6672
+      },
+      {
+        "path": "qualification/robrix-runfiles-20261104/README.md",
+        "blob": "1212ec4a68da363bc32f37a05bcf6a928f38b93d",
+        "sha256": "f141490fa89c1169f9dc8f0f783b4730c479342ec0adcec5f9aba43a25c67f6b",
+        "bytes": 2910
+      }
+    ]
+  },
+  "physical_manifest_successor": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "767f069c96a6cd2735b3a4166799a1de79017d25",
+    "tree": "f9e8e902d456e5bb98fbab612857c11974775011",
+    "parent": "a488f1d0f5a02a8604703f50b1a6e18f179b14d1",
+    "author_and_committer": "273673612+Tomasrgbsf@users.noreply.github.com",
+    "all_actual_bytes_verified": true,
+    "files": [
+      {
+        "path": "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+        "bytes": 13371,
+        "sha256": "35939d5ef63a0e36e7d12e6c9d310314274e860b86aa4459cdf62ff049f81b4f",
+        "blob": "8c03be7f5802b41bbb0479abe5623e12d4a8587c"
+      },
+      {
+        "path": "qualification/robrix-runfiles-20261104/native-a488/mac-original-job.log.gz",
+        "bytes": 101466,
+        "sha256": "0c6f44eb5088792385487c603d326cecc892935646f34db8e35d057c20541ba1",
+        "blob": "9d69a8f4452a7f662c8428d853f19511aec11ead"
+      },
+      {
+        "path": "qualification/robrix-runfiles-20261104/native-a488/linux-original-job.log.gz",
+        "bytes": 75521,
+        "sha256": "b7e7bd3f9489b47a4b7c8912cea44e623740b461a0395c643f88c4f1b282c166",
+        "blob": "9f57ed8330fe06bdae772f38b65e6572ad8fb5c7"
+      },
+      {
+        "path": "qualification/robrix-runfiles-20261104/native-a488/windows-original-job.log.gz",
+        "bytes": 140031,
+        "sha256": "b73961e67d617dd0fa095d7c379e32822a9ffee5acb4d704196a924196ee918b",
+        "blob": "0a5fbd17a908cd65c55062ceec4111fce949046b"
+      },
+      {
+        "path": "qualification/robrix-runfiles-20261104/native-a488/lock-original-job.log.gz",
+        "bytes": 71795,
+        "sha256": "5d3a812214ec41935f32fba14be8aa463cc0e1b96cf7fcc88feae75c73bd758c",
+        "blob": "5138147eaf928ca76df19b79c8de1ca9604b485b"
+      },
+      {
+        "path": "qualification/robrix-runfiles-20261104/native-a488/format-original-job.log.gz",
+        "bytes": 79115,
+        "sha256": "ba106af79044eefac9cdb46e8997a56c786e810fa66b70763bd90a7b7b828ee1",
+        "blob": "7ad19b94fcec4968496c3ecdd286ea514cb10cac"
+      },
+      {
+        "path": "qualification/robrix-runfiles-20261104/native-a488/artifact-metadata.json",
+        "bytes": 4003,
+        "sha256": "3a818bbafe12075aa90c1484ee393347feef700c8dacf480b0b84f68498cafd1",
+        "blob": "96846fe13ef6c723eff291fe20e4b00c3d7be63f"
+      },
+      {
+        "path": "qualification/robrix-runfiles-20261104/native-a488/evidence.json",
+        "bytes": 14400,
+        "sha256": "57675ac4a40bf0c854b5e11061c29fceb3f5402ab869a367a9afef1fd3849f08",
+        "blob": "7617ab95ad64c4f402174b726eb2bc1e5db27f79"
+      },
+      {
+        "path": "qualification/robrix-runfiles-20261104/README.md",
+        "bytes": 3821,
+        "sha256": "fa836baf65c0d4fdd622c1b41519092b53fd077bcae920915e7b1b613e6f368e",
+        "blob": "a9ce561493df34f7fc30b04d8e75c64ea5ef509a"
+      }
+    ],
+    "total_files": 9,
+    "total_bytes": 503523
+  }
+}

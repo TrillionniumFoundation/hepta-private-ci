@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.independent.static-review.v3",
+  "reviewer": "hepta_blockers",
+  "scope": "Robrix original target and committed-lock qualification; read-only static review, no local execution",
+  "inputs": [
+    {
+      "name": "robrix_run",
+      "git_blob_sha": "7973fd6166cc5f9487797eee8b9ce863c7b3ede6",
+      "sha256": "9d2d538747e0248531020bcdfecbbb1fe7b681c8e9f29e93abff9403ebfb6807",
+      "bytes": 7985
+    },
+    {
+      "name": "robrix_lock",
+      "git_blob_sha": "ea98d20dc1ed4562944625d5f91238504b06ba7d",
+      "sha256": "6f1fb7887155be84fa1d5e02ed55fe94e77711b6648704adfa31464a2fe146bb",
+      "bytes": 6925
+    },
+    {
+      "name": "robrix_workflow",
+      "git_blob_sha": "228ff19b8a6cef35753ae3a5e3abda7af7c417bd",
+      "sha256": "85c2dd2da2f17aebe87eb5e2ee2a0375df063a554d6a8e88ada0312329dfe823",
+      "bytes": 4565
+    }
+  ],
+  "context": {
+    "repo": "TrillionniumFoundation/hepta-private-ci",
+    "base": "9b3521c42d4a81dd814a364d02e77d89be2e0a7d",
+    "original_clippy_selector_blob": "d12a256d00673350b1a10fd8070f7001840e65c4",
+    "qualification_commit": "a488f1d0f5a02a8604703f50b1a6e18f179b14d1",
+    "qualification_tree": "7fa72c0f6b50ba98efd7a9f1481cc459cfb91472",
+    "immutable_paths_read": [
+      {
+        "path": "qualification/robrix-runfiles-20261104/run.py",
+        "git_blob_sha": "7973fd6166cc5f9487797eee8b9ce863c7b3ede6",
+        "sha256": "9d2d538747e0248531020bcdfecbbb1fe7b681c8e9f29e93abff9403ebfb6807",
+        "bytes": 7985
+      },
+      {
+        "path": "qualification/robrix-runfiles-20261104/run_lock.py",
+        "git_blob_sha": "ea98d20dc1ed4562944625d5f91238504b06ba7d",
+        "sha256": "6f1fb7887155be84fa1d5e02ed55fe94e77711b6648704adfa31464a2fe146bb",
+        "bytes": 6925
+      },
+      {
+        "path": ".github/workflows/hepta-robrix-runfiles-qualification.yml",
+        "git_blob_sha": "228ff19b8a6cef35753ae3a5e3abda7af7c417bd",
+        "sha256": "85c2dd2da2f17aebe87eb5e2ee2a0375df063a554d6a8e88ada0312329dfe823",
+        "bytes": 4565
+      }
+    ]
+  },
+  "findings": [
+    {
+      "severity": "qualification-gap",
+      "file": "run_lock.py",
+      "finding": "--require-committed compares generated MODULE.bazel.lock with entry working-tree bytes but never establishes that entry bytes or other tracked source equal HEAD. index_tree is recorded without a HEAD equality gate.",
+      "recommendation": "Run and require git diff --exit-code HEAD -- before original check/update/check, and again before passed status; keep all command exits and generated lock bytes on failure, or compare original bytes with exact HEAD Git blob.",
+      "status": "resolved-in-revised-source",
+      "resolution": "Revised ea98d20 requires entry bytes equal git show HEAD:MODULE.bazel.lock, then git diff --exit-code HEAD -- before all original commands and after all gates. Failures raise before status=passed; checkout checks and both streams are recorded. Original check/update/check sequence and any-nonzero rejection are retained."
+    }
+  ],
+  "confirmed": [
+    "Native log requires exactly one 2 passed / 0 failed / 0 ignored / 0 measured / 0 filtered summary and exactly two unique original case names.",
+    "Selected platform must match real host; test execution uses --nocache_test_results and fails on nonzero test or info exit.",
+    "XML error, failure and skipped attributes/elements reject; missing log/XML fails.",
+    "Original selector is executed and expected //codex-rs/... scope checked; Clippy directly targets the original plain rust_test, not a nonexistent -bin.",
+    "Lock mode retains first-check failure, continues original regeneration/post-check and rejects any nonzero command; generated-not-committed mode does not claim passed."
+  ],
+  "limits": [
+    "No native target, Clippy, lock update or controls executed by this review.",
+    "No claim that all transitive inputs are covered by selected source snapshot.",
+    "This review alone does not close a production, scientific, or hosted qualification gate."
+  ],
+  "previous_review": {
+    "git_blob_sha": "1d99cefa6fcbde998718517e2c0cd1666bbb1583",
+    "sha256": "c9a5e8975f341f15b13d8df82a4f12bf3d7835475d6af006ad24fd701da7bcd7"
+  },
+  "conclusion": "No remaining blocking defect found within the reviewed qualification logic; actual native/Clippy/lock execution remains required."
+}
