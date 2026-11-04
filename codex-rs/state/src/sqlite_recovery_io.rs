@@ -47,16 +47,25 @@ pub(super) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), SqliteR
             .read(true)
             .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT);
     }
-    let mut file = options.open(path).map_err(indeterminate)?;
+    let mut file = options
+        .open(path)
+        .map_err(|error| io_failure("candidate_open", error))?;
     #[cfg(windows)]
-    super::windows::require_private_created_file(&file)?;
-    file.write_all(bytes).map_err(indeterminate)?;
-    file.sync_all().map_err(indeterminate)
+    super::windows::require_private_created_file(&file).inspect_err(|_| {
+        tracing::warn!(
+            stage = "candidate_private_identity",
+            "SQLite recovery descriptor identity check failed"
+        );
+    })?;
+    file.write_all(bytes)
+        .map_err(|error| io_failure("candidate_write", error))?;
+    file.sync_all()
+        .map_err(|error| io_failure("candidate_flush", error))
 }
 
 pub(super) fn sync_directory(path: &Path) -> Result<(), SqliteRecoveryError> {
     #[cfg(unix)]
-    let directory = File::open(path).map_err(indeterminate)?;
+    let directory = File::open(path).map_err(|error| io_failure("directory_open", error))?;
     #[cfg(windows)]
     let directory = {
         use std::os::windows::fs::OpenOptionsExt;
@@ -67,9 +76,28 @@ pub(super) fn sync_directory(path: &Path) -> Result<(), SqliteRecoveryError> {
             .write(true)
             .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
             .open(path)
-            .map_err(indeterminate)?;
-        super::windows::require_private_directory(&directory)?;
+            .map_err(|error| io_failure("directory_open", error))?;
+        super::windows::require_private_directory(&directory).inspect_err(|_| {
+            tracing::warn!(
+                stage = "directory_private_identity",
+                "SQLite recovery descriptor identity check failed"
+            );
+        })?;
         directory
     };
-    directory.sync_all().map_err(indeterminate)
+    directory
+        .sync_all()
+        .map_err(|error| io_failure("directory_flush", error))
+}
+
+fn io_failure(stage: &'static str, error: std::io::Error) -> SqliteRecoveryError {
+    // Keep the fail-closed result. Diagnostics contain no path, byte content,
+    // or formatted operating-system message.
+    tracing::warn!(
+        stage,
+        raw_os_error = ?error.raw_os_error(),
+        kind = ?error.kind(),
+        "SQLite recovery descriptor I/O failed"
+    );
+    indeterminate(error)
 }
