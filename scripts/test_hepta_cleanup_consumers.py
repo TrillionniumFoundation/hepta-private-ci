@@ -54,6 +54,24 @@ class CleanupConsumerTests(unittest.TestCase):
             with patch.object(VERIFIER, "ROOT", root):
                 VERIFIER.verify_exact_workflow_references()
 
+    def test_explicit_local_prefix_remains_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "docs").mkdir()
+            (root / "docs/reference.md").write_text(
+                '"./.github/workflows/missing.yml"\n',
+                encoding="utf-8",
+            )
+            for relative in VERIFIER.WORKFLOW_REFERENCE_SCRIPTS:
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("", encoding="utf-8")
+            with patch.object(VERIFIER, "ROOT", root):
+                with self.assertRaisesRegex(
+                    SystemExit, "stale exact workflow references"
+                ):
+                    VERIFIER.verify_exact_workflow_references()
+
     def test_exact_workflow_reference_accepts_existing_file(self):
         with tempfile.TemporaryDirectory(
             prefix="hepta-workflow-reference-"
