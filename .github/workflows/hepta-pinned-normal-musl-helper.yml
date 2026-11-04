@@ -1,0 +1,1716 @@
+name: Hepta pinned ordinary controls with same-ABI Exec helper
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-pinned-musl-helper-normal-20261103
+  cancel-in-progress: false
+jobs:
+  feature-controls:
+    name: Original feature controls (${{ matrix.source }}, ${{ matrix.platform }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        source:
+        - head
+        - prospective-merge
+        platform:
+        - gnu
+        - musl
+    env:
+      EXPECTED_HEAD: 103e4bcb3a6fbce57943a0c7c339d1d48808ce69
+      EXPECTED_BASE: 3a81000aae08c658276958d678874aca4db5eedd
+      EXPECTED_MERGE: 68c36639d609033334785b347273899f5abab500
+      EXPECTED_TREE: 73d6f50dd52b5e30b536758335dbc82385f63ab3
+      SOURCE_KIND: ${{ matrix.source }}
+      BAZEL_PLATFORM: ${{ matrix.platform == 'gnu' && '//:local_linux' || '@rules_rs//rs/platforms:x86_64-unknown-linux-musl'
+        }}
+      NORMAL_GROUP: feature-parity
+    steps:
+    - name: Fetch the exact harness and its bounded ancestry
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        ref: ${{ github.sha }}
+        fetch-depth: 32
+        persist-credentials: false
+    - name: Check out the exact tested source with bounded history
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        ref: ${{ matrix.source == 'head' && env.EXPECTED_HEAD || env.EXPECTED_MERGE }}
+        fetch-depth: 32
+        persist-credentials: false
+    - name: Bind the harness and the exact tested source before execution
+      id: source
+      shell: bash
+      run: |
+        set -euo pipefail
+        mkdir -p "$RUNNER_TEMP/normal-bazel"
+        python3 - <<'PYSOURCE'
+        import hashlib, json, os, re, subprocess
+        from pathlib import Path
+        def git(*args):
+            return subprocess.check_output(['git', '--no-replace-objects', *args]).decode().strip()
+        for key in ['EXPECTED_HEAD', 'EXPECTED_BASE', 'EXPECTED_MERGE', 'EXPECTED_TREE']:
+            assert re.fullmatch(r'[0-9a-f]{40}', os.environ[key]), 'bind every immutable source identity before publication'
+        tested = git('rev-parse', 'HEAD')
+        expected = os.environ['EXPECTED_HEAD'] if os.environ['SOURCE_KIND'] == 'head' else os.environ['EXPECTED_MERGE']
+        assert tested == expected
+        assert git('rev-parse', 'HEAD^{tree}') == os.environ['EXPECTED_TREE']
+        if os.environ['SOURCE_KIND'] == 'prospective-merge':
+            assert git('show', '-s', '--format=%P', 'HEAD').split() == [os.environ['EXPECTED_BASE'], os.environ['EXPECTED_HEAD']]
+            assert git('merge-tree', '--write-tree', os.environ['EXPECTED_BASE'], os.environ['EXPECTED_HEAD']) == os.environ['EXPECTED_TREE']
+        harness = os.environ['GITHUB_SHA']
+        required_objects = {'harness': harness, 'candidate': os.environ['EXPECTED_HEAD'],
+            'base': os.environ['EXPECTED_BASE'], 'tested': tested,
+            'dependency_declaration': 'dc69725d957c79d8737eb5fbedfe6f213252317a'}
+        for label, revision in required_objects.items():
+            assert git('cat-file', '-t', revision) == 'commit', 'bounded checkout omitted required object: ' + label
+        merge_base = git('merge-base', os.environ['EXPECTED_BASE'], os.environ['EXPECTED_HEAD'])
+        assert merge_base == os.environ['EXPECTED_BASE'], 'expected base must remain the common ancestor in each bounded checkout'
+        workflow = '.github/workflows/hepta-pinned-normal-musl-helper.yml'
+        assert os.environ['GITHUB_EVENT_NAME'] == 'push'
+        assert os.environ['GITHUB_REF'] == 'refs/heads/test/hepta-musl-helper-normal-20261103'
+        assert os.environ['GITHUB_REPOSITORY'] == 'TrillionniumFoundation/hepta-private-ci'
+        assert git('show', '-s', '--format=%P', harness) == os.environ['EXPECTED_HEAD']
+        assert git('diff-tree', '--no-commit-id', '--name-status', '-r', harness) == 'A\t' + workflow
+        source = subprocess.check_output(['git', 'show', harness + ':' + workflow])
+        assert git('status', '--porcelain', '--untracked-files=normal') == ''
+        subprocess.run(['git', 'diff', '--exit-code', 'dc69725d957c79d8737eb5fbedfe6f213252317a', tested,
+            '--', 'MODULE.bazel', 'MODULE.bazel.lock', '.bazelversion'], check=True)
+        record = {'schema': 'hepta-scoped-musl-helper-normal-bazel-v1', 'tested_commit': tested,
+            'tested_tree': os.environ['EXPECTED_TREE'], 'source_kind': os.environ['SOURCE_KIND'],
+            'candidate': os.environ['EXPECTED_HEAD'], 'base': os.environ['EXPECTED_BASE'],
+            'prospective_merge': os.environ['EXPECTED_MERGE'], 'harness_commit': harness,
+            'workflow_sha256': hashlib.sha256(source).hexdigest(), 'bazel_platform': os.environ['BAZEL_PLATFORM'],
+            'checkout_fetch_depth': 32, 'required_git_objects': required_objects,
+            'observed_merge_base': merge_base, 'is_shallow_repository': git('rev-parse', '--is-shallow-repository'),
+            'normal_group': os.environ['NORMAL_GROUP'],
+            'scope': {'feature-parity': 'Seven configured Rustc roots plus six original normal Agentd native entries',
+                'remaining29': 'Original Infer 25, Exec discovery 1, Exec filesystem 1, Supervisord full 2; no Core or prior 28 entries'}[os.environ['NORMAL_GROUP']]}
+        (Path(os.environ['RUNNER_TEMP']) / 'normal-bazel/source-before.json').write_text(json.dumps(record, indent=2) + '\n')
+        print(json.dumps(record))
+        PYSOURCE
+    - name: Prepare the existing Bazel toolchain and repository cache
+      id: prepare
+      uses: ./.github/actions/prepare-bazel-ci
+      with:
+        target: ${{ matrix.platform == 'gnu' && 'x86_64-unknown-linux-gnu' || 'x86_64-unknown-linux-musl' }}
+        cache-scope: bazel-test
+    - name: Import the already verified fixed dependency artifact
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+      with:
+        artifact-ids: '13245890316'
+        run-id: '41664243615'
+        repository: TrillionniumFoundation/hepta-private-ci
+        github-token: ${{ github.token }}
+        merge-multiple: true
+        digest-mismatch: error
+        path: ${{ runner.temp }}/normal-bazel-distdir
+    - name: Recheck the fixed metadata and complete dependency bytes
+      id: dependency
+      shell: bash
+      run: |
+        set -euo pipefail
+        python3 - <<'PYDEPENDENCY'
+        import base64, hashlib, json, os
+        from pathlib import Path
+        root = Path(os.environ['RUNNER_TEMP']) / 'normal-bazel-distdir'
+        assert sorted(path.name for path in root.iterdir()) == ['source.json', 'transfer.json', 'v5.1.0.tar.gz']
+        metadata = (root / 'source.json').read_bytes()
+        assert hashlib.sha256(metadata).hexdigest() == '7d88fc6db323947a11d1638fe95185e9c733c337a1d1e7b50cdcf487e29ce56e'
+        source = json.loads(metadata)
+        assert 'https://github.com/aws/aws-lc/archive/refs/tags/v5.1.0.tar.gz' in [source.get('url')] + source.get('urls', [])
+        expected = 'a6bf6adfc5f9bba559d28554b7d3581b15f2813f03bc9f2ae19f0d915e97dadf'
+        assert source['integrity'].startswith('sha256-')
+        assert base64.b64decode(source['integrity'][7:], validate=True).hex() == expected
+        archive = root / 'v5.1.0.tar.gz'
+        assert archive.stat().st_size == 145542555
+        with archive.open('rb') as stream:
+            actual = hashlib.file_digest(stream, 'sha256').hexdigest()
+        assert actual == expected
+        transfer = json.loads((root / 'transfer.json').read_text())
+        assert transfer['workflow_commit'] == '4a78bf9314197ef5a8ea97f67134fdac6795589f'
+        assert transfer['workflow_run_id'] == '41664243615'
+        assert transfer['declaration_source_commit'] == 'dc69725d957c79d8737eb5fbedfe6f213252317a'
+        assert transfer['verified'] is True and transfer['source_sha256'] == expected and transfer['source_bytes'] == 145542555
+        report = {'artifact_id': 13245890316, 'sha256': actual, 'bytes': archive.stat().st_size,
+            'fixed_metadata_sha256': hashlib.sha256(metadata).hexdigest(), 'verified': True}
+        (Path(os.environ['RUNNER_TEMP']) / 'normal-bazel/dependency-import.json').write_text(json.dumps(report, indent=2) + '\n')
+        print(json.dumps(report))
+        PYDEPENDENCY
+        test "$(cat .bazelversion)" = '9.3.0'
+        bazel --version | tee "$RUNNER_TEMP/normal-bazel/bazel-version.txt"
+        test "$(cat "$RUNNER_TEMP/normal-bazel/bazel-version.txt")" = 'bazel 9.3.0'
+    - name: Write the scoped native runner outside the tested source
+      id: runner
+      shell: bash
+      run: |
+        set -euo pipefail
+        cat > "$RUNNER_TEMP/normal-bazel/run-target.py" <<'PYCONTROL'
+        import hashlib, json, os, re, shutil, subprocess, sys, urllib.parse
+        from pathlib import Path
+        def check_bep_completion(events, target, result_id, result, verdict):
+            summary_events = [row for row in events if row.get('id', {}).get('testSummary', {}).get('label') == target]
+            verdict['bazel_test_summaries'] = summary_events
+            assert len(summary_events) == 1, 'expected one overall test summary for the exact target'
+            summary_id = summary_events[0]['id']['testSummary']
+            summary = summary_events[0]['testSummary']
+            assert summary_id.get('configuration') == result_id.get('configuration'), 'summary and attempt must use the same configured target'
+            assert summary['overallStatus'] == 'PASSED'
+            assert all(summary.get(key) == 1 for key in ('totalRunCount', 'runCount', 'attemptCount')), 'expected exactly one test execution and one attempt in the overall summary'
+            cache = {'cached_locally': result.get('cachedLocally', False),
+                'cached_remotely': result.get('executionInfo', {}).get('cachedRemotely', False),
+                'total_cached_test_actions': summary.get('totalNumCached', 0)}
+            verdict['bazel_test_cache'] = cache
+            assert cache['cached_locally'] is False and cache['cached_remotely'] is False, 'an actual uncached test execution is required'
+            assert cache['total_cached_test_actions'] == 0, 'the overall summary must contain zero cached test actions'
+
+
+        cases = {'default_profile': ('//codex-rs/hepta-agentd:hepta-agentd-unit-tests',
+                             '//codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin',
+                             ['runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable']),
+         'default_writer': ('//codex-rs/hepta-agentd:hepta-agentd-cognitive_store_product_writer-test',
+                            '//codex-rs/hepta-agentd:hepta-agentd-cognitive_store_product_writer-test',
+                            ['agentd_product_host_recovers_exact_cut_into_fenced_writer_generation']),
+         'qualification_unit': ('//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test',
+                                '//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin',
+                                ['runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once',
+                                 'runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence',
+                                 'runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence']),
+         'qualification_product': ('//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test',
+                                   '//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin',
+                                   ['real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends']),
+         'infer': ('//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests',
+                   '//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests-bin',
+                   ['native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone',
+                    'native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant',
+                    'smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown',
+                    'smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes',
+                    'smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error',
+                    'smollm_neural_read::driver::session::owner::tests::two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth',
+                    'smollm_neural_read::driver::session::owner::tests::denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child',
+                    'smollm_neural_read::driver::session::owner::tests::cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot',
+                    'smollm_neural_read::driver::session::owner::tests::foreground_and_drop_never_wait_for_a_held_cleanup_payload',
+                    'smollm_neural_read::driver::session::owner::tests::cancellation_or_original_startup_expiry_prevents_child_birth',
+                    'smollm_neural_read::driver::session::owner::tests::readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed',
+                    'smollm_neural_read::driver::session::owner::tests::exact_supervisor_exit_without_original_worker_receipt_stays_closed',
+                    'smollm_neural_read::driver::session::owner::tests::contended_root_reservation_starts_two_original_children_without_retrying_birth',
+                    'smollm_neural_read::driver::session::owner::tests::root_contention_preserves_original_deadline_and_cancellation_before_reservation',
+                    'smollm_neural_read::driver::session::owner::tests::poisoned_roots_never_wait_or_reserve_an_owner',
+                    'smollm_neural_read::driver::session::owner::tests::root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window',
+                    'smollm_neural_read::driver::session::tests::terminal_unload_requires_successful_supervisor_and_original_child_receipt',
+                    'smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper',
+                    'smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window',
+                    'smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor',
+                    'smollm_neural_read::driver::session::tests::ready_published_after_original_startup_window_cannot_be_adopted',
+                    'smollm_neural_read::driver::session::tests::cancelled_original_startup_cannot_adopt_an_already_published_ready',
+                    'test_process::tests::requires_the_exact_original_case_and_one_pass',
+                    'test_process::tests::rejects_successful_zero_case_and_ignored_case_runs',
+                    'test_process::tests::rejects_multiple_cases_and_failed_or_missing_completion']),
+         'exec_discovery': ('//codex-rs/exec-server:exec-server-capability_discovery-test',
+                            '//codex-rs/exec-server:exec-server-capability_discovery-test',
+                            ['sandboxed_discovery_batches_roots_without_combining_different_permissions']),
+         'exec_fs': ('//codex-rs/exec-server:exec-server-file_system_unix-test',
+                     '//codex-rs/exec-server:exec-server-file_system_unix-test',
+                     ['sandboxed_file_system_helper_finds_bwrap_on_preserved_path']),
+         'supervisord': ('//codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test',
+                         '//codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test',
+                         ['supervisord_child_entry',
+                          'five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes'])}
+        case_arguments = {'default_profile': ['runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable',
+                             '--exact',
+                             '--nocapture'],
+         'default_writer': [],
+         'qualification_unit': [],
+         'qualification_product': ['real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends',
+                                   '--exact',
+                                   '--nocapture'],
+         'infer': ['native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone',
+                   'native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant',
+                   'smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown',
+                   'smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes',
+                   'smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error',
+                   'smollm_neural_read::driver::session::owner::tests::two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth',
+                   'smollm_neural_read::driver::session::owner::tests::denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child',
+                   'smollm_neural_read::driver::session::owner::tests::cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot',
+                   'smollm_neural_read::driver::session::owner::tests::foreground_and_drop_never_wait_for_a_held_cleanup_payload',
+                   'smollm_neural_read::driver::session::owner::tests::cancellation_or_original_startup_expiry_prevents_child_birth',
+                   'smollm_neural_read::driver::session::owner::tests::readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed',
+                   'smollm_neural_read::driver::session::owner::tests::exact_supervisor_exit_without_original_worker_receipt_stays_closed',
+                   'smollm_neural_read::driver::session::owner::tests::contended_root_reservation_starts_two_original_children_without_retrying_birth',
+                   'smollm_neural_read::driver::session::owner::tests::root_contention_preserves_original_deadline_and_cancellation_before_reservation',
+                   'smollm_neural_read::driver::session::owner::tests::poisoned_roots_never_wait_or_reserve_an_owner',
+                   'smollm_neural_read::driver::session::owner::tests::root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window',
+                   'smollm_neural_read::driver::session::tests::terminal_unload_requires_successful_supervisor_and_original_child_receipt',
+                   'smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper',
+                   'smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window',
+                   'smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor',
+                   'smollm_neural_read::driver::session::tests::ready_published_after_original_startup_window_cannot_be_adopted',
+                   'smollm_neural_read::driver::session::tests::cancelled_original_startup_cannot_adopt_an_already_published_ready',
+                   'test_process::tests::requires_the_exact_original_case_and_one_pass',
+                   'test_process::tests::rejects_successful_zero_case_and_ignored_case_runs',
+                   'test_process::tests::rejects_multiple_cases_and_failed_or_missing_completion',
+                   '--exact',
+                   '--nocapture'],
+         'exec_discovery': ['sandboxed_discovery_batches_roots_without_combining_different_permissions',
+                            '--exact',
+                            '--nocapture'],
+         'exec_fs': ['sandboxed_file_system_helper_finds_bwrap_on_preserved_path', '--exact', '--nocapture'],
+         'supervisord': []}
+        expected_counts = {'default_profile': 1, 'default_writer': 1, 'qualification_unit': 3, 'qualification_product': 1, 'infer': 25, 'exec_discovery': 1, 'exec_fs': 1, 'supervisord': 2}
+        expected_timeouts = {'default_profile': 300, 'default_writer': 900, 'qualification_unit': 300, 'qualification_product': 900, 'infer': 300, 'exec_discovery': 300, 'exec_fs': 300, 'supervisord': 900}
+        allowed_groups = {'feature-parity': ['default_profile', 'default_writer', 'qualification_unit', 'qualification_product'], 'remaining29': ['infer', 'exec_discovery', 'exec_fs', 'supervisord']}
+        assert {key: len(value[2]) for key, value in cases.items()} == expected_counts
+        assert sum(expected_counts.values()) == 35
+        assert all(len(value[2]) == len(set(value[2])) for value in cases.values())
+        assert all(re.fullmatch(r'[A-Za-z_][A-Za-z0-9_:]*', name) for value in cases.values() for name in value[2])
+        case = sys.argv[1]
+        assert case in allowed_groups[os.environ['NORMAL_GROUP']], 'case outside this isolated normal group'
+        target, binary_target, expected = cases[case]
+        root = Path(os.environ['RUNNER_TEMP']) / 'normal-bazel' / case
+        root.mkdir()
+        platform = '--platforms=' + os.environ['BAZEL_PLATFORM']
+        command = ['bazel', 'test', '--jobs=2', '--cache_test_results=no', '--test_output=all', '--flaky_test_attempts=1',
+            '--distdir=' + str(Path(os.environ['RUNNER_TEMP']) / 'normal-bazel-distdir'), platform,
+            '--build_event_json_file=' + str(root / 'build-events.jsonl')]
+        command += ['--test_arg=' + value for value in case_arguments[case]]
+        command.append(target)
+        (root / 'command.json').write_text(json.dumps({'argv': command, 'cwd': os.getcwd(),
+            'expected_tests': expected, 'original_test_budgets_unchanged': True,
+            'sandbox_flags_present': {key: key in os.environ for key in ('CODEX_SANDBOX', 'CODEX_SANDBOX_NETWORK_DISABLED')}}, indent=2) + '\n')
+        with (root / 'bazel.log').open('wb') as log:
+            child = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            for line in child.stdout:
+                log.write(line)
+                sys.stdout.buffer.write(line)
+                sys.stdout.buffer.flush()
+            code = child.wait()
+        (root / 'native.exit').write_text(str(code) + '\n')
+        verdict = {'result': 'FAIL', 'target': target, 'native_exit': code, 'expected_count': len(expected)}
+        try:
+            events = [json.loads(line) for line in (root / 'build-events.jsonl').read_text().splitlines() if line.strip()]
+            results = [row for row in events if row.get('id', {}).get('testResult', {}).get('label') == target]
+            assert len(results) == 1, 'expected one unsharded test attempt; retain every other outcome as failure'
+            result_id = results[0]['id']['testResult']
+            verdict['bazel_test_result_id'] = result_id
+            assert all(result_id.get(key) == 1 for key in ('run', 'shard', 'attempt')), 'expected run 1, shard 1, attempt 1'
+            result = results[0]['testResult']
+            verdict['bazel_test_status'] = result['status']
+            logs = [value['uri'] for value in result.get('testActionOutput', []) if value.get('name') == 'test.log']
+            assert len(logs) == 1
+            location = urllib.parse.urlparse(logs[0])
+            assert location.scheme == 'file' and location.netloc in ('', 'localhost')
+            path = Path(urllib.parse.unquote(location.path))
+            shutil.copyfile(path, root / 'original-test.log')
+            text = (root / 'original-test.log').read_text().replace('\r', '')
+            names = re.findall(r'^test ([A-Za-z_][A-Za-z0-9_:]*) \.\.\.', text, re.M)
+            summaries = re.findall(r'^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out;', text, re.M)
+            verdict.update({'observed_names': names, 'native_summaries': summaries})
+            query = ['bazel', 'cquery', '--output=files', platform, binary_target]
+            with (root / 'binary-query.stderr').open('wb') as error:
+                found = subprocess.run(query, stdout=subprocess.PIPE, stderr=error, check=False)
+            (root / 'binary-query.stdout').write_bytes(found.stdout)
+            assert found.returncode == 0
+            binaries = []
+            for line in found.stdout.decode().splitlines():
+                binary = Path(line)
+                if not binary.is_file():
+                    continue
+                with binary.open('rb') as stream:
+                    if stream.read(4) != b'\x7fELF':
+                        continue
+                    stream.seek(0)
+                    digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+                binaries.append({'path': str(binary.resolve()), 'bytes': binary.stat().st_size, 'sha256': digest})
+            assert len(binaries) == 1, 'expected one actual library test ELF'
+            (root / 'binary-identities.json').write_text(json.dumps(binaries, indent=2) + '\n')
+            completions = [row for row in events if row.get('id', {}).get('targetCompleted', {}).get('label') == target]
+            assert len(completions) == 1, 'one configured target completion required'
+            completed_id = completions[0]['id']['targetCompleted']
+            completed = completions[0]['completed']
+            assert completed_id.get('configuration') == result_id.get('configuration')
+            verdict['original_bazel_timeout'] = {
+                'seconds': completed.get('testTimeoutSeconds'), 'duration': completed.get('testTimeout'),
+                'expected_seconds': expected_timeouts[case]}
+            assert completed.get('success') is True
+            assert int(completed['testTimeoutSeconds']) == expected_timeouts[case]
+            assert completed['testTimeout'] == str(expected_timeouts[case]) + 's'
+            check_bep_completion(events, target, result_id, result, verdict)
+            running = re.findall(r'^running (\d+) tests?$', text, re.M)
+            assert running == [str(len(expected))], 'original native count required'
+            assert len(names) == len(set(names)), 'duplicate native names'
+            assert 'Skipping test' not in text, 'guard returned before execution'
+            assert sorted(names) == sorted(expected), (names, expected)
+            assert len(summaries) == 1
+            outcome, passed, failed, ignored, measured, filtered = summaries[0]
+            verdict.update({'observed_names': names, 'passed': int(passed), 'failed': int(failed), 'ignored': int(ignored), 'filtered': int(filtered)})
+            assert outcome == 'ok' and int(passed) == len(expected) and int(failed) == int(ignored) == int(measured) == 0
+            if case in ('default_writer', 'supervisord'):
+                assert int(filtered) == 0
+            assert code == 0 and result['status'] == 'PASSED'
+            verdict['result'] = 'PASS'
+        except Exception as error:
+            verdict['reader_error'] = str(error)
+        finally:
+            (root / 'result.json').write_text(json.dumps(verdict, indent=2) + '\n')
+            print(json.dumps(verdict))
+        sys.exit(0 if verdict['result'] == 'PASS' else 1)
+        PYCONTROL
+    - name: Write the seven-root configuration reader outside the tested source
+      id: configuration_reader
+      shell: bash
+      run: |
+        set -euo pipefail
+        cat > "$RUNNER_TEMP/normal-bazel/check-features.py" <<'PYFEATURES'
+        import hashlib
+        import json
+        import os
+        import re
+        import subprocess
+        import sys
+        import time
+        from pathlib import Path
+
+
+        def normalized_label(label):
+            # Only normalize the main repository spellings. Never strip an external name.
+            for prefix in ('@@//', '@//'):
+                if label.startswith(prefix):
+                    return '//' + label[len(prefix):]
+            return label
+
+
+        def feature_values(vector):
+            features = []
+            for index, argument in enumerate(vector):
+                value = argument[len('--cfg='):] if argument.startswith('--cfg=') else (
+                    argument if index and vector[index - 1] == '--cfg' else '')
+                match = re.fullmatch(r'feature="([^"]+)"', value)
+                if match:
+                    features.append(match.group(1))
+            return features
+
+
+        def rustc_command_arguments(action):
+            arguments = action.get('arguments', [])
+            assert arguments and all(isinstance(value, str) for value in arguments), 'missing action arguments'
+            parameters = {}
+            for parameter in action.get('paramFiles', []):
+                path = parameter.get('execPath')
+                values = parameter.get('arguments', [])
+                assert isinstance(path, str) and path and path not in parameters, 'missing or duplicate parameter-file identity'
+                assert isinstance(values, list) and all(isinstance(value, str) for value in values)
+                parameters[path] = values
+            consumed = {}
+
+            def consume(path, role):
+                assert path in parameters, 'referenced parameter file is absent from aquery: ' + path
+                previous = consumed.get(path)
+                assert previous is None or previous['role'] == role, 'parameter file reused across wrapper and Rustc roles'
+                consumed[path] = {'role': role, 'references': 1 if previous is None else previous['references'] + 1}
+                return parameters[path]
+
+            # The pinned wrapper patch expands only argv[1], once. Its values are
+            # literal, including values beginning with @ or --wrapper-args=.
+            expanded = list(arguments)
+            if len(expanded) > 1 and expanded[1].startswith('--wrapper-args='):
+                wrapper_path = expanded[1][len('--wrapper-args='):]
+                wrapper_arguments = consume(wrapper_path, 'wrapper')
+                assert '--' not in wrapper_arguments, 'wrapper response file contains the child boundary'
+                expanded = [expanded[0], *wrapper_arguments, *expanded[2:]]
+            basename = lambda value: value.replace('\\', '/').rsplit('/', 1)[-1]
+            assert basename(expanded[0]) in ('process_wrapper', 'process_wrapper.exe'), 'expected the pinned process wrapper'
+            assert '--' in expanded, 'missing wrapper/child boundary'
+            boundary = expanded.index('--')
+            wrapper = expanded[1:boundary]
+            wrapper_flags = {
+                '--subst', '--stable-status-file', '--volatile-status-file', '--env-file',
+                '--out-dir', '--arg-file', '--touch-file', '--copy-output', '--stdout-file',
+                '--stderr-file', '--captured-exit-code-file', '--output-file',
+                '--rustc-output-format', '--require-explicit-unstable-features',
+            }
+            link_search_files = []
+            index = 0
+            while index < len(wrapper):
+                flag = wrapper[index]
+                assert flag in wrapper_flags and index + 1 < len(wrapper), 'unexpected or incomplete wrapper option'
+                value = wrapper[index + 1]
+                if flag == '--arg-file':
+                    # These seven roots have no build.rs or lint-config input. The
+                    # pinned rule propagates only dependency .linksearchpaths here;
+                    # the pinned producer writes -L entries, not feature cfg flags.
+                    assert value.endswith('.linksearchpaths'), 'uninspected dynamic compiler-flags input'
+                    if value in parameters:
+                        assert all(item.startswith('-L') for item in consume(value, 'link-search')), 'link-search input contains non-link arguments'
+                    link_search_files.append({'path': value, 'included_in_param_files': value in parameters})
+                index += 2
+            child = expanded[boundary + 1:]
+            assert child and basename(child[0]) in ('rustc', 'rustc.exe'), 'expected an actual Rustc child command'
+
+            def expand_rustc(vector, stack=()):
+                result = []
+                for argument in vector:
+                    if argument.startswith('@'):
+                        path = argument[1:]
+                        assert path not in stack, 'cyclic Rustc parameter-file reference'
+                        result.extend(expand_rustc(consume(path, 'rustc'), (*stack, path)))
+                    else:
+                        result.append(argument)
+                return result
+
+            rustc_arguments = expand_rustc(child[1:])
+            assert '--' not in rustc_arguments, 'unexpected Rustc option terminator'
+            assert set(consumed) == set(parameters), 'aquery contains an unreferenced parameter file'
+            return {'rustc_executable': child[0], 'rustc_arguments': rustc_arguments,
+                'parameter_files': [{'exec_path': path, 'argument_count': len(parameters[path]), **consumed[path]}
+                                    for path in sorted(parameters)],
+                'dependency_link_search_files': link_search_files}
+
+
+        def inspect_actions(graph, expected):
+            targets = {str(item['id']): normalized_label(item['label']) for item in graph.get('targets', [])}
+            configurations = {str(item['id']): item for item in graph.get('configuration', [])}
+            observed = []
+            for action in graph.get('actions', []):
+                label = targets.get(str(action.get('targetId')))
+                assert action.get('mnemonic') == 'Rustc' and label in expected, 'unexpected configured root action'
+                binding = rustc_command_arguments(action)
+                arguments = binding['rustc_arguments']
+                features = sorted(set(feature_values(arguments)))
+                sources = sorted(set(value for value in arguments if value.endswith('.rs')))
+                source_suffix = expected[label]['source']
+                source_path = arguments[0].replace('\\', '/') if arguments else ''
+                source_present = source_path == source_suffix or source_path.endswith('/' + source_suffix)
+                configuration = configurations.get(str(action.get('configurationId')), {})
+                observed.append({
+                    'label': label,
+                    'features': features,
+                    'expected_features': expected[label]['features'],
+                    'rustc_sources': sources,
+                    'expected_source': source_suffix,
+                    'expected_source_present': source_present,
+                    'configuration_id': action.get('configurationId'),
+                    'configuration_checksum': configuration.get('checksum'),
+                    'configuration_mnemonic': configuration.get('mnemonic'),
+                    'configuration_is_tool': configuration.get('isTool', False),
+                    'execution_platform': action.get('executionPlatform'),
+                    'rustc_executable': binding['rustc_executable'],
+                    'parameter_files': binding['parameter_files'],
+                    'dependency_link_search_files': binding['dependency_link_search_files'],
+                    'feature_source': 'expanded configured Rustc child argv; dependency link-search files recorded separately',
+                    'rustc_argument_vector_sha256': hashlib.sha256(json.dumps(arguments, separators=(',', ':')).encode()).hexdigest(),
+                })
+            return observed
+
+
+        def validate_actions(observed, expected):
+            assert {item['label'] for item in observed} == set(expected), 'all seven root labels must have an actual Rustc action'
+            assert all(item['features'] == item['expected_features'] for item in observed), 'configured feature closure differs'
+            assert all(item['expected_source_present'] for item in observed), 'configured action did not bind the expected crate source'
+
+
+        def source_identity():
+            def git(*args):
+                return subprocess.check_output(['git', '--no-replace-objects', *args]).decode().strip()
+            return {'commit': git('rev-parse', 'HEAD'), 'tree': git('rev-parse', 'HEAD^{tree}'),
+                    'status': git('status', '--porcelain', '--untracked-files=normal')}
+
+
+        def main():
+            prefix = '//codex-rs/hepta-agentd:'
+            normal = ['default', 'production-cognitive-write']
+            qualification = ['production-cognitive-write', 'qualification-cognitive-write']
+            expected = {
+                prefix + 'hepta-agentd': {'features': normal, 'source': 'codex-rs/hepta-agentd/src/lib.rs'},
+                prefix + 'codex-hepta-agentd': {'features': normal, 'source': 'codex-rs/hepta-agentd/src/main.rs'},
+                prefix + 'hepta-agentd-cognitive_product_e2e-test': {'features': normal, 'source': 'codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs'},
+                prefix + 'hepta-agentd-cognitive-write-qualification-lib': {'features': qualification, 'source': 'codex-rs/hepta-agentd/src/lib.rs'},
+                prefix + 'hepta-agentd-cognitive-write-qualification-test-bin': {'features': qualification, 'source': 'codex-rs/hepta-agentd/src/lib.rs'},
+                prefix + 'hepta-agentd-cognitive-product-qualification-bin': {'features': qualification, 'source': 'codex-rs/hepta-agentd/src/main.rs'},
+                prefix + 'hepta-agentd-cognitive-product-qualification-test-bin': {'features': qualification, 'source': 'codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs'},
+            }
+            root = Path(os.environ['RUNNER_TEMP']) / 'normal-bazel/configured_features'
+            root.mkdir()
+            before = source_identity()
+            assert before['status'] == ''
+            assert before['commit'] == (os.environ['EXPECTED_HEAD'] if os.environ['SOURCE_KIND'] == 'head' else os.environ['EXPECTED_MERGE'])
+            assert before['tree'] == os.environ['EXPECTED_TREE']
+            command = ['bazel', 'aquery', '--jobs=2',
+                '--distdir=' + str(Path(os.environ['RUNNER_TEMP']) / 'normal-bazel-distdir'),
+                '--platforms=' + os.environ['BAZEL_PLATFORM'], '--output=jsonproto',
+                '--include_artifacts=false', '--include_commandline=true', '--include_param_files=true',
+                'mnemonic("Rustc", set(' + ' '.join(expected) + '))']
+            (root / 'command.json').write_text(json.dumps({'argv': command, 'cwd': os.getcwd(),
+                'expected_roots': expected, 'source_before': before, 'tests_executed': 0,
+                'sandbox_flags_present': {key: key in os.environ for key in ('CODEX_SANDBOX', 'CODEX_SANDBOX_NETWORK_DISABLED')}}, indent=2) + '\n')
+            started = time.monotonic()
+            with (root / 'aquery.stdout').open('wb') as output, (root / 'aquery.stderr').open('wb') as error:
+                completed = subprocess.run(command, stdout=output, stderr=error, check=False)
+            (root / 'analysis.exit').write_text(str(completed.returncode) + '\n')
+            raw = (root / 'aquery.stdout').read_bytes()
+            error_bytes = (root / 'aquery.stderr').read_bytes()
+            verdict = {'result': 'FAIL', 'analysis_exit': completed.returncode, 'elapsed_seconds': time.monotonic() - started,
+                'source_before': before, 'source_after': source_identity(), 'expected_roots': expected, 'tests_executed': 0,
+                'stdout_bytes': len(raw), 'stdout_sha256': hashlib.sha256(raw).hexdigest(),
+                'stderr_bytes': len(error_bytes), 'stderr_sha256': hashlib.sha256(error_bytes).hexdigest()}
+            try:
+                assert completed.returncode == 0, 'Bazel configured analysis failed; preserve raw stdout/stderr'
+                verdict['actions'] = inspect_actions(json.loads(raw), expected)
+                validate_actions(verdict['actions'], expected)
+                assert verdict['source_after'] == before
+                verdict['result'] = 'PASS'
+            except Exception as error:
+                verdict['reader_error'] = str(error)
+            finally:
+                (root / 'result.json').write_text(json.dumps(verdict, indent=2) + '\n')
+                print(json.dumps(verdict))
+            return 0 if verdict['result'] == 'PASS' else 1
+
+
+        if __name__ == '__main__':
+            sys.exit(main())
+        PYFEATURES
+    - name: Inspect the seven actual configured Rustc feature closures
+      id: configured
+      if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome
+        == 'success' && steps.runner.outcome == 'success' && steps.configuration_reader.outcome == 'success' }}
+      shell: bash
+      run: python3 "$RUNNER_TEMP/normal-bazel/check-features.py"
+    - name: Run only the original default product fail-closed unit case
+      if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome
+        == 'success' && steps.runner.outcome == 'success' && steps.configuration_reader.outcome == 'success' && steps.configured.outcome
+        == 'success' }}
+      shell: bash
+      run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" default_profile
+    - name: Run the complete original default writer recovery target
+      if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome
+        == 'success' && steps.runner.outcome == 'success' && steps.configuration_reader.outcome == 'success' && steps.configured.outcome
+        == 'success' }}
+      shell: bash
+      run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" default_writer
+    - name: Run the original three qualification unit cases with their existing wrapper prefix
+      if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome
+        == 'success' && steps.runner.outcome == 'success' && steps.configuration_reader.outcome == 'success' && steps.configured.outcome
+        == 'success' }}
+      shell: bash
+      run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" qualification_unit
+    - name: Run only the original single-Agent local cognitive lifecycle case
+      if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome
+        == 'success' && steps.runner.outcome == 'success' && steps.configuration_reader.outcome == 'success' && steps.configured.outcome
+        == 'success' }}
+      shell: bash
+      run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" qualification_product
+    - name: Retain the exact source state after every outcome
+      if: always()
+      shell: bash
+      run: |
+        set -euo pipefail
+        mkdir -p "$RUNNER_TEMP/normal-bazel"
+        git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/normal-bazel/source-after.txt"
+        git status --porcelain --untracked-files=normal > "$RUNNER_TEMP/normal-bazel/source-after-status.txt"
+        expected="$EXPECTED_HEAD"
+        if [ "$SOURCE_KIND" = prospective-merge ]; then expected="$EXPECTED_MERGE"; fi
+        test "$(git rev-parse HEAD)" = "$expected"
+        test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+        git diff --exit-code
+        git diff --cached --exit-code
+        test ! -s "$RUNNER_TEMP/normal-bazel/source-after-status.txt"
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: normal-bazel-musl-helper-${{ env.NORMAL_GROUP }}-${{ matrix.source }}-${{ matrix.platform }}-${{ env.EXPECTED_HEAD
+          }}
+        path: ${{ runner.temp }}/normal-bazel/
+        if-no-files-found: error
+        retention-days: 30
+  remaining-controls:
+    name: Original remaining 29 (${{ matrix.source }}, ${{ matrix.platform }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        source:
+        - head
+        - prospective-merge
+        platform:
+        - gnu
+        - musl
+    env:
+      EXPECTED_HEAD: 103e4bcb3a6fbce57943a0c7c339d1d48808ce69
+      EXPECTED_BASE: 3a81000aae08c658276958d678874aca4db5eedd
+      EXPECTED_MERGE: 68c36639d609033334785b347273899f5abab500
+      EXPECTED_TREE: 73d6f50dd52b5e30b536758335dbc82385f63ab3
+      SOURCE_KIND: ${{ matrix.source }}
+      BAZEL_PLATFORM: ${{ matrix.platform == 'gnu' && '//:local_linux' || '@rules_rs//rs/platforms:x86_64-unknown-linux-musl'
+        }}
+      NORMAL_GROUP: remaining29
+    steps:
+    - name: Fetch the exact harness and its bounded ancestry
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        ref: ${{ github.sha }}
+        fetch-depth: 32
+        persist-credentials: false
+    - name: Check out the exact tested source with bounded history
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        ref: ${{ matrix.source == 'head' && env.EXPECTED_HEAD || env.EXPECTED_MERGE }}
+        fetch-depth: 32
+        persist-credentials: false
+    - name: Bind the harness and the exact tested source before execution
+      id: source
+      shell: bash
+      run: |
+        set -euo pipefail
+        mkdir -p "$RUNNER_TEMP/normal-bazel"
+        python3 - <<'PYSOURCE'
+        import hashlib, json, os, re, subprocess
+        from pathlib import Path
+        def git(*args):
+            return subprocess.check_output(['git', '--no-replace-objects', *args]).decode().strip()
+        for key in ['EXPECTED_HEAD', 'EXPECTED_BASE', 'EXPECTED_MERGE', 'EXPECTED_TREE']:
+            assert re.fullmatch(r'[0-9a-f]{40}', os.environ[key]), 'bind every immutable source identity before publication'
+        tested = git('rev-parse', 'HEAD')
+        expected = os.environ['EXPECTED_HEAD'] if os.environ['SOURCE_KIND'] == 'head' else os.environ['EXPECTED_MERGE']
+        assert tested == expected
+        assert git('rev-parse', 'HEAD^{tree}') == os.environ['EXPECTED_TREE']
+        if os.environ['SOURCE_KIND'] == 'prospective-merge':
+            assert git('show', '-s', '--format=%P', 'HEAD').split() == [os.environ['EXPECTED_BASE'], os.environ['EXPECTED_HEAD']]
+            assert git('merge-tree', '--write-tree', os.environ['EXPECTED_BASE'], os.environ['EXPECTED_HEAD']) == os.environ['EXPECTED_TREE']
+        harness = os.environ['GITHUB_SHA']
+        required_objects = {'harness': harness, 'candidate': os.environ['EXPECTED_HEAD'],
+            'base': os.environ['EXPECTED_BASE'], 'tested': tested,
+            'dependency_declaration': 'dc69725d957c79d8737eb5fbedfe6f213252317a'}
+        for label, revision in required_objects.items():
+            assert git('cat-file', '-t', revision) == 'commit', 'bounded checkout omitted required object: ' + label
+        merge_base = git('merge-base', os.environ['EXPECTED_BASE'], os.environ['EXPECTED_HEAD'])
+        assert merge_base == os.environ['EXPECTED_BASE'], 'expected base must remain the common ancestor in each bounded checkout'
+        workflow = '.github/workflows/hepta-pinned-normal-musl-helper.yml'
+        assert os.environ['GITHUB_EVENT_NAME'] == 'push'
+        assert os.environ['GITHUB_REF'] == 'refs/heads/test/hepta-musl-helper-normal-20261103'
+        assert os.environ['GITHUB_REPOSITORY'] == 'TrillionniumFoundation/hepta-private-ci'
+        assert git('show', '-s', '--format=%P', harness) == os.environ['EXPECTED_HEAD']
+        assert git('diff-tree', '--no-commit-id', '--name-status', '-r', harness) == 'A\t' + workflow
+        source = subprocess.check_output(['git', 'show', harness + ':' + workflow])
+        assert git('status', '--porcelain', '--untracked-files=normal') == ''
+        subprocess.run(['git', 'diff', '--exit-code', 'dc69725d957c79d8737eb5fbedfe6f213252317a', tested,
+            '--', 'MODULE.bazel', 'MODULE.bazel.lock', '.bazelversion'], check=True)
+        record = {'schema': 'hepta-scoped-musl-helper-normal-bazel-v1', 'tested_commit': tested,
+            'tested_tree': os.environ['EXPECTED_TREE'], 'source_kind': os.environ['SOURCE_KIND'],
+            'candidate': os.environ['EXPECTED_HEAD'], 'base': os.environ['EXPECTED_BASE'],
+            'prospective_merge': os.environ['EXPECTED_MERGE'], 'harness_commit': harness,
+            'workflow_sha256': hashlib.sha256(source).hexdigest(), 'bazel_platform': os.environ['BAZEL_PLATFORM'],
+            'checkout_fetch_depth': 32, 'required_git_objects': required_objects,
+            'observed_merge_base': merge_base, 'is_shallow_repository': git('rev-parse', '--is-shallow-repository'),
+            'normal_group': os.environ['NORMAL_GROUP'],
+            'scope': {'feature-parity': 'Seven configured Rustc roots plus six original normal Agentd native entries',
+                'remaining29': 'Original Infer 25, Exec discovery 1, Exec filesystem 1, Supervisord full 2; no Core or prior 28 entries'}[os.environ['NORMAL_GROUP']]}
+        (Path(os.environ['RUNNER_TEMP']) / 'normal-bazel/source-before.json').write_text(json.dumps(record, indent=2) + '\n')
+        print(json.dumps(record))
+        PYSOURCE
+    - name: Prepare the existing Bazel toolchain and repository cache
+      id: prepare
+      uses: ./.github/actions/prepare-bazel-ci
+      with:
+        target: ${{ matrix.platform == 'gnu' && 'x86_64-unknown-linux-gnu' || 'x86_64-unknown-linux-musl' }}
+        cache-scope: bazel-test
+    - name: Import the already verified fixed dependency artifact
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+      with:
+        artifact-ids: '13245890316'
+        run-id: '41664243615'
+        repository: TrillionniumFoundation/hepta-private-ci
+        github-token: ${{ github.token }}
+        merge-multiple: true
+        digest-mismatch: error
+        path: ${{ runner.temp }}/normal-bazel-distdir
+    - name: Recheck the fixed metadata and complete dependency bytes
+      id: dependency
+      shell: bash
+      run: |
+        set -euo pipefail
+        python3 - <<'PYDEPENDENCY'
+        import base64, hashlib, json, os
+        from pathlib import Path
+        root = Path(os.environ['RUNNER_TEMP']) / 'normal-bazel-distdir'
+        assert sorted(path.name for path in root.iterdir()) == ['source.json', 'transfer.json', 'v5.1.0.tar.gz']
+        metadata = (root / 'source.json').read_bytes()
+        assert hashlib.sha256(metadata).hexdigest() == '7d88fc6db323947a11d1638fe95185e9c733c337a1d1e7b50cdcf487e29ce56e'
+        source = json.loads(metadata)
+        assert 'https://github.com/aws/aws-lc/archive/refs/tags/v5.1.0.tar.gz' in [source.get('url')] + source.get('urls', [])
+        expected = 'a6bf6adfc5f9bba559d28554b7d3581b15f2813f03bc9f2ae19f0d915e97dadf'
+        assert source['integrity'].startswith('sha256-')
+        assert base64.b64decode(source['integrity'][7:], validate=True).hex() == expected
+        archive = root / 'v5.1.0.tar.gz'
+        assert archive.stat().st_size == 145542555
+        with archive.open('rb') as stream:
+            actual = hashlib.file_digest(stream, 'sha256').hexdigest()
+        assert actual == expected
+        transfer = json.loads((root / 'transfer.json').read_text())
+        assert transfer['workflow_commit'] == '4a78bf9314197ef5a8ea97f67134fdac6795589f'
+        assert transfer['workflow_run_id'] == '41664243615'
+        assert transfer['declaration_source_commit'] == 'dc69725d957c79d8737eb5fbedfe6f213252317a'
+        assert transfer['verified'] is True and transfer['source_sha256'] == expected and transfer['source_bytes'] == 145542555
+        report = {'artifact_id': 13245890316, 'sha256': actual, 'bytes': archive.stat().st_size,
+            'fixed_metadata_sha256': hashlib.sha256(metadata).hexdigest(), 'verified': True}
+        (Path(os.environ['RUNNER_TEMP']) / 'normal-bazel/dependency-import.json').write_text(json.dumps(report, indent=2) + '\n')
+        print(json.dumps(report))
+        PYDEPENDENCY
+        test "$(cat .bazelversion)" = '9.3.0'
+        bazel --version | tee "$RUNNER_TEMP/normal-bazel/bazel-version.txt"
+        test "$(cat "$RUNNER_TEMP/normal-bazel/bazel-version.txt")" = 'bazel 9.3.0'
+    - name: Write the scoped native runner outside the tested source
+      id: runner
+      shell: bash
+      run: |
+        set -euo pipefail
+        cat > "$RUNNER_TEMP/normal-bazel/run-target.py" <<'PYCONTROL'
+        import hashlib, json, os, re, shutil, subprocess, sys, urllib.parse
+        from pathlib import Path
+        def check_bep_completion(events, target, result_id, result, verdict):
+            summary_events = [row for row in events if row.get('id', {}).get('testSummary', {}).get('label') == target]
+            verdict['bazel_test_summaries'] = summary_events
+            assert len(summary_events) == 1, 'expected one overall test summary for the exact target'
+            summary_id = summary_events[0]['id']['testSummary']
+            summary = summary_events[0]['testSummary']
+            assert summary_id.get('configuration') == result_id.get('configuration'), 'summary and attempt must use the same configured target'
+            assert summary['overallStatus'] == 'PASSED'
+            assert all(summary.get(key) == 1 for key in ('totalRunCount', 'runCount', 'attemptCount')), 'expected exactly one test execution and one attempt in the overall summary'
+            cache = {'cached_locally': result.get('cachedLocally', False),
+                'cached_remotely': result.get('executionInfo', {}).get('cachedRemotely', False),
+                'total_cached_test_actions': summary.get('totalNumCached', 0)}
+            verdict['bazel_test_cache'] = cache
+            assert cache['cached_locally'] is False and cache['cached_remotely'] is False, 'an actual uncached test execution is required'
+            assert cache['total_cached_test_actions'] == 0, 'the overall summary must contain zero cached test actions'
+
+
+        cases = {'default_profile': ('//codex-rs/hepta-agentd:hepta-agentd-unit-tests',
+                             '//codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin',
+                             ['runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable']),
+         'default_writer': ('//codex-rs/hepta-agentd:hepta-agentd-cognitive_store_product_writer-test',
+                            '//codex-rs/hepta-agentd:hepta-agentd-cognitive_store_product_writer-test',
+                            ['agentd_product_host_recovers_exact_cut_into_fenced_writer_generation']),
+         'qualification_unit': ('//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test',
+                                '//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin',
+                                ['runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once',
+                                 'runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence',
+                                 'runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence']),
+         'qualification_product': ('//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test',
+                                   '//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin',
+                                   ['real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends']),
+         'infer': ('//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests',
+                   '//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests-bin',
+                   ['native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone',
+                    'native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant',
+                    'smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown',
+                    'smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes',
+                    'smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error',
+                    'smollm_neural_read::driver::session::owner::tests::two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth',
+                    'smollm_neural_read::driver::session::owner::tests::denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child',
+                    'smollm_neural_read::driver::session::owner::tests::cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot',
+                    'smollm_neural_read::driver::session::owner::tests::foreground_and_drop_never_wait_for_a_held_cleanup_payload',
+                    'smollm_neural_read::driver::session::owner::tests::cancellation_or_original_startup_expiry_prevents_child_birth',
+                    'smollm_neural_read::driver::session::owner::tests::readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed',
+                    'smollm_neural_read::driver::session::owner::tests::exact_supervisor_exit_without_original_worker_receipt_stays_closed',
+                    'smollm_neural_read::driver::session::owner::tests::contended_root_reservation_starts_two_original_children_without_retrying_birth',
+                    'smollm_neural_read::driver::session::owner::tests::root_contention_preserves_original_deadline_and_cancellation_before_reservation',
+                    'smollm_neural_read::driver::session::owner::tests::poisoned_roots_never_wait_or_reserve_an_owner',
+                    'smollm_neural_read::driver::session::owner::tests::root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window',
+                    'smollm_neural_read::driver::session::tests::terminal_unload_requires_successful_supervisor_and_original_child_receipt',
+                    'smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper',
+                    'smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window',
+                    'smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor',
+                    'smollm_neural_read::driver::session::tests::ready_published_after_original_startup_window_cannot_be_adopted',
+                    'smollm_neural_read::driver::session::tests::cancelled_original_startup_cannot_adopt_an_already_published_ready',
+                    'test_process::tests::requires_the_exact_original_case_and_one_pass',
+                    'test_process::tests::rejects_successful_zero_case_and_ignored_case_runs',
+                    'test_process::tests::rejects_multiple_cases_and_failed_or_missing_completion']),
+         'exec_discovery': ('//codex-rs/exec-server:exec-server-capability_discovery-test',
+                            '//codex-rs/exec-server:exec-server-capability_discovery-test',
+                            ['sandboxed_discovery_batches_roots_without_combining_different_permissions']),
+         'exec_fs': ('//codex-rs/exec-server:exec-server-file_system_unix-test',
+                     '//codex-rs/exec-server:exec-server-file_system_unix-test',
+                     ['sandboxed_file_system_helper_finds_bwrap_on_preserved_path']),
+         'supervisord': ('//codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test',
+                         '//codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test',
+                         ['supervisord_child_entry',
+                          'five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes'])}
+        case_arguments = {'default_profile': ['runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable',
+                             '--exact',
+                             '--nocapture'],
+         'default_writer': [],
+         'qualification_unit': [],
+         'qualification_product': ['real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends',
+                                   '--exact',
+                                   '--nocapture'],
+         'infer': ['native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone',
+                   'native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant',
+                   'smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown',
+                   'smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes',
+                   'smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error',
+                   'smollm_neural_read::driver::session::owner::tests::two_preborn_owners_preserve_parallel_children_and_third_refuses_before_birth',
+                   'smollm_neural_read::driver::session::owner::tests::denied_or_panicked_prebirth_thread_request_keeps_bounded_roots_without_a_child',
+                   'smollm_neural_read::driver::session::owner::tests::cleanup_panic_after_drop_retains_exact_child_and_held_directory_in_failed_slot',
+                   'smollm_neural_read::driver::session::owner::tests::foreground_and_drop_never_wait_for_a_held_cleanup_payload',
+                   'smollm_neural_read::driver::session::owner::tests::cancellation_or_original_startup_expiry_prevents_child_birth',
+                   'smollm_neural_read::driver::session::owner::tests::readiness_expiry_uses_original_budget_and_keeps_unborn_reservation_closed',
+                   'smollm_neural_read::driver::session::owner::tests::exact_supervisor_exit_without_original_worker_receipt_stays_closed',
+                   'smollm_neural_read::driver::session::owner::tests::contended_root_reservation_starts_two_original_children_without_retrying_birth',
+                   'smollm_neural_read::driver::session::owner::tests::root_contention_preserves_original_deadline_and_cancellation_before_reservation',
+                   'smollm_neural_read::driver::session::owner::tests::poisoned_roots_never_wait_or_reserve_an_owner',
+                   'smollm_neural_read::driver::session::owner::tests::root_contention_attempt_cap_refuses_without_waiting_for_a_longer_startup_window',
+                   'smollm_neural_read::driver::session::tests::terminal_unload_requires_successful_supervisor_and_original_child_receipt',
+                   'smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper',
+                   'smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window',
+                   'smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor',
+                   'smollm_neural_read::driver::session::tests::ready_published_after_original_startup_window_cannot_be_adopted',
+                   'smollm_neural_read::driver::session::tests::cancelled_original_startup_cannot_adopt_an_already_published_ready',
+                   'test_process::tests::requires_the_exact_original_case_and_one_pass',
+                   'test_process::tests::rejects_successful_zero_case_and_ignored_case_runs',
+                   'test_process::tests::rejects_multiple_cases_and_failed_or_missing_completion',
+                   '--exact',
+                   '--nocapture'],
+         'exec_discovery': ['sandboxed_discovery_batches_roots_without_combining_different_permissions',
+                            '--exact',
+                            '--nocapture'],
+         'exec_fs': ['sandboxed_file_system_helper_finds_bwrap_on_preserved_path', '--exact', '--nocapture'],
+         'supervisord': []}
+        expected_counts = {'default_profile': 1, 'default_writer': 1, 'qualification_unit': 3, 'qualification_product': 1, 'infer': 25, 'exec_discovery': 1, 'exec_fs': 1, 'supervisord': 2}
+        expected_timeouts = {'default_profile': 300, 'default_writer': 900, 'qualification_unit': 300, 'qualification_product': 900, 'infer': 300, 'exec_discovery': 300, 'exec_fs': 300, 'supervisord': 900}
+        allowed_groups = {'feature-parity': ['default_profile', 'default_writer', 'qualification_unit', 'qualification_product'], 'remaining29': ['infer', 'exec_discovery', 'exec_fs', 'supervisord']}
+        assert {key: len(value[2]) for key, value in cases.items()} == expected_counts
+        assert sum(expected_counts.values()) == 35
+        assert all(len(value[2]) == len(set(value[2])) for value in cases.values())
+        assert all(re.fullmatch(r'[A-Za-z_][A-Za-z0-9_:]*', name) for value in cases.values() for name in value[2])
+        case = sys.argv[1]
+        assert case in allowed_groups[os.environ['NORMAL_GROUP']], 'case outside this isolated normal group'
+        target, binary_target, expected = cases[case]
+        root = Path(os.environ['RUNNER_TEMP']) / 'normal-bazel' / case
+        root.mkdir()
+        platform = '--platforms=' + os.environ['BAZEL_PLATFORM']
+        command = ['bazel', 'test', '--jobs=2', '--cache_test_results=no', '--test_output=all', '--flaky_test_attempts=1',
+            '--distdir=' + str(Path(os.environ['RUNNER_TEMP']) / 'normal-bazel-distdir'), platform,
+            '--build_event_json_file=' + str(root / 'build-events.jsonl')]
+        command += ['--test_arg=' + value for value in case_arguments[case]]
+        command.append(target)
+        (root / 'command.json').write_text(json.dumps({'argv': command, 'cwd': os.getcwd(),
+            'expected_tests': expected, 'original_test_budgets_unchanged': True,
+            'sandbox_flags_present': {key: key in os.environ for key in ('CODEX_SANDBOX', 'CODEX_SANDBOX_NETWORK_DISABLED')}}, indent=2) + '\n')
+        with (root / 'bazel.log').open('wb') as log:
+            child = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            for line in child.stdout:
+                log.write(line)
+                sys.stdout.buffer.write(line)
+                sys.stdout.buffer.flush()
+            code = child.wait()
+        (root / 'native.exit').write_text(str(code) + '\n')
+        verdict = {'result': 'FAIL', 'target': target, 'native_exit': code, 'expected_count': len(expected)}
+        try:
+            events = [json.loads(line) for line in (root / 'build-events.jsonl').read_text().splitlines() if line.strip()]
+            results = [row for row in events if row.get('id', {}).get('testResult', {}).get('label') == target]
+            assert len(results) == 1, 'expected one unsharded test attempt; retain every other outcome as failure'
+            result_id = results[0]['id']['testResult']
+            verdict['bazel_test_result_id'] = result_id
+            assert all(result_id.get(key) == 1 for key in ('run', 'shard', 'attempt')), 'expected run 1, shard 1, attempt 1'
+            result = results[0]['testResult']
+            verdict['bazel_test_status'] = result['status']
+            logs = [value['uri'] for value in result.get('testActionOutput', []) if value.get('name') == 'test.log']
+            assert len(logs) == 1
+            location = urllib.parse.urlparse(logs[0])
+            assert location.scheme == 'file' and location.netloc in ('', 'localhost')
+            path = Path(urllib.parse.unquote(location.path))
+            shutil.copyfile(path, root / 'original-test.log')
+            text = (root / 'original-test.log').read_text().replace('\r', '')
+            names = re.findall(r'^test ([A-Za-z_][A-Za-z0-9_:]*) \.\.\.', text, re.M)
+            summaries = re.findall(r'^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out;', text, re.M)
+            verdict.update({'observed_names': names, 'native_summaries': summaries})
+            query = ['bazel', 'cquery', '--output=files', platform, binary_target]
+            with (root / 'binary-query.stderr').open('wb') as error:
+                found = subprocess.run(query, stdout=subprocess.PIPE, stderr=error, check=False)
+            (root / 'binary-query.stdout').write_bytes(found.stdout)
+            assert found.returncode == 0
+            binaries = []
+            for line in found.stdout.decode().splitlines():
+                binary = Path(line)
+                if not binary.is_file():
+                    continue
+                with binary.open('rb') as stream:
+                    if stream.read(4) != b'\x7fELF':
+                        continue
+                    stream.seek(0)
+                    digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+                binaries.append({'path': str(binary.resolve()), 'bytes': binary.stat().st_size, 'sha256': digest})
+            assert len(binaries) == 1, 'expected one actual library test ELF'
+            (root / 'binary-identities.json').write_text(json.dumps(binaries, indent=2) + '\n')
+            completions = [row for row in events if row.get('id', {}).get('targetCompleted', {}).get('label') == target]
+            assert len(completions) == 1, 'one configured target completion required'
+            completed_id = completions[0]['id']['targetCompleted']
+            completed = completions[0]['completed']
+            assert completed_id.get('configuration') == result_id.get('configuration')
+            verdict['original_bazel_timeout'] = {
+                'seconds': completed.get('testTimeoutSeconds'), 'duration': completed.get('testTimeout'),
+                'expected_seconds': expected_timeouts[case]}
+            assert completed.get('success') is True
+            assert int(completed['testTimeoutSeconds']) == expected_timeouts[case]
+            assert completed['testTimeout'] == str(expected_timeouts[case]) + 's'
+            check_bep_completion(events, target, result_id, result, verdict)
+            running = re.findall(r'^running (\d+) tests?$', text, re.M)
+            assert running == [str(len(expected))], 'original native count required'
+            assert len(names) == len(set(names)), 'duplicate native names'
+            assert 'Skipping test' not in text, 'guard returned before execution'
+            assert sorted(names) == sorted(expected), (names, expected)
+            assert len(summaries) == 1
+            outcome, passed, failed, ignored, measured, filtered = summaries[0]
+            verdict.update({'observed_names': names, 'passed': int(passed), 'failed': int(failed), 'ignored': int(ignored), 'filtered': int(filtered)})
+            assert outcome == 'ok' and int(passed) == len(expected) and int(failed) == int(ignored) == int(measured) == 0
+            if case in ('default_writer', 'supervisord'):
+                assert int(filtered) == 0
+            assert code == 0 and result['status'] == 'PASSED'
+            verdict['result'] = 'PASS'
+        except Exception as error:
+            verdict['reader_error'] = str(error)
+        finally:
+            (root / 'result.json').write_text(json.dumps(verdict, indent=2) + '\n')
+            print(json.dumps(verdict))
+        sys.exit(0 if verdict['result'] == 'PASS' else 1)
+        PYCONTROL
+    - name: Write the unchanged strict Rustc argument parser for metadata inspection
+      id: configuration_reader
+      shell: bash
+      run: |
+        set -euo pipefail
+        cat > "$RUNNER_TEMP/normal-bazel/check-features.py" <<'PYFEATURES'
+        import hashlib
+        import json
+        import os
+        import re
+        import subprocess
+        import sys
+        import time
+        from pathlib import Path
+
+
+        def normalized_label(label):
+            # Only normalize the main repository spellings. Never strip an external name.
+            for prefix in ('@@//', '@//'):
+                if label.startswith(prefix):
+                    return '//' + label[len(prefix):]
+            return label
+
+
+        def feature_values(vector):
+            features = []
+            for index, argument in enumerate(vector):
+                value = argument[len('--cfg='):] if argument.startswith('--cfg=') else (
+                    argument if index and vector[index - 1] == '--cfg' else '')
+                match = re.fullmatch(r'feature="([^"]+)"', value)
+                if match:
+                    features.append(match.group(1))
+            return features
+
+
+        def rustc_command_arguments(action):
+            arguments = action.get('arguments', [])
+            assert arguments and all(isinstance(value, str) for value in arguments), 'missing action arguments'
+            parameters = {}
+            for parameter in action.get('paramFiles', []):
+                path = parameter.get('execPath')
+                values = parameter.get('arguments', [])
+                assert isinstance(path, str) and path and path not in parameters, 'missing or duplicate parameter-file identity'
+                assert isinstance(values, list) and all(isinstance(value, str) for value in values)
+                parameters[path] = values
+            consumed = {}
+
+            def consume(path, role):
+                assert path in parameters, 'referenced parameter file is absent from aquery: ' + path
+                previous = consumed.get(path)
+                assert previous is None or previous['role'] == role, 'parameter file reused across wrapper and Rustc roles'
+                consumed[path] = {'role': role, 'references': 1 if previous is None else previous['references'] + 1}
+                return parameters[path]
+
+            # The pinned wrapper patch expands only argv[1], once. Its values are
+            # literal, including values beginning with @ or --wrapper-args=.
+            expanded = list(arguments)
+            if len(expanded) > 1 and expanded[1].startswith('--wrapper-args='):
+                wrapper_path = expanded[1][len('--wrapper-args='):]
+                wrapper_arguments = consume(wrapper_path, 'wrapper')
+                assert '--' not in wrapper_arguments, 'wrapper response file contains the child boundary'
+                expanded = [expanded[0], *wrapper_arguments, *expanded[2:]]
+            basename = lambda value: value.replace('\\', '/').rsplit('/', 1)[-1]
+            assert basename(expanded[0]) in ('process_wrapper', 'process_wrapper.exe'), 'expected the pinned process wrapper'
+            assert '--' in expanded, 'missing wrapper/child boundary'
+            boundary = expanded.index('--')
+            wrapper = expanded[1:boundary]
+            wrapper_flags = {
+                '--subst', '--stable-status-file', '--volatile-status-file', '--env-file',
+                '--out-dir', '--arg-file', '--touch-file', '--copy-output', '--stdout-file',
+                '--stderr-file', '--captured-exit-code-file', '--output-file',
+                '--rustc-output-format', '--require-explicit-unstable-features',
+            }
+            link_search_files = []
+            index = 0
+            while index < len(wrapper):
+                flag = wrapper[index]
+                assert flag in wrapper_flags and index + 1 < len(wrapper), 'unexpected or incomplete wrapper option'
+                value = wrapper[index + 1]
+                if flag == '--arg-file':
+                    # These seven roots have no build.rs or lint-config input. The
+                    # pinned rule propagates only dependency .linksearchpaths here;
+                    # the pinned producer writes -L entries, not feature cfg flags.
+                    assert value.endswith('.linksearchpaths'), 'uninspected dynamic compiler-flags input'
+                    if value in parameters:
+                        assert all(item.startswith('-L') for item in consume(value, 'link-search')), 'link-search input contains non-link arguments'
+                    link_search_files.append({'path': value, 'included_in_param_files': value in parameters})
+                index += 2
+            child = expanded[boundary + 1:]
+            assert child and basename(child[0]) in ('rustc', 'rustc.exe'), 'expected an actual Rustc child command'
+
+            def expand_rustc(vector, stack=()):
+                result = []
+                for argument in vector:
+                    if argument.startswith('@'):
+                        path = argument[1:]
+                        assert path not in stack, 'cyclic Rustc parameter-file reference'
+                        result.extend(expand_rustc(consume(path, 'rustc'), (*stack, path)))
+                    else:
+                        result.append(argument)
+                return result
+
+            rustc_arguments = expand_rustc(child[1:])
+            assert '--' not in rustc_arguments, 'unexpected Rustc option terminator'
+            assert set(consumed) == set(parameters), 'aquery contains an unreferenced parameter file'
+            return {'rustc_executable': child[0], 'rustc_arguments': rustc_arguments,
+                'parameter_files': [{'exec_path': path, 'argument_count': len(parameters[path]), **consumed[path]}
+                                    for path in sorted(parameters)],
+                'dependency_link_search_files': link_search_files}
+
+
+        def inspect_actions(graph, expected):
+            targets = {str(item['id']): normalized_label(item['label']) for item in graph.get('targets', [])}
+            configurations = {str(item['id']): item for item in graph.get('configuration', [])}
+            observed = []
+            for action in graph.get('actions', []):
+                label = targets.get(str(action.get('targetId')))
+                assert action.get('mnemonic') == 'Rustc' and label in expected, 'unexpected configured root action'
+                binding = rustc_command_arguments(action)
+                arguments = binding['rustc_arguments']
+                features = sorted(set(feature_values(arguments)))
+                sources = sorted(set(value for value in arguments if value.endswith('.rs')))
+                source_suffix = expected[label]['source']
+                source_path = arguments[0].replace('\\', '/') if arguments else ''
+                source_present = source_path == source_suffix or source_path.endswith('/' + source_suffix)
+                configuration = configurations.get(str(action.get('configurationId')), {})
+                observed.append({
+                    'label': label,
+                    'features': features,
+                    'expected_features': expected[label]['features'],
+                    'rustc_sources': sources,
+                    'expected_source': source_suffix,
+                    'expected_source_present': source_present,
+                    'configuration_id': action.get('configurationId'),
+                    'configuration_checksum': configuration.get('checksum'),
+                    'configuration_mnemonic': configuration.get('mnemonic'),
+                    'configuration_is_tool': configuration.get('isTool', False),
+                    'execution_platform': action.get('executionPlatform'),
+                    'rustc_executable': binding['rustc_executable'],
+                    'parameter_files': binding['parameter_files'],
+                    'dependency_link_search_files': binding['dependency_link_search_files'],
+                    'feature_source': 'expanded configured Rustc child argv; dependency link-search files recorded separately',
+                    'rustc_argument_vector_sha256': hashlib.sha256(json.dumps(arguments, separators=(',', ':')).encode()).hexdigest(),
+                })
+            return observed
+
+
+        def validate_actions(observed, expected):
+            assert {item['label'] for item in observed} == set(expected), 'all seven root labels must have an actual Rustc action'
+            assert all(item['features'] == item['expected_features'] for item in observed), 'configured feature closure differs'
+            assert all(item['expected_source_present'] for item in observed), 'configured action did not bind the expected crate source'
+
+
+        def source_identity():
+            def git(*args):
+                return subprocess.check_output(['git', '--no-replace-objects', *args]).decode().strip()
+            return {'commit': git('rev-parse', 'HEAD'), 'tree': git('rev-parse', 'HEAD^{tree}'),
+                    'status': git('status', '--porcelain', '--untracked-files=normal')}
+
+
+        def main():
+            prefix = '//codex-rs/hepta-agentd:'
+            normal = ['default', 'production-cognitive-write']
+            qualification = ['production-cognitive-write', 'qualification-cognitive-write']
+            expected = {
+                prefix + 'hepta-agentd': {'features': normal, 'source': 'codex-rs/hepta-agentd/src/lib.rs'},
+                prefix + 'codex-hepta-agentd': {'features': normal, 'source': 'codex-rs/hepta-agentd/src/main.rs'},
+                prefix + 'hepta-agentd-cognitive_product_e2e-test': {'features': normal, 'source': 'codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs'},
+                prefix + 'hepta-agentd-cognitive-write-qualification-lib': {'features': qualification, 'source': 'codex-rs/hepta-agentd/src/lib.rs'},
+                prefix + 'hepta-agentd-cognitive-write-qualification-test-bin': {'features': qualification, 'source': 'codex-rs/hepta-agentd/src/lib.rs'},
+                prefix + 'hepta-agentd-cognitive-product-qualification-bin': {'features': qualification, 'source': 'codex-rs/hepta-agentd/src/main.rs'},
+                prefix + 'hepta-agentd-cognitive-product-qualification-test-bin': {'features': qualification, 'source': 'codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs'},
+            }
+            root = Path(os.environ['RUNNER_TEMP']) / 'normal-bazel/configured_features'
+            root.mkdir()
+            before = source_identity()
+            assert before['status'] == ''
+            assert before['commit'] == (os.environ['EXPECTED_HEAD'] if os.environ['SOURCE_KIND'] == 'head' else os.environ['EXPECTED_MERGE'])
+            assert before['tree'] == os.environ['EXPECTED_TREE']
+            command = ['bazel', 'aquery', '--jobs=2',
+                '--distdir=' + str(Path(os.environ['RUNNER_TEMP']) / 'normal-bazel-distdir'),
+                '--platforms=' + os.environ['BAZEL_PLATFORM'], '--output=jsonproto',
+                '--include_artifacts=false', '--include_commandline=true', '--include_param_files=true',
+                'mnemonic("Rustc", set(' + ' '.join(expected) + '))']
+            (root / 'command.json').write_text(json.dumps({'argv': command, 'cwd': os.getcwd(),
+                'expected_roots': expected, 'source_before': before, 'tests_executed': 0,
+                'sandbox_flags_present': {key: key in os.environ for key in ('CODEX_SANDBOX', 'CODEX_SANDBOX_NETWORK_DISABLED')}}, indent=2) + '\n')
+            started = time.monotonic()
+            with (root / 'aquery.stdout').open('wb') as output, (root / 'aquery.stderr').open('wb') as error:
+                completed = subprocess.run(command, stdout=output, stderr=error, check=False)
+            (root / 'analysis.exit').write_text(str(completed.returncode) + '\n')
+            raw = (root / 'aquery.stdout').read_bytes()
+            error_bytes = (root / 'aquery.stderr').read_bytes()
+            verdict = {'result': 'FAIL', 'analysis_exit': completed.returncode, 'elapsed_seconds': time.monotonic() - started,
+                'source_before': before, 'source_after': source_identity(), 'expected_roots': expected, 'tests_executed': 0,
+                'stdout_bytes': len(raw), 'stdout_sha256': hashlib.sha256(raw).hexdigest(),
+                'stderr_bytes': len(error_bytes), 'stderr_sha256': hashlib.sha256(error_bytes).hexdigest()}
+            try:
+                assert completed.returncode == 0, 'Bazel configured analysis failed; preserve raw stdout/stderr'
+                verdict['actions'] = inspect_actions(json.loads(raw), expected)
+                validate_actions(verdict['actions'], expected)
+                assert verdict['source_after'] == before
+                verdict['result'] = 'PASS'
+            except Exception as error:
+                verdict['reader_error'] = str(error)
+            finally:
+                (root / 'result.json').write_text(json.dumps(verdict, indent=2) + '\n')
+                print(json.dumps(verdict))
+            return 0 if verdict['result'] == 'PASS' else 1
+
+
+        if __name__ == '__main__':
+            sys.exit(main())
+        PYFEATURES
+    - name: Write the metadata-only Exec helper verifier outside the source
+      id: helper_reader
+      shell: bash
+      run: |
+        set -euo pipefail
+        cat > "$RUNNER_TEMP/normal-bazel/verify-exec-helper.py" <<'PYEXECPROOF'
+        """Metadata-only checks; never build, run, or invoke a test/helper executable."""
+        import ast
+        import hashlib
+        import importlib.util
+        import json
+        import os
+        from pathlib import Path, PurePosixPath
+        import re
+        import signal
+        import stat
+        import struct
+        import subprocess
+        import sys
+        import time
+
+        PHASE_SECONDS = 300
+        STOP_RESERVE_SECONDS = 45
+        PHASE_END = None
+        WORK_END = None
+
+        RUNNER_SHA = 'ac157b9d9d3b336bff896e7525ba12b3d706af53e2854bf7a783047a4736deec'
+        CHECKER_SHA = '67a5fa23b072ef9250b94020ab1d59c2062c25cdfa1ffb43d12cb8f7a66de187'
+        HELPER = '//codex-rs/exec-server:codex-exec-server-test-helper'
+        HELPER_SOURCE = 'codex-rs/exec-server/examples/codex-exec-server-test-helper.rs'
+        HELPER_NAME = 'codex-exec-server-test-helper'
+        RUNFILE_ENV = 'CARGO_BIN_EXE_' + HELPER_NAME
+        ROOT_SOURCES = {'exec_discovery': 'codex-rs/exec-server/tests/capability_discovery.rs',
+                        'exec_fs': 'codex-rs/exec-server/tests/file_system_unix.rs'}
+        FORMATTER = '''def file_record(f):
+            return {"path": f.path, "short_path": f.short_path, "owner": str(f.owner)}
+        def selected_runfiles(runfiles):
+            if runfiles == None:
+                return []
+            return [file_record(f) for f in runfiles.files.to_list() if f.basename == "codex-exec-server-test-helper"]
+        def format(target):
+            available = providers(target)
+            info = available["DefaultInfo"]
+            run_env = available.get("RunEnvironmentInfo")
+            environment = None if run_env == None else {"helper": run_env.environment.get("CARGO_BIN_EXE_codex-exec-server-test-helper"), "inherited": run_env.inherited_environment}
+            return json.encode({"label": str(target.label), "files": [file_record(f) for f in info.files.to_list()], "default_runfiles": selected_runfiles(info.default_runfiles), "data_runfiles": selected_runfiles(info.data_runfiles), "run_environment": environment})
+        '''
+
+
+        def sha(raw):
+            return hashlib.sha256(raw).hexdigest()
+
+
+        def dump(path, value):
+            path.write_text(json.dumps(value, indent=2, sort_keys=True) + '\n')
+
+
+        def remaining_work():
+            if WORK_END is None:
+                return float('inf')  # Pure-reader offline controls do not enter main().
+            remaining = WORK_END - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError('metadata work deadline reached; final 45 seconds reserved for this client and receipts')
+            return remaining
+
+
+        def deadline_alarm(signum, frame):
+            signal.setitimer(signal.ITIMER_REAL, 0)
+            raise TimeoutError('metadata work deadline reached; preserve logs and end only this client group')
+
+
+        def bounded_bytes(path, maximum=128 * 1024 * 1024):
+            remaining_work()
+            assert path.stat().st_size <= maximum, 'metadata exceeds reader limit: ' + str(path)
+            raw = path.read_bytes()
+            remaining_work()
+            return raw
+
+
+        def source_identity():
+            def git(*args):
+                return subprocess.run(['git', '--no-replace-objects', *args], stdout=subprocess.PIPE, check=True, timeout=remaining_work()).stdout.decode().strip()
+            value = {'commit': git('rev-parse', 'HEAD'), 'tree': git('rev-parse', 'HEAD^{tree}'),
+                     'status': git('status', '--porcelain', '--untracked-files=normal')}
+            expected = os.environ['EXPECTED_HEAD'] if os.environ['SOURCE_KIND'] == 'head' else os.environ['EXPECTED_MERGE']
+            assert os.environ['SOURCE_KIND'] in ('head', 'prospective-merge')
+            assert value == {'commit': expected, 'tree': os.environ['EXPECTED_TREE'], 'status': ''}, 'source identity differs'
+            return value
+
+
+        def load_originals(directory):
+            runner = bounded_bytes(directory / 'run-target.py')
+            checker = bounded_bytes(directory / 'check-features.py')
+            assert sha(runner) == RUNNER_SHA and sha(checker) == CHECKER_SHA, 'original native runner or strict parser changed'
+            values = {}
+            for node in ast.parse(runner).body:
+                if isinstance(node, ast.Assign):
+                    for target in node.targets:
+                        if isinstance(target, ast.Name) and target.id in ('cases', 'case_arguments'):
+                            assert target.id not in values
+                            values[target.id] = ast.literal_eval(node.value)
+            assert set(values) == {'cases', 'case_arguments'}
+            spec = importlib.util.spec_from_file_location('original_configured_reader', directory / 'check-features.py')
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)  # Its __main__ is deliberately not entered.
+            result = {}
+            for key, source in ROOT_SOURCES.items():
+                target, binary_target, names = values['cases'][key]
+                arguments = values['case_arguments'][key]
+                assert target == binary_target and len(names) == 1
+                assert arguments == [names[0], '--exact', '--nocapture']
+                result[key] = {'target': target, 'source': source, 'names': names, 'arguments': arguments}
+            return module, result
+
+
+        def normalize_path(value):
+            assert isinstance(value, str) and value and '\\' not in value and '\x00' not in value
+            path = PurePosixPath(value)
+            assert not path.is_absolute() and '..' not in path.parts and str(path) == value, 'noncanonical relative artifact path'
+            assert path.parts[0] == 'bazel-out', 'expected configured Bazel output'
+            return value
+
+
+        def unique_map(items, key):
+            result = {}
+            for item in items:
+                ident = str(item[key])
+                assert ident not in result, 'duplicate graph identity'
+                result[ident] = item
+            return result
+
+
+        def environment(action):
+            entries = action.get('environmentVariables', [])
+            result = {}
+            for item in entries:
+                assert item['key'] not in result, 'duplicate action environment key'
+                result[item['key']] = item['value']
+            return result
+
+
+        def option_values(arguments, name):
+            result = []
+            for index, value in enumerate(arguments):
+                if value == name:
+                    assert index + 1 < len(arguments), 'missing option value'
+                    result.append(arguments[index + 1])
+                elif value.startswith(name + '='):
+                    result.append(value[len(name) + 1:])
+            return result
+
+
+        def one_option(arguments, name):
+            values = option_values(arguments, name)
+            assert len(values) == 1, 'expected one ' + name
+            return values[0]
+
+
+        def profile(arguments):
+            values = option_values(arguments, '--codegen') + option_values(arguments, '-C')
+            values += [v[2:] for v in arguments if v.startswith('-C') and v != '-C' and not v.startswith('-C=')]
+            result = {}
+            for key in ('opt-level', 'debuginfo', 'debug-assertions', 'strip'):
+                found = [v.split('=', 1)[1] for v in values if v.startswith(key + '=')]
+                assert len(found) <= 1, 'ambiguous codegen setting'
+                result[key] = found[0] if found else None
+            assert result['opt-level'] is not None
+            return result
+
+
+        def inspect_graph(graph, case, triple, parser):
+            targets = unique_map(graph.get('targets', []), 'id')
+            configs = unique_map(graph.get('configuration', []), 'id')
+            artifacts = unique_map(graph.get('artifacts', []), 'id')
+            fragments = unique_map(graph.get('pathFragments', []), 'id')
+            def artifact_path(ident):
+                artifact = artifacts[str(ident)]
+                seen, parts = set(), []
+                fragment = str(artifact['pathFragmentId'])
+                while fragment != '0':
+                    assert fragment not in seen, 'cyclic artifact path'
+                    seen.add(fragment)
+                    node = fragments[fragment]
+                    assert isinstance(node['label'], str) and node['label'] and '/' not in node['label']
+                    parts.append(node['label'])
+                    fragment = str(node.get('parentId', 0))
+                return normalize_path('/'.join(reversed(parts)))
+            grouped = {}
+            for action in graph.get('actions', []):
+                label = parser.normalized_label(targets[str(action['targetId'])]['label'])
+                assert label in (case['target'], HELPER), 'unexpected configured target'
+                mnemonic = action['mnemonic']
+                assert mnemonic in ('Rustc', 'TestRunner'), 'unexpected analysis action'
+                grouped.setdefault((label, mnemonic), []).append(action)
+            required = {(HELPER, 'Rustc'), (case['target'], 'Rustc'), (case['target'], 'TestRunner')}
+            assert set(grouped) == required and all(len(v) == 1 for v in grouped.values()), 'require one normal helper, one test Rustc, and one TestRunner action'
+            observed = {}
+            for label in (HELPER, case['target']):
+                action = grouped[(label, 'Rustc')][0]
+                config = configs[str(action['configurationId'])]
+                assert config.get('checksum') and not config.get('isTool', False), 'helper/test must use a target configuration'
+                binding = parser.rustc_command_arguments(action)
+                args = binding['rustc_arguments']
+                source = HELPER_SOURCE if label == HELPER else case['source']
+                assert args and args[0] == source, 'wrong Rust crate root'
+                assert one_option(args, '--target') == triple, 'configured ABI differs'
+                assert args.count('--test') == (0 if label == HELPER else 1), 'helper must be ordinary main; original root remains libtest'
+                if label == HELPER:
+                    assert one_option(args, '--crate-type') == 'bin'
+                    assert one_option(args, '--crate-name') == 'codex_exec_server_test_helper'
+                else:
+                    assert environment(action).get('BAZEL_PACKAGE') == 'codex-rs/exec-server', 'original compiled Bazel dispatch marker missing'
+                basename = HELPER_NAME if label == HELPER else case['target'].split(':')[-1]
+                outputs = [artifact_path(ident) for ident in action.get('outputIds', [])]
+                linked = [path for path in outputs if PurePosixPath(path).name == basename]
+                assert len(linked) == 1, 'missing or ambiguous linked executable output'
+                observed[label] = {'source': source, 'target_triple': triple, 'is_libtest': '--test' in args,
+                    'profile': profile(args), 'configuration_id': action['configurationId'],
+                    'configuration_checksum': config['checksum'], 'output': linked[0],
+                    'rustc_arguments_sha256': sha(json.dumps(args, separators=(',', ':')).encode()),
+                    'parameter_files': binding['parameter_files'], 'dependency_link_search_files': binding['dependency_link_search_files']}
+            assert observed[HELPER]['profile'] == observed[case['target']]['profile'], 'helper and test codegen profile differ'
+            test_action = grouped[(case['target'], 'TestRunner')][0]
+            test_config = configs[str(test_action['configurationId'])]
+            assert not test_config.get('isTool', False)
+            assert test_config['checksum'] == observed[case['target']]['configuration_checksum'], 'TestRunner configuration differs from test Rustc'
+            # TestRunnerAction.getEnvironment omits rule-specific extraTestEnv.
+            # Bind that declaration via its actual cquery RunEnvironmentInfo below.
+            observed['test_runner_configuration_checksum'] = test_config['checksum']
+            return observed
+
+
+        def inspect_cquery(raw, case, observed, parser):
+            rows = [json.loads(line) for line in raw.decode().splitlines() if line.strip()]
+            by_label = {}
+            for row in rows:
+                label = parser.normalized_label(row['label'])
+                assert label not in by_label and label in (case['target'], HELPER), 'ambiguous or unexpected configured cquery target'
+                by_label[label] = row
+            assert set(by_label) == {case['target'], HELPER}
+            for label, row in by_label.items():
+                assert len(row['files']) == 1, 'expected one DefaultInfo executable'
+                file = row['files'][0]
+                assert normalize_path(file['path']) == observed[label]['output']
+                assert parser.normalized_label(file['owner']) == label
+                short = PurePosixPath(file['short_path'])
+                assert not short.is_absolute() and '..' not in short.parts and str(short) == file['short_path']
+            helper_file = by_label[HELPER]['files'][0]
+            root = by_label[case['target']]
+            runfiles = root['default_runfiles'] + root['data_runfiles']
+            assert runfiles and all(item == helper_file for item in runfiles), 'test runfiles do not declare exactly this configured helper'
+            run_env = root['run_environment']
+            assert isinstance(run_env, dict) and isinstance(run_env.get('inherited'), list), 'test RunEnvironmentInfo is absent'
+            assert not any(name in run_env['inherited'] for name in (RUNFILE_ENV, RUNFILE_ENV.replace('-', '_'))), 'inherited environment could replace the declared helper'
+            assert run_env['helper'] == '_main/' + helper_file['short_path'], 'CARGO_BIN_EXE does not reference the declared runfile'
+            return {'test': root['files'][0], 'helper': helper_file,
+                    'runfile_key': run_env['helper'], 'declared_runfile_occurrences': len(runfiles),
+                    'run_environment_provider': 'RunEnvironmentInfo', 'inherited_environment_names': run_env['inherited']}
+
+
+        def stat_identity(value):
+            return {key: getattr(value, key) for key in ('st_dev', 'st_ino', 'st_mode', 'st_size', 'st_mtime_ns', 'st_ctime_ns')}
+
+
+        def elf_identity(relative, triple):
+            relative = normalize_path(relative)
+            output_tree = Path('bazel-out').resolve(strict=True)
+            actual = Path(relative).resolve(strict=True)
+            assert actual.is_relative_to(output_tree) and actual.is_file(), 'helper escaped configured output tree'
+            fd = os.open(actual, os.O_RDONLY | os.O_NOFOLLOW)
+            try:
+                before = os.fstat(fd)
+                assert stat.S_ISREG(before.st_mode) and before.st_mode & 0o111 and before.st_size >= 64
+                header = os.pread(fd, 64, 0)
+                assert header[:7] == b'\x7fELF\x02\x01\x01', 'expected ELF64 little endian'
+                fields = struct.unpack('<16sHHIQQQIHHHHHH', header)
+                _, kind, machine, version, _, phoff, _, _, ehsize, phentsize, phnum, _, _, _ = fields
+                assert kind in (2, 3) and machine == 62 and version == 1 and ehsize == 64
+                assert phentsize == 56 and 0 < phnum < 256 and phoff >= 64 and phoff + phnum * phentsize <= before.st_size
+                interpreters = []
+                for index in range(phnum):
+                    remaining_work()
+                    ph = struct.unpack('<IIQQQQQQ', os.pread(fd, phentsize, phoff + index * phentsize))
+                    ptype, _, offset, _, _, size, _, _ = ph
+                    if ptype == 3:
+                        assert 1 < size <= 4096 and offset + size <= before.st_size
+                        raw = os.pread(fd, size, offset)
+                        assert len(raw) == size and raw[-1:] == b'\0' and b'\0' not in raw[:-1]
+                        interpreters.append(raw[:-1].decode('ascii'))
+                assert len(interpreters) <= 1, 'ambiguous PT_INTERP'
+                interpreter = interpreters[0] if interpreters else None
+                allowed = {None, '/lib/ld-musl-x86_64.so.1'} if triple.endswith('-musl') else {
+                    None, '/lib64/ld-linux-x86-64.so.2', '/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2'}
+                assert interpreter in allowed, 'ELF loader contradicts configured target ABI'
+                digest = hashlib.sha256()
+                count = 0
+                while True:
+                    remaining_work()
+                    chunk = os.read(fd, 1024 * 1024)
+                    if not chunk:
+                        break
+                    digest.update(chunk)
+                    count += len(chunk)
+                after = os.fstat(fd)
+                assert stat_identity(before) == stat_identity(after) and count == before.st_size, 'ELF changed while hashing'
+                assert stat_identity(actual.stat()) == stat_identity(after), 'ELF path changed during inspection'
+                return {'configured_path': relative, 'path': str(actual), 'bytes': count, 'sha256': digest.hexdigest(),
+                        'stat': stat_identity(after), 'elf_machine': machine, 'elf_type': kind, 'pt_interp': interpreter,
+                        'configured_target_triple': triple, 'executed': False}
+            finally:
+                os.close(fd)
+
+
+        def stop_client_group(process):
+            # Popen creates this query's session. Never signal another Bazel server,
+            # another process group, or an existing test/build task.
+            for sig, grace in ((signal.SIGINT, 30), (signal.SIGTERM, 10), (signal.SIGKILL, 5)):
+                if process.poll() is not None:
+                    break
+                try:
+                    os.killpg(process.pid, sig)
+                except ProcessLookupError:
+                    pass
+                available = max(0.01, min(grace, PHASE_END - time.monotonic()))
+                try:
+                    process.wait(timeout=available)
+                except subprocess.TimeoutExpired:
+                    pass
+            return process.poll()
+
+
+        def run_query(command, directory, name):
+            remaining_work()
+            started = time.monotonic()
+            dump(directory / (name + '-command.json'), {'argv': command, 'cwd': os.getcwd(), 'tests_executed': 0,
+                'phase_seconds': PHASE_SECONDS, 'stop_reserve_seconds': STOP_RESERVE_SECONDS,
+                'remaining_work_seconds': remaining_work()})
+            process = None
+            record = {'exit': None, 'deadline_expired': False, 'client_stop_confirmed': False}
+            try:
+                with (directory / (name + '.stdout')).open('xb') as out, (directory / (name + '.stderr')).open('xb') as err:
+                    process = subprocess.Popen(command, stdout=out, stderr=err, start_new_session=True)
+                    try:
+                        record['exit'] = process.wait(timeout=remaining_work())
+                    except subprocess.TimeoutExpired:
+                        record['deadline_expired'] = True
+                        # Stop the alarm before using its reserved client-cleanup interval.
+                        signal.setitimer(signal.ITIMER_REAL, 0)
+                        record['exit'] = stop_client_group(process)
+            except BaseException as error:
+                record['interrupted'] = type(error).__name__ + ': ' + str(error)
+                record['deadline_expired'] = isinstance(error, (TimeoutError, subprocess.TimeoutExpired))
+                raise
+            finally:
+                if process is not None and process.poll() is None:
+                    signal.setitimer(signal.ITIMER_REAL, 0)
+                    record['exit'] = stop_client_group(process)
+                if process is not None:
+                    record['exit'] = process.poll()
+                    record['client_stop_confirmed'] = process.poll() is not None
+                record['elapsed_seconds'] = time.monotonic() - started
+                for stream in ('stdout', 'stderr'):
+                    path = directory / (name + '.' + stream)
+                    if path.exists():
+                        record[stream] = {'bytes': path.stat().st_size}
+                        try:
+                            raw = bounded_bytes(path)
+                            record[stream]['sha256'] = sha(raw)
+                        except TimeoutError:
+                            record[stream]['hash_pending_reason'] = 'phase deadline; original bytes retained'
+                dump(directory / (name + '-result.json'), record)
+            assert record['exit'] == 0 and not record['deadline_expired'] and record['client_stop_confirmed'], 'configured analysis failed or timed out; preserve original ' + name + ' output'
+            return bounded_bytes(directory / (name + '.stdout'))
+
+
+        def main():
+            global PHASE_END, WORK_END
+            begun = time.monotonic()
+            PHASE_END = begun + PHASE_SECONDS
+            WORK_END = PHASE_END - STOP_RESERVE_SECONDS
+            assert __debug__
+            phase = sys.argv[1]
+            assert phase in ('pre', 'post') and len(sys.argv) == 2
+            base = Path(os.environ['RUNNER_TEMP']) / 'normal-bazel'
+            directory = base / 'exec_helper' / phase
+            directory.mkdir(parents=True, exist_ok=False)
+            signal.signal(signal.SIGALRM, deadline_alarm)
+            signal.setitimer(signal.ITIMER_REAL, remaining_work())
+            verdict = {'schema': 'hepta-exec-helper-metadata-v1', 'phase': phase, 'result': 'FAIL',
+                       'tests_executed': 0, 'native_or_helper_invocations': 0, 'cases': {}}
+            try:
+                before = source_identity()
+                verdict['source_before'] = before
+                parser, cases = load_originals(base)
+                platform = os.environ['BAZEL_PLATFORM']
+                triples = {'//:local_linux': 'x86_64-unknown-linux-gnu',
+                           '@rules_rs//rs/platforms:x86_64-unknown-linux-musl': 'x86_64-unknown-linux-musl'}
+                triple = triples[platform]
+                formatter = directory / 'runfiles.cquery.bzl'
+                formatter.write_text(FORMATTER)
+                previous = None
+                if phase == 'post':
+                    previous = json.loads(bounded_bytes(base / 'exec_helper/pre/result.json'))
+                    assert previous['result'] == 'PASS' and previous['source_after'] == before
+                for key, case in cases.items():
+                    item = {'result': 'FAIL', 'case': case, 'triple': triple}
+                    verdict['cases'][key] = item
+                    folder = directory / key
+                    folder.mkdir()
+                    try:
+                        remaining_work()
+                        flags = ['--jobs=2', '--cache_test_results=no', '--test_output=all', '--flaky_test_attempts=1',
+                                 '--distdir=' + str(Path(os.environ['RUNNER_TEMP']) / 'normal-bazel-distdir'), '--platforms=' + platform]
+                        flags += ['--test_arg=' + arg for arg in case['arguments']]
+                        # Both tools inspect configured dependencies reached through the original test root.
+                        pattern = '(^|@)//codex-rs/exec-server:(' + HELPER_NAME + '|' + case['target'].split(':')[-1] + ')$'
+                        expression = 'filter("' + pattern + '", deps(' + case['target'] + '))'
+                        if phase == 'pre':
+                            command = ['bazel', 'aquery', *flags, '--output=jsonproto', '--include_artifacts=true',
+                                       '--include_commandline=true', '--include_param_files=true',
+                                       'mnemonic("^(Rustc|TestRunner)$", ' + expression + ')']
+                            graph = json.loads(run_query(command, folder, 'aquery'))
+                            item['configured'] = inspect_graph(graph, case, triple, parser)
+                        else:
+                            item['configured'] = previous['cases'][key]['configured']
+                        command = ['bazel', 'cquery', *flags, '--output=starlark', '--starlark:file=' + str(formatter), expression]
+                        item['runfiles'] = inspect_cquery(run_query(command, folder, 'cquery'), case, item['configured'], parser)
+                        if phase == 'post':
+                            assert item['runfiles'] == previous['cases'][key]['runfiles'], 'configured runfiles changed after native step'
+                            item['helper_elf'] = elf_identity(item['runfiles']['helper']['path'], triple)
+                            item['test_elf'] = elf_identity(item['runfiles']['test']['path'], triple)
+                            native = json.loads(bounded_bytes(base / key / 'binary-identities.json'))
+                            expected = [{'path': item['test_elf']['path'], 'bytes': item['test_elf']['bytes'], 'sha256': item['test_elf']['sha256']}]
+                            assert native == expected, 'post-analysis test ELF differs from original native identity record'
+                        item['result'] = 'PASS'
+                    except Exception as error:
+                        item['reader_error'] = type(error).__name__ + ': ' + str(error)
+                remaining_work()
+                verdict['source_after'] = source_identity()
+                assert verdict['source_after'] == before
+                assert all(item['result'] == 'PASS' for item in verdict['cases'].values()), 'one or more helper metadata checks failed'
+                verdict['result'] = 'PASS'
+            except Exception as error:
+                verdict['reader_error'] = type(error).__name__ + ': ' + str(error)
+            finally:
+                signal.setitimer(signal.ITIMER_REAL, 0)
+                verdict['phase_limit_seconds'] = PHASE_SECONDS
+                verdict['work_limit_seconds'] = PHASE_SECONDS - STOP_RESERVE_SECONDS
+                verdict['client_stop_reserve_seconds'] = STOP_RESERVE_SECONDS
+                verdict['elapsed_seconds'] = time.monotonic() - begun
+                dump(directory / 'result.json', verdict)
+                print(json.dumps(verdict, sort_keys=True))
+            return 0 if verdict['result'] == 'PASS' else 1
+
+
+        if __name__ == '__main__':
+            sys.exit(main())
+        PYEXECPROOF
+    - name: Run the original 25 exact Infer entries in one parent process
+      if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome
+        == 'success' && steps.runner.outcome == 'success' }}
+      shell: bash
+      run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" infer
+    - name: Inspect each original Exec root for the ordinary same-target helper and declared runfile
+      id: helper_configured
+      if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome
+        == 'success' && steps.runner.outcome == 'success' && steps.configuration_reader.outcome == 'success' && steps.helper_reader.outcome
+        == 'success' }}
+      shell: bash
+      timeout-minutes: 6
+      run: |
+        python3 "$RUNNER_TEMP/normal-bazel/verify-exec-helper.py" pre
+    - name: Run the original namespace-aware discovery positive case
+      if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome
+        == 'success' && steps.runner.outcome == 'success' && steps.helper_configured.outcome == 'success' }}
+      shell: bash
+      run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" exec_discovery
+      id: original_exec_discovery
+    - name: Run the original preserved-PATH filesystem positive case
+      if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome
+        == 'success' && steps.runner.outcome == 'success' && steps.helper_configured.outcome == 'success' }}
+      shell: bash
+      run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" exec_fs
+      id: original_exec_fs
+    - name: Read back each configured helper and original test ELF after the native outcomes
+      id: helper_elf
+      if: ${{ !cancelled() && steps.helper_configured.outcome == 'success' }}
+      shell: bash
+      timeout-minutes: 6
+      run: |
+        python3 "$RUNNER_TEMP/normal-bazel/verify-exec-helper.py" post
+    - name: Run the original five-Agent lifecycle target and child entry
+      if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.prepare.outcome == 'success' && steps.dependency.outcome
+        == 'success' && steps.runner.outcome == 'success' }}
+      shell: bash
+      run: python3 "$RUNNER_TEMP/normal-bazel/run-target.py" supervisord
+    - name: Retain the exact source state after every outcome
+      if: always()
+      shell: bash
+      run: |
+        set -euo pipefail
+        mkdir -p "$RUNNER_TEMP/normal-bazel"
+        git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/normal-bazel/source-after.txt"
+        git status --porcelain --untracked-files=normal > "$RUNNER_TEMP/normal-bazel/source-after-status.txt"
+        expected="$EXPECTED_HEAD"
+        if [ "$SOURCE_KIND" = prospective-merge ]; then expected="$EXPECTED_MERGE"; fi
+        test "$(git rev-parse HEAD)" = "$expected"
+        test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+        git diff --exit-code
+        git diff --cached --exit-code
+        test ! -s "$RUNNER_TEMP/normal-bazel/source-after-status.txt"
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: normal-bazel-musl-helper-${{ env.NORMAL_GROUP }}-${{ matrix.source }}-${{ matrix.platform }}-${{ env.EXPECTED_HEAD
+          }}
+        path: ${{ runner.temp }}/normal-bazel/
+        if-no-files-found: error
+        retention-days: 30
+'on':
+  push:
+    branches:
+    - test/hepta-musl-helper-normal-20261103
