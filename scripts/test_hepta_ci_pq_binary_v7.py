@@ -15,31 +15,52 @@ class CurrentPqBinaryTests(unittest.TestCase):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
         self.output = Path(self.directory.name).resolve()
-        self.chain = Path(os.environ.get("HEPTA_PQ_CHAIN", "../chain")).resolve(strict=True)
+        self.chain = Path(os.environ.get("HEPTA_PQ_CHAIN", "../chain")).resolve(
+            strict=True
+        )
         self.binary = self.output / "controlled-never-executed"
         self.binary.write_bytes(
-            b"\x7fELF\x02\x01" + bytes(12) + (62).to_bytes(2, "little") + b"controlled fixture"
+            b"\x7fELF\x02\x01"
+            + bytes(12)
+            + (62).to_bytes(2, "little")
+            + b"controlled fixture"
         )
         self.binary.chmod(0o700)
         crate = self.chain / "trillionnium/crates/trnm-pon-node"
         self.artifact = dict(
-            reason="compiler-artifact", manifest_path=str(crate / "Cargo.toml"),
-            target=dict(name="trnm_pon_node", kind=["lib"], crate_types=["lib"],
-                        test=True, src_path=str(crate / "src/lib.rs")),
+            reason="compiler-artifact",
+            manifest_path=str(crate / "Cargo.toml"),
+            target=dict(
+                name="trnm_pon_node",
+                kind=["lib"],
+                crate_types=["lib"],
+                test=True,
+                src_path=str(crate / "src/lib.rs"),
+            ),
             profile=dict(test=True, opt_level="3", debug_assertions=False),
-            features=["default", "pq-native-openssl"], executable=str(self.binary),
+            features=["default", "pq-native-openssl"],
+            executable=str(self.binary),
             filenames=[str(self.binary)],
         )
         self.reader = BinaryObservation(self.chain, self.output, "X64")
         self.build()
 
     def build(self, rows=None, **receipt_changes):
-        raw = "\n".join(json.dumps(row) for row in (
-            rows if rows is not None else [self.artifact, dict(reason="build-finished", success=True)]
-        )).encode()
+        raw = "\n".join(
+            json.dumps(row)
+            for row in (
+                rows
+                if rows is not None
+                else [self.artifact, dict(reason="build-finished", success=True)]
+            )
+        ).encode()
         (self.output / "build.log").write_bytes(raw)
-        receipt = dict(status="command_succeeded", exit_code=0, argv=BUILD_COMMAND,
-                       log_sha256=hashlib.sha256(raw).hexdigest())
+        receipt = dict(
+            status="command_succeeded",
+            exit_code=0,
+            argv=BUILD_COMMAND,
+            log_sha256=hashlib.sha256(raw).hexdigest(),
+        )
         receipt.update(receipt_changes)
         (self.output / "build.json").write_text(json.dumps(receipt))
 
@@ -50,7 +71,9 @@ class CurrentPqBinaryTests(unittest.TestCase):
         self.assertTrue(after["unchanged"])
         self.assertFalse(after["every_exec_observed"])
         self.assertFalse(after["whole_chain_quantum_security_qualified"])
-        self.assertEqual(before["compiler_artifact"]["profile"], self.artifact["profile"])
+        self.assertEqual(
+            before["compiler_artifact"]["profile"], self.artifact["profile"]
+        )
 
     def test_absent_or_duplicate_artifact_refuses_before_controls(self):
         for records in ([], [self.artifact, self.artifact]):
@@ -58,7 +81,9 @@ class CurrentPqBinaryTests(unittest.TestCase):
                 self.build(records + [dict(reason="build-finished", success=True)])
                 with self.assertRaisesRegex(ValueError, "UNIQUE_FINISHED_ARTIFACT"):
                     self.reader.before()
-                self.assertFalse((self.output / "binary-inventory-before.json").exists())
+                self.assertFalse(
+                    (self.output / "binary-inventory-before.json").exists()
+                )
 
     def test_changed_binary_retains_failed_after_observation(self):
         self.reader.before()
@@ -95,7 +120,8 @@ class CurrentPqBinaryTests(unittest.TestCase):
 
     def test_failed_build_wrong_command_or_log_change_refuses(self):
         for changed in (
-            dict(status="command_failed", exit_code=1), dict(argv=BUILD_COMMAND[:-1]),
+            dict(status="command_failed", exit_code=1),
+            dict(argv=BUILD_COMMAND[:-1]),
             dict(log_sha256="0" * 64),
         ):
             with self.subTest(changed=changed):

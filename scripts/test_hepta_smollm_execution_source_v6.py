@@ -179,10 +179,17 @@ class ExecutionSourceV6Tests(unittest.TestCase):
 
     def test_identical_tree_at_a_new_commit_does_not_inherit_source_evidence(self):
         self.fixture.git(
-            "-c", "user.name=Controlled source fixture",
-            "-c", "user.email=fixture@example.invalid",
-            "-c", "commit.gpgsign=false",
-            "commit", "--allow-empty", "--quiet", "-m", "new source identity",
+            "-c",
+            "user.name=Controlled source fixture",
+            "-c",
+            "user.email=fixture@example.invalid",
+            "-c",
+            "commit.gpgsign=false",
+            "commit",
+            "--allow-empty",
+            "--quiet",
+            "-m",
+            "new source identity",
         )
         self.assertEqual(
             self.fixture.git("rev-parse", "HEAD^{tree}").strip(), self.tree
@@ -209,7 +216,8 @@ class ExecutionSourceV6Tests(unittest.TestCase):
         ):
             current = evidence.integrated_sources(repositories)
             for selected, expected in (
-                (execution.PROFILE_V5, False), (execution.PROFILE_V6, True)
+                (execution.PROFILE_V5, False),
+                (execution.PROFILE_V6, True),
             ):
                 case = root / selected
                 case.mkdir()

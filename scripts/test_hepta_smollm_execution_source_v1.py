@@ -85,17 +85,19 @@ class ExecutionSourceTests(unittest.TestCase):
         self.repin(self.manifest)
         # Imports use the workflow's selected profile. Keep every selection
         # inside this temporary source fixture without clearing the environment.
-        for version in ("V2", "V3", "V4", "V5", "V6", "V7"):
+        for version in ("V2", "V3", "V4", "V5", "V6", "V7", "V8"):
             path = self.profiles / getattr(execution, f"MANIFEST_NAME_{version}")
             profile = getattr(execution, f"PROFILE_{version}")
             manifest = dict(self.manifest, profile=profile)
-            if version in ("V5", "V6", "V7"):
+            if version in ("V5", "V6", "V7", "V8"):
                 tree = self.git("rev-parse", "HEAD^{tree}").strip()
                 manifest.update(
                     schema="hepta-smollm-public-initial-execution-sources-v2",
                     chain_tree=tree,
                 )
-                self.enterContext(patch.object(execution, f"CHAIN_TREE_{version}", tree))
+                self.enterContext(
+                    patch.object(execution, f"CHAIN_TREE_{version}", tree)
+                )
             path.write_text(json.dumps(manifest))
             for name, value in (
                 (f"CHAIN_COMMIT_{version}", head),

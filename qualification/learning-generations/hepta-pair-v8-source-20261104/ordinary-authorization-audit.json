@@ -1,0 +1,427 @@
+{
+  "schema": "hepta-ordinary-authorization-source-audit-v1",
+  "inspection_date_utc": "2026-11-04",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "hepta_runtime_source_commit": "231324ad953794e93615cf3bf6d9f50fbc71240e",
+  "scope": "Read-only source inspection of the ordinary public-initial model controls and their CURRENT/selection/FinalUse constructors. This is not a runtime acceptance receipt.",
+  "source_inspection_only": true,
+  "tests_executed_by_this_audit": false,
+  "ordinary_controls": [
+    "real_selected_initial_serves_ordinary_context_then_refuses_revocation",
+    "real_public_initial_reopens_same_ordinary_owners",
+    "real_public_initial_three_rounds_hold_and_read_original_current"
+  ],
+  "sources": [
+    {
+      "path": ".github/workflows/hepta-public-initial-v2.yml",
+      "git_blob": "dc1eefe6465f71379631061bbc5c160ded4f380d",
+      "sha256": "3a2111b9396a0597b89b47d2c1a89c6af5727e41bdd4ca6973d943a68852ad49",
+      "bytes": 31215
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_public_initial_loop_tests.rs",
+      "git_blob": "976a208cbd6a9cb59d75000ab72fb28c147a2b79",
+      "sha256": "74a0a41d75147542890bbacbc5208517ec47d6f6e690e8fca78f79b1193d47e8",
+      "bytes": 14977
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_agentd_tests.rs",
+      "git_blob": "0808ea67c3b45f2ff0482e8d8a46ee3f3c9164d1",
+      "sha256": "beed3fc68afeb2304ebf9979a05c6101ac3f9ac27618a433a0623b11c561f88e",
+      "bytes": 23940
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs",
+      "git_blob": "d7cafc802f9ae6f773b9ca90266abe248497a7b5",
+      "sha256": "c421da337e96718fe3ff3202460b87a4cf0d1ed4c4502e4c6fe4884eed1816ca",
+      "bytes": 29223
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_host.rs",
+      "git_blob": "ae32e695d87211e4c5f3b36dbc866b99028a8f79",
+      "sha256": "c162da7006a644331e1069b784cedef6f503131d92d42c4e68b08df528de2902",
+      "bytes": 15112
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "git_blob": "047ca3a27968d636f123defdb373a3ac63bd2e92",
+      "sha256": "4a563de735e62f826e49f3757e97ad8269ac526524690de7bbdae75d8a5e7099",
+      "bytes": 11993
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs",
+      "git_blob": "3ba17674d14f309b2c803195e4b80b5f1d9fa8d7",
+      "sha256": "d25359981a0274f25581f13195b17fee281d39fa239683f4e4838d6cfbb2d83d",
+      "bytes": 9874
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "git_blob": "61c7ce18fe06becc5a0a02ce3f75fa51becc9cb6",
+      "sha256": "ee47a741721a216671ed3728034265714ebd8268bc55fe731bfd21bb263f9bec",
+      "bytes": 41363
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_pq.rs",
+      "git_blob": "c6694d4c450816cd2e846773f715fe7bf7050e21",
+      "sha256": "ae4db0e2845a6e14d9f8b9823530a0c0f5d5e810673093353e8e5cb0aec5956b",
+      "bytes": 2758
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "git_blob": "043ffd75a20c42935959a98d37f40e3d7229c407",
+      "sha256": "7d468026631ae10908c084c66a4bd49f2caac67ed96ae1a4d3572df886cde352",
+      "bytes": 2313
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "git_blob": "39119fcc5c80021d52ad11e44fe0e9fff38d691d",
+      "sha256": "cc12320aa6d41d9cc74e162ec72e34a29335839baf969740c736c525a8b2eff4",
+      "bytes": 93750
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_current_store.rs",
+      "git_blob": "a66a1f6229d78f7243572d75afc5cbe6610a163e",
+      "sha256": "7666957871ce584df8deb547315d3464a67b97223afc1991baea9cc639d9888c",
+      "bytes": 12991
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_process_current.rs",
+      "git_blob": "6f681e61d5daa72a96296bcfeaac51194496caf3",
+      "sha256": "f0dca02e3750be06c778a43f485b17abc8a5e1135cea48a0e4a1989329ba8942",
+      "bytes": 10403
+    },
+    {
+      "path": "codex-rs/hepta-contracts/PQ_FINAL_USE.md",
+      "git_blob": "1f46d5b2d7e4132d3aead0d05651a830960db41c",
+      "sha256": "e7e0a29f9b17d9e698a964507bb7852c72a023d024b2b90d5142bccaf82e26aa",
+      "bytes": 4072
+    },
+    {
+      "path": "codex-rs/hepta-agentd/PQ_INSTALLATION.md",
+      "git_blob": "204129a6f5739e75d7086cd65fd19f8789ff9ff7",
+      "sha256": "555b73a037735b2accf0888b3bcd6d54a2d15fc5d48039ffba5e4fd58b5fb48d",
+      "bytes": 6885
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_neural_settled_read.rs",
+      "git_blob": "eb246b43c310dea56d13415d30ac5c392f88a50a",
+      "sha256": "95d1e0dae24ae6195042dc65954c2dcdd2e46cbdb576fc600948eaf3f007ca55",
+      "bytes": 7541
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/crypto_profile.rs",
+      "git_blob": "e321cafe4656b8b1ad9d78301c101386502d6324",
+      "sha256": "cbc4687f817aa7d7a693c06231eeb7e3e7a1b58dc7feebde030c4215c13e3df6",
+      "bytes": 2109
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/settlement_store.rs",
+      "git_blob": "50edfb68a23f10a11ac0270a82fcc79aaee7b106",
+      "sha256": "a114c831b641fb47d604a5dfb475042218193ec9a2a31ce7bdd8edf28676924f",
+      "bytes": 16823
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "git_blob": "89c3d1e64322c8847a8facc03eaba3e0d11c0c47",
+      "sha256": "8161a063506d4ec1d59dfae529835e72faea27d2950e2cc62b6b2133a2cea280",
+      "bytes": 25131
+    }
+  ],
+  "observed_workflow": {
+    "path": ".github/workflows/hepta-public-initial-v2.yml",
+    "worktree_sha256": "32b9db1df9db132272174b3bf263961f74508bef8ee4eb2dc61f662644d1f54a",
+    "profile_line": "HEPTA_PAIRED_EXECUTION_PROFILE: hepta-integrated-chain-execution-v8",
+    "qualification": "Worktree source/execution-profile binding observation only. Final publisher must bind the committed V8 workflow; this field is not a completed V8 run."
+  },
+  "findings": [
+    {
+      "id": "ordinary-current-classical",
+      "conclusion": "The three ordinary controls use Fixture::with_profile -> Fixture::with_study_objective, whose writer/head and selector keys are ed25519_dalek::SigningKey. The profile argument is a compatibility_digest, not a cryptographic algorithm selector.",
+      "references": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/smollm_public_initial_loop_tests.rs",
+          "function_or_anchor": "async fn real_public_initial_three_rounds_hold_and_read_original_current",
+          "line": 218
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_agentd_tests.rs",
+          "function_or_anchor": "async fn real_selected_initial_serves_ordinary_context_then_refuses_revocation",
+          "line": 494
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_agentd_tests.rs",
+          "function_or_anchor": "async fn real_public_initial_reopens_same_ordinary_owners",
+          "line": 192
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs",
+          "function_or_anchor": "fn with_profile(",
+          "line": 51
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs",
+          "function_or_anchor": "fn with_study_objective(",
+          "line": 64
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs",
+          "function_or_anchor": "fn sign_head(",
+          "line": 201
+        }
+      ]
+    },
+    {
+      "id": "ordinary-final-use-classical",
+      "conclusion": "ordinary_session/session calls inputs(), which writes authority.json with a 32-byte Ed25519 verifying_key and no authentication_profile or external_frontier. prepare_initial calls UnixFinalUseAuthorizer::open. Its absent-selector branch calls from_config -> FinalUseAuthority::open_state_dir -> open_state_dir_with_clock, selecting ClassicalV1, SystemAuthorityClock and frontier_store: None.",
+      "references": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_agentd_tests.rs",
+          "function_or_anchor": "async fn session(",
+          "line": 241
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs",
+          "function_or_anchor": "async fn inputs(",
+          "line": 481
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_host.rs",
+          "function_or_anchor": "fn prepare_initial(",
+          "line": 294
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+          "function_or_anchor": "pub fn open(config_path:",
+          "line": 83
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+          "function_or_anchor": "pub fn from_config(",
+          "line": 100
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "function_or_anchor": "pub fn open_state_dir(",
+          "line": 372
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "function_or_anchor": "pub fn open_state_dir_with_clock(",
+          "line": 389
+        }
+      ]
+    },
+    {
+      "id": "explicit-pq-constructor-is-separate",
+      "conclusion": "The explicit ml_dsa65_v2 selector calls from_pq_config and open_pq_state_dir_with_issuer_keys. It pins PQ issuer/revocation keys, requires protected external clock/frontier services, and compares the complete local FinalUse frontier with the external frontier on open. These constructors exist but are not selected by the ordinary fixture above. Unknown explicit profiles refuse; an explicitly selected PQ profile has no fallback to the absent-selector classical path.",
+      "references": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+          "function_or_anchor": "pub fn open(config_path:",
+          "line": 83
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs",
+          "function_or_anchor": "pub fn from_pq_config(",
+          "line": 66
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_pq.rs",
+          "function_or_anchor": "pub fn open_pq_state_dir_with_issuer_keys(",
+          "line": 12
+        }
+      ]
+    },
+    {
+      "id": "external-roots-have-narrow-scopes",
+      "conclusion": "The PQ FinalUse frontier commits its revocation head and consumed nonce set. claim and persist_or_fence perform external CAS before local persistence and fence uncertainty. It is not a root of CURRENT, Chain account/settlement state, inference journals or remote effect outcomes. CURRENT separately checks the retained signed-head floor; filesystem placement or a signed reply does not establish independent physical/admin fault domains.",
+      "references": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "function_or_anchor": "pub fn claim(",
+          "line": 637
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "function_or_anchor": "fn persist_or_fence(",
+          "line": 881
+        },
+        {
+          "path": "codex-rs/hepta-learning-artifacts/src/owner_current_store.rs",
+          "function_or_anchor": "pub(super) fn enforce_required_current_head(",
+          "line": 201
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
+          "function_or_anchor": "pub trait AuthorityFrontierStore<F>",
+          "line": 57
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cognitive_process_current.rs",
+          "function_or_anchor": "pub(crate) fn load_current_cognitive_owner_v1(",
+          "line": 98
+        }
+      ]
+    },
+    {
+      "id": "chain-native-pq-quota-settlement",
+      "conclusion": "The selected NPQ6 account path resolves current M06 provider/consumer ML-DSA authority in prepare_signature_metered and again at apply. For kind 11 it calls the original settle_verified_quota owner after both required witnesses. Its money/nonces/quota remain Chain State, outside the PNQ2 three-table witness root. This is a separate financial transition; ordinary model settled-read receipts do not execute or qualify it.",
+      "references": [
+        {
+          "path": "trillionnium/crates/trnm-mvcc-fee/src/pon_executor/pq_accounts_v2.rs",
+          "function_or_anchor": "pub fn prepare_signature_metered(",
+          "line": 777
+        },
+        {
+          "path": "trillionnium/crates/trnm-mvcc-fee/src/pon_executor/pq_accounts_v2.rs",
+          "function_or_anchor": "pub(super) fn apply(",
+          "line": 873
+        },
+        {
+          "path": "trillionnium/crates/trnm-mvcc-fee/src/pon_executor.rs",
+          "function_or_anchor": "fn settle_verified_quota(",
+          "line": 1776
+        }
+      ]
+    },
+    {
+      "id": "chain-portable-bilateral-remains-classical",
+      "conclusion": "The independent portable ConsumptionSettlementStoreV1 candidate is separate from NPQ6 quota settlement. Its engine::verify_signature_entry requires SIGNATURE_SCHEME_ED25519_V1 and Ed25519 verify_strict against the current registered bilateral key/generation. It cannot be labeled migrated merely because the M06 NPQ6 quota path exists.",
+      "references": [
+        {
+          "path": "trillionnium/crates/trnm-service-settlement/src/store.rs",
+          "function_or_anchor": "pub fn execute_committed_execution(",
+          "line": 255
+        },
+        {
+          "path": "trillionnium/crates/trnm-service-settlement/src/engine.rs",
+          "function_or_anchor": "fn verify_signature_entry(",
+          "line": 986
+        }
+      ]
+    },
+    {
+      "id": "ordinary-settled-read-is-inference-owner-observation",
+      "conclusion": "The ordinary model path opens DurableInferenceControl in prepare_initial. smollm_neural_settled_read::verify reads the same original control journal and joins the exact settled load/forward to the actual query and model identity. This observation does not issue monetary settlement, installation, CURRENT or FinalUse authority and is not evidence of Chain payment or AuthBus PQ settlement execution.",
+      "references": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/smollm_neural_settled_read.rs",
+          "function_or_anchor": "pub(super) fn verify(",
+          "line": 19
+        }
+      ],
+      "related_source": "codex-rs/hepta-infer-worker-host/src/smollm_initial_host.rs::prepare_initial"
+    },
+    {
+      "id": "authbus-pq-settlement-api-is-not-ordinary-wiring",
+      "conclusion": "AuthBusAuthorityStore::open_pq explicitly selects MlDsa65V2. AuthBusAuthorityStore::settle resolves the current registered settlement issuer and revoked bit after acquiring the same write transaction, requires the selected key algorithm, then authenticates the evidence. The ordinary fixture calls AgentdConfig::load without installing an AuthBus trust/checkpoint file; load initializes both optional fields to None. These ordinary controls do not demonstrate the explicit PQ AuthBus settlement wiring. This statement does not assert that all AuthBus callers are classical or that its PQ API is absent.",
+      "references": [
+        {
+          "path": "codex-rs/hepta-authbus/src/crypto_profile.rs",
+          "function_or_anchor": "pub async fn open_pq(",
+          "line": 13
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/settlement_store.rs",
+          "function_or_anchor": "pub async fn settle(",
+          "line": 184
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "function_or_anchor": "pub fn load(",
+          "line": 127
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "function_or_anchor": "authbus_trust_file: None",
+          "line": 201
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "function_or_anchor": "authbus_checkpoint_file: None",
+          "line": 207
+        }
+      ],
+      "related_source": "codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs::Fixture::config"
+    }
+  ],
+  "root_and_recovery_boundaries": [
+    {
+      "owner": "CURRENT",
+      "stored_material": "Signed head records plus registry/checkpoint/witness files in the artifact-owner directory; the required_current_head floor is supplied by the host or fixture.",
+      "monotonic_condition": "Verify the exact retained anchor exists, reject a lower generation or conflicting equal generation, check the signed predecessor chain and current signer validity. The production descriptor additionally requires owner paths outside agent_home.",
+      "independence_limit": "No cross-owner CAS is implemented by this floor. Independent retention and anti-rollback of the supplied floor are deployment obligations; a canonical path outside agent_home is not an independent failure domain."
+    },
+    {
+      "owner": "Explicit PQ FinalUse",
+      "stored_material": "Local claim/revocation state and an external AuthorityFrontierStore<FinalUseFrontier>, reached by the explicit Unix PQ service adapter.",
+      "monotonic_condition": "Exact external load at open; compare_and_set before local claim/revocation persistence; uncertainty fences the local owner and preserves nonce consumption.",
+      "independence_limit": "The interface requires durable CAS outside local rollback. Socket path separation, UID and signed service replies authenticate a configured service but do not prove its disk monotonicity, operator separation or independent hardware."
+    },
+    {
+      "owner": "Ordinary V7/V8 FinalUse controls",
+      "stored_material": "The classical local owner directory and local nonce/revocation journal, opened via open_state_dir.",
+      "monotonic_condition": "Local crash/reopen and monotonic owner rules; no external frontier is selected.",
+      "independence_limit": "Same-owner reopen is not whole-directory rollback protection or an independent failure-domain exercise."
+    }
+  ],
+  "migration_and_qualification": {
+    "v8_source_execution_binding_implies_pq_activation": false,
+    "ordinary_current_uses_pq_in_this_route": false,
+    "ordinary_final_use_uses_pq_in_this_route": false,
+    "ordinary_final_use_uses_external_cas_in_this_route": false,
+    "historical_ownership_migrated": false,
+    "spent_nonces_or_revocations_migrated": false,
+    "all_effect_states_under_one_monotonic_root": false,
+    "independent_fault_domains_qualified": false,
+    "whole_hepta_pq_migration_completed": false,
+    "whole_chain_hepta_pq_migration_completed": false,
+    "production_activation": false,
+    "ordinary_settled_read_proves_chain_payment": false,
+    "ordinary_authbus_pq_settlement_wiring_demonstrated": false,
+    "portable_bilateral_settlement_migrated_to_pq": false
+  },
+  "document_review": {
+    "files": [
+      "codex-rs/hepta-contracts/PQ_FINAL_USE.md",
+      "codex-rs/hepta-agentd/PQ_INSTALLATION.md"
+    ],
+    "result": "These documents retain explicit selection and deployment/whole-system limitations. No false whole-system-closure claim was found in the reviewed passages; no document changed."
+  },
+  "integration_note": "Retain these source hashes and verify unchanged runtime blobs against the final V8 commit. The V8 workflow/profile change binds sources; it does not select PQ constructors, migrate old ownership, reset journals, replace external trust roots, or establish deployment qualification.",
+  "revision": 2,
+  "supersedes_json_sha256": "7675f90f7322072d378b8b64ce7fae2b7f5a5a98f2234ac86165e6076ecf02de",
+  "chain_inspection": {
+    "repository": "TrillionniumFoundation/Trillionnium-Chain",
+    "source_commit": "c77d0aa7becceb80fd0b811a7c5387c2fd1f73f0",
+    "base_commit": "40a5ba25e40fd5eda5b04fc1c3811320d438de11",
+    "scope": "Read-only settlement split at the original source plus the cold-ledger runtime fix. The final source-pair publisher must verify corresponding runtime blobs against its selected Chain commit.",
+    "sources": [
+      {
+        "path": "trillionnium/crates/trnm-mvcc-fee/src/pon_executor/pq_accounts_v2.rs",
+        "git_blob": "19da6126d2a64dad42ff0223094d271fa8fadbbe",
+        "sha256": "754f3b22bd4ae950863b8f087682ac45097cd6306e0ac7d896b7c5ff0d070cba",
+        "bytes": 39161
+      },
+      {
+        "path": "trillionnium/crates/trnm-mvcc-fee/src/pon_executor.rs",
+        "git_blob": "0d8ea0bf4b5f64b354b6a12c2b90efe670b8883f",
+        "sha256": "f7f8aea894d0aec0d9612abc5c7e1a0cef69ccd0e2ca992e3300205d9824e67c",
+        "bytes": 148375
+      },
+      {
+        "path": "trillionnium/crates/trnm-service-settlement/src/store.rs",
+        "git_blob": "987af602a871c83535acb14df6bf45cd8746ae04",
+        "sha256": "c990cfc2e1267d681633de6c99387c9074348b621ab51cafd956dd2c47db846b",
+        "bytes": 61381
+      },
+      {
+        "path": "trillionnium/crates/trnm-service-settlement/src/engine.rs",
+        "git_blob": "b1584878f5f133444b37ca738a48d98723ff3bb3",
+        "sha256": "a0f54594849d850efe342765df24223df3cf859d01c6ac9eb273e4d3455efc22",
+        "bytes": 38235
+      }
+    ]
+  },
+  "retrieval_limit": "A broad optional git-grep attempted an uncached promisor object and its GitHub CONNECT returned403. All individually listed source blobs were successfully read and hashed; no repository-wide reachability completeness claim is made."
+}
