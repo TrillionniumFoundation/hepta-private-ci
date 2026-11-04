@@ -1,0 +1,939 @@
+name: Hepta pinned macOS ordinary fixture 5
+'on':
+  push:
+    branches:
+    - test/hepta-macos-fixtures-normal-20261104
+permissions:
+  contents: read
+concurrency:
+  group: hepta-pinned-macos-fixtures-20261104
+  cancel-in-progress: false
+jobs:
+  mac-fixtures:
+    name: Original Mac 5 (${{ matrix.source }}, Intel)
+    runs-on: macos-15-intel
+    timeout-minutes: 90
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        source:
+        - head
+        - prospective-merge
+    env:
+      SOURCE_KIND: ${{ matrix.source }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+    - name: Fetch the exact harness with bounded ancestry
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        ref: ${{ github.sha }}
+        fetch-depth: 64
+        persist-credentials: false
+    - name: Write reviewed readers outside the tested checkout
+      id: readers
+      shell: bash
+      run: |
+        set -euo pipefail
+        umask 077
+        mkdir -p "$RUNNER_TEMP/mac-fixture-harness" "$RUNNER_TEMP/mac-fixtures-private"
+        cat > "$RUNNER_TEMP/mac-fixture-harness/common.py" <<'PY_COMMON_PY'
+        import datetime
+        import hashlib
+        import importlib.util
+        import json
+        import os
+        from pathlib import Path
+        import re
+        import subprocess
+        import sys
+        import time
+
+        sys.dont_write_bytecode = True
+        PINS = {
+            'head': '4c93a641945044f904a656cbf1d23e358a074d52',
+            'merge': 'df9d90106fa7ad09340672b6d2cec1e4dbbd565d',
+            'base': '3a81000aae08c658276958d678874aca4db5eedd',
+            'tree': 'b7cb35c5733bebaed1821f913752b2de82eec496',
+        }
+        WORKFLOW = '.github/workflows/hepta-pinned-macos-fixtures.yml'
+        BRANCH = 'test/hepta-macos-fixtures-normal-20261104'
+        REPOSITORY = 'TrillionniumFoundation/hepta-private-ci'
+        TRIPLE = 'x86_64-apple-darwin'
+        AGENT = '//codex-rs/hepta-agentd:codex-hepta-agentd'
+        CASES = {
+            'tui_corruption': {
+                'target': '//codex-rs/tui:tui-unit-tests',
+                'binary': '//codex-rs/tui:tui-unit-tests-bin',
+                'name': 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery',
+                'crate_root': 'codex-rs/tui/src/lib.rs', 'features': [], 'timeout': 300,
+            },
+            'state_drain': {
+                'target': '//codex-rs/hepta-agentd:hepta-agentd-unit-tests',
+                'binary': '//codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin',
+                'name': 'state::isolation_tests::original_drain_rpc_refuses_running_and_never_fabricates_quiescence',
+                'crate_root': 'codex-rs/hepta-agentd/src/lib.rs',
+                'features': ['default', 'production-cognitive-write'], 'timeout': 300,
+            },
+            'state_owner': {
+                'target': '//codex-rs/hepta-agentd:hepta-agentd-unit-tests',
+                'binary': '//codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin',
+                'name': 'state::isolation_tests::current_durable_run_start_requires_live_owner_trust',
+                'crate_root': 'codex-rs/hepta-agentd/src/lib.rs',
+                'features': ['default', 'production-cognitive-write'], 'timeout': 300,
+            },
+            'cognitive_socket': {
+                'target': '//codex-rs/hepta-agentd:hepta-agentd-unit-tests',
+                'binary': '//codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin',
+                'name': 'cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation',
+                'crate_root': 'codex-rs/hepta-agentd/src/lib.rs',
+                'features': ['default', 'production-cognitive-write'], 'timeout': 300,
+            },
+            'two_agent_recovery': {
+                'target': '//codex-rs/hepta-agentd:hepta-agentd-two_agent_turn_recovery-test',
+                'binary': '//codex-rs/hepta-agentd:hepta-agentd-two_agent_turn_recovery-test',
+                'name': 'killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_stays_live',
+                'crate_root': 'codex-rs/hepta-agentd/tests/two_agent_turn_recovery.rs',
+                'features': ['default', 'production-cognitive-write'], 'timeout': 900,
+                'agent': AGENT,
+            },
+        }
+
+
+        def sha(raw):
+            return hashlib.sha256(raw).hexdigest()
+
+
+        def dump(path, value):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(value, indent=2, sort_keys=True) + '\n')
+
+
+        def private_root():
+            return Path(os.environ['RUNNER_TEMP']) / 'mac-fixtures-private'
+
+
+        def tested_commit():
+            kind = os.environ['SOURCE_KIND']
+            assert kind in ('head', 'prospective-merge')
+            return PINS['head'] if kind == 'head' else PINS['merge']
+
+
+        def git(*args):
+            return subprocess.check_output(['git', '--no-replace-objects', *args]).decode().strip()
+
+
+        def source_identity():
+            result = {'commit': git('rev-parse', 'HEAD'), 'tree': git('rev-parse', 'HEAD^{tree}'),
+                      'status': git('status', '--porcelain', '--untracked-files=normal')}
+            assert result == {'commit': tested_commit(), 'tree': PINS['tree'], 'status': ''}, result
+            return result
+
+
+        def common_flags():
+            return ['--test_tag_filters=-argument-comment-lint', '--test_verbose_timeout_warnings',
+                    '--build_metadata=COMMIT_SHA=' + tested_commit(),
+                    '--cache_test_results=no', '--flaky_test_attempts=1', '--runs_per_test=1']
+
+
+        def case_flags(key):
+            case = CASES[key]
+            flags = common_flags()
+            if key == 'tui_corruption':
+                flags.append('--test_sharding_strategy=disabled')
+            return flags + ['--test_arg=' + value for value in (case['name'], '--exact', '--nocapture')]
+
+
+        def metadata_command(command, key, extra, expression):
+            # Match the original shell wrapper's startup/config/cache ordering. Its
+            # Python wrapper still chooses the original authenticated/keyless mode.
+            argv = [sys.executable, '.github/scripts/run_bazel_with_buildbuddy.py']
+            if os.environ.get('BAZEL_OUTPUT_USER_ROOT'):
+                argv.append('--output_user_root=' + os.environ['BAZEL_OUTPUT_USER_ROOT'])
+            argv += ['--noexperimental_remote_repo_contents_cache', command, *case_flags(key),
+                     '--config=ci-macos']
+            for name, flag in [('BAZEL_REPO_CONTENTS_CACHE', '--repo_contents_cache='),
+                               ('BAZEL_REPOSITORY_CACHE', '--repository_cache=')]:
+                if os.environ.get(name):
+                    argv.append(flag + os.environ[name])
+            return argv + extra + ['--', expression]
+
+
+        def run_command(argv, prefix):
+            prefix.parent.mkdir(parents=True, exist_ok=True)
+            receipt = {'argv': argv, 'cwd': os.getcwd(),
+                       'started_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                       'finished': False}
+            dump(prefix.with_suffix('.command.json'), receipt)
+            start = time.monotonic()
+            with prefix.with_suffix('.stdout').open('xb') as out, prefix.with_suffix('.stderr').open('xb') as err:
+                result = subprocess.run(argv, stdout=out, stderr=err, check=False)
+            receipt.update(returncode=result.returncode, finished=True, wall_seconds=time.monotonic()-start,
+                           finished_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
+            dump(prefix.with_suffix('.command.json'), receipt)
+            print(json.dumps({'command_record': str(prefix.with_suffix('.command.json')),
+                              'returncode': result.returncode, 'wall_seconds': receipt['wall_seconds']}), flush=True)
+            return result.returncode
+
+
+        def load_buildbuddy_module():
+            spec = importlib.util.spec_from_file_location('pinned_buildbuddy', '.github/scripts/run_bazel_with_buildbuddy.py')
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            return module
+
+
+        def environment_diagnostics(label):
+            commands = [
+                ['/usr/bin/sw_vers'], ['/usr/bin/uname', '-a'],
+                ['/usr/sbin/sysctl', 'hw.ncpu', 'hw.memsize', 'kern.maxproc', 'kern.maxprocperuid',
+                 'kern.maxfiles', 'kern.maxfilesperproc'],
+                ['/bin/launchctl', 'limit'], ['/bin/bash', '-c', 'ulimit -a'], ['/usr/bin/vm_stat'],
+            ]
+            results = []
+            for argv in commands:
+                try:
+                    result = subprocess.run(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                            timeout=10, check=False)
+                    results.append({'argv': argv, 'returncode': result.returncode,
+                                    'stdout': result.stdout[:65536].decode(errors='replace'),
+                                    'stderr': result.stderr[:65536].decode(errors='replace'),
+                                    'truncated': len(result.stdout)>65536 or len(result.stderr)>65536})
+                except (OSError, subprocess.TimeoutExpired) as error:
+                    results.append({'argv': argv, 'status': 'UNKNOWN', 'error': str(error)})
+            dump(private_root() / ('environment-' + label + '.json'), {
+                'read_only': True, 'runner_os': os.environ.get('RUNNER_OS'),
+                'runner_arch': os.environ.get('RUNNER_ARCH'), 'observations': results,
+                'buildbuddy_key_available': bool(os.environ.get('BUILDBUDDY_API_KEY')),
+                'no_limit_changes': True, 'no_foreign_process_actions': True,
+            })
+        PY_COMMON_PY
+        cat > "$RUNNER_TEMP/mac-fixture-harness/bind.py" <<'PY_BIND_PY'
+        import hashlib
+        import json
+        import os
+        from pathlib import Path
+        import subprocess
+        import sys
+        from common import PINS, WORKFLOW, BRANCH, REPOSITORY, CASES, git, dump, private_root, source_identity
+
+
+        def main():
+            phase = sys.argv[1]
+            assert phase in ('before', 'after')
+            root = private_root()
+            root.mkdir(parents=True, exist_ok=True)
+            identity = source_identity()
+            assert os.environ['GITHUB_REPOSITORY'] == REPOSITORY
+            assert os.environ['GITHUB_EVENT_NAME'] == 'push'
+            assert os.environ['GITHUB_REF'] == 'refs/heads/' + BRANCH
+            assert os.environ['GITHUB_RUN_ATTEMPT'] == '1'
+            assert os.environ['RUNNER_OS'] == 'macOS' and os.environ['RUNNER_ARCH'] == 'X64'
+            assert subprocess.check_output(['/usr/bin/uname', '-m']).decode().strip() == 'x86_64'
+            for key in ('head', 'merge', 'base'):
+                assert git('cat-file', '-t', PINS[key]) == 'commit'
+            assert git('show', '-s', '--format=%P', PINS['merge']).split() == [PINS['base'], PINS['head']]
+            assert git('rev-parse', PINS['head']+'^{tree}') == PINS['tree']
+            assert git('rev-parse', PINS['merge']+'^{tree}') == PINS['tree']
+            assert git('merge-base', PINS['base'], PINS['head']) == PINS['base']
+            assert git('merge-tree', '--write-tree', PINS['base'], PINS['head']) == PINS['tree']
+            harness = os.environ['GITHUB_SHA']
+            assert git('show', '-s', '--format=%P', harness) == PINS['head']
+            assert git('diff-tree', '--no-commit-id', '--name-status', '-r', harness) == 'A\t' + WORKFLOW
+            workflow = subprocess.check_output(['git', 'show', harness + ':' + WORKFLOW])
+            source = {**identity, 'pins': PINS, 'harness_commit': harness,
+                      'harness_workflow': WORKFLOW, 'harness_workflow_sha256': hashlib.sha256(workflow).hexdigest(),
+                      'source_kind': os.environ['SOURCE_KIND'], 'runner': 'macos-15-intel',
+                      'job_budget_minutes': 90, 'expected_native_cases': CASES,
+                      'expected_native_count': 5, 'no_cross_source_pass_transfer': True,
+                      'attempt': 1, 'checkout_fetch_depth': 64,
+                      'raw_merge_parents': [PINS['base'], PINS['head']]}
+            paths = ['.bazelrc', '.bazelversion', 'defs.bzl', 'workspace_root_test_launcher.sh.tpl',
+                     '.github/scripts/run-bazel-ci.sh', '.github/scripts/run_bazel_with_buildbuddy.py',
+                     'codex-rs/tui/BUILD.bazel', 'codex-rs/hepta-agentd/BUILD.bazel',
+                     'codex-rs/tui/src/lib.rs', 'codex-rs/hepta-agentd/tests/support/fleet.rs',
+                     'codex-rs/hepta-agentd/src/state_isolation_tests.rs',
+                     'codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs']
+            source['source_files'] = []
+            for path in paths:
+                raw = Path(path).read_bytes()
+                expected = git('rev-parse', 'HEAD:' + path)
+                actual = hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+                assert actual == expected, path
+                source['source_files'].append({'path': path, 'git_blob': actual, 'bytes': len(raw),
+                                               'sha256': hashlib.sha256(raw).hexdigest()})
+            assert Path('.bazelversion').read_text().strip() == '9.3.0'
+            if phase == 'after':
+                assert source == json.loads((root / 'source-before.json').read_text()), 'source changed during verification'
+            else:
+                (root / 'published-harness.yml').write_bytes(workflow)
+                for key in ('head', 'merge', 'base'):
+                    (root / (key + '.raw-commit')).write_bytes(subprocess.check_output(['git', 'cat-file', '-p', PINS[key]]))
+            dump(root / ('source-' + phase + '.json'), source)
+            print(json.dumps({'source_phase': phase, 'result': 'PASS', 'commit': identity['commit']}))
+
+
+        if __name__ == '__main__':
+            main()
+        PY_BIND_PY
+        cat > "$RUNNER_TEMP/mac-fixture-harness/strict_arguments.py" <<'PY_STRICT_ARGUMENTS_PY'
+        import re
+
+
+        def normalized_label(label):
+            # Only normalize the main repository spellings. Never strip an external name.
+            for prefix in ('@@//', '@//'):
+                if label.startswith(prefix):
+                    return '//' + label[len(prefix):]
+            return label
+
+
+        def feature_values(vector):
+            features = []
+            for index, argument in enumerate(vector):
+                value = argument[len('--cfg='):] if argument.startswith('--cfg=') else (
+                    argument if index and vector[index - 1] == '--cfg' else '')
+                match = re.fullmatch(r'feature="([^"]+)"', value)
+                if match:
+                    features.append(match.group(1))
+            return features
+
+
+        def rustc_command_arguments(action):
+            arguments = action.get('arguments', [])
+            assert arguments and all(isinstance(value, str) for value in arguments), 'missing action arguments'
+            parameters = {}
+            for parameter in action.get('paramFiles', []):
+                path = parameter.get('execPath')
+                values = parameter.get('arguments', [])
+                assert isinstance(path, str) and path and path not in parameters, 'missing or duplicate parameter-file identity'
+                assert isinstance(values, list) and all(isinstance(value, str) for value in values)
+                parameters[path] = values
+            consumed = {}
+
+            def consume(path, role):
+                assert path in parameters, 'referenced parameter file is absent from aquery: ' + path
+                previous = consumed.get(path)
+                assert previous is None or previous['role'] == role, 'parameter file reused across wrapper and Rustc roles'
+                consumed[path] = {'role': role, 'references': 1 if previous is None else previous['references'] + 1}
+                return parameters[path]
+
+            # The pinned wrapper patch expands only argv[1], once. Its values are
+            # literal, including values beginning with @ or --wrapper-args=.
+            expanded = list(arguments)
+            if len(expanded) > 1 and expanded[1].startswith('--wrapper-args='):
+                wrapper_path = expanded[1][len('--wrapper-args='):]
+                wrapper_arguments = consume(wrapper_path, 'wrapper')
+                assert '--' not in wrapper_arguments, 'wrapper response file contains the child boundary'
+                expanded = [expanded[0], *wrapper_arguments, *expanded[2:]]
+            basename = lambda value: value.replace('\\', '/').rsplit('/', 1)[-1]
+            assert basename(expanded[0]) in ('process_wrapper', 'process_wrapper.exe'), 'expected the pinned process wrapper'
+            assert '--' in expanded, 'missing wrapper/child boundary'
+            boundary = expanded.index('--')
+            wrapper = expanded[1:boundary]
+            wrapper_flags = {
+                '--subst', '--stable-status-file', '--volatile-status-file', '--env-file',
+                '--out-dir', '--arg-file', '--touch-file', '--copy-output', '--stdout-file',
+                '--stderr-file', '--captured-exit-code-file', '--output-file',
+                '--rustc-output-format', '--require-explicit-unstable-features',
+            }
+            link_search_files = []
+            index = 0
+            while index < len(wrapper):
+                flag = wrapper[index]
+                assert flag in wrapper_flags and index + 1 < len(wrapper), 'unexpected or incomplete wrapper option'
+                value = wrapper[index + 1]
+                if flag == '--arg-file':
+                    # These seven roots have no build.rs or lint-config input. The
+                    # pinned rule propagates only dependency .linksearchpaths here;
+                    # the pinned producer writes -L entries, not feature cfg flags.
+                    assert value.endswith('.linksearchpaths'), 'uninspected dynamic compiler-flags input'
+                    if value in parameters:
+                        assert all(item.startswith('-L') for item in consume(value, 'link-search')), 'link-search input contains non-link arguments'
+                    link_search_files.append({'path': value, 'included_in_param_files': value in parameters})
+                index += 2
+            child = expanded[boundary + 1:]
+            assert child and basename(child[0]) in ('rustc', 'rustc.exe'), 'expected an actual Rustc child command'
+
+            def expand_rustc(vector, stack=()):
+                result = []
+                for argument in vector:
+                    if argument.startswith('@'):
+                        path = argument[1:]
+                        assert path not in stack, 'cyclic Rustc parameter-file reference'
+                        result.extend(expand_rustc(consume(path, 'rustc'), (*stack, path)))
+                    else:
+                        result.append(argument)
+                return result
+
+            rustc_arguments = expand_rustc(child[1:])
+            assert '--' not in rustc_arguments, 'unexpected Rustc option terminator'
+            assert set(consumed) == set(parameters), 'aquery contains an unreferenced parameter file'
+            return {'rustc_executable': child[0], 'rustc_arguments': rustc_arguments,
+                'parameter_files': [{'exec_path': path, 'argument_count': len(parameters[path]), **consumed[path]}
+                                    for path in sorted(parameters)],
+                'dependency_link_search_files': link_search_files}
+        PY_STRICT_ARGUMENTS_PY
+        cat > "$RUNNER_TEMP/mac-fixture-harness/metadata.py" <<'PY_METADATA_PY'
+        import hashlib
+        import json
+        import os
+        from pathlib import Path, PurePosixPath
+        import re
+        import stat
+        import struct
+        from common import CASES, AGENT, TRIPLE, dump, metadata_command, run_command, sha
+        from strict_arguments import normalized_label, feature_values, rustc_command_arguments
+
+
+        def unique_map(rows, key):
+            result = {}
+            for row in rows:
+                identity = str(row[key])
+                assert identity not in result, 'duplicate analysis identity'
+                result[identity] = row
+            return result
+
+
+        def option_values(arguments, name):
+            result = []
+            for index, value in enumerate(arguments):
+                if value == name:
+                    assert index + 1 < len(arguments), 'incomplete option'
+                    result.append(arguments[index + 1])
+                elif value.startswith(name + '='):
+                    result.append(value[len(name) + 1:])
+            return result
+
+
+        def one_option(arguments, name):
+            result = option_values(arguments, name)
+            assert len(result) == 1, 'expected one ' + name
+            return result[0]
+
+
+        def profile(arguments):
+            values = option_values(arguments, '--codegen') + option_values(arguments, '-C')
+            values += [x[2:] for x in arguments if x.startswith('-C') and x != '-C' and not x.startswith('-C=')]
+            result = {}
+            for key in ('opt-level', 'debuginfo', 'debug-assertions', 'strip'):
+                found = [x.split('=', 1)[1] for x in values if x.startswith(key + '=')]
+                assert len(found) <= 1, 'ambiguous compiler profile: ' + key
+                result[key] = found[0] if found else None
+            assert result['opt-level'] is not None and result['debuginfo'] == '0'
+            return result
+
+
+        def environment(action):
+            result = {}
+            for row in action.get('environmentVariables', []):
+                assert isinstance(row.get('key'), str) and row['key'] not in result
+                assert isinstance(row.get('value', ''), str)
+                result[row['key']] = row.get('value', '')
+            return result
+
+
+        def output_path(value):
+            assert isinstance(value, str) and value and '\\' not in value and '\x00' not in value
+            p = PurePosixPath(value)
+            assert not p.is_absolute() and '..' not in p.parts and str(p) == value
+            assert p.parts[0] == 'bazel-out'
+            return value
+
+
+        def inspect_graph(graph, case):
+            targets = unique_map(graph.get('targets', []), 'id')
+            configs = unique_map(graph.get('configuration', []), 'id')
+            artifacts = unique_map(graph.get('artifacts', []), 'id')
+            fragments = unique_map(graph.get('pathFragments', []), 'id')
+            def artifact_path(identity):
+                fragment = str(artifacts[str(identity)]['pathFragmentId'])
+                seen, parts = set(), []
+                while fragment != '0':
+                    assert fragment not in seen
+                    seen.add(fragment)
+                    node = fragments[fragment]
+                    assert node['label'] and '/' not in node['label']
+                    parts.append(node['label'])
+                    fragment = str(node.get('parentId', 0))
+                return output_path('/'.join(reversed(parts)))
+            binaries = {case['binary']: (case['crate_root'], case['features'], True)}
+            if case.get('agent'):
+                binaries[AGENT] = ('codex-rs/hepta-agentd/src/main.rs', ['default', 'production-cognitive-write'], False)
+            grouped = {}
+            for action in graph.get('actions', []):
+                label = normalized_label(targets[str(action['targetId'])]['label'])
+                grouped.setdefault((label, action['mnemonic']), []).append(action)
+            required = {(label, 'Rustc') for label in binaries} | {(case['target'], 'TestRunner')}
+            assert set(grouped) == required and all(len(rows) == 1 for rows in grouped.values()), 'unexpected analysis action set'
+            observed = {}
+            for label, (source, features, libtest) in binaries.items():
+                action = grouped[(label, 'Rustc')][0]
+                config = configs[str(action['configurationId'])]
+                assert config.get('checksum') and not config.get('isTool', False)
+                parsed = rustc_command_arguments(action)
+                args = parsed['rustc_arguments']
+                assert args and args[0] == source, 'wrong crate root'
+                assert one_option(args, '--target') == TRIPLE
+                assert args.count('--test') == int(libtest)
+                assert sorted(feature_values(args)) == sorted(features), 'source features differ'
+                if not libtest:
+                    assert one_option(args, '--crate-type') == 'bin'
+                    assert one_option(args, '--crate-name') == 'codex_hepta_agentd'
+                outputs = [artifact_path(x) for x in action.get('outputIds', [])]
+                linked = [x for x in outputs if PurePosixPath(x).name == label.rsplit(':', 1)[1]]
+                assert len(linked) == 1, 'ambiguous linked output'
+                observed[label] = {'crate_root': source, 'target_triple': TRIPLE, 'libtest': libtest,
+                    'features': sorted(features), 'profile': profile(args), 'output': linked[0],
+                    'configuration_checksum': config['checksum'], 'configuration_mnemonic': config.get('mnemonic'),
+                    'rustc_arguments_sha256': sha(json.dumps(args, separators=(',', ':')).encode()),
+                    'parameter_files': parsed['parameter_files'],
+                    'dependency_link_search_files': parsed['dependency_link_search_files']}
+            test_action = grouped[(case['target'], 'TestRunner')][0]
+            config = configs[str(test_action['configurationId'])]
+            assert not config.get('isTool', False)
+            assert config['checksum'] == observed[case['binary']]['configuration_checksum']
+            args = test_action.get('arguments', [])
+            assert args.count(case['name']) == args.count('--exact') == args.count('--nocapture') == 1, 'TestRunner does not select exactly the requested native case'
+            assert not any(x in args for x in ('--ignored', '--include-ignored', '--list', '--skip'))
+            env = environment(test_action)
+            for name in ('CODEX_BAZEL_TEST_SKIP_FILTERS', 'CODEX_SANDBOX', 'CODEX_SANDBOX_NETWORK_DISABLED'):
+                assert not env.get(name), 'unexpected bypass/skip environment: ' + name
+            if 'RUST_MIN_STACK' in env:
+                assert env['RUST_MIN_STACK'] == '8388608'
+            observed['test_runner'] = {'configuration_checksum': config['checksum'], 'arguments': args,
+                                       'environment': env, 'action_key': test_action.get('actionKey')}
+            return observed
+
+
+        def formatter(labels):
+            return '''def normal(label):
+            value = str(label)
+            if value.startswith("@@//"):
+                return value[2:]
+            if value.startswith("@//"):
+                return value[1:]
+            return value
+        def file_record(f):
+            return {"owner": normal(f.owner), "path": f.path, "short_path": f.short_path}
+        def selected(runfiles):
+            return [file_record(f) for f in runfiles.files.to_list() if normal(f.owner) in ''' + repr(labels) + ''']
+        def format(target):
+            available = providers(target)
+            info = available["DefaultInfo"]
+            env = available.get("RunEnvironmentInfo")
+            return json.encode({"label": normal(target.label), "files": [file_record(f) for f in info.files.to_list()], "default_runfiles": selected(info.default_runfiles), "data_runfiles": selected(info.data_runfiles), "run_environment": None if env == None else {"environment": env.environment, "inherited": env.inherited_environment}})
+        '''
+
+
+        def inspect_cquery(raw, case, graph):
+            rows = [json.loads(line) for line in raw.decode().splitlines() if line.strip()]
+            by_label = unique_map(rows, 'label')
+            required = {case['target'], case['binary']} | ({AGENT} if case.get('agent') else set())
+            assert set(by_label) == required, 'unexpected configured labels'
+            for label in required:
+                row = by_label[label]
+                assert len(row['files']) == 1 and row['files'][0]['owner'] == label
+                output_path(row['files'][0]['path'])
+                if label in graph:
+                    assert row['files'][0]['path'] == graph[label]['output']
+            root = by_label[case['target']]
+            runfiles = root['default_runfiles'] + root['data_runfiles']
+            if case['target'] != case['binary']:
+                matches = [f for f in runfiles if f['owner'] == case['binary']]
+                assert matches and all(f == by_label[case['binary']]['files'][0] for f in matches), 'wrapper does not bind this exact test binary'
+            if case.get('agent'):
+                wanted = by_label[AGENT]['files'][0]
+                matches = [f for f in runfiles if f['owner'] == AGENT]
+                assert matches and all(f == wanted for f in matches), 'process fixture does not declare the original Agentd'
+                env = root['run_environment']
+                assert isinstance(env, dict)
+                key = 'CARGO_BIN_EXE_codex-hepta-agentd'
+                assert key not in env['inherited']
+                assert env['environment'][key] == '_main/' + wanted['short_path']
+            return by_label
+
+
+        def macho_identity(relative):
+            relative = output_path(relative)
+            output_tree = Path('bazel-out').resolve(strict=True)
+            actual = Path(relative).resolve(strict=True)
+            assert actual.is_relative_to(output_tree)
+            fd = os.open(actual, os.O_RDONLY | os.O_NOFOLLOW)
+            try:
+                before = os.fstat(fd)
+                assert stat.S_ISREG(before.st_mode)
+                with os.fdopen(os.dup(fd), 'rb') as stream:
+                    header = stream.read(32)
+                    assert len(header) == 32
+                    magic, cpu, subtype, filetype, ncmds, commands, flags, reserved = struct.unpack('<8I', header)
+                    assert magic == 0xfeedfacf and cpu == 0x01000007 and filetype == 2, 'expected thin x86_64 Mach-O executable'
+                    stream.seek(0)
+                    digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+                after = os.fstat(fd)
+                fields = ('st_dev', 'st_ino', 'st_mode', 'st_size', 'st_mtime_ns', 'st_ctime_ns')
+                assert all(getattr(before, x) == getattr(after, x) for x in fields)
+                return {'path': relative, 'resolved_path': str(actual), 'bytes': before.st_size,
+                        'sha256': digest, 'format': 'Mach-O 64 little-endian', 'cpu': 'x86_64',
+                        'header_hex': header.hex(), 'stat': {x: getattr(before, x) for x in fields}}
+            finally:
+                os.close(fd)
+
+
+        def inspect(key, phase, directory):
+            case = CASES[key]
+            labels = sorted({case['target'], case['binary']} | ({AGENT} if case.get('agent') else set()))
+            binaries = sorted({case['binary']} | ({AGENT} if case.get('agent') else set()))
+            pattern = '^(@@?)?(' + '|'.join(re.escape(x) for x in binaries) + ')$'
+            target_pattern = '^(@@?)?' + re.escape(case['target']) + '$'
+            # A manual rust_test used as a wrapper's binary can itself register a
+            # TestRunner action. Inspect only the outer target that this case executes.
+            expression = '(mnemonic("^Rustc$", filter(' + json.dumps(pattern) + ', deps(' + case['target'] + ')))) union (mnemonic("^TestRunner$", filter(' + json.dumps(target_pattern) + ', deps(' + case['target'] + '))))'
+            prefix = directory / ('metadata-' + phase)
+            query = metadata_command('aquery', key, ['--output=jsonproto', '--include_artifacts=true',
+                '--include_commandline=true', '--include_param_files=true'], expression)
+            assert run_command(query, prefix.with_name(prefix.name + '-aquery')) == 0
+            graph_file = prefix.with_name(prefix.name + '-aquery').with_suffix('.stdout')
+            assert graph_file.stat().st_size <= 128*1024*1024
+            graph = inspect_graph(json.loads(graph_file.read_bytes()), case)
+            format_file = directory / ('cquery-' + phase + '.bzl')
+            format_file.write_text(formatter(labels))
+            query = metadata_command('cquery', key, ['--output=starlark', '--starlark:file=' + str(format_file)],
+                                     'set(' + ' '.join(labels) + ')')
+            assert run_command(query, prefix.with_name(prefix.name + '-cquery')) == 0
+            cq = prefix.with_name(prefix.name + '-cquery').with_suffix('.stdout')
+            assert cq.stat().st_size <= 16*1024*1024
+            declarations = inspect_cquery(cq.read_bytes(), case, graph)
+            images = {label: macho_identity(value['output']) for label, value in graph.items() if label != 'test_runner'}
+            result = {'case': key, 'phase': phase, 'graph': graph, 'declarations': declarations, 'images': images}
+            dump(directory / ('metadata-' + phase + '.json'), result)
+            return result
+
+
+        def compare(before, after):
+            assert before['case'] == after['case']
+            assert before['graph'] == after['graph'], 'configured compiler/test action changed'
+            assert before['declarations'] == after['declarations'], 'runfiles or runtime declarations changed'
+            assert before['images'].keys() == after['images'].keys()
+            for label in before['images']:
+                left, right = before['images'][label], after['images'][label]
+                for key in ('path', 'resolved_path', 'bytes', 'sha256', 'format', 'cpu', 'header_hex'):
+                    assert left[key] == right[key], 'native image changed: ' + label + ':' + key
+        PY_METADATA_PY
+        cat > "$RUNNER_TEMP/mac-fixture-harness/read_result.py" <<'PY_READ_RESULT_PY'
+        import json
+        from pathlib import Path
+        import re
+        import shutil
+        import urllib.parse
+        from common import dump
+
+
+        def read_result(case, code, bep_path, directory, configuration_checksum):
+            events = [json.loads(line) for line in bep_path.read_text().splitlines() if line.strip()]
+            all_results = [row for row in events if 'testResult' in row.get('id', {})]
+            assert len(all_results) == 1, 'one physical, unsharded test attempt required'
+            row = all_results[0]
+            ident, result = row['id']['testResult'], row['testResult']
+            assert ident['label'] == case['target']
+            assert all(ident.get(key) == 1 for key in ('run', 'shard', 'attempt'))
+            assert ident['configuration']['id'] == configuration_checksum, 'BEP configured identity differs from actual aquery'
+            logs = [x['uri'] for x in result.get('testActionOutput', []) if x.get('name') == 'test.log']
+            assert len(logs) == 1
+            location = urllib.parse.urlparse(logs[0])
+            assert location.scheme == 'file' and location.netloc in ('', 'localhost')
+            path = Path(urllib.parse.unquote(location.path))
+            # Copy now, before the next exact selector reuses the original target's log.
+            shutil.copyfile(path, directory / 'original-test.log')
+            text = (directory / 'original-test.log').read_text().replace('\r', '')
+            names = re.findall(r'^test ([A-Za-z_][A-Za-z0-9_:]*) \.\.\.', text, re.M)
+            running = re.findall(r'^running (\d+) tests?$', text, re.M)
+            summaries = re.findall(r'^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out;', text, re.M)
+            snapshot = {'native_exit': code, 'test_result': row, 'observed_names': names,
+                        'running': running, 'native_summaries': summaries}
+            dump(directory / 'native-observation.json', snapshot)
+            completions = [x for x in events if x.get('id', {}).get('targetCompleted', {}).get('label') == case['target']]
+            assert len(completions) == 1
+            completion = completions[0]
+            assert completion['id']['targetCompleted']['configuration'] == ident['configuration']
+            assert completion['completed']['success'] is True
+            assert int(completion['completed']['testTimeoutSeconds']) == case['timeout']
+            assert completion['completed']['testTimeout'] == str(case['timeout']) + 's'
+            summary_events = [x for x in events if 'testSummary' in x.get('id', {})]
+            assert len(summary_events) == 1
+            summary_event = summary_events[0]
+            assert summary_event['id']['testSummary']['label'] == case['target']
+            assert summary_event['id']['testSummary']['configuration'] == ident['configuration']
+            summary = summary_event['testSummary']
+            assert summary['overallStatus'] == 'PASSED'
+            assert all(summary.get(key) == 1 for key in ('totalRunCount', 'runCount', 'attemptCount'))
+            assert not result.get('cachedLocally', False)
+            assert not result.get('executionInfo', {}).get('cachedRemotely', False)
+            assert summary.get('totalNumCached', 0) == 0
+            assert running == ['1'] and names == [case['name']]
+            assert 'Skipping test' not in text and len(summaries) == 1
+            outcome, passed, failed, ignored, measured, filtered = summaries[0]
+            assert outcome == 'ok' and int(passed) == 1 and int(failed) == int(ignored) == int(measured) == 0
+            assert code == 0 and result['status'] == 'PASSED'
+            finished = [x for x in events if 'buildFinished' in x.get('id', {})]
+            assert len(finished) == 1 and finished[0]['finished']['overallSuccess'] is True
+            assert finished[0]['finished']['exitCode'].get('code', 0) == 0
+            return {'result': 'PASS', 'native_passed': 1, 'native_failed': 0, 'native_ignored': 0,
+                    'native_filtered': int(filtered), 'physical_attempts': 1,
+                    'name': case['name'], 'target': case['target'], 'timeout_seconds': case['timeout'],
+                    'configuration_checksum': configuration_checksum, 'cached_tests': 0}
+        PY_READ_RESULT_PY
+        cat > "$RUNNER_TEMP/mac-fixture-harness/run_lane.py" <<'PY_RUN_LANE_PY'
+        import json
+        import os
+        from pathlib import Path
+        import subprocess
+        import sys
+        import traceback
+        from common import CASES, AGENT, common_flags, case_flags, dump, private_root, run_command, source_identity, environment_diagnostics
+        import metadata
+        from read_result import read_result
+
+
+        def main():
+            root = private_root()
+            source_identity()
+            fd = os.open(root / 'lane.once', os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+            os.close(fd)
+            environment_diagnostics('before')
+            version = subprocess.check_output(['bazel', '--version']).decode().strip()
+            assert version == 'bazel 9.3.0'
+            (root / 'bazel-version.txt').write_text(version + '\n')
+            # Materialize exactly the original binaries/wrappers and process fixture
+            # child for before/after hashing. This build executes no native tests.
+            targets = sorted({c['target'] for c in CASES.values()} | {c['binary'] for c in CASES.values()} | {AGENT})
+            build = ['./.github/scripts/run-bazel-ci.sh', '--print-failed-action-summary',
+                     '--remote-download-toplevel', '--', 'build', *common_flags(), '--', *targets]
+            build_code = run_command(build, root / 'original-target-build')
+            lane = {'expected_native': 5, 'result': 'FAIL', 'cases': {}, 'build_exit': build_code,
+                    'native_commands_started': 0, 'retries': 0, 'source': source_identity()}
+            if build_code != 0:
+                lane['blocked'] = list(CASES)
+                environment_diagnostics('after')
+                dump(root / 'lane-result.json', lane)
+                return 1
+            for key, case in CASES.items():
+                directory = root / key
+                directory.mkdir()
+                outcome = {'result': 'FAIL', 'native_started': False, 'case': key, 'name': case['name']}
+                before = None
+                try:
+                    source_identity()
+                    before = metadata.inspect(key, 'before', directory)
+                    fd = os.open(directory / 'native.once', os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+                    os.close(fd)
+                    argv = ['./.github/scripts/run-bazel-ci.sh', '--print-failed-action-summary',
+                            '--print-failed-test-logs', '--', 'test', *case_flags(key),
+                            '--build_event_json_file=' + str(directory / 'build-events.jsonl'), '--', case['target']]
+                    outcome['native_started'] = True
+                    lane['native_commands_started'] += 1
+                    dump(directory / 'admission.json', {'case': key, 'argv': argv, 'source': source_identity(),
+                                                       'original_test_timeout_seconds': case['timeout'], 'attempt': 1})
+                    code = run_command(argv, directory / 'original-native')
+                    outcome['native_exit'] = code
+                    read = read_result(case, code, directory / 'build-events.jsonl', directory,
+                                       before['graph']['test_runner']['configuration_checksum'])
+                    outcome.update(read)
+                except Exception as error:
+                    outcome['reader_error'] = type(error).__name__ + ': ' + str(error)
+                    (directory / 'failure.txt').write_text(traceback.format_exc())
+                finally:
+                    if before is not None and outcome.get('native_exit') == 0:
+                        try:
+                            after = metadata.inspect(key, 'after', directory)
+                            metadata.compare(before, after)
+                            source_identity()
+                            outcome['metadata_before_after'] = 'PASS'
+                        except Exception as error:
+                            outcome['result'] = 'FAIL'
+                            outcome['metadata_after_error'] = type(error).__name__ + ': ' + str(error)
+                            (directory / 'metadata-after-failure.txt').write_text(traceback.format_exc())
+                    elif before is not None:
+                        # A failed/crashed Bazel client is not restarted for an audit.
+                        # Preserve the failure and only read the already built images.
+                        try:
+                            images = {label: metadata.macho_identity(value['path']) for label, value in before['images'].items()}
+                            dump(directory / 'images-after-failure.json', images)
+                            source_identity()
+                        except Exception as error:
+                            outcome['image_after_failure_error'] = type(error).__name__ + ': ' + str(error)
+                        outcome['metadata_after'] = 'NOT_QUERIED_AFTER_FAILED_NATIVE'
+                    lane['cases'][key] = outcome
+                    dump(directory / 'result.json', outcome)
+                    dump(root / 'lane-result.json', lane)
+                    print(json.dumps({'case': key, 'result': outcome['result'], 'native_started': outcome['native_started']}), flush=True)
+            environment_diagnostics('after')
+            lane['result'] = 'PASS' if len(lane['cases']) == 5 and all(v['result'] == 'PASS' for v in lane['cases'].values()) else 'FAIL'
+            lane['native_passed'] = sum(v.get('native_passed', 0) for v in lane['cases'].values())
+            lane['native_filtered_not_counted_as_pass'] = sum(v.get('native_filtered', 0) for v in lane['cases'].values())
+            dump(root / 'lane-result.json', lane)
+            return 0 if lane['result'] == 'PASS' else 1
+
+
+        if __name__ == '__main__':
+            sys.exit(main())
+        PY_RUN_LANE_PY
+        cat > "$RUNNER_TEMP/mac-fixture-harness/export.py" <<'PY_EXPORT_PY'
+        import hashlib
+        import json
+        import os
+        from pathlib import Path
+        import re
+        import stat
+        import sys
+
+
+        def sha(raw):
+            return hashlib.sha256(raw).hexdigest()
+
+
+        def sanitize(raw, secret):
+            # Cover both literal UTF-8 and JSON's escaped spelling. Do not record either
+            # spelling, a credential hash, or a prefix in public evidence.
+            forms = []
+            if secret:
+                for form in (secret.encode(), json.dumps(secret, ensure_ascii=True)[1:-1].encode(),
+                             json.dumps(secret, ensure_ascii=False)[1:-1].encode()):
+                    if form and form not in forms:
+                        forms.append(form)
+            result, counts = raw, []
+            for form in sorted(forms, key=len, reverse=True):
+                count = result.count(form)
+                result = result.replace(form, b'[REDACTED_BUILDBUDDY_CREDENTIAL]')
+                counts.append(count)
+            assert all(form not in result for form in forms), 'credential sanitization failed'
+            return result, sum(counts)
+
+
+        def native_shape(text):
+            return {pattern: re.findall(pattern, text.replace('\r', ''), re.M) for pattern in (
+                r'^running (\d+) tests?$', r'^test ([A-Za-z_][A-Za-z0-9_:]*) \.\.\.',
+                r'^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out;')}
+
+
+        def check_bep(raw, exported):
+            left = [json.loads(x) for x in raw.decode().splitlines() if x.strip()]
+            right = [json.loads(x) for x in exported.decode().splitlines() if x.strip()]
+            assert len(left) == len(right)
+            changed = []
+            protected = {'testResult', 'testSummary', 'targetCompleted', 'targetConfigured', 'configuration', 'buildFinished'}
+            allowed = {'structuredCommandLine', 'unstructuredCommandLine', 'optionsParsed', 'started', 'progress'}
+            for index, (a, b) in enumerate(zip(left, right)):
+                assert a.get('id') == b.get('id'), 'redaction changed an event identity'
+                kinds = set(a.get('id', {}))
+                if a != b:
+                    assert kinds & allowed and not kinds & protected, 'credential appeared outside an allowed command/diagnostic event'
+                    changed.append({'event_index': index, 'event_kind': sorted(kinds)})
+            return {'event_count': len(left), 'changed_command_or_progress_events': changed,
+                    'qualification_events_byte_derived_structurally_identical': True}
+
+
+        def main():
+            private = Path(os.environ['RUNNER_TEMP']) / 'mac-fixtures-private'
+            public = Path(os.environ['RUNNER_TEMP']) / 'mac-fixtures-evidence'
+            public.mkdir(mode=0o700)
+            secret = os.environ.get('BUILDBUDDY_API_KEY', '')
+            records = []
+            for path in sorted(private.rglob('*')):
+                if path.is_dir():
+                    continue
+                info = path.lstat()
+                assert stat.S_ISREG(info.st_mode) and not path.is_symlink(), 'unexpected evidence file kind'
+                assert info.st_size <= 128*1024*1024, 'oversized evidence file'
+                relative = path.relative_to(private)
+                raw = path.read_bytes()
+                raw.decode('utf-8')  # Evidence is text; no executable/image payloads.
+                exported, redactions = sanitize(raw, secret)
+                record = {'path': relative.as_posix(), 'original_bytes': len(raw), 'original_sha256': sha(raw),
+                          'exported_bytes': len(exported), 'exported_sha256': sha(exported),
+                          'credential_replacements': redactions, 'byte_identical': raw == exported}
+                if path.name == 'build-events.jsonl':
+                    record['bep_check'] = check_bep(raw, exported)
+                if path.name == 'original-test.log':
+                    assert native_shape(raw.decode()) == native_shape(exported.decode()), 'redaction changed native accounting'
+                    record['native_accounting_unchanged'] = True
+                if path.suffix == '.json':
+                    json.loads(exported)
+                output = public / relative
+                output.parent.mkdir(parents=True, exist_ok=True)
+                output.write_bytes(exported)
+                records.append(record)
+            assert records, 'no evidence to export'
+            result = {'schema': 'mac-fixture-secret-safe-export-v1', 'files': records,
+                      'credential_values_or_fingerprints_exported': False,
+                      'original_files_retained_only_in_private_runner_temp': True,
+                      'no_claim_of_full_raw_equality_for_redacted_files': True,
+                      'native_executables_in_artifact': False}
+            (public / 'EXPORT_MANIFEST.json').write_text(json.dumps(result, indent=2, sort_keys=True)+'\n')
+            print(json.dumps({'files': len(records), 'redacted_files': sum(not x['byte_identical'] for x in records),
+                              'status': 'PASS_EXPORT'}))
+
+
+        if __name__ == '__main__':
+            main()
+        PY_EXPORT_PY
+        cp "$RUNNER_TEMP/mac-fixture-harness/"*.py "$RUNNER_TEMP/mac-fixtures-private/"
+    - name: Fetch the retained actual merge object and its ordered parents
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        ref: df9d90106fa7ad09340672b6d2cec1e4dbbd565d
+        fetch-depth: 64
+        persist-credentials: false
+    - name: Check out only the exact H or actual M under test
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        ref: ${{ matrix.source == 'head' && '4c93a641945044f904a656cbf1d23e358a074d52' || 'df9d90106fa7ad09340672b6d2cec1e4dbbd565d'
+          }}
+        fetch-depth: 64
+        persist-credentials: false
+    - name: Bind source, original fixture blobs and first push attempt
+      id: source
+      shell: bash
+      run: |
+        set -euo pipefail
+        python3 "$RUNNER_TEMP/mac-fixture-harness/bind.py" before
+    - name: Prepare the original macOS Bazel tools and repository cache
+      id: prepare
+      uses: ./.github/actions/prepare-bazel-ci
+      with:
+        target: x86_64-apple-darwin
+        cache-scope: bazel-test
+    - name: Build original targets and execute five exact native cases once
+      id: native
+      env:
+        BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        python3 -u "$RUNNER_TEMP/mac-fixture-harness/run_lane.py"
+    - name: Recheck the complete fixed source binding
+      id: after
+      if: always() && steps.source.outcome == 'success'
+      shell: bash
+      run: |
+        set -euo pipefail
+        python3 "$RUNNER_TEMP/mac-fixture-harness/bind.py" after
+    - name: Export exact evidence with only known credential strings redacted
+      id: export
+      if: always() && steps.readers.outcome == 'success'
+      shell: bash
+      env:
+        BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+      run: |
+        set -euo pipefail
+        python3 "$RUNNER_TEMP/mac-fixture-harness/export.py"
+    - name: Preserve all available normal results including failures
+      if: always() && steps.export.outcome == 'success'
+      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+      with:
+        name: hepta-macos-fixtures-${{ matrix.source }}-4c93a641
+        path: ${{ runner.temp }}/mac-fixtures-evidence
+        if-no-files-found: error
+        retention-days: 30
