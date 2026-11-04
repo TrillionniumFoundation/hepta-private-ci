@@ -19,9 +19,13 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - key: union0cf-metadata
-            source: 0cf81d65646b8907e42e781ea35a28437b5b0054
-            script: verify_union_metadata.py
+          - key: envf2-source
+            source: f2d0fcd44cedd662f5cbccff1278ade26354f350
+            script: verify.py
+            full_source: true
+          - key: envf2-merge
+            source: 6579544c4b154eda1d19b7f7fe6aca12c432b50e
+            script: verify.py
             full_source: true
     env:
       GIT_CONFIG_COUNT: 1
