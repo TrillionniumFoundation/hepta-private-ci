@@ -73,7 +73,7 @@ async fn fixture(
     String,
 ) {
     let temp = tempfile::tempdir().unwrap();
-    let fleet = temp.path().join("fleet");
+    let fleet = temp.path().canonicalize().unwrap().join("fleet");
     std::fs::create_dir_all(&fleet).unwrap();
     let owner = AgentId::parse(format!("00000000-0000-4000-8000-{suffix:012}")).unwrap();
     let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);

@@ -51,6 +51,12 @@ pub(crate) struct FleetHarness {
 
 impl FleetHarness {
     pub(crate) fn new() -> Result<Self> {
+        // Darwin's per-user temporary root can exceed the real UDS path limit.
+        #[cfg(target_os = "macos")]
+        let temp = tempfile::Builder::new()
+            .prefix("agentd-")
+            .tempdir_in("/tmp")?;
+        #[cfg(not(target_os = "macos"))]
         let temp = tempfile::tempdir()?;
         let root = temp.path().canonicalize()?;
         let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;

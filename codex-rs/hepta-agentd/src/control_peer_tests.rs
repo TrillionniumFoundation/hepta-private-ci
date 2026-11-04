@@ -1,3 +1,6 @@
+use codex_uds::UnixListener;
+use codex_uds::UnixStream;
+
 use super::*;
 
 #[tokio::test]

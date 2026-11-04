@@ -77,7 +77,7 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
     let server = start_mock_server().await;
     // Waiting on the mocked response keeps the turn active on local and remote executors
     // without requiring an OS-specific command or a working sandboxed child process.
-    mount_response_once(
+    let original_request = mount_response_once(
         &server,
         sse_response(sse(vec![
             ev_response_created("suspended_response"),
@@ -120,6 +120,16 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         panic!("expected a started root turn");
     };
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnStarted(_))).await;
+    // A started task is not yet a durable recovery checkpoint. Observe the
+    // actual request, which is sent only after input, context, and Ready flush.
+    tokio::time::timeout(Duration::from_secs(5), async {
+        while original_request.requests().is_empty() {
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await
+    .expect("original turn should reach the provider before suspension");
+    original_request.single_request();
 
     assert_eq!(
         codex
@@ -165,25 +175,38 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         item,
         RolloutItem::EventMsg(EventMsg::TurnAborted(_) | EventMsg::TurnComplete(_))
     )));
+    assert_eq!(
+        items.iter().rev().find_map(|item| match item {
+            RolloutItem::EventMsg(EventMsg::TurnRecoveryCandidate(marker))
+                if marker.turn_id == turn_id =>
+                Some(&marker.state),
+            _ => None,
+        }),
+        Some(&codex_protocol::protocol::TurnRecoveryCandidateState::Ready)
+    );
     test.thread_manager
         .remove_thread(&test.session_configured.thread_id)
         .await
         .expect("unload the suspended root");
-    let recovery_server = start_mock_server().await;
-    mount_sse_once(
-        &recovery_server,
+    let recovered_request = mount_sse_once(
+        &server,
         sse(vec![
             ev_response_created("recovered_response"),
             ev_completed("recovered_response"),
         ]),
     )
     .await;
-    let resumed = test_codex()
-        .with_config(|config| {
-            let _ = config.features.enable(Feature::HeptaTurnRecovery);
-        })
-        .with_model("gpt-5.4")
-        .resume(&recovery_server, Arc::clone(&test.home), rollout_path)
+    // A replacement runtime must retain the selected executor, cwd, model,
+    // permissions, and deployment endpoint of the exact interrupted request.
+    let original_config = test.config.clone();
+    let mut resumed_builder = test_codex().with_config(move |config| {
+        *config = original_config;
+    });
+    if let Some(exec_server_url) = test.executor_environment().exec_server_url() {
+        resumed_builder = resumed_builder.with_exec_server_url(exec_server_url);
+    }
+    let resumed = resumed_builder
+        .resume(&server, Arc::clone(&test.home), rollout_path)
         .await
         .expect("resume the suspended root on a replacement runtime");
     assert_eq!(
@@ -211,6 +234,8 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         unreachable!("wait_for_event returned unexpected event");
     };
     assert_eq!(completed.turn_id, turn_id);
+    recovered_request.single_request();
+    original_request.single_request();
 }
 
 /// After an interrupt we expect the next request to the model to include both

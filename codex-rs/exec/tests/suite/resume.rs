@@ -1,5 +1,6 @@
 #![allow(clippy::unwrap_used)]
 use anyhow::Context;
+use codex_core::config::Config;
 use codex_core::config::ConfigBuilder;
 use codex_core::init_state_db;
 use codex_protocol::ThreadId;
@@ -244,6 +245,21 @@ async fn exec_resume_last_appends_to_existing_file() -> anyhow::Result<()> {
     Ok(())
 }
 
+// Simulate loss of the SQLite index row while retaining the rollout and its
+// live queue identity. The product delete_thread API permanently seals a thread;
+// using it here tests hard deletion instead of index repair.
+async fn remove_thread_index_row(config: &Config, thread_id: ThreadId) -> anyhow::Result<()> {
+    let sqlite = config.sqlite_config();
+    let pool = sqlite.open_read_write_pool(&sqlite.state_db_path()).await?;
+    let result = sqlx::query("DELETE FROM threads WHERE id = ?")
+        .bind(thread_id.to_string())
+        .execute(&pool)
+        .await?;
+    assert_eq!(result.rows_affected(), 1);
+    pool.close().await;
+    Ok(())
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
@@ -273,7 +289,14 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(thread_id).await?, 1);
+    remove_thread_index_row(&config, thread_id).await?;
+    assert!(state_db.get_thread(thread_id).await?.is_none());
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(thread_id)
+            .await?
+    );
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;
@@ -336,7 +359,14 @@ async fn exec_resume_last_trusts_usable_state_db_candidate() -> anyhow::Result<(
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(newer_thread_id).await?, 1);
+    remove_thread_index_row(&config, newer_thread_id).await?;
+    assert!(state_db.get_thread(newer_thread_id).await?.is_none());
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(newer_thread_id)
+            .await?
+    );
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;
@@ -486,17 +516,34 @@ async fn exec_resume_last_accepts_prompt_after_flag_in_json_mode() -> anyhow::Re
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<()> {
+    let test_started = std::time::Instant::now();
+    let record_phase = |phase: &str| {
+        eprintln!(
+            "resume_cwd_filter phase={phase} cumulative_ms={}",
+            test_started.elapsed().as_millis()
+        );
+    };
+    record_phase("test_body_start");
     skip_if_no_network!(Ok(()));
 
+    record_phase("fixture_setup_start");
     let test = test_codex_exec();
+    record_phase("fixture_setup_end");
+    record_phase("mock_server_start");
     let server = MockServer::start().await;
-    let _response_mock = mount_exec_responses(&server, /*count*/ 5).await;
+    record_phase("mock_server_ready");
+    record_phase("response_mock_mount_start");
+    let response_mock = mount_exec_responses(&server, /*count*/ 5).await;
+    record_phase("response_mock_mount_end");
 
+    record_phase("cwd_dirs_create_start");
     let dir_a = TempDir::new()?;
     let dir_b = TempDir::new()?;
+    record_phase("cwd_dirs_create_end");
 
     let marker_a = format!("resume-cwd-a-{}", Uuid::new_v4());
     let prompt_a = format!("echo {marker_a}");
+    record_phase("create_a_start");
     test.cmd_with_server(&server)
         .arg("--skip-git-repo-check")
         .arg("-C")
@@ -504,9 +551,11 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
         .arg(&prompt_a)
         .assert()
         .success();
+    record_phase("create_a_end");
 
     let marker_b = format!("resume-cwd-b-{}", Uuid::new_v4());
     let prompt_b = format!("echo {marker_b}");
+    record_phase("create_b_start");
     test.cmd_with_server(&server)
         .arg("--skip-git-repo-check")
         .arg("-C")
@@ -514,21 +563,31 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
         .arg(&prompt_b)
         .assert()
         .success();
+    record_phase("create_b_end");
 
     let sessions_dir = test.home_path().join("sessions");
+    record_phase("find_marker_a_start");
     find_session_file_containing_marker(&sessions_dir, &marker_a)
         .expect("no session file found for marker_a");
+    record_phase("find_marker_a_end");
+    record_phase("find_marker_b_start");
     let path_b = find_session_file_containing_marker(&sessions_dir, &marker_b)
         .expect("no session file found for marker_b");
+    record_phase("find_marker_b_end");
 
     // `updated_at` is second-granularity, so ensure the touch lands in a later second
     // than the initial session creation on fast CI (especially Windows).
+    record_phase("sleep_before_touch_b_start");
     std::thread::sleep(std::time::Duration::from_millis(1100));
+    record_phase("sleep_before_touch_b_end");
 
     // Make thread B deterministically newest according to rollout metadata.
+    record_phase("read_session_id_b_start");
     let session_id_b = extract_conversation_id(&path_b);
+    record_phase("read_session_id_b_end");
     let marker_b_touch = format!("resume-cwd-b-touch-{}", Uuid::new_v4());
     let prompt_b_touch = format!("echo {marker_b_touch}");
+    record_phase("touch_b_start");
     test.cmd_with_server(&server)
         .arg("--skip-git-repo-check")
         .arg("-C")
@@ -538,14 +597,18 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
         .arg(&prompt_b_touch)
         .assert()
         .success();
+    record_phase("touch_b_end");
 
     // `resume --last` sorts by `updated_at`, which is second-granularity. Sleep so
     // the upcoming `resume --last --all` write lands in a later second and becomes
     // deterministically newest (instead of tying and falling back to UUID order).
+    record_phase("sleep_before_resume_all_start");
     std::thread::sleep(std::time::Duration::from_millis(1100));
+    record_phase("sleep_before_resume_all_end");
 
     let marker_b2 = format!("resume-cwd-b-2-{}", Uuid::new_v4());
     let prompt_b2 = format!("echo {marker_b2}");
+    record_phase("resume_all_start");
     test.cmd_with_server(&server)
         .arg("--skip-git-repo-check")
         .arg("-C")
@@ -556,16 +619,22 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
         .arg(&prompt_b2)
         .assert()
         .success();
+    record_phase("resume_all_end");
 
+    record_phase("find_marker_b2_start");
     let resumed_path_all = find_session_file_containing_marker(&sessions_dir, &marker_b2)
         .expect("no resumed session file containing marker_b2");
+    record_phase("find_marker_b2_end");
+    record_phase("assert_resume_all_start");
     assert_eq!(
         resumed_path_all, path_b,
         "resume --last --all should pick newest session"
     );
+    record_phase("assert_resume_all_end");
 
     let marker_a2 = format!("resume-cwd-a-2-{}", Uuid::new_v4());
     let prompt_a2 = format!("echo {marker_a2}");
+    record_phase("resume_cwd_start");
     test.cmd_with_server(&server)
         .arg("--skip-git-repo-check")
         .arg("-C")
@@ -575,16 +644,77 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
         .arg(&prompt_a2)
         .assert()
         .success();
+    record_phase("resume_cwd_end");
 
+    record_phase("find_marker_a2_start");
     let resumed_path_cwd = find_session_file_containing_marker(&sessions_dir, &marker_a2)
         .expect("no resumed session file containing marker_a2");
+    record_phase("find_marker_a2_end");
     // The `--all` resume above appends a new turn to `path_b` while running from `dir_a`, so the
     // session's latest cwd now matches `dir_a`. A subsequent `resume --last` should therefore pick
     // the newest matching session (`path_b`).
+    record_phase("assert_resume_cwd_start");
     assert_eq!(
         resumed_path_cwd, path_b,
         "resume --last should prefer sessions whose latest turn context matches the current cwd"
     );
+    record_phase("assert_resume_cwd_end");
+
+    record_phase("drop_dir_b_start");
+    drop(dir_b);
+    record_phase("drop_dir_b_end");
+    record_phase("drop_dir_a_start");
+    drop(dir_a);
+    record_phase("drop_dir_a_end");
+    record_phase("drop_response_mock_start");
+    drop(response_mock);
+    record_phase("drop_response_mock_end");
+    record_phase("drop_server_start");
+    drop(server);
+    record_phase("drop_server_end");
+    record_phase("drop_fixture_start");
+    let (home, cwd) = test.into_temp_dirs();
+    record_phase("home_inventory_start");
+    let mut inventory = std::collections::BTreeMap::<String, (u64, u64)>::new();
+    let mut inventory_errors = Vec::new();
+    for entry in WalkDir::new(home.path()).follow_links(false) {
+        let entry = match entry {
+            Ok(entry) => entry,
+            Err(error) => {
+                inventory_errors.push(error.to_string());
+                continue;
+            }
+        };
+        if !entry.file_type().is_file() {
+            continue;
+        }
+        let relative = entry.path().strip_prefix(home.path())?;
+        let top_level = relative
+            .components()
+            .next()
+            .expect("file beneath the actual fixture home")
+            .as_os_str()
+            .to_string_lossy()
+            .into_owned();
+        let totals = inventory.entry(top_level).or_default();
+        totals.0 += 1;
+        match entry.metadata() {
+            Ok(metadata) => totals.1 += metadata.len(),
+            Err(error) => inventory_errors.push(error.to_string()),
+        }
+    }
+    eprintln!("resume_cwd_filter home_inventory={inventory:?} errors={inventory_errors:?}");
+    record_phase("home_inventory_end");
+    record_phase("close_home_start");
+    home.close()
+        .context("remove actual codex-exec home fixture")?;
+    record_phase("close_home_end");
+    record_phase("close_cwd_start");
+    cwd.close()
+        .context("remove actual codex-exec cwd fixture")?;
+    record_phase("close_cwd_end");
+    record_phase("drop_fixture_end");
+    record_phase("test_body_end");
 
     Ok(())
 }

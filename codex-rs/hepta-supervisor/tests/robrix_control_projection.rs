@@ -349,9 +349,50 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
 }
 
 fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
-    read_artifacts(
-        &std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("fixtures/robrix-control-v2"),
-    )
+    let resource = format!("fixtures/robrix-control-v2/{MANIFEST_FILE}");
+    let manifest = codex_utils_cargo_bin::find_resource!(resource)?;
+    let root = manifest
+        .parent()
+        .context("tracked projection manifest has no parent")?;
+    let declared_names = BTreeSet::from(
+        [
+            CORPUS_FILE,
+            GENERATED_CONSTANTS_FILE,
+            MANIFEST_FILE,
+            MATRIXD_SCHEMA_FILE,
+            SUPERVISORD_SCHEMA_FILE,
+        ]
+        .map(str::to_owned),
+    );
+    let tracked_names = fs::read_dir(root)
+        .with_context(|| format!("read {}", root.display()))?
+        .map(|entry| {
+            entry?
+                .file_name()
+                .into_string()
+                .map_err(|_| anyhow::anyhow!("artifact name is not UTF-8"))
+        })
+        .collect::<Result<BTreeSet<_>>>()?;
+    assert_eq!(
+        tracked_names, declared_names,
+        "tracked artifact names drifted"
+    );
+
+    // Resolve only this declared source-input set through Cargo/Bazel resources.
+    // The generated writer output keeps the strict read_artifacts file checks.
+    let mut artifacts = BTreeMap::new();
+    for name in declared_names {
+        let resource = format!("fixtures/robrix-control-v2/{name}");
+        let source = codex_utils_cargo_bin::find_resource!(resource)?.canonicalize()?;
+        if !fs::symlink_metadata(&source)?.file_type().is_file() {
+            anyhow::bail!(
+                "tracked artifact is not a regular file: {}",
+                source.display()
+            );
+        }
+        artifacts.insert(name, fs::read(source)?);
+    }
+    Ok(artifacts)
 }
 
 fn read_artifacts(root: &std::path::Path) -> Result<BTreeMap<String, Vec<u8>>> {

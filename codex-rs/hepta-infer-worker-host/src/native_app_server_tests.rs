@@ -46,7 +46,12 @@ fn observe_for_test(
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(
+        output,
+        &mut agent_output::AgentOutput::default(),
+        &observed(notification),
+        &binding,
+    )
 }
 
 fn output() -> NativeRunOutput {
@@ -406,15 +411,29 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
     let revalidation = source
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
+    let final_use_entry = source
+        .find("verified_use.enter(&authority_binding)")
+        .expect("bound final-use entry");
     let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+        .expect("physical turn start with entered authority");
     let durable_stop = source
         .find("control.abort_native_before_effect(")
         .expect("durable pre-turn stop");
     assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
+    assert!(revalidation < final_use_entry);
+    assert!(final_use_entry < turn_start);
     assert!(durable_stop < turn_start);
+    let authorized_send = source
+        .split("async fn send_authorized_turn_start(")
+        .nth(1)
+        .expect("authorized send implementation")
+        .split("async fn reconcile_turn_start(")
+        .next()
+        .expect("authorized send body");
+    assert!(authorized_send.contains("_entered: EnteredUseToken"));
+    assert!(authorized_send.contains(".request_typed_observed(ClientRequest::TurnStart"));
+    assert_eq!(source.matches("ClientRequest::TurnStart").count(), 1);
 }
 
 #[cfg(unix)]
@@ -424,9 +443,11 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
+    use codex_arg0::Arg0DispatchPaths;
     use codex_hepta_agentd::test_support::CognitiveTestHost;
     use codex_hepta_infer_core::durable_control::DurableInferenceControl;
     use codex_hepta_infer_core::durable_control::native::NativeReservationState;
+    use codex_utils_cargo_bin::cargo_bin;
     use core_test_support::responses;
 
     const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
@@ -448,10 +469,37 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let response_mock = responses::mount_sse_once(&server, response).await;
 
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
+    // Darwin's long per-user temporary root can exceed the real UDS limit.
+    // Keep a short private TempDir alive through the real host's shutdown.
+    #[cfg(target_os = "macos")]
+    let short_root = tempfile::Builder::new()
+        .prefix("worker-")
+        .tempdir_in("/tmp")?;
+    #[cfg(target_os = "macos")]
+    let root = short_root.path().to_path_buf();
+    #[cfg(not(target_os = "macos"))]
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // Resolve real binaries through Cargo/Bazel's declared test inputs. A test
+    // harness executable or an empty Arg0DispatchPaths cannot stand in for the
+    // production CLI used by the App Server's local runtime.
+    let codex_self_exe = Some(cargo_bin("codex")?);
+    #[cfg(target_os = "linux")]
+    let codex_linux_sandbox_exe = Some(cargo_bin("codex-linux-sandbox")?);
+    #[cfg(not(target_os = "linux"))]
+    let codex_linux_sandbox_exe = None;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        Arg0DispatchPaths {
+            codex_self_exe,
+            codex_linux_sandbox_exe,
+            main_execve_wrapper_exe: None,
+        },
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -489,7 +537,10 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         accepted.succeeded(),
         "fresh context must reach a successful real TurnStart"
     );
-    assert!(accepted.output.contains("fresh context accepted"));
+    assert!(
+        accepted.output.contains("fresh context accepted"),
+        "{accepted:?}"
+    );
     let accepted_record = durable
         .native_record(ACCEPT_REQUEST_ID)
         .cloned()
@@ -650,6 +701,8 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let _ = std::fs::remove_file(&journal);
     issuer.await??;
     host.shutdown().await;
+    #[cfg(target_os = "macos")]
+    drop(short_root);
     Ok(())
 }
 

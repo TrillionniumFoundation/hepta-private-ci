@@ -1,10 +1,11 @@
-name: Hepta owner-local Matrixd native transport
+name: Hepta owner-local Matrixd and Agentd native transport
 
 on:
   pull_request:
     paths:
       - "codex-rs/uds/**"
       - "codex-rs/hepta-matrixd/**"
+      - "codex-rs/hepta-agentd/**"
       - "codex-rs/Cargo.lock"
       - ".github/workflows/hepta-owner-local-native.yml"
   workflow_dispatch:
@@ -24,7 +25,7 @@ env:
 
 jobs:
   native:
-    name: Owner-local and original Matrixd controls (${{ matrix.os }})
+    name: Owner-local and original Matrixd/Agentd controls (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
@@ -64,11 +65,16 @@ jobs:
           Set-Location codex-rs
           just test --locked -p codex-hepta-matrixd --lib --test-threads 1 --no-tests fail --retries 0 2>&1 | Tee-Object "$env:RUNNER_TEMP/owner-local/matrixd.log"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise every original Agentd library control including actual Windows ranker transport
+        run: |
+          Set-Location codex-rs
+          just test --locked -p codex-hepta-agentd --lib --test-threads 1 --no-tests fail --retries 0 2>&1 | Tee-Object "$env:RUNNER_TEMP/owner-local/agentd.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Check formatting and unchanged tracked source
         if: always()
         run: |
           Set-Location codex-rs
-          cargo fmt --package codex-uds --package codex-hepta-matrixd -- --check
+          cargo fmt --package codex-uds --package codex-hepta-matrixd --package codex-hepta-agentd -- --check
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git diff --exit-code
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

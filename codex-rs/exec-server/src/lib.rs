@@ -3,6 +3,8 @@ mod capability_discovery;
 mod capability_discovery_cache;
 mod client;
 mod client_api;
+#[cfg(test)]
+mod client_stdio_tests;
 mod client_transport;
 mod connection;
 mod environment;
