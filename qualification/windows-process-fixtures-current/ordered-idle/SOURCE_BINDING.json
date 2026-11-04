@@ -82,14 +82,19 @@
         "bytes": 8206
       },
       "after": {
-        "git_blob_sha": "4fd4e103aa094f8756db25f9f942983322787113",
-        "sha256": "73ad086007cf74949e494b70177a5dcaf42c136e6ee69d4830ca9f571e6bb7f8",
-        "bytes": 10596
+        "git_blob_sha": "01fd218228d447b6c0094e73030da0361e4d0693",
+        "sha256": "9149f11264feb27427bcfbb5571182be8aec6daf62816fc65e9167f0442556d4",
+        "bytes": 10588
       },
       "previous_successor_after": {
         "git_blob_sha": "9d6bdfc1e4911043e7abdcdb8d31e2e28ac5e311",
         "sha256": "8588bab3410475127d9b0d8f29a318940a5d6311e29abfcef0258235bbba8402",
         "bytes": 9362
+      },
+      "before_original_formatter": {
+        "git_blob_sha": "4fd4e103aa094f8756db25f9f942983322787113",
+        "sha256": "73ad086007cf74949e494b70177a5dcaf42c136e6ee69d4830ca9f571e6bb7f8",
+        "bytes": 10596
       }
     },
     {
@@ -274,9 +279,9 @@
     "parent": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
     "prior_actual_outcomes": "../native-helper/prior-4db/OBSERVED_RUNTIME.json",
     "source": {
-      "git_blob_sha": "4fd4e103aa094f8756db25f9f942983322787113",
-      "sha256": "73ad086007cf74949e494b70177a5dcaf42c136e6ee69d4830ca9f571e6bb7f8",
-      "bytes": 10596
+      "git_blob_sha": "01fd218228d447b6c0094e73030da0361e4d0693",
+      "sha256": "9149f11264feb27427bcfbb5571182be8aec6daf62816fc65e9167f0442556d4",
+      "bytes": 10588
     },
     "no_new_registered_test": true,
     "production_unchanged": true,
@@ -289,6 +294,31 @@
       "sha256": "ba8b5de6b951cc74fcfa9b3a05807fae33012b711770045776c69920d8aa64b9",
       "bytes": 12011
     },
-    "no_containment_control_is_separate_from_original_counts": true
+    "no_containment_control_is_separate_from_original_counts": true,
+    "before_original_formatter": {
+      "git_blob_sha": "4fd4e103aa094f8756db25f9f942983322787113",
+      "sha256": "73ad086007cf74949e494b70177a5dcaf42c136e6ee69d4830ca9f571e6bb7f8",
+      "bytes": 10596
+    },
+    "original_formatter_adoption": {
+      "run_id": 41776976731,
+      "job_id": 126399495672,
+      "generated": {
+        "git_blob_sha": "01fd218228d447b6c0094e73030da0361e4d0693",
+        "sha256": "9149f11264feb27427bcfbb5571182be8aec6daf62816fc65e9167f0442556d4",
+        "bytes": 10588
+      },
+      "prior": {
+        "git_blob_sha": "4fd4e103aa094f8756db25f9f942983322787113",
+        "sha256": "73ad086007cf74949e494b70177a5dcaf42c136e6ee69d4830ca9f571e6bb7f8",
+        "bytes": 10596
+      },
+      "exact_closure_layout_only": true,
+      "source_commit": "795b824937386a58bb7d2ba99e2580bf9d393572",
+      "committed_cargo_equals_generated": true,
+      "committed_bazel_equals_generated": true,
+      "all_commands_exit_zero": true,
+      "native_execution": false
+    }
   }
 }

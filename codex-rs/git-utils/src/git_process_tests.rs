@@ -39,9 +39,8 @@ fn run_git_wrapper_helper_if_requested(wrapper_lifetime: GitWrapperLifetime) {
     let Some(role) = role else {
         return;
     };
-    let path = |name| {
-        std::path::PathBuf::from(std::env::var_os(name).expect("native Git fixture path"))
-    };
+    let path =
+        |name| std::path::PathBuf::from(std::env::var_os(name).expect("native Git fixture path"));
     match role.as_str() {
         "child" => {
             std::fs::write(path("GIT_CHILD_STAGE_FILE"), "child-script-started")
