@@ -1,0 +1,200 @@
+{
+  "schema": 1,
+  "status": "NATIVE_BACKPORT_AND_ORIGINAL_ROBRIX_PASSED_INDEPENDENT_ZIP_REPLAY_PENDING",
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "f7e1283370bd3e343df09416ae75717f2d558c75",
+    "tree": "0865805c2a294afa556d0f2401d9f158f2bee2ec",
+    "product_parent": "767f069c96a6cd2735b3a4166799a1de79017d25"
+  },
+  "run": {
+    "id": 41762993935,
+    "job_id": 126354758118,
+    "conclusion": "success",
+    "completed_at": "2026-11-04T02:59:40Z",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41762993935/job/126354758118"
+  },
+  "native_wrapper": {
+    "status": "prepared",
+    "product_commit": "f7e1283370bd3e343df09416ae75717f2d558c75",
+    "upstream_base": "93f38093f8e24875c1d015e67311853756bdb27e",
+    "fix_commit": "e50ebd4a0a0bf5f557aa8d4873d9a226f8e89c57",
+    "gtest": {
+      "count": 20,
+      "original": 18,
+      "additional_upstream": 2,
+      "failures": 0,
+      "skipped": 0,
+      "cases": [
+        "TestWrapperWindowsTest.TestGetFileListRelativeTo",
+        "TestWrapperWindowsTest.TestToZipEntryPaths",
+        "TestWrapperWindowsTest.TestToZipEntryPathsLongPathRoot",
+        "TestWrapperWindowsTest.TestCreateZip",
+        "TestWrapperWindowsTest.TestGetMimeType",
+        "TestWrapperWindowsTest.TestUndeclaredOutputsManifest",
+        "TestWrapperWindowsTest.TestCreateUndeclaredOutputsAnnotations",
+        "TestWrapperWindowsTest.TestTee",
+        "TestWrapperWindowsTest.TestTeeStreamsRemainingDataOnDestruction",
+        "TestWrapperWindowsTest.TestTeeStopsReadingOnDestructionAfterTimeout",
+        "TestWrapperWindowsTest.TestCdataEscapeNullTerminator",
+        "TestWrapperWindowsTest.TestCdataEscapeCdataEndings",
+        "TestWrapperWindowsTest.TestCdataEscapeSingleOctets",
+        "TestWrapperWindowsTest.TestCdataEscapeDoubleOctets",
+        "TestWrapperWindowsTest.TestCdataEscapeAndAppend",
+        "TestWrapperWindowsTest.TestIFStreamNoData",
+        "TestWrapperWindowsTest.TestIFStreamLessDataThanPageSize",
+        "TestWrapperWindowsTest.TestIFStreamExactlySinglePageSize",
+        "TestWrapperWindowsTest.TestIFStreamLessDataThanDoublePageSize",
+        "TestWrapperWindowsTest.TestIFStreamLessDataThanTriplePageSize"
+      ],
+      "xml": {
+        "bytes": 4658,
+        "sha256": "3745af328855fbf38c9e350b496cc735fd2897bf08ec5a1875cf6111fdc47289"
+      }
+    },
+    "built_wrapper": {
+      "bytes": 788992,
+      "sha256": "5bdb1b4da9165acb6e531d3f44025930eec94c9532b96c8f0610a372967f39e5"
+    },
+    "only_changed_tool": "tools/test/tw.exe"
+  },
+  "original_robrix": {
+    "commit": "f7e1283370bd3e343df09416ae75717f2d558c75",
+    "status": "passed",
+    "config": "ci-windows",
+    "steps": [
+      {
+        "name": "committed-inputs-clean-before",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.13999999999998636
+      },
+      {
+        "name": "original-robrix-corpus-tests",
+        "command": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--platforms=//:windows_x86_64_msvc",
+          "--keep_going",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 156.688
+      },
+      {
+        "name": "original-testlog-location",
+        "command": [
+          "python3",
+          "./.github/scripts/run_bazel_with_buildbuddy.py",
+          "--output_user_root=D:/b",
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-windows",
+          "--platforms=//:windows_x86_64_msvc",
+          "--host_platform=//:local_windows_msvc",
+          "bazel-testlogs"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 4.6720000000000255
+      },
+      {
+        "name": "original-clippy-selector",
+        "command": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "./scripts/list-bazel-clippy-targets.sh"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 5.9220000000000255
+      },
+      {
+        "name": "original-clippy",
+        "command": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "build",
+          "--platforms=//:windows_x86_64_msvc",
+          "--config=clippy",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 27.140999999999963
+      },
+      {
+        "name": "committed-inputs-clean-after",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.125
+      }
+    ],
+    "source_inputs_unchanged": true
+  },
+  "original_robrix_cases": [
+    "test writer_reproduces_the_tracked_artifact_set_byte_for_byte ... ok",
+    "test robrix_control_v2_generated_projection_and_cross_parser_corpus ... ok"
+  ],
+  "final_identity_check": {
+    "status": "passed",
+    "product_commit": "f7e1283370bd3e343df09416ae75717f2d558c75",
+    "original_installed_tools_unchanged": true,
+    "qualified_override_unchanged": true,
+    "robrix_receipt": {
+      "bytes": 18833,
+      "sha256": "6e2808b4a286c5769ccfc9794c0c0862ca91acc56acddb6cbd1b8bef3ea7e2cc"
+    }
+  },
+  "artifact": {
+    "id": 13291443930,
+    "name": "bazel9-output-backport-f7e1283370bd3e343df09416ae75717f2d558c75",
+    "bytes": 388020,
+    "sha256": "0220c1e73e2c9d2c5b05f077b9a208df2ee050426deb048eeaea71446d1d01b5"
+  },
+  "job_log": {
+    "kind": "complete decoded GitHub job log, UTF-8 bytes preserved in RFC1952 stored-DEFLATE gzip",
+    "decoded_bytes": 164217,
+    "decoded_sha256": "46c12cbb20270524f900369f950ae3ee884baef4f9fb7c9b83b826f8b14d6094",
+    "path": "qualification/bazel9-output-backport-20261104/hosted-f7/native-original-job.log.gz",
+    "gzip_bytes": 164250,
+    "gzip_sha256": "26ee3f752267e5cdb85a4a42edbbfdbff3c674726248499e84356811e77dbb1c"
+  },
+  "boundaries": {
+    "independent_artifact_replay": false,
+    "shared_ci_preparation_integrated": false,
+    "product_bazel_version": "9.0.0",
+    "upstream_builder_version": "8.4.2",
+    "original_gtests": 18,
+    "upstream_regression_gtests": 2,
+    "original_robrix_cases": 2,
+    "new_ignored_or_filtered_cases": 0,
+    "job_budget_minutes": 30,
+    "library_originals_deleted": 0,
+    "release_status": "HOLD_NO_GO",
+    "whole_product_ci_closed": false
+  }
+}
