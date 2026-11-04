@@ -1,0 +1,121 @@
+{
+  "schema": "independent-static-bazel-windows-output-review-v1",
+  "reviewer": "hepta_blockers",
+  "source_repository": "bazelbuild/bazel",
+  "source_tag": "9.0.0",
+  "source_commit": "93f38093f8e24875c1d015e67311853756bdb27e",
+  "source_tree": "6a343a2560c92f6ac74cefcf6a0d0de9acbd3112",
+  "inputs": [
+    {
+      "path": "tools/test/windows/tw.cc",
+      "git_blob_sha": "6740df6a6f5ce39280ceaa28c60c1cc9a5e13fe8",
+      "sha256": "ab6503875a106c0ffd30bac39c60c65185e5bb9f6dccf85b01c0bfb0a9a1bc80",
+      "bytes": 69181
+    },
+    {
+      "path": "tools/test/windows/tw.h",
+      "git_blob_sha": "146c2d0c46a989bc9d1856e6de8e265aa504ecce",
+      "sha256": "3870725564e07f5d086ca9a7c85c94346f8bca59956d76bc6c26093cab757209",
+      "bytes": 7036
+    },
+    {
+      "path": "tools/test/windows/tw_test.cc",
+      "git_blob_sha": "defbb23fe142ec1ab9db9979168b1ca2adf2bba5",
+      "sha256": "cf3a5acdab35a5e491e3b7b41aedbf7f67a856598a87217f9b2f7df9b17d9aa4",
+      "bytes": 29016
+    },
+    {
+      "path": "tools/test/BUILD",
+      "git_blob_sha": "30975c0db3e6a6d1cd16988349a7847aa67f80c4",
+      "sha256": "b7ff98f8e387d244d904c0278d5d33a5e98709313409a5850bb4a05fe560f5c7",
+      "bytes": 3534
+    },
+    {
+      "path": "tools/test/BUILD.tools",
+      "git_blob_sha": "a2c246fd340a3ff4d758f984df044e8adf916137",
+      "sha256": "81db88f41f7a9a07af246a42cfa7a8b6e118012b4f41830aaee9ffe4a4a9ee17",
+      "bytes": 5107
+    },
+    {
+      "path": "src/main/java/com/google/devtools/build/lib/bazel/repository/RepoDefinitionFunction.java",
+      "git_blob_sha": "730bb356875523c10421a04531a24319a459c1e0",
+      "sha256": "c7823895d853ab6957142d3afabfabdf92d41806fe9e5cba514bbf0efd9aa524",
+      "bytes": 14952
+    },
+    {
+      "path": "src/main/java/com/google/devtools/build/lib/bazel/repository/RepositoryFetchFunction.java",
+      "git_blob_sha": "f0eb451cb17bf8446fc1ac496ec751e62e068793",
+      "sha256": "b1e4d129e057f0404924020bbc8de7dfe948147c1c611d0340076777c964e7c9",
+      "bytes": 36463
+    },
+    {
+      "path": "src/main/java/com/google/devtools/build/lib/bazel/repository/RepositoryOptions.java",
+      "git_blob_sha": "ff9919394358c3ea0844b245981b2a770c663dc1",
+      "sha256": "c159a3386e53a3dca90da7937f2cd620fa3dc19692d773987f20d87308506c81",
+      "bytes": 23820
+    },
+    {
+      "path": "src/main/java/com/google/devtools/build/lib/analysis/test/TestActionBuilder.java",
+      "git_blob_sha": "ea07b9662e7ac63a0cfffb57c00ebefd2376b16f",
+      "sha256": "9d56c6045e480a915d1ef7dbf723b0571ac50102f9d34e450842dfaf0a985475",
+      "bytes": 20904
+    },
+    {
+      "path": "src/main/java/com/google/devtools/build/lib/analysis/test/TestConfiguration.java",
+      "git_blob_sha": "fa17ff89f56c8be8b5add9c5a23e17586141340e",
+      "sha256": "a3c46c82e50ec10b3291c15ff5e37958fae6817436f571dc2235a539630df92f",
+      "bytes": 24395
+    }
+  ],
+  "upstream_fix": {
+    "commit": "e50ebd4a0a0bf5f557aa8d4873d9a226f8e89c57",
+    "pr": 32203,
+    "changed_paths": [
+      "tools/test/windows/tw.cc",
+      "tools/test/windows/tw_test.cc"
+    ],
+    "commit_metadata_and_complete_file_patches_read": true
+  },
+  "observations": [
+    "9.0.0 TeeImpl::Create starts a thread with tee.get() and retains its HANDLE only in a local AutoHandle. TeeImpl has no custom destructor or thread member. The virtual base destructor does not wait for the background thread.",
+    "RunSubprocess waits for the process and obtains its exit code, then returns and destroys the Tee without waiting for pending output to drain. The Tee's input/output AutoHandles may close while the thread is using them. This can lose terminal log output without changing the child exit code.",
+    "The exact upstream fix retains the thread HANDLE and waits during Tee destruction, then performs bounded synchronous-I/O cancellation when a writer outlives the job. It adds one drain regression and one held-writer timeout regression.",
+    "RepoDefinitionFunction checks canonical REPOSITORY_OVERRIDES before its BAZEL_TOOLS embedded_tools fallback. RepositoryFetchFunction routes RepoOverride to setupOverride. This is direct source evidence that --override_repository=bazel_tools=<local-path> can replace the repository through the normal interface.",
+    "BUILD.tools selects tools/test/tw.exe for the Windows test_wrapper filegroup. TestActionBuilder obtains the fixed private $test_wrapper prerequisite. No public test_wrapper option was found in the inspected TestConfiguration; this is not an exhaustive negative claim about every Bazel source.",
+    "The exact 9.0.0 tw_test.cc contains 18 declared TestWrapperWindowsTest cases; the two upstream additions produce 20 declared cases without changing the existing 18."
+  ],
+  "recommended_scope": [
+    "Create a separate research candidate using exact official 9.0.0 source and dependencies with only the two e50 source/test changes; preserve upstream attribution.",
+    "Build original //tools/test:tw and //tools/test:tw_test on the actual Windows toolchain, run the complete 18 original plus 2 added tests, and record exact source inputs, commands and output binary digest.",
+    "Copy the complete embedded_tools repository into an isolated temporary directory, replace only tools/test/tw.exe, and verify the full file inventory has exactly that one byte change. Keep the installed Bazel original and xml.exe unchanged.",
+    "Use the official repository override for the bounded qualification run and prove its effective target/action input selection. Retain the original Rust test body, full target, timeout, no-retry/no-filter rules and exact two-case plus terminal summary checks."
+  ],
+  "limitations": [
+    "Static review supports the output-loss mechanism and official override route; it does not prove that this was the sole cause of the specific missing Robrix case.",
+    "The upstream bounded destructor does not guarantee complete output from arbitrarily long-lived or uncancellable writers. Strict complete-case/log checks remain required.",
+    "No Windows compilation, upstream regression, override execution or product test was run by this reviewer.",
+    "The research tool override must be qualified before any default-tool adoption; no production ref was changed by this review."
+  ],
+  "original_test_cases": [
+    "TestWrapperWindowsTest.TestGetFileListRelativeTo",
+    "TestWrapperWindowsTest.TestToZipEntryPaths",
+    "TestWrapperWindowsTest.TestToZipEntryPathsLongPathRoot",
+    "TestWrapperWindowsTest.TestCreateZip",
+    "TestWrapperWindowsTest.TestGetMimeType",
+    "TestWrapperWindowsTest.TestUndeclaredOutputsManifest",
+    "TestWrapperWindowsTest.TestCreateUndeclaredOutputsAnnotations",
+    "TestWrapperWindowsTest.TestTee",
+    "TestWrapperWindowsTest.TestCdataEscapeNullTerminator",
+    "TestWrapperWindowsTest.TestCdataEscapeCdataEndings",
+    "TestWrapperWindowsTest.TestCdataEscapeSingleOctets",
+    "TestWrapperWindowsTest.TestCdataEscapeDoubleOctets",
+    "TestWrapperWindowsTest.TestCdataEscapeAndAppend",
+    "TestWrapperWindowsTest.TestIFStreamNoData",
+    "TestWrapperWindowsTest.TestIFStreamLessDataThanPageSize",
+    "TestWrapperWindowsTest.TestIFStreamExactlySinglePageSize",
+    "TestWrapperWindowsTest.TestIFStreamLessDataThanDoublePageSize",
+    "TestWrapperWindowsTest.TestIFStreamLessDataThanTriplePageSize"
+  ],
+  "native_tests_executed": 0,
+  "files_modified": false
+}

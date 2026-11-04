@@ -1,0 +1,58 @@
+name: bazel9 Windows output-drain backport
+
+on:
+  push:
+    branches:
+      - research/bazel9-windows-output-backport-20261104-gpt6
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bazel9-output-backport-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-native:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+    steps:
+      - name: Preserve exact Git bytes
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel9-output-backport
+      - name: Build the exact upstream backport and run all twenty wrapper tests
+        shell: pwsh
+        run: python qualification/bazel9-output-backport-20261104/build.py --work "$env:RUNNER_TEMP/bazel9-output-backport"
+      - name: Run the complete original Robrix cases and Clippy
+        shell: bash
+        run: |
+          export ROBRIX_QUALIFICATION_BASH="$(cygpath -w "$BASH")"
+          python3 qualification/robrix-runfiles-20261104/run.py --config ci-windows --output "$RUNNER_TEMP/robrix-runfiles"
+      - name: Recheck every original installed tool and the qualified override
+        if: always() && !cancelled()
+        shell: pwsh
+        run: python qualification/bazel9-output-backport-20261104/build.py --work "$env:RUNNER_TEMP/bazel9-output-backport" --finalize --robrix "$env:RUNNER_TEMP/robrix-runfiles"
+      - name: Retain complete source, commands, native XML and original test evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: bazel9-output-backport-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/bazel9-output-backport/evidence
+            ${{ runner.temp }}/robrix-runfiles
+          if-no-files-found: error
+          retention-days: 7
