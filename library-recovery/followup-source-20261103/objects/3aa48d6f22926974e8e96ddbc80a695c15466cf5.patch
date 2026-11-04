@@ -1,0 +1,1170 @@
+diff --git a/codex-rs/Cargo.lock b/codex-rs/Cargo.lock
+index d6ba6b0b91..ef41d3757f 100644
+--- a/codex-rs/Cargo.lock
++++ b/codex-rs/Cargo.lock
+@@ -3476,6 +3476,7 @@ dependencies = [
+  "codex-hepta-authbus",
+  "codex-hepta-authbus-p1-3-qualification",
+  "codex-hepta-automation",
++ "codex-hepta-bao-adapter",
+  "codex-hepta-bellman-operator",
+  "codex-hepta-codex-adapter",
+  "codex-hepta-cognitive-read",
+@@ -3517,6 +3518,8 @@ dependencies = [
+  "core_test_support",
+  "ed25519-dalek",
+  "http 1.4.0",
++ "rcgen",
++ "rustls",
+  "serde",
+  "serde_json",
+  "sha2 0.10.9",
+@@ -3524,6 +3527,7 @@ dependencies = [
+  "tempfile",
+  "thiserror 2.0.18",
+  "tokio",
++ "tokio-rustls",
+  "tokio-util",
+  "wiremock",
+ ]
+diff --git a/codex-rs/hepta-agentd/Cargo.toml b/codex-rs/hepta-agentd/Cargo.toml
+index c8b922d3bb..107cd20b90 100644
+--- a/codex-rs/hepta-agentd/Cargo.toml
++++ b/codex-rs/hepta-agentd/Cargo.toml
+@@ -99,6 +99,11 @@ tokio = { workspace = true, features = [
+ tokio-util = { workspace = true }
+ 
+ [dev-dependencies]
++tokio = { workspace = true, features = ["net", "process"] }
++codex-hepta-bao-adapter = { path = "../hepta-bao-adapter" }
++rcgen = { workspace = true }
++rustls = { workspace = true }
++tokio-rustls = { workspace = true }
+ codex-hepta-authbus-p1-3-qualification = { path = "../hepta-authbus-p1-3-qualification" }
+ codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
+ codex-hepta-operations = { workspace = true }
+diff --git a/codex-rs/hepta-agentd/src/lib.rs b/codex-rs/hepta-agentd/src/lib.rs
+index c075e561ea..4b0552cd5e 100644
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -12,6 +12,10 @@ mod authbus_trust;
+ mod automation;
+ mod automation_effect_host;
+ mod automation_recovery;
++// Qualification-only until entry-aware runtime registration is reviewed.
++#[cfg(test)]
++#[cfg(unix)]
++mod bao_operation_target;
+ mod browser_servo;
+ mod client;
+ mod cognitive_context;
+diff --git a/codex-rs/hepta-agentd/src/bao_operation_target.rs b/codex-rs/hepta-agentd/src/bao_operation_target.rs
+new file mode 100644
+index 0000000000..119c7a0879
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/bao_operation_target.rs
+@@ -0,0 +1,274 @@
++//! Private qualification composition for the entry-aware CognitiveStore owner.
++//! No runtime registration or production clock/trust provisioning occurs here.
++
++use std::sync::Arc;
++
++use codex_hepta_authbus::AuthBusAuthorityHost;
++use codex_hepta_authbus::QuotaReservation;
++use codex_hepta_authbus::ReservationRequest;
++use codex_hepta_authbus::SettlementStatus;
++use codex_hepta_bao_adapter::BAO_DURABLE_OPERATION_DESTINATION;
++use codex_hepta_bao_adapter::BaoAuthBusEvidenceProvider;
++use codex_hepta_bao_adapter::BaoClient;
++use codex_hepta_bao_adapter::BaoDurableAuthBusAdmission;
++use codex_hepta_bao_adapter::BaoFinalUseHost;
++use codex_hepta_bao_adapter::BaoReadRequest;
++use codex_hepta_cognitive_store::ProductionDispatchFuture;
++use codex_hepta_cognitive_store::ProductionDispatchRequest;
++use codex_hepta_cognitive_store::ProductionEntryDispatchRequest;
++use codex_hepta_cognitive_store::ProductionEntryOutboxTarget;
++use codex_hepta_cognitive_store::ProductionTargetOutcome;
++use codex_hepta_contracts::FinalUseBinding;
++use codex_hepta_contracts::SignedFinalUseApproval;
++use codex_hepta_contracts::SignedFinalUseGrant;
++use codex_hepta_types::Digest32;
++use codex_hepta_types::StableId;
++
++/// External per-operation policy and independently signed provider evidence.
++/// This interface never receives a signing key or creates an owner entry.
++trait BaoOperationProvisioner: Send + Sync {
++    fn provision(
++        &self,
++        request: &ProductionDispatchRequest,
++        binding: &FinalUseBinding,
++    ) -> Result<BaoOperationInputs, String>;
++}
++
++struct BaoOperationInputs {
++    admission: BaoDurableAuthBusAdmission,
++    grant: SignedFinalUseGrant,
++    approval: SignedFinalUseApproval,
++    evidence: Box<dyn BaoAuthBusEvidenceProvider + Send>,
++}
++
++struct BaoOperationTarget {
++    client: Arc<BaoClient>,
++    registered_host: Arc<BaoFinalUseHost>,
++    authbus: Arc<AuthBusAuthorityHost>,
++    provisioner: Arc<dyn BaoOperationProvisioner>,
++}
++
++// Private state cannot escape as another provider-execution API. It stays bound
++// to this concrete target, and the request/operation identity cannot be changed
++// after quota preparation. Dropping it performs no asynchronous refund.
++struct PreparedBaoOperation {
++    read: BaoReadRequest,
++    dispatched: QuotaReservation,
++    inputs: BaoOperationInputs,
++}
++
++fn indeterminate(reason: impl Into<String>) -> ProductionTargetOutcome {
++    ProductionTargetOutcome::Indeterminate {
++        reason: reason.into(),
++    }
++}
++
++impl BaoOperationTarget {
++    fn read_request(
++        &self,
++        request: &ProductionDispatchRequest,
++        operation_id: &str,
++    ) -> Result<(BaoReadRequest, FinalUseBinding), String> {
++        if request.occurrence_key != operation_id
++            || request.idempotency_key != operation_id
++            || request.operation_destination_id != BAO_DURABLE_OPERATION_DESTINATION
++            || request.payload_sha256.as_str()
++                != Digest32::of_bytes(request.payload_json.as_bytes()).to_string()
++        {
++            return Err("Bao durable request identity mismatch".into());
++        }
++        let read: BaoReadRequest = serde_json::from_str(&request.payload_json)
++            .map_err(|_| "invalid Bao operation payload")?;
++        let binding = self
++            .client
++            .binding(&read)
++            .map_err(|error| error.to_string())?;
++        if request.operation_subject_id != binding.subject_id
++            || request.operation_scope_sha256.as_str()
++                != Digest32::from_array(binding.scope_sha256).to_string()
++        {
++            return Err("Bao subject/scope mismatch".into());
++        }
++        Ok((read, binding))
++    }
++
++    async fn prepare(
++        &self,
++        request: &ProductionDispatchRequest,
++        operation_id: StableId,
++    ) -> Result<PreparedBaoOperation, String> {
++        let (read, binding) = self.read_request(request, operation_id.as_str())?;
++        let mut inputs = self.provisioner.provision(request, &binding)?;
++        let admission = &inputs.admission;
++        if admission.policy_revision == 0
++            || admission.expected_quota_revision == 0
++            || admission.amount == 0
++            || admission.expires_at_ms == 0
++        {
++            return Err("invalid Bao quota admission".into());
++        }
++        let port = self.authbus.execution();
++        let observed = inputs
++            .evidence
++            .trusted_time()
++            .map_err(|error| error.to_string())?;
++        let time = port
++            .observe_trusted_time_attestation(&observed)
++            .await
++            .map_err(|error| error.to_string())?;
++        let principal = StableId::new(binding.subject_id).map_err(|error| error.to_string())?;
++        let action = StableId::new("action:bao-read").map_err(|error| error.to_string())?;
++        let scope = Digest32::from_array(binding.scope_sha256);
++        let decision = port
++            .authorize(
++                &principal,
++                &action,
++                scope,
++                admission.policy_revision,
++                time.clone(),
++            )
++            .await
++            .map_err(|error| error.to_string())?;
++        let effect_digest = self
++            .client
++            .authbus_effect_digest(&read, &operation_id)
++            .map_err(|error| error.to_string())?;
++        let reserved = port
++            .reserve(
++                &decision,
++                ReservationRequest {
++                    quota_key: admission.quota_key.clone(),
++                    operation_id,
++                    amount: admission.amount,
++                    effect_digest,
++                    expected_quota_revision: admission.expected_quota_revision,
++                    expires_at_ms: admission.expires_at_ms,
++                },
++                time,
++            )
++            .await
++            .map_err(|error| error.to_string())?;
++        let observed = inputs
++            .evidence
++            .trusted_time()
++            .map_err(|error| error.to_string())?;
++        let time = port
++            .observe_trusted_time_attestation(&observed)
++            .await
++            .map_err(|error| error.to_string())?;
++        let dispatched = port
++            .mark_dispatch_attempted(
++                &reserved.reservation_id,
++                reserved.revision,
++                effect_digest,
++                time,
++            )
++            .await
++            .map_err(|error| error.to_string())?;
++        Ok(PreparedBaoOperation {
++            read,
++            dispatched,
++            inputs,
++        })
++    }
++
++    async fn execute(&self, mut prepared: PreparedBaoOperation) -> ProductionTargetOutcome {
++        let port = self.authbus.execution();
++        let provider = self
++            .registered_host
++            .consume_kv_v2(
++                &self.client,
++                &prepared.inputs.grant,
++                &prepared.inputs.approval,
++                &prepared.read,
++            )
++            .await;
++        let receipt = match provider {
++            Ok(receipt) => receipt,
++            Err(error) => {
++                if let Ok(observed) = prepared.inputs.evidence.trusted_time()
++                    && let Ok(time) = port.observe_trusted_time_attestation(&observed).await
++                {
++                    let _ = port
++                        .mark_indeterminate(
++                            &prepared.dispatched.reservation_id,
++                            prepared.dispatched.revision,
++                            time,
++                        )
++                        .await;
++                }
++                return indeterminate(format!("registered Bao outcome pending: {error}"));
++            }
++        };
++        let settlement = async {
++            let encoded = serde_json::to_vec(&receipt).map_err(|error| error.to_string())?;
++            let observed = prepared
++                .inputs
++                .evidence
++                .trusted_time()
++                .map_err(|error| error.to_string())?;
++            let time = port
++                .observe_trusted_time_attestation(&observed)
++                .await
++                .map_err(|error| error.to_string())?;
++            let signed = prepared
++                .inputs
++                .evidence
++                .settlement_evidence(
++                    &prepared.dispatched,
++                    SettlementStatus::Completed,
++                    prepared.inputs.admission.amount,
++                    Digest32::of_bytes(&encoded),
++                    time.wall_time_ms(),
++                )
++                .map_err(|error| error.to_string())?;
++            port.settle(&signed, time)
++                .await
++                .map_err(|error| error.to_string())?;
++            Ok::<(), String>(())
++        }
++        .await;
++        match settlement {
++            Ok(()) => indeterminate(
++                "Bao delivery and signed AuthBus settlement observed; independent operation terminal proof required",
++            ),
++            Err(error) => {
++                indeterminate(format!("Bao delivered; signed settlement pending: {error}"))
++            }
++        }
++    }
++}
++
++impl ProductionEntryOutboxTarget for BaoOperationTarget {
++    fn destination_id(&self) -> &str {
++        BAO_DURABLE_OPERATION_DESTINATION
++    }
++
++    fn dispatch<'a>(
++        &'a self,
++        carrier: ProductionEntryDispatchRequest,
++    ) -> ProductionDispatchFuture<'a> {
++        Box::pin(async move {
++            let ProductionEntryDispatchRequest { request, entry } = carrier;
++            let operation_id = match StableId::new(entry.operation_id()) {
++                Ok(id) => id,
++                Err(error) => return indeterminate(error.to_string()),
++            };
++            let prepared = match self.prepare(&request, operation_id).await {
++                Ok(prepared) => prepared,
++                Err(error) => return indeterminate(format!("Bao preparation rejected: {error}")),
++            };
++            // Final owner validation occurs AFTER every preparation await. The
++            // private active guard spans provider I/O, registered delivery and
++            // signed settlement. Cancellation leaves both durable owners held
++            // for reconciliation, never a fabricated NotApplied/refund result.
++            match entry.with_entry(&request, || self.execute(prepared)).await {
++                Ok(outcome) => outcome,
++                Err(error) => indeterminate(format!("Bao owner entry rejected: {error}")),
++            }
++        })
++    }
++}
++
++#[path = "bao_operation_target_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-agentd/src/bao_operation_target_tests.rs b/codex-rs/hepta-agentd/src/bao_operation_target_tests.rs
+new file mode 100644
+index 0000000000..ebe931d1f6
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/bao_operation_target_tests.rs
+@@ -0,0 +1,743 @@
++use super::*;
++use std::os::unix::fs::MetadataExt;
++use std::os::unix::fs::PermissionsExt;
++use std::sync::atomic::AtomicU64;
++use std::sync::atomic::AtomicUsize;
++use std::sync::atomic::Ordering;
++use std::time::Duration;
++use std::time::SystemTime;
++use std::time::UNIX_EPOCH;
++
++use codex_hepta_authbus::IssuerPurpose;
++use codex_hepta_authbus::IssuerSpec;
++use codex_hepta_authbus::PolicyEffect;
++use codex_hepta_authbus::PolicySpec;
++use codex_hepta_authbus::QuotaSpec;
++use codex_hepta_authbus::SettlementEvidenceClaims;
++use codex_hepta_authbus::SignedSettlementEvidence;
++use codex_hepta_authbus::SignedTrustedTimeAttestation;
++use codex_hepta_authbus::TrustedTimeAttestationClaims;
++use codex_hepta_authbus::bootstrap_retryable;
++use codex_hepta_bao_adapter::BaoAuthBusError;
++use codex_hepta_bao_adapter::BaoToken;
++use codex_hepta_bao_adapter::RegisteredBaoConsumer;
++use codex_hepta_cognitive_store::CognitiveRecoveryAnchor;
++use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
++use codex_hepta_cognitive_store::DurableCognitiveStore;
++use codex_hepta_cognitive_store::ProductionAuthorityLease;
++use codex_hepta_cognitive_store::ProductionAuthorityToken;
++use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
++use codex_hepta_cognitive_store::ProductionDurableWriter;
++use codex_hepta_cognitive_store::ProductionEntryOutboxDispatcher;
++use codex_hepta_cognitive_store::ProductionQueuedReceipt;
++use codex_hepta_contracts::AgentId;
++use codex_hepta_contracts::AuthorityClock;
++use codex_hepta_contracts::AuthorityTrustError;
++use codex_hepta_contracts::FinalUseApproval;
++use codex_hepta_contracts::FinalUseApprovalVerifier;
++use codex_hepta_contracts::FinalUseAuthority;
++use codex_hepta_contracts::FinalUseGrant;
++use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
++use codex_hepta_contracts::FinalUseRevocationUpdate;
++use codex_hepta_contracts::FinalUseRevocations;
++use codex_hepta_contracts::Sha256Digest;
++use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
++use codex_hepta_memory::LocalOutcomeState;
++use codex_hepta_operations::OperationIntentV1;
++use codex_hepta_paths::HeptaFleetRoot;
++use codex_hepta_types::Generation;
++use ed25519_dalek::Signer;
++use ed25519_dalek::SigningKey;
++use tokio::io::AsyncReadExt;
++use tokio::io::AsyncWriteExt;
++
++const SECRET: &str = "fixture-only-entry-secret";
++type TestError = Box<dyn std::error::Error + Send + Sync>;
++
++struct Clock(AtomicU64);
++impl AuthorityClock for Clock {
++    fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
++        Ok(self.0.load(Ordering::SeqCst))
++    }
++}
++
++#[derive(Clone)]
++struct Evidence {
++    sequence: Arc<AtomicU64>,
++    now: u64,
++    bad_settlement: bool,
++}
++impl BaoAuthBusEvidenceProvider for Evidence {
++    fn trusted_time(&mut self) -> Result<SignedTrustedTimeAttestation, BaoAuthBusError> {
++        let revision = self.sequence.fetch_add(1, Ordering::SeqCst) + 1;
++        let claims = TrustedTimeAttestationClaims {
++            issuer_id: StableId::new("issuer:entry-time").unwrap(),
++            key_epoch: Generation::new(1).unwrap(),
++            wall_time_ms: self.now + revision,
++            source_revision: revision,
++            source_digest: Digest32::of_bytes(&revision.to_be_bytes()),
++        };
++        Ok(SignedTrustedTimeAttestation {
++            signature: SigningKey::from_bytes(&[81; 32])
++                .sign(&claims.signing_bytes())
++                .to_bytes(),
++            claims,
++        })
++    }
++    fn settlement_evidence(
++        &mut self,
++        reservation: &QuotaReservation,
++        status: SettlementStatus,
++        observed_cost: u64,
++        terminal_evidence_digest: Digest32,
++        observed_at_ms: u64,
++    ) -> Result<SignedSettlementEvidence, BaoAuthBusError> {
++        let claims = SettlementEvidenceClaims {
++            issuer_id: StableId::new("issuer:entry-settlement").unwrap(),
++            key_epoch: Generation::new(1).unwrap(),
++            reservation_id: reservation.reservation_id.clone(),
++            operation_id: reservation.operation_id.clone(),
++            status,
++            observed_cost,
++            terminal_evidence_digest,
++            observed_at_ms,
++            expires_at_ms: observed_at_ms + 30_000,
++        };
++        let key = if self.bad_settlement {
++            [99; 32]
++        } else {
++            [82; 32]
++        };
++        Ok(SignedSettlementEvidence {
++            signature: SigningKey::from_bytes(&key)
++                .sign(&claims.signing_bytes())
++                .to_bytes(),
++            claims,
++        })
++    }
++}
++
++struct Provisioner {
++    admission: BaoDurableAuthBusAdmission,
++    grant: SignedFinalUseGrant,
++    approval: SignedFinalUseApproval,
++    evidence: Evidence,
++    expire_owner: Option<Arc<Clock>>,
++}
++impl BaoOperationProvisioner for Provisioner {
++    fn provision(
++        &self,
++        _: &ProductionDispatchRequest,
++        binding: &FinalUseBinding,
++    ) -> Result<BaoOperationInputs, String> {
++        if binding != &self.grant.grant.binding {
++            return Err("fixture binding mismatch".into());
++        }
++        if let Some(clock) = &self.expire_owner {
++            clock.0.store(self.evidence.now + 30_001, Ordering::SeqCst);
++        }
++        Ok(BaoOperationInputs {
++            admission: self.admission.clone(),
++            grant: self.grant.clone(),
++            approval: self.approval.clone(),
++            evidence: Box::new(self.evidence.clone()),
++        })
++    }
++}
++
++fn state_dir(root: &std::path::Path, name: &str) -> std::path::PathBuf {
++    let path = root.join(name);
++    std::fs::create_dir(&path).unwrap();
++    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o700)).unwrap();
++    path
++}
++
++fn authority_and_grant(
++    root: &std::path::Path,
++    name: &str,
++    key: u8,
++    binding: FinalUseBinding,
++    clock: Arc<Clock>,
++) -> (FinalUseAuthority, SignedFinalUseGrant) {
++    let issuer = SigningKey::from_bytes(&[key; 32]);
++    let now = clock.now_unix_ms().unwrap();
++    let authority = FinalUseAuthority::open_state_dir_with_clock(
++        &state_dir(root, name),
++        name.into(),
++        issuer.verifying_key().to_bytes(),
++        FinalUseRevocations {
++            authority_epoch: 1,
++            revision: 1,
++            revoked_grant_ids: Default::default(),
++        },
++        clock,
++    )
++    .unwrap();
++    let grant = FinalUseGrant {
++        schema_version: 1,
++        signer_id: name.into(),
++        authority_epoch: 1,
++        grant_id: format!("{name}-grant"),
++        nonce: [key; 32],
++        binding,
++        not_before_unix_ms: now - 1000,
++        expires_at_unix_ms: now + 60_000,
++    };
++    let signature = issuer
++        .sign(&grant.signing_bytes().unwrap())
++        .to_bytes()
++        .to_vec();
++    (authority, SignedFinalUseGrant { grant, signature })
++}
++
++async fn authbus_fixture(
++    root: &std::path::Path,
++    binding: &FinalUseBinding,
++    now: u64,
++) -> (
++    Arc<AuthBusAuthorityHost>,
++    BaoDurableAuthBusAdmission,
++    Evidence,
++) {
++    let database = state_dir(root, "authbus-database").join("authority.sqlite");
++    let checkpoint = state_dir(root, "authbus-checkpoint").join("checkpoint.json");
++    let host = Arc::new(
++        bootstrap_retryable(&database, checkpoint, "entry-qualification")
++            .await
++            .unwrap(),
++    );
++    for (purpose, name, key) in [
++        (IssuerPurpose::TrustedTime, "issuer:entry-time", 81),
++        (IssuerPurpose::Settlement, "issuer:entry-settlement", 82),
++    ] {
++        host.admin()
++            .enroll_issuer(
++                purpose,
++                IssuerSpec {
++                    issuer_id: StableId::new(name).unwrap(),
++                    key_epoch: Generation::new(1).unwrap(),
++                    verifying_key: SigningKey::from_bytes(&[key; 32]).verifying_key(),
++                },
++            )
++            .await
++            .unwrap();
++    }
++    let mut evidence = Evidence {
++        sequence: Arc::new(AtomicU64::new(0)),
++        now,
++        bad_settlement: false,
++    };
++    let time = host
++        .execution()
++        .observe_trusted_time_attestation(&evidence.trusted_time().unwrap())
++        .await
++        .unwrap();
++    let policy = host
++        .admin()
++        .create_policy(
++            PolicySpec {
++                policy_id: StableId::new("policy:entry-bao").unwrap(),
++                principal: StableId::new(&binding.subject_id).unwrap(),
++                action: StableId::new("action:bao-read").unwrap(),
++                scope_digest: Digest32::from_array(binding.scope_sha256),
++                effect: PolicyEffect::Allow,
++                not_before_ms: now - 1000,
++                expires_at_ms: now + 60_000,
++            },
++            time,
++        )
++        .await
++        .unwrap();
++    let time = host
++        .execution()
++        .observe_trusted_time_attestation(&evidence.trusted_time().unwrap())
++        .await
++        .unwrap();
++    let quota = host
++        .admin()
++        .create_quota(
++            QuotaSpec {
++                quota_key: StableId::new("quota:entry-bao").unwrap(),
++                principal: policy.principal,
++                scope_digest: Digest32::from_array(binding.scope_sha256),
++                unit: StableId::new("unit:request").unwrap(),
++                period_id: StableId::new("period:fixture").unwrap(),
++                limit: 1,
++            },
++            time,
++        )
++        .await
++        .unwrap();
++    (
++        host,
++        BaoDurableAuthBusAdmission {
++            policy_revision: 1,
++            quota_key: quota.quota_key,
++            expected_quota_revision: 1,
++            amount: 1,
++            expires_at_ms: now + 60_000,
++        },
++        evidence,
++    )
++}
++
++fn lease_authority(
++    agent: &AgentId,
++    now: u64,
++) -> (
++    ProductionAuthorityLease,
++    Arc<dyn ProductionAuthorityVerifier>,
++) {
++    let authority = ProductionAuthorityLease::from_verified_parts(
++        agent.clone(),
++        Sha256Digest::for_bytes(b"fixture-authority"),
++        1,
++        1,
++        now / 1000 + 3600,
++        ProductionAuthorityToken::from_verified_bytes(b"fixture-token".to_vec()).unwrap(),
++    )
++    .unwrap();
++    let verifier: Arc<dyn ProductionAuthorityVerifier> =
++        Arc::new(|lease: &ProductionAuthorityLease, owner: &AgentId| {
++            if &lease.agent_id == owner {
++                Ok(())
++            } else {
++                Err("fixture owner mismatch".into())
++            }
++        });
++    (authority, verifier)
++}
++
++// Genuine cold handoff: the predecessor is fully gone before recovery reads it.
++// This deliberately makes no claim about graceful in-process pool shutdown.
++async fn cold_bootstrap(root: &std::path::Path, agent: &str, now: u64) {
++    assert_eq!(root.canonicalize().unwrap(), root);
++    assert!(!root.join("cold-anchor.json").exists());
++    let mut child = tokio::process::Command::new(std::env::current_exe().unwrap())
++        .arg("--exact")
++        .arg("bao_operation_target::tests::cold_bootstrap_helper")
++        .arg("--ignored")
++        .arg("--nocapture")
++        .env("HEPTA_BAO_COLD_ROOT", root)
++        .env("HEPTA_BAO_COLD_AGENT", agent)
++        .env("HEPTA_BAO_COLD_TIME", now.to_string())
++        .kill_on_drop(true)
++        .spawn()
++        .unwrap();
++    let (mut done, outcome) = tokio::sync::oneshot::channel();
++    // A separate supervisor owns the Child. If the caller is canceled, the
++    // receiver closes and the supervisor kills AND waits while this runtime lives.
++    // Runtime shutdown may abort supervision; kill_on_drop is only a fallback,
++    // not a claim of fully joined in-process shutdown.
++    let supervisor = tokio::spawn(async move {
++        let status = tokio::select! {
++            result = child.wait() => Some(result),
++            _ = done.closed() => None,
++            _ = tokio::time::sleep(Duration::from_secs(30)) => None,
++        };
++        let result = match status {
++            Some(status) => status.map_err(|error| error.to_string()),
++            None => {
++                let _ = child.start_kill();
++                let status = child.wait().await;
++                Err(format!(
++                    "cold fixture timed out/canceled; reaped status: {status:?}"
++                ))
++            }
++        };
++        let _ = done.send(result);
++    });
++    let result = outcome.await;
++    supervisor.await.expect("bootstrap supervisor joined");
++    let status = result.unwrap().expect("bounded bootstrap child");
++    assert!(status.success(), "bootstrap child exit: {status}");
++}
++
++#[tokio::test]
++#[ignore = "cold bootstrap child fixture"]
++async fn cold_bootstrap_helper() {
++    let root =
++        std::path::PathBuf::from(std::env::var_os("HEPTA_BAO_COLD_ROOT").expect("child-only root"));
++    assert_eq!(root.canonicalize().unwrap(), root);
++    let agent = AgentId::parse(&std::env::var("HEPTA_BAO_COLD_AGENT").unwrap()).unwrap();
++    let now = std::env::var("HEPTA_BAO_COLD_TIME")
++        .unwrap()
++        .parse()
++        .unwrap();
++    let fleet = HeptaFleetRoot::parse(state_dir(&root, "fleet")).unwrap();
++    let (authority, verifier) = lease_authority(&agent, now);
++    let store = DurableCognitiveStore::open(&fleet.layout().agent(&agent))
++        .await
++        .unwrap();
++    let _writer = ProductionDurableWriter::open_with_live_verifier(
++        store.clone(),
++        authority,
++        verifier,
++        "bao-entry-lease",
++        1,
++    )
++    .await
++    .unwrap();
++    let anchor = store.recovery_anchor().await.unwrap();
++    use std::io::Write;
++    let mut file = std::fs::OpenOptions::new()
++        .write(true)
++        .create_new(true)
++        .open(root.join("cold-anchor.json"))
++        .unwrap();
++    file.write_all(&serde_json::to_vec(&anchor).unwrap())
++        .unwrap();
++    file.sync_all().unwrap();
++}
++
++async fn owner_fixture(
++    root: &std::path::Path,
++    read: &BaoReadRequest,
++    binding: &FinalUseBinding,
++    clock: Arc<Clock>,
++) -> (ProductionDurableWriter, ProductionQueuedReceipt) {
++    let now = clock.now_unix_ms().unwrap();
++    cold_bootstrap(root, &read.subject_id, now).await;
++    let fleet = HeptaFleetRoot::parse(root.join("fleet")).unwrap();
++    let agent = AgentId::parse(&read.subject_id).unwrap();
++    let layout = fleet.layout().agent(&agent);
++    let (authority, verifier) = lease_authority(&agent, now);
++    let anchor: CognitiveRecoveryAnchor =
++        serde_json::from_slice(&std::fs::read(root.join("cold-anchor.json")).unwrap()).unwrap();
++    assert_eq!(anchor.owner_agent_id, agent);
++    let recovered = DurableCognitiveStore::open_with_recovery(
++        &layout,
++        CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
++        &authority,
++        verifier.as_ref(),
++    )
++    .await
++    .unwrap_or_else(|error| {
++        // Metadata only: diagnose cold handoff without changing guarded files.
++        fn inventory(path: &std::path::Path) {
++            let metadata = std::fs::symlink_metadata(path).unwrap();
++            eprintln!(
++                "cold recovery metadata: {} mode={:o} uid={} nlink={} bytes={}",
++                path.display(),
++                metadata.mode(),
++                metadata.uid(),
++                metadata.nlink(),
++                metadata.len()
++            );
++            if metadata.is_dir() {
++                for child in std::fs::read_dir(path).unwrap() {
++                    inventory(&child.unwrap().path());
++                }
++            }
++        }
++        inventory(root);
++        panic!("cold recovery failed: {error:?}");
++    });
++    let writer = ProductionDurableWriter::open_with_entry_clock(
++        recovered,
++        authority,
++        verifier,
++        clock,
++        "bao-entry-lease",
++        1,
++    )
++    .await
++    .unwrap();
++    let payload = serde_json::to_string(read).unwrap();
++    let intent = OperationIntentV1::new(
++        StableId::new("operation:registered-bao").unwrap(),
++        StableId::new(&read.subject_id).unwrap(),
++        StableId::new(BAO_DURABLE_OPERATION_DESTINATION).unwrap(),
++        Digest32::of_bytes(payload.as_bytes()),
++        Digest32::from_array(binding.scope_sha256),
++        Generation::new(1).unwrap(),
++        None,
++    )
++    .unwrap();
++    let queued = writer
++        .prepare_operation(intent, "bao.kv.read", payload)
++        .await
++        .unwrap();
++    (writer, queued)
++}
++
++struct Fixture {
++    _root: tempfile::TempDir,
++    writer: ProductionDurableWriter,
++    queued: ProductionQueuedReceipt,
++    dispatcher: ProductionEntryOutboxDispatcher,
++    owner_grant: SignedFinalUseGrant,
++    owner_binding: FinalUseBinding,
++    authbus: Arc<AuthBusAuthorityHost>,
++    quota: StableId,
++    delivered: Arc<AtomicUsize>,
++}
++
++async fn fixture(client: BaoClient, expire_owner: bool, bad_settlement: bool) -> Fixture {
++    let root = tempfile::tempdir().unwrap();
++    let canonical_root = root.path().canonicalize().unwrap();
++    let now = SystemTime::now()
++        .duration_since(UNIX_EPOCH)
++        .unwrap()
++        .as_millis() as u64;
++    let owner_clock = Arc::new(Clock(AtomicU64::new(now)));
++    let provider_clock = Arc::new(Clock(AtomicU64::new(now)));
++    let read = BaoReadRequest {
++        subject_id: "00000000-0000-4000-8000-00000000c061".into(),
++        consumer_id: "entry-consumer".into(),
++        namespace: "team".into(),
++        mount: "secret".into(),
++        path: "token".into(),
++        field: "value".into(),
++        version: 1,
++        expected_secret_sha256: Digest32::of_bytes(SECRET.as_bytes()).into_array(),
++    };
++    let binding = client.binding(&read).unwrap();
++    let (authbus, admission, mut evidence) = authbus_fixture(&canonical_root, &binding, now).await;
++    evidence.bad_settlement = bad_settlement;
++    let quota = admission.quota_key.clone();
++    let (writer, queued) =
++        owner_fixture(&canonical_root, &read, &binding, owner_clock.clone()).await;
++    let owner_binding = writer
++        .final_use_binding(&queued, BAO_DURABLE_OPERATION_DESTINATION)
++        .await
++        .unwrap();
++    let (owner_authority, owner_grant) = authority_and_grant(
++        &canonical_root,
++        "operation-owner",
++        71,
++        owner_binding.clone(),
++        owner_clock.clone(),
++    );
++    let (provider_authority, grant) = authority_and_grant(
++        &canonical_root,
++        "provider-owner",
++        72,
++        binding,
++        provider_clock.clone(),
++    );
++    let approver = SigningKey::from_bytes(&[73; 32]);
++    let distributor = SigningKey::from_bytes(&[74; 32]);
++    let approval = FinalUseApproval::for_grant("operator-approval".into(), &grant.grant).unwrap();
++    let approval = SignedFinalUseApproval {
++        signature: approver
++            .sign(&approval.signing_bytes().unwrap())
++            .to_bytes()
++            .to_vec(),
++        approval,
++    };
++    let delivered = Arc::new(AtomicUsize::new(0));
++    let count = delivered.clone();
++    let registered = BaoFinalUseHost::new(
++        provider_authority,
++        FinalUseApprovalVerifier::new(
++            "operator-approval".into(),
++            approver.verifying_key().to_bytes(),
++        )
++        .unwrap(),
++        FinalUseRevocationFeedVerifier::new(
++            "feed-owner".into(),
++            distributor.verifying_key().to_bytes(),
++        )
++        .unwrap(),
++        provider_clock,
++        [RegisteredBaoConsumer::new(
++            "entry-consumer".into(),
++            Arc::new(move |secret| {
++                assert_eq!(secret, SECRET.as_bytes());
++                count.fetch_add(1, Ordering::SeqCst);
++                Ok(())
++            }),
++        )
++        .unwrap()],
++    )
++    .unwrap();
++    let update = FinalUseRevocationUpdate::new(
++        "feed-owner".into(),
++        FinalUseRevocations {
++            authority_epoch: 1,
++            revision: 2,
++            revoked_grant_ids: Default::default(),
++        },
++        now - 1000,
++        now + 60_000,
++    );
++    registered
++        .apply_revocation_update(&SignedFinalUseRevocationUpdate {
++            signature: distributor
++                .sign(&update.signing_bytes().unwrap())
++                .to_bytes()
++                .to_vec(),
++            update,
++        })
++        .unwrap();
++    let target = Arc::new(BaoOperationTarget {
++        client: Arc::new(client),
++        registered_host: Arc::new(registered),
++        authbus: authbus.clone(),
++        provisioner: Arc::new(Provisioner {
++            admission,
++            grant,
++            approval,
++            evidence,
++            expire_owner: expire_owner.then_some(owner_clock),
++        }),
++    });
++    let dispatcher = ProductionEntryOutboxDispatcher::attach(owner_authority, target);
++    Fixture {
++        _root: root,
++        writer,
++        queued,
++        dispatcher,
++        owner_grant,
++        owner_binding,
++        authbus,
++        quota,
++        delivered,
++    }
++}
++
++type TlsServer = (
++    BaoClient,
++    tokio::task::JoinHandle<Result<(), TestError>>,
++    tokio::sync::oneshot::Receiver<()>,
++    tokio::sync::oneshot::Sender<()>,
++);
++
++async fn tls_server(pause: bool) -> Result<TlsServer, TestError> {
++    let cert = rcgen::generate_simple_self_signed(vec!["localhost".into()])?;
++    let pem = cert.cert.pem();
++    let config = rustls::ServerConfig::builder_with_provider(Arc::new(
++        rustls::crypto::aws_lc_rs::default_provider(),
++    ))
++    .with_safe_default_protocol_versions()?
++    .with_no_client_auth()
++    .with_single_cert(
++        vec![cert.cert.der().clone()],
++        rustls::pki_types::PrivatePkcs8KeyDer::from(cert.signing_key.serialize_der()).into(),
++    )?;
++    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
++    let client = BaoClient::new(
++        &format!("https://localhost:{}/", listener.local_addr()?.port()),
++        pem.as_bytes(),
++        BaoToken::new("fixture-token".into())?,
++        Duration::from_secs(5),
++    )?;
++    let (accepted, observed) = tokio::sync::oneshot::channel();
++    let (release, released) = tokio::sync::oneshot::channel();
++    let task = tokio::spawn(async move {
++        tokio::time::timeout(Duration::from_secs(10), async move {
++        let (socket, _) = listener.accept().await?;
++        let mut stream = tokio_rustls::TlsAcceptor::from(Arc::new(config))
++            .accept(socket)
++            .await?;
++        let mut request = Vec::new();
++        while !request.ends_with(b"\r\n\r\n") && request.len() < 16384 {
++            request.push(stream.read_u8().await?);
++        }
++        let _ = accepted.send(());
++        if pause { released.await?; }
++        let body = serde_json::json!({"data":{"data":{"value":SECRET},"metadata":{"version":1}}})
++            .to_string();
++        let headers = format!(
++            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
++            body.len()
++        );
++        stream.write_all(headers.as_bytes()).await?;
++        stream.write_all(body.as_bytes()).await?;
++        Ok::<(), TestError>(())
++        }).await?
++    });
++    Ok((client, task, observed, release))
++}
++
++#[tokio::test]
++async fn real_carrier_delivery_and_signed_settlement_stay_indeterminate() {
++    let (client, server, _observed, _release) = tls_server(false).await.unwrap();
++    let f = fixture(client, false, false).await;
++    let receipt = f
++        .dispatcher
++        .dispatch(
++            &f.writer,
++            &f.owner_grant,
++            &f.owner_binding,
++            f.queued.clone(),
++        )
++        .await
++        .unwrap();
++    assert_eq!(receipt.state, LocalOutcomeState::Indeterminate);
++    assert_eq!(f.delivered.load(Ordering::SeqCst), 1);
++    let quota = f.authbus.read().quota_snapshot(&f.quota).await.unwrap();
++    assert_eq!((quota.available, quota.reserved, quota.consumed), (0, 0, 1));
++    assert_eq!(f.dispatcher.reconcile(&f.writer, 1).await.unwrap(), 0);
++    assert!(
++        f.dispatcher
++            .dispatch(&f.writer, &f.owner_grant, &f.owner_binding, f.queued)
++            .await
++            .is_err()
++    );
++    assert_eq!(f.delivered.load(Ordering::SeqCst), 1);
++    server.await.unwrap().unwrap();
++}
++
++#[tokio::test]
++async fn expired_real_carrier_after_preparation_never_enters_provider() {
++    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
++    listener.set_nonblocking(true).unwrap();
++    let cert = rcgen::generate_simple_self_signed(vec!["localhost".into()]).unwrap();
++    let client = BaoClient::new(
++        &format!(
++            "https://localhost:{}/",
++            listener.local_addr().unwrap().port()
++        ),
++        cert.cert.pem().as_bytes(),
++        BaoToken::new("fixture-token".into()).unwrap(),
++        Duration::from_secs(2),
++    )
++    .unwrap();
++    let f = fixture(client, true, false).await;
++    let receipt = f
++        .dispatcher
++        .dispatch(&f.writer, &f.owner_grant, &f.owner_binding, f.queued)
++        .await
++        .unwrap();
++    assert_eq!(receipt.state, LocalOutcomeState::Indeterminate);
++    assert!(
++        receipt
++            .target_reason
++            .unwrap()
++            .contains("owner entry rejected")
++    );
++    assert_eq!(f.delivered.load(Ordering::SeqCst), 0);
++    assert_eq!(
++        listener.accept().unwrap_err().kind(),
++        std::io::ErrorKind::WouldBlock
++    );
++    let quota = f.authbus.read().quota_snapshot(&f.quota).await.unwrap();
++    assert_eq!((quota.available, quota.reserved, quota.consumed), (0, 1, 0));
++}
++
++#[tokio::test]
++async fn invalid_signed_settlement_never_terminalizes_owner_or_refunds_hold() {
++    let (client, server, _observed, _release) = tls_server(false).await.unwrap();
++    let f = fixture(client, false, true).await;
++    let receipt = f
++        .dispatcher
++        .dispatch(&f.writer, &f.owner_grant, &f.owner_binding, f.queued)
++        .await
++        .unwrap();
++    assert_eq!(receipt.state, LocalOutcomeState::Indeterminate);
++    assert!(
++        receipt
++            .target_reason
++            .unwrap()
++            .contains("signed settlement pending")
++    );
++    assert_eq!(f.delivered.load(Ordering::SeqCst), 1);
++    let quota = f.authbus.read().quota_snapshot(&f.quota).await.unwrap();
++    assert_eq!((quota.available, quota.reserved, quota.consumed), (0, 1, 0));
++    server.await.unwrap().unwrap();
++}
++
++#[path = "bao_operation_target_cancellation_tests.rs"]
++mod cancellation;
+diff --git a/codex-rs/hepta-agentd/src/bao_operation_target_cancellation_tests.rs b/codex-rs/hepta-agentd/src/bao_operation_target_cancellation_tests.rs
+new file mode 100644
+index 0000000000..f4dd0027fb
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/bao_operation_target_cancellation_tests.rs
+@@ -0,0 +1,75 @@
++use super::*;
++use codex_hepta_cognitive_store::ProductionWriterError;
++use codex_hepta_memory::LocalLeaseOutboxError;
++
++#[tokio::test]
++async fn cancellation_of_real_bao_entry_preserves_holds_and_releases_exclusion() {
++    let (client, server, accepted, release) = tls_server(true).await.unwrap();
++    let f = Arc::new(fixture(client, false, false).await);
++    let dispatch_fixture = Arc::clone(&f);
++    let dispatch = tokio::spawn(async move {
++        dispatch_fixture
++            .dispatcher
++            .dispatch(
++                &dispatch_fixture.writer,
++                &dispatch_fixture.owner_grant,
++                &dispatch_fixture.owner_binding,
++                dispatch_fixture.queued.clone(),
++            )
++            .await
++    });
++    tokio::time::timeout(Duration::from_secs(5), accepted)
++        .await
++        .unwrap()
++        .unwrap();
++    assert!(matches!(
++        f.writer.release().await,
++        Err(ProductionWriterError::Local(
++            LocalLeaseOutboxError::LeaseEntryInProgress { .. }
++        ))
++    ));
++    assert!(matches!(
++        f.writer
++            .apply("operation:registered-bao", "fixture premature outcome")
++            .await,
++        Err(ProductionWriterError::Local(
++            LocalLeaseOutboxError::EntryInProgress { .. }
++        ))
++    ));
++    dispatch.abort();
++    assert!(dispatch.await.unwrap_err().is_cancelled());
++    assert_eq!(
++        f.writer.status("operation:registered-bao").await.unwrap(),
++        LocalOutcomeState::Indeterminate
++    );
++    let quota = f.authbus.read().quota_snapshot(&f.quota).await.unwrap();
++    assert_eq!((quota.available, quota.reserved, quota.consumed), (0, 1, 0));
++    assert_eq!(f.delivered.load(Ordering::SeqCst), 0);
++    assert!(
++        f.dispatcher
++            .dispatch(
++                &f.writer,
++                &f.owner_grant,
++                &f.owner_binding,
++                f.queued.clone()
++            )
++            .await
++            .is_err()
++    );
++    // The canceled provider cannot receive a new owner grant/dispatch attempt.
++    // Releasing the pause only lets the fixture server observe the closed peer.
++    let _ = release.send(());
++    let _ = server.await.unwrap();
++    assert_eq!(f.delivered.load(Ordering::SeqCst), 0);
++    // The active entry is gone, so closure reaches the independent durable
++    // unresolved-occurrence fence. Cancellation cannot make that effect safe.
++    assert!(matches!(
++        f.writer.release().await,
++        Err(ProductionWriterError::Local(LocalLeaseOutboxError::IllegalTransition(reason)))
++            if reason == "cannot terminalize lease with unresolved local occurrences: operation:registered-bao"
++    ));
++    assert_eq!(
++        f.writer.status("operation:registered-bao").await.unwrap(),
++        LocalOutcomeState::Indeterminate
++    );
++}

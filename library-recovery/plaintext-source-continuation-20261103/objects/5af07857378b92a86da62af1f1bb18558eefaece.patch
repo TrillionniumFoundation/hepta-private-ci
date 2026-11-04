@@ -1,0 +1,109 @@
+diff --git a/docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json b/docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json
+index 358765225..40ba048b9 100644
+--- a/docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json
++++ b/docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json
+@@ -1369,7 +1369,7 @@
+           "mustContain": [
+             "run_production_operation_reconciler",
+             "attach_production_operations",
+-            "CompletedRuntimeTask::Operations"
++            "\"production-operation-reconciler\""
+           ]
+         }
+       ],
+@@ -1424,7 +1424,7 @@
+           "mustContain": [
+             "run_production_operation_reconciler",
+             "attach_production_operations",
+-            "CompletedRuntimeTask::Operations"
++            "\"production-operation-reconciler\""
+           ]
+         }
+       ],
+@@ -1489,7 +1489,7 @@
+           "mustContain": [
+             "run_production_operation_reconciler",
+             "attach_production_operations",
+-            "CompletedRuntimeTask::Operations"
++            "\"production-operation-reconciler\""
+           ]
+         }
+       ],
+@@ -1520,7 +1520,7 @@
+       "summary": "explicit Agentd daemon lifecycle composition with observer-only reconciler and fail-closed default",
+       "publicSymbols": [
+         "AgentdConfig::with_production_operations",
+-        "AgentdProductionOperationRuntimeConfig::open"
++        "AgentdConfig::with_production_writer_host"
+       ],
+       "sourceEvidence": [
+         {
+@@ -1534,10 +1534,10 @@
+         {
+           "path": "codex-rs/hepta-agentd/src/runtime.rs",
+           "mustContain": [
+-            "AgentdProductionOperationRuntimeConfig::open",
++            "operations.attach(Arc::clone(recovered_host)).await?",
+             "attach_production_operations",
+             "run_production_operation_reconciler",
+-            "CompletedRuntimeTask::Operations"
++            "\"production-operation-reconciler\""
+           ]
+         },
+         {
+@@ -1551,10 +1551,17 @@
+       ],
+       "positiveTests": [
+         {
+-          "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
++          "path": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
+           "mustContain": [
+-            "cleanup_never_polls_the_join_handle_already_consumed_by_select",
+-            "operations_task.is_finished()"
++            "shutdown_listener_error_does_not_detach_live_tasks",
++            "cooperative_shutdown_precedes_forced_abort"
++          ]
++        },
++        {
++          "path": "codex-rs/hepta-agentd/tests/production_reconcile_host.rs",
++          "mustContain": [
++            "actual_host_bounds_unavailable_observers_and_rotates_clones",
++            "existing_host_exposes_token_free_lease_observation_without_retention"
+           ]
+         }
+       ],
+diff --git a/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json b/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json
+index 0d8a3e30d..f9af35d9a 100644
+--- a/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json
++++ b/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json
+@@ -336,7 +336,7 @@
+           "mustContain": [
+             "run_production_operation_reconciler",
+             "attach_production_operations",
+-            "CompletedRuntimeTask::Operations"
++            "\"production-operation-reconciler\""
+           ]
+         }
+       ]
+diff --git a/docs/modules/kernel.operations/TECHNICAL.md b/docs/modules/kernel.operations/TECHNICAL.md
+index 744afc747..9d7d417f7 100644
+--- a/docs/modules/kernel.operations/TECHNICAL.md
++++ b/docs/modules/kernel.operations/TECHNICAL.md
+@@ -54,7 +54,7 @@ The exclusive root owns the canonical `OperationIntentV1` semantics and determin
+ | exact-head / synthetic-merge execution | pending current candidate CI |
+ | independent acceptance / release | false |
+ 
+-Canonical exact source identity is recorded by `IMPLEMENTATION_MAP.json` with `sourceIdentityPolicy=path_blob_manifest_v1`. The verifier resolves every mapped path through `git rev-parse HEAD:<path>`; a tracked map therefore does not need to contain its own future HEAD/tree hash.
++Current source observation is governed by `IMPLEMENTATION_MAP.json` with `sourceIdentityPolicy=candidate_or_exact_observation_v1`. Development verification checks source navigation; qualification additionally checks the candidate against the retained observation and mapped inputs. The retained `exactSourceEvidence.kind=path_blob_manifest_v1` entries are historical evidence, not an automatic current-head qualification or permission to rebind old execution receipts.
+ 
+ The 16,384-record limits belong to the in-memory reference oracle. Durable configured limits and fail-before-mutation checks live in the CognitiveStore owner. Long-lived segment/checkpoint compaction remains a separate gap.
+ 
+@@ -371,6 +371,6 @@ This receipt is source-navigation evidence for the current durable candidate; ru
+ | reference ledger | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | reference oracle |
+ | reference outbox | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | reference oracle |
+ 
+-- Exact mapped source identity is verified through `path_blob_manifest_v1`.
+-- `productionImplementation=true` means repository source implementation exists; it does not mean product execution, activation, acceptance or release.
++- Current observation policy is `candidate_or_exact_observation_v1`; retained path/blob receipts remain historical until separately requalified.
++- The current implementation map sets `productionImplementation=false` and `productExecutionProved=false` after mapped source/build inputs changed. This does not remove the implemented source or named caller; it prevents navigation evidence from renewing historical execution qualification. Activation, independent acceptance and release remain false.
+ - Remaining repository gates are current exact-head/synthetic-merge success, remaining destination adapters and long-lived segment/checkpoint compaction. External production authority/grant enrollment remains an activation gate and is not manufactured by Agentd.

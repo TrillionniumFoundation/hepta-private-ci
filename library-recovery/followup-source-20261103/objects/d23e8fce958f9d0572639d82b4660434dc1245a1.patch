@@ -1,0 +1,561 @@
+diff --git a/.github/scripts/test_hepta_neuron_materialize_and_freeze.py b/.github/scripts/test_hepta_neuron_materialize_and_freeze.py
+new file mode 100644
+--- /dev/null
++++ b/.github/scripts/test_hepta_neuron_materialize_and_freeze.py
+@@ -0,0 +1,142 @@
++"""All fixtures are synthetic; tests do not prove physical Laya execution."""
++import hashlib
++import json
++import sys
++import tempfile
++import unittest
++from pathlib import Path
++from unittest.mock import patch, MagicMock
++
++ROOT = Path(__file__).resolve().parents[2]
++sys.path.insert(0, str(ROOT / "scripts"))
++sys.path.insert(0, str(ROOT / ".github/scripts"))
++
++import hepta_neuron_materialize_weights as material
++from hepta_neuron_freeze_dataset import freeze_dataset
++from hepta_neuron_model_trials import InvalidTrial, read_json
++from test_hepta_neuron_model_trials import fixture
++
++
++class MaterializationTests(unittest.TestCase):
++    def _catalog_and_cache(self, path):
++        cache = path / "cache"
++        cache.mkdir()
++        content = {}
++        for rel in material.REQUIRED:
++            file = cache / rel
++            file.parent.mkdir(parents=True, exist_ok=True)
++            file.write_bytes(b"synthetic-test-" + rel.encode())
++            content[rel] = file
++        weight = hashlib.sha256(content["model.safetensors"].read_bytes()).hexdigest()
++        cat = {"repository": "local-fixture", "revision": "a" * 40,
++               "variants": {"typed": {"subfolder": "typed-decisions",
++                                      "model_id": "fixture-typed", "weights_sha256": weight}}}
++        return cat, content
++
++    def test_copy_is_explicit_offline_and_create_only(self):
++        with tempfile.TemporaryDirectory() as temp:
++            root = Path(temp)
++            catalog, files = self._catalog_and_cache(root)
++            requests = []
++
++            def fetch(repo, rel, rev, allow_net, cache):
++                requests.append((repo, rel, rev, allow_net))
++                return files[rel.removeprefix("typed-decisions/")]
++
++            def inspect(cat, arm, dest):
++                self.assertEqual(arm, "typed")
++                for rel in material.REQUIRED:
++                    self.assertTrue((dest / rel).is_file())
++                return {"weights_sha256": cat["variants"][arm]["weights_sha256"],
++                        "artifact_tree_sha256": "f" * 64}
++
++            with patch.object(material, "verify_catalog", side_effect=lambda c: c), \
++                 patch.object(material, "inspect_local", side_effect=inspect):
++                packet = material.materialize(catalog, "typed", root / "model", fetcher=fetch)
++                self.assertTrue(packet["local_weight_bytes_verified"])
++                self.assertFalse(packet["promotion_authorized"])
++                self.assertFalse(packet["network_permission_used"])
++                self.assertEqual(len(requests), len(material.REQUIRED))
++                self.assertTrue(all(x[3] is False and x[2] == "a" * 40 for x in requests))
++                self.assertEqual((root / "model/model.safetensors").read_bytes(),
++                                 files["model.safetensors"].read_bytes())
++                with self.assertRaisesRegex(InvalidTrial, "new absolute directory"):
++                    material.materialize(catalog, "typed", root / "model", fetcher=fetch)
++
++    def test_corrupt_bytes_cannot_finish_acquisition(self):
++        with tempfile.TemporaryDirectory() as temp:
++            root = Path(temp)
++            catalog, files = self._catalog_and_cache(root)
++            files["model.safetensors"].write_bytes(b"tampered")
++            def fetch(repo, rel, rev, allow_net, cache):
++                return files[rel.removeprefix("typed-decisions/")]
++            with patch.object(material, "verify_catalog", side_effect=lambda c: c):
++                with self.assertRaisesRegex(InvalidTrial, "digest mismatch"):
++                    material.materialize(catalog, "typed", root / "model", fetcher=fetch)
++            self.assertTrue((root / "model").is_dir())
++            self.assertFalse((root / "model/rl_agent_config.json").exists())
++
++    def test_offline_hub_fetch_never_implies_network_permission(self):
++        with patch.dict(sys.modules, {"huggingface_hub": MagicMock()}):
++            module = sys.modules["huggingface_hub"]
++            module.hf_hub_download.return_value = "/tmp/nonexistent/cache-file"
++            result = material._hf_fetch("org/repo", "typed-decisions/model.safetensors",
++                                        "b" * 40, False, None)
++            self.assertIsInstance(result, Path)
++            module.hf_hub_download.assert_called_once_with(
++                repo_id="org/repo", filename="typed-decisions/model.safetensors",
++                revision="b" * 40, local_files_only=True, cache_dir=None)
++
++
++class DatasetFreezeTests(unittest.TestCase):
++    def test_blind_export_revalidates_both_roles_and_preserves_original(self):
++        with tempfile.TemporaryDirectory() as temp:
++            root = Path(temp)
++            manifest, rows, source, template = fixture(root, "heads")
++            folder = root / "frozen"
++            payload = freeze_dataset(template, source, folder)
++            self.assertFalse(payload["promotion_authorized"])
++            self.assertEqual(payload["observed_window_counts"]["future_2"], 1)
++            self.assertEqual((folder / "manifest.json").exists(), True)
++            result = [json.loads(x) for x in (folder / "blinded.jsonl").read_text().splitlines()]
++            self.assertEqual(len(rows), len(result))
++            self.assertTrue(all("target_q24" not in x for x in result if x["split"] != "train"))
++            self.assertTrue(all("target_q24" in x for x in result if x["split"] == "train"))
++            self.assertTrue("target_q24" in json.loads(source.read_text().splitlines()[-1]))
++            self.assertNotIn("gold", (folder / "freeze-diagnostic.json").read_text())
++            with self.assertRaisesRegex(InvalidTrial, "new absolute directory"):
++                freeze_dataset(template, source, folder)
++
++    def test_sealed_choice_labels_never_exported(self):
++        with tempfile.TemporaryDirectory() as temp:
++            root = Path(temp)
++            _, rows, source, template = fixture(root, "multilingual")
++            out = root / "final"
++            freeze_dataset(template, source, out)
++            raw = (out / "blinded.jsonl").read_text()
++            self.assertNotIn('"gold":', raw)
++            self.assertNotIn('"is_ood":', raw)
++            self.assertEqual(len(raw.splitlines()), len(rows))
++
++    def test_tampered_seal_and_nonchronological_windows_block_export(self):
++        with tempfile.TemporaryDirectory() as temp:
++            root = Path(temp)
++            manifest, rows, source, template = fixture(root, "decisions")
++            rows[3]["observed_at_ms"] = 2000
++            source.write_text("".join(json.dumps(r) + "\n" for r in rows))
++            manifest.pop("dataset_sha256")
++            manifest.pop("blind_dataset_sha256")
++            template.write_text(json.dumps(manifest))
++            with self.assertRaisesRegex(InvalidTrial, "time windows overlap"):
++                freeze_dataset(template, source, root / "invalid")
++            self.assertFalse((root / "invalid").exists())
++            rows[3]["observed_at_ms"] = 4000
++            source.write_text("".join(json.dumps(r) + "\n" for r in rows))
++            manifest["dataset_sha256"] = "c" * 64
++            template.write_text(json.dumps(manifest))
++            with self.assertRaisesRegex(InvalidTrial, "conflicts with actual bytes"):
++                freeze_dataset(template, source, root / "invalid")
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/.github/scripts/test_hepta_neuron_model_trials.py b/.github/scripts/test_hepta_neuron_model_trials.py
+--- a/.github/scripts/test_hepta_neuron_model_trials.py
++++ b/.github/scripts/test_hepta_neuron_model_trials.py
+@@ -250,6 +250,13 @@
+                 with self.assertRaisesRegex(InvalidTrial, "new absolute safetensors path"):
+                     run_head(manifest, run_rows, arm, "cpu", artifact)
+ 
++    def test_exponential_overflow_in_json_is_rejected_before_model_use(self):
++        from hepta_neuron_model_trials import strict_json_loads
++        with self.assertRaisesRegex(InvalidTrial, "nonfinite JSON number"):
++            strict_json_loads('{"nested":{"metric":1e999}}')
++        self.assertEqual(strict_json_loads('{"nested":{"metric":1e-5}}'),
++                         {"nested": {"metric": 1e-5}})
++
+     def test_duplicate_json_keys_and_nonfinite_manifest_are_rejected(self):
+         from hepta_neuron_model_trials import read_json, strict_json_loads
+         with tempfile.TemporaryDirectory() as path:
+diff --git a/.github/workflows/hepta-neuron-model-trials.yml b/.github/workflows/hepta-neuron-model-trials.yml
+--- a/.github/workflows/hepta-neuron-model-trials.yml
++++ b/.github/workflows/hepta-neuron-model-trials.yml
+@@ -6,7 +6,10 @@
+       - 'scripts/hepta_neuron_model_trials.py'
+       - 'scripts/hepta_neuron_trial_evidence_gate.py'
+       - 'scripts/hepta_neuron_artifact_preflight.py'
++      - 'scripts/hepta_neuron_materialize_weights.py'
++      - 'scripts/hepta_neuron_freeze_dataset.py'
+       - '.github/scripts/test_hepta_neuron_model_trials.py'
++      - '.github/scripts/test_hepta_neuron_materialize_and_freeze.py'
+       - '.github/scripts/test_hepta_neuron_trial_evidence_gate.py'
+       - '.github/workflows/hepta-neuron-model-trials.yml'
+       - 'qualification/neuron-model-trials/**'
+@@ -29,7 +32,7 @@
+           /tmp/hepta-neuron-trial-venv/bin/python -m pip install --disable-pip-version-check --no-input 'cryptography==46.0.4'
+       - name: Strict offline protocol checks (no weights, no production model claims)
+         run: |
+-          /tmp/hepta-neuron-trial-venv/bin/python -m py_compile scripts/hepta_neuron_model_trials.py scripts/hepta_neuron_trial_evidence_gate.py scripts/hepta_neuron_artifact_preflight.py
++          /tmp/hepta-neuron-trial-venv/bin/python -m py_compile scripts/hepta_neuron_model_trials.py scripts/hepta_neuron_trial_evidence_gate.py scripts/hepta_neuron_artifact_preflight.py scripts/hepta_neuron_materialize_weights.py scripts/hepta_neuron_freeze_dataset.py
+           /tmp/hepta-neuron-trial-venv/bin/python -m unittest discover -s .github/scripts -p 'test_hepta_neuron*.py' -v
+           /tmp/hepta-neuron-trial-venv/bin/python scripts/hepta_neuron_artifact_preflight.py catalog \
+             --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
+diff --git a/qualification/neuron-model-trials/README.md b/qualification/neuron-model-trials/README.md
+--- a/qualification/neuron-model-trials/README.md
++++ b/qualification/neuron-model-trials/README.md
+@@ -62,6 +62,53 @@
+ full local artifact-tree SHA. `local_weight_bytes_verified=true` only proves
+ that those physical local bytes match the public metadata lock; neither that
+ lock nor its receipt is independently authenticated production evidence.
++
++### Operator-controlled weight acquisition and evaluator-owned dataset freeze
++
++The artifact materializer is **offline-cache-only by default**. It copies the
++five preregistered files into a **new** model directory on the actual target
++host, checks the complete weight-file SHA-256 during copying, runs the tensor
++inventory and encoder/tokenizer preflight, fsyncs each file and emits a
++create-only diagnostic receipt. A failed acquisition leaves its partial
++output directory in place for operator quarantine; never treat that directory
++as a runnable model.
++
++```sh
++# Use this by default after approved weights have already entered the HF cache.
++python scripts/hepta_neuron_materialize_weights.py \
++  --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
++  --arm typed --destination /absolute/new/model-typed \
++  --output /absolute/new/typed-acquisition.json
++
++# Only on an explicitly authorized network-enabled target host:
++# add --allow-network and optionally --cache-dir /absolute/trusted/hf-cache
++```
++
++**No network download was executed in CI**. The local model path is never
++included in Git, and checksum validation against upstream metadata does not
++establish independent publisher/host attestation. Use a distinct fresh
++output directory for each arm and compare the observed `artifact_tree_sha256`
++to the independently frozen experiment manifest before running.
++
++The evaluator can seal already-collected local Hepta data (with approved data
++rights and chronological source grouping) without exporting labels to the
++inference worker. The original sealed file is **never copied** to the model
++runner directory:
++
++```sh
++python scripts/hepta_neuron_freeze_dataset.py \
++  --manifest-template /evaluator/controlled/manifest-input.json \
++  --sealed-dataset /evaluator/controlled/sealed.jsonl \
++  --output-dir /evaluator/controlled/new-frozen-bundle
++# Share ONLY new-frozen-bundle/manifest.json and blinded.jsonl with the runner.
++# Retain sealed.jsonl under the independent evaluator, then use compare with
++# actual inference receipts and the original sealed file.
++```
++
++`freeze-diagnostic.json` records row counts and byte commitments, not
++real-data provenance or elapsed future-window certification. All producer,
++source, consent, license, principal, evaluator-independence, and NDU-causality
++gates remain external and fail closed.
+ 
+ **Full-model manifests must bind** `upstream_lock_sha256` and use the locked
+ common source revision and expected weight hash for each model. Pass
+diff --git a/scripts/hepta_neuron_freeze_dataset.py b/scripts/hepta_neuron_freeze_dataset.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/hepta_neuron_freeze_dataset.py
+@@ -0,0 +1,129 @@
++#!/usr/bin/env python3
++"""Evaluator-owned, offline, create-only sealed/blinded Hepta experiment inputs.
++
++Generates no synthetic labels, cannot access production routes, and never
++certifies independent data origin, actual future elapsed time, or NDU utility.
++The sealed source file stays solely with the evaluator; only the blinded export
++may be forwarded to an inference runner.
++"""
++from __future__ import annotations
++
++import argparse
++import hashlib
++import os
++import shutil
++import tempfile
++from collections import Counter
++from pathlib import Path
++
++from hepta_neuron_model_trials import (
++    ARMS, InvalidTrial, blind_rows, canonical_jsonl, is_sha, load_inputs,
++    read_json, require, sha_file, strict_json_loads, write_new,
++)
++
++SCHEMA = "hepta.neuron.dataset-freeze.v1"
++
++
++def _write_bytes(path, data):
++    with open(path, "xb") as target:
++        os.chmod(path, 0o600)
++        target.write(data)
++        target.flush()
++        os.fsync(target.fileno())
++
++
++def _fsync_dir(path):
++    fd = os.open(path, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
++    try:
++        os.fsync(fd)
++    finally:
++        os.close(fd)
++
++
++def freeze_dataset(template_path: Path, sealed_path: Path, output_dir: Path):
++    """Preflight both roles before publishing a blind dataset + frozen manifest."""
++    sealed_path = Path(sealed_path)
++    output_dir = Path(output_dir)
++    require(sealed_path.is_absolute() and sealed_path.is_file() and not sealed_path.is_symlink(),
++            "sealed source must be an existing physical absolute file")
++    require(output_dir.is_absolute() and not output_dir.exists() and not output_dir.is_symlink(),
++            "output must be a new absolute directory")
++    require(output_dir.parent.is_dir() and not output_dir.parent.is_symlink(),
++            "unsafe output directory parent")
++    require(not sealed_path.resolve().is_relative_to(output_dir),
++            "sealed data cannot be inside blinded export directory")
++    manifest = read_json(template_path)
++    require(isinstance(manifest, dict) and manifest.get("family") in ARMS,
++            "unknown experiment family")
++    rows = []
++    with open(sealed_path, encoding="utf-8") as source:
++        for line in source:
++            if line.strip():
++                value = strict_json_loads(line)
++                require(isinstance(value, dict), "sealed row must be a JSON object")
++                rows.append(value)
++    require(rows, "empty sealed dataset")
++    blinded = canonical_jsonl(blind_rows(rows, manifest["family"]))
++    sealed_sha = sha_file(sealed_path)
++    blinded_sha = hashlib.sha256(blinded).hexdigest()
++    for field, value in (("dataset_sha256", sealed_sha),
++                         ("blind_dataset_sha256", blinded_sha)):
++        prior = manifest.get(field)
++        require(prior is None or not is_sha(prior) or prior == value,
++                f"source manifest {field} conflicts with actual bytes")
++        manifest[field] = value
++
++    # Evidence of chronological windows must be checked by the evaluator, not
++    # trusted from a caller's split labels. load_inputs enforces all five splits,
++    # source-group disjointness, token budget and model/Head dimensions.
++    staging = Path(tempfile.mkdtemp(prefix=f".{output_dir.name}.staging-",
++                                         dir=output_dir.parent))
++    try:
++        os.chmod(staging, 0o700)
++        frozen_path = staging / "manifest.json"
++        blinded_path = staging / "blinded.jsonl"
++        write_new(frozen_path, manifest)
++        _write_bytes(blinded_path, blinded)
++        _, sealed_rows = load_inputs(frozen_path, sealed_path, role="evaluator")
++        _, blind_rows_checked = load_inputs(frozen_path, blinded_path, role="runner")
++        require(len(sealed_rows) == len(blind_rows_checked), "not all cases survived blinding")
++        outcome = {
++            "schema": SCHEMA,
++            "family": manifest["family"],
++            "sealed_dataset_sha256": sealed_sha,
++            "blinded_dataset_sha256": blinded_sha,
++            "manifest_sha256": sha_file(frozen_path),
++            "observed_window_counts": dict(sorted(Counter(r["split"] for r in sealed_rows).items())),
++            "labels_exported_to_runner": False,
++            "sealed_labels_independently_attested": False,
++            "future_windows_independently_elapsed": False,
++            "production_evidence_verified": False,
++            "ndu_selection_authorized": False,
++            "promotion_authorized": False,
++        }
++        write_new(staging / "freeze-diagnostic.json", outcome)
++        _fsync_dir(staging)
++        require(not output_dir.exists(), "destination appeared during freeze")
++        # Stage first; only a validated complete directory becomes visible.
++        staging.rename(output_dir)
++        _fsync_dir(output_dir.parent)
++        return outcome
++    finally:
++        if staging.exists():
++            shutil.rmtree(staging)
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--manifest-template", type=Path, required=True)
++    parser.add_argument("--sealed-dataset", type=Path, required=True)
++    parser.add_argument("--output-dir", type=Path, required=True)
++    args = parser.parse_args()
++    try:
++        freeze_dataset(args.manifest_template, args.sealed_dataset, args.output_dir)
++    except (ValueError, KeyError, TypeError, OSError, RuntimeError) as error:
++        parser.exit(2, f"blocked: {error}\n")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/hepta_neuron_materialize_weights.py b/scripts/hepta_neuron_materialize_weights.py
+new file mode 100644
+--- /dev/null
++++ b/scripts/hepta_neuron_materialize_weights.py
+@@ -0,0 +1,160 @@
++#!/usr/bin/env python3
++"""Explicit, create-only acquisition of pinned Laya weights for offline shadow trials.
++
++Acquisition is a target-host operator action. The default does not use the network;
++--allow-network explicitly opts into Hugging Face transport. Publisher metadata,
++physical byte equality, and local tensor shape checks are separate evidence levels.
++This tool grants no NDU, serving, activation, or promotion authority.
++"""
++from __future__ import annotations
++
++import argparse
++import hashlib
++import os
++import shutil
++from pathlib import Path
++
++from hepta_neuron_artifact_preflight import REQUIRED, inspect_local, verify_catalog
++from hepta_neuron_model_trials import InvalidTrial, read_json, require, sha_file, write_new
++
++SCHEMA = "hepta.neuron.weight-materialization.v1"
++MAX_FILE_BYTES = {"model.safetensors": 2_000_000_000, "tokenizer/tokenizer.json": 128_000_000}
++
++
++def _sync_directory(path: Path):
++    fd = os.open(path, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
++    try:
++        os.fsync(fd)
++    finally:
++        os.close(fd)
++
++
++def _copy_source(src: Path, target: Path, expected_sha: str | None):
++    """Copy from the HF cache into a fresh, owned physical file and hash bytes."""
++    src = Path(src)
++    require(src.is_file(), "acquired cache path is not a file")
++    rel = target.as_posix()
++    suffix = "model.safetensors" if target.name == "model.safetensors" else (
++        "tokenizer/tokenizer.json" if target.name == "tokenizer.json" else "metadata")
++    limit = MAX_FILE_BYTES.get(suffix, 16_000_000)
++    size = src.stat().st_size
++    require(0 < size <= limit, f"unexpected artifact size: {rel}")
++    target.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
++    digest = hashlib.sha256()
++    with open(src, "rb") as from_file, open(target, "xb") as to_file:
++        os.chmod(target, 0o600)
++        total = 0
++        while piece := from_file.read(1 << 20):
++            total += len(piece)
++            require(total <= limit, "artifact exceeds maximum allowed bytes")
++            to_file.write(piece)
++            digest.update(piece)
++        to_file.flush()
++        os.fsync(to_file.fileno())
++    require(total == size, "cache file changed during copy")
++    value = digest.hexdigest()
++    require(expected_sha is None or value == expected_sha,
++            "weight digest mismatch; acquired source is not the locked checkpoint")
++    return value
++
++
++def _hf_fetch(repo_id, relative_file, revision, allow_network, cache_dir):
++    try:
++        from huggingface_hub import hf_hub_download
++    except ImportError as exc:
++        raise InvalidTrial("huggingface_hub required for operator-authorized acquisition") from exc
++    return Path(hf_hub_download(
++        repo_id=repo_id, filename=relative_file, revision=revision,
++        local_files_only=not allow_network, cache_dir=cache_dir,
++    ))
++
++
++def materialize(catalog, arm: str, destination: Path, *, allow_network=False,
++                cache_dir: str | None = None, fetcher=None):
++    """Create an exclusive destination; never overwrite, infer a branch or accept symlinks.
++
++    Failed downloads are deliberately left under the new destination for operator
++    quarantine; they cannot produce a successful receipt or be silently retried.
++    """
++    verify_catalog(catalog)
++    require(arm in catalog["variants"], "unknown model arm")
++    require(type(allow_network) is bool, "network admission must be explicit")
++    destination = Path(destination)
++    require(destination.is_absolute() and not destination.exists() and not destination.is_symlink(),
++            "destination must be a new absolute directory")
++    parent = destination.parent
++    require(parent.is_dir() and not parent.is_symlink(), "untrusted destination parent")
++    checkout_root = Path(__file__).resolve().parents[1]
++    require(not destination.resolve().is_relative_to(checkout_root),
++            "weight bytes may not be staged inside the source checkout")
++    if cache_dir is not None:
++        cache = Path(cache_dir)
++        require(cache.is_absolute() and cache.is_dir() and not cache.is_symlink(),
++                "HF cache must be an existing physical absolute directory")
++        cache_dir = str(cache)
++    variant = catalog["variants"][arm]
++    fetcher = fetcher or _hf_fetch
++    # Exclusive reservation: a failed attempt cannot be mistaken for a complete
++    # physical checkpoint. Operator must inspect/quarantine any partial directory.
++    destination.mkdir(mode=0o700, parents=False, exist_ok=False)
++    saved = {}
++    try:
++        for rel in REQUIRED:
++            remote_rel = "/".join(x for x in (variant["subfolder"], rel) if x)
++            source = Path(fetcher(catalog["repository"], remote_rel,
++                                  catalog["revision"], allow_network, cache_dir))
++            dst = destination / rel
++            expected = variant["weights_sha256"] if rel == "model.safetensors" else None
++            saved[rel] = _copy_source(source, dst, expected)
++        for subdir in (destination / "encoder", destination / "tokenizer"):
++            _sync_directory(subdir)
++        _sync_directory(destination)
++        receipt = inspect_local(catalog, arm, destination)
++        require(receipt["weights_sha256"] == saved["model.safetensors"],
++                "physical byte digest drift during metadata validation")
++        _sync_directory(parent)
++        return {
++            "schema": SCHEMA,
++            "catalog_revision": catalog["revision"],
++            "model_id": variant["model_id"],
++            "arm": arm,
++            "relative_file_sha256": saved,
++            "physical_artifact_tree_sha256": receipt["artifact_tree_sha256"],
++            "local_weight_bytes_verified": True,
++            "tensor_inventory_verified": True,
++            "network_permission_used": allow_network,
++            "independently_attested_host": False,
++            "model_forward_executed": False,
++            "production_evidence_verified": False,
++            "ndu_selection_authorized": False,
++            "promotion_authorized": False,
++        }
++    except Exception:
++        # Fail closed. Preserve partial bytes for postmortem; do not call them
++        # a completed artifact or publish any success receipt.
++        raise
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--catalog", type=Path, required=True)
++    parser.add_argument("--arm", choices=("laya", "typed", "multilingual"), required=True)
++    parser.add_argument("--destination", type=Path, required=True)
++    parser.add_argument("--output", type=Path, required=True)
++    parser.add_argument("--cache-dir")
++    parser.add_argument("--allow-network", action="store_true")
++    args = parser.parse_args()
++    try:
++        require(args.output.is_absolute() and not args.output.exists(),
++                "receipt must be a new absolute file")
++        catalog = verify_catalog(read_json(args.catalog))
++        outcome = materialize(catalog, args.arm, args.destination,
++                              allow_network=args.allow_network, cache_dir=args.cache_dir)
++        outcome["catalog_sha256"] = sha_file(args.catalog)
++        write_new(args.output, outcome)
++    except (InvalidTrial, OSError, ImportError, ValueError, TypeError, KeyError, RuntimeError) as error:
++        parser.exit(2, f"blocked: {error}\n")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/hepta_neuron_model_trials.py b/scripts/hepta_neuron_model_trials.py
+--- a/scripts/hepta_neuron_model_trials.py
++++ b/scripts/hepta_neuron_model_trials.py
+@@ -91,8 +91,13 @@
+     def invalid_constant(value):
+         raise InvalidTrial(f"nonfinite JSON literal: {value}")
+ 
++    def finite_float(value):
++        parsed = float(value)
++        require(math.isfinite(parsed), "nonfinite JSON number")
++        return parsed
++
+     return json.loads(data, object_pairs_hook=no_duplicates,
+-                      parse_constant=invalid_constant)
++                      parse_constant=invalid_constant, parse_float=finite_float)
+ 
+ 
+ def read_json(path):

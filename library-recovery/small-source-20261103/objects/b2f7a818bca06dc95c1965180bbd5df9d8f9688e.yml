@@ -1,0 +1,64 @@
+name: Hepta P6 Codex Native fallback shadow gate
+
+on:
+  pull_request:
+    paths:
+      - "qa/meta-network-scale/p6_fallback_gate.py"
+      - "qa/meta-network-scale/test_p6_fallback_gate.py"
+      - "scripts/run_hepta_local_closeout.py"
+      - "scripts/test_run_hepta_local_closeout.py"
+      - "codex-rs/hepta-types/src/execution_contract.rs"
+      - "codex-rs/hepta-codex-adapter/src/**"
+      - "codex-rs/hepta-operations/src/**"
+      - "codex-rs/hepta-agentd/src/**"
+      - ".github/workflows/hepta-p6-codex-native-parity.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-p6-parity-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-source-shadow:
+    name: P6 signed fallback and parity contract (non-authorizing)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+    steps:
+      - name: Checkout exact proposed source, without writing credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Use pinned test Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Install exact cryptographic test-library version
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --only-binary=:all: --no-input 'cryptography==46.0.4'
+          python3 -m pip check
+      - name: Verify source HEAD and run fail-closed signed-contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 -m unittest discover -v -s qa/meta-network-scale -p 'test_p6_fallback_gate.py'
+          python3 -m unittest discover -v -s scripts -p 'test_run_hepta_local_closeout.py'
+      - name: Require original exact source unchanged
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"

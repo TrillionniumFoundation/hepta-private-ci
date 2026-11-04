@@ -1,0 +1,95 @@
+name: Hepta pinned encoder physical material smoke (random BERT only)
+
+on:
+  push:
+    branches: ["research/multimodal-stem-bridge-20261014"]
+    paths:
+      - "experiments/shared_stem_cell/test_multimodal_material_integration.py"
+      - "experiments/shared_stem_cell/multimodal_real_encoder.py"
+      - "experiments/shared_stem_cell/PINNED_ENCODER_PHYSICAL_SMOKE_V3.md"
+      - ".github/workflows/hepta-pinned-encoder-physical-smoke.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/test_multimodal_material_integration.py"
+      - "experiments/shared_stem_cell/multimodal_real_encoder.py"
+      - "experiments/shared_stem_cell/PINNED_ENCODER_PHYSICAL_SMOKE_V3.md"
+      - ".github/workflows/hepta-pinned-encoder-physical-smoke.yml"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-pinned-encoder-physical-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  synthetic-material-real-forward:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Create isolated pinned CPU worker
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-physical-smoke
+          python3 -m venv /tmp/hepta-physical-venv
+          /tmp/hepta-physical-venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/hepta-physical-venv/bin/pip install numpy==1.26.4 transformers==4.57.1 safetensors==0.6.2 huggingface-hub==0.35.3 tokenizers==0.22.1 psutil==7.0.0
+          /tmp/hepta-physical-venv/bin/pip check
+          /tmp/hepta-physical-venv/bin/pip freeze > /tmp/hepta-physical-smoke/environment.txt
+          /tmp/hepta-physical-venv/bin/python - <<'PYHF'
+          from transformers import BertModel, BertConfig, BertTokenizerFast
+          from safetensors.torch import load_file
+          print('STOCK_HF_SAFETENSORS_DEPENDENCIES_AVAILABLE')
+          PYHF
+      - name: Require actual local safetensors load and stock-BERT forwards
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell /tmp/hepta-physical-venv/bin/python -m unittest discover \
+            -s experiments/shared_stem_cell \
+            -p 'test_multimodal_material_integration.py' -v 2>&1 \
+            | tee /tmp/hepta-physical-smoke/actual-local-material-tests.log
+          if grep -Ei 'skipped=[1-9]|skipped .+ no transformers' /tmp/hepta-physical-smoke/actual-local-material-tests.log; then
+            echo 'Physical integration test skipped, refuse qualification' >&2
+            exit 1
+          fi
+          grep -q 'Ran 6 tests' /tmp/hepta-physical-smoke/actual-local-material-tests.log
+          grep -q '^OK$' /tmp/hepta-physical-smoke/actual-local-material-tests.log
+      - name: Record exact source identity and disposition
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-physical-smoke
+          git rev-parse HEAD > /tmp/hepta-physical-smoke/source-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-physical-smoke/source-tree.txt
+          sha256sum experiments/shared_stem_cell/test_multimodal_material_integration.py \
+            experiments/shared_stem_cell/multimodal_real_encoder.py \
+            experiments/shared_stem_cell/PINNED_ENCODER_PHYSICAL_SMOKE_V3.md \
+            .github/workflows/hepta-pinned-encoder-physical-smoke.yml \
+            > /tmp/hepta-physical-smoke/source-SHA256SUMS
+          python3 - <<'PYDISPOSITION'
+          import json
+          from pathlib import Path
+          Path('/tmp/hepta-physical-smoke/disposition.json').write_text(
+              json.dumps({'schema':'hepta.random-stock-bert-smoke.v1',
+                          'checkpoint_pretrained':False,
+                          'checkpoint_publisher_authenticated':False,
+                          'real_mmbert_or_granite_executed':False,
+                          'real_world_capability_established':False,
+                          'production_accepted':False},sort_keys=True)+'\n'
+          )
+          PYDISPOSITION
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-random-bert-material-smoke-not-pretrained-efficacy
+          path: /tmp/hepta-physical-smoke
+          if-no-files-found: error

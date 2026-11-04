@@ -1,0 +1,30 @@
+--- a/hepta-ndu/src/lib.rs
++++ b/hepta-ndu/src/lib.rs
+@@ -10,6 +10,7 @@
+ #![forbid(unsafe_code)]
+ 
+ mod coefficient_profile;
++mod asset_population;
+ mod conditional_moments;
+ mod covariance;
+ mod covariance_profile;
+@@ -33,6 +34,19 @@
+ pub use coefficient_profile::NduCoefficientProjectionV1;
+ pub use coefficient_profile::admit_ndu_coefficient_profile;
+ pub use coefficient_profile::project_z_estimate_to_coefficient_q24;
++pub use asset_population::AssetPopulationConfigV1;
++pub use asset_population::AssetPopulationError;
++pub use asset_population::AssetPopulationObservationV1;
++pub use asset_population::AssetPopulationSummaryV1;
++pub use asset_population::AssetPortfolioWeightV1;
++pub use asset_population::MeanFieldEquilibriumReceiptV1;
++pub use asset_population::MeanFieldIterationReceiptV1;
++pub use asset_population::MeanFieldPopulationSummaryV1;
++pub use asset_population::PortfolioSelectionDispositionV1;
++pub use asset_population::PortfolioSelectionReceiptV1;
++pub use asset_population::select_asset_portfolio_v1;
++pub use asset_population::solve_mean_field_equilibrium_v1;
++pub use asset_population::summarize_asset_population_v1;
+ pub use conditional_moments::ConditionalMomentSampleV1;
+ pub use conditional_moments::ConditionalMomentsV1;
+ pub use conditional_moments::estimate_conditional_moments;

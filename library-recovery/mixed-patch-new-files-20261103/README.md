@@ -1,0 +1,9 @@
+# Exact new files from original mixed patches
+
+This inactive directory anchors 30 exact new-file source/build objects and 3 original license/notice objects. All 33 were already present in the target repository and freshly verified before tree reuse; no source payload was reuploaded. The 30 comprise 24 source/build files plus six JSON patch manifests read by concrete archived build scripts. Original paths, modes, zero-base hunks, Git index prefixes, parent fingerprints and line positions remain in the manifest.
+
+A bounded parser accepts only a complete single new regular-file hunk, checks all added-line counts, validates the Git index prefix, preserves exact CR/LF bytes and requires an explicit no-newline marker when needed. The initial independent review found three malformed-input acceptance cases; their actual failures and the subsequent 14-case passing regression are retained. Re-parsing all five frozen original patches left all 212 reconstructed object identities and locations unchanged.
+
+The complete original patches remain unsynchronized: binary blocks, existing-file modifications needing exact bases, and other non-source material are not covered by this projection. These 30 objects are outside the frozen 6116-candidate union and add zero to the formal 5887 verified count. Notices add no source count. No preserved code was executed, no patch applied, and no historical CI, scientific or production claim requalified.
+
+The newly authored verify_sources.py checks bytes, optionally against SHA-named original patch files using --original-patches DIRECTORY. Original patch reads are bounded to 32 MiB total plus a one-byte overflow probe before refusal; no RSS bound is claimed. Optimized Python is refused. DRAFT / SHADOW_ONLY / DENY_ALL / HOLD_NO_GO remain; original deletion count is zero.

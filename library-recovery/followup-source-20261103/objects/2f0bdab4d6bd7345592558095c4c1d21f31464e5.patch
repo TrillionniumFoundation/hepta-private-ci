@@ -1,0 +1,19 @@
+--- a/.github/workflows/hepta-neuron-shared-feature-batch.yml
++++ b/.github/workflows/hepta-neuron-shared-feature-batch.yml
+@@ -25,6 +25,16 @@
+       - "codex-rs/hepta-prompt-registry/**"
+       - "codex-rs/utils/path-utils/**"
+       - "codex-rs/Cargo.lock"
++      # Manifest/toolchain-only changes must requalify the exact owner code below.
++      - "codex-rs/Cargo.toml"
++      - "codex-rs/rust-toolchain.toml"
++      - "codex-rs/hepta-memory/Cargo.toml"
++      - "codex-rs/hepta-automation/Cargo.toml"
++      - "codex-rs/hepta-intelligence/Cargo.toml"
++      - "codex-rs/hepta-supervisor/Cargo.toml"
++      - "codex-rs/git-utils/Cargo.toml"
++      - "codex-rs/ext/hepta-memory/Cargo.toml"
++      - "codex-rs/exec-server/Cargo.toml"
+       - "codex-rs/hepta-agentd/src/test_support.rs"
+       - "codex-rs/hepta-contracts/src/authority_lease.rs"
+       - "codex-rs/hepta-contracts/src/authority_lease_windows.rs"

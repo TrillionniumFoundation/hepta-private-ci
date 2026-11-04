@@ -1,0 +1,26 @@
+{
+  "schema": "independent-static-source-review-v1",
+  "reviewer": "chain_blockers",
+  "reviewed_at": "2026-11-04",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": {
+    "git_blob_sha": "4eccd59fa5ddbc1f2fb29c25e6ac68096bf8393f",
+    "sha256": "edf46036fde23390464f87d9e12aa07114988173a0d2fed03b097e63dc3ed98a",
+    "bytes": 2321,
+    "original_filename": "hepta_git_replace_local_repro.py"
+  },
+  "method": "Complete source read and recomputed Git blob / SHA-256 / byte count; historical commit diff inspected; no execution",
+  "findings": [
+    "No obvious token, credential, private key or real personal email was found; proof@example.invalid is a fixture placeholder.",
+    "The script creates an isolated temporary Git repository and contrasts ls-tree/cat-file/worktree comparison with --no-replace-objects after a replacement ref and assume-unchanged are introduced.",
+    "Historical commit 90dd67e39b1b8b4c462716144536524e104c04de adds the same ls-tree/cat-file/worktree comparison in scripts/run_hepta_local_closeout.py (blob 3ef726c507485577e41d263bf84b50cf8f8ce088), supporting this repository's archival research context."
+  ],
+  "source_executed": false,
+  "files_modified_by_reviewer": false,
+  "unique_historical_owner_proven": false,
+  "current_vulnerability_or_native_acceptance_proven": false,
+  "limitations": [
+    "This reproducer's assertions and temporary Git modifications are not a production acceptance verifier.",
+    "The relationship supports archival placement; it does not establish the original creator or uniqueness of historical repository ownership."
+  ]
+}
