@@ -59,6 +59,21 @@ impl TestService {
         root: &Path,
         name: &str,
         seed: u8,
+        handler: impl FnMut(
+            PqTrustRequestV2,
+            &PqNativeSigningKey,
+        ) -> TestResult<SignedPqTrustResponseV2>
+        + Send
+        + 'static,
+    ) -> TestResult<Self> {
+        Self::start_with_lifetime(root, name, seed, Duration::from_secs(30), handler)
+    }
+
+    pub(crate) fn start_with_lifetime(
+        root: &Path,
+        name: &str,
+        seed: u8,
+        lifetime: Duration,
         mut handler: impl FnMut(
             PqTrustRequestV2,
             &PqNativeSigningKey,
@@ -86,7 +101,7 @@ impl TestService {
         let requests = Arc::new(AtomicUsize::new(0));
         let count = Arc::clone(&requests);
         let join = thread::spawn(move || -> TestResult<()> {
-            let deadline = Instant::now() + Duration::from_secs(30);
+            let deadline = Instant::now() + lifetime;
             while !stopping.load(Ordering::Relaxed) && Instant::now() < deadline {
                 match listener.accept() {
                     Ok((mut stream, _)) => {
@@ -137,13 +152,22 @@ impl Drop for TestService {
 }
 
 pub(crate) fn frontier_service(root: &Path, initial: FinalUseFrontier) -> TestResult<TestService> {
+    frontier_service_with_lifetime(root, initial, Duration::from_secs(30))
+}
+
+pub(crate) fn frontier_service_with_lifetime(
+    root: &Path,
+    initial: FinalUseFrontier,
+    lifetime: Duration,
+) -> TestResult<TestService> {
     let path = root.join("external-frontier.json");
     fs::write(&path, serde_json::to_vec(&initial)?)?;
     fs::File::open(&path)?.sync_all()?;
-    TestService::start(
+    TestService::start_with_lifetime(
         root,
         "frontier.sock",
         /*seed*/ 81,
+        lifetime,
         move |request, key| {
             let current: FinalUseFrontier = serde_json::from_slice(&fs::read(&path)?)?;
             let outcome = match &request.operation {

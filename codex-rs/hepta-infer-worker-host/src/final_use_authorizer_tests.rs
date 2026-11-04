@@ -7,6 +7,7 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_contracts::FinalUseGrant;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 use tokio::net::UnixListener;
 
 fn binding(label: u8) -> FinalUseBinding {
@@ -39,6 +40,121 @@ fn config(root: &Path, socket: PathBuf, verifying_key: [u8; 32]) -> FinalUseAuth
         revoked_grant_ids: BTreeSet::new(),
         issuer_timeout_ms: 2_000,
     }
+}
+
+fn write_classic_config(
+    path: &Path,
+    config: &FinalUseAuthorizerConfig,
+    profile: Option<&str>,
+) -> Result<Vec<u8>> {
+    let mut value = serde_json::json!({
+        "issuer_socket": config.issuer_socket,
+        "issuer_uid": config.issuer_uid,
+        "signer_id": config.signer_id,
+        "verifying_key": config.verifying_key,
+        "authority_state_dir": config.authority_state_dir,
+        "authority_epoch": config.authority_epoch,
+        "revocation_revision": config.revocation_revision,
+        "revoked_grant_ids": config.revoked_grant_ids,
+        "issuer_timeout_ms": config.issuer_timeout_ms,
+    });
+    if let Some(profile) = profile {
+        value["authentication_profile"] = serde_json::json!(profile);
+    }
+    let bytes = serde_json::to_vec(&value)?;
+    std::fs::write(path, &bytes)?;
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
+    Ok(bytes)
+}
+
+#[test]
+fn ordinary_open_rejects_missing_or_classic_profile_before_creating_state() -> Result<()> {
+    let root = tempfile::tempdir()?;
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))?;
+    let socket = root.path().join("must-not-contact-issuer.sock");
+    let signer = SigningKey::from_bytes(&[75; 32]);
+    let config = config(
+        root.path(),
+        socket.clone(),
+        signer.verifying_key().to_bytes(),
+    );
+    let path = root.path().join("legacy-authority.json");
+
+    for (profile, expected_error) in [
+        (None, "requires explicit ml_dsa65_v2 authentication profile"),
+        (
+            Some("classical_v1"),
+            "unsupported final-use authentication profile",
+        ),
+    ] {
+        let bytes = write_classic_config(&path, &config, profile)?;
+        let error = UnixFinalUseAuthorizer::open(&path)
+            .err()
+            .ok_or("ordinary open accepted a classical authority profile")?;
+        assert!(error.to_string().contains(expected_error), "{error}");
+        assert!(!config.authority_state_dir.exists());
+        assert!(!socket.exists());
+        assert_eq!(std::fs::read(&path)?, bytes);
+    }
+    Ok(())
+}
+
+#[test]
+fn ordinary_open_does_not_reactivate_or_change_existing_classic_state() -> Result<()> {
+    let root = tempfile::tempdir()?;
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))?;
+    let socket = root.path().join("must-not-contact-historical-issuer.sock");
+    let signer = SigningKey::from_bytes(&[76; 32]);
+    let mut config = config(
+        root.path(),
+        socket.clone(),
+        signer.verifying_key().to_bytes(),
+    );
+    config.revocation_revision = 2;
+    config
+        .revoked_grant_ids
+        .insert("historically-revoked".to_owned());
+    let owner = UnixFinalUseAuthorizer::from_config(config.clone())?;
+    assert_eq!(
+        owner.authentication_profile(),
+        FinalUseAuthenticationProfile::ClassicalV1
+    );
+    drop(owner);
+    let snapshot = std::fs::read(config.authority_state_dir.join("authority.json"))?;
+    let claims = std::fs::read(config.authority_state_dir.join("authority.claims"))?;
+    let path = root.path().join("historical-authority.json");
+
+    for (profile, expected_error) in [
+        (None, "requires explicit ml_dsa65_v2 authentication profile"),
+        (
+            Some("classical_v1"),
+            "unsupported final-use authentication profile",
+        ),
+    ] {
+        let bytes = write_classic_config(&path, &config, profile)?;
+        let error = UnixFinalUseAuthorizer::open(&path)
+            .err()
+            .ok_or("historical classical state regained ordinary runtime authority")?;
+        assert!(error.to_string().contains(expected_error), "{error}");
+        assert_eq!(
+            std::fs::read(config.authority_state_dir.join("authority.json"))?,
+            snapshot
+        );
+        assert_eq!(
+            std::fs::read(config.authority_state_dir.join("authority.claims"))?,
+            claims
+        );
+        assert!(!socket.exists());
+        assert_eq!(std::fs::read(&path)?, bytes);
+    }
+    // Explicit historical opening remains possible and preserves the original
+    // revocation head after the ordinary route refused activation.
+    let owner = UnixFinalUseAuthorizer::from_config(config)?;
+    assert_eq!(
+        owner.authority.revocation_head()?,
+        revocations(2, &["historically-revoked"])
+    );
+    Ok(())
 }
 
 async fn listener(root: &Path, name: &str) -> Result<(UnixListener, PathBuf)> {
