@@ -6,7 +6,11 @@ use std::io::Write;
 fn bootstrap_creates_private_source_and_preserves_existing_bytes()
 -> Result<(), Box<dyn std::error::Error>> {
     let temporary = tempfile::tempdir()?;
-    let root = temporary.path().canonicalize()?.join("agent").join("cognitive");
+    let root = temporary
+        .path()
+        .canonicalize()?
+        .join("agent")
+        .join("cognitive");
     create_private_directories(&root)?;
     let path = root.join("database.sqlite3");
     prepare_database(&root, &path)?;
