@@ -77,7 +77,9 @@
         "bytes": 797985,
         "sha256": "42a3e5ebaf25776fbfda4e5b3fb6a9e82ed59fb2d2930fa14d33358fc3ff3da6"
       },
-      "correction": "Install native development prerequisites on the disposable Linux runner. The generator script, recipes, compiler, case inventory, assertions, lockfile protections, and 30-minute budget are unchanged. Fetch depth 4 preserves access to the original formatter base through this successor."
+      "correction": "Install native development prerequisites on the disposable Linux runner. The generator script, recipes, compiler, case inventory, assertions, lockfile protections, and 30-minute budget are unchanged. Fetch depth 4 preserves access to the original formatter base through this successor.",
+      "actual_nextest": "0.9.111",
+      "requested_unsupported_version_input": "0.9.103"
     },
     {
       "commit": "6ab6f754e336cb296c418f33d4e68ac1f6df047b",
@@ -95,11 +97,41 @@
         "bytes": 1787075,
         "sha256": "e5df769450ed33484c064dca71af9e4e2a7a9a048bd184bc939ecad4e09fddf1"
       },
-      "reason": "nextest 0.9.103 custom profile's absent JUnit path does not fall back to the default profile; this repository uses profile.local inherits=default. No JUnit was emitted, so the original strict reader correctly refused qualification."
+      "reason": "The action accepts tool/checksum/fallback inputs, not a separate version input. It actually installed cargo-nextest 0.9.111. That version's custom profile with absent JUnit path does not inherit the default path. Both unchanged generators and the full library command exited zero, but no fresh JUnit existed, so qualification remained false.",
+      "actual_nextest": "0.9.111",
+      "requested_unsupported_version_input": "0.9.103"
+    },
+    {
+      "commit": "f5d8112d958340c9b18eb233301743a89f0feb36",
+      "tree": "1a2bac1f02b464cc5714c14c6bf1460fe544d86c",
+      "run": 41770542607,
+      "job": 126378962594,
+      "status": "FAILED_BEFORE_GENERATION_AT_STRICT_RUNTIME_VERSION_CHECK",
+      "requested_nextest": "0.9.151",
+      "actual_nextest": "0.9.111",
+      "qualification": false,
+      "generation_completed": false,
+      "reason": "The unsupported separate version input was ignored; INPUT_TOOL remained nextest. The strict runtime check rejected 0.9.111 before either original generator or native test.",
+      "correction": "Change only the action input to tool: nextest@0.9.151, matching the actually native-qualified Memory workflow. Preserve strict actual-version equality, original generators, complete original library, zero retries, exact report requirements and 30-minute budget.",
+      "artifact": {
+        "id": 13294618670,
+        "bytes": 2950,
+        "sha256": "a6ca91017ff9350844c16a9229756f45c64c9c2061faa287a6566ce46f5d8b25"
+      },
+      "complete_decoded_original_job": {
+        "bytes": 105901,
+        "sha256": "b6611820b760617ab0101315d8abfea46183b6507c7eebd1b6fb9590d94e9984",
+        "git_blob": "bb4e8716a7321920dd93d3530e3247d97aea5694"
+      },
+      "transport": {
+        "format": "RFC1952 stored-DEFLATE gzip",
+        "bytes": 105929,
+        "sha256": "246e6bfd20f4a090b1127c4e73f554b0770b0928a4f9a64e243ca1908d63a736"
+      },
+      "historical_correction": "Original a989 and 6ab logs also prove actual nextest 0.9.111, not the previously described requested 0.9.103. Their raw logs remain byte-identical and source history is retained."
     }
   ],
   "nextest_correction": {
-    "old": "0.9.103",
     "current": "0.9.151",
     "reference_repository_workflow": {
       "source": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
@@ -108,9 +140,10 @@
     },
     "upstream_old": {
       "path": "nextest-runner/src/config/elements/junit.rs",
-      "tag": "cargo-nextest-0.9.103",
+      "tag": "cargo-nextest-0.9.111",
       "git_blob": "abc86ad3e82f605a7365427ab79f7466c06a48c9",
-      "observation": "custom_data.map(custom.path).unwrap_or(default.path) keeps the custom profile's None path"
+      "observation": "custom_data.map(custom.path).unwrap_or(default.path) keeps the custom profile's None path",
+      "sha256": "fa8502ab901d2eedd1b4d7bbd8408bc23eadb72a71aad3a1f02bfca1ed2d5585"
     },
     "upstream_new": {
       "path": "nextest-runner/src/config/core/imp.rs",
@@ -127,6 +160,24 @@
       "no retries",
       "exact fresh JUnit required",
       "non-schema bytes and both locks unchanged"
-    ]
-  }
+    ],
+    "old_requested_but_not_installed": "0.9.103",
+    "old_actual": "0.9.111",
+    "action": {
+      "repository": "taiki-e/install-action",
+      "commit": "44c6d64aa62cd779e873306675c7a58e86d6d532",
+      "path": "action.yml",
+      "git_blob": "98cadc334c15b33dab5b9750af33506e151f5850",
+      "supported_inputs": [
+        "tool",
+        "checksum",
+        "fallback"
+      ],
+      "corrected_input": {
+        "tool": "nextest@0.9.151"
+      },
+      "strict_runtime_version_check_retained": true
+    }
+  },
+  "runtime_installation_status": "Correct pinned input committed; actual successor installation and all original results still pending."
 }

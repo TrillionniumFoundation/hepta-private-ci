@@ -14,7 +14,7 @@
     "bytes": 1787075,
     "sha256": "e5df769450ed33484c064dca71af9e4e2a7a9a048bd184bc939ecad4e09fddf1"
   },
-  "reason": "nextest 0.9.103 custom profile's absent JUnit path does not fall back to the default profile; this repository uses profile.local inherits=default. No JUnit was emitted, so the original strict reader correctly refused qualification.",
+  "reason": "The action accepts tool/checksum/fallback inputs, not a separate version input. It actually installed cargo-nextest 0.9.111. That version's custom profile with absent JUnit path does not inherit the default path. Both unchanged generators and the full library command exited zero, but no fresh JUnit existed, so qualification remained false.",
   "complete_decoded_original_job": {
     "bytes": 107273,
     "sha256": "97904a5f1d1d005003b6984013e3f79f4a61ee58d3e3b62b3898eedc6ed4c9e7",
@@ -27,5 +27,8 @@
   },
   "native_case_counts_verified": false,
   "original_generated_files_retained_in_zip": true,
-  "generated_source_adopted": false
+  "generated_source_adopted": false,
+  "actual_nextest": "0.9.111",
+  "requested_unsupported_version_input": "0.9.103",
+  "erratum": "Supersedes only the old descriptive version 0.9.103; the unmodified original full log proves actual 0.9.111. No command, test, raw log or failure outcome changed."
 }
