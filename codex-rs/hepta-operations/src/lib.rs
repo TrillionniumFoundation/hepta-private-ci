@@ -13,6 +13,11 @@
 mod destination_dedupe;
 mod dispatcher;
 mod durable_model;
+#[allow(
+    clippy::disallowed_methods,
+    clippy::collapsible_if,
+    reason = "this owner module deliberately opens its standalone SQLite lineage and keeps the explicit nested state transition readable"
+)]
 mod durable_store;
 mod error;
 mod exact_claim;

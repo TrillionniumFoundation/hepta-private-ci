@@ -1,0 +1,91 @@
+name: Kernel evidence publication formatting suggestions
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-evidence-publication-format-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  format:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 20
+    env:
+      RUSTUP_TOOLCHAIN: 1.95.0
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+      - name: Format actual changed Rust sources in an isolated worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          output="$RUNNER_TEMP/evidence-publication-format"
+          diagnostic="$RUNNER_TEMP/evidence-publication-format-tree"
+          mkdir -p "$output"
+          git worktree add --detach "$diagnostic" "$SOURCE_SHA"
+          git rev-parse HEAD HEAD^{tree} > "$output/source.txt"
+          rustfmt --version > "$output/rustfmt-version.txt"
+          printf '%s\n' 'Formatting suggestions only. The tested source is not changed and no qualification is granted.' > "$output/SCOPE.txt"
+          git diff --name-only --diff-filter=ACM -z "$BASE_SHA" "$SOURCE_SHA" -- codex-rs/hepta-evidence codex-rs/hepta-agentd codex-rs/hepta-agent-protocol > "$output/inputs.nul"
+          python3 - "$diagnostic" "$output" <<'PY'
+          import hashlib, json, shutil, subprocess, sys
+          from pathlib import Path
+          tree, output = map(Path, sys.argv[1:])
+          results = []
+          with (output / 'rustfmt.log').open('wb') as log:
+              for raw in (output / 'inputs.nul').read_bytes().split(b'\0'):
+                  if not raw or not raw.endswith(b'.rs'):
+                      continue
+                  relative = Path(raw.decode())
+                  if relative.is_absolute() or '..' in relative.parts:
+                      raise RuntimeError('invalid Rust source path')
+                  command = ['rustfmt', '--edition', '2024', str(tree / relative)]
+                  code = subprocess.run(command, cwd=tree, stdout=log, stderr=subprocess.STDOUT, timeout=60).returncode
+                  results.append({'path': str(relative), 'exitCode': code})
+          patch = subprocess.check_output(['git', '-C', str(tree), 'diff', '--binary'])
+          (output / 'formatting-only.patch').write_bytes(patch)
+          changed = subprocess.check_output(['git', '-C', str(tree), 'diff', '--name-only', '-z'])
+          for raw in changed.split(b'\0'):
+              if not raw:
+                  continue
+              relative = Path(raw.decode())
+              if relative.is_absolute() or '..' in relative.parts:
+                  raise RuntimeError('invalid formatted path')
+              source, target = tree / relative, output / 'files' / relative
+              if not source.is_file() or source.is_symlink():
+                  raise RuntimeError('invalid formatted source')
+              target.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copyfile(source, target)
+          (output / 'RESULT.json').write_text(json.dumps({'results': results, 'qualificationGranted': False}, indent=2) + '\n')
+          sums = [f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.relative_to(output)}\n' for path in sorted(output.rglob('*')) if path.is_file() and path.name != 'SHA256SUMS']
+          (output / 'SHA256SUMS').write_text(''.join(sums))
+          if not results or any(result['exitCode'] != 0 for result in results):
+              raise SystemExit('Rust formatting or parsing failed; inspect retained diagnostics')
+          PY
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Retain formatter output independently of package compilation
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kernel-evidence-publication-format-only-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/evidence-publication-format/
+          if-no-files-found: error
+          retention-days: 7

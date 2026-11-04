@@ -1,0 +1,77 @@
+name: Kernel evidence implementation-map projection
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-evidence-map-projection-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  project:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      PROJECTION_SOURCE_SHA: db3a0048cf87a9e789131c3a1c0bad74f8b518ce
+    steps:
+      - name: Checkout immutable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Generate and verify metadata-only projection
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git merge-base --is-ancestor "$PROJECTION_SOURCE_SHA" "$SOURCE_SHA"; echo $?)" = 0
+          output="$RUNNER_TEMP/kernel-evidence-map-projection"
+          worktree="$RUNNER_TEMP/kernel-evidence-map-source"
+          mkdir -p "$output"
+          git worktree add --detach "$worktree" "$PROJECTION_SOURCE_SHA"
+          (
+            cd "$worktree"
+            python3 scripts/hepta-implementation-maps.py migrate \
+              --module platform.types \
+              --module kernel.operations | tee "$output/migrate.json"
+            changed=$(git diff --name-only)
+            test "$changed" = $'docs/modules/kernel.operations/IMPLEMENTATION_MAP.json\ndocs/modules/platform.types/IMPLEMENTATION_MAP.json'
+            git diff --check
+            git diff --binary > "$output/implementation-map-projection.patch"
+            mkdir -p "$output/docs/modules/kernel.operations" "$output/docs/modules/platform.types"
+            cp docs/modules/kernel.operations/IMPLEMENTATION_MAP.json "$output/docs/modules/kernel.operations/IMPLEMENTATION_MAP.json"
+            cp docs/modules/platform.types/IMPLEMENTATION_MAP.json "$output/docs/modules/platform.types/IMPLEMENTATION_MAP.json"
+            git config user.name 'Kernel evidence projection verifier'
+            git config user.email 'noreply@github.com'
+            git add docs/modules/kernel.operations/IMPLEMENTATION_MAP.json docs/modules/platform.types/IMPLEMENTATION_MAP.json
+            git commit -m 'metadata projection for verification only'
+            projected_sha=$(git rev-parse HEAD)
+            projected_tree=$(git rev-parse HEAD^{tree})
+            python3 scripts/hepta-implementation-maps.py verify \
+              --expected-sha "$projected_sha" \
+              --expected-tree "$projected_tree" | tee "$output/verify.json"
+            printf '%s\n' "$PROJECTION_SOURCE_SHA" "$(git rev-parse "$PROJECTION_SOURCE_SHA^{tree}")" "$projected_sha" "$projected_tree" > "$output/identities.txt"
+          )
+          printf '%s\n' 'Read-only metadata projection. No qualification, acceptance, activation, promotion or release authority is granted.' > "$output/SCOPE.txt"
+          (
+            cd "$output"
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+          )
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Upload verified projection
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kernel-evidence-map-projection-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kernel-evidence-map-projection/
+          if-no-files-found: error
+          retention-days: 7

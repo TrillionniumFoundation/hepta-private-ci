@@ -1,0 +1,101 @@
+name: Kernel evidence convergence
+
+on:
+  push:
+    branches: [main, codex/kernel-evidence-converged-20260927]
+  # Required workflows must not vanish behind path filters.
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-evidence-convergence-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualification:
+    name: Source and deterministic merge
+    uses: ./.github/workflows/hepta-kernel-evidence-qualification.yml
+
+  regression:
+    name: Evidence convergence regression
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      RECORDS: /tmp/evidence-convergence
+      EXPECTED_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Preserve exact tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          git rev-parse HEAD > "$RECORDS/source.commit"
+          git rev-parse HEAD^{tree} > "$RECORDS/source.tree"
+          git archive --format=tar.gz --output="$RECORDS/source.tar.gz" HEAD
+          sha256sum "$RECORDS/source.tar.gz" > "$RECORDS/source.sha256"
+      - name: Run Python evidence regressions without empty-suite success
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 - <<'PY' 2>&1 | tee "$RECORDS/python-tests.log"
+          import json
+          import os
+          from pathlib import Path
+          import unittest
+
+          suite = unittest.defaultTestLoader.discover(
+              "scripts/tests", pattern="test_kernel_evidence*.py"
+          )
+          discovered = suite.countTestCases()
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          passed = discovered > 0 and result.testsRun == discovered and result.wasSuccessful() and not result.skipped
+          receipt = {
+              "schemaVersion": 1,
+              "sourceCommit": os.environ["EXPECTED_SOURCE"],
+              "workflowRunId": os.environ["GITHUB_RUN_ID"],
+              "workflowRunAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "discovered": discovered,
+              "executed": result.testsRun,
+              "failures": len(result.failures),
+              "errors": len(result.errors),
+              "skipped": len(result.skipped),
+              "passed": passed,
+          }
+          (Path(os.environ["RECORDS"]) / "python-tests.json").write_text(
+              json.dumps(receipt, indent=2) + "\n", encoding="utf-8"
+          )
+          raise SystemExit(0 if passed else 1)
+          PY
+      - name: Upload source and partial diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kernel-evidence-convergence-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          path: /tmp/evidence-convergence/
+          if-no-files-found: error
+          retention-days: 14
+
+  required:
+    name: Kernel evidence convergence required
+    if: always()
+    needs: [qualification, regression]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Reject failed, cancelled, skipped or absent lanes
+        env:
+          QUALIFICATION_RESULT: ${{ needs.qualification.result }}
+          REGRESSION_RESULT: ${{ needs.regression.result }}
+        run: |
+          set -euo pipefail
+          test "$QUALIFICATION_RESULT" = success
+          test "$REGRESSION_RESULT" = success

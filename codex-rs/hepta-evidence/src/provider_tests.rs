@@ -19,10 +19,12 @@ use crate::HeptaEvidenceStore;
 use crate::ProviderBindingState;
 use crate::ProviderIntentClaimDisposition;
 
-fn sqlite_config(temp: &TempDir) -> SqliteConfig {
-    SqliteConfig::new_for_testing(
-        AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute temp path"),
-    )
+type TestError = Box<dyn std::error::Error + Send + Sync>;
+
+fn sqlite_config(temp: &TempDir) -> Result<SqliteConfig, TestError> {
+    Ok(SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(
+        temp.path().to_path_buf(),
+    )?))
 }
 
 fn binding(thread_id: &str, logical: &[u8], wire: &[u8]) -> ProviderRequestBinding {
@@ -47,9 +49,10 @@ fn binding(thread_id: &str, logical: &[u8], wire: &[u8]) -> ProviderRequestBindi
 }
 
 #[tokio::test]
-async fn provider_intent_rejects_orphaned_ephemeral_digests_before_insert() {
+async fn provider_intent_rejects_orphaned_ephemeral_digests_before_insert() -> Result<(), TestError>
+{
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     for (nonce, input_present) in [(91, true), (92, false)] {
@@ -75,6 +78,8 @@ async fn provider_intent_rejects_orphaned_ephemeral_digests_before_insert() {
             .expect("pending count"),
         0
     );
+
+    Ok(())
 }
 
 fn intent(nonce: u8) -> ProviderInvocationIntent {
@@ -112,9 +117,9 @@ async fn insert_pre_0006_intent(
     pool: &sqlx::SqlitePool,
     intent: &ProviderInvocationIntent,
     recorded_at_ms: i64,
-) {
-    let payload = crate::canonical::canonical_json(intent).expect("canonical provider intent");
-    let payload_json = String::from_utf8(payload.clone()).expect("UTF-8 provider intent");
+) -> Result<(), TestError> {
+    let payload = crate::canonical::canonical_json(intent)?;
+    let payload_json = String::from_utf8(payload.clone())?;
     let payload_sha256 = Sha256Digest::for_bytes(&payload);
     let binding = &intent.binding;
     sqlx::query(
@@ -153,17 +158,18 @@ async fn insert_pre_0006_intent(
     .bind(payload_sha256.as_str())
     .bind(recorded_at_ms)
     .execute(pool)
-    .await
-    .expect("insert pre-0006 provider intent");
+    .await?;
+
+    Ok(())
 }
 
 async fn insert_pre_0006_receipt(
     pool: &sqlx::SqlitePool,
     receipt: &ProviderInvocationReceipt,
     recorded_at_ms: i64,
-) {
-    let payload = crate::canonical::canonical_json(receipt).expect("canonical provider receipt");
-    let payload_json = String::from_utf8(payload.clone()).expect("UTF-8 provider receipt");
+) -> Result<(), TestError> {
+    let payload = crate::canonical::canonical_json(receipt)?;
+    let payload_json = String::from_utf8(payload.clone())?;
     let payload_sha256 = Sha256Digest::for_bytes(&payload);
     sqlx::query(
         "INSERT INTO provider_invocation_terminals (
@@ -182,8 +188,9 @@ async fn insert_pre_0006_receipt(
     .bind(payload_sha256.as_str())
     .bind(recorded_at_ms)
     .execute(pool)
-    .await
-    .expect("insert pre-0006 provider receipt");
+    .await?;
+
+    Ok(())
 }
 
 fn completed(intent: ProviderInvocationIntent, output: &[u8]) -> ProviderInvocationReceipt {
@@ -199,9 +206,10 @@ fn completed(intent: ProviderInvocationIntent, output: &[u8]) -> ProviderInvocat
 }
 
 #[tokio::test]
-async fn migration_0006_backfills_ephemeral_projection_without_rewriting_evidence() {
+async fn migration_0006_backfills_ephemeral_projection_without_rewriting_evidence()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let path = sqlite.home().join("hepta_evidence_2.sqlite");
     let pre_0006 = sqlite
         .open_durable_evidence_pool(&path)
@@ -217,9 +225,9 @@ async fn migration_0006_backfills_ephemeral_projection_without_rewriting_evidenc
     let mut plain_binding = binding("thread-plain", b"plain-logical", b"plain-wire");
     plain_binding.host_request_binding_id_sha256 = Sha256Digest::for_bytes(b"plain-host-binding");
     let plain = ProviderInvocationIntent::new([82; 16], plain_binding);
-    insert_pre_0006_intent(&pre_0006, &attached, 8_100).await;
-    insert_pre_0006_receipt(&pre_0006, &receipt, 8_101).await;
-    insert_pre_0006_intent(&pre_0006, &plain, 8_200).await;
+    insert_pre_0006_intent(&pre_0006, &attached, 8_100).await?;
+    insert_pre_0006_receipt(&pre_0006, &receipt, 8_101).await?;
+    insert_pre_0006_intent(&pre_0006, &plain, 8_200).await?;
     let intent_before = sqlx::query_as::<_, (String, String, String, String, i64)>(
         "SELECT attempt_id, request_binding_id, payload_json, payload_sha256, recorded_at_ms
          FROM provider_invocation_intents WHERE attempt_id = ?",
@@ -339,12 +347,15 @@ async fn migration_0006_backfills_ephemeral_projection_without_rewriting_evidenc
             .expect("claim after migration"),
         ProviderIntentClaimDisposition::BlockedByBinding(ProviderBindingState::Completed)
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn ephemeral_projection_round_trips_and_detects_projection_corruption() {
+async fn ephemeral_projection_round_trips_and_detects_projection_corruption()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -427,16 +438,18 @@ async fn ephemeral_projection_round_trips_and_detects_projection_corruption() {
         Err(error) => error,
     };
     assert!(matches!(error, EvidenceError::Corrupt(_)));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn migration_0006_rejects_invalid_payload_shapes_and_rolls_back() {
+async fn migration_0006_rejects_invalid_payload_shapes_and_rolls_back() -> Result<(), TestError> {
     for (offset, corruption) in ["explicit-null", "non-text", "orphan", "malformed"]
         .into_iter()
         .enumerate()
     {
         let temp = TempDir::new().expect("temp dir");
-        let sqlite = sqlite_config(&temp);
+        let sqlite = sqlite_config(&temp)?;
         let path = sqlite.home().join("hepta_evidence_2.sqlite");
         let pre_0006 = sqlite
             .open_durable_evidence_pool(&path)
@@ -447,7 +460,7 @@ async fn migration_0006_rejects_invalid_payload_shapes_and_rolls_back() {
             .await
             .expect("apply lineage through 0005");
         let intent = ephemeral_intent(90 + offset as u8, "thread-invalid-migration");
-        insert_pre_0006_intent(&pre_0006, &intent, 9_000 + offset as i64).await;
+        insert_pre_0006_intent(&pre_0006, &intent, 9_000 + offset as i64).await?;
         let original: String = sqlx::query_scalar(
             "SELECT payload_json FROM provider_invocation_intents WHERE attempt_id = ?",
         )
@@ -551,12 +564,14 @@ async fn migration_0006_rejects_invalid_payload_shapes_and_rolls_back() {
         assert_eq!(immutable_trigger, 1, "{corruption}");
         rolled_back.close().await;
     }
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn provider_records_are_idempotent_pending_and_persistent() {
+async fn provider_records_are_idempotent_pending_and_persistent() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -621,12 +636,14 @@ async fn provider_records_are_idempotent_pending_and_persistent() {
         .expect("provider attempt");
     assert_eq!(stored.intent.intent, intent);
     assert_eq!(stored.receipt.expect("provider terminal").receipt, receipt);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn provider_terminal_conflict_never_overwrites_original() {
+async fn provider_terminal_conflict_never_overwrites_original() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     let intent = intent(2);
@@ -656,12 +673,14 @@ async fn provider_terminal_conflict_never_overwrites_original() {
         .expect("read terminal")
         .expect("stored terminal");
     assert_eq!(stored.receipt, completed);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn unary_completion_persists_without_synthetic_provider_fields() {
+async fn unary_completion_persists_without_synthetic_provider_fields() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -696,12 +715,14 @@ async fn unary_completion_persists_without_synthetic_provider_fields() {
             .await
             .expect("terminal projection");
     assert_eq!(terminal_kind, "completed");
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn concurrent_provider_intent_replay_inserts_exactly_once() {
+async fn concurrent_provider_intent_replay_inserts_exactly_once() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let first = HeptaEvidenceStore::open(&sqlite).await.expect("first pool");
     let second = HeptaEvidenceStore::open(&sqlite)
         .await
@@ -722,12 +743,14 @@ async fn concurrent_provider_intent_replay_inserts_exactly_once() {
             .expect("pending count"),
         1
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn concurrent_provider_terminal_conflict_preserves_one_terminal() {
+async fn concurrent_provider_terminal_conflict_preserves_one_terminal() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let first = HeptaEvidenceStore::open(&sqlite).await.expect("first pool");
     let second = HeptaEvidenceStore::open(&sqlite)
         .await
@@ -765,12 +788,14 @@ async fn concurrent_provider_terminal_conflict_preserves_one_terminal() {
             .expect("pending count"),
         0
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn provider_terminal_requires_exact_durable_intent() {
+async fn provider_terminal_requires_exact_durable_intent() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     let receipt = completed(intent(5), b"output");
@@ -789,12 +814,14 @@ async fn provider_terminal_requires_exact_durable_intent() {
             .expect("pending count"),
         0
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn provider_tables_are_immutable_and_foreign_key_bound() {
+async fn provider_tables_are_immutable_and_foreign_key_bound() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -839,10 +866,13 @@ async fn provider_tables_are_immutable_and_foreign_key_bound() {
     .await
     .expect_err("terminal must reference its exact intent");
     assert!(error.to_string().contains("FOREIGN KEY constraint failed"));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn provider_evidence_never_persists_prompt_token_header_or_output_plaintext() {
+async fn provider_evidence_never_persists_prompt_token_header_or_output_plaintext()
+-> Result<(), TestError> {
     const PROMPT: &[u8] = b"fixture-prompt-ultra-private-871";
     const TOKEN: &[u8] = b"fixture-bearer-token-ultra-private-872";
     const HEADER: &[u8] = b"fixture-auth-header-ultra-private-873";
@@ -852,7 +882,7 @@ async fn provider_evidence_never_persists_prompt_token_header_or_output_plaintex
     const EPHEMERAL_WITNESS: &[u8] = b"fixture-ephemeral-witness-ultra-private-877";
 
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -897,13 +927,15 @@ async fn provider_evidence_never_persists_prompt_token_header_or_output_plaintex
                 .any(|w| w == forbidden)
         );
     }
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn provider_projection_and_digest_corruption_fail_closed() {
+async fn provider_projection_and_digest_corruption_fail_closed() -> Result<(), TestError> {
     for (nonce, corruption) in [(8, "projection"), (9, "digest")] {
         let temp = TempDir::new().expect("temp dir");
-        let sqlite = sqlite_config(&temp);
+        let sqlite = sqlite_config(&temp)?;
         let store = HeptaEvidenceStore::open(&sqlite)
             .await
             .expect("open evidence");
@@ -945,12 +977,14 @@ async fn provider_projection_and_digest_corruption_fail_closed() {
             EvidenceError::Corrupt(_)
         ));
     }
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn open_rejects_missing_provider_schema_object() {
+async fn open_rejects_missing_provider_schema_object() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -970,12 +1004,14 @@ async fn open_rejects_missing_provider_schema_object() {
         Err(error) => error,
     };
     assert!(matches!(error, EvidenceError::Corrupt(_)));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn open_rejects_legacy_provider_rows_without_host_binding_digest() {
+async fn open_rejects_legacy_provider_rows_without_host_binding_digest() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
@@ -1034,4 +1070,6 @@ async fn open_rejects_legacy_provider_rows_without_host_binding_digest() {
         EvidenceError::Corrupt(detail)
             if detail.contains("predate host request binding evidence")
     ));
+
+    Ok(())
 }
