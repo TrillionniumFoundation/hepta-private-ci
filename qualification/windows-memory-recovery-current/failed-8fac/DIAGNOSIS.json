@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "source_commit": "8facd08bcb51222fe3c88c3b9b03bdea09db4553",
+  "source_tree": "795b2a09e29bcb996c2e13f0980e1a7c7ba41da3",
+  "original_run": 41770514444,
+  "windows_job": 126382183118,
+  "windows_artifact": {
+    "id": 13295599285,
+    "bytes": 980513,
+    "sha256": "4d016ac79f96c54fd0da5e13a69061a6105be5f089f00d419728371b321f140f"
+  },
+  "original_log": {
+    "path": "original-windows-job.log",
+    "bytes": 202663,
+    "sha256": "c9c8582330003624b204fd9c7c3745e9ecbdc88bd01cf462dff04f3ddefdb591",
+    "git_blob": "1cbc58604f8a734f44846bcf3f2c3c257d291482"
+  },
+  "actual_result": {
+    "path": 21,
+    "state": 210,
+    "memory_passed": 261,
+    "memory_failed": 3,
+    "memory_original_ignored": 7,
+    "clippy_exit": 0,
+    "source_inputs_unchanged": true
+  },
+  "failures": [
+    "cognitive_store::windows::tests::bootstrap_creates_private_source_and_preserves_existing_bytes",
+    "cognitive_store::windows::tests::bootstrap_refuses_existing_hard_link_without_adopting_or_changing_it",
+    "cognitive_store::windows::tests::pointer_stage_collision_preserves_the_original_private_file"
+  ],
+  "actual_error": "Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+  "source_analysis": "All three tests pass their newly owned tempfile directory spelling directly to private-directory creation. The added original-path precheck rejects a non-physical spelling before native acquisition. This is source analysis of the common failure; the original returned error does not print the exact offending path.",
+  "candidate": {
+    "path": "codex-rs/hepta-memory/src/cognitive_store_windows_tests.rs",
+    "base_blob": "1c375f6981d72b5426a6820473ffac4714ed1c5d",
+    "candidate_blob": "db9e00fb422d595a0356fc033b25c21f68e6bc1d",
+    "bytes": 2156,
+    "sha256": "c4cefe5584714b59cdf766e43a2b48706d99c7b46eee8c129c4542b6006aae3f",
+    "change": "Canonicalize only each newly owned existing TempDir before joining missing private child components.",
+    "changed_lines": 3,
+    "original_assertion_lines_preserved": 8,
+    "original_cases_preserved": 3
+  },
+  "preserved": [
+    "All production path, reparse, owner/DACL/local-NTFS and retained identity checks",
+    "Original hard-link rejection, private file collision, sharing and source-byte assertions",
+    "Real file/directory sync and propagated errors",
+    "Original three complete native libraries, original Bazel tests/Clippy and budgets",
+    "Seven exact original Memory ignored cases; all SQL schemas and original assertions"
+  ],
+  "other_original_gates": {
+    "generator": "success",
+    "linux": "success",
+    "macos": "success",
+    "bazel": "success"
+  },
+  "qualification": "Candidate still requires original hosted generation and native gates; prior source and static review are not candidate PASS.",
+  "independent_review": {
+    "blob": "6e446a382c948900d65c55fc44ee1f4a3113a621",
+    "bytes": 1530,
+    "sha256": "2b3b10603ffb4d97f45a677e69e0986c070c37fa63af621de062ffcc65a50c86",
+    "executed_tests": 0
+  }
+}
