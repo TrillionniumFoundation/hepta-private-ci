@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 import subprocess
 import time
 import xml.etree.ElementTree as ET
@@ -93,6 +94,53 @@ def reports(base, suffix):
     ))
 
 
+
+def remove_generated_report(path):
+    metadata = path.lstat()
+    attributes = getattr(metadata, "st_file_attributes", 0)
+    require(stat.S_ISREG(metadata.st_mode)
+            and not (attributes & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)),
+            "generated report must be a regular non-reparse file")
+    raw = path.read_bytes()
+    readonly = bool(attributes & getattr(stat, "FILE_ATTRIBUTE_READONLY", 0))
+    if os.name == "nt" and readonly:
+        # Bazel can materialize read-only outputs. Only clear that Windows
+        # attribute on these generated reports; do not suppress other errors.
+        path.chmod(stat.S_IWRITE)
+    path.unlink()
+    require(not path.exists() and not path.is_symlink(),
+            "old generated report remains")
+    return {"bytes": len(raw), "sha256": digest(raw),
+            "windows_readonly_attribute_observed": readonly,
+            "windows_readonly_attribute_cleared": os.name == "nt" and readonly}
+
+
+def report_cleanup_controls(output):
+    root = output / "report-cleanup-controls"
+    root.mkdir()
+    path = root / "readonly-test.log"
+    path.write_bytes(b"owned generated report\n")
+    path.chmod(stat.S_IREAD)
+    require(bool(path.lstat().st_file_attributes & stat.FILE_ATTRIBUTE_READONLY),
+            "the real cleanup control is not read-only")
+    observed = remove_generated_report(path)
+    require(observed["windows_readonly_attribute_cleared"] is True,
+            "the real read-only attribute was not handled")
+    directory = root / "not-a-report"
+    directory.mkdir()
+    try:
+        remove_generated_report(directory)
+    except RuntimeError:
+        pass
+    else:
+        raise RuntimeError("a directory was accepted as a generated report")
+    require(directory.is_dir(), "the rejected directory was modified")
+    directory.rmdir()
+    return {"real_readonly_report_removed": True,
+            "nonregular_directory_rejected_without_removal": True,
+            "native_product_acceptance": False}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, required=True)
@@ -108,6 +156,7 @@ def main():
     try:
         require(os.name == "nt", "native Windows required")
         receipt["reader_controls"] = reader_controls()
+        receipt["report_cleanup_controls"] = report_cleanup_controls(output)
         head = subprocess.check_output(
             ["git", "--no-replace-objects", "rev-parse", "HEAD"], cwd=ROOT, text=True
         ).strip()
@@ -159,9 +208,11 @@ def main():
                              "sha256": digest(mutant), "bytes": len(mutant),
                              "only_change": "Do not put the wrapper into its owned Job Object."}
         base = Path(os.environ["BAZEL_OUTPUT_BASE"]) / "execroot"
+        receipt["removed_prior_reports"] = {}
         for suffix in ("log", "xml"):
-            for path in reports(base, suffix):
-                path.unlink()
+            paths = reports(base, suffix)
+            require(len(paths) == 1, "missing or ambiguous prior generated report")
+            receipt["removed_prior_reports"][suffix] = remove_generated_report(paths[0])
         bash = Path(os.environ["HEPTA_BASH"])
         require(bash.is_absolute() and bash.name.casefold() == "bash.exe" and bash.is_file(),
                 "the workflow Git Bash executable is required")
@@ -231,6 +282,8 @@ def main():
             "source_restored": receipt["source_restored"],
             "clean_exit_code": clean.returncode,
             "reader_controls": receipt.get("reader_controls"),
+            "report_cleanup_controls": receipt.get("report_cleanup_controls"),
+            "removed_prior_reports": receipt.get("removed_prior_reports"),
             "rejection": receipt.get("rejection"),
             "native_product_acceptance": False,
         }), flush=True)

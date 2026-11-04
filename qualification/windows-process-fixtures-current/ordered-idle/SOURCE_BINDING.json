@@ -204,7 +204,7 @@
     "python_tests": false,
     "formatting": false
   },
-  "status": "Native Windows fixture successor: original 4db Queue35 and idle3 passed both runs; original Git33 passed source and failed two readiness cases on same-tree merge. Current native fixture and actual no-containment rejection control remain pending.",
+  "status": "Original f2 and same-tree actual merge each passed Git33/Queue35/idle3. The additional no-containment control failed before execution while removing an old generated report; its narrow cleanup successor remains pending.",
   "original_formatter_adoption": {
     "source_commit": "7a1393304a76c45052e538087565c00a135f5a14",
     "run_id": 41767138349,
@@ -288,11 +288,11 @@
     "independent_static_review_blob": "a6551015fd421677959b39a73567b5819c8274a0",
     "static_review_is_native_evidence": false,
     "helper_exit_zero_only_in_explicit_child_role": true,
-    "native_execution_claimed": false,
+    "native_execution_claimed": true,
     "no_containment_negative_script": {
-      "git_blob_sha": "de4b5e506d9fdbae393f13448fb0f10376799898",
-      "sha256": "ba8b5de6b951cc74fcfa9b3a05807fae33012b711770045776c69920d8aa64b9",
-      "bytes": 12011
+      "git_blob_sha": "b89cf9140d8faf912d63386c23e285ba648ca4a9",
+      "sha256": "37ee03979e851eebad13a43771b76387e031580ef3cb04f67dbfd19e0d9f064c",
+      "bytes": 14429
     },
     "no_containment_control_is_separate_from_original_counts": true,
     "before_original_formatter": {
@@ -319,6 +319,15 @@
       "committed_bazel_equals_generated": true,
       "all_commands_exit_zero": true,
       "native_execution": false
-    }
+    },
+    "observed_commit": "f2d0fcd44cedd662f5cbccff1278ade26354f350",
+    "observed_merge": "6579544c4b154eda1d19b7f7fe6aca12c432b50e",
+    "observed_receipt": "../native-helper/negative-cleanup-f2/OBSERVED.json",
+    "no_containment_negative_script_before_cleanup": {
+      "git_blob_sha": "de4b5e506d9fdbae393f13448fb0f10376799898",
+      "sha256": "ba8b5de6b951cc74fcfa9b3a05807fae33012b711770045776c69920d8aa64b9",
+      "bytes": 12011
+    },
+    "no_containment_control_demonstrated": false
   }
 }
