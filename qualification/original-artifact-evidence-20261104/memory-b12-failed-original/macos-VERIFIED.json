@@ -1,0 +1,314 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+  "original_run": 41756875503,
+  "artifact_id": 13290717285,
+  "original_qualification_status": "failed",
+  "key": "memory-b12-macos-failed",
+  "zip_bytes": 976527,
+  "zip_sha256": "66f7550b14e3a35610df570f566427c08b4049157f98f2e93c0b3f6881792187",
+  "all_member_crc": true,
+  "source_verification": {
+    "count": 9203,
+    "before_sha256": "98839873f5c3433de23aab19b2efdce50dc2b8e40b495217022a6743687a4b4d",
+    "after_sha256": "98839873f5c3433de23aab19b2efdce50dc2b8e40b495217022a6743687a4b4d",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs",
+      ".github",
+      "scripts",
+      "bazel",
+      "patches",
+      "third_party",
+      "cargo_bazel_template",
+      "justfile",
+      "defs.bzl",
+      "BUILD.bazel",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      "qualification/windows-memory-recovery-current",
+      "qualification/keyring-sync-provider/build_pinned_client.py"
+    ],
+    "symlink_resolution": []
+  },
+  "result": {
+    "mode": "negative-evidence",
+    "original_commands": [
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "cwd": "/Users/runner/work/hepta-private-ci/hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 2.2715977909999765
+      },
+      {
+        "name": "rustc-version",
+        "argv": [
+          "rustc",
+          "-Vv"
+        ],
+        "cwd": "/Users/runner/work/hepta-private-ci/hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 0.14784391599999935
+      },
+      {
+        "name": "nextest-version",
+        "argv": [
+          "cargo",
+          "nextest",
+          "--version"
+        ],
+        "cwd": "/Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs",
+        "exit_code": 0,
+        "seconds": 0.5668516249999982
+      },
+      {
+        "name": "codex-utils-path-inventory",
+        "argv": [
+          "cargo",
+          "nextest",
+          "list",
+          "--locked",
+          "-p",
+          "codex-utils-path",
+          "--lib",
+          "--message-format=json"
+        ],
+        "cwd": "/Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs",
+        "exit_code": 0,
+        "seconds": 168.61914625
+      },
+      {
+        "name": "codex-utils-path-original-tests",
+        "argv": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-utils-path",
+          "--lib",
+          "--no-tests=fail",
+          "--retries",
+          "0",
+          "--success-output=final"
+        ],
+        "cwd": "/Users/runner/work/hepta-private-ci/hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 5.8156489589999865
+      },
+      {
+        "name": "codex-state-inventory",
+        "argv": [
+          "cargo",
+          "nextest",
+          "list",
+          "--locked",
+          "-p",
+          "codex-state",
+          "--lib",
+          "--message-format=json"
+        ],
+        "cwd": "/Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs",
+        "exit_code": 0,
+        "seconds": 556.454532125
+      },
+      {
+        "name": "codex-state-original-tests",
+        "argv": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-state",
+          "--lib",
+          "--no-tests=fail",
+          "--retries",
+          "0",
+          "--success-output=final"
+        ],
+        "cwd": "/Users/runner/work/hepta-private-ci/hepta-private-ci",
+        "exit_code": 100,
+        "seconds": 12.029756791999944
+      },
+      {
+        "name": "codex-hepta-memory-inventory",
+        "argv": [
+          "cargo",
+          "nextest",
+          "list",
+          "--locked",
+          "-p",
+          "codex-hepta-memory",
+          "--lib",
+          "--message-format=json"
+        ],
+        "cwd": "/Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs",
+        "exit_code": 0,
+        "seconds": 108.15831258300011
+      },
+      {
+        "name": "codex-hepta-memory-original-tests",
+        "argv": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-memory",
+          "--lib",
+          "--no-tests=fail",
+          "--retries",
+          "0",
+          "--success-output=final"
+        ],
+        "cwd": "/Users/runner/work/hepta-private-ci/hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 23.24279241699992
+      },
+      {
+        "name": "original-scoped-clippy",
+        "argv": [
+          "just",
+          "fix",
+          "--locked",
+          "-p",
+          "codex-utils-path",
+          "-p",
+          "codex-state",
+          "-p",
+          "codex-hepta-memory",
+          "--no-deps"
+        ],
+        "cwd": "/Users/runner/work/hepta-private-ci/hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 128.9897866670001
+      },
+      {
+        "name": "final-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "cwd": "/Users/runner/work/hepta-private-ci/hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 1.156014000000141
+      }
+    ],
+    "original_libraries": {
+      "codex-utils-path": {
+        "status": "passed",
+        "inventory_count": 4,
+        "expected_count": 4,
+        "result_passed": 4
+      },
+      "codex-state": {
+        "status": "failed",
+        "inventory_count": 215,
+        "expected_count": 215,
+        "result_passed": null
+      },
+      "codex-hepta-memory": {
+        "status": "passed",
+        "inventory_count": 279,
+        "expected_count": 272,
+        "result_passed": 272
+      }
+    },
+    "original_targets": null,
+    "original_problems": [
+      "codex-state: original library tests failed"
+    ],
+    "failed_streams": {
+      "codex-state-original-tests.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "codex-state-original-tests.stderr": {
+        "bytes": 166568,
+        "sha256": "5de6a80a6ebcb3d57aeb578c1423d5c8ee8267e67929341c591bb5390decaaf4"
+      }
+    },
+    "observed_junit": {
+      "codex-utils-path": {
+        "cases": 4,
+        "sha256": "4abaf1d9aa6d0a73650afa1bbc906c665a9ea013b4c0bfe3b065e2f629c4e9f1",
+        "failures": []
+      },
+      "codex-state": {
+        "cases": 215,
+        "sha256": "b1acf9e1a1a8336ed1827894756809d9b23cbfbd2c67a7611fb2cd62ee7c41b0",
+        "failures": [
+          {
+            "name": "sqlite_recovery::image::tests::cold_image_rejects_wrong_guard_replacement_sidecars_and_size",
+            "details": [
+              {
+                "tag": "failure",
+                "attributes": {
+                  "message": "Error: SQLite recovery is indeterminate: the complete immutable file identity was not established",
+                  "type": "test failure with exit code 101"
+                },
+                "text": "Error: SQLite recovery is indeterminate: the complete immutable file identity was not established"
+              },
+              {
+                "tag": "system-out",
+                "attributes": {},
+                "text": "\nrunning 1 test\ntest sqlite_recovery::image::tests::cold_image_rejects_wrong_guard_replacement_sidecars_and_size ... FAILED\n\nfailures:\n\nfailures:\n    sqlite_recovery::image::tests::cold_image_rejects_wrong_guard_replacement_sidecars_and_size\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 214 filtered out; finished in 0.02s\n\n"
+              },
+              {
+                "tag": "system-err",
+                "attributes": {},
+                "text": "Error: SQLite recovery is indeterminate: the complete immutable file identity was not established\n"
+              }
+            ]
+          },
+          {
+            "name": "sqlite_recovery::image::tests::cold_image_is_immutable_and_reconnects_to_same_copy",
+            "details": [
+              {
+                "tag": "failure",
+                "attributes": {
+                  "message": "Error: SQLite recovery is indeterminate: the complete immutable file identity was not established",
+                  "type": "test failure with exit code 101"
+                },
+                "text": "Error: SQLite recovery is indeterminate: the complete immutable file identity was not established"
+              },
+              {
+                "tag": "system-out",
+                "attributes": {},
+                "text": "\nrunning 1 test\ntest sqlite_recovery::image::tests::cold_image_is_immutable_and_reconnects_to_same_copy ... FAILED\n\nfailures:\n\nfailures:\n    sqlite_recovery::image::tests::cold_image_is_immutable_and_reconnects_to_same_copy\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 214 filtered out; finished in 0.03s\n\n"
+              },
+              {
+                "tag": "system-err",
+                "attributes": {},
+                "text": "Error: SQLite recovery is indeterminate: the complete immutable file identity was not established\n"
+              }
+            ]
+          }
+        ]
+      },
+      "codex-hepta-memory": {
+        "cases": 272,
+        "sha256": "c7d5a717d8ebf28e084035eea2b244d65ae4b51f7bd0d6095bd7fca40f575388",
+        "failures": []
+      }
+    }
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only verification of original retained evidence; no new product execution or whole-CI admission.",
+  "output_count": 26,
+  "verified_report_sha256": "ef2326c4032970ad2b52558e63cf4ff0c4b194449e1e38ae801d600aa3c80424"
+}

@@ -1,0 +1,108 @@
+{
+  "schema": 1,
+  "key": "wrapper-9fd-lock",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+  "original_run": 41758337703,
+  "artifact_id": 13289134109,
+  "zip_bytes": 611471,
+  "zip_sha256": "ca748288130f39e99dcef5d959b975a32970016f69b710c1288ad5653b625de6",
+  "crc_all_members": true,
+  "source_verification": {
+    "count": 1659,
+    "before_sha256": "31972026eddb829653b683b82bce53882e760ed7126d41729b5bbcf8f58129d5",
+    "after_sha256": "31972026eddb829653b683b82bce53882e760ed7126d41729b5bbcf8f58129d5",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "MODULE.bazel",
+      "BUILD.bazel",
+      ".bazelrc",
+      ".bazelversion",
+      "defs.bzl",
+      "bazel",
+      "third_party",
+      "cargo_bazel_template",
+      "justfile",
+      "codex-rs/Cargo.toml",
+      "codex-rs/Cargo.lock",
+      "codex-rs/rust-toolchain.toml",
+      "codex-rs/**/Cargo.toml",
+      "codex-rs/third_party",
+      "patches",
+      "tools/argument-comment-lint",
+      "scripts/update_cargo_bazel.py",
+      "scripts/check-module-bazel-lock.sh",
+      ".github/scripts/run_bazel_with_buildbuddy.py",
+      ".github/actions/setup-ci",
+      ".github/actions/setup-bazel-ci",
+      ".github/actions/prepare-bazel-ci",
+      ".github/workflows/rust-ci.yml",
+      ".github/workflows/rust-ci-full.yml",
+      ".github/workflows/rust-release-argument-comment-lint.yml",
+      ".github/workflows/hepta-windows-archive-input-qualification.yml",
+      "qualification/windows-archive-inputs-20261104"
+    ],
+    "symlink_resolution": []
+  },
+  "original_qualification_status": "passed",
+  "result": {
+    "commands": [
+      [
+        "committed-lock-check",
+        [
+          "./scripts/check-module-bazel-lock.sh"
+        ],
+        0
+      ],
+      [
+        "original-lock-update",
+        [
+          "just",
+          "bazel-lock-update"
+        ],
+        0
+      ],
+      [
+        "original-lock-check",
+        [
+          "./scripts/check-module-bazel-lock.sh"
+        ],
+        0
+      ]
+    ],
+    "lock_sha256": "1a58f7d1fcbfe850d18a01c19faf15c941dfd229cb8caeb406dbe8ce8c99522e",
+    "lock_bytes": 1701389,
+    "checkout_checks": [
+      {
+        "stage": "before",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0
+      },
+      {
+        "stage": "after",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0
+      }
+    ]
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only replay of retained evidence; no new product execution or whole-CI admission.",
+  "output_counts": {
+    "recorded_outputs": 13,
+    "retained_outputs": 0,
+    "command_logs": 0
+  },
+  "verified_report_sha256": "35a0c96c1e0d82b9fc16a37bd18ec6604d01b25fff3c4a412ffd3c3bcc804277"
+}

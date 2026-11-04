@@ -1,0 +1,575 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "steps": [
+    {
+      "name": "product-identity",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+      "exit": 0,
+      "elapsed_seconds": 0.04699999999996862
+    },
+    {
+      "name": "product-clean-before",
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+      "exit": 0,
+      "elapsed_seconds": 0.17200000000002547
+    },
+    {
+      "name": "upstream-init",
+      "command": [
+        "git",
+        "init",
+        "D:\\a\\_temp\\bazel9-output-backport\\source"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport",
+      "exit": 0,
+      "elapsed_seconds": 0.047000000000025466
+    },
+    {
+      "name": "upstream-line-endings",
+      "command": [
+        "git",
+        "config",
+        "core.autocrlf",
+        "false"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 0.03100000000000591
+    },
+    {
+      "name": "upstream-remote",
+      "command": [
+        "git",
+        "remote",
+        "add",
+        "origin",
+        "https://github.com/bazelbuild/bazel.git"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 0.031999999999982265
+    },
+    {
+      "name": "upstream-fetch",
+      "command": [
+        "git",
+        "fetch",
+        "--depth=1",
+        "--no-tags",
+        "origin",
+        "93f38093f8e24875c1d015e67311853756bdb27e"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 4.125
+    },
+    {
+      "name": "upstream-checkout",
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "FETCH_HEAD"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 4.5779999999999745
+    },
+    {
+      "name": "upstream-identity",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 0.047000000000025466
+    },
+    {
+      "name": "upstream-tree",
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 0.04599999999999227
+    },
+    {
+      "name": "upstream-clean-before",
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 0.29700000000002547
+    },
+    {
+      "name": "upstream-patch-check",
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "D:\\a\\hepta-private-ci\\hepta-private-ci\\qualification\\bazel9-output-backport-20261104\\bazel9-windows-tee-drain.patch"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 0.04699999999996862
+    },
+    {
+      "name": "upstream-patch",
+      "command": [
+        "git",
+        "apply",
+        "D:\\a\\hepta-private-ci\\hepta-private-ci\\qualification\\bazel9-output-backport-20261104\\bazel9-windows-tee-drain.patch"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 0.047000000000025466
+    },
+    {
+      "name": "upstream-exact-diff",
+      "command": [
+        "git",
+        "diff",
+        "--binary",
+        "--no-ext-diff",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 0.20299999999997453
+    },
+    {
+      "name": "upstream-changed-paths",
+      "command": [
+        "git",
+        "diff",
+        "--name-only",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 0.18799999999998818
+    },
+    {
+      "name": "builder-version",
+      "command": [
+        "C:\\hostedtoolcache\\windows\\bazelisk\\1.28.1\\x64\\bazel.EXE",
+        "--nosystem_rc",
+        "--nohome_rc",
+        "--output_base=D:\\a\\_temp\\bazel9-output-backport\\b",
+        "--output_user_root=D:\\a\\_temp\\bazel9-output-backport\\u",
+        "version",
+        "--gnu_format"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 5.375
+    },
+    {
+      "name": "build-original-tw-target",
+      "command": [
+        "C:\\hostedtoolcache\\windows\\bazelisk\\1.28.1\\x64\\bazel.EXE",
+        "--nosystem_rc",
+        "--nohome_rc",
+        "--output_base=D:\\a\\_temp\\bazel9-output-backport\\b",
+        "--output_user_root=D:\\a\\_temp\\bazel9-output-backport\\u",
+        "build",
+        "--lockfile_mode=error",
+        "//tools/test:tw"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 39.625
+    },
+    {
+      "name": "test-complete-original-tw-target",
+      "command": [
+        "C:\\hostedtoolcache\\windows\\bazelisk\\1.28.1\\x64\\bazel.EXE",
+        "--nosystem_rc",
+        "--nohome_rc",
+        "--output_base=D:\\a\\_temp\\bazel9-output-backport\\b",
+        "--output_user_root=D:\\a\\_temp\\bazel9-output-backport\\u",
+        "test",
+        "--lockfile_mode=error",
+        "--nocache_test_results",
+        "--test_output=all",
+        "--flaky_test_attempts=1",
+        "--test_env=GTEST_OUTPUT=xml:D:\\a\\_temp\\bazel9-output-backport\\evidence\\tw-gtest.xml",
+        "//tools/test:tw_test"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 21.890000000000043
+    },
+    {
+      "name": "upstream-bazel-bin",
+      "command": [
+        "C:\\hostedtoolcache\\windows\\bazelisk\\1.28.1\\x64\\bazel.EXE",
+        "--nosystem_rc",
+        "--nohome_rc",
+        "--output_base=D:\\a\\_temp\\bazel9-output-backport\\b",
+        "--output_user_root=D:\\a\\_temp\\bazel9-output-backport\\u",
+        "info",
+        "bazel-bin"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 0.7349999999999568
+    },
+    {
+      "name": "upstream-changed-paths-after",
+      "command": [
+        "git",
+        "diff",
+        "--name-only",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+      "exit": 0,
+      "elapsed_seconds": 0.20300000000003138
+    },
+    {
+      "name": "product-bazel-version",
+      "command": [
+        "C:\\hostedtoolcache\\windows\\bazelisk\\1.28.1\\x64\\bazel.EXE",
+        "--version"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+      "exit": 0,
+      "elapsed_seconds": 1.0779999999999745
+    },
+    {
+      "name": "product-install-base",
+      "command": [
+        "C:\\hostedtoolcache\\windows\\bazelisk\\1.28.1\\x64\\bazel.EXE",
+        "info",
+        "install_base"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+      "exit": 0,
+      "elapsed_seconds": 4.359000000000037
+    },
+    {
+      "name": "product-clean-after-prepare",
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+      "exit": 0,
+      "elapsed_seconds": 0.1560000000000059
+    }
+  ],
+  "native_host": "Windows-2025Server-10.0.26100-SP0",
+  "upstream_base": "93f38093f8e24875c1d015e67311853756bdb27e",
+  "fix_commit": "e50ebd4a0a0bf5f557aa8d4873d9a226f8e89c57",
+  "destination": "D:\\a\\hepta-private-ci\\hepta-private-ci\\bazel-windows-test-tools",
+  "work": "D:\\a\\_temp\\bazel9-output-backport",
+  "gtest": {
+    "count": 20,
+    "original": 18,
+    "additional_upstream": 2,
+    "failures": 0,
+    "skipped": 0,
+    "cases": [
+      "TestWrapperWindowsTest.TestGetFileListRelativeTo",
+      "TestWrapperWindowsTest.TestToZipEntryPaths",
+      "TestWrapperWindowsTest.TestToZipEntryPathsLongPathRoot",
+      "TestWrapperWindowsTest.TestCreateZip",
+      "TestWrapperWindowsTest.TestGetMimeType",
+      "TestWrapperWindowsTest.TestUndeclaredOutputsManifest",
+      "TestWrapperWindowsTest.TestCreateUndeclaredOutputsAnnotations",
+      "TestWrapperWindowsTest.TestTee",
+      "TestWrapperWindowsTest.TestTeeStreamsRemainingDataOnDestruction",
+      "TestWrapperWindowsTest.TestTeeStopsReadingOnDestructionAfterTimeout",
+      "TestWrapperWindowsTest.TestCdataEscapeNullTerminator",
+      "TestWrapperWindowsTest.TestCdataEscapeCdataEndings",
+      "TestWrapperWindowsTest.TestCdataEscapeSingleOctets",
+      "TestWrapperWindowsTest.TestCdataEscapeDoubleOctets",
+      "TestWrapperWindowsTest.TestCdataEscapeAndAppend",
+      "TestWrapperWindowsTest.TestIFStreamNoData",
+      "TestWrapperWindowsTest.TestIFStreamLessDataThanPageSize",
+      "TestWrapperWindowsTest.TestIFStreamExactlySinglePageSize",
+      "TestWrapperWindowsTest.TestIFStreamLessDataThanDoublePageSize",
+      "TestWrapperWindowsTest.TestIFStreamLessDataThanTriplePageSize"
+    ],
+    "xml": {
+      "bytes": 4658,
+      "sha256": "3745af328855fbf38c9e350b496cc735fd2897bf08ec5a1875cf6111fdc47289"
+    }
+  },
+  "product_commit": "f7e1283370bd3e343df09416ae75717f2d558c75",
+  "qualification_inputs": {
+    "qualification/bazel9-output-backport-20261104/bazel9-windows-tee-drain.patch": {
+      "bytes": 4562,
+      "sha256": "06146cf94199fc7ba4c800487f452ee171776645634403f46866268d521b676c"
+    },
+    "qualification/bazel9-output-backport-20261104/build.py": {
+      "bytes": 14785,
+      "sha256": "dd5e70f9d434ca552c1654a20ad271f1c990c4bb10e3ea072f5b431d448d8e2f"
+    },
+    "qualification/bazel9-output-backport-20261104/README.md": {
+      "bytes": 5433,
+      "sha256": "fe89426d9364e0df0902f2a645f950393ef108bbbbdf4256b191b46a28d24f61"
+    },
+    "qualification/bazel9-output-backport-20261104/source-binding.json": {
+      "bytes": 3025,
+      "sha256": "ba90ba895444701a17b3618160ad3b63ed4e7bbdfaee9458fe16bd1195936af3"
+    },
+    "qualification/bazel9-output-backport-20261104/upstream-static-review.json": {
+      "bytes": 7359,
+      "sha256": "779fd46bd4bd01bc854a5236e61803016562e60b029d323abfc355ba54be9273"
+    },
+    ".bazelrc": {
+      "bytes": 13838,
+      "sha256": "7ca4fa8ade39ba80442aa1320fecc5561cd71798b07eb780f29ee37d57d4caee"
+    }
+  },
+  "upstream_tree": "6a343a2560c92f6ac74cefcf6a0d0de9acbd3112",
+  "builder_versions": [
+    "Bazelisk v1.28.1",
+    "bazel 8.4.2"
+  ],
+  "built_wrapper": {
+    "bytes": 788992,
+    "sha256": "5bdb1b4da9165acb6e531d3f44025930eec94c9532b96c8f0610a372967f39e5"
+  },
+  "installed_tools": "C:\\Users\\runneradmin\\_bazel_runneradmin\\install\\f0d5ad6fc8db51ae85b648c7943b09c1\\embedded_tools",
+  "only_changed_tool": "tools/test/tw.exe",
+  "embedded_entry_count": 591,
+  "evidence_outputs": {
+    "build-original-tw-target.stderr": {
+      "bytes": 2401,
+      "sha256": "e4e4957b4131c2fd5c1382aea430af7fa1130bef4248c3d48763d0d09cf9603a"
+    },
+    "build-original-tw-target.stdout": {
+      "bytes": 158,
+      "sha256": "419f40efdcc017be1f33c55bf06d5fd0b1ebed2036bb818c4b57d777a304d5d6"
+    },
+    "builder-version.stderr": {
+      "bytes": 204,
+      "sha256": "466ccb4f071855922701f09ff640ba3171af00d44c5791d5520e5e053e44caff"
+    },
+    "builder-version.stdout": {
+      "bytes": 29,
+      "sha256": "eb1089f38212a45ad1220ff5ddcda5d71b02f63b9a9dbcfdafe66a22ba130d34"
+    },
+    "installed-tools-before.json": {
+      "bytes": 89343,
+      "sha256": "3df7300c2d41789b0cf08d4176e36b2c0eaf5a21b13b3a737e95b6997069a07d"
+    },
+    "override-tools.json": {
+      "bytes": 89343,
+      "sha256": "3318b37a12d8412b35cd751578debc6a27516facd17355c724ca015df4f47d96"
+    },
+    "product-bazel-version.stderr": {
+      "bytes": 109,
+      "sha256": "ac60d1a79f65af8b14b7f2845fbb6b8598972d6ce6e48457ea28b53a39108ada"
+    },
+    "product-bazel-version.stdout": {
+      "bytes": 13,
+      "sha256": "c93c63657fccbbf797e42a982ba9a370f4006e9d68bc018878d506f4b5d8d1ce"
+    },
+    "product-clean-after-prepare.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "product-clean-after-prepare.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "product-clean-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "product-clean-before.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "product-identity.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "product-identity.stdout": {
+      "bytes": 41,
+      "sha256": "2e75c2c2d79c40982940c491ca7c2a1b1ca0696396efd14539cd7d40fd72b9d8"
+    },
+    "product-install-base.stderr": {
+      "bytes": 154,
+      "sha256": "e2b6bb5bb08b7d472e094624e3af357d014e9d53dfd7bd96c042d1fc23f4eadb"
+    },
+    "product-install-base.stdout": {
+      "bytes": 81,
+      "sha256": "b8eec3bb35f31705be42bde704e884155a9ffc6146fb31863881eff8a2651b03"
+    },
+    "test-complete-original-tw-target.stderr": {
+      "bytes": 1971,
+      "sha256": "451f74312478cc943043c51178987893307b5b2a4bbb928d8ac2a188af733a65"
+    },
+    "test-complete-original-tw-target.stdout": {
+      "bytes": 3725,
+      "sha256": "a92b244b26b83660c40a7ce0370a9ac81861c2568ba11191f889befba266a151"
+    },
+    "tw-gtest.xml": {
+      "bytes": 4658,
+      "sha256": "3745af328855fbf38c9e350b496cc735fd2897bf08ec5a1875cf6111fdc47289"
+    },
+    "tw.cc": {
+      "bytes": 69951,
+      "sha256": "cd93a25fb82003bb9fa538a6207d340c9fa326277a33dc962dfe63cdac544899"
+    },
+    "tw.exe": {
+      "bytes": 788992,
+      "sha256": "5bdb1b4da9165acb6e531d3f44025930eec94c9532b96c8f0610a372967f39e5"
+    },
+    "tw_test.cc": {
+      "bytes": 30991,
+      "sha256": "17f9b278e5df0bc794a27c94799537958596bc76f008b01e8716baa56e21bb7c"
+    },
+    "upstream-bazel-bin.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-bazel-bin.stdout": {
+      "bytes": 87,
+      "sha256": "27110e88efcab5999a6ff012819b2491cbd4db525049a853863cc579e5a591ef"
+    },
+    "upstream-changed-paths-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-changed-paths-after.stdout": {
+      "bytes": 55,
+      "sha256": "aae0d8d0e1ed5211206cf2ce64588091eb829e41e465f1a020450099d13f01f7"
+    },
+    "upstream-changed-paths.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-changed-paths.stdout": {
+      "bytes": 55,
+      "sha256": "aae0d8d0e1ed5211206cf2ce64588091eb829e41e465f1a020450099d13f01f7"
+    },
+    "upstream-checkout.stderr": {
+      "bytes": 50,
+      "sha256": "37d3ba29c71d90bf8786287dac3b1485f05004009db8eff96edceb78a110a7db"
+    },
+    "upstream-checkout.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-clean-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-clean-before.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-exact-diff.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-exact-diff.stdout": {
+      "bytes": 4706,
+      "sha256": "4c8ce3ab2a56d994307a1d831015c64602fffa1aa458b8f2536417e4850fc00c"
+    },
+    "upstream-fetch.stderr": {
+      "bytes": 117,
+      "sha256": "d9a46e8f48d61acba6f198840da0da360f71c3f557a7c7d5c3aba67f95767cc6"
+    },
+    "upstream-fetch.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-identity.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-identity.stdout": {
+      "bytes": 41,
+      "sha256": "0f3589d66c3607c8f57d76e343a41dba883298bb745c6c73f2def48503df138e"
+    },
+    "upstream-init.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-init.stdout": {
+      "bytes": 83,
+      "sha256": "191244093c1af651e19587f7ce7567c356f1504dfe0811c2d20250020ae7bf06"
+    },
+    "upstream-line-endings.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-line-endings.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-patch-check.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-patch-check.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-patch.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-patch.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-remote.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-remote.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-tree.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "upstream-tree.stdout": {
+      "bytes": 41,
+      "sha256": "5e53425211e54ab3a3f9a5861544ac8bc532d6d797edd6cf6b02ab972319c9fc"
+    }
+  },
+  "robrix_receipt": {
+    "bytes": 18833,
+    "sha256": "6e2808b4a286c5769ccfc9794c0c0862ca91acc56acddb6cbd1b8bef3ea7e2cc"
+  },
+  "original_installed_tools_unchanged": true,
+  "qualified_override_unchanged": true
+}

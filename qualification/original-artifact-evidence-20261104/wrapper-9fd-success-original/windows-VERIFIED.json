@@ -1,0 +1,181 @@
+{
+  "schema": 1,
+  "key": "wrapper-9fd-windows",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+  "original_run": 41758337703,
+  "artifact_id": 13289701641,
+  "zip_bytes": 21209,
+  "zip_sha256": "c6d3c37e1302cb037d11c04c987175eacdcd82708fc96071372a407668abf9d7",
+  "crc_all_members": true,
+  "source_verification": {
+    "count": 74,
+    "before_sha256": "dca3a81e8fcf7387d27dbeb330f40db6b0d990ab1639ffa7dbeb04bbc4500374",
+    "after_sha256": "dca3a81e8fcf7387d27dbeb330f40db6b0d990ab1639ffa7dbeb04bbc4500374",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      "BUILD.bazel",
+      "defs.bzl",
+      ".bazelrc",
+      ".bazelversion",
+      "patches",
+      "bazel",
+      "justfile",
+      "codex-rs/Cargo.toml",
+      "codex-rs/Cargo.lock",
+      "codex-rs/rust-toolchain.toml",
+      ".github/actions/prepare-bazel-ci",
+      ".github/actions/setup-ci",
+      ".github/actions/setup-bazel-ci",
+      ".github/scripts/run_bazel_with_buildbuddy.py",
+      ".github/scripts/run-bazel-ci.sh",
+      ".github/scripts/run-bazel-query-ci.sh",
+      "scripts/check-module-bazel-lock.sh",
+      "scripts/list-bazel-clippy-targets.sh",
+      "qualification/windows-archive-inputs-20261104",
+      ".github/workflows/hepta-windows-archive-input-qualification.yml"
+    ],
+    "symlink_resolution": []
+  },
+  "original_qualification_status": "passed",
+  "result": {
+    "native_config": "ci-windows",
+    "executed": 19,
+    "failed": 0,
+    "ignored": 0,
+    "measured": 0,
+    "filtered": 0,
+    "exact_case_names": [
+      "flags::test::test_extra_args",
+      "flags::test::test_repeated_flags",
+      "flags::test::test_flag_help",
+      "flags::test::test_flag_single_repeated",
+      "options::response_file_tests::ordinary_wrapper_and_child_arguments_do_not_read_response_files",
+      "options::response_file_tests::unreadable_wrapper_response_file_fails_before_running_the_child",
+      "options::response_file_tests::multiline_values_remain_literal_through_the_normal_flag_parser",
+      "options::test::test_enforce_allow_features_flag_user_didnt_say",
+      "options::response_file_tests::wrapper_response_files_cannot_change_the_child_boundary_or_recurse",
+      "options::test::test_enforce_allow_features_flag_user_requested_something",
+      "options::test::test_enforce_allow_features_flag_user_requested_something_in_param_file",
+      "output::test::test_json_parsing_error",
+      "test::test_process_line_diagnostic_rendered",
+      "test::test_process_line_diagnostic_json",
+      "util::test::test_read_to_array",
+      "util::test::test_stamp_status_to_array",
+      "test::test_process_line_noise",
+      "options::response_file_tests::large_wrapper_prefix_preserves_all_arguments_and_child_response_files",
+      "windows_archive_tests::preserve_final_archives_and_exclude_llvm_temp_files"
+    ],
+    "materialized_sources": {
+      "main.rs": {
+        "bytes": 16684,
+        "sha256": "d7fe64c575b51c742fe7b0b2461175572aa4341878980e3dd9c960bc7a35c7a8"
+      },
+      "windows_archive_tests.rs": {
+        "bytes": 2026,
+        "sha256": "68f749daf6c3677bb4fdb0c77908985c29215157fa54fdfbcebb95d1d3566748"
+      }
+    },
+    "original_commands": [
+      {
+        "name": "committed-inputs-clean-before",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.29699999999999704
+      },
+      {
+        "name": "original-process-wrapper-tests",
+        "command": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--platforms=//:windows_x86_64_msvc",
+          "--keep_going",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--",
+          "@rules_rust//util/process_wrapper:process_wrapper_test"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 99.156
+      },
+      {
+        "name": "original-testlog-location",
+        "command": [
+          "python3",
+          "./.github/scripts/run_bazel_with_buildbuddy.py",
+          "--output_user_root=D:/b",
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-windows",
+          "--platforms=//:windows_x86_64_msvc",
+          "--host_platform=//:local_windows_msvc",
+          "bazel-testlogs"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.1570000000000107
+      },
+      {
+        "name": "materialized-wrapper-location",
+        "command": [
+          "python3",
+          "./.github/scripts/run_bazel_with_buildbuddy.py",
+          "--output_user_root=D:/b",
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-windows",
+          "--platforms=//:windows_x86_64_msvc",
+          "--host_platform=//:local_windows_msvc",
+          "output_base"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.11000000000001364
+      },
+      {
+        "name": "native-regression-format",
+        "command": [
+          "rustfmt",
+          "+1.96.0",
+          "--check",
+          "D:\\o\\external\\rules_rs++rules_rust+rules_rust\\util\\process_wrapper\\windows_archive_tests.rs"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.9679999999999893
+      },
+      {
+        "name": "committed-inputs-clean-after",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.8439999999999941
+      }
+    ],
+    "boundary": "Complete original process-wrapper target and actual patched external source; not the full Windows Clippy build."
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only replay of retained evidence; no new product execution or whole-CI admission.",
+  "output_counts": {
+    "recorded_outputs": 17,
+    "retained_outputs": 0,
+    "command_logs": 0
+  },
+  "verified_report_sha256": "c17a1d8444c7a893ba4f4759dc66dc6520e3a5a6069dc17f9941d9bb042898a5"
+}

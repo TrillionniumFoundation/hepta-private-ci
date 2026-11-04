@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "scope": "Independent read-only replay of existing Actions artifacts; no new product execution or whole-CI admission.",
+  "tee": {
+    "source": "f7e1283370bd3e343df09416ae75717f2d558c75",
+    "verifier_source": "c8c1059afc32010f44afa24733aebbaa58f4e5d4",
+    "verifier_blob": "ac3a2c2d1bdae9b705387d7518d47ed00f99c1e4",
+    "bridge_run": 41765877691,
+    "bridge_job": 126363998091,
+    "bridge_log_utf8": {
+      "bytes": 748536,
+      "sha256": "f3e79531c1fa0e85c0e83af892efc39ef34b6cbae2c8c4ce0384055d2d0ffc31"
+    },
+    "exact_original_files": [
+      {
+        "original_path": "bazel9-output-backport/evidence/receipt.json",
+        "path": "qualification/original-artifact-evidence-20261104/tee-f7-success-original/bazel9-output-backport/evidence/receipt.json",
+        "bytes": 19038,
+        "sha256": "b1d4c3cea6bb93ce879691754add30633af2a16d4781664b9107c1090bb620b9",
+        "blob": "9c97e163e46bf5cd9e46d520d59da9eb5afff1c0"
+      },
+      {
+        "original_path": "bazel9-output-backport/evidence/tw-gtest.xml",
+        "path": "qualification/original-artifact-evidence-20261104/tee-f7-success-original/bazel9-output-backport/evidence/tw-gtest.xml",
+        "bytes": 4658,
+        "sha256": "3745af328855fbf38c9e350b496cc735fd2897bf08ec5a1875cf6111fdc47289",
+        "blob": "5379c7c45f7bd2ef32c1bc41a516926fb7495e47"
+      },
+      {
+        "original_path": "bazel9-output-backport/evidence/installed-tools-before.json",
+        "path": "qualification/original-artifact-evidence-20261104/tee-f7-success-original/bazel9-output-backport/evidence/installed-tools-before.json",
+        "bytes": 89343,
+        "sha256": "3df7300c2d41789b0cf08d4176e36b2c0eaf5a21b13b3a737e95b6997069a07d",
+        "blob": "6d929cea34d2c841605683f0e6bc14f45d8ce8a2"
+      },
+      {
+        "original_path": "bazel9-output-backport/evidence/override-tools.json",
+        "path": "qualification/original-artifact-evidence-20261104/tee-f7-success-original/bazel9-output-backport/evidence/override-tools.json",
+        "bytes": 89343,
+        "sha256": "3318b37a12d8412b35cd751578debc6a27516facd17355c724ca015df4f47d96",
+        "blob": "b2cc7d2fdf365fec46ad9ae8762692a6502d71d2"
+      },
+      {
+        "original_path": "robrix-runfiles/receipt.json",
+        "path": "qualification/original-artifact-evidence-20261104/tee-f7-success-original/robrix-runfiles/receipt.json",
+        "bytes": 18833,
+        "sha256": "6e2808b4a286c5769ccfc9794c0c0862ca91acc56acddb6cbd1b8bef3ea7e2cc",
+        "blob": "3b00d1a2edb4fb17c88b2986c8264ab498beeae1"
+      },
+      {
+        "original_path": "robrix-runfiles/robrix.log",
+        "path": "qualification/original-artifact-evidence-20261104/tee-f7-success-original/robrix-runfiles/robrix.log",
+        "bytes": 432,
+        "sha256": "a801649e4d8d50ed5f1815dc6ba2caf1787cfefe94b3e5b7b04da3f9e0a14636",
+        "blob": "57299689d6e0a6a6b8da1bfa1643d8a8ea1dad3e"
+      },
+      {
+        "original_path": "robrix-runfiles/robrix.xml",
+        "path": "qualification/original-artifact-evidence-20261104/tee-f7-success-original/robrix-runfiles/robrix.xml",
+        "bytes": 822,
+        "sha256": "2860c148f5d3770131f604e73367bab93d285a10bec97ca00b0d3eacef72d822",
+        "blob": "3d78b6e77122679e1765f94a03b55f42a0ede10d"
+      }
+    ]
+  },
+  "wrapper": {
+    "source": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+    "linux_and_lock_bridge_source": "57448c18aab5a3ec9cac2c23d9d197305a6fa425",
+    "linux_and_lock_run": 41763400427,
+    "linux_job": 126356061392,
+    "lock_job": 126356061170,
+    "windows_bridge_source": "813e13524d34fe9f7f634f6f01075c7207c7de5a",
+    "windows_run": 41766194944,
+    "windows_job": 126365023136,
+    "previous_verifier_failure": "57448 used mixed separators when reconstructing the formatter's Windows path; the strict corrected replay passes. The complete negative log and exact original formatter argv remain on commit813e135.",
+    "executions": {
+      "linux": 18,
+      "windows": 19
+    },
+    "ignored": 0,
+    "filtered": 0
+  },
+  "memory": {
+    "source": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+    "original_qualification_status": "failed",
+    "verifier_source": "0d796a65cffc8801f5e90644a97eb63a6c3d979c",
+    "bridge_run": 41762791646,
+    "bridge_job": 126354111554,
+    "bridge_log_utf8": {
+      "bytes": 288262,
+      "sha256": "3cf4f0b38dfe8e7f75916a36166c48cd625dd7ab5cd282c6370c0f55bb2d918c"
+    },
+    "exact_observation": "Both cold-image cases return SqliteRecoveryError::Indeterminate before their successful completion. The original error does not include a stack line or the temporary path. Canonical fixture reasoning remains a source-backed inference, and the new ceb source requires fresh original native qualification."
+  },
+  "boundaries": [
+    "Tee validates 20 exact GTests and two exact original Robrix tests plus original scoped Clippy. It is one prepared Windows job; every other CI consumer still needs its own correct setup.",
+    "The retained Tee inventories contain 591 entries and differ only at tools/test/tw.exe. Final stability is the exact original helper's source-bound finalizer observation, without separately retained final inventories.",
+    "Wrapper scope is the complete process-wrapper test target and actual materialized external source, not the full Windows Clippy workspace.",
+    "Mac evidence verification succeeded while the original product qualification failed. These statuses are deliberately distinct.",
+    "Test products retain their exact tested heads; this checkpoint only preserves review evidence."
+  ]
+}
