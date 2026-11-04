@@ -1,5 +1,6 @@
 load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
+load("//:defs.bzl", "workspace_root_test")
 
 rust_library(
     name = "hepta-operator-acceptance-lib",
@@ -27,11 +28,8 @@ rust_library(
 )
 
 rust_test(
-    name = "hepta-operator-acceptance-tests",
+    name = "hepta-operator-acceptance-tests-bin",
     crate = ":hepta-operator-acceptance-lib",
-    # no-remote also makes this target's compile actions run on the native host.
-    # Keep its execution tools native while target dependencies may use RBE.
-    exec_compatible_with = HOST_CONSTRAINTS,
     rustc_flags = select({
         "@platforms//os:windows": [
             "-Aunused-imports",
@@ -39,13 +37,22 @@ rust_test(
         ],
         "//conditions:default": [],
     }),
-    # Retain the independent, installed OpenSSH oracle on the native host.
-    # The remote compiler image intentionally does not carry ssh-keygen.
-    tags = ["no-remote"],
+    tags = ["manual"],
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",
     ],
+)
+
+# Keep Rust compilation and its proc-macro dependencies in one execution domain.
+# Only the original test run needs the native host's independent OpenSSH oracle.
+workspace_root_test(
+    name = "hepta-operator-acceptance-tests",
+    chdir_workspace_root = False,
+    exec_compatible_with = HOST_CONSTRAINTS,
+    test_bin = ":hepta-operator-acceptance-tests-bin",
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
+    tags = ["no-remote"],
 )
 
 rust_binary(
