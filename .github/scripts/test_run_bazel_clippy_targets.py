@@ -13,7 +13,9 @@ SOURCE = Path(__file__).resolve().parents[2] / "scripts/list-bazel-clippy-target
 NATIVE = "//codex-rs/core:core-all-test-bin"
 CROSS = "//codex-rs/core:core-all-test-windows-cross-bin"
 UNIT = "//codex-rs/hepta-neuron:hepta-neuron-unit-tests-bin"
-UNIX_ONLY = "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin"
+UNIX_ONLY = (
+    "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin"
+)
 PREFIX = ["//codex-rs/...", "-//codex-rs/v8-poc:all"]
 
 
