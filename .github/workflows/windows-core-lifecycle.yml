@@ -2,7 +2,10 @@ name: Native Windows Core lifecycle ordering
 
 on:
   push:
-    branches: [fix/windows-core-lifecycle-order-20261103]
+    branches:
+      - fix/windows-core-lifecycle-order-20261103
+      - fix/windows-core-websocket-fork-20261104
+      - integration/unified-blocker-20261104-r2
   workflow_dispatch:
 
 permissions:

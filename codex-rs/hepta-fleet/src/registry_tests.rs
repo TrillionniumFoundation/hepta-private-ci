@@ -346,3 +346,32 @@ fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistr
     }
     Ok(())
 }
+
+#[cfg(windows)]
+#[test]
+fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistryError> {
+    let fleet = TestFleet::new()?;
+    let record = fleet
+        .registry
+        .register(fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?)?;
+    // Exercise production registration below an ordinary temporary parent.
+    // This is the same existing-object owner validator used by CognitiveStore.
+    for root in [
+        record.layout.agent_root(),
+        record.layout.home_root(),
+        record.layout.run_root(),
+        record.layout.logs_root(),
+        record.layout.releases_root(),
+        record.layout.cognitive_root(),
+        record.layout.matrix_root(),
+        record.layout.matrix_secrets_root(),
+        record.layout.automation_root(),
+    ] {
+        drop(codex_utils_path::open_existing_private_state_directory(root)?);
+    }
+    assert_eq!(
+        fleet.registry.load_agent(&record.manifest.agent_id)?,
+        record
+    );
+    Ok(())
+}

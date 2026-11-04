@@ -565,6 +565,7 @@ def codex_rust_crate(
             integration_test_replacements,
             normal_dev = True,
         ) + maybe_deps + deps_extra
+
         # Aliases are implicit dependency edges: apply the same per-test map.
         integration_test_aliases = crate_aliases(
             crate_data,

@@ -1,0 +1,135 @@
+{
+  "schema": "hepta.fleet-create-new-private-directory-independent-review.v1",
+  "reviewer": "hepta_blockers",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": "0cf81d65646b8907e42e781ea35a28437b5b0054",
+  "base_tree": "24b1c33ca0f666a75e9899605a7e0eacc59ed160",
+  "inputs": [
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+      "before": {
+        "git_blob_sha": "1ca4611e7b928a382ae9761f094416db42780371",
+        "sha256": "4a75cdecfdd496038f9e6b8449bf8be3798557fc854c0d6b897e2f974dd7dd45",
+        "bytes": 7968
+      },
+      "after": {
+        "git_blob_sha": "44c5ceea8166f84c0d682c362fe9d5da48cb66ce",
+        "sha256": "7bafc016159601063dd4066f652f9fa547eb41c33916e9097a049b8707af95b4",
+        "bytes": 8331
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "before": {
+        "git_blob_sha": "1e7881b34be647ed30c09a7c29ad44f80460c7bc",
+        "sha256": "1ac3479990c3ccfedd620785a1f82d4ada528dc70cae97ea1d0412e6dcea8b3f",
+        "bytes": 26685
+      },
+      "after": {
+        "git_blob_sha": "0232a88ebe33ae206228a755b0915d0ad94c48d6",
+        "sha256": "d4180ece93d3443e8a6657b603804f3648cb9219d63b6ba82e0042f5b1142bf9",
+        "bytes": 27123
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/lib.rs",
+      "before": {
+        "git_blob_sha": "ad58f0b856d31ab4ea6a2d7fdb140f62925dd8f1",
+        "sha256": "c939ca70bbf43158c3178aeeb97bf9c15d46033514e6d772334c4019cd14c21c",
+        "bytes": 7768
+      },
+      "after": {
+        "git_blob_sha": "d908aa39149ac9e00432b77bc5baae61ac2d8197",
+        "sha256": "364a87dd00f54f600d5938ee524c3287b79ca4ab3735c0d8da79b31fc1ee8957",
+        "bytes": 7851
+      }
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry.rs",
+      "before": {
+        "git_blob_sha": "b17115eb5cffff5f890f34a786534c588d0d3aa5",
+        "sha256": "714b160817bf07b71d11af569a6849769395df00b3769988898e7aff29880753",
+        "bytes": 21262
+      },
+      "after": {
+        "git_blob_sha": "af939fb1d879e1503b1f501c26cd527f6fbdba29",
+        "sha256": "b723774a3062552c1d4d267c1bf3ebac81ec218e06a54bf92a6224802fab175b",
+        "bytes": 21676
+      }
+    },
+    {
+      "path": "codex-rs/hepta-fleet/Cargo.toml",
+      "before": {
+        "git_blob_sha": "a271fa91b84d9ea0100703ff491c6826b0aabc6e",
+        "sha256": "c651dae8fede019ba6409f9e59815796444e4a9fb4a698aad40db94859dc3870",
+        "bytes": 631
+      },
+      "after": {
+        "git_blob_sha": "139c0d4836edca041d2bdf6c56b63a5cbd035867",
+        "sha256": "c57700487a49fd26f26ef1bb0255bab6192ef0cc1d117fbcbd5650774ff000e1",
+        "bytes": 709
+      }
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "before": {
+        "git_blob_sha": "245ae8b907f26b604d8ea9ff8c8c62a7671141c0",
+        "sha256": "2696998413bb6c9977ff5bc4939db05910d74b9ca7d86deb1b3c1e720d3df2f1",
+        "bytes": 11895
+      },
+      "after": {
+        "git_blob_sha": "1b7dbe191b8687c7b5f7cbfe8fa6b73578fe2524",
+        "sha256": "1ea0fda2b0ea9d220bdc11f66867d5404fd897a06865344cddebbd905f7b9c18",
+        "bytes": 12885
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+      "before": {
+        "git_blob_sha": "5ee4110ac4bd633cc07bbca3ebc4f4e0b6ff67ff",
+        "sha256": "bc31c4d507fd0172a02fb628bc5cc911063bab31ef4d6de71ca699d9269c45cc",
+        "bytes": 10150
+      },
+      "after": {
+        "git_blob_sha": "39ff5ed27fa3777953fd7ec5a63e8c684e987152",
+        "sha256": "f82fa6abf59ea71cc99551bf61222d3b50f9b93eba1a6f8d7062d04bb5cd452e",
+        "bytes": 12388
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory_tests.rs",
+      "before": {
+        "git_blob_sha": "1e0f78fdf05b7aa3e315127ef640e6af343ae431",
+        "sha256": "62dcf6a66223b657412eb20479fdad8cd29d8e7af04f89961c8bad2d60f76dbb",
+        "bytes": 4909
+      },
+      "after": {
+        "git_blob_sha": "6951e4ad310fb01a3932f66a6ed845b7186667ee",
+        "sha256": "f94275c6906d7601b178095fc2b2a33d185880772baec1bc0c97d3322bf9f2c5",
+        "bytes": 5667
+      }
+    }
+  ],
+  "method": "Read the exact eight candidate blobs and exact immutable base files; compare production changes and read the added tests. No local or hosted execution performed by this reviewer.",
+  "conclusion": "No confirmed blocker found within this create-only production delta.",
+  "findings": [
+    "The added DirectoryOpen::CreateNew alone selects FILE_CREATE (2). The existing Create mode remains FILE_OPEN_IF (3), and the three existing-only modes retain FILE_OPEN.",
+    "The new mode retains explicit creation security, OBJ_DONT_REPARSE, the original synchronous non-inheritable handle acquisition, no FILE_SHARE_DELETE, and the existing directory flags. It neither opens nor repairs an occupied leaf.",
+    "The public create_new_private_state_directory validates the exact newly returned handle using the existing Directory validator before granting the handle. Existing private-state APIs and validators are unchanged.",
+    "The Fleet change invokes this API only on Windows initial directory creation; it drops the returned handle before returning to the original staging, synchronization and rename logic. Unix and non-Windows fallback logic are unchanged.",
+    "The manifest adds only the Windows codex-utils-path dependency. Actual generated locks and compiler qualification remain separate.",
+    "The three test files retain every original line in order. Added Windows registration checks all nine real produced owner directories with the existing-only private validator, rather than reconstructing test leaves.",
+    "The three new low-level cases check occupied private state retains security and payload, restricted existing security is not repaired, and a junction does not first create a redirected leaf. The junction fixture failure remains a failure, not a skip."
+  ],
+  "boundaries": {
+    "fixture_only_rebuild_proposal_adopted": false,
+    "full_existing_security_backend_reaudit": false,
+    "foreign_or_non_ntfs_support_claimed": false,
+    "cargo_or_bazel_generated": false,
+    "compiler_executed": false,
+    "native_tests_executed": false,
+    "old_native_results_reused": false,
+    "combined_qualification_required": true
+  },
+  "remaining": "Run the original committed lock/format gates and real platform owner suites on the combined source. This static review does not establish a platform pass or close other Windows state, owner, or scientific gates."
+}

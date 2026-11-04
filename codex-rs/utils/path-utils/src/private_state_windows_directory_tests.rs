@@ -146,3 +146,22 @@ fn rejects_ancestor_substitution_at_retained_open() -> io::Result<()> {
     assert_eq!((denied, redirected), (true, false));
     Ok(())
 }
+
+#[test]
+fn create_new_rejects_junction_without_creating_redirected_leaf() -> io::Result<()> {
+    let temporary = tempfile::tempdir()?;
+    let outside = temporary.path().join("outside");
+    let alias = temporary.path().join("alias");
+    fs::create_dir(&outside)?;
+    junction(&outside, &alias)?;
+    let outside_leaf = outside.join("registry");
+    assert!(!outside_leaf.try_exists()?);
+    let result = super::super::create_new_private_state_directory(&alias.join("registry"));
+    let denied = result.is_err();
+    drop(result);
+    let created = outside_leaf.try_exists()?;
+    fs::remove_dir(&alias)?;
+    assert!(denied, "creation must refuse a reparse ancestor");
+    assert!(!created, "creation must not touch the redirected leaf");
+    Ok(())
+}

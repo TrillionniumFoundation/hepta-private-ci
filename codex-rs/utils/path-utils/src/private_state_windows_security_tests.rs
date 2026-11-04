@@ -273,3 +273,59 @@ fn relative_root_uses_one_absolute_spelling_for_create_and_open() {
     validate_private_owner_and_dacl(&directory).expect("private directory ownership");
     validate_private_owner_and_dacl(&child).expect("private child ownership");
 }
+
+#[test]
+fn create_new_directory_refuses_existing_private_state_without_mutation() {
+    let temporary = tempfile::tempdir().expect("tempdir");
+    let root = temporary.path().join("owner");
+    let directory = create_new_private_state_directory(&root).expect("new private directory");
+    let mut child = open_private_state_child(&directory, "state", PrivateFileAccess::Create)
+        .expect("private child");
+    std::io::Write::write_all(&mut child, b"retained state").expect("write original state");
+    child.sync_all().expect("flush original state");
+    let before = descriptor(&directory).expect("original directory security");
+    let error =
+        create_new_private_state_directory(&root).expect_err("existing owner must be refused");
+    assert_eq!(error.kind(), io::ErrorKind::AlreadyExists);
+    assert_eq!(
+        descriptor(&directory).expect("after refused creation"),
+        before
+    );
+    assert_eq!(
+        std::fs::read(root.join("state")).expect("retained bytes"),
+        b"retained state"
+    );
+    validate_private_owner_and_dacl(&directory).expect("original private owner and DACL");
+}
+
+#[test]
+fn create_new_directory_does_not_repair_existing_restricted_security() {
+    let temporary = tempfile::tempdir().expect("tempdir");
+    let root = temporary.path().join("restricted");
+    let wide = wide_path(&root).expect("wide root");
+    with_private_security(|security| {
+        read_only_descriptor(security)?;
+        if unsafe { CreateDirectoryW(wide.as_ptr(), security) } == 0 {
+            return Err(io::Error::last_os_error());
+        }
+        Ok(())
+    })
+    .expect("read-only fixture directory");
+    let directory = OpenOptions::new()
+        .read(true)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+        .open(&root)
+        .expect("read descriptor handle");
+    let before = descriptor(&directory).expect("original restricted security");
+    assert!(create_new_private_state_directory(&root).is_err());
+    assert_eq!(
+        descriptor(&directory).expect("after refused creation"),
+        before
+    );
+    assert_eq!(
+        std::fs::read_dir(&root)
+            .expect("original empty directory")
+            .count(),
+        0
+    );
+}

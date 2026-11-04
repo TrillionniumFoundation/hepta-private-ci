@@ -117,6 +117,16 @@ pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
     Ok(directory)
 }
 
+/// Creates a new private directory, refusing any existing leaf.
+///
+/// The explicit owner and protected descriptor are supplied to the same native
+/// no-reparse acquisition. Existing objects are never opened, adopted or repaired.
+pub fn create_new_private_state_directory(root: &Path) -> io::Result<File> {
+    let directory = directory::create_new(root)?;
+    validate_handle(&directory, HandleKind::Directory)?;
+    Ok(directory)
+}
+
 /// Opens one normal-name child relative to the retained private directory.
 pub fn open_private_state_child(
     directory: &File,

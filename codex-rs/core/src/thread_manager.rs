@@ -420,12 +420,41 @@ impl Drop for StartingThreadSpawnGuard {
 }
 
 #[cfg(test)]
-#[derive(Default)]
+const STARTUP_DIAGNOSTIC_CAPACITY: usize = 16;
+
+#[cfg(test)]
+type ThreadStartupProgress = (
+    &'static str,
+    std::time::Duration,
+    Option<ThreadId>,
+    Option<ThreadId>,
+);
+
+#[cfg(test)]
+#[derive(Debug)]
 pub(crate) struct ThreadStartupTestHook {
     entered: AtomicBool,
     entered_notify: Notify,
     released: AtomicBool,
     released_notify: Notify,
+    observed_since: std::time::Instant,
+    progress: std::sync::Mutex<Vec<ThreadStartupProgress>>,
+    dropped_observations: std::sync::atomic::AtomicUsize,
+}
+
+#[cfg(test)]
+impl Default for ThreadStartupTestHook {
+    fn default() -> Self {
+        Self {
+            entered: AtomicBool::default(),
+            entered_notify: Notify::default(),
+            released: AtomicBool::default(),
+            released_notify: Notify::default(),
+            observed_since: std::time::Instant::now(),
+            progress: std::sync::Mutex::new(Vec::with_capacity(STARTUP_DIAGNOSTIC_CAPACITY)),
+            dropped_observations: std::sync::atomic::AtomicUsize::default(),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -1782,6 +1811,35 @@ impl ThreadManager {
 
 impl ThreadManagerState {
     #[cfg(test)]
+    pub(crate) fn record_startup_before_delivery_for_tests(
+        &self,
+        phase: &'static str,
+        parent_thread_id: Option<ThreadId>,
+        thread_id: Option<ThreadId>,
+    ) {
+        // Observation must never block or print on the timed startup path.
+        let hook = match self.startup_before_delivery_hook.try_lock() {
+            Ok(hook) => hook.clone(),
+            Err(_) => return,
+        };
+        if let Some(hook) = hook {
+            if let Ok(mut progress) = hook.progress.try_lock()
+                && progress.len() < STARTUP_DIAGNOSTIC_CAPACITY
+            {
+                progress.push((
+                    phase,
+                    hook.observed_since.elapsed(),
+                    parent_thread_id,
+                    thread_id,
+                ));
+            } else {
+                hook.dropped_observations
+                    .fetch_add(/*val*/ 1, Ordering::Relaxed);
+            }
+        }
+    }
+
+    #[cfg(test)]
     async fn pause_startup_before_finalize_for_tests(&self) {
         let hook = self
             .startup_before_finalize_hook
@@ -2370,6 +2428,14 @@ impl ThreadManagerState {
         let (result_tx, result_rx) = tokio::sync::oneshot::channel();
         let state = Arc::clone(self);
         let agent_transition = request.agent_transition.take();
+        #[cfg(test)]
+        let startup_parent_thread_id = request.parent_thread_id;
+        #[cfg(test)]
+        self.record_startup_before_delivery_for_tests(
+            "spawn-request",
+            request.parent_thread_id,
+            request.options.reserved_thread_id,
+        );
         // Tokio tasks do not inherit the caller's tracing span. Preserve it explicitly so the
         // cancellation-safe owner remains part of the request's startup trace after detaching.
         tokio::spawn(
@@ -2378,6 +2444,15 @@ impl ThreadManagerState {
                 let owned_result = state
                     .spawn_thread_owned(request, Arc::clone(&admission))
                     .await;
+                #[cfg(test)]
+                state.record_startup_before_delivery_for_tests(
+                    "delivery",
+                    startup_parent_thread_id,
+                    owned_result
+                        .as_ref()
+                        .ok()
+                        .map(|owned| owned.new_thread.thread_id),
+                );
                 #[cfg(test)]
                 state.pause_startup_before_delivery_for_tests().await;
                 let (result, cleanup) = match owned_result {
@@ -2472,6 +2547,12 @@ impl ThreadManagerState {
             }
         };
         let session_reserved_thread_id = (!is_resumed_thread).then_some(thread_id);
+        #[cfg(test)]
+        self.record_startup_before_delivery_for_tests(
+            "owner-identity",
+            immediate_parent_thread_id,
+            Some(thread_id),
+        );
         if let Some(parent_thread_id) = immediate_parent_thread_id {
             self.ensure_thread_not_hard_delete_fenced(parent_thread_id)
                 .await?;
@@ -2552,6 +2633,12 @@ impl ThreadManagerState {
             starting.retain(|runtime| runtime.strong_count() != 0);
             starting.push(Arc::downgrade(&source_changed_during_startup));
         }
+        #[cfg(test)]
+        self.record_startup_before_delivery_for_tests(
+            "session-spawn",
+            immediate_parent_thread_id,
+            Some(thread_id),
+        );
         let session_spawn = Session::spawn(SessionSpawnArgs {
             config,
             allow_provider_model_fallback,
@@ -2595,6 +2682,12 @@ impl ThreadManagerState {
                 codex_sandboxing::WindowsSandboxProxySettingsMode::Reconcile,
         })
         .await;
+        #[cfg(test)]
+        self.record_startup_before_delivery_for_tests(
+            "session-returned",
+            immediate_parent_thread_id,
+            Some(thread_id),
+        );
         let (session, io) = match session_spawn {
             Ok(spawned) => spawned,
             Err(error) => {
@@ -2618,6 +2711,12 @@ impl ThreadManagerState {
         {
             session.services.mcp_runtime.enable_full_access_form_input();
         }
+        #[cfg(test)]
+        self.record_startup_before_delivery_for_tests(
+            "finalize",
+            immediate_parent_thread_id,
+            Some(thread_id),
+        );
         let finalized = match self
             .finalize_thread_spawn(
                 session,
@@ -2637,6 +2736,12 @@ impl ThreadManagerState {
             }
         };
         let new_thread = finalized.new_thread;
+        #[cfg(test)]
+        self.record_startup_before_delivery_for_tests(
+            "registered",
+            immediate_parent_thread_id,
+            Some(new_thread.thread_id),
+        );
         if source_changed_during_startup.load(Ordering::Acquire) {
             new_thread.thread.session.request_mcp_runtime_refresh();
         }

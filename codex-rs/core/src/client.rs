@@ -390,8 +390,20 @@ impl WebsocketConnectionIdentity {
         beta_features_header: Option<&str>,
         responses_metadata: &CodexResponsesMetadata,
     ) -> std::result::Result<Self, ApiError> {
+        // Prewarm prepares this transport for the following turn. Request kind
+        // and turn lineage vary per request, so normalize only this comparison
+        // copy; wire metadata and recovery fingerprints keep their real values.
+        let mut connection_metadata = responses_metadata.clone();
+        if matches!(
+            connection_metadata.request_kind,
+            Some(CodexResponsesRequestKind::Prewarm)
+        ) {
+            connection_metadata.request_kind = Some(CodexResponsesRequestKind::Turn);
+        }
+        connection_metadata.parent_turn_id = None;
+        connection_metadata.root_turn_id = None;
         let compatibility_projection_json =
-            serde_json::to_vec(&responses_metadata.turn_recovery_compatibility_projection())
+            serde_json::to_vec(&connection_metadata.turn_recovery_compatibility_projection())
                 .map_err(|error| {
                     ApiError::Stream(format!(
                         "failed to bind websocket compatibility identity: {error}"

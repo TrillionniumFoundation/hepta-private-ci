@@ -1,0 +1,32 @@
+2026-11-04T04:43:22.3551858Z ##[group]Bazel test log tail for //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test
+2026-11-04T04:43:22.3552253Z exec ${PAGER:-/usr/bin/less} "$0" || exit 1
+2026-11-04T04:43:22.3552616Z Executing tests from //codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test
+2026-11-04T04:43:22.3553028Z -----------------------------------------------------------------------------
+2026-11-04T04:43:22.3553235Z 
+2026-11-04T04:43:22.3553351Z running 13 tests
+2026-11-04T04:43:22.3553591Z test cognitive_store_unavailable_fails_closed_before_provider ... ok
+2026-11-04T04:43:22.3553974Z test five_real_agents_survive_one_automation_store_failure_without_peer_stall ... ok
+2026-11-04T04:43:22.3554358Z test five_running_agents_share_only_with_the_explicit_consumer ... ok
+2026-11-04T04:43:22.3554979Z test real_agentd_external_gpt53_spark_read_only_smoke ... ignored, set HEPTA_EXTERNAL_CODEX_AUTH_JSON to run the bounded GPT-5.3 Spark provider smoke
+2026-11-04T04:43:22.3555534Z test real_agentd_final_use_revalidation_rejects_concurrent_tombstone ... ok
+2026-11-04T04:43:22.3556095Z test real_agentd_local_memory_review_hides_host_tombstone_after_reopen ... ignored, qualification profile runs the separate bounded cognitive-write E2E
+2026-11-04T04:43:22.3556818Z test real_agentd_local_memory_review_is_read_only_and_replayable ... ignored, qualification profile runs the separate bounded cognitive-write E2E
+2026-11-04T04:43:22.3557529Z test real_agentd_loopback_provider_read_only_smoke ... ignored, set HEPTA_LOCAL_PROVIDER_BASE_URL and HEPTA_LOCAL_PROVIDER_MODEL for a loopback model smoke
+2026-11-04T04:43:22.3558110Z test real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends ... FAILED
+2026-11-04T04:43:22.3558537Z test running_consumer_observes_owner_control_grant_and_revoke_without_restart ... ok
+2026-11-04T04:43:22.3558958Z test runtime_automation_store_failure_does_not_end_real_agentd_or_normal_turns ... ok
+2026-11-04T04:43:22.3559333Z test two_real_agentd_app_servers_never_cross_recall ... ok
+2026-11-04T04:43:22.3559675Z test unavailable_automation_store_keeps_real_agentd_and_app_server_ready ... ok
+2026-11-04T04:43:22.3559908Z 
+2026-11-04T04:43:22.3559980Z failures:
+2026-11-04T04:43:22.3560069Z 
+2026-11-04T04:43:22.3560308Z ---- real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends stdout ----
+2026-11-04T04:43:22.3560713Z Error: current projection rows did not match their generation receipt
+2026-11-04T04:43:22.3560928Z 
+2026-11-04T04:43:22.3560932Z 
+2026-11-04T04:43:22.3560997Z failures:
+2026-11-04T04:43:22.3561235Z     real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends
+2026-11-04T04:43:22.3561451Z 
+2026-11-04T04:43:22.3561653Z test result: FAILED. 8 passed; 1 failed; 4 ignored; 0 measured; 0 filtered out; finished in 25.74s
+2026-11-04T04:43:22.3561917Z 
+2026-11-04T04:43:22.3562106Z ##[endgroup]

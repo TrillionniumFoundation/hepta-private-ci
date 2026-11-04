@@ -363,6 +363,7 @@ crate.annotation(
         "x86_64-pc-windows-gnullvm": ["pure"],
     },
 )
+
 # Resolve the explicit desktop variant's optional path dependency and features
 # on the Linux platforms that support the original authenticated owner transport.
 # The default Agentd Bazel library still does not enable this variant.
@@ -375,7 +376,6 @@ crate.annotation(
         "x86_64-unknown-linux-musl": ["desktop-objective-ui"],
     },
 )
-
 crate.annotation(
     crate = "zstd-sys",
     gen_build_script = "on",

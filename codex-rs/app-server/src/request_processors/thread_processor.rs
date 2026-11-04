@@ -4081,6 +4081,8 @@ impl ThreadRequestProcessor {
 
         let response_history = thread_history.clone();
         let resume_environments = persisted_runtime_environment.map(|(cwd, workspace_roots)| {
+            let workspace_roots =
+                workspace_roots.unwrap_or_else(|| config.effective_workspace_roots());
             self.thread_manager
                 .default_environment_selections(&cwd, &workspace_roots)
         });
@@ -4326,7 +4328,7 @@ impl ThreadRequestProcessor {
         typesafe_overrides: &mut ConfigOverrides,
     ) -> (
         Option<ThreadMetadata>,
-        Option<(AbsolutePathBuf, Vec<AbsolutePathBuf>)>,
+        Option<(AbsolutePathBuf, Option<Vec<AbsolutePathBuf>>)>,
     ) {
         let InitialHistory::Resumed(resumed_history) = thread_history else {
             return (None, None);
@@ -4334,6 +4336,14 @@ impl ThreadRequestProcessor {
         let mut persisted_runtime_environment = None;
         if let Some(persisted_settings) = latest_persisted_resume_settings(&resumed_history.history)
         {
+            // Named profiles are resolved from current configuration. Their
+            // display identity does not pin the permissions or roots they had
+            // when the history was written. The ':' prefix is reserved for
+            // built-in profiles, whose persisted runtime roots remain valid.
+            let has_named_persisted_profile = persisted_settings
+                .active_permission_profile
+                .as_ref()
+                .is_some_and(|profile| !profile.id.starts_with(':'));
             let has_raw_cwd_override = request_overrides
                 .as_ref()
                 .is_some_and(|overrides| overrides.contains_key("cwd"));
@@ -4345,12 +4355,28 @@ impl ThreadRequestProcessor {
                 && !has_raw_cwd_override
                 && !has_raw_workspace_roots_override
             {
-                persisted_runtime_environment = persisted_settings
-                    .runtime_cwd
-                    .clone()
-                    .zip(persisted_settings.runtime_workspace_roots.clone());
+                if has_named_persisted_profile {
+                    // Resolve relative entries in the current profile against
+                    // the retained runtime cwd, without restoring stale roots.
+                    typesafe_overrides.cwd = persisted_settings
+                        .runtime_cwd
+                        .as_ref()
+                        .map(|cwd| cwd.as_path().to_path_buf());
+                    persisted_runtime_environment = persisted_settings
+                        .runtime_cwd
+                        .clone()
+                        .map(|cwd| (cwd, None));
+                } else {
+                    persisted_runtime_environment = persisted_settings
+                        .runtime_cwd
+                        .clone()
+                        .zip(persisted_settings.runtime_workspace_roots.clone().map(Some));
+                }
             }
-            if typesafe_overrides.workspace_roots.is_none() && !has_raw_workspace_roots_override {
+            if typesafe_overrides.workspace_roots.is_none()
+                && !has_raw_workspace_roots_override
+                && !has_named_persisted_profile
+            {
                 typesafe_overrides.workspace_roots =
                     persisted_settings.runtime_workspace_roots.clone();
             }

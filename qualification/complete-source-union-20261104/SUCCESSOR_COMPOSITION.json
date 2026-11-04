@@ -1,0 +1,411 @@
+{
+  "schema_version": 1,
+  "base": {
+    "commit": "0cf81d65646b8907e42e781ea35a28437b5b0054",
+    "tree": "24b1c33ca0f666a75e9899605a7e0eacc59ed160",
+    "branch": "integration/private-ci-complete-source-20261104-gpt6"
+  },
+  "status": "SOURCE_REVIEWED_PENDING_ACTUAL_GENERATION_AND_ORIGINAL_PRODUCT_GATES",
+  "frozen_owner_sources": [
+    {
+      "commit": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "role": "Frozen 27-path r2 composition, explicitly resolved below."
+    },
+    {
+      "commit": "2ab0e25ba649664b9fb8e77a09aa6da10c8e5449",
+      "role": "Existing selected-executor HTTP MCP projection at publication; exact original eager fixture retained."
+    },
+    {
+      "commit": "f7ef4ffc2962a8f842ad905f6e0278c1e87bf2ac",
+      "role": "Test-only bounded fork-startup phase observations."
+    },
+    {
+      "commit": "5d9be0de14fc9a96b1df5071f57c156281f36705",
+      "role": "Original resume cumulative phases and successful output retention."
+    },
+    {
+      "commit": "f2d0fcd44cedd662f5cbccff1278ade26354f350",
+      "role": "Exact native Windows process-tree fixture, with now-unused base64 dev edge removed after complete package source review. Original source/merge Git33 Queue35 controls3 passed; separate rejection-control report cleanup failure remains open on that source."
+    }
+  ],
+  "registry_adoption_review": {
+    "source": "0cf81d65646b8907e42e781ea35a28437b5b0054",
+    "tree": "24b1c33ca0f666a75e9899605a7e0eacc59ed160",
+    "run_id": 41777289308,
+    "job_id": 126400487803,
+    "original_metadata_sha256": "f4f9f6a6b08e4a70e9092d3a6ed9743954544726b17939ed9266136810af2142",
+    "projection_blob": "0c5fa56ee4d5c3778305381ae0d328bb35a2b1c1",
+    "projection_sha256": "90e690fd4463222c166e979ae189e725da118247d4d162fd595a55d9273d8459",
+    "independent_run_id": 41778545855,
+    "independent_job_id": 126404487847,
+    "all_18_complete_before_after_records_match_actual_original_resolver": true,
+    "all_19_changed_edges_select_already_present_package_identities": true,
+    "all_changed_edges_within_declared_manifest_requirements": true,
+    "scope": "Exact record and manifest/resolve-node adoption boundary only; full source and prospective merge product gates remain required."
+  },
+  "generator_boundaries": {
+    "strict_controls": 30,
+    "executed_on_this_candidate": false,
+    "original_commands_and_budgets_retained": true,
+    "reviewed_record_changes": 18,
+    "reviewed_actual_edge_changes": 19,
+    "whole_package_identity_bijection_required": true,
+    "committed_first_check_and_no_source_change_required": true
+  },
+  "production_fleet_creation": {
+    "source_review": "37d67e78c76bbcbe9b7f896bc5999443c1bbbdd9",
+    "proof_checkpoint": "ad0c198c51cfb23376b019f3959cb22fe1a3c3f7",
+    "test_only_positive_fixture_reconstruction_rejected": true,
+    "original_agentd_fixture_files_unchanged": true,
+    "independent_source_review": {
+      "blob": "a6556d8e260bb6552b893021a0e09e25f32ee811",
+      "sha256": "d251b554e1dfee4ce919bf83c3281c7bed78752fe898da7be988cf2628bef5ca",
+      "bytes": 6585,
+      "scope": "Complete eight exact source files and four appended Windows controls, static only; native qualification remains required."
+    }
+  },
+  "source_files": [
+    {
+      "path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      "before": "80fa77ff4e39ee6bbf6009593ba2274b7b664a76",
+      "after": "a372c4522156ccf03edb732ea069e6b37e5acc03",
+      "bytes": 13137,
+      "sha256": "7715daa6b6027e73170914e965bb1673df2051d6059ce61ab2338c39f3e91f59"
+    },
+    {
+      "path": ".github/workflows/hepta-operator-acceptance-native.yml",
+      "before": "a485c5da5f4785ede2b40aa42bad5c5511885d2a",
+      "after": "bab92677a76682d21e6dacaa7b0c7c9424664773",
+      "bytes": 8772,
+      "sha256": "7f027a14c0517fc4ffc494d4f471f0cd5a351e7921ca3db721d6d0da16119221"
+    },
+    {
+      "path": ".github/workflows/windows-core-lifecycle.yml",
+      "before": "505ba7353ceb7bb64c6a8227c86a510a2de92106",
+      "after": "14c7fbb6c4970968db07900fc68183bb2e985d56",
+      "bytes": 9848,
+      "sha256": "2aeebcfeb134333168a04b2860c73b4a4349d458acf43d6830285f4769784bc4"
+    },
+    {
+      "path": ".github/workflows/windows-ordinary-consumers.yml",
+      "before": null,
+      "after": "6d3cbfe5532260cd8c6084b39d28f54916153484",
+      "bytes": 10967,
+      "sha256": "99ccd5f569251bc1fd6df65e5c999bfdf82bc30ab1f4daf5283670d3645d7eaf"
+    },
+    {
+      "path": ".github/workflows/windows-retained-recovery.yml",
+      "before": "c134f927f936a9279136eb5fb96cda73684ca7d7",
+      "after": "0e12a0f964e2fed5f680b6eccade09f5fa4a8502",
+      "bytes": 8936,
+      "sha256": "8658fcc81ae07132374556f8eaa921f9d23e5c4797ab4acfdc9e0f0b73d994ba"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "before": "6126faf53271e6108c96394b0217bc763213cf86",
+      "after": "87fa49fcb4c95021ab347ed510bf7645e381e5cc",
+      "bytes": 253831,
+      "sha256": "834d91f0e5a59865e1515f0c6cccd08eeeed2e4537e66d49ab6f9937f6c89181"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "before": "dd7a2a0ac42627200bfbce5a4ddf80e8781439ab",
+      "after": "7806f3c83c77aaae460f0922b0f432b35f363261",
+      "bytes": 194762,
+      "sha256": "d4000b2b22ed87f7a89223ec6ee637679c9ecb7d62015ce56c393d3dffb4f895"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control_tests.rs",
+      "before": "5f3c5ed264d6aca45e1b8588a081620bf710ee0a",
+      "after": "d31bd4d02e11b32c8b2d76f6fd87593235292b05",
+      "bytes": 170571,
+      "sha256": "448974bdd9311c599785f29be8c70531eed4a39f5c54adf459ffaec05e5f4da4"
+    },
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "before": "dcf0ec6e3af8dd1333f3adaff43f3d7ac86e9359",
+      "after": "247de45a878b5e4514990e99b2289fc3dc087a47",
+      "bytes": 162374,
+      "sha256": "564d36eb2ef39e1a6b3e187f2b3b95fbb3fa7d7c87fbc41979e4aa0948778230"
+    },
+    {
+      "path": "codex-rs/core/src/client_tests.rs",
+      "before": "94a0f022eeef7de0f80c21935105d36caac0733f",
+      "after": "06cfae068feebe6692740638f466b0d2bff38293",
+      "bytes": 52806,
+      "sha256": "e34be3a427d886c17d6a447325ca138ad811c0c6ea1d879d1a4002e010a8e600"
+    },
+    {
+      "path": "codex-rs/core/src/codex_thread.rs",
+      "before": "729df0733060a7820045e0738672e800ba535e9f",
+      "after": "2598dfe51a753ef33c570a0994f63ba92569b7f5",
+      "bytes": 48576,
+      "sha256": "69e8a336efbc3962c6df6fda5de20fd41bf26a000f3bd9e5f862e14fe7b844b8"
+    },
+    {
+      "path": "codex-rs/core/src/compact_remote_request.rs",
+      "before": "2d7fe3e59a0ecd2bdcf68a87a0459801971415ac",
+      "after": "ca1d7cd8ee0792fe2adcbb172c748b1255a56c1e",
+      "bytes": 4370,
+      "sha256": "365873afcbf80fd25452f3c99f33a74426300a88c499812c995cd857f0f89c44"
+    },
+    {
+      "path": "codex-rs/core/src/session/turn.rs",
+      "before": "2944d8cb4379d1cee17ab85bc2d06d7a0e1d67c1",
+      "after": "93da15694a96535fff72bc2af02e906bbf036736",
+      "bytes": 132249,
+      "sha256": "510f93eacf16f2ffaaf1bd6190bb028c5ba4b36be5c444f9c51ea5fb8cf68b37"
+    },
+    {
+      "path": "codex-rs/core/src/session_startup_prewarm.rs",
+      "before": "c17b1f5cf69fbf0fb5d2e0d48a0b21799711a28d",
+      "after": "7ba2692577b881a949593ddc32974aa3c0f38926",
+      "bytes": 12859,
+      "sha256": "9178d4d24f7c0339242b6048b20556d844c94f1b06445ec4bfb6fea48c8f9192"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/mod.rs",
+      "before": "a50ef1307acb278fc7b9336cd6517b8a1c180f20",
+      "after": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+      "bytes": 4895,
+      "sha256": "6cfc926f1fb4417554b75f337372fd714fdd3769b0db9db1398bc8a0ffc9938e"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/terminalization_submission.rs",
+      "before": null,
+      "after": "fdc74175cfa71005d16e6932e6bd9361664fb2ba",
+      "bytes": 5177,
+      "sha256": "0960e943d536c2772795fee7bc5dea662d5e28c6a936b06f3aac128e7ed48072"
+    },
+    {
+      "path": "codex-rs/exec-server/src/client.rs",
+      "before": "329cd5a34cb35652fc6314507e80bcfe42c9649c",
+      "after": "d5b5c20eaa846713af5279675efcf2d8f5b11643",
+      "bytes": 119021,
+      "sha256": "d591763a35f89eebc6eb0b62b65cd5c98458f2d70095d8e70d9e26c234956e27"
+    },
+    {
+      "path": "codex-rs/exec-server/src/client_stdio_tests.rs",
+      "before": null,
+      "after": "1f0e145eed988c0940263d54829ceabd3118a8cf",
+      "bytes": 2778,
+      "sha256": "ce5da52187c7301ef70c385740d295c1d94c702a5fd78f920b4ce750b89fb38f"
+    },
+    {
+      "path": "codex-rs/exec-server/src/lib.rs",
+      "before": "8a2616a2001bcbb06b2b9bd1420c274c1c73cb81",
+      "after": "1506b032568d76c30209b8c5533ac867c23cdafc",
+      "bytes": 8881,
+      "sha256": "953de27c339da1816016b04d4288a8d8083aaa64820a38637f49b50ea96ec033"
+    },
+    {
+      "path": "codex-rs/exec/tests/suite/resume.rs",
+      "before": "61129dfa9bb80848adb820ca9fe32b908631bdd4",
+      "after": "0e060357553a50ba116e11f6b4559f6283fec3a7",
+      "bytes": 40050,
+      "sha256": "e804ff600cf661c42eb0f5a550c6a9bc0b08c94504cd3536aa97c85981b3738e"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "before": "98f009ad1a988d673dfd8699e0918cdfa871e44c",
+      "after": "453768525b1f691206658042be46e70aefe95f17",
+      "bytes": 18083,
+      "sha256": "90338a263d02d05801eb8670589bf8d7803fdaadfded919c01d3b41f6f1d7c04"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs",
+      "before": "1b8c80c742cbe03155359e55024fe08acc7d793f",
+      "after": "d48c24ec00130cf9b28c748cde2e7b99dcecabf8",
+      "bytes": 8013,
+      "sha256": "9b6a14360faf6004f72839f55c055a8ce7241e5d4dba5ad77ebba2dee6380576"
+    },
+    {
+      "path": "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+      "before": "01f1544f2245dd0b85a2f94160d97c2bc2e728b8",
+      "after": "802a1d3fa441d9c257a62b4c034d226ff8077db9",
+      "bytes": 20101,
+      "sha256": "9280332de6781b371bc37bc53577e3b31fac3f4fa295365cd5ce5bd24f4f9023"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "before": "87914733764944948a4140be80d88c3158d78468",
+      "after": "b6e83e523821ff8de1fc4016940c6b174d563fa0",
+      "bytes": 18350,
+      "sha256": "ddec2ddca6da9ec977dc0f868b75d6ccedd307ce5b523efce803960008dab3a1"
+    },
+    {
+      "path": "codex-rs/hepta-operator-acceptance/BUILD.bazel",
+      "before": "d4a530911b29ac536eaa6c4908f06c89d88a5997",
+      "after": "378faa58f7dba01891b13bd1661c6231843ca858",
+      "bytes": 2548,
+      "sha256": "5391a254e040928bdc69341f027515d5e457a99f1fe918119a1539d399af3de5"
+    },
+    {
+      "path": "codex-rs/core/src/session/mcp_runtime.rs",
+      "before": "63fa4ff767bd27e0adcdfb32203ec8a3c6e3ecdb",
+      "after": "8fc6fdbc2996550c5fc3b86c2a417840a5c86f9b",
+      "bytes": 16719,
+      "sha256": "535b72b6d78c8c86fb1eafd7a55a2c115e73b8fe1e366a8a4b6de2b5591e6a40"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control/spawn.rs",
+      "before": "3722500c55ac82a216bf6593f86c8d716b74f11c",
+      "after": "809f59b0180e57d1f00f2173ee984ffbe3942cb7",
+      "bytes": 56309,
+      "sha256": "e16bc645a24ed4a68c1b5c754287e9dfefc1afcb3c4714cb78942ff0739cb856"
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager.rs",
+      "before": "d598d7e652254796321de6a16a98ef35c5181365",
+      "after": "78a25e5c91984121992c17949dad77c22585cc5d",
+      "bytes": 119340,
+      "sha256": "8cf3e360281248771a8cd3ede0121403c804a8ac7dfffeae48f033f018d1706b"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "before": "245ae8b907f26b604d8ea9ff8c8c62a7671141c0",
+      "after": "1b7dbe191b8687c7b5f7cbfe8fa6b73578fe2524",
+      "bytes": 12885,
+      "sha256": "1ea0fda2b0ea9d220bdc11f66867d5404fd897a06865344cddebbd905f7b9c18"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "before": "1e7881b34be647ed30c09a7c29ad44f80460c7bc",
+      "after": "0232a88ebe33ae206228a755b0915d0ad94c48d6",
+      "bytes": 27123,
+      "sha256": "d4180ece93d3443e8a6657b603804f3648cb9219d63b6ba82e0042f5b1142bf9"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry.rs",
+      "before": "b17115eb5cffff5f890f34a786534c588d0d3aa5",
+      "after": "af939fb1d879e1503b1f501c26cd527f6fbdba29",
+      "bytes": 21676,
+      "sha256": "b723774a3062552c1d4d267c1bf3ebac81ec218e06a54bf92a6224802fab175b"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/lib.rs",
+      "before": "ad58f0b856d31ab4ea6a2d7fdb140f62925dd8f1",
+      "after": "d908aa39149ac9e00432b77bc5baae61ac2d8197",
+      "bytes": 7851,
+      "sha256": "364a87dd00f54f600d5938ee524c3287b79ca4ab3735c0d8da79b31fc1ee8957"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+      "before": "1ca4611e7b928a382ae9761f094416db42780371",
+      "after": "44c5ceea8166f84c0d682c362fe9d5da48cb66ce",
+      "bytes": 8331,
+      "sha256": "7bafc016159601063dd4066f652f9fa547eb41c33916e9097a049b8707af95b4"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/Cargo.toml",
+      "before": "a271fa91b84d9ea0100703ff491c6826b0aabc6e",
+      "after": "139c0d4836edca041d2bdf6c56b63a5cbd035867",
+      "bytes": 709,
+      "sha256": "c57700487a49fd26f26ef1bb0255bab6192ef0cc1d117fbcbd5650774ff000e1"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+      "before": "5ee4110ac4bd633cc07bbca3ebc4f4e0b6ff67ff",
+      "after": "39ff5ed27fa3777953fd7ec5a63e8c684e987152",
+      "bytes": 12388,
+      "sha256": "f82fa6abf59ea71cc99551bf61222d3b50f9b93eba1a6f8d7062d04bb5cd452e"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory_tests.rs",
+      "before": "1e0f78fdf05b7aa3e315127ef640e6af343ae431",
+      "after": "6951e4ad310fb01a3932f66a6ed845b7186667ee",
+      "bytes": 5667,
+      "sha256": "f94275c6906d7601b178095fc2b2a33d185880772baec1bc0c97d3322bf9f2c5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+      "before": "e7a2e3732ccfa954207a787d2e26dc58987a0e73",
+      "after": "c2ecc470dadc6a30ce5246ee689d70f3042ea009",
+      "bytes": 26352,
+      "sha256": "ef1130e8d18845498fc8edb1769f2d4475782fe1209efb8f7840a336b29bf0b0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "before": "3d6c567a32cb8486702690778f9afdb292a3bda0",
+      "after": "3d8cc817959064df9e9f465f3bc7420efe2d97ab",
+      "bytes": 98497,
+      "sha256": "0e28557766ceea76a03ff4de80b9e6b04d8e8fa7cd700f6847d1c5402abed25a"
+    },
+    {
+      "path": "MODULE.bazel",
+      "before": "65f4f2acfbfd22202d19647f55d3bdedf2c7eefc",
+      "after": "d4e8e6ea2a696094c3c718cb072c155dc705025b",
+      "bytes": 23134,
+      "sha256": "c50fe7e64e29a9adc37ca787ded04a9370859c66863c0a4583427db7681a80f5"
+    },
+    {
+      "path": "codex-rs/core-plugins/src/startup_sync_tests.rs",
+      "before": "6859d6b7254727a27df2901dbd2170640e29d8ff",
+      "after": "fddc640f0e4245912c6c31509a891b3a62b4cdb4",
+      "bytes": 55555,
+      "sha256": "112e0be718eb4143e08bc7186702b72abb71da1eb47ad4938167d19eb7c1684c"
+    },
+    {
+      "path": "defs.bzl",
+      "before": "89afabbeb53945ca70025288ffbbb86dcfe26a27",
+      "after": "97f923babe58c62d3b3e1479a9495a2f172261dc",
+      "bytes": 35348,
+      "sha256": "55161221e269392591bd72e944f8937985caa655f4444c5274a2eddaa75407f7"
+    },
+    {
+      "path": "codex-rs/git-utils/src/git_process_tests.rs",
+      "before": "9d6bdfc1e4911043e7abdcdb8d31e2e28ac5e311",
+      "after": "01fd218228d447b6c0094e73030da0361e4d0693",
+      "bytes": 10588,
+      "sha256": "9149f11264feb27427bcfbb5571182be8aec6daf62816fc65e9167f0442556d4"
+    },
+    {
+      "path": "codex-rs/git-utils/Cargo.toml",
+      "before": "4e6545c1f1400f6b4dc45ca0881652d7f63ee268",
+      "after": "a0bd7872854cffa38dd559805a1dea2d06db85ae",
+      "bytes": 1051,
+      "sha256": "1b812bba7cc7dfa5339ab3ddb5e499e35fcafe42a6489e1e7a43208b291a816d"
+    }
+  ],
+  "original_generated_formatter_outputs": [
+    {
+      "path": "MODULE.bazel",
+      "encoding": "utf-8",
+      "bytes": 23134,
+      "git": "d4e8e6ea2a696094c3c718cb072c155dc705025b",
+      "sha256": "c50fe7e64e29a9adc37ca787ded04a9370859c66863c0a4583427db7681a80f5",
+      "prefix": "ORIGINAL_FORMATTED_FILE"
+    },
+    {
+      "path": "codex-rs/core-plugins/src/startup_sync_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 55555,
+      "git": "fddc640f0e4245912c6c31509a891b3a62b4cdb4",
+      "sha256": "112e0be718eb4143e08bc7186702b72abb71da1eb47ad4938167d19eb7c1684c",
+      "prefix": "ORIGINAL_FORMATTED_FILE"
+    },
+    {
+      "path": "defs.bzl",
+      "encoding": "utf-8",
+      "bytes": 35348,
+      "git": "97f923babe58c62d3b3e1479a9495a2f172261dc",
+      "sha256": "55161221e269392591bd72e944f8937985caa655f4444c5274a2eddaa75407f7",
+      "prefix": "ORIGINAL_FORMATTED_FILE"
+    }
+  ],
+  "locks": {
+    "before_cargo": "d6c49a2eed9bddda69d9a46726014c5262c7b310",
+    "before_bazel": "dca2622a029cad67b0f9a947814cf3ea45d0e39d",
+    "manual_changes": 0,
+    "previous_proposal_not_adopted": true
+  },
+  "boundaries": {
+    "full_product_pass": false,
+    "protected_main_advanced": false,
+    "activation": false,
+    "library_original_deletions": 0,
+    "library_formal_pushed": 5889,
+    "library_expected": 6116,
+    "library_extras_separate": 49
+  }
+}

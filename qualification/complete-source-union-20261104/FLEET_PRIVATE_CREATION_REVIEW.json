@@ -1,0 +1,597 @@
+{
+  "schema_version": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_base": "0cf81d65646b8907e42e781ea35a28437b5b0054",
+  "purpose": "Repair production new Fleet private-directory creation on Windows; do not repair already-existing ownership or DACL.",
+  "status": "SOURCE_CANDIDATE_PENDING_ORIGINAL_WINDOWS_NATIVE_AND_GENERATED_LOCK",
+  "production_contract": {
+    "fleet_root_type_blob": "30d3a88e199578ace3e2fb0387e86d0c467e3806",
+    "contract": "HeptaFleetRoot validates absolute non-root host path syntax. FleetRegistry::initialize creates ordinary fleet parent directories and checks physical directory types; it does not establish or require a prequalified private-parent descriptor.",
+    "fleet_registry_base": "b17115eb5cffff5f890f34a786534c588d0d3aa5",
+    "agentd_runtime_blob": "7f7241d8d7b1ad978cd6a07db785f3b0e4af612d",
+    "runtime": "Actual Agentd startup invokes CognitiveStore::open on the registered layout after generation checks. No intermediate private-directory reconstruction was found in this path.",
+    "cognitive_windows_blob": "83225e8fd04a575ac816544aceedda82c7701d1f",
+    "old_ownerlocal_source": "fb0db17119e862e225661b9b9ec6b05bd6bd1504",
+    "old_ownerlocal_limitation": "The three Agentd fixture blobs equal frozen e516, but this older passing source has no Windows cognitive provider. Its native success cannot qualify the new strict owner integration.",
+    "new_owner_fixture_candidate": "0b835841f37156f6b4b51f1d5ef9ae983c017b0d",
+    "new_owner_fixture_boundary": "Parent reported a private-parent fixture proposal. This candidate does not adopt it: parent DACL inheritance does not establish explicit child token-user ownership, and public FleetRoot/initialize contracts do not require that external private-parent bootstrap."
+  },
+  "original_failure": {
+    "source": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+    "checkout": "4109e2a9610816ddf05cf893d0cbcced1a0aceb2",
+    "tree": "d237c3669d3c11f2ef11c03250ce39ca8d674044",
+    "checkout_tree_equals_source": true,
+    "run_id": 41771368391,
+    "job_id": 126384287822,
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+    "log": {
+      "bytes": 450953,
+      "sha256": "b8af16f766e895a408ab69554d4f6df27b1213ac78cd55828b778086ad27ae91",
+      "git_blob": "bfe24e8bcbd84df44fb7d3ab56a0971dc468a0e7"
+    },
+    "batches": [
+      {
+        "outcome": "FAILED",
+        "passed": 72,
+        "failed": 2,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 98,
+        "duration": "13.20s"
+      },
+      {
+        "outcome": "FAILED",
+        "passed": 73,
+        "failed": 3,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 96,
+        "duration": "4.16s"
+      },
+      {
+        "outcome": "ok",
+        "passed": 22,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 150,
+        "duration": "6.63s"
+      }
+    ],
+    "unique_case_count": 172,
+    "passed": 167,
+    "failed": 5,
+    "ignored": 0,
+    "failures": [
+      "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit",
+      "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+      "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation",
+      "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store",
+      "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane"
+    ],
+    "failure": "Unavailable(\"private state owner or DACL is unsafe\")"
+  },
+  "production_design": [
+    "Add a creation-only DirectoryOpen::CreateNew mode with FILE_CREATE=2 to the existing NtCreateFile helper. Existing Create/ExistingRead/ExistingReadWrite/ExistingPathIdentity mode outcomes are retained.",
+    "Reuse the exact current-user protected creation descriptor, OBJ_DONT_REPARSE, FILE_OPEN_REPARSE_POINT, FILE_DIRECTORY_FILE, synchronous access, no-delete-sharing policy, and returned-handle type/owner/DACL validation. No chmod, owner reset, ACL repair, path precheck-then-create, or existing-state fallback is added.",
+    "Fleet Windows private-directory creation now calls this exclusive creator and drops the validated handle before its original staging/rename sequence. Existing occupied names remain errors. Unix and other-platform implementations are unchanged.",
+    "Existing private directory permission/validation and synchronization functions are unchanged. This patch does not qualify unsupported filesystems, repair legacy unsafe roots, or add Windows directory-entry power-loss guarantees."
+  ],
+  "dependency_delta": {
+    "kind": "normal target dependency",
+    "package": "codex-hepta-fleet",
+    "target": "cfg(windows)",
+    "dependency": "codex-utils-path",
+    "workspace": true,
+    "new_package_versions": 0,
+    "lock_requirement": "Resolve actual Cargo graph and regenerate MODULE.bazel.lock on the composed root candidate; no handwritten lock patch."
+  },
+  "original_tests": {
+    "agentd_files_changed": 0,
+    "all_three_original_agentd_fixture_blobs_retained": true,
+    "original_assertions_budgets_ignores_removed": 0,
+    "test_file_rule": "Each of the three modified test files starts with its exact complete original bytes; four Windows-native regression cases are appended.",
+    "new_windows_cases": [
+      "registry::tests::fresh_agent_roots_satisfy_private_owner_contract",
+      "private_state_windows::security_tests::create_new_directory_refuses_existing_private_state_without_mutation",
+      "private_state_windows::security_tests::create_new_directory_does_not_repair_existing_restricted_security",
+      "private_state_windows::directory::tests::create_new_rejects_junction_without_creating_redirected_leaf"
+    ],
+    "expected_validation": "Original complete path-utils, Fleet and Agentd owning targets, current compiled inventory including additions; retain original negative reparse/ACL/hardlink/acquisition/identity/generation cases. No source review is counted as execution."
+  },
+  "not_adopted": {
+    "reason": "Fixture-only reconstruction would make five positive fixtures valid while leaving actual Fleet registration incompatible with the strict cognitive owner.",
+    "fixture_only_blobs": [
+      {
+        "path": "codex-rs/hepta-agentd/src/automation_service_tests.rs",
+        "blob": "5113ebfd109d49d27bcc0ba81ae508fc6789c5dc",
+        "sha256": "4aa1c8dd93dd07c70bb4e8c49de927fa6ff57197e236c5cf8a115b04864f7ec4",
+        "bytes": 14531
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+        "blob": "ca2961188e794400626fbeda1e8d765fd742beae",
+        "sha256": "067e60481cb5d5a72d72e451a0437e318fbc8624b4f6991c90d68487457b1c8a",
+        "bytes": 23947
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+        "blob": "1ed388fadbf40d5864f99214668f72f9b4f7ba60",
+        "sha256": "f7135bc026691874e929ab11435357479f49050444957791c186d972a59f8145",
+        "bytes": 37568
+      }
+    ],
+    "tests_executed": 0
+  },
+  "official_references": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntcreatefile",
+      "claim": "FILE_CREATE refuses an occupied name; directory creation permits this disposition."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/dotnet/api/microsoft.windows.eventtracing.disk.kernelfilemode",
+      "claim": "CreateNew is disposition value 2."
+    }
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "base_blob": "245ae8b907f26b604d8ea9ff8c8c62a7671141c0",
+      "candidate_blob": "1b7dbe191b8687c7b5f7cbfe8fa6b73578fe2524",
+      "bytes": 12885,
+      "sha256": "1ea0fda2b0ea9d220bdc11f66867d5404fd897a06865344cddebbd905f7b9c18",
+      "full_byte_readback": true,
+      "changes": [
+        {
+          "old_start": 349,
+          "new_start": 349,
+          "removed": [],
+          "added": [
+            "#[cfg(windows)]",
+            "#[test]",
+            "fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistryError> {",
+            "    let fleet = TestFleet::new()?;",
+            "    let record = fleet",
+            "        .registry",
+            "        .register(fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?)?;",
+            "    // Exercise production registration below an ordinary temporary parent.",
+            "    // This is the same existing-object owner validator used by CognitiveStore.",
+            "    for root in [",
+            "        record.layout.agent_root(),",
+            "        record.layout.home_root(),",
+            "        record.layout.run_root(),",
+            "        record.layout.logs_root(),",
+            "        record.layout.releases_root(),",
+            "        record.layout.cognitive_root(),",
+            "        record.layout.matrix_root(),",
+            "        record.layout.matrix_secrets_root(),",
+            "        record.layout.automation_root(),",
+            "    ] {",
+            "        drop(codex_utils_path::open_existing_private_state_directory(root)?);",
+            "    }",
+            "    assert_eq!(",
+            "        fleet.registry.load_agent(&record.manifest.agent_id)?,",
+            "        record",
+            "    );",
+            "    Ok(())",
+            "}",
+            ""
+          ],
+          "before": [
+            "    Ok(())",
+            "}",
+            ""
+          ],
+          "after": []
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "base_blob": "1e7881b34be647ed30c09a7c29ad44f80460c7bc",
+      "candidate_blob": "0232a88ebe33ae206228a755b0915d0ad94c48d6",
+      "bytes": 27123,
+      "sha256": "d4180ece93d3443e8a6657b603804f3648cb9219d63b6ba82e0042f5b1142bf9",
+      "full_byte_readback": true,
+      "changes": [
+        {
+          "old_start": 119,
+          "new_start": 119,
+          "removed": [],
+          "added": [
+            "/// Creates a new private directory, refusing any existing leaf.",
+            "///",
+            "/// The explicit owner and protected descriptor are supplied to the same native",
+            "/// no-reparse acquisition. Existing objects are never opened, adopted or repaired.",
+            "pub fn create_new_private_state_directory(root: &Path) -> io::Result<File> {",
+            "    let directory = directory::create_new(root)?;",
+            "    validate_handle(&directory, HandleKind::Directory)?;",
+            "    Ok(directory)",
+            "}",
+            ""
+          ],
+          "before": [
+            "    Ok(directory)",
+            "}",
+            ""
+          ],
+          "after": [
+            "/// Opens one normal-name child relative to the retained private directory.",
+            "pub fn open_private_state_child(",
+            "    directory: &File,"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry.rs",
+      "base_blob": "b17115eb5cffff5f890f34a786534c588d0d3aa5",
+      "candidate_blob": "af939fb1d879e1503b1f501c26cd527f6fbdba29",
+      "bytes": 21676,
+      "sha256": "b723774a3062552c1d4d267c1bf3ebac81ec218e06a54bf92a6224802fab175b",
+      "full_byte_readback": true,
+      "changes": [
+        {
+          "old_start": 531,
+          "new_start": 531,
+          "removed": [
+            "#[cfg(not(unix))]"
+          ],
+          "added": [
+            "#[cfg(windows)]",
+            "fn create_private_directory(path: &Path) -> std::io::Result<()> {",
+            "    // Registration owns creation, not repair of an existing owner directory.",
+            "    // FILE_CREATE preserves create_dir's occupied-name refusal while assigning",
+            "    // the current user explicitly, including for elevated Windows tokens.",
+            "    drop(codex_utils_path::create_new_private_state_directory(path)?);",
+            "    Ok(())",
+            "}",
+            "",
+            "#[cfg(not(any(unix, windows)))]"
+          ],
+          "before": [
+            "    builder.mode(0o700).create(path)",
+            "}",
+            ""
+          ],
+          "after": [
+            "fn create_private_directory(path: &Path) -> std::io::Result<()> {",
+            "    std::fs::create_dir(path)",
+            "}"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/lib.rs",
+      "base_blob": "ad58f0b856d31ab4ea6a2d7fdb140f62925dd8f1",
+      "candidate_blob": "d908aa39149ac9e00432b77bc5baae61ac2d8197",
+      "bytes": 7851,
+      "sha256": "364a87dd00f54f600d5938ee524c3287b79ca4ab3735c0d8da79b31fc1ee8957",
+      "full_byte_readback": true,
+      "changes": [
+        {
+          "old_start": 16,
+          "new_start": 16,
+          "removed": [],
+          "added": [
+            "pub use private_state_windows::create_new_private_state_directory;",
+            "#[cfg(windows)]"
+          ],
+          "before": [
+            "#[cfg(windows)]",
+            "pub use private_state_windows::create_new_private_state_child;",
+            "#[cfg(windows)]"
+          ],
+          "after": [
+            "pub use private_state_windows::open_existing_private_state_directory;",
+            "#[cfg(windows)]",
+            "pub use private_state_windows::open_existing_private_state_directory_for_sync;"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+      "base_blob": "1ca4611e7b928a382ae9761f094416db42780371",
+      "candidate_blob": "44c5ceea8166f84c0d682c362fe9d5da48cb66ce",
+      "bytes": 8331,
+      "sha256": "7bafc016159601063dd4066f652f9fa547eb41c33916e9097a049b8707af95b4",
+      "full_byte_readback": true,
+      "changes": [
+        {
+          "old_start": 32,
+          "new_start": 32,
+          "removed": [],
+          "added": [
+            "const FILE_CREATE: u32 = 2;"
+          ],
+          "before": [
+            "use super::wide_path;",
+            "use super::with_private_security;",
+            ""
+          ],
+          "after": [
+            "const FILE_OPEN_IF: u32 = 3;",
+            "const FILE_DIRECTORY_FILE: u32 = 1;",
+            "const FILE_SYNCHRONOUS_IO_NONALERT: u32 = 0x20;"
+          ]
+        },
+        {
+          "old_start": 70,
+          "new_start": 71,
+          "removed": [],
+          "added": [
+            "    CreateNew,"
+          ],
+          "before": [
+            "",
+            "enum DirectoryOpen {",
+            "    Create,"
+          ],
+          "after": [
+            "    ExistingRead,",
+            "    ExistingReadWrite,",
+            "    ExistingPathIdentity,"
+          ]
+        },
+        {
+          "old_start": 96,
+          "new_start": 98,
+          "removed": [],
+          "added": [
+            "pub(super) fn create_new(root: &Path) -> io::Result<File> {",
+            "    open_with_mode(root, DirectoryOpen::CreateNew)",
+            "}",
+            ""
+          ],
+          "before": [
+            "    open_with_mode(root, DirectoryOpen::Create)",
+            "}",
+            ""
+          ],
+          "after": [
+            "pub(super) fn open_existing(root: &Path) -> io::Result<File> {",
+            "    open_with_mode(root, DirectoryOpen::ExistingRead)",
+            "}"
+          ]
+        },
+        {
+          "old_start": 135,
+          "new_start": 141,
+          "removed": [
+            "                DirectoryOpen::Create => security.lpSecurityDescriptor,"
+          ],
+          "added": [
+            "                DirectoryOpen::Create | DirectoryOpen::CreateNew => security.lpSecurityDescriptor,"
+          ],
+          "before": [
+            "            // Applied only if the leaf is created. Existing security is never",
+            "            // repaired; the caller validates the exact returned handle.",
+            "            security_descriptor: match mode {"
+          ],
+          "after": [
+            "                DirectoryOpen::ExistingRead",
+            "                | DirectoryOpen::ExistingReadWrite",
+            "                | DirectoryOpen::ExistingPathIdentity => ptr::null(),"
+          ]
+        },
+        {
+          "old_start": 155,
+          "new_start": 161,
+          "removed": [
+            "                    DirectoryOpen::Create | DirectoryOpen::ExistingReadWrite => {"
+          ],
+          "added": [
+            "                    DirectoryOpen::Create",
+            "                    | DirectoryOpen::CreateNew",
+            "                    | DirectoryOpen::ExistingReadWrite => {"
+          ],
+          "before": [
+            "                match mode {",
+            "                    DirectoryOpen::ExistingPathIdentity => FILE_READ_ATTRIBUTES | SYNCHRONIZE,",
+            "                    DirectoryOpen::ExistingRead => FILE_GENERIC_READ,"
+          ],
+          "after": [
+            "                        FILE_GENERIC_READ | FILE_GENERIC_WRITE",
+            "                    }",
+            "                },"
+          ]
+        },
+        {
+          "old_start": 167,
+          "new_start": 175,
+          "removed": [],
+          "added": [
+            "                    DirectoryOpen::CreateNew => FILE_CREATE,"
+          ],
+          "before": [
+            "                FILE_SHARE_READ | FILE_SHARE_WRITE,",
+            "                match mode {",
+            "                    DirectoryOpen::Create => FILE_OPEN_IF,"
+          ],
+          "after": [
+            "                    DirectoryOpen::ExistingRead",
+            "                    | DirectoryOpen::ExistingReadWrite",
+            "                    | DirectoryOpen::ExistingPathIdentity => 1, // FILE_OPEN"
+          ]
+        },
+        {
+          "old_start": 176,
+          "new_start": 185,
+          "removed": [],
+          "added": [
+            "                        | DirectoryOpen::CreateNew"
+          ],
+          "before": [
+            "                    | match mode {",
+            "                        DirectoryOpen::ExistingPathIdentity => 0,",
+            "                        DirectoryOpen::Create"
+          ],
+          "after": [
+            "                        | DirectoryOpen::ExistingRead",
+            "                        | DirectoryOpen::ExistingReadWrite => FILE_DIRECTORY_FILE,",
+            "                    },"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-fleet/Cargo.toml",
+      "base_blob": "a271fa91b84d9ea0100703ff491c6826b0aabc6e",
+      "candidate_blob": "139c0d4836edca041d2bdf6c56b63a5cbd035867",
+      "bytes": 709,
+      "sha256": "c57700487a49fd26f26ef1bb0255bab6192ef0cc1d117fbcbd5650774ff000e1",
+      "full_byte_readback": true,
+      "changes": [
+        {
+          "old_start": 24,
+          "new_start": 24,
+          "removed": [],
+          "added": [
+            "[target.'cfg(windows)'.dependencies]",
+            "codex-utils-path = { workspace = true }",
+            ""
+          ],
+          "before": [
+            "thiserror = { workspace = true }",
+            "toml = { workspace = true }",
+            ""
+          ],
+          "after": [
+            "[dev-dependencies]",
+            "ed25519-dalek = { workspace = true }",
+            "pretty_assertions = { workspace = true }"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+      "base_blob": "5ee4110ac4bd633cc07bbca3ebc4f4e0b6ff67ff",
+      "candidate_blob": "39ff5ed27fa3777953fd7ec5a63e8c684e987152",
+      "bytes": 12388,
+      "sha256": "f82fa6abf59ea71cc99551bf61222d3b50f9b93eba1a6f8d7062d04bb5cd452e",
+      "full_byte_readback": true,
+      "changes": [
+        {
+          "old_start": 276,
+          "new_start": 276,
+          "removed": [],
+          "added": [
+            "#[test]",
+            "fn create_new_directory_refuses_existing_private_state_without_mutation() {",
+            "    let temporary = tempfile::tempdir().expect(\"tempdir\");",
+            "    let root = temporary.path().join(\"owner\");",
+            "    let directory = create_new_private_state_directory(&root).expect(\"new private directory\");",
+            "    let mut child = open_private_state_child(&directory, \"state\", PrivateFileAccess::Create)",
+            "        .expect(\"private child\");",
+            "    std::io::Write::write_all(&mut child, b\"retained state\").expect(\"write original state\");",
+            "    child.sync_all().expect(\"flush original state\");",
+            "    let before = descriptor(&directory).expect(\"original directory security\");",
+            "    let error =",
+            "        create_new_private_state_directory(&root).expect_err(\"existing owner must be refused\");",
+            "    assert_eq!(error.kind(), io::ErrorKind::AlreadyExists);",
+            "    assert_eq!(",
+            "        descriptor(&directory).expect(\"after refused creation\"),",
+            "        before",
+            "    );",
+            "    assert_eq!(",
+            "        std::fs::read(root.join(\"state\")).expect(\"retained bytes\"),",
+            "        b\"retained state\"",
+            "    );",
+            "    validate_private_owner_and_dacl(&directory).expect(\"original private owner and DACL\");",
+            "}",
+            "",
+            "#[test]",
+            "fn create_new_directory_does_not_repair_existing_restricted_security() {",
+            "    let temporary = tempfile::tempdir().expect(\"tempdir\");",
+            "    let root = temporary.path().join(\"restricted\");",
+            "    let wide = wide_path(&root).expect(\"wide root\");",
+            "    with_private_security(|security| {",
+            "        read_only_descriptor(security)?;",
+            "        if unsafe { CreateDirectoryW(wide.as_ptr(), security) } == 0 {",
+            "            return Err(io::Error::last_os_error());",
+            "        }",
+            "        Ok(())",
+            "    })",
+            "    .expect(\"read-only fixture directory\");",
+            "    let directory = OpenOptions::new()",
+            "        .read(true)",
+            "        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)",
+            "        .open(&root)",
+            "        .expect(\"read descriptor handle\");",
+            "    let before = descriptor(&directory).expect(\"original restricted security\");",
+            "    assert!(create_new_private_state_directory(&root).is_err());",
+            "    assert_eq!(",
+            "        descriptor(&directory).expect(\"after refused creation\"),",
+            "        before",
+            "    );",
+            "    assert_eq!(",
+            "        std::fs::read_dir(&root)",
+            "            .expect(\"original empty directory\")",
+            "            .count(),",
+            "        0",
+            "    );",
+            "}",
+            ""
+          ],
+          "before": [
+            "    validate_private_owner_and_dacl(&child).expect(\"private child ownership\");",
+            "}",
+            ""
+          ],
+          "after": []
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory_tests.rs",
+      "base_blob": "1e0f78fdf05b7aa3e315127ef640e6af343ae431",
+      "candidate_blob": "6951e4ad310fb01a3932f66a6ed845b7186667ee",
+      "bytes": 5667,
+      "sha256": "f94275c6906d7601b178095fc2b2a33d185880772baec1bc0c97d3322bf9f2c5",
+      "full_byte_readback": true,
+      "changes": [
+        {
+          "old_start": 149,
+          "new_start": 149,
+          "removed": [],
+          "added": [
+            "#[test]",
+            "fn create_new_rejects_junction_without_creating_redirected_leaf() -> io::Result<()> {",
+            "    let temporary = tempfile::tempdir()?;",
+            "    let outside = temporary.path().join(\"outside\");",
+            "    let alias = temporary.path().join(\"alias\");",
+            "    fs::create_dir(&outside)?;",
+            "    junction(&outside, &alias)?;",
+            "    let outside_leaf = outside.join(\"registry\");",
+            "    assert!(!outside_leaf.try_exists()?);",
+            "    let result = super::super::create_new_private_state_directory(&alias.join(\"registry\"));",
+            "    let denied = result.is_err();",
+            "    drop(result);",
+            "    let created = outside_leaf.try_exists()?;",
+            "    fs::remove_dir(&alias)?;",
+            "    assert!(denied, \"creation must refuse a reparse ancestor\");",
+            "    assert!(!created, \"creation must not touch the redirected leaf\");",
+            "    Ok(())",
+            "}",
+            ""
+          ],
+          "before": [
+            "    Ok(())",
+            "}",
+            ""
+          ],
+          "after": []
+        }
+      ]
+    }
+  ],
+  "independent_review": "Hepta agent requested; pending, separate from native execution",
+  "execution": {
+    "compiler_runs": 0,
+    "formatter_runs": 0,
+    "native_tests": 0
+  }
+}

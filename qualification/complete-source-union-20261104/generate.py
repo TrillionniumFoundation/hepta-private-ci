@@ -83,10 +83,39 @@ def compare_cargo(baseline, generated, config):
             "unreviewed registry, Git, or local package identity change")
     require(new[new_key] == new_unicode, "Unicode version/source/checksum/dependencies differ")
     require(new[control_key] == new_control, "new UI core package differs from its reviewed manifest")
-    local_deltas = []
+    reviewed_registry = {}
+    for transition in config["reviewed_registry_dependency_changes"]:
+        previous, current = transition["before"], transition["after"]
+        key = key_for(previous)
+        require(key not in reviewed_registry, "duplicate reviewed registry identity")
+        require(key_for(current) == key and key[2].startswith("registry+"),
+                "reviewed registry package identity changed")
+        require(previous != current, "reviewed registry transition is empty")
+        require(
+            {field: value for field, value in previous.items() if field != "dependencies"}
+            == {field: value for field, value in current.items() if field != "dependencies"},
+            "reviewed registry non-dependency field changed",
+        )
+        for row in (previous, current):
+            dependencies = row.get("dependencies", [])
+            require(len(dependencies) == len(set(dependencies)),
+                    "duplicate reviewed registry dependency")
+        require(old.get(key) == previous, "reviewed registry baseline differs: " + key[0])
+        require(new.get(key) == current, "reviewed registry result differs: " + key[0])
+        reviewed_registry[key] = transition
+    require(len(reviewed_registry) == config["expected_registry_record_change_count"],
+            "reviewed registry transition count differs")
+    local_deltas, registry_deltas, seen_registry = [], [], set()
     for key in sorted(set(old) & set(new)):
         previous, current = old[key], new[key]
         if previous == current:
+            continue
+        if key in reviewed_registry:
+            require(previous == reviewed_registry[key]["before"]
+                    and current == reviewed_registry[key]["after"],
+                    "registry transition differs from complete reviewed records")
+            seen_registry.add(key)
+            registry_deltas.append({"package": list(key), "before": previous, "after": current})
             continue
         require(not key[2] and key[0] in config["allowed_local_dependency_packages"],
                 "unrelated Cargo package record changed: " + key[0])
@@ -96,13 +125,80 @@ def compare_cargo(baseline, generated, config):
             "local package identity or non-dependency metadata changed: " + key[0],
         )
         local_deltas.append({"package": list(key), "before": previous, "after": current})
+    require(seen_registry == set(reviewed_registry), "reviewed registry transition was not applied")
     return {
         "baseline_packages": len(old),
         "generated_packages": len(new),
         "registry_changes": [{"before": old_unicode, "after": new_unicode}],
+        "registry_dependency_changes": registry_deltas,
         "new_local_package": new_control,
         "local_dependency_changes": local_deltas,
         "all_other_versions_sources_checksums_unchanged": True,
+    }
+
+
+def metadata_document(raw):
+    candidates = []
+    for line in raw.splitlines():
+        if line.startswith(b"{"):
+            try:
+                value = json.loads(line)
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                continue
+            if isinstance(value, dict) and "packages" in value and "resolve" in value:
+                candidates.append(value)
+    require(len(candidates) == 1 and candidates[0].get("version") == 1,
+            "expected exactly one complete Cargo metadata v1 document")
+    return candidates[0]
+
+
+def verify_metadata_graph(metadata, locked_packages, config):
+    require(metadata.get("version") == 1, "Cargo metadata format changed")
+    by_identity, by_id = {}, {}
+    for package in metadata["packages"]:
+        key = (package["name"], package["version"], package.get("source") or "")
+        require(key not in by_identity and package["id"] not in by_id,
+                "duplicate actual Cargo metadata identity")
+        by_identity[key] = package
+        by_id[package["id"]] = package
+    require(set(by_identity) == set(locked_packages),
+            "actual locked metadata package identities differ from generated lock")
+    nodes = {}
+    for node in metadata["resolve"]["nodes"]:
+        require(node["id"] not in nodes, "duplicate actual Cargo resolver node")
+        nodes[node["id"]] = node
+    require(set(nodes) == set(by_id), "actual resolver node inventory is incomplete")
+    expected = {}
+    for row in config["reviewed_registry_metadata"]:
+        key = tuple(row["identity"])
+        require(key not in expected, "duplicate reviewed registry metadata identity")
+        expected[key] = row
+    reviewed_records = {
+        (row["before"]["name"], row["before"]["version"], row["before"].get("source", ""))
+        for row in config["reviewed_registry_dependency_changes"]
+    }
+    require(set(expected) == reviewed_records, "registry metadata review inventory differs")
+    fields = ("name", "source", "req", "kind", "rename", "optional",
+              "uses_default_features", "features", "target", "registry")
+    for key, row in expected.items():
+        package = by_identity[key]
+        require(package["id"] == row["package_id"], "registry metadata package ID changed")
+        declarations = [
+            {field: dependency.get(field) for field in fields}
+            for dependency in package["dependencies"]
+        ]
+        require(declarations == row["manifest_dependencies"],
+                "registry manifest declarations differ: " + key[0])
+        require(package["features"] == row["manifest_features"],
+                "registry manifest features differ: " + key[0])
+        require(nodes[package["id"]] == row["resolve_node"],
+                "registry resolved edges, kinds, targets or features differ: " + key[0])
+    return {
+        "packages": len(by_identity),
+        "resolve_nodes": len(nodes),
+        "reviewed_registry_records": len(expected),
+        "all_lock_package_identities_match_actual_metadata": True,
+        "reviewed_manifest_declarations_and_resolve_nodes_unchanged": True,
     }
 
 
@@ -212,10 +308,11 @@ def main():
         receipt["cargo_delta"] = compare_cargo(baseline, generated_cargo, config)
         run("actual-locked-metadata",
             ["cargo", "metadata", "--locked", "--all-features", "--format-version", "1"], WORKSPACE)
-        metadata = json.loads((output / "actual-locked-metadata.log").read_bytes())
+        metadata = metadata_document((output / "actual-locked-metadata.log").read_bytes())
         _, locked_packages = records(generated_cargo)
-        require(len(metadata["packages"]) == len(locked_packages),
-                "actual locked metadata is not the complete generated Cargo graph")
+        receipt["metadata_verification"] = verify_metadata_graph(metadata, locked_packages, config)
+        write_json(output / "reviewed-registry-metadata-verification.json",
+                   receipt["metadata_verification"])
         run("original-lock-update", ["just", "bazel-lock-update"])
         run("original-lock-check", ["just", "bazel-lock-check"])
         generated_bazel = (ROOT / "MODULE.bazel.lock").read_bytes()
