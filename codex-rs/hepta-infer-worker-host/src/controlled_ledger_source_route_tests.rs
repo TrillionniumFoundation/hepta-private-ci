@@ -20,11 +20,15 @@ impl ControlledTrustedTimeProvider for SignedClock {
             wall_time_ms: 1_000 + revision,
             source_revision: revision,
             source_digest: Digest32::of_bytes(&revision.to_be_bytes()),
+            challenge: None,
         };
         let signature = SigningKey::from_bytes(&[121; 32])
             .sign(&claims.signing_bytes())
             .to_bytes();
-        Ok(SignedTrustedTimeAttestation { claims, signature })
+        Ok(SignedTrustedTimeAttestation {
+            claims,
+            signature: signature.into(),
+        })
     }
 }
 
@@ -82,7 +86,7 @@ impl Ledger {
                     IssuerSpec {
                         issuer_id: StableId::new(issuer_id)?,
                         key_epoch: Generation::new(1)?,
-                        verifying_key: SigningKey::from_bytes(&key).verifying_key(),
+                        verifying_key: SigningKey::from_bytes(&key).verifying_key().into(),
                     },
                 )
                 .await?;

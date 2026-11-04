@@ -336,11 +336,17 @@ pub struct AppendReceipt {
 /// invariant and verifies every chain link.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LedgerSnapshot {
+    pub(crate) authentication_profile: crate::LearningAuthenticationProfile,
     pub(crate) records: Vec<LedgerRecord>,
     pub head_digest: Digest32,
 }
 
 impl LedgerSnapshot {
+    #[must_use]
+    pub const fn authentication_profile(&self) -> crate::LearningAuthenticationProfile {
+        self.authentication_profile
+    }
+
     #[must_use]
     pub fn records(&self) -> &[LedgerRecord] {
         &self.records

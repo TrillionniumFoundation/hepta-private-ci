@@ -224,7 +224,8 @@ class CallerProofTests(unittest.TestCase):
     def test_real_final_use_pins_reject_known_verifier_and_message_drift(self) -> None:
         paths = [
             "codex-rs/hepta-contracts/src/final_use.rs",
-            "codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs",
+            "codex-rs/hepta-contracts/src/authority_authentication.rs",
+            "codex-rs/hepta-contracts/src/pq_auth.rs",
         ]
         manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
         data = {"protected_file": [
@@ -234,45 +235,74 @@ class CallerProofTests(unittest.TestCase):
         for row in data["protected_file"]:
             self.assertIn("source_sha256", row)
         originals = {path: (ROOT / path).read_bytes() for path in paths}
-        source = originals[paths[1]].decode("utf-8")
-        code = MODULE._strip_rust_non_code(source)
+        grant_source = originals[paths[0]].decode("utf-8")
+        authority_source = originals[paths[1]].decode("utf-8")
+        pq_source = originals[paths[2]].decode("utf-8")
 
-        def item(marker: str) -> tuple[str, str]:
-            start = source.index(marker)
+        def item(source: str, marker: str) -> tuple[str, str]:
+            code = MODULE._strip_rust_non_code(source)
+            self.assertEqual(code.count(marker), 1)
+            start = code.index(marker)
             brace = code.index("{", start)
             end = MODULE._matching_delimiter(code, brace, "{", "}")
             self.assertIsNotNone(end)
+            assert end is not None
             return source[start:end + 1], source[start:brace]
 
-        verify, header = item("pub(super) fn verify(")
-        broken = source.replace(verify, header + "{ true }")
+        # The canonical profile delegate, native verifier and grant message live
+        # in separate pinned files. Keep all original decoy/mutation controls on
+        # the actual acceptance path, not the retired experimental V2 module.
+        verify, header = item(authority_source, "pub(crate) fn verify(")
+        broken = authority_source.replace(verify, header + "{ true }")
         decoy = (
             "const DECOY: () = { enum OtherIssuer { "
-            "Ed25519V1(VerifyingKey), MlDsa65V2(Box<MlDsaVerifyingKey<MlDsa65>>) "
+            "Classical(VerifyingKey), MlDsa65(Arc<PqNativeVerifier>) "
             "} impl OtherIssuer { " + verify + " } };"
         )
-        implementation, _ = item("impl IssuerVerifier {")
-        imports = source[source.index("use ml_dsa::EncodedVerifyingKey;"):source.index("pub const")]
-        constants = source[source.index("pub const"):source.index("\n\n/// One host-pinned")]
-        binding, binding_header = item("fn bind_key_id(")
-        context = 'pub const FINAL_USE_ML_DSA65_V2_CONTEXT: &[u8] = b"hepta.kernel.final-use.ml-dsa-65.v2";'
+        implementation, _ = item(authority_source, "impl PinnedAuthorityKey {")
+        imports = pq_source[pq_source.index("use ml_dsa::KeyInit;"):pq_source.index("pub const")]
+        self.assertEqual(pq_source.count("use ml_dsa::MlDsa65;"), 1)
+        binding, _ = item(pq_source, "pub fn from_pinned_spki(")
+        self.assertEqual(binding.count("if key_id != expected_key_id {"), 1)
+        unpinned_binding = binding.replace("if key_id != expected_key_id {", "if false {")
+        signing, _ = item(grant_source, "pub fn signing_bytes(")
+        context = 'b"hepta.kernel.authority.final-use.pq.v2\\0"'
+        wrong_context = 'b"hepta.kernel.authority.final-use.pq.v3\\0"'
+        self.assertEqual(signing.count(context), 1)
+        wrong_signing = signing.replace(context, wrong_context)
         mutations = {
-            "nested_impl": broken.replace("impl IssuerVerifier {", "impl IssuerVerifier { " + decoy),
-            "macro": broken.replace("impl IssuerVerifier {", "impl self::IssuerVerifier {")
-                + "\nmacro_rules! ignore { ($($t:tt)*) => {}; }\nignore!(" + implementation + ");\n",
-            "nested_import": source.replace("use ml_dsa::MlDsa65;", "use ml_dsa::MlDsa87 as MlDsa65;")
-                + "\nmod decoy { " + imports + " }\n",
-            "nested_context": source.replace('b"hepta.kernel.final-use.ml-dsa-65.v2"', 'b"hepta.kernel.final-use.ml-dsa-65.v3"')
-                + "\nmod decoy { " + constants + " }\n",
-            "nested_key_binding": source.replace(binding, binding_header + "{ Ok(input.to_vec()) }")
-                + "\nmod decoy { " + binding + " }\n",
-            "conditional_context": source.replace(context, '#[cfg(target_os = "windows")]\n' + context)
-                + '\n#[cfg(not(target_os = "windows"))]\n' + context.replace("65.v2", "65.v3"),
-            "serde_grant": originals[paths[0]].decode("utf-8").replace(
-                "    pub binding: FinalUseBinding,", "    #[serde(skip_serializing)]\n    pub binding: FinalUseBinding,"
+            "nested_impl": (
+                paths[1], broken.replace("impl PinnedAuthorityKey {", "impl PinnedAuthorityKey { " + decoy)
+            ),
+            "macro": (
+                paths[1], broken.replace("impl PinnedAuthorityKey {", "impl self::PinnedAuthorityKey {")
+                + "\nmacro_rules! ignore { ($($t:tt)*) => {}; }\nignore!(" + implementation + ");\n"
+            ),
+            "nested_import": (
+                paths[2], pq_source.replace("use ml_dsa::MlDsa65;", "use ml_dsa::MlDsa87 as MlDsa65;")
+                + "\nmod decoy { " + imports + " }\n"
+            ),
+            "nested_context": (
+                paths[0], grant_source.replace(signing, wrong_signing)
+                + "\nmod decoy { const CONTEXT: &[u8] = " + context + "; }\n"
+            ),
+            "nested_key_binding": (
+                paths[2], pq_source.replace(binding, unpinned_binding)
+                + "\nmod decoy { " + binding + " }\n"
+            ),
+            "conditional_context": (
+                paths[0], grant_source.replace(
+                    signing, '#[cfg(target_os = "windows")]\n' + signing
+                    + '\n#[cfg(not(target_os = "windows"))]\n' + wrong_signing
+                )
+            ),
+            "serde_grant": (
+                paths[0], grant_source.replace(
+                    "    pub binding: FinalUseBinding,", "    #[serde(skip_serializing)]\n    pub binding: FinalUseBinding,"
+                )
             ),
         }
-        for name, changed in mutations.items():
+        for name, (target_relative, changed) in mutations.items():
             with self.subTest(mutation=name), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 for relative, raw in originals.items():
@@ -280,9 +310,13 @@ class CallerProofTests(unittest.TestCase):
                     target.parent.mkdir(parents=True, exist_ok=True)
                     target.write_bytes(raw)
                 self.assertEqual(MODULE._verify_protected_files(root, data), paths)
-                target = root / paths[0 if name == "serde_grant" else 1]
+                target = root / target_relative
                 self.assertNotEqual(target.read_text(), changed)
-                target.write_text(changed)
+                target.write_text(changed, encoding="utf-8")
+                self.assertEqual(
+                    [path for path in paths if (root / path).read_bytes() != originals[path]],
+                    [target_relative],
+                )
                 with self.assertRaisesRegex(MODULE.VerificationFailure, "protected source SHA256 mismatch"):
                     MODULE._verify_protected_files(root, data)
 
@@ -290,10 +324,11 @@ class CallerProofTests(unittest.TestCase):
     def test_real_final_use_retained_owner_delegate_noops_fail_source_pins(self) -> None:
         paths = [
             "codex-rs/hepta-contracts/src/final_use.rs",
-            "codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs",
             "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
             "codex-rs/hepta-contracts/src/final_use_store.rs",
             "codex-rs/utils/windows-private-state/src/private_owner_lock.rs",
+            "codex-rs/hepta-contracts/src/authority_authentication.rs",
+            "codex-rs/hepta-contracts/src/pq_auth.rs",
         ]
         manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
         data = {
@@ -301,11 +336,14 @@ class CallerProofTests(unittest.TestCase):
                 row for row in manifest["protected_file"] if row["path"] in paths
             ]
         }
+        self.assertEqual([row["path"] for row in data["protected_file"]], paths)
+        for row in data["protected_file"]:
+            self.assertIn("source_sha256", row)
         originals = {path: (ROOT / path).read_bytes() for path in paths}
         cases = [
-            (paths[2], "pub(super) fn ensure_live_state<'state>", "Ok(state)"),
-            (paths[3], "pub(super) fn revalidate_owner(", "Ok(())"),
-            (paths[4], "pub fn revalidate_shared(", "Ok(())"),
+            (paths[1], "pub(super) fn ensure_live_state<'state>", "Ok(state)"),
+            (paths[2], "pub(super) fn revalidate_owner(", "Ok(())"),
+            (paths[3], "pub fn revalidate_shared(", "Ok(())"),
         ]
         for relative, marker, body in cases:
             with self.subTest(delegate=relative), tempfile.TemporaryDirectory() as directory:

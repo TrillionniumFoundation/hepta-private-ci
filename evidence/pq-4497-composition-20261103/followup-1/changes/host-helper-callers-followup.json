@@ -1,0 +1,220 @@
+{
+  "base_head": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "prior_failed_strict_log": "pq-audit/hepta-scoped-clippy.log",
+  "scope": "Complete current host crate Rust source enumeration; staged merged files override current checkout for edited files",
+  "direct_helper_consumers": [
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_concurrency_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_resource_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_pq_test_support.rs"
+  ],
+  "direct_helper_calls": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_pq_test_support.rs",
+      "line": 52,
+      "helper": "key",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_pq_test_support.rs",
+      "line": 53,
+      "helper": "key",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_pq_test_support.rs",
+      "line": 46,
+      "helper": "signed",
+      "handling": "returns Result to fallible service handler"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_pq_test_support.rs",
+      "line": 45,
+      "helper": "TestService::start",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_pq_test_support.rs",
+      "line": 48,
+      "helper": "frontier_service",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 74,
+      "helper": "key",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 174,
+      "helper": "signed",
+      "handling": "returns Result to fallible service handler"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs",
+      "line": 143,
+      "helper": "TestService::start",
+      "handling": "tail returns Result from frontier_service"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_tests.rs",
+      "line": 42,
+      "helper": "key",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_tests.rs",
+      "line": 43,
+      "helper": "key",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_tests.rs",
+      "line": 36,
+      "helper": "signed",
+      "handling": "returns Result to fallible service handler"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_tests.rs",
+      "line": 32,
+      "helper": "TestService::start",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_tests.rs",
+      "line": 38,
+      "helper": "frontier_service",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_concurrency_tests.rs",
+      "line": 59,
+      "helper": "key",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_concurrency_tests.rs",
+      "line": 60,
+      "helper": "key",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_concurrency_tests.rs",
+      "line": 46,
+      "helper": "signed",
+      "handling": "returns Result to fallible service handler"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_concurrency_tests.rs",
+      "line": 41,
+      "helper": "TestService::start",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_concurrency_tests.rs",
+      "line": 55,
+      "helper": "frontier_service",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_resource_tests.rs",
+      "line": 62,
+      "helper": "key",
+      "handling": "fallible key projection then Result collection"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_resource_tests.rs",
+      "line": 65,
+      "helper": "key",
+      "handling": "fallible key projection then Result collection"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_resource_tests.rs",
+      "line": 186,
+      "helper": "key",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_resource_tests.rs",
+      "line": 187,
+      "helper": "key",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_resource_tests.rs",
+      "line": 55,
+      "helper": "signed",
+      "handling": "returns Result to fallible service handler"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_resource_tests.rs",
+      "line": 51,
+      "helper": "TestService::start",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_resource_tests.rs",
+      "line": 57,
+      "helper": "frontier_service",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs",
+      "line": 41,
+      "helper": "key",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs",
+      "line": 46,
+      "helper": "key",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs",
+      "line": 31,
+      "helper": "signed",
+      "handling": "returns Result to fallible service handler"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs",
+      "line": 30,
+      "helper": "TestService::start",
+      "handling": "propagates ?"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs",
+      "line": 33,
+      "helper": "frontier_service",
+      "handling": "propagates ?"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs",
+      "before_sha256": "33bf5fa9fc8b5127fd2c57f8623fa8da4723024f6c53b5efdb84d364411b01bd",
+      "after_sha256": "361b25112f5275eedef12d98a58e96b470da876ba5f8020d7382317c1e0ea3e3",
+      "original_assertions_preserved": 11
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_concurrency_tests.rs",
+      "before_sha256": "68b73fc1d5465ad0c4f11b31a14b469c72ebee8015e863657b403f89c210acf3",
+      "after_sha256": "ac3aad8c91b5f70d3152124e7e9aa29b2f6dcfd48e2891d30a16858c8efbe5fc",
+      "original_assertions_preserved": 26
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_resource_tests.rs",
+      "before_sha256": "30155baa2a632ba2ba2509fca6e5ae4b5646da3359747c4e7787726a369642cd",
+      "after_sha256": "b129982232238192c5f6dee3176524799382a00686a6e4c702f792d617588dd3",
+      "original_assertions_preserved": 11
+    }
+  ],
+  "checks": [
+    "All original assertions and seed ranges retained",
+    "Both key rosters preserve8 exact seeds in original order and collect Result; any failure returnsErr, no filtered entry",
+    "No unwrap/expect, lint attributes, budget or negative controls added/removed in this follow-up"
+  ],
+  "validation": "Rustfmt1.96 syntax/format complete; authoritative original strict Clippy pending"
+}

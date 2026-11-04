@@ -1,0 +1,22 @@
+{
+  "job_id": 125827960057,
+  "raw_bytes": 1280123,
+  "raw_sha256": "61a41e6c5ea684f1ec34105c0915c308101e94fe5ad9b6b1d7cdf12651938c0c",
+  "xz_bytes": 102060,
+  "xz_sha256": "51d2b37046ab0b06a98e2fcec6decf9c3e619e3cc6d0323cab1703c6ebf7378c",
+  "round_trip_verified": true,
+  "job_exit_code": 34,
+  "classification": "Mixed terminal failure: real native assertions and timeouts, alongside remote build-service DNS/unavailability. No single environment-only or source-only cause is assigned.",
+  "bazel_summary": "Executed 206 out of 612 tests: 291 tests pass, 79 fail to build, 13 fail locally, and 229 were skipped.",
+  "bazel_targets": {
+    "total": 612,
+    "reported_executed": 206,
+    "passed_including_cached": 291,
+    "failed_to_build": 79,
+    "failed_locally_including_timeouts": 13,
+    "skipped": 229
+  },
+  "remote_build_service_unavailable_observed": true,
+  "remote_build_service_error": "UNAVAILABLE: Unable to resolve host remote.buildbuddy.io",
+  "new_host_learning_auth_missing_file_observed_in_this_log": false
+}

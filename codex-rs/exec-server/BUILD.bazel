@@ -1,4 +1,5 @@
-load("//:defs.bzl", "codex_rust_crate")
+load("@rules_rust//rust:defs.bzl", "rust_binary")
+load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate")
 
 codex_rust_crate(
     name = "exec-server",
@@ -8,6 +9,7 @@ codex_rust_crate(
         "@crates//:opentelemetry_sdk",
     ],
     extra_binaries = [
+        "//codex-rs/exec-server:codex-exec-server-test-helper",
         "//codex-rs/bwrap:bwrap",
         "//codex-rs/windows-sandbox-rs:codex-command-runner",
         "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup",
@@ -21,4 +23,27 @@ codex_rust_crate(
     integration_test_args = ["--test-threads=1"],
     test_tags = ["no-sandbox"],
     unit_test_args = ["--test-threads=1"],
+)
+
+# Same-target fixture main; the original helper dispatch is shared with tests.
+# extra_binaries adds only integration-test runfiles, never product dependencies.
+rust_binary(
+    name = "codex-exec-server-test-helper",
+    testonly = True,
+    srcs = [
+        "examples/codex-exec-server-test-helper.rs",
+        "tests/common/dispatch.rs",
+    ],
+    crate_name = "codex_exec_server_test_helper",
+    crate_root = "examples/codex-exec-server-test-helper.rs",
+    edition = "2024",
+    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS,
+    tags = ["manual"],
+    deps = [
+        ":exec-server",
+        "//codex-rs/http-client",
+        "//codex-rs/sandboxing",
+        "//codex-rs/test-binary-support",
+        "@crates//:tokio",
+    ],
 )

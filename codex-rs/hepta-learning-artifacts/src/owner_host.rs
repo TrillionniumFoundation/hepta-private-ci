@@ -20,12 +20,13 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::str::FromStr;
 
+use crate::LearningAuthenticationProfile;
+use crate::LearningSignature;
+use crate::LearningVerificationKey;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use ed25519_dalek::Signature;
-use ed25519_dalek::VerifyingKey;
 
 use crate::ArtifactEvent;
 use crate::ArtifactPublicationError;
@@ -72,11 +73,14 @@ pub use revocation::ArtifactRevocationBindingV2;
 #[path = "owner_durability.rs"]
 mod durability;
 const CURRENT_HEAD_MAGIC: &str = "HEPTA-ARTIFACT-CURRENT-HEAD-V1";
+const PQ_CURRENT_HEAD_MAGIC: &str = "HEPTA-ARTIFACT-CURRENT-HEAD-PQ-V2";
+#[path = "owner_authentication.rs"]
+mod authentication;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TrustedArtifactSignerV1 {
     pub signer_id: StableId,
-    pub verifying_key: [u8; 32],
+    pub verifying_key: LearningVerificationKey,
     pub minimum_authority_epoch: u64,
     pub maximum_authority_epoch: u64,
     pub valid_from: u64,
@@ -107,13 +111,16 @@ pub struct SignedArtifactWriterLeaseV1 {
     pub lease_generation: u64,
     pub issued_at: u64,
     pub expires_at: u64,
-    pub signature: [u8; 64],
+    pub signature: LearningSignature,
 }
 
 impl SignedArtifactWriterLeaseV1 {
     #[must_use]
     pub fn signing_bytes(&self) -> Vec<u8> {
-        let mut bytes = b"hepta.learning-artifacts.writer-lease.v1".to_vec();
+        let mut bytes = self.signature.profile().learning_domain(
+            b"hepta.learning-artifacts.writer-lease.v1",
+            b"hepta.learning-artifacts.writer-lease.pq.v2",
+        );
         push_id(&mut bytes, &self.lease_id);
         push_id(&mut bytes, &self.producer_id);
         push_id(&mut bytes, &self.registry_id);
@@ -137,13 +144,16 @@ pub struct SignedCurrentArtifactHeadV1 {
     pub withdrawal_scope_digest: Digest32,
     pub binding: Digest32,
     pub witness: RegistryHeadWitnessV1,
-    pub signature: [u8; 64],
+    pub signature: LearningSignature,
 }
 
 impl SignedCurrentArtifactHeadV1 {
     #[must_use]
     pub fn signing_bytes(&self) -> Vec<u8> {
-        let mut bytes = b"hepta.learning-artifacts.current-head.v1".to_vec();
+        let mut bytes = self.signature.profile().learning_domain(
+            b"hepta.learning-artifacts.current-head.v1",
+            b"hepta.learning-artifacts.current-head.pq.v2",
+        );
         bytes.extend_from_slice(self.withdrawal_scope_digest.as_array());
         bytes.extend_from_slice(self.binding.as_array());
         push_id(&mut bytes, &self.witness.registry_id);
@@ -206,6 +216,7 @@ pub struct ArtifactOwnerVerifierV1 {
     trust_digest: Digest32,
     writer_signers: BTreeMap<StableId, TrustedArtifactSignerV1>,
     head_signers: BTreeMap<StableId, TrustedArtifactSignerV1>,
+    profile: LearningAuthenticationProfile,
 }
 
 impl ArtifactOwnerVerifierV1 {
@@ -219,6 +230,15 @@ impl ArtifactOwnerVerifierV1 {
         {
             return Err(ArtifactOwnerHostError::InvalidTrust);
         }
+        let profile = trust.writer_signers[0].verifying_key.profile();
+        if trust
+            .writer_signers
+            .iter()
+            .chain(&trust.head_signers)
+            .any(|signer| signer.verifying_key.profile() != profile)
+        {
+            return Err(ArtifactOwnerHostError::InvalidTrust);
+        }
         trust
             .writer_signers
             .sort_by(|left, right| left.signer_id.cmp(&right.signer_id));
@@ -228,7 +248,10 @@ impl ArtifactOwnerVerifierV1 {
         let writer_signers = validate_signers(&trust.writer_signers)?;
         let head_signers = validate_signers(&trust.head_signers)?;
 
-        let mut bytes = b"hepta.learning-artifacts.owner-trust.v1".to_vec();
+        let mut bytes = profile.learning_domain(
+            b"hepta.learning-artifacts.owner-trust.v1",
+            b"hepta.learning-artifacts.owner-trust.pq.v2",
+        );
         push_id(&mut bytes, &trust.registry_id);
         bytes.extend_from_slice(trust.withdrawal_scope_digest.as_array());
         bytes.extend_from_slice(&trust.minimum_registry_generation.get().to_be_bytes());
@@ -241,12 +264,17 @@ impl ArtifactOwnerVerifierV1 {
             trust_digest: Digest32::of_bytes(&bytes),
             writer_signers,
             head_signers,
+            profile,
         })
     }
 
     #[must_use]
     pub const fn trust_digest(&self) -> Digest32 {
         self.trust_digest
+    }
+
+    pub const fn authentication_profile(&self) -> LearningAuthenticationProfile {
+        self.profile
     }
 
     /// Authenticate one CURRENT head and the exact immutable registry snapshot
@@ -279,6 +307,7 @@ impl ArtifactOwnerVerifierV1 {
             verified.witness_digest,
             verified.trust_digest,
             self.current_validity(signed_head, requirement.now)?,
+            self.profile,
         ))
     }
 
@@ -295,7 +324,8 @@ impl ArtifactOwnerVerifierV1 {
             verified_at,
             signed.witness.expires_at.min(signer.expires_at),
             signer.revoked_at,
-        ))
+        )
+        .with_authentication_profile(self.profile))
     }
 
     fn verify_writer_lease(
@@ -309,7 +339,7 @@ impl ArtifactOwnerVerifierV1 {
             || lease.authority_epoch == 0
             || lease.lease_generation == 0
             || lease.issued_at > now
-            || now > lease.expires_at
+            || self.profile.expired_at(now, lease.expires_at)
             || lease.issued_at > lease.expires_at
         {
             return Err(ArtifactOwnerHostError::WriterLeaseContext);
@@ -332,7 +362,9 @@ impl ArtifactOwnerVerifierV1 {
             &lease.signature,
         )?;
         let mut digest_bytes = lease.signing_bytes();
-        digest_bytes.extend_from_slice(&lease.signature);
+        if lease.signature.profile() == LearningAuthenticationProfile::ClassicalV1 {
+            digest_bytes.extend_from_slice(&lease.signature);
+        }
         Ok(VerifiedArtifactWriterLeaseV1 {
             producer_id: lease.producer_id.clone(),
             lease_digest: Digest32::of_bytes(&digest_bytes),
@@ -347,6 +379,9 @@ impl ArtifactOwnerVerifierV1 {
     ) -> Result<VerifiedCurrentArtifactHeadV1, ArtifactOwnerHostError> {
         if signed.withdrawal_scope_digest != self.trust.withdrawal_scope_digest
             || signed.binding.is_zero()
+            || self
+                .profile
+                .expired_at(requirement.now, signed.witness.expires_at)
         {
             return Err(ArtifactOwnerHostError::CurrentHeadContext);
         }
@@ -458,8 +493,11 @@ impl LearningArtifactOwnerHost {
         required_current_head: Option<SignedCurrentArtifactHeadV1>,
         now: u64,
     ) -> Result<Self, ArtifactOwnerHostError> {
+        let verifier = ArtifactOwnerVerifierV1::new(trust)?;
+        let verified_lease = verifier.verify_writer_lease(&lease, now)?;
         durability::create_root(root.as_ref())?;
         let root = fs::canonicalize(root)?;
+        authentication::bind_namespace(&root, verifier.authentication_profile())?;
         for directory in [
             "writer",
             "transactions",
@@ -470,8 +508,6 @@ impl LearningArtifactOwnerHost {
         ] {
             ensure_real_directory(&root, directory)?;
         }
-        let verifier = ArtifactOwnerVerifierV1::new(trust)?;
-        let verified_lease = verifier.verify_writer_lease(&lease, now)?;
         let fence_path = root.join("writer").join("owner.lock");
         let mut options = OpenOptions::new();
         options.read(true).write(true).create(true);
@@ -757,7 +793,7 @@ impl LearningArtifactOwnerHost {
         let discovered = self
             .discover_current_head(now)?
             .ok_or(ArtifactOwnerHostError::CurrentHeadConflict)?;
-        if discovered.signed != *signed {
+        if !authentication::same_authenticated_head(&discovered.signed, signed) {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
         Ok((receipt, requirement))
@@ -1054,10 +1090,17 @@ impl LearningArtifactOwnerHost {
         &self,
         signed: &SignedCurrentArtifactHeadV1,
     ) -> Result<(), ArtifactOwnerHostError> {
-        write_create_only_or_exact(
-            &self.signed_head_record_path(signed),
-            &encode_signed_head(signed),
-        )
+        let path = self.signed_head_record_path(signed);
+        if self.verifier.profile == LearningAuthenticationProfile::MlDsa65V2 && path.try_exists()? {
+            let existing = decode_signed_head(&read_small_record(&path, MAX_SMALL_RECORD_BYTES)?)?;
+            self.verify_presented_head(signed)?;
+            self.verify_presented_head(&existing)?;
+            if !authentication::same_authenticated_head(&existing, signed) {
+                return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+            }
+            return durability::sync_file_and_parent(&path);
+        }
+        write_create_only_or_exact(&path, &encode_signed_head(signed))
     }
 
     fn signed_head_record_path(&self, signed: &SignedCurrentArtifactHeadV1) -> PathBuf {
@@ -1242,8 +1285,12 @@ fn parse_witness_receipt(
 }
 
 fn encode_signed_head(value: &SignedCurrentArtifactHeadV1) -> Vec<u8> {
+    let magic = match value.signature.profile() {
+        LearningAuthenticationProfile::ClassicalV1 => CURRENT_HEAD_MAGIC,
+        LearningAuthenticationProfile::MlDsa65V2 => PQ_CURRENT_HEAD_MAGIC,
+    };
     format!(
-        "{CURRENT_HEAD_MAGIC}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n",
+        "{magic}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n",
         value.withdrawal_scope_digest,
         value.binding,
         value.witness.registry_id,
@@ -1264,9 +1311,14 @@ fn decode_signed_head(bytes: &[u8]) -> Result<SignedCurrentArtifactHeadV1, Artif
     let text =
         std::str::from_utf8(bytes).map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?;
     let fields = text.lines().collect::<Vec<_>>();
-    if fields.len() != 13 || fields[0] != CURRENT_HEAD_MAGIC {
+    if fields.len() != 13 {
         return Err(ArtifactOwnerHostError::CurrentHeadContext);
     }
+    let profile = match fields[0] {
+        CURRENT_HEAD_MAGIC => LearningAuthenticationProfile::ClassicalV1,
+        PQ_CURRENT_HEAD_MAGIC => LearningAuthenticationProfile::MlDsa65V2,
+        _ => return Err(ArtifactOwnerHostError::CurrentHeadContext),
+    };
     Ok(SignedCurrentArtifactHeadV1 {
         withdrawal_scope_digest: parse_digest(fields[1])?,
         binding: parse_digest(fields[2])?,
@@ -1284,7 +1336,7 @@ fn decode_signed_head(bytes: &[u8]) -> Result<SignedCurrentArtifactHeadV1, Artif
             issued_at: parse_u64(fields[10])?,
             expires_at: parse_u64(fields[11])?,
         },
-        signature: decode_signature(fields[12])?,
+        signature: decode_signature(fields[12], profile)?,
     })
 }
 
@@ -1299,11 +1351,10 @@ fn validate_signers(
         {
             return Err(ArtifactOwnerHostError::InvalidTrust);
         }
-        let key = VerifyingKey::from_bytes(&signer.verifying_key)
+        signer
+            .verifying_key
+            .validate()
             .map_err(|_| ArtifactOwnerHostError::InvalidKey)?;
-        if key.is_weak() {
-            return Err(ArtifactOwnerHostError::InvalidKey);
-        }
         if result
             .insert(signer.signer_id.clone(), signer.clone())
             .is_some()
@@ -1333,7 +1384,11 @@ fn verify_signer_context(
     }
     if signer.revoked_at.is_some_and(|at| issued_at >= at)
         || (require_current && signer.revoked_at.is_some_and(|at| now >= at))
-        || (require_current && now > signer.expires_at)
+        || (require_current
+            && signer
+                .verifying_key
+                .profile()
+                .expired_at(now, signer.expires_at))
     {
         return Err(ArtifactOwnerHostError::SignerRevoked);
     }
@@ -1341,13 +1396,12 @@ fn verify_signer_context(
 }
 
 fn verify_signature(
-    verifying_key: &[u8; 32],
+    verifying_key: &LearningVerificationKey,
     message: &[u8],
-    signature: &[u8; 64],
+    signature: &LearningSignature,
 ) -> Result<(), ArtifactOwnerHostError> {
-    VerifyingKey::from_bytes(verifying_key)
-        .map_err(|_| ArtifactOwnerHostError::InvalidKey)?
-        .verify_strict(message, &Signature::from_bytes(signature))
+    verifying_key
+        .verify(message, signature)
         .map_err(|_| ArtifactOwnerHostError::InvalidSignature)
 }
 
@@ -1507,12 +1561,19 @@ fn encode_hex(bytes: &[u8]) -> String {
     value
 }
 
-fn decode_signature(value: &str) -> Result<[u8; 64], ArtifactOwnerHostError> {
-    if value.len() != 128 {
+fn decode_signature(
+    value: &str,
+    profile: LearningAuthenticationProfile,
+) -> Result<LearningSignature, ArtifactOwnerHostError> {
+    let length = match profile {
+        LearningAuthenticationProfile::ClassicalV1 => 64,
+        LearningAuthenticationProfile::MlDsa65V2 => 3_309,
+    };
+    if value.len() != length * 2 {
         return Err(ArtifactOwnerHostError::CurrentHeadContext);
     }
     let raw = value.as_bytes();
-    let mut signature = [0u8; 64];
+    let mut signature = vec![0u8; length];
     for (index, output) in signature.iter_mut().enumerate() {
         let high =
             decode_hex_digit(raw[index * 2]).ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
@@ -1520,7 +1581,10 @@ fn decode_signature(value: &str) -> Result<[u8; 64], ArtifactOwnerHostError> {
             .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
         *output = (high << 4) | low;
     }
-    Ok(signature)
+    Ok(match profile {
+        LearningAuthenticationProfile::ClassicalV1 => LearningSignature::ClassicalV1(signature),
+        LearningAuthenticationProfile::MlDsa65V2 => LearningSignature::MlDsa65V2(signature),
+    })
 }
 
 const fn decode_hex_digit(value: u8) -> Option<u8> {
@@ -1662,7 +1726,7 @@ mod tests {
     fn trusted_signer(key: &SigningKey) -> TrustedArtifactSignerV1 {
         TrustedArtifactSignerV1 {
             signer_id: id("owner-authority"),
-            verifying_key: key.verifying_key().to_bytes(),
+            verifying_key: key.verifying_key().to_bytes().into(),
             minimum_authority_epoch: 1,
             maximum_authority_epoch: 10,
             valid_from: 1,
@@ -1695,9 +1759,9 @@ mod tests {
             lease_generation: 1,
             issued_at: 10,
             expires_at: 1_000,
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        value.signature = key.sign(&value.signing_bytes()).to_bytes();
+        value.signature = key.sign(&value.signing_bytes()).to_bytes().into();
         value
     }
 
@@ -1753,9 +1817,9 @@ mod tests {
                 issued_at: 20,
                 expires_at: 1_000,
             },
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        value.signature = key.sign(&value.signing_bytes()).to_bytes();
+        value.signature = key.sign(&value.signing_bytes()).to_bytes().into();
         value
     }
 
@@ -2188,7 +2252,7 @@ mod tests {
         historical_signer.revoked_at = Some(25);
         let current_signer = TrustedArtifactSignerV1 {
             signer_id: id("owner-authority-v2"),
-            verifying_key: new_key.verifying_key().to_bytes(),
+            verifying_key: new_key.verifying_key().to_bytes().into(),
             minimum_authority_epoch: 2,
             maximum_authority_epoch: 10,
             valid_from: 25,
@@ -2224,9 +2288,9 @@ mod tests {
                 issued_at: 30,
                 expires_at: 1_000,
             },
-            signature: [0; 64],
+            signature: [0; 64].into(),
         };
-        head_two.signature = new_key.sign(&head_two.signing_bytes()).to_bytes();
+        head_two.signature = new_key.sign(&head_two.signing_bytes()).to_bytes().into();
         owner
             .persist_signed_head_record(&head_two)
             .fixture("persist rotated head");
@@ -2256,7 +2320,7 @@ mod tests {
 
         let mut stale_epoch = head_two;
         stale_epoch.witness.authority_epoch = 1;
-        stale_epoch.signature = new_key.sign(&stale_epoch.signing_bytes()).to_bytes();
+        stale_epoch.signature = new_key.sign(&stale_epoch.signing_bytes()).to_bytes().into();
         let requirement = RegistryHeadRequirementV1 {
             registry_id: id("learning-artifacts"),
             minimum_generation: Generation::new(/*value*/ 2).fixture("generation"),
@@ -2363,7 +2427,7 @@ mod tests {
             .fixture("immutable payload");
             let mut head = signed_head(&key, scope, receipt.head_digest);
             head.witness.expires_at = head_expiry;
-            head.signature = key.sign(&head.signing_bytes()).to_bytes();
+            head.signature = key.sign(&head.signing_bytes()).to_bytes().into();
             let requirement = RegistryHeadRequirementV1 {
                 registry_id: id("learning-artifacts"),
                 minimum_generation: Generation::new(/*value*/ 1).fixture("generation"),

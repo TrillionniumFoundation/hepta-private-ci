@@ -1,0 +1,61 @@
+{
+  "base_head": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "version": "2.4.3",
+  "local_python": "3.12.14",
+  "ci_action_ref": "8f01853be192eb0f849a5c7d721450e7a467c579",
+  "command": [
+    "/workspace/scratch/df0a4a720ed8/hepta-pq/codespell-2.4.3/bin/codespell",
+    "--count",
+    "--ignore-words",
+    ".codespellignore",
+    "--skip",
+    "./.git"
+  ],
+  "cwd": "/workspace/scratch/df0a4a720ed8/hepta-pq/codespell-candidate-final",
+  "returncode": 0,
+  "elapsed_seconds": 11.186,
+  "log": "codespell-candidate-final.log",
+  "log_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+  "dictionary_sha256": "becad0f381d1a654a79908cc05ccd87d85d032f962b427ae28184ca895d77eaf",
+  "config_sha256": "3698e08e5ee9e6c9c169b5b35a7cfb33927ce369d621b07a2dca2a717efc6717",
+  "tracked_paths": 10951,
+  "present_tracked_paths": 9695,
+  "missing_tracked_paths": 1256,
+  "followup_evidence_paths": 137,
+  "total_selected_paths": 9832,
+  "manifests": {
+    "input-manifest.jsonl": {
+      "file": "codespell-candidate-final-input-manifest.jsonl.gz",
+      "raw_bytes": 1899622,
+      "raw_sha256": "c41af86eb242c68e75e08e9c257e06b3ea984b22a5587e2c62f29800ef3d5a42",
+      "gzip_bytes": 519102,
+      "gzip_sha256": "f629964374df67a38dcb0110eca1ce1f88642cd510a02bac2d6b1b9145f3a79d"
+    },
+    "selected-paths.txt": {
+      "file": "codespell-candidate-final-selected-paths.txt.gz",
+      "raw_bytes": 582571,
+      "raw_sha256": "202968b1b102c5d1e8cc20914f72d1ac4c4eed3b35a4054dbb0a53313b2f246c",
+      "gzip_bytes": 68733,
+      "gzip_sha256": "34f99ce302f565435dc42e70d2d355786c1d28afdee12a7fd80b5cb737dae86a"
+    },
+    "missing-paths.txt": {
+      "file": "codespell-candidate-final-missing-paths.txt.gz",
+      "raw_bytes": 86435,
+      "raw_sha256": "50a7548e0cc7f165a66c781bdc30487618f2cdf9cbab275b4383f950593af31e",
+      "gzip_bytes": 12256,
+      "gzip_sha256": "cf70c149f7e79219458a826ae37efa102f7d000d6a910642044536845dbf7eda"
+    }
+  },
+  "all_selected_source_and_snapshot_bytes_unchanged": true,
+  "base_head_unchanged": true,
+  "immutable_compiler_log_sha256_before": "d510782c8bee3c41c4cbb6de29163fba78ae5dc3e0cf76c35de93d182bc9109d",
+  "immutable_compiler_log_sha256_after": "d510782c8bee3c41c4cbb6de29163fba78ae5dc3e0cf76c35de93d182bc9109d",
+  "limitations": [
+    "Local available candidate files, not the full remote checkout",
+    "The exact missing base paths are recorded and were not scanned",
+    "Local Python differs from the CI Python 3.13 Alpine container",
+    "Present tracked files plus all files in the new follow-up evidence directory",
+    "This receipt and its output files are saved outside the scanned candidate",
+    "No scanner options, configuration exclusions or raw evidence bytes were changed"
+  ]
+}

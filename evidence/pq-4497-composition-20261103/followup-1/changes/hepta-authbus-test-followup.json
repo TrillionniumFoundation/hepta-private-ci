@@ -1,0 +1,16 @@
+{
+  "base": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "reason": "Three actual test compile errors observed in original scoped just fix; explicit IssuerPurpose import and classic typed signature conversion, assertions unchanged",
+  "files": [
+    {
+      "path": "codex-rs/hepta-authbus/src/settlement_store_tests.rs",
+      "before_sha256": "b02a9a944560921d32efdcb77b5a4d3af2654c0093732545a29db796bbfc5f8e",
+      "after_sha256": "99f305c1e91f374a5e622a86715430238a7046ab902ea1e6bd179f65c2cb8a0e"
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/settlement_issuer_tests.rs",
+      "before_sha256": "7836a16bd02af7d00ce0106a7360530fd8041d1768d804d5db81893a48ad450a",
+      "after_sha256": "0eec9862b7e5a479170f0c9be4a03d78e351a2f2c776a8407a3cb5ea3ea44e31"
+    }
+  ]
+}

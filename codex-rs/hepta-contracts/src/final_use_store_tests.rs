@@ -12,6 +12,43 @@ fn private_tempdir() -> tempfile::TempDir {
 }
 
 #[test]
+fn incompatible_experimental_pq_store_is_rejected_without_resetting_claims() {
+    let directory = private_tempdir();
+    let head = FinalUseRevocations {
+        authority_epoch: 9,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let (owner, _) =
+        Store::open_pq_key_ring_exact(directory.path(), "owner", [91; 32], head.clone()).unwrap();
+    owner.append_claim(9, [7; 32]).unwrap();
+    drop(owner);
+    // The earlier raw-key experimental profile used schema 3 and a distinct
+    // trust namespace. Canonical PQ cannot reinterpret it as a fresh owner.
+    let legacy = serde_json::json!({
+        "schema": 3,
+        "signer_id": "owner",
+        "trust": { "MlDsa65IssuerKeyRingV2": ([91; 32]) },
+        "head": head,
+    });
+    let state_path = directory.path().join("authority.json");
+    std::fs::write(&state_path, serde_json::to_vec(&legacy).unwrap()).unwrap();
+    let state = std::fs::read(&state_path).unwrap();
+    let claims_path = directory.path().join("authority.claims");
+    let claims = std::fs::read(&claims_path).unwrap();
+    assert!(matches!(
+        Store::open_pq_key_ring_exact(directory.path(), "owner", [91; 32], head.clone()),
+        Err(FinalUseError::InvalidTrust)
+    ));
+    assert!(matches!(
+        Store::open_key_ring_exact(directory.path(), "owner", [91; 32], head),
+        Err(FinalUseError::InvalidTrust)
+    ));
+    assert_eq!(std::fs::read(state_path).unwrap(), state);
+    assert_eq!(std::fs::read(claims_path).unwrap(), claims);
+}
+
+#[test]
 fn legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims() {
     for trust in [
         StoreTrust::SingleKey([47; 32]),
@@ -38,7 +75,7 @@ fn legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims() {
             StoreTrust::IssuerKeyRing(digest) => serde_json::json!({
                 "schema": 2, "signer_id": "owner", "issuer_trust_sha256": digest, "state": state,
             }),
-            StoreTrust::MlDsa65IssuerKeyRingV2(_) => panic!("PQ trust has no legacy migration"),
+            StoreTrust::PqIssuerKeyRing(_) => panic!("PQ stores have no legacy snapshot migration"),
         };
         std::fs::write(
             directory.path().join("authority.json"),
@@ -125,7 +162,7 @@ fn legacy_zero_nonce_rejects_before_original_stage_or_committed_bytes_change() {
             StoreTrust::IssuerKeyRing(digest) => serde_json::json!({
                 "schema": 2, "signer_id": "owner", "issuer_trust_sha256": digest, "state": state,
             }),
-            StoreTrust::MlDsa65IssuerKeyRingV2(_) => panic!("PQ trust has no legacy migration"),
+            StoreTrust::PqIssuerKeyRing(_) => panic!("PQ stores have no legacy snapshot migration"),
         };
         std::fs::write(
             directory.path().join("authority.json"),

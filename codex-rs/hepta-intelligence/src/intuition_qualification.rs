@@ -128,7 +128,10 @@ pub fn decide_authenticated_intuition_v1(
     let decision = decide_calibrated_v3(request, &profile)?;
     let completeness_payload_digest = Digest32::of_bytes(&completeness_payload);
     let qualification_payload_digest = Digest32::of_bytes(&qualification_payload);
-    let mut bytes = b"hepta.intelligence.authenticated-intuition.v1\0".to_vec();
+    let mut bytes = verifier.authentication_profile().learning_domain(
+        b"hepta.intelligence.authenticated-intuition.v1\0",
+        b"hepta.intelligence.authenticated-intuition.pq.v3\0",
+    );
     for digest in [
         verifier.trust_digest(),
         profile_digest,
@@ -140,8 +143,16 @@ pub fn decide_authenticated_intuition_v1(
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
-    bytes.extend_from_slice(&evidence.completeness.signature);
-    bytes.extend_from_slice(&evidence.qualification.signature);
+    if evidence.completeness.signature.profile()
+        == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1
+    {
+        bytes.extend_from_slice(&evidence.completeness.signature);
+    }
+    if evidence.qualification.signature.profile()
+        == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1
+    {
+        bytes.extend_from_slice(&evidence.qualification.signature);
+    }
 
     Ok(AuthenticatedIntuitionDecisionV1 {
         decision,
@@ -223,7 +234,10 @@ pub fn decide_authenticated_intuition_v2(
     let profile_qualification_payload_digest = Digest32::of_bytes(&profile_qualification_payload);
     let runtime_payload_digest = Digest32::of_bytes(&runtime_payload);
 
-    let mut bytes = b"hepta.intelligence.authenticated-intuition.v2\0".to_vec();
+    let mut bytes = verifier.authentication_profile().learning_domain(
+        b"hepta.intelligence.authenticated-intuition.v2\0",
+        b"hepta.intelligence.authenticated-intuition.pq.v4\0",
+    );
     for digest in [
         verifier.trust_digest(),
         profile_digest,
@@ -238,9 +252,21 @@ pub fn decide_authenticated_intuition_v2(
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
-    bytes.extend_from_slice(&evidence.completeness.signature);
-    bytes.extend_from_slice(&evidence.profile_qualification.signature);
-    bytes.extend_from_slice(&evidence.runtime.signature);
+    if evidence.completeness.signature.profile()
+        == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1
+    {
+        bytes.extend_from_slice(&evidence.completeness.signature);
+    }
+    if evidence.profile_qualification.signature.profile()
+        == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1
+    {
+        bytes.extend_from_slice(&evidence.profile_qualification.signature);
+    }
+    if evidence.runtime.signature.profile()
+        == codex_hepta_learning_ledger::LearningAuthenticationProfile::ClassicalV1
+    {
+        bytes.extend_from_slice(&evidence.runtime.signature);
+    }
 
     Ok(AuthenticatedIntuitionDecisionV2 {
         decision,

@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "phase": "original_sparse_cold_build",
+  "job_id": "1a1a2953d6b-96a-7465",
+  "source": {
+    "base_sha": "f28af9b7700a61fbbcdcc121521cb879297d5e31",
+    "patch_sha256": "45bf9ddd4be31a12941d68cc96ea836da75bffd3ea9228dc93cfacfe7dbae7ef",
+    "files_after": {
+      "codex-rs/hepta-contracts/PQ_FINAL_USE.md": {
+        "bytes": 4677,
+        "sha256": "3fc477ff08775f9659d8efb4da6cccfad4923dece629bf9148c3ec1cc6032d20"
+      },
+      "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs": {
+        "bytes": 11430,
+        "sha256": "9c731c9043cc028387090c66509ca135b71a961bdbfd1379d15b79975eba5797"
+      },
+      "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_role_tests.rs": {
+        "bytes": 5440,
+        "sha256": "106459ec2186558c5380009e65e40f61eaaa9d80dba4732bc15bffcdb6312e9b"
+      }
+    }
+  },
+  "original_source_manifest": "f28-source.json",
+  "sparse_paths": [
+    "codex-rs",
+    "scripts"
+  ],
+  "status": {
+    "at_unix_ms": 1793731097780,
+    "audit_recorded": true,
+    "cancelled": false,
+    "exit_code": 101,
+    "job_id": "1a1a2953d6b-96a-7465",
+    "log_bytes": {
+      "stderr": {
+        "seen": 95748,
+        "stored": 95748
+      },
+      "stdout": {
+        "seen": 0,
+        "stored": 0
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "state": "failed",
+    "timed_out": false
+  },
+  "tests_executed": 0,
+  "observed_test_names": [],
+  "reason": "Compilation failed before test execution: tracked docs/modules/MODULES.json was absent from the sparse checkout, required by hepta-fleet/src/module_catalog.rs include_str.",
+  "logs": {
+    "stdout.log": {
+      "file": "f28-stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr.log": {
+      "file": "f28-stderr.log",
+      "bytes": 95748,
+      "sha256": "825219fcca50ad6aac478cb112c15b65992c66d30d8a778527cabcf5c857be44"
+    },
+    "request.json": {
+      "file": "f28-request.json",
+      "bytes": 1045,
+      "sha256": "439c69ad7feabb6ae0adb45fc7031419db4ac871ae9849ed4643cafc2860100c"
+    }
+  }
+}

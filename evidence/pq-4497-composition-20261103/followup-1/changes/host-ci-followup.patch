@@ -1,0 +1,142 @@
+--- a/codex-rs/hepta-infer-worker-host/src/controlled_funding.rs
++++ b/codex-rs/hepta-infer-worker-host/src/controlled_funding.rs
+@@ -3,6 +3,7 @@
+ use std::sync::Arc;
+ 
+ use codex_hepta_authbus::AuthBusAuthorityHost;
++use codex_hepta_authbus::AuthBusVerifyingKey;
+ use codex_hepta_authbus::QuotaReservation;
+ use codex_hepta_authbus::ReservationRequest;
+ use codex_hepta_authbus::ReservationState;
+@@ -117,7 +118,7 @@
+             funding: ControlledLedgerFunding {
+                 owner,
+                 reservation,
+-                issuer_key: issuer.verifying_key.to_bytes(),
++                issuer_key: issuer.verifying_key,
+                 issuer_id: issuer.issuer_id,
+                 issuer_epoch: issuer.key_epoch,
+                 time_provider,
+@@ -163,7 +164,7 @@
+     reservation: QuotaReservation,
+     issuer_id: StableId,
+     issuer_epoch: Generation,
+-    issuer_key: [u8; 32],
++    issuer_key: AuthBusVerifyingKey,
+     time_provider: Arc<dyn ControlledTrustedTimeProvider>,
+ }
+ 
+@@ -182,7 +183,7 @@
+             .settlement_issuer(&self.issuer_id, self.issuer_epoch)
+             .await
+             .map_err(|e| e.to_string())?;
+-        if issuer.revoked || issuer.verifying_key.to_bytes() != self.issuer_key {
++        if issuer.revoked || issuer.verifying_key != self.issuer_key {
+             return Err("controlled current settlement issuer differs".to_owned());
+         }
+         let time = self
+--- a/codex-rs/hepta-infer-worker-host/src/controlled_ledger_source_route_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/controlled_ledger_source_route_tests.rs
+@@ -20,11 +20,15 @@
+             wall_time_ms: 1_000 + revision,
+             source_revision: revision,
+             source_digest: Digest32::of_bytes(&revision.to_be_bytes()),
++            challenge: None,
+         };
+         let signature = SigningKey::from_bytes(&[121; 32])
+             .sign(&claims.signing_bytes())
+             .to_bytes();
+-        Ok(SignedTrustedTimeAttestation { claims, signature })
++        Ok(SignedTrustedTimeAttestation {
++            claims,
++            signature: signature.into(),
++        })
+     }
+ }
+ 
+@@ -82,7 +86,7 @@
+                     IssuerSpec {
+                         issuer_id: StableId::new(issuer_id)?,
+                         key_epoch: Generation::new(1)?,
+-                        verifying_key: SigningKey::from_bytes(&key).verifying_key(),
++                        verifying_key: SigningKey::from_bytes(&key).verifying_key().into(),
+                     },
+                 )
+                 .await?;
+--- a/codex-rs/hepta-infer-worker-host/src/smollm_study_roles_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/smollm_study_roles_tests.rs
+@@ -88,7 +88,7 @@
+                 .map(|(index, key)| ledger::TrustedLearningSignerV1 {
+                     principal: principals[index].clone(),
+                     controller_id: id(&format!("controlled-test-role-{index}")),
+-                    verifying_key: key.verifying_key().to_bytes(),
++                    verifying_key: key.verifying_key().to_bytes().into(),
+                     roles: vec![kinds[index]],
+                     revoked_at: None,
+                 })
+@@ -122,9 +122,12 @@
+             issued_at: micros(),
+             expires_at: self.until,
+             payload_digest: Digest32::of_bytes(payload),
+-            signature: [0; 64],
+-        };
+-        signed.signature = self.keys[index].sign(&signed.signing_bytes()).to_bytes();
++            signature: [0; 64].into(),
++        };
++        signed.signature = self.keys[index]
++            .sign(&signed.signing_bytes())
++            .to_bytes()
++            .into();
+         signed
+     }
+ 
+@@ -149,7 +152,7 @@
+         let root_trust = ledger::LearningTrustRootV1 {
+             root_id: id("controlled-neural-test-root"),
+             scope_digest: self.trust.scope_digest,
+-            verifying_key: root_key.verifying_key().to_bytes(),
++            verifying_key: root_key.verifying_key().to_bytes().into(),
+             valid_from: self.from,
+             expires_at: self.until,
+             revoked_at: None,
+@@ -165,7 +168,7 @@
+             root_id: root_trust.root_id.clone(),
+             issued_at: now,
+             expires_at: self.until,
+-            signature: [0; 64],
++            signature: [0; 64].into(),
+         };
+         distribution.signature = root_key
+             .sign(
+@@ -173,7 +176,8 @@
+                     .signing_bytes()
+                     .unwrap_or_else(|error| panic!("{error:?}")),
+             )
+-            .to_bytes();
++            .to_bytes()
++            .into();
+         let activated = ledger::activate_learning_trust(&root_trust, distribution, None, micros())
+             .unwrap_or_else(|error| panic!("{error:?}"));
+         let binding = profile.training_ledger_binding();
+--- a/.github/workflows/hepta-pon-native-pair.yml
++++ b/.github/workflows/hepta-pon-native-pair.yml
+@@ -881,7 +881,6 @@
+       RUSTUP_TOOLCHAIN: "1.96.0"
+       CARGO_INCREMENTAL: "0"
+       CARGO_BUILD_JOBS: "2"
+-      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-cell-host-target
+       CARGO_PROFILE_TEST_DEBUG: "0"
+       CARGO_PROFILE_DEV_DEBUG: "0"
+       PYTHONDONTWRITEBYTECODE: "1"
+@@ -891,6 +890,11 @@
+           ref: ${{ env.TESTED_SHA }}
+           fetch-depth: 0
+           persist-credentials: false
++      - name: Create a fresh external Cargo target for the Cell host
++        run: |
++          set -euo pipefail
++          cell_host_target=$(mktemp -d "$RUNNER_TEMP/hepta-cell-host-target.XXXXXX")
++          printf 'CARGO_TARGET_DIR=%s\n' "$cell_host_target" >> "$GITHUB_ENV"
+       - name: Bind the actual Cell host source and merge tree
+         run: |
+           set -euo pipefail

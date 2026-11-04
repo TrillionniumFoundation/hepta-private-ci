@@ -1,0 +1,73 @@
+{
+  "base_commit": "a6c58700d23efd575d2803637aa7d9203d27e7bf",
+  "source": "exact base plus uncommitted composition overlay; no deployed qualification",
+  "manifest_sha256": "98571c94f2ff37c439dd26b42393f7ff5f5a3a72b5b79309bbe559dae5b610c9",
+  "workflow_sha256": "0f36a9110731e100b160ba53dcc64a0f5cfa6869f3749e99cc178cbad01f4773",
+  "records": [
+    {
+      "command": [
+        "python3",
+        "/workspace/scratch/df0a4a720ed8/hepta-source/scripts/verify_hepta_callers.py",
+        "self-test"
+      ],
+      "exit_code": 0,
+      "log": "/workspace/scratch/df0a4a720ed8/hepta-pq/callers-self-test.log",
+      "log_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "cwd": "/workspace/scratch/df0a4a720ed8/hepta-source"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/workspace/scratch/df0a4a720ed8/hepta-source/scripts",
+        "-p",
+        "test_hepta_typed_callers.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "/workspace/scratch/df0a4a720ed8/hepta-pq/typed-caller-controls.log",
+      "log_sha256": "39a9aa4b0513659165519acc3e4620b60ea1bffaaada2795f2aed42eaf8a8b30",
+      "cwd": "/workspace/scratch/df0a4a720ed8/hepta-source"
+    },
+    {
+      "command": [
+        "python3",
+        "hepta-source/scripts/verify_hepta_callers.py",
+        "verify",
+        "--root",
+        "hepta-source",
+        "--manifest",
+        "pq-audit/three-way/merged/CALLERS.toml"
+      ],
+      "exit_code": 0,
+      "log": "/workspace/scratch/df0a4a720ed8/hepta-pq/callers-verify-2.log",
+      "log_sha256": "c4f47cb4b1bb8e5fb20d107891ac0bef21666d97effabe928fc2b15b4d5e05fa",
+      "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+      "rust_files": 5604,
+      "boundaries": 51,
+      "authority_granted": false,
+      "cwd": "/workspace/scratch/df0a4a720ed8"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "hepta-source/scripts",
+        "-p",
+        "test_hepta_final_use_pq_ci.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "/workspace/scratch/df0a4a720ed8/hepta-pq/native-binding-controls.log",
+      "log_sha256": "de2286df140b25ce9460fc57ed5a979b5d0331477858567bdb0b80c1ec9f56bf",
+      "tests": 14,
+      "cwd": "/workspace/scratch/df0a4a720ed8"
+    }
+  ]
+}

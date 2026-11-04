@@ -1,0 +1,32 @@
+{
+  "base": "0baf43cf4bf8f953fff079725348de1d8f26434f",
+  "tool_version": "1.7.12\ninstalled by downloading from release page\nbuilt with go1.26.1 compiler for linux/amd64",
+  "checks": [
+    {
+      "name": "baseline",
+      "command": [
+        "/workspace/scratch/df0a4a720ed8/hepta-pq/actionlint-1.7.12/actionlint",
+        "-no-color",
+        "/workspace/scratch/df0a4a720ed8/hepta-pq/hepta-pon-native-pair-0baf.yml"
+      ],
+      "returncode": 1,
+      "workflow_sha256": "0f36a9110731e100b160ba53dcc64a0f5cfa6869f3749e99cc178cbad01f4773",
+      "log": "/workspace/scratch/df0a4a720ed8/hepta-pq/actionlint-baseline.log",
+      "log_sha256": "6d09aa91b011a32ed9f21acdf0a0483d2bf78ef26b1cede770b3f3cf1558c195"
+    },
+    {
+      "name": "followup",
+      "command": [
+        "/workspace/scratch/df0a4a720ed8/hepta-pq/actionlint-1.7.12/actionlint",
+        "-no-color",
+        "/workspace/scratch/df0a4a720ed8/pq-audit/three-way/merged/.github/workflows/hepta-pon-native-pair.yml"
+      ],
+      "returncode": 0,
+      "workflow_sha256": "0e3bf46701083ddd11d61b1673dc35fa0c9b83544b878ed01322c141428c618b",
+      "log": "/workspace/scratch/df0a4a720ed8/hepta-pq/actionlint-followup.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "structural_check": "all baseline steps preserved byte-structurally; only job CARGO_TARGET_DIR removed and new setup step inserted at index1; all other jobs/lanes/timeouts/pins identical",
+  "scope": "actual actionlint syntax and expression checks; does not assert remote CI execution"
+}

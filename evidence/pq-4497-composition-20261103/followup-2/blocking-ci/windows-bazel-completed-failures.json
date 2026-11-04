@@ -1,0 +1,86 @@
+{
+  "schema": "hepta-followup2-blocking-windows-bazel-observation-v1",
+  "run_id": 41609576580,
+  "source_commit": "2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d",
+  "source_tree": "80562dbe724b082f388828b32fb305d036e8dff7",
+  "scope": "Three completed Windows Bazel shards at the retained timestamp; the fourth shard was still running. Original Bazel counts include cached results and are not unique Rust test counts. This is separate from the four Windows diagnostic lanes.",
+  "input_api": "followup2-blocking-jobs-snapshot.json",
+  "logs_are_complete_decoded_github_job_logs": true,
+  "entries": [
+    {
+      "job_id": 125827960161,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41609576580/job/125827960161",
+      "status": "completed",
+      "conclusion": "failure",
+      "log_file": "job-125827960161.log",
+      "log_bytes": 677054,
+      "log_sha256": "7bc36e133aedcf821655b1fe4c916b95c2517c64e1a5a49601dea9b9d7b1301b",
+      "retained_file": "job-125827960161.log.xz",
+      "xz_bytes": 64688,
+      "xz_sha256": "9db0bcdf828760f29052ab087052c1390f0dec27c6dd593d251fe466dd69329f",
+      "lossless_roundtrip_verified": true,
+      "original_summary": [
+        "2026-11-03T09:42:55.9665452Z Executed 89 out of 151 tests: 99 tests pass, 3 fail locally, and 49 were skipped."
+      ],
+      "failed_bazel_targets": [
+        "//codex-rs/exec-server:exec-server-exec_process-test                     FAILED in 0.4s",
+        "//codex-rs/hepta-learning-artifacts:hepta-learning-artifacts-unit-tests  FAILED in 70.4s",
+        "//codex-rs/core:core-unit-tests                                          FAILED in 4 out of 11 in 101.2s"
+      ],
+      "missing_module_errors_seen": [],
+      "classification": "Actual native test failures. No root cause repair or environment-only classification is claimed."
+    },
+    {
+      "job_id": 125827960219,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41609576580/job/125827960219",
+      "status": "completed",
+      "conclusion": "failure",
+      "log_file": "job-125827960219.log",
+      "log_bytes": 1349359,
+      "log_sha256": "997c2717bd671846a93aeb4377821d273396b3fbd7d4658ead0c725b879cacb7",
+      "retained_file": "job-125827960219.log.xz",
+      "xz_bytes": 117224,
+      "xz_sha256": "5db6649347e19f0600b06aee2e8f9adb94fa77b6deb0cc8b933d67385665b617",
+      "lossless_roundtrip_verified": true,
+      "original_summary": [
+        "2026-11-03T09:48:40.1184058Z Executed 100 out of 153 tests: 101 tests pass, 7 fail locally, and 45 were skipped."
+      ],
+      "failed_bazel_targets": [
+        "//codex-rs/cli:cli-sandbox_cloud_config-test                             FAILED in 1.5s",
+        "//codex-rs/core:core-responses_headers-test                              FAILED in 17.3s",
+        "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test  FAILED in 2.5s",
+        "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests    FAILED in 7.0s",
+        "//codex-rs/hepta-memory:hepta-memory-unit-tests                          FAILED in 167.5s",
+        "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 3.9s",
+        "//codex-rs/app-server:app-server-all-test                                FAILED in 10 out of 24 in 92.7s"
+      ],
+      "missing_module_errors_seen": [],
+      "classification": "Actual native test failures. No root cause repair or environment-only classification is claimed."
+    },
+    {
+      "job_id": 125827960371,
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41609576580/job/125827960371",
+      "status": "completed",
+      "conclusion": "failure",
+      "log_file": "job-125827960371.log",
+      "log_bytes": 542499,
+      "log_sha256": "672526274475aada8e353f4139bbaad83447734d3169602df63e59a51deaa859",
+      "retained_file": "job-125827960371.log.xz",
+      "xz_bytes": 53196,
+      "xz_sha256": "ec0297297ea898b8b74aa743523d1f96708711cdcb29894b5b2162fd78704297",
+      "lossless_roundtrip_verified": true,
+      "original_summary": [
+        "2026-11-03T09:44:56.6518626Z Executed 100 out of 159 tests: 102 tests pass, 3 fail locally, and 54 were skipped."
+      ],
+      "failed_bazel_targets": [
+        "//codex-rs/ext/queue:queue-queue_service-test                            FAILED in 63.7s",
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 93.3s",
+        "//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests                        FAILED in 30.6s"
+      ],
+      "missing_module_errors_seen": [],
+      "classification": "Actual native test failures. No root cause repair or environment-only classification is claimed."
+    }
+  ],
+  "source_changes_or_gate_relaxations": false,
+  "product_qualification": false
+}

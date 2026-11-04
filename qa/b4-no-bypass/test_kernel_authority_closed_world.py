@@ -7,6 +7,7 @@ import sys
 import tomllib
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -50,22 +51,22 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
 
     def public_methods(self, source_path: str, type_name: str) -> set[str]:
         code = self.lexical_code(source_path)
-        match = re.search(rf"\bimpl\s+{re.escape(type_name)}\s*\{{", code)
-        self.assertIsNotNone(match, f"missing impl block for {type_name}")
-        assert match is not None
-        brace = code.find("{", match.start())
-        end = CALLER_PROOF._matching_delimiter(code, brace, "{", "}")
-        self.assertIsNotNone(end, f"unbalanced impl block for {type_name}")
-        assert end is not None
-        block = code[brace + 1 : end]
+        matches = list(re.finditer(rf"\bimpl\s+{re.escape(type_name)}\s*\{{", code))
+        self.assertTrue(matches, f"missing impl block for {type_name}")
         methods: set[str] = set()
-        for method in re.finditer(
-            r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", block
-        ):
-            prefix = block[: method.start()]
-            depth = prefix.count("{") - prefix.count("}")
-            if depth == 0:
-                methods.add(method.group(1))
+        for match in matches:
+            brace = code.find("{", match.start())
+            end = CALLER_PROOF._matching_delimiter(code, brace, "{", "}")
+            self.assertIsNotNone(end, f"unbalanced impl block for {type_name}")
+            assert end is not None
+            block = code[brace + 1 : end]
+            for method in re.finditer(
+                r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", block
+            ):
+                prefix = block[: method.start()]
+                depth = prefix.count("{") - prefix.count("}")
+                if depth == 0:
+                    methods.add(method.group(1))
         return methods
 
     def public_free_functions(self, source_path: str) -> set[str]:
@@ -151,12 +152,54 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                     boundary_ids,
                     f"{type_name}::{method}: missing canonical privileged boundary",
                 )
-            observed = self.public_methods(str(row["sourcePath"]), type_name)
+            extension_paths = row.get("extensionSourcePaths", [])
+            self.assertIsInstance(extension_paths, list)
+            assert isinstance(extension_paths, list)
+            source_paths = [str(row["sourcePath"]), *extension_paths]
+            self.assertTrue(all(isinstance(path, str) and path for path in source_paths))
+            self.assertEqual(
+                len(source_paths), len(set(source_paths)),
+                f"{type_name}: duplicate authority method source path",
+            )
+            observed: set[str] = set()
+            # Only the independently reviewed explicit paths extend this type;
+            # neither the caller manifest nor observed methods grant a policy.
+            for source_path in source_paths:
+                observed.update(self.public_methods(source_path, type_name))
             self.assertEqual(
                 observed,
                 privileged_methods | non_privileged_methods,
                 f"{type_name}: public method classification drifted",
             )
+
+    def test_split_authority_impls_cannot_add_unclassified_public_methods(self) -> None:
+        data = {
+            "types": [{
+                "typeName": "ExampleAuthority",
+                "sourcePath": "classic.rs",
+                "extensionSourcePaths": ["pq.rs"],
+                "privilegedMethods": {"open": "example_open", "open_pq": "example_open_pq"},
+                "nonPrivilegedMethods": [],
+            }],
+            "boundaries": [{"id": "example_open"}, {"id": "example_open_pq"}],
+        }
+        sources = {
+            "classic.rs": "impl ExampleAuthority { pub fn open() {} }",
+            "pq.rs": "impl ExampleAuthority { pub fn open_pq() {} }",
+        }
+        with patch.object(self, "data", return_value=data), patch.object(
+            self, "lexical_code", side_effect=sources.__getitem__
+        ):
+            self.test_every_public_authority_method_is_explicitly_classified()
+            with self.subTest(mutation="omitted_extension_file"):
+                data["types"][0]["extensionSourcePaths"] = []
+                with self.assertRaisesRegex(AssertionError, "public method classification drifted"):
+                    self.test_every_public_authority_method_is_explicitly_classified()
+                data["types"][0]["extensionSourcePaths"] = ["pq.rs"]
+            with self.subTest(mutation="unclassified_method_in_second_impl"):
+                sources["pq.rs"] += "\nimpl ExampleAuthority { pub fn unreviewed_authority() {} }"
+                with self.assertRaisesRegex(AssertionError, "public method classification drifted"):
+                    self.test_every_public_authority_method_is_explicitly_classified()
 
     def test_canonical_kernel_authority_inventory_is_declared_in_callers_manifest(self) -> None:
         data = tomllib.loads(MANIFEST.read_text(encoding="utf-8"))

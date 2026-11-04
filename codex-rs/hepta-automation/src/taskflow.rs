@@ -691,7 +691,7 @@ impl AutomationStore {
         let json = definition.canonical_json()?;
         let mut tx = self
             .taskflow_pool()
-            .begin()
+            .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(|_| TaskFlowError::Unavailable)?;
         let existing = sqlx::query(
@@ -822,7 +822,7 @@ impl AutomationStore {
         validate_digest(definition_digest, "definition digest")?;
         let mut tx = self
             .taskflow_pool()
-            .begin()
+            .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(|_| TaskFlowError::Unavailable)?;
         let definition_row = sqlx::query(
@@ -978,7 +978,7 @@ impl AutomationStore {
             .ok_or_else(|| invalid("lease duration overflows timestamp"))?;
         let mut tx = self
             .taskflow_pool()
-            .begin()
+            .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(|_| TaskFlowError::Unavailable)?;
         let row =
@@ -1204,9 +1204,11 @@ impl AutomationStore {
         validate_text(&command.command_id, "command_id", MAX_ID_BYTES)?;
         self.validate_taskflow_fence(&command.fence)?;
         let command_digest = command.digest()?;
+        // Read the history only after reserving its writer. Concurrent provider
+        // recovery must wait here instead of upgrading an obsolete snapshot.
         let mut tx = self
             .taskflow_pool()
-            .begin()
+            .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(|_| TaskFlowError::Unavailable)?;
         let row =

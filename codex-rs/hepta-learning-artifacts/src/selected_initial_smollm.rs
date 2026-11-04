@@ -22,6 +22,7 @@ pub use public_profile::SelectedPublicInitialSmolLmMaterialV2;
 
 #[derive(Clone, Copy, Debug)]
 pub(super) struct InitialSelectionWindowV1 {
+    pub(super) authentication_profile: codex_hepta_contracts::LearningAuthenticationProfile,
     pub(super) verified_at: u64,
     pub(super) expires_at: u64,
     pub(super) revoked_at: Option<u64>,
@@ -30,7 +31,7 @@ pub(super) struct InitialSelectionWindowV1 {
 
 impl InitialSelectionWindowV1 {
     fn validate_at(self, now: u64) -> Result<(), ArtifactSelectionError> {
-        if now < self.verified_at || now > self.expires_at {
+        if now < self.verified_at || self.authentication_profile.expired_at(now, self.expires_at) {
             return Err(ArtifactSelectionError::SelectionContext);
         }
         if self.revoked_at.is_some_and(|at| now >= at) {
@@ -88,6 +89,15 @@ impl VerifiedArtifactSelectionV1 {
 }
 
 impl SelectedInitialSmolLmMaterialV1 {
+    /// The profile authenticated by both the original selector and CURRENT.
+    /// A host must bind its independent FinalUse owner to this same profile.
+    #[must_use]
+    pub const fn authentication_profile(
+        &self,
+    ) -> codex_hepta_contracts::LearningAuthenticationProfile {
+        self.candidate.authentication_profile()
+    }
+
     #[must_use]
     pub fn manifest(&self) -> &ArtifactManifest {
         &self.candidate.spec().manifest

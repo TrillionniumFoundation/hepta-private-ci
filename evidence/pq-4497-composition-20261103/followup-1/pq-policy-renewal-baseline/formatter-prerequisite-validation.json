@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/workspace/scratch/df0a4a720ed8/hepta-pq/actionlint-1.7.12/actionlint",
+    "-color",
+    ".github/workflows/hepta-pq-policy-renewal.yml"
+  ],
+  "exit_code": 0,
+  "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "workflow_sha256": "b58cf41271e1a8e5a385b840bdfb2189703aa4a1e93221e3ce25f6a4e63ccbc8",
+  "patch_sha256": "28382443cd3b3fef70d88ba1aca7aed4e01f90b2a7f5ca412d9f29e683b022c7",
+  "change": "Add the identical existing setup-uv pin and version from hepta-pon-native-pair.yml before the original formatter; retain every existing test, deadline, lane, and result requirement.",
+  "native_execution_pass_claimed": false
+}

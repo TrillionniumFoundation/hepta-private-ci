@@ -1,0 +1,49 @@
+{
+  "base": "47a7e36ee21b9a68ba9de50bc0b962c2ad880538",
+  "candidate": "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c",
+  "tree": "535660af742d62b6578b5e4334e0f2d2c17527e0",
+  "source_files": [
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/store/pq_rollback_witness/tests.rs",
+      "base_sha256": "a26a24da5d6a2bd6221206f9fbad294c4b1b46b9806d8d7940f8b832eecb2e1a",
+      "candidate_sha256": "a26a24da5d6a2bd6221206f9fbad294c4b1b46b9806d8d7940f8b832eecb2e1a",
+      "byte_identical": true,
+      "base_blob": "96b23043257e8cc12f1477a48b250fec2af8fca4",
+      "candidate_blob": "96b23043257e8cc12f1477a48b250fec2af8fca4"
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/store/pq_rollback_witness.rs",
+      "base_sha256": "0d0829a72ded56422672ede914934690681d34b613a9287d70ee2aa466787db4",
+      "candidate_sha256": "0d0829a72ded56422672ede914934690681d34b613a9287d70ee2aa466787db4",
+      "byte_identical": true,
+      "base_blob": "ef7aea9c6459f8171baf937a2e57898cf3936bee",
+      "candidate_blob": "ef7aea9c6459f8171baf937a2e57898cf3936bee"
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/store/pq_network.rs",
+      "base_sha256": "036a2b1d78e60c565f565d404905cc7d3dfb477522ea755ae7be495b86c5f932",
+      "candidate_sha256": "036a2b1d78e60c565f565d404905cc7d3dfb477522ea755ae7be495b86c5f932",
+      "byte_identical": true,
+      "base_blob": "bea4200197a282f2c970dc22f0d0765e64dffa61",
+      "candidate_blob": "bea4200197a282f2c970dc22f0d0765e64dffa61"
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/pq_rollback_witness.rs",
+      "base_sha256": "3b5f54d06853ee4d0aee183ec54748d551773b2b2ad52fc521482d50a1cf672b",
+      "candidate_sha256": "c0e019c57d3811338dc7d0dc32bbdf795527e4939b44839db82a658a891ba38b",
+      "byte_identical": false,
+      "base_blob": "8842b6d7aa7542e56e50f6895a4ef7d7efd07521",
+      "candidate_blob": "8c6fcefe166f88d15d6f1302b1deb421347a3662"
+    }
+  ],
+  "source_delta_sha256": "e191972a942df1453d1842be1b9e64065d82300fded273967cee97894734824c",
+  "original_and_candidate_exchange_bound": "MAX_EXCHANGE = Duration::from_millis(250)",
+  "source_failing_call": "trillionnium/crates/trnm-pon-node/src/store/pq_rollback_witness/tests.rs:718",
+  "phase_before_failure": "LIVE_CANCELLED observed; epoch advanced; retired row (status, highest) == (2,1); local checkpoint == external head; next ordinary begin_pq_network_request refused",
+  "new_guard_codes_not_observed": [
+    "PQ_WITNESS_OBSERVATION_ROLLBACK",
+    "PQ_WITNESS_STORAGE_ROLLBACK",
+    "PQ_WITNESS_COMMIT_UNCERTAIN"
+  ],
+  "causal_limit": "No stage timing in retained log. Cannot identify request preparation/Current/CAS/signing boundary or establish scheduler, filesystem, or new-check overhead causation."
+}

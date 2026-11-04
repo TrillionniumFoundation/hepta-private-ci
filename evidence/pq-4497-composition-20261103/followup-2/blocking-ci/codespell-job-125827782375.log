@@ -1,0 +1,281 @@
+﻿2026-11-03T09:15:46.0124090Z Current runner version: '2.338.2'
+2026-11-03T09:15:46.0150762Z ##[group]Runner Image Provisioner
+2026-11-03T09:15:46.0151649Z Hosted Compute Agent
+2026-11-03T09:15:46.0152350Z Version: 20261021.618
+2026-11-03T09:15:46.0153032Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-11-03T09:15:46.0153809Z Build Date: 2026-10-21T00:45:21Z
+2026-11-03T09:15:46.0154500Z Worker ID: {3c5dcd40-ee66-444d-84b5-2f8b18c78820}
+2026-11-03T09:15:46.0155216Z Region: westus
+2026-11-03T09:15:46.0155820Z Cloud: Azure
+2026-11-03T09:15:46.0156357Z ##[endgroup]
+2026-11-03T09:15:46.0157857Z ##[group]Operating System
+2026-11-03T09:15:46.0158919Z Ubuntu
+2026-11-03T09:15:46.0159490Z 24.04.5
+2026-11-03T09:15:46.0160079Z LTS
+2026-11-03T09:15:46.0160637Z ##[endgroup]
+2026-11-03T09:15:46.0161226Z ##[group]Runner Image
+2026-11-03T09:15:46.0161855Z Image: ubuntu-24.04
+2026-11-03T09:15:46.0162461Z Version: 20261025.353.1
+2026-11-03T09:15:46.0163793Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-03T09:15:46.0165466Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-11-03T09:15:46.0166458Z ##[endgroup]
+2026-11-03T09:15:46.0167546Z ##[group]GITHUB_TOKEN Permissions
+2026-11-03T09:15:46.0169840Z Contents: read
+2026-11-03T09:15:46.0170449Z Metadata: read
+2026-11-03T09:15:46.0171109Z ##[endgroup]
+2026-11-03T09:15:46.0173209Z Secret source: Actions
+2026-11-03T09:15:46.0174260Z Cache mode: write
+2026-11-03T09:15:46.0174960Z Prepare workflow directory
+2026-11-03T09:15:46.0566705Z Prepare all required actions
+2026-11-03T09:15:46.0620009Z Getting action download info
+2026-11-03T09:15:46.4193915Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-03T09:15:46.5563666Z Download action repository 'codespell-project/codespell-problem-matcher@b80729f885d32f78a716c2f107b4db1025001c42' (SHA:b80729f885d32f78a716c2f107b4db1025001c42)
+2026-11-03T09:15:46.8145306Z Download action repository 'codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579' (SHA:8f01853be192eb0f849a5c7d721450e7a467c579)
+2026-11-03T09:15:47.1585670Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/codespell.yml@refs/pull/4497/merge (21ceefde202d58ef60e937d637f725727a9fe086)
+2026-11-03T09:15:47.1593089Z Complete job name: Codespell / Check for spelling errors
+2026-11-03T09:15:47.2257632Z ##[group]Build container for action use: '/home/runner/work/_actions/codespell-project/actions-codespell/8f01853be192eb0f849a5c7d721450e7a467c579/Dockerfile'.
+2026-11-03T09:15:47.2650326Z ##[command]/usr/bin/docker build -t 36b090:1a27084fe8764e33bb306f14f75d3a6d -f "/home/runner/work/_actions/codespell-project/actions-codespell/8f01853be192eb0f849a5c7d721450e7a467c579/Dockerfile" "/home/runner/work/_actions/codespell-project/actions-codespell/8f01853be192eb0f849a5c7d721450e7a467c579"
+2026-11-03T09:15:51.5828360Z #0 building with "default" instance using docker driver
+2026-11-03T09:15:51.5828939Z 
+2026-11-03T09:15:51.5829160Z #1 [internal] load build definition from Dockerfile
+2026-11-03T09:15:51.5829627Z #1 transferring dockerfile: 325B 0.0s done
+2026-11-03T09:15:51.5830076Z #1 DONE 0.0s
+2026-11-03T09:15:51.5830251Z 
+2026-11-03T09:15:51.5830540Z #2 [internal] load metadata for docker.io/library/python:3.13-alpine
+2026-11-03T09:15:51.8296095Z #2 ...
+2026-11-03T09:15:51.8296547Z 
+2026-11-03T09:15:51.8297046Z #3 [auth] library/python:pull token for registry-1.docker.io
+2026-11-03T09:15:51.8297687Z #3 DONE 0.0s
+2026-11-03T09:15:51.9798069Z 
+2026-11-03T09:15:51.9799071Z #2 [internal] load metadata for docker.io/library/python:3.13-alpine
+2026-11-03T09:15:52.3236592Z #2 DONE 0.9s
+2026-11-03T09:15:52.4510320Z 
+2026-11-03T09:15:52.4511222Z #4 [internal] load .dockerignore
+2026-11-03T09:15:52.4511791Z #4 transferring context: 2B done
+2026-11-03T09:15:52.4512243Z #4 DONE 0.0s
+2026-11-03T09:15:52.4512456Z 
+2026-11-03T09:15:52.4512610Z #5 [internal] load build context
+2026-11-03T09:15:52.4513405Z #5 transferring context: 7.97kB done
+2026-11-03T09:15:52.4513697Z #5 DONE 0.0s
+2026-11-03T09:15:52.4513863Z 
+2026-11-03T09:15:52.4514350Z #6 [1/3] FROM docker.io/library/python:3.13-alpine@sha256:7984cf56ceaddebe4fefeb75d64000b9f45d8b77b11a09b24524da6cdc3af0c8
+2026-11-03T09:15:52.4515377Z #6 resolve docker.io/library/python:3.13-alpine@sha256:7984cf56ceaddebe4fefeb75d64000b9f45d8b77b11a09b24524da6cdc3af0c8 done
+2026-11-03T09:15:52.4516326Z #6 sha256:7b229517ed222597277036d94892173207d01a731ab3a88eeb1de2e963a2c788 3.85MB / 3.85MB 0.1s done
+2026-11-03T09:15:52.4517110Z #6 sha256:09a0787ca8c6c8834dc68f94d57bf7e39a399b3144fcbe2012681d9aa6e9ae15 0B / 412.04kB 0.1s
+2026-11-03T09:15:52.4517849Z #6 sha256:932709760b042cb7be5fff55bb3ffd613331f5482614ab0e6f4a8dbbff813a61 0B / 12.67MB 0.1s
+2026-11-03T09:15:52.4518904Z #6 sha256:53a2a9572bd358c122f3cb8c1cb614e49b4bed883097b273f04794767562375b 0B / 249B 0.1s
+2026-11-03T09:15:52.4519648Z #6 sha256:7984cf56ceaddebe4fefeb75d64000b9f45d8b77b11a09b24524da6cdc3af0c8 10.30kB / 10.30kB done
+2026-11-03T09:15:52.4520530Z #6 sha256:7712cfd23e0501f5cb58faa5e6e0d515c9939bdbce866921799b31e696a1d13c 1.74kB / 1.74kB done
+2026-11-03T09:15:52.4521809Z #6 sha256:4b47a20ba2e7896b29f6a8400bcbfaf2c4f5baec4a18d3d445e11b03a6bf932f 5.43kB / 5.43kB done
+2026-11-03T09:15:52.5729347Z #6 sha256:09a0787ca8c6c8834dc68f94d57bf7e39a399b3144fcbe2012681d9aa6e9ae15 412.04kB / 412.04kB 0.1s done
+2026-11-03T09:15:52.5731265Z #6 extracting sha256:7b229517ed222597277036d94892173207d01a731ab3a88eeb1de2e963a2c788 0.1s done
+2026-11-03T09:15:52.5732650Z #6 extracting sha256:09a0787ca8c6c8834dc68f94d57bf7e39a399b3144fcbe2012681d9aa6e9ae15
+2026-11-03T09:15:52.8148257Z #6 sha256:932709760b042cb7be5fff55bb3ffd613331f5482614ab0e6f4a8dbbff813a61 12.67MB / 12.67MB 0.3s done
+2026-11-03T09:15:52.8149253Z #6 sha256:53a2a9572bd358c122f3cb8c1cb614e49b4bed883097b273f04794767562375b 249B / 249B 0.2s done
+2026-11-03T09:15:52.8150115Z #6 extracting sha256:09a0787ca8c6c8834dc68f94d57bf7e39a399b3144fcbe2012681d9aa6e9ae15 0.1s done
+2026-11-03T09:15:52.8168559Z #6 extracting sha256:932709760b042cb7be5fff55bb3ffd613331f5482614ab0e6f4a8dbbff813a61
+2026-11-03T09:15:53.4563067Z #6 extracting sha256:932709760b042cb7be5fff55bb3ffd613331f5482614ab0e6f4a8dbbff813a61 0.5s done
+2026-11-03T09:15:53.4564217Z #6 extracting sha256:53a2a9572bd358c122f3cb8c1cb614e49b4bed883097b273f04794767562375b done
+2026-11-03T09:15:53.4564937Z #6 DONE 1.1s
+2026-11-03T09:15:53.4565540Z 
+2026-11-03T09:15:53.4566321Z #7 [2/3] COPY LICENSE         README.md         entrypoint.sh         codespell-problem-matcher/codespell-matcher.json         requirements.txt         /code/
+2026-11-03T09:15:53.4567334Z #7 DONE 0.0s
+2026-11-03T09:15:53.6109256Z 
+2026-11-03T09:15:53.6110207Z #8 [3/3] RUN pip install --no-cache-dir -r /code/requirements.txt
+2026-11-03T09:15:55.6904884Z #8 2.233 Collecting codespell>=2.2.4 (from codespell[toml]>=2.2.4->-r /code/requirements.txt (line 1))
+2026-11-03T09:15:55.8918674Z #8 2.268   Downloading codespell-2.4.3-py3-none-any.whl.metadata (16 kB)
+2026-11-03T09:15:55.8919629Z #8 2.311 Downloading codespell-2.4.3-py3-none-any.whl (340 kB)
+2026-11-03T09:15:55.8920320Z #8 2.435 Installing collected packages: codespell
+2026-11-03T09:15:56.0113777Z #8 2.470 Successfully installed codespell-2.4.3
+2026-11-03T09:15:56.0117276Z #8 2.471 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+2026-11-03T09:15:56.0121325Z #8 2.472 
+2026-11-03T09:15:56.0121858Z #8 2.472 [notice] A new release of pip is available: 26.2.2 -> 26.3
+2026-11-03T09:15:56.0122641Z #8 2.472 [notice] To update, run: pip install --upgrade pip
+2026-11-03T09:15:56.0123207Z #8 DONE 2.6s
+2026-11-03T09:15:56.1633797Z 
+2026-11-03T09:15:56.1634395Z #9 exporting to image
+2026-11-03T09:15:56.1639757Z #9 exporting layers
+2026-11-03T09:15:57.0065332Z #9 exporting layers 1.0s done
+2026-11-03T09:15:57.0289061Z #9 writing image sha256:725a018c7dd0c430b5ff2d097cbdf4cb9687ecd75d1b803a3bc9fbaa20fd74a3 done
+2026-11-03T09:15:57.0290104Z #9 naming to docker.io/library/36b090:1a27084fe8764e33bb306f14f75d3a6d done
+2026-11-03T09:15:57.0290550Z #9 DONE 1.0s
+2026-11-03T09:15:57.0360820Z ##[endgroup]
+2026-11-03T09:15:57.0686369Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-03T09:15:57.0687072Z with:
+2026-11-03T09:15:57.0687293Z   persist-credentials: false
+2026-11-03T09:15:57.0687636Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-03T09:15:57.0690520Z   token: ***
+2026-11-03T09:15:57.0690730Z   ssh-strict: true
+2026-11-03T09:15:57.0690930Z   ssh-user: git
+2026-11-03T09:15:57.0691119Z   clean: true
+2026-11-03T09:15:57.0691329Z   sparse-checkout-cone-mode: true
+2026-11-03T09:15:57.0691585Z   fetch-depth: 1
+2026-11-03T09:15:57.0691790Z   fetch-tags: false
+2026-11-03T09:15:57.0692023Z   show-progress: true
+2026-11-03T09:15:57.0692230Z   lfs: false
+2026-11-03T09:15:57.0692415Z   submodules: false
+2026-11-03T09:15:57.0692627Z   set-safe-directory: true
+2026-11-03T09:15:57.0693103Z ##[endgroup]
+2026-11-03T09:15:57.3576120Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-03T09:15:57.3577630Z ##[group]Getting Git version info
+2026-11-03T09:15:57.3578645Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-03T09:15:57.3579694Z [command]/usr/bin/git version
+2026-11-03T09:15:57.3598447Z git version 2.56.0
+2026-11-03T09:15:57.3624053Z ##[endgroup]
+2026-11-03T09:15:57.3641769Z Temporarily overriding HOME='/home/runner/work/_temp/7aabbc49-37fc-4dc2-940c-35d754c8e5ce' before making global git config changes
+2026-11-03T09:15:57.3643225Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T09:15:57.3649104Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T09:15:57.3703819Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-03T09:15:57.3707111Z ##[group]Initializing the repository
+2026-11-03T09:15:57.3713211Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T09:15:57.3824395Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-03T09:15:57.3825584Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-03T09:15:57.3826601Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-03T09:15:57.3827419Z hint: call:
+2026-11-03T09:15:57.3827879Z hint:
+2026-11-03T09:15:57.3828818Z hint: 	git config --global init.defaultBranch <name>
+2026-11-03T09:15:57.3829707Z hint:
+2026-11-03T09:15:57.3830450Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-03T09:15:57.3831127Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-03T09:15:57.3831816Z hint:
+2026-11-03T09:15:57.3832050Z hint: 	git branch -m <name>
+2026-11-03T09:15:57.3832283Z hint:
+2026-11-03T09:15:57.3832621Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-03T09:15:57.3837099Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-03T09:15:57.3851591Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-03T09:15:57.3902377Z ##[endgroup]
+2026-11-03T09:15:57.3903086Z ##[group]Disabling automatic garbage collection
+2026-11-03T09:15:57.3907429Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-03T09:15:57.4052435Z ##[endgroup]
+2026-11-03T09:15:57.4053331Z ##[group]Setting up auth
+2026-11-03T09:15:57.4054343Z Removing SSH command configuration
+2026-11-03T09:15:57.4055643Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T09:15:57.4059260Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T09:15:57.4418993Z Removing HTTP extra header
+2026-11-03T09:15:57.4420037Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T09:15:57.4460738Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T09:15:57.4730545Z Removing includeIf entries pointing to credentials config files
+2026-11-03T09:15:57.4737357Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-03T09:15:57.4780261Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-03T09:15:57.5028787Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-40e1b395-4de1-498f-aaab-8a48a02c0d9a.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-03T09:15:57.5080940Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-40e1b395-4de1-498f-aaab-8a48a02c0d9a.config
+2026-11-03T09:15:57.5121821Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-40e1b395-4de1-498f-aaab-8a48a02c0d9a.config
+2026-11-03T09:15:57.5164702Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-40e1b395-4de1-498f-aaab-8a48a02c0d9a.config
+2026-11-03T09:15:57.5206583Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-40e1b395-4de1-498f-aaab-8a48a02c0d9a.config
+2026-11-03T09:15:57.5243301Z ##[endgroup]
+2026-11-03T09:15:57.5243702Z ##[group]Fetching the repository
+2026-11-03T09:15:57.5253646Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +21ceefde202d58ef60e937d637f725727a9fe086:refs/remotes/pull/4497/merge
+2026-11-03T09:16:02.1720071Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-03T09:16:02.1732875Z  * [new ref]         21ceefde202d58ef60e937d637f725727a9fe086 -> pull/4497/merge
+2026-11-03T09:16:02.1734667Z ##[endgroup]
+2026-11-03T09:16:02.1735056Z ##[group]Determining the checkout info
+2026-11-03T09:16:02.1735461Z ##[endgroup]
+2026-11-03T09:16:02.1735756Z [command]/usr/bin/git sparse-checkout disable
+2026-11-03T09:16:02.1793017Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-03T09:16:02.1834348Z ##[group]Checking out the ref
+2026-11-03T09:16:02.1839365Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/4497/merge
+2026-11-03T09:16:03.0279874Z Note: switching to 'refs/remotes/pull/4497/merge'.
+2026-11-03T09:16:03.0280395Z 
+2026-11-03T09:16:03.0280797Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-03T09:16:03.0281718Z changes and commit them, and you can discard any commits you make in this
+2026-11-03T09:16:03.0282611Z state without impacting any branches by switching back to a branch.
+2026-11-03T09:16:03.0283125Z 
+2026-11-03T09:16:03.0283611Z If you want to create a new branch to retain commits you create, you may
+2026-11-03T09:16:03.0284394Z do so (now or later) by using -c with the switch command. Example:
+2026-11-03T09:16:03.0284826Z 
+2026-11-03T09:16:03.0285023Z   git switch -c <new-branch-name>
+2026-11-03T09:16:03.0285321Z 
+2026-11-03T09:16:03.0285512Z Or undo this operation with:
+2026-11-03T09:16:03.0285795Z 
+2026-11-03T09:16:03.0285953Z   git switch -
+2026-11-03T09:16:03.0286240Z 
+2026-11-03T09:16:03.0286618Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-03T09:16:03.0287419Z 
+2026-11-03T09:16:03.0288265Z HEAD is now at 21ceefd Merge 2d7506108fd1b7813d5afbe2bbb0aaf5d9460c6d into 3a81000aae08c658276958d678874aca4db5eedd
+2026-11-03T09:16:03.0312681Z ##[endgroup]
+2026-11-03T09:16:03.0369293Z [command]/usr/bin/git log -1 --format=%H
+2026-11-03T09:16:03.0404660Z 21ceefde202d58ef60e937d637f725727a9fe086
+2026-11-03T09:16:03.0415366Z ##[group]Removing auth
+2026-11-03T09:16:03.0416261Z Removing SSH command configuration
+2026-11-03T09:16:03.0421291Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T09:16:03.0464729Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T09:16:03.0726300Z Removing HTTP extra header
+2026-11-03T09:16:03.0732287Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T09:16:03.0778925Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T09:16:03.1043207Z Removing includeIf entries pointing to credentials config files
+2026-11-03T09:16:03.1048326Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-03T09:16:03.1089914Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-03T09:16:03.1090910Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-03T09:16:03.1091722Z includeif.gitdir:/github/workspace/.git.path
+2026-11-03T09:16:03.1092295Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-03T09:16:03.1109519Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-03T09:16:03.1136516Z /home/runner/work/_temp/git-credentials-40e1b395-4de1-498f-aaab-8a48a02c0d9a.config
+2026-11-03T09:16:03.1156365Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-40e1b395-4de1-498f-aaab-8a48a02c0d9a.config
+2026-11-03T09:16:03.1203742Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-03T09:16:03.1249152Z /home/runner/work/_temp/git-credentials-40e1b395-4de1-498f-aaab-8a48a02c0d9a.config
+2026-11-03T09:16:03.1257496Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-40e1b395-4de1-498f-aaab-8a48a02c0d9a.config
+2026-11-03T09:16:03.1302577Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-03T09:16:03.1337672Z /github/runner_temp/git-credentials-40e1b395-4de1-498f-aaab-8a48a02c0d9a.config
+2026-11-03T09:16:03.1347239Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-40e1b395-4de1-498f-aaab-8a48a02c0d9a.config
+2026-11-03T09:16:03.1397705Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-03T09:16:03.1434427Z /github/runner_temp/git-credentials-40e1b395-4de1-498f-aaab-8a48a02c0d9a.config
+2026-11-03T09:16:03.1443189Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-40e1b395-4de1-498f-aaab-8a48a02c0d9a.config
+2026-11-03T09:16:03.1487280Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-03T09:16:03.1741293Z Removing credentials config '/home/runner/work/_temp/git-credentials-40e1b395-4de1-498f-aaab-8a48a02c0d9a.config'
+2026-11-03T09:16:03.1750966Z ##[endgroup]
+2026-11-03T09:16:03.1960057Z ##[group]Run codespell-project/codespell-problem-matcher@b80729f885d32f78a716c2f107b4db1025001c42
+2026-11-03T09:16:03.1960777Z ##[endgroup]
+2026-11-03T09:16:03.2355655Z ##[group]Run codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579
+2026-11-03T09:16:03.2356140Z with:
+2026-11-03T09:16:03.2356402Z   ignore_words_file: .codespellignore
+2026-11-03T09:16:03.2356662Z   skip: ./.git
+2026-11-03T09:16:03.2356857Z ##[endgroup]
+2026-11-03T09:16:03.2455988Z ##[command]/usr/bin/docker run --name b0901a27084fe8764e33bb306f14f75d3a6d_43ca70 --label 36b090 --workdir /github/workspace --rm -e "INPUT_IGNORE_WORDS_FILE" -e "INPUT_BUILTIN" -e "INPUT_CHECK_FILENAMES" -e "INPUT_CHECK_HIDDEN" -e "INPUT_CONFIG" -e "INPUT_EXCLUDE_FILE" -e "INPUT_IGNORE_WORDS_LIST" -e "INPUT_URI_IGNORE_WORDS_LIST" -e "INPUT_PATH" -e "INPUT_SKIP" -e "INPUT_ONLY_WARN" -e "HOME" -e "GITHUB_JOB" -e "GITHUB_REF" -e "GITHUB_SHA" -e "GITHUB_REPOSITORY" -e "GITHUB_REPOSITORY_OWNER" -e "GITHUB_REPOSITORY_OWNER_ID" -e "GITHUB_RUN_ID" -e "GITHUB_RUN_NUMBER" -e "GITHUB_RETENTION_DAYS" -e "GITHUB_RUN_ATTEMPT" -e "GITHUB_ACTOR_ID" -e "GITHUB_ACTOR" -e "GITHUB_WORKFLOW" -e "GITHUB_HEAD_REF" -e "GITHUB_BASE_REF" -e "GITHUB_EVENT_NAME" -e "GITHUB_SERVER_URL" -e "GITHUB_API_URL" -e "GITHUB_GRAPHQL_URL" -e "GITHUB_REF_NAME" -e "GITHUB_REF_PROTECTED" -e "GITHUB_REF_TYPE" -e "GITHUB_WORKFLOW_REF" -e "GITHUB_WORKFLOW_SHA" -e "GITHUB_REPOSITORY_ID" -e "GITHUB_TRIGGERING_ACTOR" -e "GITHUB_WORKSPACE" -e "GITHUB_ACTION" -e "GITHUB_EVENT_PATH" -e "GITHUB_ACTION_REPOSITORY" -e "GITHUB_ACTION_REF" -e "GITHUB_PATH" -e "GITHUB_ENV" -e "GITHUB_STEP_SUMMARY" -e "GITHUB_STATE" -e "GITHUB_OUTPUT" -e "GITHUB_ARTIFACTS" -e "GITHUB_ARTIFACTS_LIST" -e "RUNNER_OS" -e "RUNNER_ARCH" -e "RUNNER_NAME" -e "RUNNER_ENVIRONMENT" -e "RUNNER_TOOL_CACHE" -e "RUNNER_TEMP" -e "RUNNER_WORKSPACE" -e "ACTIONS_RUNTIME_URL" -e "ACTIONS_RUNTIME_TOKEN" -e "ACTIONS_CACHE_URL" -e "ACTIONS_RESULTS_URL" -e "ACTIONS_CACHE_MODE" -e "ACTIONS_ORCHESTRATION_ID" -e GITHUB_ACTIONS=true -e CI=true -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/home/runner/work/_temp":"/github/runner_temp" -v "/home/runner/work/_temp/_github_home":"/github/home" -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" -v "/home/runner/work/_temp/_runner_file_commands":"/github/file_commands" -v "/home/runner/work/hepta-private-ci/hepta-private-ci":"/github/workspace" 36b090:1a27084fe8764e33bb306f14f75d3a6d
+2026-11-03T09:16:04.0762829Z Running codespell on '' with the following options...
+2026-11-03T09:16:04.0763255Z Builtin dictionaries ''
+2026-11-03T09:16:04.0763551Z Check filenames? ''
+2026-11-03T09:16:04.0763792Z Check hidden? ''
+2026-11-03T09:16:04.0764043Z Config ''
+2026-11-03T09:16:04.0764259Z Exclude file ''
+2026-11-03T09:16:04.0764520Z Ignore words file '.codespellignore'
+2026-11-03T09:16:04.0764824Z Ignore words list ''
+2026-11-03T09:16:04.0765077Z Ignore URI words list ''
+2026-11-03T09:16:04.0765342Z Skipping './.git'
+2026-11-03T09:16:04.0765739Z Resulting CLI options  --ignore-words .codespellignore --skip ./.git
+2026-11-03T09:16:20.7853912Z 0
+2026-11-03T09:16:20.7995899Z Codespell found no problems
+2026-11-03T09:16:20.9236881Z Prepare all required actions
+2026-11-03T09:16:20.9273061Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-03T09:16:20.9273381Z ##[endgroup]
+2026-11-03T09:16:20.9329494Z ##[start-action display=Check for a clean worktree;id=__self.__run]
+2026-11-03T09:16:20.9367575Z ##[group]Run set -euo pipefail
+2026-11-03T09:16:20.9367923Z [36;1mset -euo pipefail[0m
+2026-11-03T09:16:20.9368388Z [36;1m[0m
+2026-11-03T09:16:20.9368892Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-03T09:16:20.9369475Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-03T09:16:20.9369740Z [36;1m  exit 0[0m
+2026-11-03T09:16:20.9369931Z [36;1mfi[0m
+2026-11-03T09:16:20.9370117Z [36;1m[0m
+2026-11-03T09:16:20.9370487Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-03T09:16:20.9371153Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-03T09:16:20.9371428Z [36;1mexit 1[0m
+2026-11-03T09:16:20.9395852Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-03T09:16:20.9396207Z ##[endgroup]
+2026-11-03T09:16:20.9986498Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=65]
+2026-11-03T09:16:21.0086005Z Post job cleanup.
+2026-11-03T09:16:21.1105969Z [command]/usr/bin/git version
+2026-11-03T09:16:21.1154834Z git version 2.56.0
+2026-11-03T09:16:21.1202201Z Temporarily overriding HOME='/home/runner/work/_temp/2937edfa-1f18-421b-a721-68ed492527c9' before making global git config changes
+2026-11-03T09:16:21.1203921Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-03T09:16:21.1209848Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-03T09:16:21.1258979Z Removing SSH command configuration
+2026-11-03T09:16:21.1259661Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-03T09:16:21.1304555Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-03T09:16:21.1591467Z Removing HTTP extra header
+2026-11-03T09:16:21.1597976Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-03T09:16:21.1649419Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-03T09:16:21.1955244Z Removing includeIf entries pointing to credentials config files
+2026-11-03T09:16:21.1964685Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-03T09:16:21.2014749Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-03T09:16:21.2433695Z Cleaning up orphan processes
+2026-11-03T09:16:21.2964449Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: codespell-project/codespell-problem-matcher@b80729f885d32f78a716c2f107b4db1025001c42. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
