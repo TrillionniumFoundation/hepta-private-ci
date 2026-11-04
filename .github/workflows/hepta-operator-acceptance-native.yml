@@ -89,8 +89,18 @@ jobs:
           retention-days: 14
 
   bazel-oracle:
-    name: Original Linux Bazel operator oracle with native placement
-    runs-on: ubuntu-24.04
+    name: Original Bazel operator oracle with native placement (${{ matrix.target }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+          - os: macos-15
+            target: aarch64-apple-darwin
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 45
     environment:
       name: bazel
@@ -109,7 +119,7 @@ jobs:
       - name: Prepare original Bazel CI
         uses: ./.github/actions/prepare-bazel-ci
         with:
-          target: x86_64-unknown-linux-gnu
+          target: ${{ matrix.target }}
           cache-scope: bazel-test
       - name: Bind source and installed OpenSSH oracle
         run: |
@@ -126,6 +136,8 @@ jobs:
               raise RuntimeError("source identity mismatch")
           source = {"head": head,
                     "tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+                    "host_os": "${{ runner.os }}",
+                    "target_triple": "${{ matrix.target }}",
                     "oracle": "/usr/bin/ssh-keygen",
                     "oracle_sha256": hashlib.sha256(Path("/usr/bin/ssh-keygen").read_bytes()).hexdigest(),
                     "bazelrc_sha256": hashlib.sha256(Path(".bazelrc").read_bytes()).hexdigest(),
@@ -178,7 +190,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: operator-bazel-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          name: operator-bazel-${{ matrix.target }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
           path: |
             ${{ runner.temp }}/operator-bazel
             ${{ runner.temp }}/bazel-execution-logs
