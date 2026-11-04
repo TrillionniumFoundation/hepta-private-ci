@@ -122,6 +122,120 @@ def execute_groups(
     return results
 
 
+SANDBOX_HELPERS = ("codex-windows-sandbox-setup", "codex-command-runner")
+
+
+def publish_sandbox_helpers(root: Path, target: Path, cargo_log: str) -> list[dict]:
+    """Use only this exact manifest's successful native compiler artifacts."""
+    manifest = (root / "codex-rs/windows-sandbox-rs/Cargo.toml").resolve()
+    profile = (target / "dev-small").resolve()
+    found = {}
+    for line in cargo_log.splitlines():
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(record, dict) or record.get("reason") != "compiler-artifact":
+            continue
+        item = record.get("target", {})
+        name = item.get("name")
+        if name not in SANDBOX_HELPERS or item.get("kind") != ["bin"]:
+            continue
+        if Path(record.get("manifest_path", "")).resolve() != manifest:
+            raise ValueError("sandbox helper came from a different manifest")
+        executable = record.get("executable")
+        if not executable:
+            raise ValueError("sandbox helper artifact has no executable")
+        binary = Path(executable).resolve(strict=True)
+        if binary.parent != profile or binary.name != name + ".exe":
+            raise ValueError("sandbox helper escaped the original native profile")
+        if record.get("profile", {}).get("test"):
+            raise ValueError("sandbox helper is a test harness, not a native helper")
+        if name in found and found[name] != binary:
+            raise ValueError("sandbox helper has ambiguous compiler artifacts")
+        found[name] = binary
+    if set(found) != set(SANDBOX_HELPERS):
+        raise ValueError("both original native sandbox helpers must be built")
+    siblings = profile / "deps"
+    siblings.mkdir(exist_ok=True)
+    if siblings.is_symlink() or siblings.resolve() != siblings:
+        raise ValueError("sandbox helper sibling directory is redirected")
+    artifacts = []
+    for name in SANDBOX_HELPERS:
+        binary = found[name]
+        data = binary.read_bytes()
+        if not data.startswith(b"MZ"):
+            raise ValueError("native Windows helper is not a PE executable")
+        destination = siblings / binary.name
+        # The nextest library executable lives in this deps directory. Publish
+        # the real helper beside it; never substitute a fixture or PATH binary.
+        try:
+            with destination.open("xb") as stream:
+                stream.write(data)
+                stream.flush()
+                os.fsync(stream.fileno())
+        except FileExistsError:
+            if destination.is_symlink() or not destination.is_file():
+                raise ValueError("sandbox helper destination is redirected")
+        if destination.read_bytes() != data or binary.read_bytes() != data:
+            raise ValueError("sandbox helper changed while being materialized")
+        artifacts.append(
+            {
+                "name": name,
+                "source": str(binary),
+                "testSibling": str(destination),
+                "bytes": len(data),
+                "sha256": hashlib.sha256(data).hexdigest(),
+            }
+        )
+    return artifacts
+
+
+def prepare_sandbox_helpers(root: Path, output: Path) -> dict:
+    command = [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-windows-sandbox",
+        "--profile",
+        "dev-small",
+        "--message-format=json",
+    ]
+    for name in SANDBOX_HELPERS:
+        command.extend(["--bin", name])
+    result = {"command": command, "exitCode": None, "artifacts": [], "passed": False}
+    started = time.monotonic()
+    log = output / "sandbox-helper-build.log"
+    try:
+        with log.open("w", encoding="utf-8") as stream:
+            process = subprocess.run(
+                command,
+                cwd=root / "codex-rs",
+                stdout=stream,
+                stderr=subprocess.STDOUT,
+                check=False,
+            )
+        result["exitCode"] = process.returncode
+        if process.returncode == 0:
+            result["artifacts"] = publish_sandbox_helpers(
+                root,
+                Path(os.environ["CARGO_TARGET_DIR"]),
+                log.read_text(encoding="utf-8", errors="replace"),
+            )
+            result["passed"] = True
+    except Exception as error:
+        # This is a failed prerequisite, never a skipped original regression.
+        # Keep running the declared groups so every original result is retained.
+        result["error"] = f"{type(error).__name__}: {error}"
+    result["durationSeconds"] = round(time.monotonic() - started, 3)
+    (output / "sandbox-helper-preparation.json").write_text(
+        json.dumps(result, indent=2) + "\n", encoding="utf-8"
+    )
+    print(json.dumps({"sandboxHelperPreparation": result}), flush=True)
+    return result
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--expected-head", required=True)
@@ -162,10 +276,13 @@ def main() -> int:
     (output / "temporary-environment.json").write_text(
         json.dumps(temporary, indent=2) + "\n"
     )
+    helpers = prepare_sandbox_helpers(root, output)
     results = execute_groups(root, output, manifest["groups"])
     after = source(root)
     intact = valid_source(args.expected_head, before, after)
-    passed = intact and all(result["passed"] for result in results)
+    passed = (
+        intact and helpers["passed"] and all(result["passed"] for result in results)
+    )
     receipt = {
         "schema": "hepta.windows-current-ci-receipt.v1",
         "createdAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -178,6 +295,7 @@ def main() -> int:
         "platform": platform.platform(),
         "machine": platform.machine(),
         "temporaryEnvironment": temporary,
+        "sandboxHelperPreparation": helpers,
         "groups": results,
         "testRetries": 0,
         "productionAuthorityGranted": False,
