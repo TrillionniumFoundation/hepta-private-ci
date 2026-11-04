@@ -128,5 +128,44 @@
     "sha256": "c25ce1d58cf5cd92f13d9dea03e33f515140c19b06940793bf5bf488a2cf60ef",
     "expected_original_status": "passed",
     "reader": "qualification/dylint-20261103/run_lock.py"
+  },
+  {
+    "key": "memory-230d-macos",
+    "kind": "memory",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+    "workflow_head": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+    "run_id": 41750472531,
+    "artifact_id": 13286585140,
+    "bytes": 44120,
+    "sha256": "3bbc9ff066523ef0169f8e38a26c646052dbc88ec33cee051def6fc05b1c084d",
+    "expected_original_status": "passed",
+    "reader": "qualification/memory-migration-20261103/run.py"
+  },
+  {
+    "key": "memory-230d-windows",
+    "kind": "memory",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+    "workflow_head": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+    "run_id": 41750472531,
+    "artifact_id": 13286240278,
+    "bytes": 42481,
+    "sha256": "a77f8c1f297b8666ef49816a7892c4e1b2c7f491a3c4166f472a915d959f379b",
+    "expected_original_status": "failed",
+    "reader": "qualification/memory-migration-20261103/run.py"
+  },
+  {
+    "key": "memory-230d-linux",
+    "kind": "memory",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+    "workflow_head": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+    "run_id": 41750472531,
+    "artifact_id": 13285990483,
+    "bytes": 44580,
+    "sha256": "52a56ccd6575d7aabe99cd5c41152e277fd4c5cc79f5f038dee0214498ee3998",
+    "expected_original_status": "passed",
+    "reader": "qualification/memory-migration-20261103/run.py"
   }
 ]

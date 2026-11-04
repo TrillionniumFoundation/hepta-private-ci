@@ -19,26 +19,12 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - key: state-windows
-            source: 052f4caa6c26396f37cecac6e133433d06a61eb2
-          - key: state-bazel
-            source: 052f4caa6c26396f37cecac6e133433d06a61eb2
-          - key: state-linux
-            source: 052f4caa6c26396f37cecac6e133433d06a61eb2
-          - key: state-macos
-            source: 052f4caa6c26396f37cecac6e133433d06a61eb2
-          - key: env-source
-            source: 00963996f16c067fbd04517d22d3d7e53d1d09a6
-          - key: env-merge
-            source: 2eb8c97ea45fa13aca3186eb0ca1355c85af2f58
-          - key: memory-macos
-            source: c4023a27d00622382d8f23830fae93350252bf5f
-          - key: memory-linux
-            source: c4023a27d00622382d8f23830fae93350252bf5f
-          - key: memory-windows
-            source: c4023a27d00622382d8f23830fae93350252bf5f
-          - key: dylint-lock
-            source: 30ad34c1895597a04dc42f0d233505aa7566a6b7
+          - key: memory-230d-macos
+            source: 230d2d69a8c68ae6f8c502118fd9a8ee33027c37
+          - key: memory-230d-windows
+            source: 230d2d69a8c68ae6f8c502118fd9a8ee33027c37
+          - key: memory-230d-linux
+            source: 230d2d69a8c68ae6f8c502118fd9a8ee33027c37
     env:
       GIT_CONFIG_COUNT: 1
       GIT_CONFIG_KEY_0: core.autocrlf
