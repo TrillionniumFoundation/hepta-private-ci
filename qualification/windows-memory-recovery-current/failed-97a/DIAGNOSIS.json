@@ -1,0 +1,247 @@
+{
+  "schema": 1,
+  "source": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+  "run_id": 41767471183,
+  "windows_job": 126370589210,
+  "original_status": "failed",
+  "artifact": {
+    "key": "memory97-windows",
+    "kind": "memory-native",
+    "host": "windows",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+    "workflow_head": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+    "run_id": 41767471183,
+    "artifact_id": 13294760102,
+    "bytes": 975016,
+    "sha256": "d97763fa99637bf24aef71a12edf4f7ec273c765ed233e60d08c5d96a28df77e",
+    "expected_original_status": "failed",
+    "reader": "qualification/windows-memory-recovery-current/generate.py"
+  },
+  "original_log": {
+    "bytes": 197123,
+    "sha256": "2c857d97a1e6be90bddbf8bafad83697d07555fefefbb5d8524c3f6ee885f570",
+    "gzip_bytes": 197161,
+    "gzip_sha256": "6056febb7671a451f36c4d4f2426cf2dc8cdd111ec72494b4d8c97a12e3c7c75",
+    "encoding": "Original decoded GitHub job UTF-8 text in lossless standard gzip; no line-ending rewriting."
+  },
+  "actual_commands": [
+    {
+      "name": "initial-clean-source",
+      "argv": [
+        "git",
+        "--no-replace-objects",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+      "exit_code": 0,
+      "seconds": 0.21899999999993724
+    },
+    {
+      "name": "rustc-version",
+      "argv": [
+        "rustc",
+        "-Vv"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+      "exit_code": 0,
+      "seconds": 0.031000000000062755
+    },
+    {
+      "name": "nextest-version",
+      "argv": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+      "exit_code": 0,
+      "seconds": 0.6879999999999882
+    },
+    {
+      "name": "codex-utils-path-inventory",
+      "argv": [
+        "cargo",
+        "nextest",
+        "list",
+        "--locked",
+        "-p",
+        "codex-utils-path",
+        "--lib",
+        "--message-format=json"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+      "exit_code": 102,
+      "seconds": 15.108999999999924
+    },
+    {
+      "name": "codex-state-inventory",
+      "argv": [
+        "cargo",
+        "nextest",
+        "list",
+        "--locked",
+        "-p",
+        "codex-state",
+        "--lib",
+        "--message-format=json"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+      "exit_code": 0,
+      "seconds": 401.28200000000004
+    },
+    {
+      "name": "codex-state-original-tests",
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-state",
+        "--lib",
+        "--no-tests=fail",
+        "--retries",
+        "0",
+        "--success-output=final"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+      "exit_code": 0,
+      "seconds": 86.15599999999995
+    },
+    {
+      "name": "codex-hepta-memory-inventory",
+      "argv": [
+        "cargo",
+        "nextest",
+        "list",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "--message-format=json"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+      "exit_code": 0,
+      "seconds": 131.28199999999993
+    },
+    {
+      "name": "codex-hepta-memory-original-tests",
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "--no-tests=fail",
+        "--retries",
+        "0",
+        "--success-output=final"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+      "exit_code": 1,
+      "seconds": 78.25
+    },
+    {
+      "name": "original-scoped-clippy",
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-utils-path",
+        "-p",
+        "codex-state",
+        "-p",
+        "codex-hepta-memory",
+        "--no-deps"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+      "exit_code": 0,
+      "seconds": 128.20299999999997
+    },
+    {
+      "name": "final-clean-source",
+      "argv": [
+        "git",
+        "--no-replace-objects",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+      "exit_code": 0,
+      "seconds": 0.20299999999997453
+    }
+  ],
+  "original_junit_failures": [
+    {
+      "package": "codex-hepta-memory",
+      "cases": [
+        {
+          "name": "cognitive_path::tests::junction_and_its_descendants_are_rejected",
+          "details": [
+            {
+              "kind": "failure",
+              "attributes": {
+                "message": "thread 'cognitive_path::tests::junction_and_its_descendants_are_rejected' (8836) panicked at hepta-memory\\src\\cognitive_path_tests.rs:127:5",
+                "type": "test failure with exit code 101"
+              },
+              "text": "thread 'cognitive_path::tests::junction_and_its_descendants_are_rejected' (8836) panicked at hepta-memory\\src\\cognitive_path_tests.rs:127:5:\nassertion failed: matches!(CognitiveStore::open(&layout).await,\n    Err(crate::CognitiveStoreError::Invalid(_)))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+            },
+            {
+              "kind": "system-out",
+              "attributes": {},
+              "text": "\nrunning 1 test\ntest cognitive_path::tests::junction_and_its_descendants_are_rejected ... FAILED\n\nfailures:\n\nfailures:\n    cognitive_path::tests::junction_and_its_descendants_are_rejected\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 270 filtered out; finished in 0.04s\n\n"
+            },
+            {
+              "kind": "system-err",
+              "attributes": {},
+              "text": "\nthread 'cognitive_path::tests::junction_and_its_descendants_are_rejected' (8836) panicked at hepta-memory\\src\\cognitive_path_tests.rs:127:5:\nassertion failed: matches!(CognitiveStore::open(&layout).await,\n    Err(crate::CognitiveStoreError::Invalid(_)))\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "observed_state": {
+    "passed": 210,
+    "failed": 0,
+    "skipped": 0,
+    "all_original_and_added_inventory_matched": true
+  },
+  "observed_memory": {
+    "inventory_nonignored": 264,
+    "failed_case": "cognitive_path::tests::junction_and_its_descendants_are_rejected",
+    "failure_assertion": "CognitiveStore::open(&layout) must return CognitiveStoreError::Invalid",
+    "old_ignored_retained": 7
+  },
+  "path_inventory_failure": {
+    "exit_code": 102,
+    "underlying_cargo_exit_code": 101,
+    "dependency": "rustc_version",
+    "diagnostic": "[16] Error in the HTTP2 framing layer",
+    "classification": "Original dependency fetch failure before library inventory or any Path case. No test retry was performed."
+  },
+  "source_analysis": {
+    "kind": "inference from exact source ordering, not an observed Err variant in the original failure text",
+    "old_windows_creator_blob": "cb41206ab6bfb219f0e0feb98a317a64794e4327",
+    "parent_store_blob": "26eb19879cc8f55e13307679b694cffd8920fd3b",
+    "shared_path_blob": "b084411f8d0fd6352669e8ca8c67bf4bf9f9f2b8",
+    "original_test_blob": "d7e5ac377bc82c67bd415b725e8d2e6f50ba804d",
+    "finding": "Windows native private creation runs before the legacy opener's canonical-path Invalid guard. Native creation maps all its refusal errors to Unavailable. The actual test already established that the junction and its descendant return None from the same shared canonical checker."
+  },
+  "repair": {
+    "path": "codex-rs/hepta-memory/src/cognitive_store_windows.rs",
+    "candidate_blob": "9aae0a0e5ec329cf1985d828833ab9302f2db7be",
+    "scope": "Before any missing component is created, validate the first existing ancestor with the same canonical no-redirection checker; a known redirected path returns the original Invalid contract. Keep the original native create/open, descriptor owner/ACL, local NTFS, no-reparse and sharing checks after this observation.",
+    "changed_test_bytes": false,
+    "changed_sql_schema": false,
+    "changed_budgets_or_retries": false
+  },
+  "qualification": "All five original gates rerun on the necessary source successor. No previous source result is transferred."
+}

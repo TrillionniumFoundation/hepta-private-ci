@@ -1,0 +1,25 @@
+# Windows retained Memory recovery on the current dependency union
+
+Parent: 230d2d69a8c68ae6f8c502118fd9a8ee33027c37. This retains the original Memory migration ledger fix and the root owner's physical-path fixture repairs.
+
+The source uses the reviewed retained Windows provider from e9cf924b88e3ace17e6fb74498949866f83a69d9 and the private-state foundation qualified at 052f4caa6c26396f37cecac6e133433d06a61eb2. Historical source is evidence for the candidate implementation, not a test result for this tree.
+
+The port is limited to private local NTFS handles, existing-only frozen source observations, fresh private copy creation, and the Memory owner's real synchronization and admission path. The state boundary accepts only identical drive paths represented by Disk or VerbatimDisk prefixes; the remaining components must match exactly. Owner, protected ACL, reparse, local filesystem, file identity, single-link, source immutability, current-cut witness and writer-fence checks remain mandatory. Missing sidecar observation is not an atomic absence lease. Directory flush failure remains a failure.
+
+The shared canonical path check already rejects redirection, so recovery preserves its accepted OS spelling instead of rejecting a lawful verbatim drive prefix a second time. Windows file and directory synchronization uses handles with the required write access and still calls real sync_all. Publication after rename can remain indeterminate and retains the candidate according to the original owner protocol.
+
+The parent schema 1 through 15, schema oracle, all SQL, original assertions, original test budgets and seven existing ignored qualification probes are retained. The historical migrations 16/17, objective/HOS2 features, capture export, sender-store integration and new public close method are excluded.
+
+New Windows controls exercise both native and verbatim home spellings through real retained SQLite inspection and writable current-cut recovery. An unrelated directory, different disk, different component spelling, UNC/device namespace and relative path remain rejected. An outside materialization target is not created.
+
+The first hosted phase invokes the original repository formatter, actual Cargo metadata, original Bazel lock update and check. It verifies that the package/version/source/checksum set stays at the parent's 1,517 records and only the three listed workspace records gain their necessary dependencies. Any produced lock or formatting bytes must be adopted as a successor before native qualification can be claimed. No source-generation result is a product test pass.
+
+Current state: DRAFT / HOLD. Original complete path, state and Memory libraries on Windows, Linux and macOS, scoped Clippy and original Bazel targets must run against the adopted exact source and locks. The four current Windows Memory failures and seven originally ignored probes remain recorded in checkpoint 347628fd14bacc525371f1084b65aa856563817c. That checkpoint independently verified the parent's actual macOS and Linux 272-case passes; these are predecessor results, not results for this candidate.
+
+## Adopted real generation
+
+Run 41752190839, job 126319693196, at source 8dfdf8c2fb146e8d47a943e7270851224eafa532 produced the adopted Cargo.lock and two formatter outputs. Their original bytes and SHA-256 digests are recorded in generated-inputs.json. Cargo retains all 1,517 package identities, versions, sources and checksums; only four required dependency edges in three workspace records were added. The original committed-first Bazel check, update and final check returned zero, and MODULE.bazel.lock remained byte-identical. This is lock generation and format evidence only.
+
+The successor runs the complete original path, state and Memory libraries separately on Windows, Linux and macOS using Rust 1.96.0, the original just test entry point, original profile budgets, zero retries and fresh JUnit reports. Each compiled library is independently enumerated with pinned nextest 0.9.151; the report must contain every nonignored case exactly once. The same seven original Memory ignored names are checked explicitly, while the other two libraries admit no ignored tests. The compiled binary digest is checked before and after each execution. The default nextest report location is workspace target/nextest/local/junit.xml; CARGO_TARGET_DIR only isolates build output. Original scoped just fix must pass and leave source bytes unchanged.
+
+A separate Linux GNU Bazel job performs the original committed-first/update/check sequence, all three original unfiltered library targets with uncached test execution, complete Rust summaries and original scoped Clippy targets. It retains raw reports and command results. It does not claim Windows Bazel or full-union admission. The existing thirty-minute native and Bazel qualification budgets are retained. Reader controls verify rejection of incomplete, duplicate, filtered, failed, skipped, retried and zero-case reports; those controls are not added to product test denominators.

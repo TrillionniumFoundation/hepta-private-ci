@@ -1,0 +1,145 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+  "original_run": 41756875503,
+  "artifact_id": 13291170166,
+  "original_qualification_status": "failed",
+  "key": "memory-b12-bazel-failed",
+  "zip_bytes": 896736,
+  "zip_sha256": "3e87e4a6cc6ae4bda63e5c06b77b3cf396084e914b5e778eaa955c2f1bcf1982",
+  "all_member_crc": true,
+  "source_verification": {
+    "count": 9203,
+    "before_sha256": "98839873f5c3433de23aab19b2efdce50dc2b8e40b495217022a6743687a4b4d",
+    "after_sha256": "98839873f5c3433de23aab19b2efdce50dc2b8e40b495217022a6743687a4b4d",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs",
+      ".github",
+      "scripts",
+      "bazel",
+      "patches",
+      "third_party",
+      "cargo_bazel_template",
+      "justfile",
+      "defs.bzl",
+      "BUILD.bazel",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      "qualification/windows-memory-recovery-current",
+      "qualification/keyring-sync-provider/build_pinned_client.py"
+    ],
+    "symlink_resolution": []
+  },
+  "result": {
+    "mode": "negative-evidence",
+    "original_commands": [
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 0,
+        "seconds": 0.27146411799999726
+      },
+      {
+        "name": "committed-lock-first",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 22.68421678
+      },
+      {
+        "name": "original-lock-update",
+        "argv": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "seconds": 19.576291962000013
+      },
+      {
+        "name": "original-lock-check",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 5.329840259000008
+      },
+      {
+        "name": "original-testlog-location",
+        "argv": [
+          "python3",
+          "./.github/scripts/run_bazel_with_buildbuddy.py",
+          "--output_user_root=/home/runner/.cache/codex-ci/b",
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-linux",
+          "bazel-testlogs"
+        ],
+        "exit_code": 0,
+        "seconds": 0.9573665059999996
+      },
+      {
+        "name": "original-library-targets",
+        "argv": [
+          "/usr/bin/bash",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--keep_going",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--",
+          "//codex-rs/utils/path-utils:path-utils-unit-tests",
+          "//codex-rs/state:state-unit-tests",
+          "//codex-rs/hepta-memory:hepta-memory-unit-tests"
+        ],
+        "exit_code": 0,
+        "seconds": 115.90347760899999
+      }
+    ],
+    "original_libraries": {},
+    "original_targets": {
+      "path": {
+        "passed": 7,
+        "failed": 0,
+        "original_ignored": [],
+        "measured": 0,
+        "filtered": 0,
+        "rust_summaries": [
+          [
+            "ok",
+            "7",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        ]
+      }
+    },
+    "original_problems": null,
+    "failed_streams": {},
+    "observed_junit": {}
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only verification of original retained evidence; no new product execution or whole-CI admission.",
+  "output_count": 17,
+  "verified_report_sha256": "f7d8e14dd610c0b99b03605cd445f4794bb06a57c129f82b4e28ac89c7c5ec63"
+}

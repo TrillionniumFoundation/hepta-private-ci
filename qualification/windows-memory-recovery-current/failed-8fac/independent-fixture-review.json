@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.memory-owned-tempdir.static-review.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "path": "codex-rs/hepta-memory/src/cognitive_store_windows_tests.rs",
+  "before": {
+    "git_blob_sha": "1c375f6981d72b5426a6820473ffac4714ed1c5d",
+    "sha256": "7bc1f79d37a3e664ec2354296d8ca82d54ff9cfe92b7bc562d3c40e1d918afa5",
+    "bytes": 2108
+  },
+  "candidate": {
+    "git_blob_sha": "db9e00fb422d595a0356fc033b25c21f68e6bc1d",
+    "sha256": "c4cefe5584714b59cdf766e43a2b48706d99c7b46eee8c129c4542b6006aae3f",
+    "bytes": 2156
+  },
+  "reviewer": "independent hepta_blockers agent",
+  "checks": {
+    "exact_three_owned_temporary_root_normalizations": true,
+    "all_original_assertion_lines_byte_identical": true,
+    "original_assertion_lines": 8,
+    "original_test_names_and_count_preserved": true,
+    "production_changed": false
+  },
+  "reason": "Canonicalize only the freshly created test-owned TempDir before appending nonexistent child names. This supplies the strict creator with a physical existing ancestor; it does not canonicalize caller policy or redirect a production path. The same original hard-link, frozen-writer, stage-collision and original-byte assertions remain.",
+  "conclusion": "No confirmed boundary weakening in this exact three-line fixture change.",
+  "limits": {
+    "static_review_only": true,
+    "local_execution": false,
+    "new_native_execution": false,
+    "independently_downloaded_failed_artifact": false,
+    "hosted_original_gates_still_required": true
+  }
+}

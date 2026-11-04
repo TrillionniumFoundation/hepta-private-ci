@@ -600,3 +600,7 @@ impl MetadataImage {
         }
     }
 }
+
+#[cfg(windows)]
+#[path = "cognitive_store_recovery_windows_tests.rs"]
+mod windows_spelling;

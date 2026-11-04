@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "kind": "independent-static-review",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewed_at_utc": "2026-11-04",
+  "reviewer": "hepta_blockers",
+  "source_parent": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+  "inputs": {
+    "initial_reader": {
+      "git_blob_sha": "fa792bc8647622026267cefd3591136a576ecc9e",
+      "sha256": "29da85ef30e689dacb56e5c1d0b728d8dae18baef3e45d538c2d7f5631e073b0",
+      "bytes": 13423
+    },
+    "fixed_reader": {
+      "git_blob_sha": "472ac6d42327c106c19c6e232f92c29b06ba502f",
+      "sha256": "0094d361fe0449d20a280763d15a72400268981a579481ae3f83adbffca4aa82",
+      "bytes": 13663
+    },
+    "controls": {
+      "git_blob_sha": "62a4caf424d5b1e1abd4a67cee5af419a79f6890",
+      "sha256": "af047b67c8cd01e585cd65ff98a6b378bf27b31cd3dda168a9ec5e95c2c87702",
+      "bytes": 10133
+    },
+    "official_bazel_9_RunCommand": {
+      "git_blob_sha": "bb3acd44904896fb15e2ff96f1ece9470c09ed11",
+      "sha256": "0c82e0cb7fe3ecabc6be1fdf0404ca556f22378db1db102ebfb1f2c529f43fda",
+      "bytes": 53244
+    },
+    "workspace_launcher": {
+      "git_blob_sha": "4606fd8b15274f3e52aca493a34f32264d124c06",
+      "sha256": "e292867c613d853887a64ca09bca231e66cc65d48806985c1f16c1c69c1169e5",
+      "bytes": 4713
+    },
+    "bazel_wrapper": {
+      "git_blob_sha": "6262c9b2a44ed2fc1e3a8766c49b48bd0bc31433",
+      "sha256": "4b3da7ac8e9eb940e128a0aa59c3cb2388e804d3dd46c50b6a0ef04a1f27e5f2",
+      "bytes": 14168
+    },
+    "state_BUILD": {
+      "git_blob_sha": "8f27a6255fa88e40a93db65e110a4b3c934b6958",
+      "sha256": "4bdf532e9243f6b91bf33beff3de0533887f2cbdb7e7ec14ad74ad42d44c4170",
+      "bytes": 707
+    }
+  },
+  "confirmed_initial_finding": {
+    "status": "fixed-in-static-successor",
+    "description": "Bazel 9 run rejects test targets with multiple status artifacts. The original state-unit-tests target has four shards, so listing it with plain bazel run would fail before producing the actual inventory.",
+    "official_repository": "bazelbuild/bazel",
+    "official_commit": "93f38093f8e24875c1d015e67311853756bdb27e",
+    "official_path": "src/main/java/com/google/devtools/build/lib/runtime/commands/RunCommand.java",
+    "error_code": "TOO_MANY_TEST_SHARDS_OR_RUNS",
+    "resolution": "Exactly the inventory and ignored-inventory bazel run commands now set --test_sharding_strategy=disabled. The original test command retains four state shards."
+  },
+  "checks": [
+    "The two listing commands are the only new --test_sharding_strategy=disabled occurrences.",
+    "Original three-target test argv and scoped Clippy argv remain byte-identical.",
+    "The reader still requires fresh expected shard paths, complete original case identities, deterministic FNV partitioning, no duplicates, no retries and the exact original ignored cases.",
+    "Actual executable listing is forwarded by the existing launcher as --list/--ignored; listing does not execute test cases."
+  ],
+  "scope": {
+    "static_review": true,
+    "local_python_execution": false,
+    "native_execution": false,
+    "controls_executed_by_this_review": false,
+    "new_runtime_pass_proven": false,
+    "all_bazel_or_product_qualification": false
+  },
+  "conclusion": "No additional confirmed blocking issue in the reviewed narrow successor. Initial reader remains unexecuted HOLD; new controls and native qualification are required."
+}

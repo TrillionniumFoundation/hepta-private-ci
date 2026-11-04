@@ -1,0 +1,286 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "b12f9b216d91bb760582a9df0d569f7e051a1016",
+  "original_run": 41756875503,
+  "artifact_id": 13290865451,
+  "original_qualification_status": "failed",
+  "key": "memory-b12-windows-failed",
+  "zip_bytes": 932899,
+  "zip_sha256": "d4e462cad9f1e2ac4aadb2ea0fa74f6b84fcc24edfff825057a6ae32c0608b00",
+  "all_member_crc": true,
+  "source_verification": {
+    "count": 9203,
+    "before_sha256": "98839873f5c3433de23aab19b2efdce50dc2b8e40b495217022a6743687a4b4d",
+    "after_sha256": "98839873f5c3433de23aab19b2efdce50dc2b8e40b495217022a6743687a4b4d",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs",
+      ".github",
+      "scripts",
+      "bazel",
+      "patches",
+      "third_party",
+      "cargo_bazel_template",
+      "justfile",
+      "defs.bzl",
+      "BUILD.bazel",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      "qualification/windows-memory-recovery-current",
+      "qualification/keyring-sync-provider/build_pinned_client.py"
+    ],
+    "symlink_resolution": []
+  },
+  "result": {
+    "mode": "negative-evidence",
+    "original_commands": [
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 0.11000000000001364
+      },
+      {
+        "name": "rustc-version",
+        "argv": [
+          "rustc",
+          "-Vv"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 0.03100000000000591
+      },
+      {
+        "name": "nextest-version",
+        "argv": [
+          "cargo",
+          "nextest",
+          "--version"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+        "exit_code": 0,
+        "seconds": 0.625
+      },
+      {
+        "name": "codex-utils-path-inventory",
+        "argv": [
+          "cargo",
+          "nextest",
+          "list",
+          "--locked",
+          "-p",
+          "codex-utils-path",
+          "--lib",
+          "--message-format=json"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+        "exit_code": 0,
+        "seconds": 122.57799999999997
+      },
+      {
+        "name": "codex-utils-path-original-tests",
+        "argv": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-utils-path",
+          "--lib",
+          "--no-tests=fail",
+          "--retries",
+          "0",
+          "--success-output=final"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 2.093999999999994
+      },
+      {
+        "name": "codex-state-inventory",
+        "argv": [
+          "cargo",
+          "nextest",
+          "list",
+          "--locked",
+          "-p",
+          "codex-state",
+          "--lib",
+          "--message-format=json"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+        "exit_code": 0,
+        "seconds": 434.922
+      },
+      {
+        "name": "codex-state-original-tests",
+        "argv": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-state",
+          "--lib",
+          "--no-tests=fail",
+          "--retries",
+          "0",
+          "--success-output=final"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 1,
+        "seconds": 79.67199999999991
+      },
+      {
+        "name": "codex-hepta-memory-inventory",
+        "argv": [
+          "cargo",
+          "nextest",
+          "list",
+          "--locked",
+          "-p",
+          "codex-hepta-memory",
+          "--lib",
+          "--message-format=json"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+        "exit_code": 101,
+        "seconds": 158.89099999999996
+      },
+      {
+        "name": "original-scoped-clippy",
+        "argv": [
+          "just",
+          "fix",
+          "--locked",
+          "-p",
+          "codex-utils-path",
+          "-p",
+          "codex-state",
+          "-p",
+          "codex-hepta-memory",
+          "--no-deps"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 1,
+        "seconds": 163.42200000000003
+      },
+      {
+        "name": "final-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 0.09400000000005093
+      }
+    ],
+    "original_libraries": {
+      "codex-utils-path": {
+        "status": "passed",
+        "inventory_count": 21,
+        "expected_count": 21,
+        "result_passed": 21
+      },
+      "codex-state": {
+        "status": "failed",
+        "inventory_count": 210,
+        "expected_count": 210,
+        "result_passed": null
+      },
+      "codex-hepta-memory": {
+        "status": "failed",
+        "inventory_count": 0,
+        "expected_count": 0,
+        "result_passed": null
+      }
+    },
+    "original_targets": null,
+    "original_problems": [
+      "codex-state: original library tests failed",
+      "codex-hepta-memory: library inventory failed",
+      "original scoped Clippy failed"
+    ],
+    "failed_streams": {
+      "codex-state-original-tests.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "codex-state-original-tests.stderr": {
+        "bytes": 163334,
+        "sha256": "d9163be3a3bf3580b0f88323b3f771057b8464a36a47776c0f456b5539187f45"
+      },
+      "codex-hepta-memory-inventory.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "codex-hepta-memory-inventory.stderr": {
+        "bytes": 25919,
+        "sha256": "ffa5a696e1d7746be99dfb4ae49097cfea6376b7e13d6beb80b719e579caebb4"
+      },
+      "original-scoped-clippy.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "original-scoped-clippy.stderr": {
+        "bytes": 41798,
+        "sha256": "2d431f4544d9a06c6c95c3fe0755a68bbd4b10314834590df8419bceee0a0af0"
+      }
+    },
+    "observed_junit": {
+      "codex-utils-path": {
+        "cases": 21,
+        "sha256": "6ba4c2ff71ae7deb36c069d07f008e06e51104a7112dda49bdf051e7c1c6b6da",
+        "failures": []
+      },
+      "codex-state": {
+        "cases": 210,
+        "sha256": "48c41087465dc60195637417129993f48c692f98c776138aa8c7839ca95785a0",
+        "failures": [
+          {
+            "name": "sqlite_recovery::windows_tests::windows_native_and_verbatim_homes_bind_without_admitting_another_directory",
+            "details": [
+              {
+                "tag": "failure",
+                "attributes": {
+                  "message": "thread 'sqlite_recovery::windows_tests::windows_native_and_verbatim_homes_bind_without_admitting_another_directory' (1192) panicked at state\\src\\sqlite_recovery_windows_tests.rs:243:5",
+                  "type": "test failure with exit code 101"
+                },
+                "text": "thread 'sqlite_recovery::windows_tests::windows_native_and_verbatim_homes_bind_without_admitting_another_directory' (1192) panicked at state\\src\\sqlite_recovery_windows_tests.rs:243:5:\nassertion failed: same_recovery_home(&native, &verbatim)\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+              },
+              {
+                "tag": "system-out",
+                "attributes": {},
+                "text": "\nrunning 1 test\ntest sqlite_recovery::windows_tests::windows_native_and_verbatim_homes_bind_without_admitting_another_directory ... FAILED\n\nfailures:\n\nfailures:\n    sqlite_recovery::windows_tests::windows_native_and_verbatim_homes_bind_without_admitting_another_directory\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 209 filtered out; finished in 0.26s\n\n"
+              },
+              {
+                "tag": "system-err",
+                "attributes": {},
+                "text": "\nthread 'sqlite_recovery::windows_tests::windows_native_and_verbatim_homes_bind_without_admitting_another_directory' (1192) panicked at state\\src\\sqlite_recovery_windows_tests.rs:243:5:\nassertion failed: same_recovery_home(&native, &verbatim)\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only verification of original retained evidence; no new product execution or whole-CI admission.",
+  "output_count": 23,
+  "verified_report_sha256": "b9c9aea5a14e4041baf3f7769c0d738b7386f69e6065ce52bf03bb4ae61a1fb7"
+}
