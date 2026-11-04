@@ -1,0 +1,5 @@
+==> Python scripts formatter failed
+$ uv run --frozen --project scripts ruff format ./.github/scripts/check_windows_private_state_acquisition.py ./.github/scripts/test_check_windows_private_state_acquisition.py ./.github/scripts/test_v8_canary_changes.py ./.github/scripts/v8_canary_changes.py ./scripts/check_hepta_rustsec_advisories.py ./scripts/hepta-module-docs.py ./scripts/hepta_ci_dependencies.py ./scripts/hepta_ci_module_paths.py ./scripts/test_hepta_ci_exec.py ./scripts/test_hepta_ci_module_path_scopes.py ./scripts/test_hepta_module_status_facts.py ./scripts/test_hepta_native_feedback.py ./scripts/test_ui_product_foundation_ci.py ./scripts/tests/test_hepta_rustsec_guard.py ./scripts/verify_hepta_callers.py
+[Errno 2] No such file or directory: 'uv'
+Formatting failed: Python scripts
+error: recipe `fmt` failed on line 51 with exit code 1
