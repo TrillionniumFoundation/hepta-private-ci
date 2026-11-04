@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "status": "PENDING_NATIVE_QUALIFICATION",
+  "posture": "Draft / HOLD_NO_GO / DENY_ALL",
+  "source_parent": "3cc71d6ec7e5e084dcecceb2757bc940459f0ada",
+  "parent_tree": "7a56bdb9d4e4ea0804e1a642e146761c34ffb091",
+  "original_negative": {
+    "workflow_run": 41749310312,
+    "job_id": 126310940316,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41749310312/job/126310940316",
+    "tested_checkout": "3d1f649991fc846e81ea0a46dd0799170220eb7f",
+    "tested_tree": "7a56bdb9d4e4ea0804e1a642e146761c34ffb091",
+    "tree_equals_source_parent": true,
+    "top_level_targets": 1282,
+    "successful_top_level_targets": 1276,
+    "diagnostic": "2026-11-04T00:53:42.6500176Z Error: ProcessWrapperError(\"unable to copy bazel-out/windows_x86_64_msvc-fastbuild/bin/codex-rs/app-server\\\\exec-server.lib.temp-archive-9c734b8.a into unified dependency dir D:\\\\o\\\\execroot\\\\_main\\\\rules_rust_process_wrapper_deps_7628_1793753619290\\\\exec-server.lib.temp-archive-9c734b8.a: The system cannot find the file specified. (os error 2)\")",
+    "full_decoded_log": {
+      "bytes": 546646,
+      "sha256": "f1ed79e1898bff21c16425325c46d76d5a4bfacb84d78bd3eae91725b010c7ce"
+    },
+    "lossless_gzip_parts": [
+      {
+        "path": "qualification/windows-archive-inputs-20261104/negative-original-job.part01.log.gz",
+        "bytes": 300043,
+        "sha256": "e303dfc0245315f6fb3c3d7e6e853bbde00c439fa06c026e67967c0b35ffb5f0",
+        "decoded_bytes": 300000,
+        "decoded_sha256": "25ff488a1c66d57aa441e1cf2756189e10eb019a5f60c5650e538a9fde8b085c"
+      },
+      {
+        "path": "qualification/windows-archive-inputs-20261104/negative-original-job.part02.log.gz",
+        "bytes": 246684,
+        "sha256": "c66222bb0f088aac5568ff6f305875fe05710e3df7be975a55ef1dea7f54de52",
+        "decoded_bytes": 246646,
+        "decoded_sha256": "19e1b2a5c2c5a2fd789d7b820fbb02c89ee1d7a661dfe363162c6c3501748ae9"
+      }
+    ]
+  },
+  "upstream": {
+    "rules_rs_version": "0.0.96",
+    "rules_rust_commit": "f19661ba71f77c993ce1eb082053692610fe4313",
+    "main_source_url": "https://github.com/hermeticbuild/rules_rust/blob/f19661ba71f77c993ce1eb082053692610fe4313/util/process_wrapper/main.rs",
+    "archive_naming_reference": "https://github.com/llvm/llvm-project/blob/llvmorg-22.1.0/llvm/lib/Object/ArchiveWriter.cpp",
+    "reference_boundary": "LLVM's published naming algorithm supports the precise filename classification; this reference alone is not a measurement of the installed archiver version."
+  },
+  "change": {
+    "patch_blob": "6cd03175f189d1829945b45c3e58a24f21f0f555",
+    "patch_sha256": "64ae53f0b56fce9ea03a202142a055307d416868e5e08b6b1f3b6a2c30870092",
+    "pinned_upstream_context_and_hunk_counts_verified": true,
+    "classification": "Archive basename ends with .lib, .rlib or .a; then .temp-archive-; exactly seven ASCII hex characters; final .a. Existing .tmp and .rcgu.o exclusions remain. Other names and all genuine read/link/copy errors retain their behavior.",
+    "regression": "One real Windows filesystem test writes fifteen distinct files, preserves ten final or similar names byte-for-byte, excludes five actual temporary output forms, and checks the exact resulting directory count.",
+    "boundary": "This deterministic input-classification regression does not claim concurrent rename stress qualification."
+  },
+  "required": {
+    "original_test_target": "@rules_rust//util/process_wrapper:process_wrapper_test",
+    "windows_case_count": 19,
+    "linux_case_count": 18,
+    "ignored": 0,
+    "filtered": 0,
+    "source_binding": "The materialized main.rs and new Windows test must equal the SHA256 of the independently patched pinned upstream source.",
+    "original_native_windows_clippy": "Fresh original blocking CI must analyze and build the same complete native selection; a unit pass alone does not close the original Clippy job.",
+    "lock": "Actual committed check, just bazel-lock-update, post-check and both HEAD checkout checks must pass without changing the committed lock.",
+    "format": "Original repository formatter and fixed Rust1.96 rustfmt check of the actual new upstream test file."
+  },
+  "local_execution": "Unavailable. No local Python, Rust, Clippy, formatter, patch command or Bazel execution is claimed; only the explicit pure-JS context application and hash checks above ran."
+}
