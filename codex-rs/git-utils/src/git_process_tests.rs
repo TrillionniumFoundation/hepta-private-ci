@@ -1,7 +1,5 @@
 use super::spawn_git_command;
 use super::wait_for_git_command_with_timeout_output;
-#[cfg(windows)]
-use base64::Engine as _;
 use pretty_assertions::assert_eq;
 #[cfg(windows)]
 use std::process::Stdio;
@@ -41,6 +39,51 @@ fn windows_git_child_lifetime_fixture() {
     std::thread::sleep(Duration::from_secs(60));
 }
 
+#[cfg(windows)]
+#[test]
+fn windows_git_wrapper_lifetime_fixture() -> std::io::Result<()> {
+    let Some(mode) = std::env::var_os("CODEX_GIT_PROCESS_TEST_WRAPPER") else {
+        return Ok(());
+    };
+    let lifetime = match mode.to_str() {
+        Some("wait-for-child") => GitWrapperLifetime::WaitForChild,
+        Some("exit-before-timeout") => GitWrapperLifetime::ExitBeforeTimeout,
+        _ => return Err(std::io::Error::other("invalid Git wrapper fixture mode")),
+    };
+    let child_pid = std::env::var_os("CHILD_PID_FILE")
+        .ok_or_else(|| std::io::Error::other("missing child PID path"))?;
+    let release = std::env::var_os("RELEASE_WRAPPER_FILE")
+        .ok_or_else(|| std::io::Error::other("missing wrapper release path"))?;
+    // Both descendants use the real test executable and inherit the original
+    // stdout/stderr pipes and JobObject. No shell owns their exit lifecycle.
+    let mut child = std::process::Command::new(std::env::current_exe()?)
+        .args([
+            "--exact",
+            "git_process::tests::windows_git_child_lifetime_fixture",
+            "--nocapture",
+        ])
+        .env_remove("CODEX_GIT_PROCESS_TEST_WRAPPER")
+        .env("CODEX_GIT_PROCESS_TEST_CHILD", "1")
+        .spawn()?;
+    std::fs::write(child_pid, child.id().to_string())?;
+    match lifetime {
+        GitWrapperLifetime::WaitForChild => {
+            let status = child.wait()?;
+            if !status.success() {
+                return Err(std::io::Error::other("Git fixture child failed"));
+            }
+        }
+        GitWrapperLifetime::ExitBeforeTimeout => {
+            while !std::path::Path::new(&release).try_exists()? {
+                std::thread::sleep(Duration::from_millis(25));
+            }
+            // Dropping std::process::Child does not wait for or kill it.
+            // It must retain the pipe until the original timeout kills the job.
+        }
+    }
+    Ok(())
+}
+
 async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     wrapper_lifetime: GitWrapperLifetime,
 ) {
@@ -66,46 +109,19 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     };
     #[cfg(windows)]
     let mut command = {
-        let mut command = Command::new("powershell.exe");
-        // Run the descendant lifecycle in the current test executable.
-        // This keeps the original readiness deadline, JobObject containment,
-        // and descendant-kill assertions while removing a second PowerShell
-        // startup from the readiness handshake.
-        //
-        // Pass the executable path through an environment variable, not
-        // inline PowerShell quoting, so spaces and apostrophes remain safe.
-        let lifecycle = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => "$child.WaitForExit()",
-            GitWrapperLifetime::ExitBeforeTimeout => {
-                "while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) { Start-Sleep -Milliseconds 25 }"
-            }
-        };
-        let wrapper_command = format!(
-            "$start = [System.Diagnostics.ProcessStartInfo]::new(); \
-             $start.FileName = $env:CODEX_GIT_PROCESS_CHILD_EXE; \
-             $start.Arguments = '--exact git_process::tests::windows_git_child_lifetime_fixture --nocapture'; \
-             $start.UseShellExecute = $false; $start.CreateNoWindow = $true; \
-             $child = [System.Diagnostics.Process]::new(); $child.StartInfo = $start; \
-             if (-not $child.Start()) {{ throw 'Git child did not start' }}; \
-             [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); \
-             {lifecycle}"
+        let mut command = Command::new(std::env::current_exe().expect("test executable path"));
+        command.args([
+            "--exact",
+            "git_process::tests::windows_git_wrapper_lifetime_fixture",
+            "--nocapture",
+        ]);
+        command.env(
+            "CODEX_GIT_PROCESS_TEST_WRAPPER",
+            match wrapper_lifetime {
+                GitWrapperLifetime::WaitForChild => "wait-for-child",
+                GitWrapperLifetime::ExitBeforeTimeout => "exit-before-timeout",
+            },
         );
-        // Encode the wrapper so its quotes survive Windows argv serialization.
-        let encoded_wrapper = base64::engine::general_purpose::STANDARD.encode(
-            wrapper_command
-                .encode_utf16()
-                .flat_map(u16::to_le_bytes)
-                .collect::<Vec<_>>(),
-        );
-        command
-            .args(["-NoProfile", "-NonInteractive", "-EncodedCommand"])
-            .arg(encoded_wrapper);
-        command
-            .env(
-                "CODEX_GIT_PROCESS_CHILD_EXE",
-                std::env::current_exe().expect("test executable path"),
-            )
-            .env("CODEX_GIT_PROCESS_TEST_CHILD", "1");
         command
     };
     command
