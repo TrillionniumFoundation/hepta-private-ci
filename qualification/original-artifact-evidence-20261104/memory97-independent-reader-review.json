@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.memory.current-artifact-verifier.independent-source-review.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewer_scope": "Read-only source review of the new shard, lock-generation and dispatch logic; no archived program execution, original ZIP download, native test execution or product qualification.",
+  "inputs": [
+    {
+      "path": "verify_memory_current.py",
+      "git_blob_sha": "e9c8cac88e428bb2da99951c4c0a2a3c82453d79",
+      "sha256": "49eff695f44cd13506555b5903940e9a1e11618776df321bb66875fd77e4ff94",
+      "bytes": 29171
+    },
+    {
+      "role": "previous verifier",
+      "git_blob_sha": "6dafb0815076dcbebf6a49dfe74596b962fec51d",
+      "sha256": "8bef32487e2f131b8af67428f01317ad5c95eea6887bd86f31a4ff77e6bb4bae",
+      "bytes": 17721
+    }
+  ],
+  "unchanged_functions": [
+    "verify_output_set",
+    "inventory",
+    "junit",
+    "static_windows_cases",
+    "require_command",
+    "inspect_native",
+    "rust_counts"
+  ],
+  "inspected": [
+    "bazel_list accepts a nonempty unique test inventory, rejects benchmarks, and permits an empty ignored inventory only explicitly.",
+    "inspect_shards requires the exact retained report names for one/four/one original shards, a unique success summary per shard, exact case/counter agreement, no duplicate names within/across shards, correct FNV assignment, exact original ignored cases, inventory-conserving per-shard filters and complete disjoint coverage.",
+    "inspect_bazel binds exact inventory/ignored-inventory commands with sharding disabled only for bazel run, retains the original test and Clippy commands and requires the original three targets to have executed.",
+    "inspect_generation requires the exact original eight successful commands in sequence, no source changes awaiting adoption, generated/committed lock bytes equal to exact Git bytes and metadata package counts.",
+    "The independently fetched baseline Cargo blob is Git-hash verified; package keys, versions, sources, checksums and unrelated fields remain exact, with only the configured workspace dependency additions accepted.",
+    "main selects generation/native/Bazel inspection explicitly for passed evidence and preserves original failed evidence as negative-evidence rather than promoting it."
+  ],
+  "findings": [],
+  "conclusion": "No confirmed new blocker found within this static review scope.",
+  "boundaries": [
+    "Bazel XML checks wrapper success and consistency; complete Rust case identities are established by retained test logs and compiled inventories, not by requiring XML testcase names to equal Rust case names.",
+    "Original report freshness and full source binding additionally rely on the existing collection and verify_sources mechanisms; this review did not re-download or replay those artifacts.",
+    "No synthetic control, native test, lock generation, original artifact readback or whole-repository CI was run by this review.",
+    "This review does not change any product head, source policy, original ignore set or acceptance budget."
+  ],
+  "executions": {
+    "native": 0,
+    "synthetic": 0,
+    "archived_source": 0,
+    "artifact_downloads": 0
+  }
+}

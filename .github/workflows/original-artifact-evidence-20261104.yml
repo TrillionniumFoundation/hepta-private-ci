@@ -19,9 +19,21 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - key: tee-8f-shared-original
-            source: 8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9
-            script: verify_tee_success.py
+          - key: memory97-windows
+            source: 97a49196f1c1dea6be1522b503a62aa7ae5031f6
+            script: verify_memory_current.py
+          - key: memory97-bazel
+            source: 97a49196f1c1dea6be1522b503a62aa7ae5031f6
+            script: verify_memory_current.py
+          - key: memory97-generation
+            source: 97a49196f1c1dea6be1522b503a62aa7ae5031f6
+            script: verify_memory_current.py
+          - key: memory97-macos
+            source: 97a49196f1c1dea6be1522b503a62aa7ae5031f6
+            script: verify_memory_current.py
+          - key: memory97-linux
+            source: 97a49196f1c1dea6be1522b503a62aa7ae5031f6
+            script: verify_memory_current.py
     env:
       GIT_CONFIG_COUNT: 1
       GIT_CONFIG_KEY_0: core.autocrlf
@@ -73,7 +85,13 @@ jobs:
             /qualification/windows-archive-inputs-20261104/
             /qualification/keyring-sync-provider/build_pinned_client.py
       - name: Check verifier syntax
-        run: python3 -m py_compile harness/qualification/original-artifact-evidence-20261104/verify.py harness/qualification/original-artifact-evidence-20261104/verify_tee_success.py
+        run: python3 -m py_compile harness/qualification/original-artifact-evidence-20261104/verify.py harness/qualification/original-artifact-evidence-20261104/verify_memory_current.py
+      - name: Reject optimized Python before artifact processing
+        run: |
+          if python3 -O harness/qualification/original-artifact-evidence-20261104/verify_memory_current.py --help; then
+            echo 'optimized verifier unexpectedly accepted'
+            exit 1
+          fi
       - name: Verify original ZIP, Git inputs and recorded outputs
         env:
           GITHUB_TOKEN: ${{ github.token }}
