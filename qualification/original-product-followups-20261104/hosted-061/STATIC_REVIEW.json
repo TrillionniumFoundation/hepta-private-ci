@@ -1,0 +1,41 @@
+{
+  "schema": "private-ci.original-core-supervisor.static-reader-review.v1",
+  "source_commit": "061ec434abcbe673013f1e16b6b5a1b3d9c1d3bb",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "inputs": [
+    {
+      "path": "qualification/core-supervisor-original-20261104/run_original_native.py",
+      "git_blob": "a14126a20e4421de951e5f71f3c6d27fe953c7fc",
+      "bytes": 13195,
+      "sha256": "551d4cc04bb5697eb2d87bd57b801a716690d074bc9611cb429346b8b7fe7879"
+    },
+    {
+      "path": ".github/workflows/core-supervisor-original-qualification.yml",
+      "git_blob": "c85b9fb4ca67596b4f970e56c9f82c0640820f15",
+      "bytes": 2873,
+      "sha256": "886d6eeff09303b6d7bce6db5ee4739feb6edcf5703f92b2cadf1bfde6217054"
+    },
+    {
+      "path": "qualification/core-supervisor-original-20261104/test_reader.py",
+      "git_blob": "406781ed5a322d9ad4f086caad5397d2ce963837",
+      "bytes": 4905,
+      "sha256": "4cb6d4e2e95f3a3f9763b4679e80d459444e81589a673980f391360c99e2b8c9"
+    }
+  ],
+  "executions": 0,
+  "findings": [],
+  "checks": [
+    "Exact dispatched Git SHA, tracked blob identities (including raw symlink payload), initial/final Git cleanliness and all tracked source bytes are required.",
+    "The full compiled Core binary is listed before exactly two required nonignored cases are selected; remaining cases are recorded as qualification-filtered, not claimed executed.",
+    "The Supervisor restart target must have exactly the one original runnable case and no ignored cases.",
+    "Existing JUnit is deleted before each original command; command exit, fresh JUnit, exact unique full Rust names, zero failure/skip/retry elements and counters all must agree.",
+    "Original test binaries are hashed before and after; original just fmt and scoped just fix must pass without changing source.",
+    "Workflow pins Rust 1.96.0/nextest 0.9.151, preserves 8MiB stack and original 60-minute job budget, and uses two native platforms."
+  ],
+  "boundaries": [
+    "No control, product test, Clippy or hosted artifact execution was performed by this static review.",
+    "The selected Core scope is two regressions, not full Core; the complete target claim applies only to the one-case Supervisor integration binary.",
+    "The validator's failure message says every nonignored library case, but its actual equality is the explicitly recorded required set. This wording does not broaden the accepted set.",
+    "Linux prerequisite installation uses the runner's package repositories; this review does not claim pinned D-Bus provenance or cross-platform product qualification."
+  ]
+}

@@ -1,0 +1,578 @@
+{
+  "schema": 1,
+  "status": "ORIGINAL_WINDOWS_AND_LINUX_SCOPED_NATIVE_PASSED",
+  "source_commit": "061ec434abcbe673013f1e16b6b5a1b3d9c1d3bb",
+  "source_tree": "61270b09edf7394cdda68b70aa5ff61428db08f6",
+  "product_base": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+  "run": 41770058343,
+  "hosts": {
+    "win": {
+      "job": 126377380408,
+      "host": "Windows-2025Server-10.0.26100-SP0",
+      "commands": [
+        {
+          "name": "source-commit",
+          "argv": [
+            "git",
+            "--no-replace-objects",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exit_code": 0,
+          "seconds": 0.016000000000019554
+        },
+        {
+          "name": "source-tree",
+          "argv": [
+            "git",
+            "--no-replace-objects",
+            "rev-parse",
+            "HEAD^{tree}"
+          ],
+          "exit_code": 0,
+          "seconds": 0.03099999999997749
+        },
+        {
+          "name": "initial-clean-source",
+          "argv": [
+            "git",
+            "--no-replace-objects",
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--"
+          ],
+          "exit_code": 0,
+          "seconds": 0.2820000000000107
+        },
+        {
+          "name": "rustc-version",
+          "argv": [
+            "rustc",
+            "-Vv"
+          ],
+          "exit_code": 0,
+          "seconds": 0.03100000000000591
+        },
+        {
+          "name": "nextest-version",
+          "argv": [
+            "cargo",
+            "nextest",
+            "--version"
+          ],
+          "exit_code": 0,
+          "seconds": 1.2339999999999804
+        },
+        {
+          "name": "original-formatter",
+          "argv": [
+            "just",
+            "fmt",
+            "--base",
+            "fcedede3f945bc75cec6dc7730c7cf0ef9056eda"
+          ],
+          "exit_code": 0,
+          "seconds": 2.3910000000000196
+        },
+        {
+          "name": "source-clean-after-formatter",
+          "argv": [
+            "git",
+            "--no-replace-objects",
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--"
+          ],
+          "exit_code": 0,
+          "seconds": 0.2189999999999941
+        },
+        {
+          "name": "core-original-two-inventory",
+          "argv": [
+            "cargo",
+            "nextest",
+            "list",
+            "--locked",
+            "-p",
+            "codex-core",
+            "--lib",
+            "--message-format=json"
+          ],
+          "exit_code": 0,
+          "seconds": 827.7180000000001
+        },
+        {
+          "name": "core-original-two-original-tests",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-core",
+            "--lib",
+            "--no-tests=fail",
+            "--retries",
+            "0",
+            "--success-output=final",
+            "-E",
+            "test(=environment_selection::tests::blocking_snapshot_waits_for_starting_environment) | test(=tools::handlers::multi_agents::tests::multi_agent_v2_wait_agent_uses_configured_default_timeout)"
+          ],
+          "exit_code": 0,
+          "seconds": 3.9220000000000255
+        },
+        {
+          "name": "supervisor-restart-original-inventory",
+          "argv": [
+            "cargo",
+            "nextest",
+            "list",
+            "--locked",
+            "-p",
+            "codex-hepta-supervisor",
+            "--test",
+            "restart_budget_recovery",
+            "--message-format=json"
+          ],
+          "exit_code": 0,
+          "seconds": 200.81200000000013
+        },
+        {
+          "name": "supervisor-restart-original-original-tests",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-supervisor",
+            "--test",
+            "restart_budget_recovery",
+            "--no-tests=fail",
+            "--retries",
+            "0",
+            "--success-output=final"
+          ],
+          "exit_code": 0,
+          "seconds": 2.344000000000051
+        },
+        {
+          "name": "original-scoped-clippy",
+          "argv": [
+            "just",
+            "fix",
+            "--locked",
+            "-p",
+            "codex-core",
+            "-p",
+            "codex-hepta-supervisor",
+            "--no-deps"
+          ],
+          "exit_code": 0,
+          "seconds": 370.09400000000005
+        },
+        {
+          "name": "final-clean-source",
+          "argv": [
+            "git",
+            "--no-replace-objects",
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--"
+          ],
+          "exit_code": 0,
+          "seconds": 0.6720000000000255
+        }
+      ],
+      "scopes": {
+        "core-original-two": {
+          "status": "passed",
+          "original_inventory_count": 2331,
+          "original_runnable_count": 2328,
+          "original_ignored": [
+            "agent::role::tests::apply_role_skills_config_disables_skill_for_spawned_agent",
+            "session::tests::configuration_tests::new_default_turn_uses_config_aware_skills_for_role_overrides",
+            "shell_snapshot::tests::windows_powershell_snapshot_includes_sections"
+          ],
+          "explicitly_selected_original_cases": [
+            "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+            "tools::handlers::multi_agents::tests::multi_agent_v2_wait_agent_uses_configured_default_timeout"
+          ],
+          "qualified_case_count": 2,
+          "qualification_filtered_original_case_count": 2326,
+          "complete_target": false,
+          "binary_sha256_before": "a0dba99a9d63a2726be0fe17d05df3c46ddc27f787f86bea9fc79384d81b5e1f",
+          "binary_sha256_after": "a0dba99a9d63a2726be0fe17d05df3c46ddc27f787f86bea9fc79384d81b5e1f",
+          "result": {
+            "passed": 2,
+            "failed": 0,
+            "errors": 0,
+            "skipped": 0,
+            "retried": 0,
+            "executed": [
+              "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+              "tools::handlers::multi_agents::tests::multi_agent_v2_wait_agent_uses_configured_default_timeout"
+            ],
+            "original_ignored": [
+              "agent::role::tests::apply_role_skills_config_disables_skill_for_spawned_agent",
+              "session::tests::configuration_tests::new_default_turn_uses_config_aware_skills_for_role_overrides",
+              "shell_snapshot::tests::windows_powershell_snapshot_includes_sections"
+            ]
+          }
+        },
+        "supervisor-restart-original": {
+          "status": "passed",
+          "original_inventory_count": 1,
+          "original_runnable_count": 1,
+          "original_ignored": [],
+          "explicitly_selected_original_cases": [
+            "restart_budget_survives_repeated_supervisord_recovery"
+          ],
+          "qualified_case_count": 1,
+          "qualification_filtered_original_case_count": 0,
+          "complete_target": true,
+          "binary_sha256_before": "89c4647907db8d442cf912ad384e2b75798af7cc00f1437ac552c3493f7760d2",
+          "binary_sha256_after": "89c4647907db8d442cf912ad384e2b75798af7cc00f1437ac552c3493f7760d2",
+          "result": {
+            "passed": 1,
+            "failed": 0,
+            "errors": 0,
+            "skipped": 0,
+            "retried": 0,
+            "executed": [
+              "restart_budget_survives_repeated_supervisord_recovery"
+            ],
+            "original_ignored": []
+          }
+        }
+      },
+      "source_inputs_unchanged": true,
+      "complete_decoded_original_job": {
+        "bytes": 515340,
+        "sha256": "c61b321ced13a412d202b055c9084095518bb75e65ae40c502898800a912b5c4",
+        "git_blob": "a1d35f309bc832d4f1862513abaae4ac45a7a561",
+        "parts": [
+          {
+            "path": "qualification/original-product-followups-20261104/hosted-061/win/original-job.part-001.log.gz",
+            "offset": 0,
+            "decoded_bytes": 400000,
+            "decoded_sha256": "f3b9ca2cacb5b0a5ee51d959c68afcee3f719270a57700814de7de386a2496bb",
+            "stored_bytes": 400053,
+            "stored_sha256": "c02ac3d9e0d476281640d81b57e4ee8e812a5a61a93c15ec518eed3cf2ddb45b"
+          },
+          {
+            "path": "qualification/original-product-followups-20261104/hosted-061/win/original-job.part-002.log.gz",
+            "offset": 400000,
+            "decoded_bytes": 115340,
+            "decoded_sha256": "de5b01f058de6f3831cab0e1fc968b0503535d90d665a904b19a9f5bbb246a59",
+            "stored_bytes": 115368,
+            "stored_sha256": "ffbe18efe02347a3ff97a6653da618d20475b85a08124b945c3aff78064a8c31"
+          }
+        ]
+      },
+      "original_receipt_serialized_sha256": "e3a99e582323c3d69c345d63fa8e2b0e7417a92a139570c2b5913e41dc452f92"
+    },
+    "linux": {
+      "job": 126377380186,
+      "host": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "commands": [
+        {
+          "name": "source-commit",
+          "argv": [
+            "git",
+            "--no-replace-objects",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exit_code": 0,
+          "seconds": 0.0016966379999985293
+        },
+        {
+          "name": "source-tree",
+          "argv": [
+            "git",
+            "--no-replace-objects",
+            "rev-parse",
+            "HEAD^{tree}"
+          ],
+          "exit_code": 0,
+          "seconds": 0.0018941569999810781
+        },
+        {
+          "name": "initial-clean-source",
+          "argv": [
+            "git",
+            "--no-replace-objects",
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--"
+          ],
+          "exit_code": 0,
+          "seconds": 0.11348235899998826
+        },
+        {
+          "name": "rustc-version",
+          "argv": [
+            "rustc",
+            "-Vv"
+          ],
+          "exit_code": 0,
+          "seconds": 0.013288192999993953
+        },
+        {
+          "name": "nextest-version",
+          "argv": [
+            "cargo",
+            "nextest",
+            "--version"
+          ],
+          "exit_code": 0,
+          "seconds": 0.020113189000028342
+        },
+        {
+          "name": "original-formatter",
+          "argv": [
+            "just",
+            "fmt",
+            "--base",
+            "fcedede3f945bc75cec6dc7730c7cf0ef9056eda"
+          ],
+          "exit_code": 0,
+          "seconds": 0.4421129419999943
+        },
+        {
+          "name": "source-clean-after-formatter",
+          "argv": [
+            "git",
+            "--no-replace-objects",
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--"
+          ],
+          "exit_code": 0,
+          "seconds": 0.10993956400000116
+        },
+        {
+          "name": "core-original-two-inventory",
+          "argv": [
+            "cargo",
+            "nextest",
+            "list",
+            "--locked",
+            "-p",
+            "codex-core",
+            "--lib",
+            "--message-format=json"
+          ],
+          "exit_code": 0,
+          "seconds": 543.0274901370001
+        },
+        {
+          "name": "core-original-two-original-tests",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-core",
+            "--lib",
+            "--no-tests=fail",
+            "--retries",
+            "0",
+            "--success-output=final",
+            "-E",
+            "test(=environment_selection::tests::blocking_snapshot_waits_for_starting_environment) | test(=tools::handlers::multi_agents::tests::multi_agent_v2_wait_agent_uses_configured_default_timeout)"
+          ],
+          "exit_code": 0,
+          "seconds": 1.3238915399999769
+        },
+        {
+          "name": "supervisor-restart-original-inventory",
+          "argv": [
+            "cargo",
+            "nextest",
+            "list",
+            "--locked",
+            "-p",
+            "codex-hepta-supervisor",
+            "--test",
+            "restart_budget_recovery",
+            "--message-format=json"
+          ],
+          "exit_code": 0,
+          "seconds": 136.20185986299998
+        },
+        {
+          "name": "supervisor-restart-original-original-tests",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-supervisor",
+            "--test",
+            "restart_budget_recovery",
+            "--no-tests=fail",
+            "--retries",
+            "0",
+            "--success-output=final"
+          ],
+          "exit_code": 0,
+          "seconds": 1.0763691180000023
+        },
+        {
+          "name": "original-scoped-clippy",
+          "argv": [
+            "just",
+            "fix",
+            "--locked",
+            "-p",
+            "codex-core",
+            "-p",
+            "codex-hepta-supervisor",
+            "--no-deps"
+          ],
+          "exit_code": 0,
+          "seconds": 321.045190876
+        },
+        {
+          "name": "final-clean-source",
+          "argv": [
+            "git",
+            "--no-replace-objects",
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--"
+          ],
+          "exit_code": 0,
+          "seconds": 0.11091909099991426
+        }
+      ],
+      "scopes": {
+        "core-original-two": {
+          "status": "passed",
+          "original_inventory_count": 2422,
+          "original_runnable_count": 2421,
+          "original_ignored": [
+            "tools::handlers::multi_agents::tests::spawn_agent_reapplies_runtime_sandbox_after_role_config"
+          ],
+          "explicitly_selected_original_cases": [
+            "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+            "tools::handlers::multi_agents::tests::multi_agent_v2_wait_agent_uses_configured_default_timeout"
+          ],
+          "qualified_case_count": 2,
+          "qualification_filtered_original_case_count": 2419,
+          "complete_target": false,
+          "binary_sha256_before": "ccbac5da85fa36066254be2813f0e4913913fc889cfe167da3dac6a6a407f084",
+          "binary_sha256_after": "ccbac5da85fa36066254be2813f0e4913913fc889cfe167da3dac6a6a407f084",
+          "result": {
+            "passed": 2,
+            "failed": 0,
+            "errors": 0,
+            "skipped": 0,
+            "retried": 0,
+            "executed": [
+              "tools::handlers::multi_agents::tests::multi_agent_v2_wait_agent_uses_configured_default_timeout",
+              "environment_selection::tests::blocking_snapshot_waits_for_starting_environment"
+            ],
+            "original_ignored": [
+              "tools::handlers::multi_agents::tests::spawn_agent_reapplies_runtime_sandbox_after_role_config"
+            ]
+          }
+        },
+        "supervisor-restart-original": {
+          "status": "passed",
+          "original_inventory_count": 1,
+          "original_runnable_count": 1,
+          "original_ignored": [],
+          "explicitly_selected_original_cases": [
+            "restart_budget_survives_repeated_supervisord_recovery"
+          ],
+          "qualified_case_count": 1,
+          "qualification_filtered_original_case_count": 0,
+          "complete_target": true,
+          "binary_sha256_before": "6b3326267ab71fe1ded85544fe5683594da765b1f404cb5c15b6c540f7bbf1e5",
+          "binary_sha256_after": "6b3326267ab71fe1ded85544fe5683594da765b1f404cb5c15b6c540f7bbf1e5",
+          "result": {
+            "passed": 1,
+            "failed": 0,
+            "errors": 0,
+            "skipped": 0,
+            "retried": 0,
+            "executed": [
+              "restart_budget_survives_repeated_supervisord_recovery"
+            ],
+            "original_ignored": []
+          }
+        }
+      },
+      "source_inputs_unchanged": true,
+      "complete_decoded_original_job": {
+        "bytes": 548769,
+        "sha256": "4d3aa9ebf0245c45c9fe4a41dd114ceb91de3b7db5edbf2c5eee27686bec4b5c",
+        "git_blob": "42468db59611bcad371bd12654f800e4ab91ad65",
+        "parts": [
+          {
+            "path": "qualification/original-product-followups-20261104/hosted-061/linux/original-job.part-001.log.gz",
+            "offset": 0,
+            "decoded_bytes": 400000,
+            "decoded_sha256": "c8f2d7b654a0055b035d6acecc316df6e0e9336b3ae9799810fdd2e8ad02e1ab",
+            "stored_bytes": 400053,
+            "stored_sha256": "3da759c8b9bb6968f7c8990c188178f7e8f9099db66fb652aa4e9eb07b28e4d0"
+          },
+          {
+            "path": "qualification/original-product-followups-20261104/hosted-061/linux/original-job.part-002.log.gz",
+            "offset": 400000,
+            "decoded_bytes": 148769,
+            "decoded_sha256": "4fd6e46c9109d42f01d1a3601cf47ab4c9554bae99bac5e35ed71848362d5e11",
+            "stored_bytes": 148802,
+            "stored_sha256": "ab678f21edea02cd3a6dfc7a9d1b9553d5448de19583c905ed2f3ed92179e60c"
+          }
+        ]
+      },
+      "original_receipt_serialized_sha256": "a868b42d4ed902e3934a7871326893621688efc3c15519ef65551e6753af3b2f"
+    }
+  },
+  "artifacts": [
+    {
+      "id": 13295049061,
+      "name": "original-core-supervisor-ubuntu-24.04-061ec434abcbe673013f1e16b6b5a1b3d9c1d3bb",
+      "bytes": 1849090,
+      "sha256": "f47e9de3657097291c29b639fc5ee69ec8d59ea8bd0fc870ba8d937c924728f7",
+      "source": "061ec434abcbe673013f1e16b6b5a1b3d9c1d3bb"
+    },
+    {
+      "id": 13294634691,
+      "name": "original-core-supervisor-windows-2025-061ec434abcbe673013f1e16b6b5a1b3d9c1d3bb",
+      "bytes": 1845159,
+      "sha256": "f87d21c354810bb100e950067779881631529ac62f8049e78bd4996029d10883",
+      "source": "061ec434abcbe673013f1e16b6b5a1b3d9c1d3bb"
+    }
+  ],
+  "independent_original_zip_replay": "PENDING; the native observations and full logs are not a substitute for independent ZIP replay",
+  "scope": "Exactly two preexisting Core regressions plus the complete one-case Supervisor restart_budget_recovery integration target on each of Windows and Linux; not full Core, full Supervisor, full product, physical supervision or activation.",
+  "unchanged": [
+    "all tracked native source bytes before/after",
+    "Cargo.lock",
+    "MODULE.bazel.lock",
+    "every original assertion and test timeout",
+    "zero retries",
+    "original 60-minute job budget"
+  ],
+  "prior_negative": {
+    "source": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+    "actual_merge": "1e7cae598d1e90e1bc0a3d45c1fb5f3978d279c6",
+    "run": 41758337794,
+    "job": 126348728224,
+    "evidence_commit": "a3bf4c98b619244f0c81ab900aa086495b31d62e"
+  },
+  "static_review": {
+    "blob": "6441b380fceabe2ac70a3f1ea9135330d3cd9bb0",
+    "bytes": 2602,
+    "sha256": "aec2ecc099fd301c101300865da347f0cef306c3838ab3aa4b45830f578d66f5"
+  }
+}
