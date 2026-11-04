@@ -180,8 +180,18 @@ def inspect_output(source, output, prepared=None):
     # Existing receipts never excuse absent/changed historical files.
     if RECEIPT_PATH in found:
         receipt=strict_json(bounded_read(output/RECEIPT_PATH,16384))
-        require(receipt.get('status')=='COMPLETE' and receipt.get('scientific_execution_performed') is False,'inspection-receipt')
+        expected=completion_receipt(source,output,prepared,checked)
+        require(canonical(receipt)==canonical(expected),'inspection-receipt')
     return checked
+
+def completion_receipt(source, output, prepared, checked):
+    values={**prepared['assets'],**{path:prepared['metadata_raw'][path] for path in MARKER_PATHS}}
+    receipt={'status':'COMPLETE','scope':'five-artifact-inspection','scientific_execution_performed':False,
+             'source_root':str(source),'output_root':str(output),'descriptor_sha256':H(bounded_read(source/DESCRIPTOR,16384)),
+             'files':{path:{'bytes':len(body),'sha256':H(body)} for path,body in values.items()},
+             'consumed_relations':checked,'historical_runtime':'Not executed; CORE selection dependency and evaluation-source SHA drift remain unresolved.',
+             'completeness':'12 exact historical files only, not whole manifest, checkout, experiment, source closure or branch CI.'}
+    return receipt
 
 def restore(source, output):
     source,output=roots(source,output,fresh=True)
@@ -195,11 +205,7 @@ def restore(source, output):
         target=output/path; target.parent.mkdir(parents=True,exist_ok=True)
         with target.open('xb') as stream: stream.write(body)
     checked=inspect_output(source,output,prepared)
-    receipt={'status':'COMPLETE','scope':'five-artifact-inspection','scientific_execution_performed':False,
-             'source_root':str(source),'output_root':str(output),'descriptor_sha256':H(bounded_read(source/DESCRIPTOR,16384)),
-             'files':{path:{'bytes':len(body),'sha256':H(body)} for path,body in values.items()},
-             'consumed_relations':checked,'historical_runtime':'Not executed; CORE selection dependency and evaluation-source SHA drift remain unresolved.',
-             'completeness':'12 exact historical files only, not whole manifest, checkout, experiment, source closure or branch CI.'}
+    receipt=completion_receipt(source,output,prepared,checked)
     body=canonical(receipt); require(len(body)<=16384,'receipt-bound')
     with (output/RECEIPT_PATH).open('xb') as stream: stream.write(body)
     return receipt
