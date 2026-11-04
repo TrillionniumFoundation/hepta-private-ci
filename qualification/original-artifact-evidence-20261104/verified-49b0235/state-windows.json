@@ -1,0 +1,166 @@
+{
+  "schema": 1,
+  "key": "state-windows",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+  "original_run": 41728048322,
+  "artifact_id": 13277275842,
+  "zip_bytes": 1518178,
+  "zip_sha256": "2499d17fc137a3c0ebe8b4d9876eb83edf9d3404bd8949f8dd424436446de78b",
+  "crc_all_members": true,
+  "source_verification": {
+    "count": 8891,
+    "before_sha256": "656b2fd62801d79e167c836539a9efc119e436201dcc306269c5cf5cafcf0665",
+    "after_sha256": "656b2fd62801d79e167c836539a9efc119e436201dcc306269c5cf5cafcf0665",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs",
+      "justfile",
+      "defs.bzl",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      ".bazelrc",
+      ".bazelversion",
+      "bazel",
+      "patches",
+      "third_party/dbus",
+      "scripts/run-nextest.py",
+      "scripts/just-shell.py",
+      "scripts/check-module-bazel-lock.sh",
+      ".github/actions/prepare-bazel-ci",
+      ".github/actions/setup-ci",
+      ".github/actions/setup-bazel-ci",
+      ".github/scripts/run_bazel_with_buildbuddy.py",
+      ".github/scripts/check_windows_private_state_acquisition.py",
+      ".github/scripts/test_check_windows_private_state_acquisition.py",
+      ".github/fixtures/windows-private-state-acquisition",
+      "qualification/keyring-sync-provider/build_pinned_client.py",
+      "qualification/windows-private-state-current",
+      ".github/workflows/hepta-windows-private-state-qualification.yml"
+    ],
+    "symlink_resolution": [
+      {
+        "path": "codex-rs/vendor/bubblewrap/LICENSE",
+        "git_blob": "d24842f3cdcf2e447f9a7a26fa387ad63f5c4b91",
+        "link_payload": {
+          "bytes": 7,
+          "sha256": "400d38e5cfee181230373a8b02d38f50271a5bf62c62410382efddb8e8b19e22"
+        },
+        "resolved_path": "codex-rs/vendor/bubblewrap/COPYING",
+        "resolved_sha256": "b7993225104d90ddd8024fd838faf300bea5e83d91203eab98e29512acebd69c"
+      }
+    ]
+  },
+  "original_qualification_status": "passed",
+  "result": {
+    "mode": "native",
+    "counts": {
+      "codex-utils-path": 17,
+      "codex-hepta-contracts": 131,
+      "codex-hepta-prompt-registry": 28,
+      "codex-hepta-agentd": 165
+    },
+    "total_cases": 341,
+    "skipped": 0,
+    "metadata_packages": 1517,
+    "original_command_exits": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "original_acquisition_manifest": {
+      "source_head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+      "source_tree": "6b5b20e34fc3f3605d5d1312a871decf1da86db1",
+      "production_path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+      "production_sha256": "05f8abf49d5a0d5f099695d6138e01525ac9b5e0b369e5172e0dd8f342e2f2a6",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-utils-path",
+        "--lib",
+        "-E",
+        "test(private_state_windows::directory::tests::)",
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate",
+        "--failure-output",
+        "immediate",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all"
+      ],
+      "lanes": [
+        {
+          "lane": "positive",
+          "production_sha256": "05f8abf49d5a0d5f099695d6138e01525ac9b5e0b369e5172e0dd8f342e2f2a6",
+          "exit_code": 0,
+          "log_sha256": "33470893e344bf6fc1ba77b44aea06d2158ef1edce6caf69e70391f1f8f081c9",
+          "statuses": {
+            "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+            "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+          },
+          "observations": {
+            "substitution": "swapped=true denied=true redirected=false",
+            "creation": "denied=true created=false"
+          }
+        },
+        {
+          "lane": "unchecked-create",
+          "patch_sha256": "93ed0742de0e4cfe226334fd2f71f1129ee42125f214ecf77297916d97696369",
+          "production_sha256": "1dbbf4b4291835ac4c2d331119fdc60495ff54c0c6a6551b8efc72c35eb98869",
+          "exit_code": 1,
+          "log_sha256": "3150a924e82e2f483d43a78f4f153f235bbc5075c8dffd20f89c2afef19030d8",
+          "statuses": {
+            "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+            "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "FAIL"
+          },
+          "observations": {
+            "substitution": "swapped=true denied=true redirected=false",
+            "creation": "denied=true created=true"
+          }
+        },
+        {
+          "lane": "path-check-open",
+          "patch_sha256": "24efb0448aaac1cc0a1b70bf661ad590fe0d1ee407d7787ea5b33c9923f2b320",
+          "production_sha256": "e6591ca48cbe4495811ea1f3bf382ef7aa8cf9739f4aa276cb3bd0866481244e",
+          "exit_code": 1,
+          "log_sha256": "0ac65715b88b15c4cf0118adbfc4431d27d4b8be4244e3bacf14932f46dc08e2",
+          "statuses": {
+            "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "FAIL",
+            "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+          },
+          "observations": {
+            "substitution": "swapped=true denied=false redirected=true",
+            "creation": "denied=true created=false"
+          }
+        }
+      ],
+      "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-pc-windows-msvc\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+      "qualified": true,
+      "restored": true
+    }
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only replay of retained evidence; no new product execution or whole-CI admission.",
+  "output_counts": {
+    "recorded_outputs": 0,
+    "retained_outputs": 0,
+    "command_logs": 10
+  },
+  "verified_report_sha256": "44550f2de16d129c328f641d1e92ae1511c47337d2ab7e8b17a41114ff69370a"
+}

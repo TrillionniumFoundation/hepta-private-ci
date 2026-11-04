@@ -1,0 +1,164 @@
+{
+  "schema": 1,
+  "key": "memory-windows",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "c4023a27d00622382d8f23830fae93350252bf5f",
+  "original_run": 41729363873,
+  "artifact_id": 13274179601,
+  "zip_bytes": 42322,
+  "zip_sha256": "10375e7fe6e96dec01511d5b6707a4343a61f66dfddd1faf781529d802d65554",
+  "crc_all_members": true,
+  "source_verification": {
+    "count": 123,
+    "before_sha256": "7db344d645fc01acf622348355daacffe65b5fb87aa468a97efe256316c9401c",
+    "after_sha256": "7db344d645fc01acf622348355daacffe65b5fb87aa468a97efe256316c9401c",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs/hepta-memory",
+      "codex-rs/Cargo.toml",
+      "codex-rs/Cargo.lock",
+      "codex-rs/rust-toolchain.toml",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      "BUILD.bazel",
+      "defs.bzl",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      ".github/actions/prepare-bazel-ci",
+      ".github/actions/setup-ci",
+      ".github/actions/setup-bazel-ci",
+      ".github/scripts/run_bazel_with_buildbuddy.py",
+      ".github/scripts/run-bazel-ci.sh",
+      ".github/scripts/run-bazel-query-ci.sh",
+      "scripts/check-module-bazel-lock.sh",
+      "scripts/list-bazel-clippy-targets.sh",
+      "qualification/memory-migration-20261103",
+      ".github/workflows/hepta-memory-migration-qualification.yml"
+    ],
+    "symlink_resolution": []
+  },
+  "original_qualification_status": "failed",
+  "result": {
+    "original_tests": null,
+    "original_steps": [
+      {
+        "name": "committed-inputs-clean-before",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.125
+      },
+      {
+        "name": "original-memory-unit-tests",
+        "command": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--platforms=//:windows_x86_64_msvc",
+          "--keep_going",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--",
+          "//codex-rs/hepta-memory:hepta-memory-unit-tests"
+        ],
+        "exit": 3,
+        "elapsed_seconds": 219.719
+      },
+      {
+        "name": "original-testlog-location",
+        "command": [
+          "python3",
+          "./.github/scripts/run_bazel_with_buildbuddy.py",
+          "--output_user_root=D:/b",
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-windows",
+          "--platforms=//:windows_x86_64_msvc",
+          "--host_platform=//:local_windows_msvc",
+          "bazel-testlogs"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.3280000000000314
+      }
+    ],
+    "original_commands": null,
+    "native_logs": {
+      "memory.log": {
+        "summaries": [
+          [
+            "FAILED",
+            "64",
+            "4",
+            "4",
+            "0",
+            "195"
+          ],
+          [
+            "ok",
+            "80",
+            "0",
+            "2",
+            "0",
+            "185"
+          ],
+          [
+            "ok",
+            "78",
+            "0",
+            "1",
+            "0",
+            "188"
+          ],
+          [
+            "ok",
+            "34",
+            "0",
+            "0",
+            "0",
+            "233"
+          ]
+        ],
+        "failed_cases": [
+          "cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation",
+          "cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+          "cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers",
+          "cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission"
+        ],
+        "ignored_cases": [
+          "cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt",
+          "cognitive_retrieval::observation::tests::target_host_owner_retrieval_reports_latency_percentiles",
+          "cognitive_store_tests::kg_projection_crash_child",
+          "cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor",
+          "local_compact_executor_tests::host_restart_reopen_replay_process_soak",
+          "local_compact_executor_tests::sqlite_1000_operation_seeded_reopen_replay_stress",
+          "local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe"
+        ],
+        "panic_blocks": [
+          "---- cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation stdout ----\n\nthread 'cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation' (784) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:163:6:\ndescriptor-bound writable recovery: Indeterminate(\"SQLite recovery is indeterminate: the complete immutable file identity was not established\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+          "---- cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate stdout ----\n\nthread 'cognitive_store::recovery::tests::post_rename_publication_failure_is_indeterminate_and_retains_candidate' (8492) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:214:48:\npointer rename: Unavailable(\"Access is denied. (os error 5)\")\n",
+          "---- cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers stdout ----\n\nthread 'cognitive_store::recovery::tests::predecessor_witness_is_rejected_and_current_witness_recovers' (9120) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:291:5:\nassertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),\n    CognitiveRecoveryRequirement::ExactCurrentCut(&predecessor), &authority,\n    &RecoveryVerifier,).await, Err(CognitiveRecoveryError::AccessDenied(_)))\n",
+          "---- cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission stdout ----\n\nthread 'cognitive_store::recovery::tests::revoked_owner_profile_and_witness_checks_precede_recovery_admission' (8116) panicked at hepta-memory/src\\cognitive_store_recovery_tests.rs:365:5:\nassertion failed: matches!(CognitiveStore::open_with_recovery(&layout(&temp, &owner),\n    CognitiveRecoveryRequirement::ExactCurrentCut(&tampered), &authority,\n    &RecoveryVerifier,).await, Err(CognitiveRecoveryError::AccessDenied(_)))\n\n"
+        ]
+      }
+    }
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only replay of retained evidence; no new product execution or whole-CI admission.",
+  "output_counts": {
+    "recorded_outputs": 9,
+    "retained_outputs": 0,
+    "command_logs": 0
+  },
+  "verified_report_sha256": "0aa970cc99714c65a3bb8f545e8d43da08f6fdc25ac81c27427a78b45ac293c8"
+}

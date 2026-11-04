@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "key": "memory-macos",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "c4023a27d00622382d8f23830fae93350252bf5f",
+  "original_run": 41729363873,
+  "artifact_id": 13274979085,
+  "zip_bytes": 40849,
+  "zip_sha256": "e93335e54c18bc47c7582487761291de6365df04cc411e63a5e35bc320ed6f58",
+  "crc_all_members": true,
+  "source_verification": {
+    "count": 123,
+    "before_sha256": "7db344d645fc01acf622348355daacffe65b5fb87aa468a97efe256316c9401c",
+    "after_sha256": "7db344d645fc01acf622348355daacffe65b5fb87aa468a97efe256316c9401c",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs/hepta-memory",
+      "codex-rs/Cargo.toml",
+      "codex-rs/Cargo.lock",
+      "codex-rs/rust-toolchain.toml",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      "BUILD.bazel",
+      "defs.bzl",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      ".github/actions/prepare-bazel-ci",
+      ".github/actions/setup-ci",
+      ".github/actions/setup-bazel-ci",
+      ".github/scripts/run_bazel_with_buildbuddy.py",
+      ".github/scripts/run-bazel-ci.sh",
+      ".github/scripts/run-bazel-query-ci.sh",
+      "scripts/check-module-bazel-lock.sh",
+      "scripts/list-bazel-clippy-targets.sh",
+      "qualification/memory-migration-20261103",
+      ".github/workflows/hepta-memory-migration-qualification.yml"
+    ],
+    "symlink_resolution": []
+  },
+  "original_qualification_status": "failed",
+  "result": {
+    "original_tests": null,
+    "original_steps": [
+      {
+        "name": "committed-inputs-clean-before",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.7663535420000045
+      },
+      {
+        "name": "original-memory-unit-tests",
+        "command": [
+          "/bin/bash",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--keep_going",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--",
+          "//codex-rs/hepta-memory:hepta-memory-unit-tests"
+        ],
+        "exit": 3,
+        "elapsed_seconds": 162.552617917
+      },
+      {
+        "name": "original-testlog-location",
+        "command": [
+          "python3",
+          "./.github/scripts/run_bazel_with_buildbuddy.py",
+          "--output_user_root=/Users/runner/.cache/codex-ci/b",
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-macos",
+          "bazel-testlogs"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.8721234580000043
+      }
+    ],
+    "original_commands": null,
+    "native_logs": {
+      "memory.log": {
+        "summaries": [
+          [
+            "FAILED",
+            "0",
+            "1",
+            "0",
+            "0",
+            "278"
+          ],
+          [
+            "FAILED",
+            "261",
+            "11",
+            "7",
+            "0",
+            "0"
+          ]
+        ],
+        "failed_cases": [
+          "cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal",
+          "cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal",
+          "h7_trajectory_store_tests::bound_read_rejects_terminal_trajectory_from_prior_lease_head",
+          "h7_trajectory_store_tests::bound_trajectory_is_append_only_causal_and_reopenable",
+          "h7_trajectory_store_tests::head_scoped_expired_terminal_gate_survives_store_reopen",
+          "h7_trajectory_store_tests::recovery_read_observes_expired_terminal_without_appending_h7_rows",
+          "h7_trajectory_store_tests::trajectory_rejects_gap_parent_policy_and_stale_binding",
+          "h7_trajectory_store_tests::trajectory_rejects_mixed_generation_event_chain",
+          "local_turn_binding::tests::exact_bound_handles_form_a_local_only_contract",
+          "local_turn_binding::tests::legacy_lease_or_executor_is_rejected_fail_closed",
+          "local_turn_binding::tests::mismatched_store_or_fence_is_rejected",
+          "local_turn_binding::tests::turn_identity_and_digest_tampering_fail_closed"
+        ],
+        "ignored_cases": [
+          "cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt",
+          "cognitive_retrieval::observation::tests::target_host_owner_retrieval_reports_latency_percentiles",
+          "cognitive_store_tests::kg_projection_crash_child",
+          "cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor",
+          "local_compact_executor_tests::host_restart_reopen_replay_process_soak",
+          "local_compact_executor_tests::sqlite_1000_operation_seeded_reopen_replay_stress",
+          "local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe"
+        ],
+        "panic_blocks": [
+          "---- cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal stdout ----\n\nthread 'cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal' (29831) panicked at hepta-memory/src/cognitive_store_recovery_read_only_tests.rs:205:5:\nassertion failed: `(left == right)`\n\n\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :\n Some(\n\u001b[31m<    \u001b[0m\u001b[1;48;5;52;31m101\u001b[0m\u001b[31m,\u001b[0m\n\u001b[32m>    \u001b[0m\u001b[1;48;5;22;32m73\u001b[0m\u001b[32m,\u001b[0m\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+          "---- h7_trajectory_store_tests::bound_read_rejects_terminal_trajectory_from_prior_lease_head stdout ----\n\nthread 'h7_trajectory_store_tests::bound_read_rejects_terminal_trajectory_from_prior_lease_head' (30290) panicked at hepta-memory/src/h7_trajectory_store_tests.rs:73:10:\nstore: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\n",
+          "---- h7_trajectory_store_tests::bound_trajectory_is_append_only_causal_and_reopenable stdout ----\n\nthread 'h7_trajectory_store_tests::bound_trajectory_is_append_only_causal_and_reopenable' (30291) panicked at hepta-memory/src/h7_trajectory_store_tests.rs:73:10:\nstore: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\n",
+          "---- h7_trajectory_store_tests::head_scoped_expired_terminal_gate_survives_store_reopen stdout ----\n\nthread 'h7_trajectory_store_tests::head_scoped_expired_terminal_gate_survives_store_reopen' (30293) panicked at hepta-memory/src/h7_trajectory_store_tests.rs:116:10:\nstore: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\n",
+          "---- h7_trajectory_store_tests::recovery_read_observes_expired_terminal_without_appending_h7_rows stdout ----\n\nthread 'h7_trajectory_store_tests::recovery_read_observes_expired_terminal_without_appending_h7_rows' (30295) panicked at hepta-memory/src/h7_trajectory_store_tests.rs:116:10:\nstore: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\n",
+          "---- h7_trajectory_store_tests::trajectory_rejects_gap_parent_policy_and_stale_binding stdout ----\n\nthread 'h7_trajectory_store_tests::trajectory_rejects_gap_parent_policy_and_stale_binding' (30298) panicked at hepta-memory/src/h7_trajectory_store_tests.rs:73:10:\nstore: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\n",
+          "---- h7_trajectory_store_tests::trajectory_rejects_mixed_generation_event_chain stdout ----\n\nthread 'h7_trajectory_store_tests::trajectory_rejects_mixed_generation_event_chain' (30299) panicked at hepta-memory/src/h7_trajectory_store_tests.rs:73:10:\nstore: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\n",
+          "---- local_turn_binding::tests::exact_bound_handles_form_a_local_only_contract stdout ----\n\nthread 'local_turn_binding::tests::exact_bound_handles_form_a_local_only_contract' (30788) panicked at hepta-memory/src/local_turn_binding.rs:330:14:\nstore: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\n",
+          "---- local_turn_binding::tests::legacy_lease_or_executor_is_rejected_fail_closed stdout ----\n\nthread 'local_turn_binding::tests::legacy_lease_or_executor_is_rejected_fail_closed' (30789) panicked at hepta-memory/src/local_turn_binding.rs:330:14:\nstore: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\n",
+          "---- local_turn_binding::tests::mismatched_store_or_fence_is_rejected stdout ----\n\nthread 'local_turn_binding::tests::mismatched_store_or_fence_is_rejected' (30790) panicked at hepta-memory/src/local_turn_binding.rs:330:14:\nstore: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\n",
+          "---- local_turn_binding::tests::turn_identity_and_digest_tampering_fail_closed stdout ----\n\nthread 'local_turn_binding::tests::turn_identity_and_digest_tampering_fail_closed' (30791) panicked at hepta-memory/src/local_turn_binding.rs:330:14:\nstore: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\n\n"
+        ]
+      }
+    }
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only replay of retained evidence; no new product execution or whole-CI admission.",
+  "output_counts": {
+    "recorded_outputs": 9,
+    "retained_outputs": 0,
+    "command_logs": 0
+  },
+  "verified_report_sha256": "1b71636517e5e2abb1cfb1ac90ad908fa88469eedb52c04c8e3dd04d4b60320f"
+}

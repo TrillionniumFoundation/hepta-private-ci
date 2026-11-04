@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "key": "state-bazel",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+  "original_run": 41728048322,
+  "artifact_id": 13276311936,
+  "zip_bytes": 1086233,
+  "zip_sha256": "6468201079392a243364112eb0f53e3de1cef056f87f2d6774e3d76bfec4d6dc",
+  "crc_all_members": true,
+  "source_verification": {
+    "count": 8891,
+    "before_sha256": "656b2fd62801d79e167c836539a9efc119e436201dcc306269c5cf5cafcf0665",
+    "after_sha256": "656b2fd62801d79e167c836539a9efc119e436201dcc306269c5cf5cafcf0665",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs",
+      "justfile",
+      "defs.bzl",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      ".bazelrc",
+      ".bazelversion",
+      "bazel",
+      "patches",
+      "third_party/dbus",
+      "scripts/run-nextest.py",
+      "scripts/just-shell.py",
+      "scripts/check-module-bazel-lock.sh",
+      ".github/actions/prepare-bazel-ci",
+      ".github/actions/setup-ci",
+      ".github/actions/setup-bazel-ci",
+      ".github/scripts/run_bazel_with_buildbuddy.py",
+      ".github/scripts/check_windows_private_state_acquisition.py",
+      ".github/scripts/test_check_windows_private_state_acquisition.py",
+      ".github/fixtures/windows-private-state-acquisition",
+      "qualification/keyring-sync-provider/build_pinned_client.py",
+      "qualification/windows-private-state-current",
+      ".github/workflows/hepta-windows-private-state-qualification.yml"
+    ],
+    "symlink_resolution": [
+      {
+        "path": "codex-rs/vendor/bubblewrap/LICENSE",
+        "git_blob": "d24842f3cdcf2e447f9a7a26fa387ad63f5c4b91",
+        "link_payload": {
+          "bytes": 7,
+          "sha256": "400d38e5cfee181230373a8b02d38f50271a5bf62c62410382efddb8e8b19e22"
+        },
+        "resolved_path": "codex-rs/vendor/bubblewrap/COPYING",
+        "resolved_sha256": "b7993225104d90ddd8024fd838faf300bea5e83d91203eab98e29512acebd69c"
+      }
+    ]
+  },
+  "original_qualification_status": "passed",
+  "result": {
+    "mode": "bazel",
+    "generated_lock_sha256": "1a58f7d1fcbfe850d18a01c19faf15c941dfd229cb8caeb406dbe8ce8c99522e",
+    "targets": [
+      "//codex-rs/utils/path-utils:path-utils-unit-tests",
+      "//codex-rs/hepta-contracts:hepta-contracts-unit-tests",
+      "//codex-rs/hepta-prompt-registry:hepta-prompt-registry-unit-tests",
+      "//codex-rs/hepta-agentd:hepta-agentd-unit-tests"
+    ],
+    "original_command_exits": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only replay of retained evidence; no new product execution or whole-CI admission.",
+  "output_counts": {
+    "recorded_outputs": 0,
+    "retained_outputs": 0,
+    "command_logs": 6
+  },
+  "verified_report_sha256": "3daa0cdac090e225a9d3810468680aa0d1fc0408e16c4958a7b5f2efdcf33653"
+}

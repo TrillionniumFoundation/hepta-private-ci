@@ -1,0 +1,56 @@
+{
+  "reproducer_commit": "b744660a0ebd2b31726c38445cab810a8c3b1626",
+  "script_sha256": "8ea7e6d88fde979f2b1d251423644e9801db2a79815a1ac71ff0488bd60a8da6",
+  "runs": [
+    {
+      "optimized": false,
+      "argv": [
+        "/usr/bin/python3",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/dylint-proof/qualification/dylint-20261103/hosted-30ad34/verify.py",
+        "--repository",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/source",
+        "--artifact",
+        "/home/runner/work/_temp/evidence-dylint-lock/original.zip",
+        "--output",
+        "/home/runner/work/_temp/evidence-dylint-lock/root-reproducer.json"
+      ],
+      "exit": 0,
+      "log_sha256": "b94d38fd39bf2e3f51d0fbe4dffc229a7c46cec2bb770e3da3d00206f71166cc"
+    },
+    {
+      "optimized": true,
+      "argv": [
+        "/usr/bin/python3",
+        "-O",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/dylint-proof/qualification/dylint-20261103/hosted-30ad34/verify.py",
+        "--repository",
+        "/home/runner/work/hepta-private-ci/hepta-private-ci/source",
+        "--artifact",
+        "/home/runner/work/_temp/evidence-dylint-lock/original.zip",
+        "--output",
+        "/home/runner/work/_temp/evidence-dylint-lock/root-optimized.json"
+      ],
+      "exit": 1,
+      "log_sha256": "bc174b81519fd088fe4d85ede3932b6c2954a27cd50273770006fdec92891cea"
+    }
+  ],
+  "positive_passed": true,
+  "optimized_rejected": true,
+  "original_result": {
+    "source_commit": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+    "source_tree": "fcbb3b9c180f929661348dc5d6453e8c04fe369e",
+    "tested_checkout": "cf13fb2ffc18e7ef7a814845faf26b95f1fcca89",
+    "verified_git_inputs": 1664,
+    "verified_outputs": 9,
+    "lock_commands": [
+      0,
+      0,
+      0
+    ],
+    "committed_generated_git_lock_equal": true,
+    "outer_rust_tests": 8,
+    "nested_ui_cases_inside_one_outer_test": 9,
+    "python_wrapper_tests": 6,
+    "scope": "Original maintained lint/bootstrap and committed lock only."
+  }
+}

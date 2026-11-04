@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "key": "dylint-lock",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+  "original_run": 41726681634,
+  "artifact_id": 13274416692,
+  "zip_bytes": 610346,
+  "zip_sha256": "c25ce1d58cf5cd92f13d9dea03e33f515140c19b06940793bf5bf488a2cf60ef",
+  "crc_all_members": true,
+  "source_verification": {
+    "count": 1664,
+    "before_sha256": "38acc46b3a6d502a4868441655de1401ae31cb8a84a5ca5d9f484fd0a72eb606",
+    "after_sha256": "38acc46b3a6d502a4868441655de1401ae31cb8a84a5ca5d9f484fd0a72eb606",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "MODULE.bazel",
+      "BUILD.bazel",
+      ".bazelrc",
+      ".bazelversion",
+      "defs.bzl",
+      "bazel",
+      "third_party",
+      "cargo_bazel_template",
+      "justfile",
+      "codex-rs/Cargo.toml",
+      "codex-rs/Cargo.lock",
+      "codex-rs/rust-toolchain.toml",
+      "codex-rs/**/Cargo.toml",
+      "codex-rs/third_party",
+      "patches",
+      "tools/argument-comment-lint",
+      "scripts/update_cargo_bazel.py",
+      "scripts/check-module-bazel-lock.sh",
+      ".github/scripts/run_bazel_with_buildbuddy.py",
+      ".github/actions/setup-ci",
+      ".github/actions/setup-bazel-ci",
+      ".github/actions/prepare-bazel-ci",
+      ".github/workflows/rust-ci.yml",
+      ".github/workflows/rust-ci-full.yml",
+      ".github/workflows/rust-release-argument-comment-lint.yml",
+      ".github/workflows/hepta-dylint-lock-qualification.yml",
+      "qualification/dylint-20261103"
+    ],
+    "symlink_resolution": []
+  },
+  "original_qualification_status": "passed",
+  "result": {
+    "commands": [
+      [
+        "committed-lock-check",
+        [
+          "./scripts/check-module-bazel-lock.sh"
+        ],
+        0
+      ],
+      [
+        "original-lock-update",
+        [
+          "just",
+          "bazel-lock-update"
+        ],
+        0
+      ],
+      [
+        "original-lock-check",
+        [
+          "./scripts/check-module-bazel-lock.sh"
+        ],
+        0
+      ]
+    ],
+    "lock_sha256": "50ffccd2af246c69a365f7ec35d84ca6ee3b16381ae1775a585d2fc8795a216d",
+    "lock_bytes": 1688065
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only replay of retained evidence; no new product execution or whole-CI admission.",
+  "output_counts": {
+    "recorded_outputs": 9,
+    "retained_outputs": 0,
+    "command_logs": 0
+  },
+  "verified_report_sha256": "0b2230cbfbcc4436a3696d5bdbb70694f7f3f1a38d0fe78d75bda6a99492d31b"
+}
