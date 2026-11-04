@@ -2077,16 +2077,7 @@ mod tests {
     #[tokio::test]
     async fn connect_stdio_command_initializes_json_rpc_client_on_windows() {
         let client = ExecServerClient::connect_stdio_command(StdioExecServerConnectArgs {
-            command: StdioExecServerCommand {
-                program: "powershell".to_string(),
-                args: vec![
-                    "-NoProfile".to_string(),
-                    "-Command".to_string(),
-                    "$null = [Console]::In.ReadLine(); [Console]::Out.WriteLine('{\"id\":1,\"result\":{\"sessionId\":\"stdio-test\"}}'); $null = [Console]::In.ReadLine(); Start-Sleep -Seconds 60".to_string(),
-                ],
-                env: HashMap::new(),
-                cwd: None,
-            },
+            command: crate::client_stdio_tests::stdio_command(),
             client_name: "stdio-test-client".to_string(),
             initialize_timeout: Duration::from_secs(1),
             resume_session_id: None,

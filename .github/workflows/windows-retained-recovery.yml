@@ -2,7 +2,9 @@ name: Native Windows retained recovery and cognitive owner
 
 on:
   push:
-    branches: [fix/windows-retained-sqlite-recovery-20261103]
+    branches:
+      - fix/windows-retained-sqlite-recovery-20261103
+      - integration/unified-blocker-20261104-r2
   workflow_dispatch:
 
 permissions:
