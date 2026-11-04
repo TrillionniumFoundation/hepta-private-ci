@@ -1,0 +1,45 @@
+name: Original composed workflow formatting
+
+on:
+  push:
+    branches: [qualification/private-ci-format-current-20261104-gpt6]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: original-composed-format-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-prettier:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
+      PYTHONDONTWRITEBYTECODE: "1"
+      GIT_CONFIG_COUNT: "1"
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: "false"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: pnpm/action-setup@a8198c4bff370c8506180b035930dea56dbd5288
+        with:
+          run_install: false
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: 22
+      - name: Run the original pinned formatter and full repository format check
+        run: python3 qualification/complete-source-union-20261104/prettier_qualify.py
+      - name: Preserve actual commands and every source input
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: original-prettier-${{ github.sha }}
+          path: ${{ runner.temp }}/original-prettier-qualification
+          if-no-files-found: error
+          retention-days: 14
