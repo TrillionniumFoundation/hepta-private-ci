@@ -3,13 +3,13 @@ use super::boot::Boot;
 use super::ipc;
 use super::paths;
 use super::provision;
+use super::socket_publication::PublishedListener;
 use super::supervisor;
 use super::workload;
 use codex_hepta_agentd::*;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::FleetRegistry;
 use std::os::unix::net::UnixDatagram;
-use std::os::unix::net::UnixListener;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -25,10 +25,10 @@ pub(super) struct Activation {
     pub(super) consumers: PathBuf,
     pub(super) manager_handoff: UnixDatagram,
     pub(super) recovery_handoff: UnixDatagram,
-    pub(super) manager_requests: UnixListener,
-    pub(super) recovery_requests: UnixListener,
-    pub(super) workload: UnixListener,
-    pub(super) recovery_observer: UnixListener,
+    pub(super) manager_requests: PublishedListener,
+    pub(super) recovery_requests: PublishedListener,
+    pub(super) workload: PublishedListener,
+    pub(super) recovery_observer: PublishedListener,
     pub(super) heartbeat: workload::Heartbeat,
 }
 

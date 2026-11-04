@@ -1,5 +1,6 @@
 //! Fixed native product storage, separate Root material and actual bind views.
 
+use super::socket_publication::verify_root_ancestry;
 use std::ffi::CString;
 use std::fs::File;
 use std::fs::OpenOptions;
@@ -71,32 +72,6 @@ pub(super) fn prepare_runtime() -> io::Result<()> {
     std::fs::set_permissions(LANES, std::fs::Permissions::from_mode(0o2710))?;
     verify_root_ancestry(Path::new(LANES))?;
     Ok(())
-}
-
-fn verify_root_ancestry(path: &Path) -> io::Result<()> {
-    if path.canonicalize()? != path {
-        return Err(io::Error::other(
-            "physical native Root runtime ancestry required",
-        ));
-    }
-    for ancestor in path.ancestors() {
-        let metadata = std::fs::symlink_metadata(ancestor)?;
-        if !metadata.is_dir() || metadata.uid() != 0 || metadata.mode() & 0o022 != 0 {
-            return Err(io::Error::other(
-                "native runtime ancestor is not exclusively Root controlled",
-            ));
-        }
-    }
-    Ok(())
-}
-
-pub(super) fn owner_socket(path: &Path, gid: u32) -> io::Result<()> {
-    let name = CString::new(path.as_os_str().as_encoded_bytes()).map_err(io::Error::other)?;
-    // SAFETY: the newly bound socket name is a retained fixed native path.
-    if unsafe { libc::chown(name.as_ptr(), 0, gid) } != 0 {
-        return Err(io::Error::last_os_error());
-    }
-    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o660))
 }
 
 pub(super) fn root_json(path: &Path, value: &impl serde::Serialize) -> io::Result<()> {
