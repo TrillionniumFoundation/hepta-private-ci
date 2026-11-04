@@ -393,6 +393,12 @@ jobs:
         with:
           tool: nextest@0.9.103
 
+      - name: Install the repository-pinned Python formatter runner
+        id: uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.3"
+
       - name: Install native prerequisites including original system OpenSSL
         id: native
         shell: bash
@@ -408,7 +414,9 @@ jobs:
           evidence = Path(os.environ["OWNER_CI_EVIDENCE"])
           records = []
           for command in (["rustc", "-Vv"], ["cargo", "-Vv"], ["just", "--version"],
-                          ["cargo", "nextest", "--version"], ["pkg-config", "--modversion", "openssl"],
+                          ["cargo", "nextest", "--version"], ["uv", "--version"],
+                          ["uv", "run", "--frozen", "--project", "scripts", "ruff", "--version"],
+                          ["pkg-config", "--modversion", "openssl"],
                           ["pkg-config", "--variable=libdir", "openssl"]):
               result = subprocess.run(command, text=True, capture_output=True, check=False)
               records.append({"argv": command, "exit_code": result.returncode,
@@ -514,7 +522,7 @@ jobs:
                   path = evidence / (label + ".json")
                   result["commands"][label] = json.loads(path.read_text()) if path.exists() else {
                       "argv": argv, "status": "not_started", "exit_code": None}
-              required_steps = ("checkout", "source", "tools", "rust", "nextest", "native", "v8", "metadata",
+              required_steps = ("checkout", "source", "tools", "rust", "nextest", "uv", "native", "v8", "metadata",
                                 "format", "memory", "agentd", "desktop_ui", "fix_memory", "fix_agentd",
                                 "fix_desktop_ui", "format_final")
               result["owning_packages_qualified"] = (result["source_final"]["unchanged"]
