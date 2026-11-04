@@ -909,6 +909,9 @@ impl Session {
         thread_extension_init.insert(codex_extension_api::ThreadOriginator(
             session_configuration.originator.clone(),
         ));
+        let fixture_metadata = thread_extension_init
+            .get::<crate::fixture_metadata::FixtureMetadataContext>()
+            .and_then(|context| context.0.clone());
         let mcp_thread_init = thread_extension_init.clone();
         let thread_extension_data = codex_extension_api::ExtensionData::new_with_init(
             thread_id.to_string(),
@@ -1533,6 +1536,7 @@ impl Session {
                     attestation_provider,
                     config.http_client_factory(),
                 )
+                .with_fixture_metadata(fixture_metadata)
                 .with_prompt_cache_key_override(
                     crate::guardian::prompt_cache_key_override_for_review_session(
                         &session_configuration.session_source,

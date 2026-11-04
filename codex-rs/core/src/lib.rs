@@ -67,6 +67,7 @@ mod environment_selection;
 pub mod exec;
 pub mod exec_env;
 mod exec_policy;
+mod fixture_metadata;
 #[cfg(test)]
 mod git_info_tests;
 mod guardian;

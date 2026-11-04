@@ -257,6 +257,7 @@ fn session_telemetry_for_request(
 struct ModelClientState {
     thread_id: ThreadId,
     provider: SharedModelProvider,
+    fixture_metadata: Option<Arc<crate::fixture_metadata::OpenAiFixtureMetadataLease>>,
     auth_env_telemetry: AuthEnvTelemetry,
     session_source: SessionSource,
     originator: String,
@@ -652,6 +653,7 @@ impl ModelClient {
             state: Arc::new(ModelClientState {
                 thread_id,
                 provider: model_provider,
+                fixture_metadata: None,
                 auth_env_telemetry,
                 session_source,
                 originator,
@@ -671,6 +673,29 @@ impl ModelClient {
             prompt_cache_key_override: None,
             http_client_factory,
         }
+    }
+
+    pub(crate) fn with_fixture_metadata(
+        mut self,
+        lease: Option<Arc<crate::fixture_metadata::OpenAiFixtureMetadataLease>>,
+    ) -> Self {
+        let Some(lease) = lease else {
+            return self;
+        };
+        let Some(state) = Arc::get_mut(&mut self.state) else {
+            unreachable!("fixture metadata must be bound before the client is shared");
+        };
+        if lease.matches_provider(state.provider.info()) {
+            state.fixture_metadata = Some(lease);
+        }
+        self
+    }
+
+    fn accepts_internal_chat_message_metadata(&self, endpoint: &str) -> bool {
+        provider_accepts_internal_chat_message_metadata(endpoint)
+            || self.state.fixture_metadata.as_ref().is_some_and(|lease| {
+                lease.accepts_request(self.state.provider.info(), endpoint)
+            })
     }
 
     pub(crate) fn with_prompt_cache_key_override(
@@ -1235,7 +1260,7 @@ impl ModelClient {
                 }
             }
         }
-        if !provider_accepts_internal_chat_message_metadata(&api_provider.base_url) {
+        if !self.accepts_internal_chat_message_metadata(&api_provider.base_url) {
             for item in &mut input {
                 item.clear_internal_chat_message_metadata_passthrough();
             }
@@ -1292,7 +1317,7 @@ impl ModelClient {
         api_provider: &ApiProvider,
     ) {
         let strip_internal_metadata =
-            !provider_accepts_internal_chat_message_metadata(&api_provider.base_url);
+            !self.accepts_internal_chat_message_metadata(&api_provider.base_url);
         for item in input {
             if item.id().is_some_and(|id| !id.is_prefixed()) {
                 item.set_id(/*new_id*/ None);

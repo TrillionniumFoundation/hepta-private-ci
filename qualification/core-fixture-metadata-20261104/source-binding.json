@@ -1,0 +1,196 @@
+{
+  "schema": 1,
+  "base": {
+    "sha": "5d19a578ac28a6ce7fc67a348b10297dc370c19f",
+    "tree": "49802adddec7dce9cf72c5f4b7ac23399d6d7358"
+  },
+  "status": "CANDIDATE_PENDING_ORIGINAL_NATIVE",
+  "sources": [
+    {
+      "path": "codex-rs/core/src/fixture_metadata.rs",
+      "blob": "612b0f496c04abe19598eb7d18c4b625e8348924",
+      "bytes": 4116,
+      "sha256": "af9e3121e1140f5d171811402778e0cdeb47e1bc8834cd368a3466ae1742f008",
+      "base_blob": null
+    },
+    {
+      "path": "codex-rs/core/src/lib.rs",
+      "blob": "4c9ff715ec2f54880eff98322f025518a849994f",
+      "bytes": 7770,
+      "sha256": "4e1348df137ddc61d06d300f51f1e14bf5ff150a085d6310e36af0a9b2242792",
+      "base_blob": "d03ef98db551aec7be2c4fcd802bdbc702a9bd64"
+    },
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "blob": "7fd02dd6d129ca59a14af3f8757d4292ba308f32",
+      "bytes": 163343,
+      "sha256": "aa8cc9dcd303ecd043a6ca4f0e02b84910f4b527c5d122612403f17b2bf93ff0",
+      "base_blob": "247de45a878b5e4514990e99b2289fc3dc087a47"
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager.rs",
+      "blob": "7de17a7939cba1ac2850c2bd9352bd6b38b51fe2",
+      "bytes": 120662,
+      "sha256": "a42a46582a88233e563a15b9b61938beb971c4d34312515583304703f9686294",
+      "base_blob": "78a25e5c91984121992c17949dad77c22585cc5d"
+    },
+    {
+      "path": "codex-rs/core/src/session/session.rs",
+      "blob": "bf46a1a86004b24091b31bd266bfc85865fb8859",
+      "bytes": 80594,
+      "sha256": "3bd31bcdbfdf15be7dbfad3071d71b59eb9091fd0a6397fed8494e8ef5b9a81c",
+      "base_blob": "b3a03355df039c9406c30a07be87bac83e390ad9"
+    },
+    {
+      "path": "codex-rs/core/src/test_support.rs",
+      "blob": "342d6cbea12a2bad14d21106b1f0f309531865fc",
+      "bytes": 8062,
+      "sha256": "2ab5d566e6f8fa277d7c5dd46ad2234359ef5230a8b60f5eb8881db08ea3fbe5",
+      "base_blob": "47427773eb68495c4a7c31de44f2618b51987494"
+    },
+    {
+      "path": "codex-rs/core/tests/common/test_codex.rs",
+      "blob": "455802927d9194e2aff418fb69b1af2fbec98970",
+      "bytes": 49366,
+      "sha256": "5521628fca4cff628352c9415f34935086dfdd11532dfcd7fb13d91ef378e175",
+      "base_blob": "a25b835a90488e600f169e7cdcbe1d9c91e0cd8a"
+    },
+    {
+      "path": "codex-rs/core/src/fixture_metadata_tests.rs",
+      "blob": "325154cf2d380fa386c872298f3911e8c3dd927a",
+      "bytes": 6032,
+      "sha256": "5bead2bd14b172b6339869b0a69850cebe8a7f71acc419738185ad05492f8524",
+      "base_blob": null
+    },
+    {
+      "path": "codex-rs/core/src/client_tests.rs",
+      "blob": "57013e1834afca7e97a4db3fe71637e683d2dae3",
+      "bytes": 57808,
+      "sha256": "f6f8b2b6611838d2b6df775d5e73db3205894a9e1b17cd12a24b35167ee1785a",
+      "base_blob": "3a7fe78f26c3450ec3a2f6c307ba3622a3bbe7d8"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/fixture_metadata.rs",
+      "blob": "cb5a2b78ec083e326eccd1b4b986d9ad2b832bf7",
+      "bytes": 6462,
+      "sha256": "40a8883695da1e74e21cd42d49fb04c1cb7c899f6a6c0163ef756087e2580fb2",
+      "base_blob": null
+    },
+    {
+      "path": "codex-rs/core/tests/suite/mod.rs",
+      "blob": "6ae30f34b4b06238a6a7bce61a592750047688f4",
+      "bytes": 4917,
+      "sha256": "f77fe933d819f21ef453498a4b8e86ed717342351d37b5f4657498659bf7874e",
+      "base_blob": "17145f671a76a894ab374ca299a67cf1a43e9c55"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/abort_tasks.rs",
+      "blob": "525df47011bbac5558f11f9f10638eaf870cbf17",
+      "bytes": 14037,
+      "sha256": "c259c2e6050cb23e2ed9afd816327f157050e2a62af2311f0ba1e882e656b37b",
+      "base_blob": "a14b95497300bec56505ceeddba4641143dc5a49"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "blob": "25194ed6c2640ba62c84e27f8673f19bfa6661f0",
+      "bytes": 21287,
+      "sha256": "a862adedc714fb9c4bcbbea49a793801624f050aa9c1dce37abccdd008a21bed",
+      "base_blob": "9f1fc48fbafdf48ba7b97774ceaf6b47c06f9a50"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/landlock.rs",
+      "blob": "6dcc9aa4692a7f0802737817b7d7ce0bdcd9cb38",
+      "bytes": 12339,
+      "sha256": "f8e09b9d401de7fd4ece8fa1458501f1bef669ec8ef980b938ca00e739b7b3ce",
+      "base_blob": "c2f966336105e62d98305a2f6888ccd8da3ff08c"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/binding.rs",
+      "blob": "089921b16f0e3cedffe2c1f38d52ab0dd258a29e",
+      "bytes": 11678,
+      "sha256": "91baba283de7da2e1bebeeaa1d245c4ce741653d06812ae496341ac591dc1064",
+      "base_blob": "90d4fcfe4e56d41d13e5b89f05c3cc41af25fb2c"
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+      "blob": "71d2b12b62a875a63fe4ab7da141475c5312b3ff",
+      "bytes": 14916,
+      "sha256": "77b654c58f924f97801853e9b901f4a237c8d894f58c96ba58e52c2cb47b282b",
+      "base_blob": "6e200299fb4a9259c5c396ba9b04980caeecb061"
+    },
+    {
+      "path": "codex-rs/core/src/hook_mcp_executor.rs",
+      "blob": "ea597a396a9eb031f31d5884bf525b325d5150a0",
+      "bytes": 2887,
+      "sha256": "e837c8dbcc20be11e00e55871882d99c72e1a9b2434c9144a9ed7b8d390e98dc",
+      "base_blob": "397c9da7a50c5f6e2df352024581cad5b3b8805d"
+    }
+  ],
+  "protected_files": [
+    {
+      "path": "codex-rs/model-provider-info/src/lib.rs",
+      "blob": "98c0fdb74861c92628996f1e1a58a2ac18352da3",
+      "reason": "Production URL wire helper and provider type are byte-identical."
+    },
+    {
+      "path": "codex-rs/core/tests/suite/client.rs",
+      "blob": "638482d49adadf26d4c5aa11870785fa9af9c24a",
+      "reason": "Original positive and same-port third-party negative assertions are byte-identical."
+    },
+    {
+      "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+      "blob": "a8b50af532b961b505b3dee5aa3a0417d28c7ecc",
+      "reason": "All 14 original hook cases and governance/visibility assertions are byte-identical."
+    }
+  ],
+  "new_unit_cases": [
+    "fixture_metadata::tests::fixture_endpoint_requires_an_exact_literal_loopback_origin",
+    "fixture_metadata::tests::replacement_provider_does_not_inherit_a_fixture_capability",
+    "fixture_metadata::tests::transport_tuning_is_bound_into_the_final_snapshot",
+    "fixture_metadata::tests::fixture_request_uses_exact_endpoint_and_provider_snapshot",
+    "fixture_metadata::tests::fixture_lease_lifetime_is_owned_by_explicit_clones",
+    "fixture_metadata::tests::fixture_debug_does_not_disclose_provider_values",
+    "client::tests::fixture_metadata_isolation::explicit_fixture_client_does_not_authorize_another_client_on_the_same_port",
+    "client::tests::fixture_metadata_isolation::fixture_client_rejects_provider_replacement_even_at_the_same_url"
+  ],
+  "new_integration_cases": [
+    "suite::fixture_metadata::metadata_lease_survives_dropping_the_test_container",
+    "suite::fixture_metadata::metadata_lease_follows_child_and_resumed_sessions_in_the_same_manager",
+    "suite::fixture_metadata::replacing_provider_in_the_same_manager_does_not_inherit_metadata",
+    "suite::fixture_metadata::changing_fixture_url_in_the_same_manager_does_not_inherit_metadata"
+  ],
+  "cargo_manifest_changes": [],
+  "cargo_lock_changes": false,
+  "bazel_lock_changes": false,
+  "feature_changes": [],
+  "scope": "The runtime capability is explicit hidden Rust test support, not a new production endpoint allowlist or a security boundary against deliberate trusted Rust test injection.",
+  "compile_prerequisite": {
+    "path": "codex-rs/linux-sandbox/src/landlock.rs",
+    "old_blob": "c2f966336105e62d98305a2f6888ccd8da3ff08c",
+    "new_blob": "6dcc9aa4692a7f0802737817b7d7ce0bdcd9cb38",
+    "owner": "root",
+    "reason": "Pinned landlock 0.4.4 renamed method, actual original SDK E0599. Only method name changed; true and original enforcement semantics remain."
+  },
+  "hook_controls": {
+    "owner": "hepta_blockers",
+    "original_integration_source": "a8b50af532b961b505b3dee5aa3a0417d28c7ecc",
+    "original_integration_cases": [
+      "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+      "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+      "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+      "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+      "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+      "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+      "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+      "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+      "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+      "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+      "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+      "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+      "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+      "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names"
+    ],
+    "old_binding_tests": 5,
+    "new_binding_tests": 3
+  }
+}

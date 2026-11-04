@@ -624,6 +624,7 @@ pub(crate) struct ThreadManagerState {
     agent_graph_store: Option<Arc<dyn AgentGraphStore>>,
     attestation_provider: Option<Arc<dyn AttestationProvider>>,
     external_time_provider: Option<Arc<dyn TimeProvider>>,
+    fixture_metadata: Option<Arc<crate::fixture_metadata::OpenAiFixtureMetadataLease>>,
     session_source: SessionSource,
     installation_id: String,
     analytics_events_client: Option<AnalyticsEventsClient>,
@@ -766,6 +767,7 @@ impl ThreadManager {
                 agent_graph_store,
                 attestation_provider,
                 external_time_provider,
+                fixture_metadata: None,
                 auth_manager,
                 session_source,
                 installation_id,
@@ -804,6 +806,23 @@ impl ThreadManager {
             unreachable!("code-mode session provider must be set before thread manager is shared");
         };
         state.code_mode_session_provider = provider;
+        self
+    }
+
+    pub(crate) fn with_openai_fixture_metadata_for_tests(
+        mut self,
+        fixture_provider: &ModelProviderInfo,
+        config: &Config,
+    ) -> Self {
+        let Some(state) = Arc::get_mut(&mut self.state) else {
+            unreachable!("fixture metadata must be bound before thread manager is shared");
+        };
+        state.fixture_metadata =
+            crate::fixture_metadata::OpenAiFixtureMetadataLease::for_owned_test_provider(
+                fixture_provider,
+                &config.model_provider_id,
+                &config.model_provider,
+            );
         self
     }
 
@@ -921,6 +940,7 @@ impl ThreadManager {
                 agent_graph_store,
                 attestation_provider: None,
                 external_time_provider: None,
+                fixture_metadata: None,
                 auth_manager,
                 session_source: SessionSource::Exec,
                 installation_id,
@@ -2639,6 +2659,17 @@ impl ThreadManagerState {
             immediate_parent_thread_id,
             Some(thread_id),
         );
+        // A copied attachment cannot grant a new manager authority. Only this
+        // manager's explicit fixture lease may cross into a child or resume.
+        let mut thread_extension_init = thread_extension_init;
+        thread_extension_init.insert(crate::fixture_metadata::FixtureMetadataContext(
+            self.fixture_metadata
+                .as_ref()
+                .filter(|lease| {
+                    lease.matches_config(&config.model_provider_id, &config.model_provider)
+                })
+                .cloned(),
+        ));
         let session_spawn = Session::spawn(SessionSpawnArgs {
             config,
             allow_provider_model_fallback,

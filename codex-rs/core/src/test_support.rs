@@ -215,3 +215,17 @@ pub fn all_model_presets() -> &'static Vec<ModelPreset> {
 pub fn builtin_collaboration_mode_presets() -> Vec<CollaborationModeMask> {
     collaboration_mode_presets::builtin_collaboration_mode_presets()
 }
+
+/// Bind metadata support to the OpenAI mock provider created by a test builder.
+///
+/// This hidden test-only injection follows the existing thread-manager test
+/// seams. It is never inferred from a URL, serialized config or environment.
+/// Replacing the fixture's provider identity leaves the manager unprivileged.
+#[doc(hidden)]
+pub fn with_openai_fixture_metadata(
+    thread_manager: ThreadManager,
+    fixture_provider: &ModelProviderInfo,
+    config: &Config,
+) -> ThreadManager {
+    thread_manager.with_openai_fixture_metadata_for_tests(fixture_provider, config)
+}

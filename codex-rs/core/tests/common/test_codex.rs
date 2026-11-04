@@ -609,7 +609,7 @@ impl TestCodexBuilder {
         test_env: TestEnv,
         include_local_environment: bool,
     ) -> anyhow::Result<TestCodex> {
-        let (config, fallback_cwd) = self
+        let (config, fallback_cwd, fixture_provider) = self
             .prepare_config(base_url, &home, test_env.cwd().clone())
             .await?;
         let exec_server_url = self
@@ -648,7 +648,7 @@ impl TestCodexBuilder {
         }
         let cwd = test_env.local_cwd_temp_dir().unwrap_or(fallback_cwd);
         Box::pin(self.build_from_config(
-            config,
+            (config, fixture_provider),
             cwd,
             home,
             resume_from,
@@ -660,13 +660,14 @@ impl TestCodexBuilder {
 
     async fn build_from_config(
         &mut self,
-        config: Config,
+        prepared_config: (Config, ModelProviderInfo),
         cwd: Arc<TempDir>,
         home: Arc<TempDir>,
         resume_from: Option<PathBuf>,
         mut test_env: TestEnv,
         environment_manager: Arc<codex_exec_server::EnvironmentManager>,
     ) -> anyhow::Result<TestCodex> {
+        let (config, fixture_provider) = prepared_config;
         let auth = self.auth.clone();
         let state_db = codex_core::init_state_db(&config).await;
         let thread_store = thread_store_from_config(&config, state_db.clone());
@@ -700,6 +701,11 @@ impl TestCodexBuilder {
             installation_id,
             /*attestation_provider*/ None,
             /*external_time_provider*/ self.external_time_provider.clone(),
+        );
+        let thread_manager = codex_core::test_support::with_openai_fixture_metadata(
+            thread_manager,
+            &fixture_provider,
+            &config,
         );
         let code_mode_host_program = self
             .code_mode_host_program
@@ -809,7 +815,7 @@ impl TestCodexBuilder {
         base_url: String,
         home: &TempDir,
         cwd_override: AbsolutePathBuf,
-    ) -> anyhow::Result<(Config, Arc<TempDir>)> {
+    ) -> anyhow::Result<(Config, Arc<TempDir>, ModelProviderInfo)> {
         let model_provider = ModelProviderInfo {
             base_url: Some(base_url),
             // Most core tests use SSE-only mock servers, so keep websocket transport off unless
@@ -830,6 +836,7 @@ impl TestCodexBuilder {
         // specific model can still override this with a config mutator.
         config.model = Some("gpt-5.5".to_string());
         config.cwd = cwd_override;
+        let fixture_provider = model_provider.clone();
         config.model_provider = model_provider;
         if let Ok(path) = codex_utils_cargo_bin::cargo_bin("codex") {
             config.codex_self_exe = Some(path);
@@ -856,7 +863,7 @@ impl TestCodexBuilder {
         }
         ensure_test_model_catalog(&mut config)?;
 
-        Ok((config, cwd))
+        Ok((config, cwd, fixture_provider))
     }
 }
 

@@ -1,0 +1,116 @@
+{
+  "schema": "hepta.core.model-hidden-configured-hook.source-diagnosis.v1",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "base": "5d19a578ac28a6ce7fc67a348b10297dc370c19f",
+  "base_tree": "49802adddec7dce9cf72c5f4b7ac23399d6d7358",
+  "generated_utc": "2026-11-04 06:26:27 UTC",
+  "observed_original_failure": {
+    "run": 41771368391,
+    "job": 126384287502,
+    "case": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+    "assertion": "request.message_input_texts(\"developer\").contains(&expected_context)",
+    "failure_observation_source": "Original job failure supplied by root; this review independently reads source, not the full historical job log."
+  },
+  "inputs": [
+    {
+      "path": "codex-rs/codex-mcp/src/binding.rs",
+      "git_blob_sha": "90d4fcfe4e56d41d13e5b89f05c3cc41af25fb2c",
+      "sha256": "8ea552ea0592bfe76d402844199b6b10b31e35dda6e5dfcd83864415d214935b",
+      "bytes": 11110
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/connection_manager/tool_catalog.rs",
+      "git_blob_sha": "1cda1d902fd31897b3de6b9dd629dce8741b6c75",
+      "sha256": "dbb0d154f570637679baf29e72cec930c34c85bd4735e4038f228ba8bc0b99af",
+      "bytes": 17286
+    },
+    {
+      "path": "codex-rs/core/src/hook_mcp_executor.rs",
+      "git_blob_sha": "397c9da7a50c5f6e2df352024581cad5b3b8805d",
+      "sha256": "48ca8068453f87c8c6ff6a1707fa885fde3ea4456fc9a0f0fe5f7a5e4ba02c90",
+      "bytes": 2820
+    },
+    {
+      "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+      "git_blob_sha": "a8b50af532b961b505b3dee5aa3a0417d28c7ecc",
+      "sha256": "bc8ec41923a606052897b0ef9acf0e966f5454d9ffd632438d625fb17fd838e2",
+      "bytes": 40711
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/bin/test_stdio_server.rs",
+      "git_blob_sha": "5ebd161921b9064444841d631835d4f51f78813e",
+      "sha256": "ea08de179afeb0a8ca089497ed790a108044414e7ca455ab955c0e50191700ba",
+      "bytes": 40654
+    },
+    {
+      "path": "codex-rs/hooks/src/events/user_prompt_submit.rs",
+      "git_blob_sha": "c70deba2f7ba15d34ec7e1132bcae191e52aacab",
+      "sha256": "6ed00b8d41723c88f34e03e58ae1c942012851b1547d30050f4b6fc470f7701f",
+      "bytes": 17690
+    },
+    {
+      "path": "codex-rs/core/src/context/hook_additional_context.rs",
+      "git_blob_sha": "9fe2bcc299eced3819b07a94e3fef793cf0a4aa2",
+      "sha256": "be670648feaf8b07afde43270407a936f4d79e7cf05e5f1f4aa8e81afae307af",
+      "bytes": 785
+    }
+  ],
+  "source_diagnosis": [
+    "The test_stdio_server declares thread_hint with ui.visibility=[] and demands threadId in request metadata before returning two fixed text content blocks.",
+    "CoreHookMcpExecutor constructs the correct owning threadId but first calls McpBinding::prepare_call. That API expressly filters out tools for which tool_is_model_visible is false. The hidden thread_hint is therefore rejected before its transport call.",
+    "The failed hook result becomes an error entry, with no additional_contexts_for_model. HookAdditionalContext would otherwise preserve the complete joined text as a developer message. This source path explains the original missing exact context without changing its expected text.",
+    "capture_binding_with_metadata already filters each ready server's tools with the configured tool_filter and captures an exact client, catalog revision and timeout. It retains permitted hidden entries in calls while separately omitting them from tools."
+  ],
+  "proposed_paths": [
+    {
+      "path": "codex-rs/codex-mcp/src/binding.rs",
+      "git_blob_sha": "089921b16f0e3cedffe2c1f38d52ab0dd258a29e",
+      "sha256": "91baba283de7da2e1bebeeaa1d245c4ce741653d06812ae496341ac591dc1064",
+      "bytes": 11678
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+      "git_blob_sha": "71d2b12b62a875a63fe4ab7da141475c5312b3ff",
+      "sha256": "77b654c58f924f97801853e9b901f4a237c8d894f58c96ba58e52c2cb47b282b",
+      "bytes": 14916
+    },
+    {
+      "path": "codex-rs/core/src/hook_mcp_executor.rs",
+      "git_blob_sha": "ea597a396a9eb031f31d5884bf525b325d5150a0",
+      "sha256": "e837c8dbcc20be11e00e55871882d99c72e1a9b2434c9144a9ed7b8d390e98dc",
+      "bytes": 2887
+    }
+  ],
+  "change_scope": {
+    "production": "Add a dedicated prepare_call_for_hook lookup in the same frozen permitted calls map; use it only in CoreHookMcpExecutor.",
+    "model_visible_prepare_call_unchanged": true,
+    "model_catalog_projection_unchanged": true,
+    "configured_tool_filter_unchanged": true,
+    "unready_client_rejection_unchanged": true,
+    "captured_connection_and_revision_guard_unchanged": true,
+    "governance_and_active_tool_policy_deny_unchanged": true,
+    "owning_thread_id_metadata_unchanged": true,
+    "original_timeout_seconds": 5,
+    "original_core_integration_fixture_entirely_unchanged": true,
+    "old_binding_test_file_exact_prefix": true,
+    "new_binding_tests": 3
+  },
+  "new_tests": [
+    "configured_hook_can_bind_hidden_tool_without_exposing_it_to_model",
+    "configured_hook_cannot_bind_absent_or_filtered_tool",
+    "hidden_hook_call_rejects_stale_catalog_before_preparation"
+  ],
+  "validation": {
+    "whole_candidate_blob_identity_readback": true,
+    "rust_compiled": false,
+    "native_tests_run": 0,
+    "original_formatter_run": false,
+    "required_native": "Run the current original hooks_mcp integration cases including hidden-context and both governed transport guards, plus the complete codex-mcp binding test module under the exact adopted source; retain the original budgets and assertions.",
+    "new_scope_not_inferred_as_qualified": true
+  },
+  "boundaries": [
+    "Configured, trusted hook execution already has an explicit policy path distinct from model tool visibility; this change does not make hidden tools model-callable.",
+    "The new lookup does not consult raw client tools or reconnect/reroute to a latest runtime; an absent call remains denied and catalog replacement is still rejected before preparation.",
+    "No root or product ref has been moved by this candidate publication. The three blobs are reviewable source objects until adopted in a commit. No native result is claimed."
+  ]
+}

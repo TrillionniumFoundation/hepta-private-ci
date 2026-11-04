@@ -1500,3 +1500,113 @@ async fn non_chatgpt_codex_endpoints_omit_attestation_generation() {
     );
     assert_eq!(attestation_calls.load(Ordering::Relaxed), 0);
 }
+
+mod fixture_metadata_isolation {
+    use super::*;
+    use crate::fixture_metadata::OpenAiFixtureMetadataLease;
+    use codex_model_provider_info::OPENAI_PROVIDER_ID;
+
+    fn fixture_provider() -> ModelProviderInfo {
+        let mut provider =
+            ModelProviderInfo::create_openai_provider(Some("http://127.0.0.1:47813/v1".to_string()));
+        provider.supports_websockets = false;
+        provider
+    }
+
+    fn client(provider: ModelProviderInfo) -> ModelClient {
+        ModelClient::new(
+            /*auth_manager*/ None,
+            AgentIdentityAuthPolicy::JwtOnly,
+            ThreadId::new(),
+            provider,
+            SessionSource::Exec,
+            "test_originator".to_string(),
+            /*model_verbosity*/ None,
+            /*content_item_kinds_enabled*/ true,
+            /*enable_request_compression*/ false,
+            /*include_timing_metrics*/ false,
+            /*beta_features_header*/ None,
+            /*concurrent_reasoning_summaries_enabled*/ false,
+            /*attestation_provider*/ None,
+            HttpClientFactory::new(OutboundProxyPolicy::ReqwestDefault),
+        )
+    }
+
+    fn wire_item(client: &ModelClient, endpoint: &str) -> serde_json::Value {
+        let mut item = ResponseItem::Message {
+            id: None,
+            role: "user".to_string(),
+            content: vec![ContentItem::InputText {
+                text: "fixture metadata".to_string(),
+            }],
+            phase: None,
+            internal_chat_message_metadata_passthrough: Some(
+                InternalChatMessageMetadataPassthrough {
+                    content_item_kinds: Some(vec![ContentItemKind("user.text".to_string())]),
+                    ..Default::default()
+                },
+            ),
+        };
+        let api_provider = ModelProviderInfo::create_openai_provider(Some(endpoint.to_string()))
+            .to_api_provider(Some(AuthMode::ApiKey))
+            .expect("test API provider");
+        client.prepare_response_items_for_request(std::slice::from_mut(&mut item), &api_provider);
+        serde_json::to_value(item).expect("response item should serialize")
+    }
+
+    #[test]
+    fn explicit_fixture_client_does_not_authorize_another_client_on_the_same_port() {
+        let provider = fixture_provider();
+        let ordinary = client(provider.clone());
+        let lease = OpenAiFixtureMetadataLease::for_owned_test_provider(
+            &provider, OPENAI_PROVIDER_ID, &provider,
+        )
+        .expect("owned fixture");
+        let privileged = client(provider.clone()).with_fixture_metadata(Some(Arc::clone(&lease)));
+        let endpoint = provider.base_url.as_deref().expect("fixture endpoint");
+        assert!(wire_item(&ordinary, endpoint)["internal_chat_message_metadata_passthrough"].is_null());
+        assert!(
+            wire_item(&privileged, endpoint)["internal_chat_message_metadata_passthrough"].is_object()
+        );
+        let clone = privileged.clone();
+        drop(privileged);
+        drop(lease);
+        assert!(wire_item(&clone, endpoint)["internal_chat_message_metadata_passthrough"].is_object());
+        assert!(wire_item(&ordinary, endpoint)["internal_chat_message_metadata_passthrough"].is_null());
+        assert!(
+            wire_item(&clone, "http://127.0.0.1:47814/v1")
+                ["internal_chat_message_metadata_passthrough"]
+                .is_null()
+        );
+        assert!(
+            wire_item(&clone, CHATGPT_CODEX_BASE_URL)["internal_chat_message_metadata_passthrough"]
+                .is_null()
+        );
+    }
+
+    #[test]
+    fn fixture_client_rejects_provider_replacement_even_at_the_same_url() {
+        let provider = fixture_provider();
+        let lease = OpenAiFixtureMetadataLease::for_owned_test_provider(
+            &provider, OPENAI_PROVIDER_ID, &provider,
+        )
+        .expect("owned fixture");
+        let mut replacement = provider.clone();
+        replacement.name = "Test Responses".to_string();
+        let rejected = client(replacement.clone()).with_fixture_metadata(Some(Arc::clone(&lease)));
+        let endpoint = provider.base_url.as_deref().expect("fixture endpoint");
+        assert!(
+            wire_item(&rejected, endpoint)["internal_chat_message_metadata_passthrough"].is_null()
+        );
+
+        // Recheck the complete provider at use time, even if a test changes the
+        // client's private provider after binding its original lease.
+        let mut changed = client(provider.clone()).with_fixture_metadata(Some(lease));
+        Arc::get_mut(&mut changed.state)
+            .expect("unshared client")
+            .provider = create_model_provider(replacement, /*auth_manager*/ None);
+        assert!(
+            wire_item(&changed, endpoint)["internal_chat_message_metadata_passthrough"].is_null()
+        );
+    }
+}

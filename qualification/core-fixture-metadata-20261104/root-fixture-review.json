@@ -1,0 +1,603 @@
+{
+  "schema_version": 1,
+  "scope": "Two existing positive recovery fixture repairs; source review only",
+  "base_commit": "5d19a578ac28a6ce7fc67a348b10297dc370c19f",
+  "changes": [
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "test": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode",
+      "before": "9f1fc48fbafdf48ba7b97774ceaf6b47c06f9a50",
+      "after": "25194ed6c2640ba62c84e27f8673f19bfa6661f0",
+      "bytes": 21287,
+      "sha256": "a862adedc714fb9c4bcbbea49a793801624f050aa9c1dce37abccdd008a21bed",
+      "all_other_test_bodies_byte_identical": true,
+      "original_test_attributes": 6,
+      "after_test_attributes": 6,
+      "diff": [
+        {
+          "op": "+",
+          "oldLine": 122,
+          "newLine": 122,
+          "text": "        // Recovery remains authorized only before the first provider event."
+        },
+        {
+          "op": "+",
+          "oldLine": 122,
+          "newLine": 123,
+          "text": "        vec![StreamingSseChunk {"
+        },
+        {
+          "op": "+",
+          "oldLine": 122,
+          "newLine": 124,
+          "text": "            gate: Some(first_response_gate),"
+        },
+        {
+          "op": "+",
+          "oldLine": 122,
+          "newLine": 125,
+          "text": "            body: responses::sse(vec!["
+        },
+        {
+          "op": "+",
+          "oldLine": 122,
+          "newLine": 126,
+          "text": "                ev_response_created(\"resp-interrupted\"),"
+        },
+        {
+          "op": "+",
+          "oldLine": 122,
+          "newLine": 127,
+          "text": "                ev_completed(\"resp-interrupted\"),"
+        },
+        {
+          "op": "+",
+          "oldLine": 122,
+          "newLine": 128,
+          "text": "            ]),"
+        },
+        {
+          "op": "+",
+          "oldLine": 122,
+          "newLine": 129,
+          "text": "        }],"
+        },
+        {
+          "op": "-",
+          "oldLine": 122,
+          "newLine": 130,
+          "text": "        vec!["
+        },
+        {
+          "op": "-",
+          "oldLine": 123,
+          "newLine": 130,
+          "text": "            StreamingSseChunk {"
+        },
+        {
+          "op": "-",
+          "oldLine": 124,
+          "newLine": 130,
+          "text": "                gate: None,"
+        },
+        {
+          "op": "-",
+          "oldLine": 125,
+          "newLine": 130,
+          "text": "                body: responses::sse(vec![ev_response_created(\"resp-interrupted\")]),"
+        },
+        {
+          "op": "-",
+          "oldLine": 126,
+          "newLine": 130,
+          "text": "            },"
+        },
+        {
+          "op": "-",
+          "oldLine": 127,
+          "newLine": 130,
+          "text": "            StreamingSseChunk {"
+        },
+        {
+          "op": "-",
+          "oldLine": 128,
+          "newLine": 130,
+          "text": "                gate: Some(first_response_gate),"
+        },
+        {
+          "op": "-",
+          "oldLine": 129,
+          "newLine": 130,
+          "text": "                body: responses::sse(vec![ev_completed(\"resp-interrupted\")]),"
+        },
+        {
+          "op": "-",
+          "oldLine": 130,
+          "newLine": 130,
+          "text": "            },"
+        },
+        {
+          "op": "-",
+          "oldLine": 131,
+          "newLine": 130,
+          "text": "        ],"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 147,
+          "text": "    // Set Plan mode on the original turn; recovery must replay its settings."
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 148,
+          "text": "    let initial_submission = test"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 149,
+          "text": "        .codex"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 150,
+          "text": "        .start_or_steer_turn("
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 151,
+          "text": "            user_message_request(\"recoverable user input\").with_thread_settings("
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 152,
+          "text": "                ThreadSettingsOverrides {"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 153,
+          "text": "                    collaboration_mode: Some(CollaborationMode {"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 154,
+          "text": "                        mode: ModeKind::Plan,"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 155,
+          "text": "                        settings: Settings {"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 156,
+          "text": "                            model: test.session_configured.model.clone(),"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 157,
+          "text": "                            reasoning_effort: None,"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 158,
+          "text": "                            developer_instructions: None,"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 159,
+          "text": "                        },"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 160,
+          "text": "                    }),"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 161,
+          "text": "                    ..Default::default()"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 162,
+          "text": "                },"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 163,
+          "text": "            ),"
+        },
+        {
+          "op": "+",
+          "oldLine": 149,
+          "newLine": 164,
+          "text": "        )"
+        },
+        {
+          "op": "-",
+          "oldLine": 149,
+          "newLine": 165,
+          "text": "    let initial_submission = submit_user_message(&test.codex, \"recoverable user input\")"
+        },
+        {
+          "op": "+",
+          "oldLine": 217,
+          "newLine": 232,
+          "text": "            thread_settings: ThreadSettingsOverrides::default(),"
+        },
+        {
+          "op": "-",
+          "oldLine": 217,
+          "newLine": 233,
+          "text": "            thread_settings: ThreadSettingsOverrides {"
+        },
+        {
+          "op": "-",
+          "oldLine": 218,
+          "newLine": 233,
+          "text": "                collaboration_mode: Some(CollaborationMode {"
+        },
+        {
+          "op": "-",
+          "oldLine": 219,
+          "newLine": 233,
+          "text": "                    mode: ModeKind::Plan,"
+        },
+        {
+          "op": "-",
+          "oldLine": 220,
+          "newLine": 233,
+          "text": "                    settings: Settings {"
+        },
+        {
+          "op": "-",
+          "oldLine": 221,
+          "newLine": 233,
+          "text": "                        model: test.session_configured.model.clone(),"
+        },
+        {
+          "op": "-",
+          "oldLine": 222,
+          "newLine": 233,
+          "text": "                        reasoning_effort: None,"
+        },
+        {
+          "op": "-",
+          "oldLine": 223,
+          "newLine": 233,
+          "text": "                        developer_instructions: None,"
+        },
+        {
+          "op": "-",
+          "oldLine": 224,
+          "newLine": 233,
+          "text": "                    },"
+        },
+        {
+          "op": "-",
+          "oldLine": 225,
+          "newLine": 233,
+          "text": "                }),"
+        },
+        {
+          "op": "-",
+          "oldLine": 226,
+          "newLine": 233,
+          "text": "                ..Default::default()"
+        },
+        {
+          "op": "-",
+          "oldLine": 227,
+          "newLine": 233,
+          "text": "            },"
+        },
+        {
+          "op": "+",
+          "oldLine": 252,
+          "newLine": 257,
+          "text": "    assert_eq!("
+        },
+        {
+          "op": "+",
+          "oldLine": 252,
+          "newLine": 258,
+          "text": "        test.codex.config_snapshot().await.collaboration_mode.mode,"
+        },
+        {
+          "op": "+",
+          "oldLine": 252,
+          "newLine": 259,
+          "text": "        ModeKind::Plan"
+        },
+        {
+          "op": "+",
+          "oldLine": 252,
+          "newLine": 260,
+          "text": "    );"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/tests/suite/abort_tasks.rs",
+      "test": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+      "before": "a14b95497300bec56505ceeddba4641143dc5a49",
+      "after": "525df47011bbac5558f11f9f10638eaf870cbf17",
+      "bytes": 14037,
+      "sha256": "c259c2e6050cb23e2ed9afd816327f157050e2a62af2311f0ba1e882e656b37b",
+      "all_other_test_bodies_byte_identical": true,
+      "original_test_attributes": 4,
+      "after_test_attributes": 4,
+      "diff": [
+        {
+          "op": "+",
+          "oldLine": 80,
+          "newLine": 80,
+          "text": "    let suspended_response = mount_response_once("
+        },
+        {
+          "op": "-",
+          "oldLine": 80,
+          "newLine": 81,
+          "text": "    mount_response_once("
+        },
+        {
+          "op": "+",
+          "oldLine": 123,
+          "newLine": 123,
+          "text": "    // Physical dispatch follows the durable Ready marker. Suspending before"
+        },
+        {
+          "op": "+",
+          "oldLine": 123,
+          "newLine": 124,
+          "text": "    // dispatch is a different state and must not become a recovery candidate."
+        },
+        {
+          "op": "+",
+          "oldLine": 123,
+          "newLine": 125,
+          "text": "    tokio::time::timeout(Duration::from_secs(5), async {"
+        },
+        {
+          "op": "+",
+          "oldLine": 123,
+          "newLine": 126,
+          "text": "        while suspended_response.requests().is_empty() {"
+        },
+        {
+          "op": "+",
+          "oldLine": 123,
+          "newLine": 127,
+          "text": "            tokio::time::sleep(Duration::from_millis(10)).await;"
+        },
+        {
+          "op": "+",
+          "oldLine": 123,
+          "newLine": 128,
+          "text": "        }"
+        },
+        {
+          "op": "+",
+          "oldLine": 123,
+          "newLine": 129,
+          "text": "    })"
+        },
+        {
+          "op": "+",
+          "oldLine": 123,
+          "newLine": 130,
+          "text": "    .await"
+        },
+        {
+          "op": "+",
+          "oldLine": 123,
+          "newLine": 131,
+          "text": "    .expect(\"root turn should reach the provider before suspension\");"
+        },
+        {
+          "op": "+",
+          "oldLine": 172,
+          "newLine": 181,
+          "text": "    // Preserve the physical provider endpoint across the replacement runtime."
+        },
+        {
+          "op": "+",
+          "oldLine": 172,
+          "newLine": 182,
+          "text": "    server.reset().await;"
+        },
+        {
+          "op": "-",
+          "oldLine": 172,
+          "newLine": 183,
+          "text": "    let recovery_server = start_mock_server().await;"
+        },
+        {
+          "op": "+",
+          "oldLine": 174,
+          "newLine": 184,
+          "text": "        &server,"
+        },
+        {
+          "op": "-",
+          "oldLine": 174,
+          "newLine": 185,
+          "text": "        &recovery_server,"
+        },
+        {
+          "op": "+",
+          "oldLine": 181,
+          "newLine": 191,
+          "text": "    // A fresh runtime must use the same model, cwd, roots and permission"
+        },
+        {
+          "op": "+",
+          "oldLine": 181,
+          "newLine": 192,
+          "text": "    // configuration. A changed request identity is intentionally unrecoverable."
+        },
+        {
+          "op": "+",
+          "oldLine": 181,
+          "newLine": 193,
+          "text": "    let original_config = test.config.clone();"
+        },
+        {
+          "op": "+",
+          "oldLine": 181,
+          "newLine": 194,
+          "text": "    let mut recovery_builder = test_codex().with_config(move |config| {"
+        },
+        {
+          "op": "+",
+          "oldLine": 181,
+          "newLine": 195,
+          "text": "        *config = original_config.clone();"
+        },
+        {
+          "op": "+",
+          "oldLine": 181,
+          "newLine": 196,
+          "text": "    });"
+        },
+        {
+          "op": "+",
+          "oldLine": 181,
+          "newLine": 197,
+          "text": "    if let Some(exec_server_url) = test.executor_environment().exec_server_url() {"
+        },
+        {
+          "op": "+",
+          "oldLine": 181,
+          "newLine": 198,
+          "text": "        recovery_builder = recovery_builder.with_exec_server_url(exec_server_url);"
+        },
+        {
+          "op": "+",
+          "oldLine": 181,
+          "newLine": 199,
+          "text": "    }"
+        },
+        {
+          "op": "+",
+          "oldLine": 181,
+          "newLine": 200,
+          "text": "    let resumed = recovery_builder"
+        },
+        {
+          "op": "+",
+          "oldLine": 181,
+          "newLine": 201,
+          "text": "        .resume(&server, Arc::clone(&test.home), rollout_path)"
+        },
+        {
+          "op": "-",
+          "oldLine": 181,
+          "newLine": 202,
+          "text": "    let resumed = test_codex()"
+        },
+        {
+          "op": "-",
+          "oldLine": 182,
+          "newLine": 202,
+          "text": "        .with_config(|config| {"
+        },
+        {
+          "op": "-",
+          "oldLine": 183,
+          "newLine": 202,
+          "text": "            let _ = config.features.enable(Feature::HeptaTurnRecovery);"
+        },
+        {
+          "op": "-",
+          "oldLine": 184,
+          "newLine": 202,
+          "text": "        })"
+        },
+        {
+          "op": "-",
+          "oldLine": 185,
+          "newLine": 202,
+          "text": "        .with_model(\"gpt-5.4\")"
+        },
+        {
+          "op": "-",
+          "oldLine": 186,
+          "newLine": 202,
+          "text": "        .resume(&recovery_server, Arc::clone(&test.home), rollout_path)"
+        },
+        {
+          "op": "+",
+          "oldLine": 189,
+          "newLine": 204,
+          "text": "    assert!(!Arc::ptr_eq(&test.thread_manager, &resumed.thread_manager));"
+        }
+      ]
+    }
+  ],
+  "original_failures": {
+    "run_id": 41771368391,
+    "job_id": 126384287502,
+    "source_checkout": "4109e2a9610816ddf05cf893d0cbcced1a0aceb2",
+    "decoded_log_bytes": 6677386,
+    "decoded_log_sha256": "19e44140a8286d611af7436343b5c52228048c194e7e970ecb6a8438f0d7e542",
+    "cases": [
+      {
+        "name": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode",
+        "error": "panicked at core/tests/suite/turn_input_submission.rs:210:6:\ninterrupted idle turn should expose its recovery epoch: Elapsed(())\n\n",
+        "verbatim_case_stdout": "---- suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode stdout ----\n\nthread 'suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode' (4110) panicked at core/tests/suite/turn_input_submission.rs:210:6:\ninterrupted idle turn should expose its recovery epoch: Elapsed(())\n\n"
+      },
+      {
+        "name": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+        "error": "panicked at core/tests/suite/abort_tasks.rs:189:5:\nassertion `left == right` failed\n  left: NotSubmitted { reason: RecoveryStateChanged }\n right: Started { turn_id: \"01a1a4d6-8eb3-7069-9e4f-29dc6d738188\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n",
+        "verbatim_case_stdout": "---- suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history stdout ----\n\nthread 'suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history' (1469) panicked at core/tests/suite/abort_tasks.rs:189:5:\nassertion `left == right` failed\n  left: NotSubmitted { reason: RecoveryStateChanged }\n right: Started { turn_id: \"01a1a4d6-8eb3-7069-9e4f-29dc6d738188\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n"
+      }
+    ]
+  },
+  "production_authorities": [
+    {
+      "path": "codex-rs/core/src/session/turn_input.rs",
+      "git_blob": "215af4dd2a36cf07915e2451040c19527bac3c9a",
+      "contract": "Recovery rejects non-default thread setting overrides and compares the persisted exact TurnContext and environment selection before replay."
+    },
+    {
+      "path": "codex-rs/core/src/session/turn.rs",
+      "git_blob": "942935e6d73ef3e3fc53c1fd73dd490e0247354e",
+      "contract": "Ready is published at physical dispatch; the first event pulled by the outer loop revokes authority before event dispatch, including ResponseEvent::Created."
+    },
+    {
+      "path": "codex-rs/core/tests/common/test_codex.rs",
+      "git_blob": "a25b835a90488e600f169e7cdcbe1d9c91e0cd8a",
+      "contract": "resume constructs a fresh TestCodex runtime with a new default local cwd unless its configuration is explicitly restored; with_exec_server_url selects the effective executor manager."
+    }
+  ],
+  "decisions": [
+    "Hold all first-response SSE events behind the existing oneshot until interruption; do not send Created before expecting a recovery epoch.",
+    "Apply the existing Plan-mode configuration to the original admitted user turn, then recover with default overrides. Keep all original Ready/order/history/turn-ID/input checks and add an explicit recovered Plan-mode assertion.",
+    "Observe the actual first provider request before root suspension with a bounded five-second readiness wait. Keep the existing sixty-second mock delay and all original live-descendant, shutdown, durable-history and identity assertions.",
+    "Reuse the same mock endpoint after reset, copy the entire original Config, retain the optional executor URL, and create a genuinely fresh ThreadManager. Existing production context and selector matching stays strict."
+  ],
+  "runtime_status": "Not compiled or executed yet. The private metadata qualification owner has been asked to independently review and run these unchanged full-name cases with the candidate.",
+  "remaining_risk": "The existing generic resume builder constructs a local TestEnv even for an explicitly supplied remote executor. Native remote/Wine coverage must confirm the restored effective environment selection; a mismatch must retain the existing fail-closed production behavior.",
+  "production_files_modified": [],
+  "original_negative_tests_modified": [],
+  "test_cases_removed": 0,
+  "timeout_increases": 0
+}

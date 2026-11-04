@@ -1,0 +1,71 @@
+{
+  "schema": "hepta.core.fixture-metadata-lease.independent-static-review.v1",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "base": "5d19a578ac28a6ce7fc67a348b10297dc370c19f",
+  "reviewed_utc": "2026-11-04 06:23:30 UTC",
+  "inputs": [
+    {
+      "path": "codex-rs/core/src/fixture_metadata.rs",
+      "git_blob_sha": "612b0f496c04abe19598eb7d18c4b625e8348924",
+      "sha256": "af9e3121e1140f5d171811402778e0cdeb47e1bc8834cd368a3466ae1742f008",
+      "bytes": 4116
+    },
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "git_blob_sha": "7fd02dd6d129ca59a14af3f8757d4292ba308f32",
+      "sha256": "aa8cc9dcd303ecd043a6ca4f0e02b84910f4b527c5d122612403f17b2bf93ff0",
+      "bytes": 163343
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager.rs",
+      "git_blob_sha": "7de17a7939cba1ac2850c2bd9352bd6b38b51fe2",
+      "sha256": "a42a46582a88233e563a15b9b61938beb971c4d34312515583304703f9686294",
+      "bytes": 120662
+    },
+    {
+      "path": "codex-rs/core/src/session/session.rs",
+      "git_blob_sha": "bf46a1a86004b24091b31bd266bfc85865fb8859",
+      "sha256": "3bd31bcdbfdf15be7dbfad3071d71b59eb9091fd0a6397fed8494e8ef5b9a81c",
+      "bytes": 80594
+    },
+    {
+      "path": "codex-rs/core/src/test_support.rs",
+      "git_blob_sha": "342d6cbea12a2bad14d21106b1f0f309531865fc",
+      "sha256": "2ab5d566e6f8fa277d7c5dd46ad2234359ef5230a8b60f5eb8881db08ea3fbe5",
+      "bytes": 8062
+    },
+    {
+      "path": "codex-rs/core/tests/common/test_codex.rs",
+      "git_blob_sha": "455802927d9194e2aff418fb69b1af2fbec98970",
+      "sha256": "5521628fca4cff628352c9415f34935086dfdd11532dfcd7fb13d91ef378e175",
+      "bytes": 49366
+    }
+  ],
+  "result": "No confirmed blocker in the reviewed issuance, provider matching and capability propagation paths.",
+  "scope": [
+    "Complete 4116-byte lease module.",
+    "Provider construction before with_config and final provider snapshot at builder injection.",
+    "ThreadManager default None, one-time unique-Arc injection, per-spawn overwrite of the private typed context.",
+    "Session context extraction and strong-Arc ownership in ModelClient.",
+    "Both internal metadata filtering decisions in ModelClient and public hidden test-support forwarding."
+  ],
+  "findings": [
+    "Lease issuance requires built-in OpenAI fixture provenance, exact configured provider identity and literal normalized HTTP loopback /v1 with an explicit nonzero port, no credentials/query/fragment in the URL. Custom provider name, auth/header/wire or endpoint changes fail the equality check.",
+    "The five allowed configuration changes affect transport behavior. The finalized complete provider is cloned into the lease, so subsequent changes to any of those fields also fail matching.",
+    "New managers and clients default to None. Every manager spawn replaces the private FixtureMetadataContext; copied extension attachments cannot independently authorize a different manager.",
+    "Child/resumed sessions retain only their owning manager's lease when its full config matches. ModelClient holds a strong Arc and checks exact provider plus exact request endpoint at use; no global URL registry or environment/config switch was found in these reviewed changes.",
+    "The existing normal endpoint acceptance helper is still called before the explicit lease path. This review did not independently re-read or re-prove the unchanged helper module.",
+    "Debug output omits provider values and endpoint. No lease serialization was present."
+  ],
+  "boundaries": [
+    "The hidden test-support entry point is intentionally compiled and publicly callable by Rust consumers of test_support; doc(hidden) is not a security boundary. The reviewed grant is an explicit test API capability, not a claim that arbitrary Rust code cannot construct test fixtures.",
+    "Provider/endpoint equality is not cryptographic authentication of the process currently listening on that port. The review makes no server-identity or unbounded network-lifetime claim.",
+    "Only selected propagation regions of the large existing files were reviewed, not the entire client/session implementation.",
+    "The proposed eight unit tests and four integration lifecycle tests were not independently read or executed in this review. Actual full native qualification remains required."
+  ],
+  "native_tests_run": 0,
+  "compilation_run": false,
+  "formatting_run": false,
+  "source_changed_by_reviewer": false,
+  "qualification_closed": false
+}

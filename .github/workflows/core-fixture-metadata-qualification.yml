@@ -1,0 +1,125 @@
+name: Core explicit fixture metadata qualification
+
+on:
+  push:
+    branches: [fix/private-ci-core-fixture-metadata-20261104-gpt6]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: core-fixture-metadata-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  format-and-reader-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          toolchain: 1.96.0
+          components: rustfmt
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.151
+      - name: Exercise every reader control and reject optimized Python
+        run: |
+          python3 - <<'PY'
+          import subprocess
+          import unittest
+          suite = unittest.defaultTestLoader.discover("qualification/core-fixture-metadata-20261104", pattern="test_readers.py")
+          if suite.countTestCases() != 13:
+              raise SystemExit("unexpected reader control inventory")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if not result.wasSuccessful() or result.testsRun != 13 or result.skipped or result.expectedFailures or result.unexpectedSuccesses:
+              raise SystemExit("reader controls incomplete")
+          result = subprocess.run(["python3", "-O", "qualification/core-fixture-metadata-20261104/run_native.py", "--help"], capture_output=True, text=True)
+          if result.returncode == 0 or "optimized Python is not accepted" not in result.stderr:
+              raise SystemExit("optimized reader was not rejected")
+          PY
+      - name: Original formatter must leave the exact source unchanged
+        run: python3 qualification/core-fixture-metadata-20261104/run_native.py --format-only --output "$RUNNER_TEMP/core-fixture-format"
+      - name: Preserve exact format output and source proposals
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: core-fixture-format-${{ github.sha }}
+          path: ${{ runner.temp }}/core-fixture-format
+          if-no-files-found: error
+          retention-days: 14
+
+  original-native:
+    needs: format-and-reader-controls
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, windows-2025]
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      RUSTUP_TOOLCHAIN: 1.96.0
+      RUST_MIN_STACK: '8388608'
+      NEXTEST_PROFILE: local
+      PYTHONIOENCODING: utf-8
+      PYTHONDONTWRITEBYTECODE: '1'
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Install original Linux native prerequisites
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libssl-dev libcap-dev bubblewrap
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          toolchain: 1.96.0
+          components: rustfmt,clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.151
+      - name: Select independent native output
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as stream:
+              stream.write("CARGO_TARGET_DIR=" + str(Path(os.environ["RUNNER_TEMP"]) / "core-fixture-target") + "\n")
+          PY
+      - name: Run original cases and new capability controls with exact compiled inventory
+        run: python qualification/core-fixture-metadata-20261104/run_native.py --output "$RUNNER_TEMP/core-fixture-native"
+      - name: Retain every original log, inventory, JUnit and source identity
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: core-fixture-native-${{ matrix.runner }}-${{ github.sha }}
+          path: ${{ runner.temp }}/core-fixture-native
+          if-no-files-found: error
+          retention-days: 14

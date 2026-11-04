@@ -77,7 +77,7 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
     let server = start_mock_server().await;
     // Waiting on the mocked response keeps the turn active on local and remote executors
     // without requiring an OS-specific command or a working sandboxed child process.
-    mount_response_once(
+    let suspended_response = mount_response_once(
         &server,
         sse_response(sse(vec![
             ev_response_created("suspended_response"),
@@ -120,6 +120,15 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         panic!("expected a started root turn");
     };
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnStarted(_))).await;
+    // Physical dispatch follows the durable Ready marker. Suspending before
+    // dispatch is a different state and must not become a recovery candidate.
+    tokio::time::timeout(Duration::from_secs(5), async {
+        while suspended_response.requests().is_empty() {
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await
+    .expect("root turn should reach the provider before suspension");
 
     assert_eq!(
         codex
@@ -169,23 +178,30 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         .remove_thread(&test.session_configured.thread_id)
         .await
         .expect("unload the suspended root");
-    let recovery_server = start_mock_server().await;
+    // Preserve the physical provider endpoint across the replacement runtime.
+    server.reset().await;
     mount_sse_once(
-        &recovery_server,
+        &server,
         sse(vec![
             ev_response_created("recovered_response"),
             ev_completed("recovered_response"),
         ]),
     )
     .await;
-    let resumed = test_codex()
-        .with_config(|config| {
-            let _ = config.features.enable(Feature::HeptaTurnRecovery);
-        })
-        .with_model("gpt-5.4")
-        .resume(&recovery_server, Arc::clone(&test.home), rollout_path)
+    // A fresh runtime must use the same model, cwd, roots and permission
+    // configuration. A changed request identity is intentionally unrecoverable.
+    let original_config = test.config.clone();
+    let mut recovery_builder = test_codex().with_config(move |config| {
+        *config = original_config.clone();
+    });
+    if let Some(exec_server_url) = test.executor_environment().exec_server_url() {
+        recovery_builder = recovery_builder.with_exec_server_url(exec_server_url);
+    }
+    let resumed = recovery_builder
+        .resume(&server, Arc::clone(&test.home), rollout_path)
         .await
         .expect("resume the suspended root on a replacement runtime");
+    assert!(!Arc::ptr_eq(&test.thread_manager, &resumed.thread_manager));
     assert_eq!(
         resumed
             .codex

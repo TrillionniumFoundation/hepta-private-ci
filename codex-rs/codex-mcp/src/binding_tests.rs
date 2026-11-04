@@ -373,3 +373,86 @@ async fn preparation_holds_catalog_authority_until_it_finishes() {
         .expect_err("the test preparation should stop the call");
     assert!(step.tool_catalog_revision.try_write().is_ok());
 }
+
+async fn model_hidden_test_step() -> TestStep {
+    let mut step = test_step(
+        "old",
+        AppToolApproval::Prompt,
+        /*supports_sandbox_state_meta*/ true,
+    )
+    .await;
+    let binding = Arc::get_mut(&mut step.step).expect("test binding should be unshared");
+    let call = binding
+        .calls
+        .get_mut(&(SERVER_NAME.to_string(), TOOL_NAME.to_string()))
+        .expect("test tool should have a captured call");
+    let mut metadata = rmcp::model::MetaObject::new();
+    metadata.insert("ui".to_string(), serde_json::json!({ "visibility": [] }));
+    call.tool_info.tool.meta = Some(metadata);
+    binding.tools.clear();
+    step
+}
+
+#[tokio::test]
+async fn configured_hook_can_bind_hidden_tool_without_exposing_it_to_model() {
+    let step = model_hidden_test_step().await;
+    assert!(step.step.tools().is_empty());
+    assert!(step.step.tool_info(SERVER_NAME, TOOL_NAME).is_some());
+    assert!(step.step.prepare_call(SERVER_NAME, TOOL_NAME).is_none());
+
+    let call = step
+        .step
+        .prepare_call_for_hook(SERVER_NAME, TOOL_NAME)
+        .expect("explicit hook should retain the permitted hidden tool");
+    assert!(!crate::tool_is_model_visible(call.tool_info()));
+    assert_eq!(call.tool_approval_mode(), AppToolApproval::Prompt);
+    assert_eq!(call.server_environment_id(), "old-environment");
+    assert!(Arc::ptr_eq(&call.client.client, &step.client));
+    assert!(step.step.tools().is_empty());
+    assert!(step.step.prepare_call(SERVER_NAME, TOOL_NAME).is_none());
+}
+
+#[tokio::test]
+async fn configured_hook_cannot_bind_absent_or_filtered_tool() {
+    let mut step = model_hidden_test_step().await;
+    assert!(
+        step.step
+            .prepare_call_for_hook("missing-server", TOOL_NAME)
+            .is_none()
+    );
+    assert!(
+        step.step
+            .prepare_call_for_hook(SERVER_NAME, "missing-tool")
+            .is_none()
+    );
+    let binding = Arc::get_mut(&mut step.step).expect("test binding should be unshared");
+    assert!(
+        binding
+            .calls
+            .remove(&(SERVER_NAME.to_string(), TOOL_NAME.to_string()))
+            .is_some()
+    );
+    assert!(binding.tool_info(SERVER_NAME, TOOL_NAME).is_none());
+    assert!(binding.prepare_call_for_hook(SERVER_NAME, TOOL_NAME).is_none());
+}
+
+#[tokio::test]
+async fn hidden_hook_call_rejects_stale_catalog_before_preparation() {
+    let step = model_hidden_test_step().await;
+    let call = step
+        .step
+        .prepare_call_for_hook(SERVER_NAME, TOOL_NAME)
+        .expect("explicit hook should retain the permitted hidden tool");
+    *step.tool_catalog_revision.write().await += 1;
+    let preparation_ran = Arc::new(AtomicBool::new(false));
+    let marker = Arc::clone(&preparation_ran);
+    let error = call
+        .call_with_preparation(/*requested_timeout*/ None, || async move {
+            marker.store(true, Ordering::SeqCst);
+            Ok((None, None))
+        })
+        .await
+        .expect_err("stale hook authority must fail before preparation");
+    assert!(error.to_string().contains("catalog changed"));
+    assert!(!preparation_ran.load(Ordering::SeqCst));
+}
