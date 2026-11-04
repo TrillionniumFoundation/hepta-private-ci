@@ -19,19 +19,13 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - key: memory97-windows
-            source: 97a49196f1c1dea6be1522b503a62aa7ae5031f6
-            script: verify_memory_current.py
-          - key: memory97-bazel
-            source: 97a49196f1c1dea6be1522b503a62aa7ae5031f6
-            script: verify_memory_current.py
+          - key: env3cd-source-failed
+            source: 3cd052f1b89ceffb20c5ad5a3902bc4634b286ce
+            script: verify.py
+          - key: env3cd-merge-failed
+            source: d500f40b21bc5c26e7950ab22af783b9c82d6066
+            script: verify.py
           - key: memory97-generation
-            source: 97a49196f1c1dea6be1522b503a62aa7ae5031f6
-            script: verify_memory_current.py
-          - key: memory97-macos
-            source: 97a49196f1c1dea6be1522b503a62aa7ae5031f6
-            script: verify_memory_current.py
-          - key: memory97-linux
             source: 97a49196f1c1dea6be1522b503a62aa7ae5031f6
             script: verify_memory_current.py
     env:
@@ -86,6 +80,8 @@ jobs:
             /qualification/keyring-sync-provider/build_pinned_client.py
       - name: Check verifier syntax
         run: python3 -m py_compile harness/qualification/original-artifact-evidence-20261104/verify.py harness/qualification/original-artifact-evidence-20261104/verify_memory_current.py
+      - name: Exercise mixed-output and command-binding reader controls
+        run: python3 -m unittest discover -s harness/qualification/original-artifact-evidence-20261104 -p test_reader_boundaries.py -v
       - name: Reject optimized Python before artifact processing
         run: |
           if python3 -O harness/qualification/original-artifact-evidence-20261104/verify_memory_current.py --help; then

@@ -476,5 +476,39 @@
     "sha256": "22546ede2e166620d8a5f3d46f11132e476bd8519c0ee1c680402516c028906b",
     "expected_original_status": "passed",
     "reader": "qualification/windows-memory-recovery-current/generate.py"
+  },
+  {
+    "key": "env3cd-source-failed",
+    "kind": "env",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+    "workflow_head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+    "run_id": 41768053006,
+    "artifact_id": 13294576843,
+    "bytes": 4497955,
+    "sha256": "fab247a72d6ce69a1d0962904723e9ea68488f0967eb7a0a98e3ca3ce051e451",
+    "expected_original_status": "failed",
+    "reader": "qualification/windows-process-env-current/run_qualification.py",
+    "command_logs": [
+      "original-process-suites.log",
+      "deferred-idle-controls-command.log"
+    ]
+  },
+  {
+    "key": "env3cd-merge-failed",
+    "kind": "env",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "d500f40b21bc5c26e7950ab22af783b9c82d6066",
+    "workflow_head": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+    "run_id": 41768053006,
+    "artifact_id": 13294830907,
+    "bytes": 4444322,
+    "sha256": "8325b5297bb2112f253e7961076ce6fa978211375fdbd38df2ea9a6f4b99384a",
+    "expected_original_status": "failed",
+    "reader": "qualification/windows-process-env-current/run_qualification.py",
+    "command_logs": [
+      "original-process-suites.log",
+      "deferred-idle-controls-command.log"
+    ]
   }
 ]

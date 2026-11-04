@@ -198,7 +198,7 @@ def verify_sources(spec, receipt, members, git):
             "snapshot_scope": scope, "symlink_resolution": git.symlinks}
 
 
-def verify_outputs(receipt, members):
+def verify_outputs(receipt, members, command_logs=None):
     outputs = receipt.get("outputs", {})
     for name, evidence in outputs.items():
         require(name in members, "missing recorded output: " + name)
@@ -209,9 +209,17 @@ def verify_outputs(receipt, members):
         raw = members[evidence["file"]]
         require(len(raw) == evidence["bytes"] and sha(raw) == evidence["sha256"], "retained output differs")
     commands = receipt.get("commands", [])
-    for command in commands:
+    if command_logs is not None:
+        require(isinstance(command_logs, list) and len(command_logs) == len(commands)
+                and all(isinstance(name, str) for name in command_logs)
+                and len(set(command_logs)) == len(command_logs),
+                "explicit command log binding differs")
+    for index, command in enumerate(commands):
         name = command.get("name")
-        path = name + ".log" if name else "original-process-suites.log"
+        path = (command_logs[index] if command_logs is not None else
+                name + ".log" if name else "original-process-suites.log")
+        if name is not None:
+            require(path == name + ".log", "named command log binding differs")
         require(sha(members[path]) == command["log_sha256"], "command log differs: " + path)
     return {"recorded_outputs": len(outputs), "retained_outputs": len(receipt.get("retained", [])),
             "command_logs": len(commands),
@@ -437,7 +445,7 @@ def main():
     git = GitBytes(args.source, spec["source"])
     try:
         source = verify_sources(spec, receipt, members, git)
-        outputs = verify_outputs(receipt, members)
+        outputs = verify_outputs(receipt, members, spec.get("command_logs"))
         if spec["kind"] == "state":
             result = inspect_state(spec, receipt, members, git)
         elif spec["kind"] == "dylint":

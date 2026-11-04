@@ -38,6 +38,23 @@ def parse(raw):
     return json.loads(raw, object_pairs_hook=unique)
 
 
+def parse_cargo_metadata_log(raw):
+    # generate.py sends both Cargo streams to the same original log. Cargo emits
+    # one compact metadata document after any diagnostic lines; diagnostics are
+    # retained and hashed independently instead of being parsed as JSON.
+    starts = [match.start() for match in re.finditer(br'^\{"packages":', raw, re.M)]
+    require(len(starts) == 1, "expected one line-start Cargo metadata document")
+    prefix, document = raw[:starts[0]], raw[starts[0]:]
+    require(len(prefix) <= 1024 * 1024, "Cargo diagnostic prefix exceeds reader bound")
+    metadata = parse(document)
+    require(isinstance(metadata, dict) and isinstance(metadata.get("packages"), list)
+            and isinstance(metadata.get("workspace_members"), list)
+            and metadata.get("version") == 1, "invalid Cargo metadata document")
+    return metadata, {"bytes": len(prefix), "sha256": sha(prefix),
+                      "preview_utf8": prefix[:8192].decode("utf-8", errors="replace"),
+                      "preview_is_complete": len(prefix) <= 8192}
+
+
 def verify_output_set(receipt, members):
     outputs = receipt["outputs"]
     require(set(outputs) == set(members) - {"receipt.json"}, "unbound or missing retained output")
@@ -324,12 +341,13 @@ def inspect_generation(receipt, members, git, by_name, spec):
         require(members[file_name] == members["committed-" + file_name] == git.read(git_path),
                 "generated lock differs from exact committed Git bytes")
     parse(members["MODULE.bazel.lock"])
+    metadata_diagnostics = {}
     for name in ("actual-cargo-metadata", "actual-locked-metadata"):
         raw = members[name + ".log"]
         with gzip.GzipFile(fileobj=io.BytesIO(members[name + ".log.gz"])) as stream:
             uncompressed = stream.read(LIMIT + 1)
         require(len(uncompressed) <= LIMIT and uncompressed == raw, "retained metadata gzip differs")
-        metadata = parse(raw)
+        metadata, metadata_diagnostics[name] = parse_cargo_metadata_log(raw)
         require(len(metadata["packages"]) == config["package_count"], "metadata package count changed")
     oid = config["base_cargo_blob"]
     document = parse(request("https://api.github.com/repos/" + spec["repository"] + "/git/blobs/" + oid,
@@ -365,7 +383,7 @@ def inspect_generation(receipt, members, git, by_name, spec):
     return {"mode": "generation", "commands": [name for name, _ in commands], "command_exits": [0] * len(commands),
             "cargo_delta": delta, "cargo_sha256": sha(members["Cargo.lock"]),
             "bazel_sha256": sha(members["MODULE.bazel.lock"]), "baseline_cargo_blob": oid,
-            "committed_and_generated_match_exact_git": True,
+            "committed_and_generated_match_exact_git": True, "metadata_diagnostics": metadata_diagnostics,
             "boundary": "Actual original formatting/metadata/lock generation; no native result inferred."}
 
 
