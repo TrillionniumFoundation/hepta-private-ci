@@ -1,0 +1,136 @@
+{
+  "review_type": "Independent SOURCE ONLY corrected-freeze review; supersedes verdict without changing preserved blocked review",
+  "review_date_utc": "2026-11-04",
+  "verdict": "SOURCE REVIEW PASS for one synthetic-only qualification attempt under the stated guards, subject to explicit parent admission; NOT an execution/test pass or real-G1 authority",
+  "freeze_sha256": "c78a3f89520063cce49d8ff433dbd62d35ce0355b97738d850f68f1e8fc7cda3",
+  "reviewed_sha256": {
+    "FREEZE.json": "c78a3f89520063cce49d8ff433dbd62d35ce0355b97738d850f68f1e8fc7cda3",
+    "CAPACITY.md": "ed90062d5b30e992499f18c81b867c6bd24ac6ae68bdfa24f316931cd186fbc7",
+    "PLAN.md": "0f668313af7d3053079c0b6878303e509d00efb0502efa166064b5190c05f9ee",
+    "PRIOR_370669ac_CAPACITY.md": "2d118a71b4ea99787e294dea83cf059c584dbc7fa9fe0819a3b73f29204d42e7",
+    "PRIOR_370669ac_FREEZE.json": "370669ac172398490b58d9e781cb6d183db4b0b462f315bff29d1ba9e2cd27fd",
+    "PRIOR_370669ac_PLAN.md": "53f8eab5aeae30572912edbe8af820745920d79c43d2d4d20b3bed347e85033f",
+    "PRIOR_370669ac_partition.py": "f7b8e275ad9f2487b5cfef99e270140643d7ba19d76c8d55cdd95af6a37750a0",
+    "PRIOR_370669ac_qualification.py": "6dea90e76f22ca93ffb6c6e9bfc75f956359edb7a10484876645983af8126fd6",
+    "PRIOR_370669ac_run_once.py": "1f8853c086b27e194964a54a8fa6977491abef5ee913bde832d7f3b6f32f59a1",
+    "PRIOR_SOURCE_REVIEW_370669ac.json": "cf2189dc4bb437b06b0242ccb74c331d6709891abd36724cba8f47b77d8c30e1",
+    "partition.py": "f7b8e275ad9f2487b5cfef99e270140643d7ba19d76c8d55cdd95af6a37750a0",
+    "qualification.py": "c7880d756bbbb063d1e51d63548613275d4b7683cb22e254037943ab58ed2156",
+    "run_once.py": "6739ef2c810859d46ce064934728a4f2a08c1b463b959710dbc957febdc39662"
+  },
+  "preserved_initial_review": {
+    "path": "bundled-digits-partition-candidate-v1/PRIOR_SOURCE_REVIEW_370669ac.json",
+    "sha256": "cf2189dc4bb437b06b0242ccb74c331d6709891abd36724cba8f47b77d8c30e1",
+    "byte_exact_verified": true,
+    "initial_verdict": "BLOCKED"
+  },
+  "preservation": {
+    "six_original_candidate_files_byte_exact": true,
+    "all_12_freeze_entries_match": true,
+    "partition_py_unchanged": true,
+    "RUN_ONCE_absent_at_review": true
+  },
+  "scope": {
+    "method": "Read revised sources and text diffs against frozen original files; hash all freeze entries and preserved records. Independent report writer uses standard library only; does not import, compile or execute candidate.",
+    "candidate_programs_executed": 0,
+    "tests_executed": 0,
+    "real_asset_opens_or_decodes": 0,
+    "training_or_holdout_access": 0,
+    "source_files_modified": false,
+    "review_record_updated_only": true
+  },
+  "closed_blockers": [
+    {
+      "id": "SRC-01",
+      "evidence": "run_once.py child argv is exactly executable, -I, -S, -B, -c, bootstrap; this disables normal site initialization, user-site and Python environment injection before the explicit frozen local import. No new descendant creation code introduced.",
+      "status": "closed by source inspection"
+    },
+    {
+      "id": "SRC-02",
+      "evidence": "qualification.py now binds all32 negatives to exact type/category. The29 parser/verifier negatives require type(exc) is p.Reject and exact one-element args tuple. Two root-reuse negatives require exact FileExistsError, EEXIST, exact target filename and existing target directory. Injected failure requires exact OSError and the specific injected object identity. The39 ordered check names/count and32 observed negative names/order are asserted before success. Receipt stores expected and observed type/category.",
+      "status": "closed by source inspection"
+    }
+  ],
+  "exact_delta": [
+    "partition.py byte-for-byte unchanged.",
+    "run_once.py only code change is adding -S to the child interpreter argument list.",
+    "qualification.py adds errno, fixed32-category map, ordered39-check list/count, exact negative checking/evidence, same-object injected exception, target paths for two existing-directory cases, final list/count checks and expanded receipt. Fixture, parser inputs, positive checks and finite workload remain unchanged.",
+    "PLAN.md adopts -S, narrows verifier contract to five bound payloads plus marker rather than entire directory, discloses raw OSError/RecursionError and records preservation/test hardening.",
+    "CAPACITY.md adds external-supervisor-death limitation and system interpreter/stdlib trust. No budget increase.",
+    "FREEZE binds five current source/docs plus six exact originals and initial review (12 entries). Current review itself remains outside freeze to avoid circularity."
+  ],
+  "qualification_accounting": {
+    "expected_recorded_checks": 39,
+    "expected_negative_cases": 32,
+    "expected_exact_Reject_cases": 29,
+    "expected_exact_FileExistsError_cases": 2,
+    "expected_exact_injected_OSError_cases": 1,
+    "expected_positive_grouped_checks": 7,
+    "expected_negative_categories": {
+      "boolean_split": "split_integer",
+      "foreign_profile": "profile",
+      "truncated": "gzip_boundary",
+      "trailing": "gzip_boundary",
+      "members": "gzip_boundary",
+      "badgzip": "gzip",
+      "compressedcap": "compressed_cap",
+      "decodedcap": "decoded_cap",
+      "negative": "range",
+      "noninteger": "range",
+      "hugeexponent": "integer_csv",
+      "nan": "integer_csv",
+      "infinity": "integer_csv",
+      "underscore": "integer_csv",
+      "space": "integer_csv",
+      "feature_range": "range",
+      "label_range": "range",
+      "missingcolumn": "integer_csv",
+      "blank": "integer_csv",
+      "leadingzero": "integer_csv",
+      "missingrow": "row_count",
+      "extrarow": "row_count",
+      "missinglf": "newline",
+      "crlf": "newline",
+      "conflicting_labels": "conflicting_group",
+      "minimum_stop": "minimum_groups",
+      "verify_corruption": "binding_mismatch",
+      "verify_torn_marker": "completion_json",
+      "no_overwrite": "FileExistsError at exclusive root mkdir",
+      "partial_failure": "the specifically injected OSError at management/final.jsonl open",
+      "verify_partial": "artifact_type",
+      "partial_no_retry": "FileExistsError at exclusive root mkdir"
+    },
+    "positive_checks": [
+      "real_profile_static_only",
+      "exact_boundaries",
+      "deterministic_bytes",
+      "exact_decimal_exponent_input",
+      "duplicates_grouped_once",
+      "canonical_serialization_public_schema",
+      "completion_binding"
+    ],
+    "observed_passes": null,
+    "coverage_limit": "Counts are source-derived expectations, not run results or exhaustive branch coverage. Original review unqualified-branch list still applies. No supervisor termination experiment has been added."
+  },
+  "parent_admission_conditions": [
+    "Admit exactly this FREEZE hash and only run_once.py, once; no standalone qualification invocation, retry, limit increase or output cleanup.",
+    "Launch parent with the trusted interpreter using -I -S -B and the absolute run_once.py path as well, so parent startup also excludes site hooks. Child already fixes its own argv.",
+    "Preserve existing rb EX|NB shared lock contract at /workspace/shared/rgb-class-preservation-20261030/benchmark.lock; lock acquisition failure is not permission to replace or bypass it.",
+    "Frozen child limits remain CPU4s, alarm30s, AS128MiB, FSIZE2MiB; supervisor threshold32s with owned wait4. Retained terminal output <=4MiB includes final receipt reserve. No strict aggregate CPU or total-wall proof.",
+    "After admitted execution, independently inspect terminal wait4 receipt, exact39 checks and32 category records, complete/partial artifacts and aggregate inventory. Failure preserves evidence and consumes this once-only path.",
+    "Real dataset decode/partition, training, selection/final access, denied sources and prior Fashion work remain blocked. Synthetic pass cannot authorize them."
+  ],
+  "retained_limits": [
+    "-S correction still needs normal system interpreter/stdlib trust; source hashing is not a hostile filesystem race boundary.",
+    "verify_complete binds five named payloads plus marker, not every filesystem entry. Extra files and a retained COMPLETE.pending are not rejected or counted by this function; full run_once terminal inventory separately counts regular files. It does not validate manifest/record semantic correctness, authenticate the marker, or defeat concurrent mutation. Do not call it an exact full-directory inventory verifier.",
+    "verify_complete filesystem errors may propagate OSError rather than a fixed Reject category, and deeply nested bounded JSON may raise RecursionError. These fail closed, but PLAN claim of fixed-category error is broader than implementation. Normalize errors or narrow that documentation before claiming that interface.",
+    "External SIGTERM/SIGKILL supervisor death is not covered by the Python exception handler. The child retains its resource/alarm guards, but complete reap and continued benchmark lock ownership are not guaranteed if the supervisor is externally killed. No termination test is present. This must remain an explicit limitation; design G1-07 termination qualification remains open for real G1.",
+    "Child CPU is enforced per process. Supervisor CPU has observed prefix only, final tail unknown; wall starts before fork and receipt wall excludes final serialization/write/teardown. No strict aggregate CPU or total-wall proof.",
+    "No empirical memory/runtime fit is known. Original 2CPU/15child/25parent design budget is explicitly superseded only by a newly requested synthetic 4CPU/30alarm/32parent budget, requiring parent admission.",
+    "Corruption freeze timing amendment moves clean partition-only G1 prerequisite to before G2; parent must explicitly accept the pre-data amendment. Real G1 remains unapproved, separate from any successful synthetic test.",
+    "No attribution/license material is yet embedded in derivative outputs; address provenance attribution before any authorized real derivative delivery. Synthetic handmade fixtures are not dataset derivatives.",
+    "Synthetic completion cannot authorize data decoding, training, selection/final opening, alteration of other holds or any old Fashion work."
+  ],
+  "interpretation_of_retained_limits": "Original -S correction item is now satisfied; remaining interpreter/stdlib trust applies. Original verifier error/extra-entry overclaims are now narrowed in PLAN rather than changed in code. Real G1 termination qualification remains open; parent only admits synthetic guards. Parent startup should use the launch condition above.",
+  "remaining_mandatory_source_fixes_for_this_synthetic_attempt": []
+}

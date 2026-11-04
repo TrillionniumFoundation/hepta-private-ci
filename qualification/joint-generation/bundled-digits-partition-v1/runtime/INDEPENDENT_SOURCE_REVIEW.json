@@ -1,0 +1,100 @@
+{
+  "review_type": "Independent SOURCE ONLY review of one real non-training partition manager",
+  "review_date_utc": "2026-11-04",
+  "verdict": "SOURCE PASS conditional on distinct parent admission of exact freeze and disclosed limitations; NOT execution success, training authority, or holdout-opening authority",
+  "freeze_sha256": "0c55be575808a0209d94165f93ff451551966ec931854e3f3f89c1949aea7552",
+  "reviewed_sha256": {
+    "CAPACITY.md": "b9e62312569131b54937c09eaccb81c15446bd92f705b4bddcd858d4311990a8",
+    "INPUTS.json": "b41c7fda6510ff5350e1b8c794f83e8f47a56ee6ee560c0028d281d7a55f09e2",
+    "PLAN.md": "687050fd99d8d9e9cb811d0f3dd8efac3ba9d8c77811d4cb94e323b6669c4b97",
+    "PRIOR_INDEPENDENT_SAVED_REVIEW.json": "3e3a787e4c0b60e4781f4f5c8f2e7d97d2d078c5466bf1b2a0e1565184ac6e4f",
+    "PRIOR_INDEPENDENT_SOURCE_REVIEW.json": "cacfba842b116816d742cbc3860f12ba882a9c6a26ce5b410b63a78bb57ff9a7",
+    "PRIOR_REAL_G1_ADMISSION_NEXT.md": "8996b71e0f678d83e0fd730bb013868b432cf14f3a819b51ff5c6a72963410d6",
+    "PROVENANCE.md": "01f92709ac2df5cf4b7fc9f2ff9b490c198a1e8052531d8b0a7fd3f2596ce537",
+    "partition.py": "f7b8e275ad9f2487b5cfef99e270140643d7ba19d76c8d55cdd95af6a37750a0",
+    "run_once.py": "4baad6e649c6c0045999a9bdd7d163d8001c53c4e38945fa4bf95a6b71b9121b",
+    "worker.py": "9b84e16fd639d9003234918239bb867250dd63fc2749f80fdf1d593ffa8bc4ac"
+  },
+  "scope": {
+    "candidate_imports_compiles_or_executions": 0,
+    "tests_executed": 0,
+    "real_asset_opens_hashes_or_decodes": 0,
+    "training_or_private_partition_reads": 0,
+    "method": "Static source/document review; independent stdlib hashes of frozen candidate files, preserved prior reviews, and three documentary inputs only. No real asset required.",
+    "candidate_source_modified": false
+  },
+  "preservation": {
+    "all_10_freeze_entries_match": true,
+    "documentary_pins_verified": 3,
+    "RUN_ONCE_absent": true,
+    "partition_byte_exact_previous": true,
+    "prior_source_and_saved_review_copies_byte_exact": true,
+    "initial_blocked_review_path": "../bundled-digits-partition-candidate-v1/PRIOR_SOURCE_REVIEW_370669ac.json",
+    "initial_blocked_review_sha256": "cf2189dc4bb437b06b0242ccb74c331d6709891abd36724cba8f47b77d8c30e1",
+    "initial_blocked_review_unchanged": true,
+    "fixes_during_this_review": 0
+  },
+  "source_identity": {
+    "profile": "bundled-digits-real-v1",
+    "documentary_rows": 1797,
+    "compressed_bytes": 57523,
+    "sha256": "09f66e6debdee2cd2b5ae59e0d6abbb73fc2b0e0185d2e1957e9ebb51e23aa22",
+    "independently_reopened_in_this_review": false
+  },
+  "exact_delta_from_synthetic_candidate": [
+    "partition.py unchanged SHA256 f7b8e275ad9f2487b5cfef99e270140643d7ba19d76c8d55cdd95af6a37750a0.",
+    "New worker replaces synthetic qualification workload with three documentary identity checks, one bounded exact real-source read, one REAL build, one publication, binding verification and redacted RESULT.",
+    "New supervisor checks parent isolation flags and frozen inputs, reserves fresh RUN_ONCE, uses existing rb EX|NB lock, forks/reexecs once with -I -S -B, waits/reaps, requires exact successful inventory and binds child public aggregate to its payload.",
+    "INPUTS adds exact source/document pins and attribution. PLAN/CAPACITY document real manager exposure, no fallback/retry, aggregate-only release, limitations and admission conditions. Prior evidence is retained unchanged."
+  ],
+  "checks": {
+    "parser": "128KiB compressed cap; REAL exact hash and 57523-byte length before decoding; single complete gzip member; 2MiB decoded cap; exact 1797 rows; LF only; 2144-byte line, 65-token and 32-byte/token caps; finite bounded decimal grammar; integral pixels 0..16 and labels 0..9. Scientific exponent is limited to one or two digits. Unknown real lexical compatibility must fail, not trigger an alternate loader.",
+    "grouping": "SHA256 of all 64 pixel bytes identifies group; repeated hash must match actual pixels and label, else fail. Entire duplicate group receives one fixed domain-hash split. Exact integer 60/20/20 thresholds, no balancing or seed search. TRAIN minimum 10 unique groups for each of 10 classes; both heldouts minimum 100 groups.",
+    "worker_input": "All three documentary pins rechecked before source open. Source bounded read MAX_COMPRESSED+1; p.REAL enforces fixed content identity. No sklearn/model imports, network or further process launch in worker.",
+    "privacy": "All row pixels, labels, per-group hashes, multiplicities and source-row mappings occur only in private_manager payloads. Public RESULT/WAIT4 expose fixed documentary identity, whole-file hashes/sizes, aggregate partition group counts, TRAIN-only class coverage and attribution, never heldout class counts or row identifiers. Exceptions use allowlisted fixed categories, no raw exception repr/tracebacks. Child stdout/stderr suppressed.",
+    "completion": "Five payloads plus COMPLETE.json are binding-verified by unchanged verifier. Parent independently requires seven pre-receipt successful files: five payloads, COMPLETE.json and RESULT.json. It rejects extra successful files including COMPLETE.pending. Parent does not parse private record or manifest semantics; it reads their bytes only for hashes. Private PUBLIC_RECEIPT complete=true alone never establishes success.",
+    "lock_and_process": "Original benchmark.lock opened rb without creation/replacement, flock EX|NB. Parent retains lock across fork, wait/reap, completion verification and inventory on normal path. Child hard CPU4s, AS128MiB, FSIZE2MiB, alarm30s before exec. Supervisor owned wait4, kill/reap at observed32s and finally cleanup on caught errors. Child explicit local imports with trusted interpreter -I -S -B; parent flags checked.",
+    "one_attempt": "Fresh exclusive RUN_ONCE reservation consumes attempt before lock acquisition. No cleanup/retry paths, no threshold/seed search or alternate source. Pre-reservation freeze/flag errors exit2 without creating run. Source code does not enforce admission cryptographically; cooperative operator must only run once after parent approval.",
+    "capacity": "Worker payloads plus marker <=4MiB-65536 before publishing; RESULT <=16384; parent successful pre-receipt inventory <=4MiB-65536 and terminal receipt <=49152. Failure partial artifacts remain. Atomic hardlink transiently creates two marker names; if unlink fails, marker is small and fixed-schema, failure RESULT and fixed supervisor receipt remain within reserve. No arbitrary append/log writes."
+  },
+  "expected_accounting": {
+    "maximum_child_processes": 1,
+    "success_children_started": 1,
+    "success_children_reaped": 1,
+    "success_child_exit": 0,
+    "success_complete_wait": true,
+    "successful_private_payloads": 5,
+    "successful_private_marker_files": 1,
+    "successful_total_files_including_RESULT_and_WAIT4": 8,
+    "real_observed_partition_counts": null,
+    "real_observed_runtime": null,
+    "synthetic_prior_evidence_only": {
+      "checks": 39,
+      "negative_cases": 32,
+      "Reject_cases": 29,
+      "FileExistsError_cases": 2,
+      "injected_OSError_cases": 1
+    },
+    "failure": "Lock/fork failure can start zero children. Controlled worker parse/build/publish failures produce passed=false and fixed category; normal failed child still reaped. Signals, missing RESULT or verifier issues yield supervisor_failure. Catastrophic supervisor death/filesystem failure can prevent a terminal receipt. No receipt or complete marker alone is success."
+  },
+  "unavoidable_exposure": [
+    "The admitted manager reads all 1797 pixel rows and labels for schema/conflict checks and partition construction. This is declared management exposure, not zero exposure.",
+    "Parent verifier management-reads raw private file bytes for bounded hashing without parsing rows. Independent saved reconstruction, if separately admitted, likewise incurs additional manager exposure.",
+    "Public aggregate group counts, TRAIN class coverage and whole-file sizes/hashes reveal those aggregates and bindings; they are not row-level release. No cryptographic privacy or administrator-proof seal is claimed."
+  ],
+  "retained_limitations": [
+    "Real lexical compatibility, split minima and 128MiB runtime fit are unknown. Preserve any failure without relaxation or retry.",
+    "External unhandled SIGTERM/SIGKILL of supervisor can release lock before child ends and prevent reap. Child limits/alarm remain, but no parent-death guarantee or fault/kill qualification exists. Parent must expressly accept this narrow normal-execution scope before admission.",
+    "CPU4s is child-only. wait4 measures whole child lifetime; parent observed CPU prefix includes startup, excludes nonzero final serialization/write/teardown. Wall prefix excludes tail; review/tool/reconstruction costs additional. No strict total process-tree CPU or wall proof.",
+    "Trusted interpreter/stdlib and cooperative local filesystem required. Frozen hashes and marker bindings do not defeat hostile concurrent writes or authenticate immutable data. No permission or security setting changes are made.",
+    "Verifier is byte binding, not semantic reconstruction. Exact parent inventory and separately authorized saved review cover distinct concerns.",
+    "Public original UCI TEST subset is repartitioned locally, not an untouched original TEST. No writer IDs/writer-disjoint guarantee. Local bytes not compared to independently downloaded original; provenance/license conclusion inherits preserved documentary audit."
+  ],
+  "parent_admission_conditions": [
+    "Approve only exact reviewed freeze with trusted system Python -I -S -B and absolute run_once.py; never separately invoke worker.",
+    "Explicitly accept declared manager exposure, empirical-capacity uncertainty, external-supervisor-death limitation and incomplete total timing bounds.",
+    "One real attempt only, with exact asset identity, unchanged caps/parser/thresholds and existing lock. Any lexical mismatch consumes attempt and remains failed; no fallback or retry.",
+    "After run, require terminal wait4 status and separately admitted saved artifact verification. No G2 training, selection/final evaluation, Fashion, all-FIT, strict256 or HOLD_NEW_TRAIN change follows."
+  ],
+  "remaining_mandatory_source_fixes": []
+}
