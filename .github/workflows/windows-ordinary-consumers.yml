@@ -96,6 +96,7 @@ jobs:
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
         run: |
+          export HEPTA_CI_BASH="$(cygpath -w "$BASH")"
           python - <<'PY'
           import hashlib
           import json
@@ -133,8 +134,10 @@ jobs:
               },
           }
           targets = [f"//codex-rs/{name}:{name}-unit-tests" for name in scopes]
+          bash = Path(os.environ["HEPTA_CI_BASH"])
+          bash_sha256 = hashlib.sha256(bash.read_bytes()).hexdigest()
           command = [
-              "bash", ".github/scripts/run-bazel-ci.sh",
+              str(bash), ".github/scripts/run-bazel-ci.sh",
               "--print-failed-action-summary", "--print-failed-test-logs",
               "--windows-msvc-host-platform", "--",
               "test", "--platforms=//:windows_x86_64_msvc",
@@ -150,7 +153,10 @@ jobs:
               "command": command, "started_at": started, "wall_seconds": time.time() - started,
               "exit_code": result.returncode, "log_sha256": hashlib.sha256(log.read_bytes()).hexdigest(),
               "original_targets": targets, "targets": {},
+              "launcher": {"path": str(bash), "sha256": bash_sha256},
           }
+          if hashlib.sha256(bash.read_bytes()).hexdigest() != bash_sha256:
+              raise RuntimeError("native Git Bash launcher changed during execution")
           (output / "result.json").write_text(json.dumps(receipt, indent=2) + "\n")
           info = subprocess.run([
               sys.executable, ".github/scripts/run_bazel_with_buildbuddy.py",
