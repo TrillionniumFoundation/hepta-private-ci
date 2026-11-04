@@ -70,9 +70,7 @@ async fn cancelled_idle_fence_releases_followers_without_bypassing_their_fence()
         .expect("first contributor");
     queue
         .defer(
-            Box::pin(async move {
-                follower_fence_rx.await.expect("follower's own fence")
-            }),
+            Box::pin(async move { follower_fence_rx.await.expect("follower's own fence") }),
             async move {
                 follower_tx.send(()).expect("follower observer");
             },
@@ -84,6 +82,8 @@ async fn cancelled_idle_fence_releases_followers_without_bypassing_their_fence()
         follower_rx.try_recv(),
         Err(oneshot::error::TryRecvError::Empty)
     );
-    follower_fence_tx.send(()).expect("release follower's fence");
+    follower_fence_tx
+        .send(())
+        .expect("release follower's fence");
     follower_rx.await.expect("follower should complete");
 }

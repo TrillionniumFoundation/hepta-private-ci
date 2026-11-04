@@ -1,0 +1,161 @@
+{
+  "schema": "actual-hosted-format-adoption-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "7a1393304a76c45052e538087565c00a135f5a14",
+  "source_tree": "bb4fd36d1108f39b670d62f0d57e3c8ffb021763",
+  "run_id": 41767138349,
+  "run_attempt": 1,
+  "job_id": 126368013303,
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41767138349/job/126368013303",
+  "actual_generator_result": {
+    "source_commit": "7a1393304a76c45052e538087565c00a135f5a14",
+    "base_commit": "00963996f16c067fbd04517d22d3d7e53d1d09a6",
+    "status": "generated-needs-adoption",
+    "commands": [
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 0,
+        "seconds": 0.3821844839999926,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "committed-lock-first",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 16.420269345999998,
+        "log_sha256": "8a8c34c75d36935127779d556eb235acd5715c6544320dd94fd893d3f66f5133"
+      },
+      {
+        "name": "original-formatter",
+        "argv": [
+          "just",
+          "fmt",
+          "--base",
+          "00963996f16c067fbd04517d22d3d7e53d1d09a6"
+        ],
+        "exit_code": 0,
+        "seconds": 0.7140373299999965,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "original-formatter-check",
+        "argv": [
+          "just",
+          "fmt",
+          "--check",
+          "--base",
+          "00963996f16c067fbd04517d22d3d7e53d1d09a6"
+        ],
+        "exit_code": 0,
+        "seconds": 0.7148660379999967,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "actual-cargo-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "seconds": 16.762621683000006,
+        "log_sha256": "732c26a6fccfb7faee60d13950a530d824013b4ba69fc4caa2efe32f2fcda15b"
+      },
+      {
+        "name": "actual-locked-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--locked",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "seconds": 0.8176990120000056,
+        "log_sha256": "d9e3fbd6fedcc99c0b7cdf1899d27a7cc2959583dca3486aea826c7359e22f1d"
+      },
+      {
+        "name": "original-lock-update",
+        "argv": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "seconds": 20.094988204999993,
+        "log_sha256": "9b91b618305cab972ac30497127c78340795df473c41b4467f0c5f6f4fd6f63e"
+      },
+      {
+        "name": "original-lock-check",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 4.037502015000015,
+        "log_sha256": "26dd8eb524e0a222290cd85def5b849fb18874a8aada5fa9304f1da936610689"
+      }
+    ],
+    "scope": "Real lock generation and formatting; native product qualification is separate.",
+    "cargo_delta": {
+      "packages": 1517,
+      "added_dependencies": {
+        "codex-git-utils": [
+          "base64 0.22.1"
+        ]
+      },
+      "versions_sources_checksums_unchanged": true
+    },
+    "changed_paths": [
+      "codex-rs/core/src/tasks/idle_work_tests.rs"
+    ],
+    "committed_cargo_equals_generated": true,
+    "committed_bazel_equals_generated": true,
+    "source_unchanged": false
+  },
+  "returned_job_log": {
+    "git_blob_sha": "5901fdc5633b22e26abf15dfd468cd84439e9499",
+    "sha256": "bac106825807b1c86756b9fb62da149fac41cfebc553f84aad8815812c8e20a5",
+    "bytes": 133775
+  },
+  "log_scope": "Complete decoded job-log bytes returned by the GitHub connector, retained unchanged. This is separate from the uploaded artifact ZIP.",
+  "generated_file": {
+    "path": "codex-rs/core/src/tasks/idle_work_tests.rs",
+    "git_blob_sha": "da30f9f06437324d0ec0e909afc694b6ed7158ac",
+    "sha256": "57c768ef3901a2836352a32ff9c86bf84e31b334adbcbd250c224858df805685",
+    "bytes": 3072,
+    "transport": "One GENERATED_FILE_CHUNK decoded from actual job log; exact declared bytes and SHA-256 matched; Git blob independently recomputed.",
+    "previous": {
+      "git_blob_sha": "5a64bd9fa162d98c6fb7cb0e01a6512d6fa9f6f3",
+      "sha256": "d1d5c33a3df839c4c2caec55b1954dd7cb3e4cb51aba5a04ec25865ed2c1d56f",
+      "bytes": 3082
+    },
+    "only_whitespace_changed": true
+  },
+  "artifact": {
+    "id": 13292794405,
+    "bytes": 4295075,
+    "sha256": "0c84d21e266183dc3d2fa553f794ef6a6d124a8c0a053b02726803cfe7904bc7",
+    "source": "Actual upload step metadata; ZIP not independently downloaded by this adoption."
+  },
+  "native_qualification_ran": false,
+  "native_tests_passed": null,
+  "python_reader_controls_run_by_this_generation_job": false,
+  "generated_status_was_not_native_qualification": true,
+  "local_executor_available": false,
+  "original_tests_budgets_and_acceptance_changed": false,
+  "overall_blockers_closed": false
+}

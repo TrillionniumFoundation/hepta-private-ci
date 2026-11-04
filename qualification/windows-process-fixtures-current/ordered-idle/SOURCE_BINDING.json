@@ -51,6 +51,11 @@
       "path": "codex-rs/core/src/tasks/idle_work_tests.rs",
       "before": null,
       "after": {
+        "git_blob_sha": "da30f9f06437324d0ec0e909afc694b6ed7158ac",
+        "sha256": "57c768ef3901a2836352a32ff9c86bf84e31b334adbcbd250c224858df805685",
+        "bytes": 3072
+      },
+      "before_original_formatter": {
         "git_blob_sha": "5a64bd9fa162d98c6fb7cb0e01a6512d6fa9f6f3",
         "sha256": "d1d5c33a3df839c4c2caec55b1954dd7cb3e4cb51aba5a04ec25865ed2c1d56f",
         "bytes": 3082
@@ -158,5 +163,18 @@
     "python_tests": false,
     "formatting": false
   },
-  "status": "Draft source candidate; original generated formatter/locks and native gates must run on this new commit."
+  "status": "Draft with the exact hosted formatter output adopted. The same original generation gate must confirm committed bytes unchanged before native qualification.",
+  "original_formatter_adoption": {
+    "source_commit": "7a1393304a76c45052e538087565c00a135f5a14",
+    "run_id": 41767138349,
+    "job_id": 126368013303,
+    "generated_git_blob_sha": "da30f9f06437324d0ec0e909afc694b6ed7158ac",
+    "generated_sha256": "57c768ef3901a2836352a32ff9c86bf84e31b334adbcbd250c224858df805685",
+    "generated_bytes": 3072,
+    "only_whitespace_changed": true,
+    "committed_cargo_lock_equals_generated": true,
+    "committed_bazel_lock_equals_generated": true,
+    "local_formatter_execution": false,
+    "hosted_original_formatter_executed": true
+  }
 }
