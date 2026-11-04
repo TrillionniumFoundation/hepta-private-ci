@@ -31,6 +31,10 @@ use crate::RuntimeComposition;
 mod notes_objective;
 pub use notes_objective::AgentdNotesObjectiveConfig;
 
+#[path = "desktop_objective_state.rs"]
+mod desktop_objective;
+pub use desktop_objective::AgentdDesktopObjectiveConfig;
+
 #[path = "state_control.rs"]
 mod control;
 
@@ -41,6 +45,7 @@ pub(crate) struct AgentdState {
     #[cfg(target_os = "linux")]
     pub(crate) notes_organ_root: std::sync::OnceLock<Arc<crate::AgentdRootAuthoritySession>>,
     pub(crate) notes_objective: std::sync::OnceLock<AgentdNotesObjectiveConfig>,
+    pub(crate) desktop_objective: std::sync::OnceLock<AgentdDesktopObjectiveConfig>,
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
@@ -143,6 +148,7 @@ impl AgentdState {
             #[cfg(target_os = "linux")]
             notes_organ_root: std::sync::OnceLock::new(),
             notes_objective: std::sync::OnceLock::new(),
+            desktop_objective: std::sync::OnceLock::new(),
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),

@@ -13,8 +13,9 @@ use std::time::Duration;
 use std::time::Instant;
 
 use crate::AgentdError;
+use crate::calculator_deadline::Deadline;
 
-const FLAGS: [&str; 15] = [
+const FLAGS: [&str; 18] = [
     "--root-production-profile",
     "--root-production-handoff-fd",
     "--root-production-uid",
@@ -30,7 +31,17 @@ const FLAGS: [&str; 15] = [
     "--notes-literal-deployment-fd",
     "--notes-literal-ui-fd",
     "--notes-session-pidfd",
+    "--desktop-production-handoff-fd",
+    "--desktop-thread-deployment-fd",
+    "--desktop-session-pidfd",
 ];
+
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum Profile {
+    Android,
+    Notes,
+    Desktop,
+}
 
 pub(super) struct LaunchInputs {
     pub(super) handoff: UnixDatagram,
@@ -53,6 +64,12 @@ pub(super) enum PrimaryInputs {
         deadline: Instant,
     },
     Notes,
+    Desktop {
+        handoff: UnixDatagram,
+        deployment: File,
+        session_pidfd: OwnedFd,
+        deadline: Deadline,
+    },
 }
 
 pub(super) struct NotesUiInputs {
@@ -88,12 +105,13 @@ pub(super) fn parse(
     let profile = selected
         .remove("--root-production-profile")
         .unwrap_or_else(|| OsString::from("android"));
-    let notes_primary = match profile.to_str() {
-        Some("android") => false,
-        Some("notes") => true,
+    let profile = match profile.to_str() {
+        Some("android") => Profile::Android,
+        Some("notes") => Profile::Notes,
+        Some("desktop") => Profile::Desktop,
         _ => {
             return Err(invalid(
-                "original production profile must be android or notes",
+                "original production profile must be android, notes or desktop",
             ));
         }
     };
@@ -112,9 +130,7 @@ pub(super) fn parse(
     }
     let control = descriptor_number(take("--root-production-control-fd")?)?;
     let app_server = descriptor_number(take("--root-production-app-server-fd")?)?;
-    let android = if notes_primary {
-        None
-    } else {
+    let android = if profile == Profile::Android {
         let server = identifier(take("--android-runtime-server")?)?;
         let environment = identifier(take("--android-runtime-environment")?)?;
         let payload = descriptor_number(take("--android-original-payload-fd")?)?;
@@ -123,6 +139,8 @@ pub(super) fn parse(
             "original monotonic deadline",
         )?;
         Some((server, environment, payload, original_deadline(end)?))
+    } else {
+        None
     };
     let notes = selected
         .remove("--notes-production-handoff-fd")
@@ -151,9 +169,37 @@ pub(super) fn parse(
             ));
         }
     };
-    if notes_primary && (notes.is_none() || notes_ui.is_none()) {
+    if profile == Profile::Notes && (notes.is_none() || notes_ui.is_none()) {
         return Err(invalid(
             "original Notes profile requires its real application and UI capabilities",
+        ));
+    }
+    let desktop_handoff = selected
+        .remove("--desktop-production-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    let desktop_deployment = selected
+        .remove("--desktop-thread-deployment-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    let desktop_session = selected
+        .remove("--desktop-session-pidfd")
+        .map(descriptor_number)
+        .transpose()?;
+    let desktop = match (desktop_handoff, desktop_deployment, desktop_session) {
+        (None, None, None) if profile != Profile::Desktop => None,
+        (Some(handoff), Some(deployment), Some(session)) if profile == Profile::Desktop => {
+            Some((handoff, deployment, session))
+        }
+        _ => {
+            return Err(invalid(
+                "the explicit Desktop profile requires its three dedicated descriptors",
+            ));
+        }
+    };
+    if profile == Profile::Desktop && (notes.is_some() || notes_ui.is_some()) {
+        return Err(invalid(
+            "Desktop and legacy Notes inputs cannot be combined",
         ));
     }
     let lifetime = selected
@@ -179,6 +225,9 @@ pub(super) fn parse(
         notes_deployment,
         notes_listener,
         notes_session,
+        desktop_handoff,
+        desktop_deployment,
+        desktop_session,
     ]
     .into_iter()
     .flatten()
@@ -186,26 +235,47 @@ pub(super) fn parse(
     if numbers.iter().copied().collect::<BTreeSet<_>>().len() != numbers.len() {
         return Err(invalid("original production descriptors must be distinct"));
     }
-    // Notes has no Android effect expiry to borrow or renew. Its startup uses
+    // Notes and Desktop have no Android effect expiry to borrow or renew. Startup uses
     // the existing handoff's fixed 30-second bound; each later Notes action has
     // its own original protected source/sender deadline.
     let bootstrap_deadline = android
         .as_ref()
         .map(|(_, _, _, deadline)| *deadline)
         .unwrap_or_else(|| Instant::now() + Duration::from_secs(30));
+    // Carry this new profile's one suspend-aware startup budget through the
+    // late Root handoff and both original application offers; never renew it
+    // when the sealed deployment becomes readable.
+    let desktop_deadline = (profile == Profile::Desktop)
+        .then(|| Deadline::after(Duration::from_secs(30)))
+        .transpose()?;
     // All numeric and pairing checks precede ownership transfer. CLOEXEC keeps
     // inherited authority out of unrelated App Server helper re-executions.
     let handoff = UnixDatagram::from(take_descriptor(handoff)?);
     let control = take_descriptor(control)?;
     let app_server = take_descriptor(app_server)?;
-    let primary = match android {
-        Some((server, environment, payload, deadline)) => PrimaryInputs::Android {
-            server,
-            environment,
-            payload: take_readonly_file(payload)?,
-            deadline,
-        },
-        None => PrimaryInputs::Notes,
+    let primary = match profile {
+        Profile::Android => {
+            let (server, environment, payload, deadline) =
+                android.ok_or_else(|| invalid("validated Android inputs are absent"))?;
+            PrimaryInputs::Android {
+                server,
+                environment,
+                payload: take_readonly_file(payload)?,
+                deadline,
+            }
+        }
+        Profile::Notes => PrimaryInputs::Notes,
+        Profile::Desktop => {
+            let (handoff, deployment, session) =
+                desktop.ok_or_else(|| invalid("validated Desktop inputs are absent"))?;
+            PrimaryInputs::Desktop {
+                handoff: UnixDatagram::from(take_descriptor(handoff)?),
+                deployment: take_readonly_file(deployment)?,
+                session_pidfd: take_descriptor(session)?,
+                deadline: desktop_deadline
+                    .ok_or_else(|| invalid("original Desktop startup deadline is absent"))?,
+            }
+        }
     };
     let notes = notes
         .map(take_descriptor)

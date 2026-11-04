@@ -38,6 +38,7 @@ impl ObjectiveExecutionProfile for FullObjectiveExecution {
                     None => {
                         agentd.start_current_run_start_record(record)?;
                         agentd.execute_notes_objective(record).await?;
+                        agentd.execute_desktop_objective(record).await?;
                         "compiled"
                     }
                 }
@@ -133,6 +134,14 @@ impl ObjectiveRuntimeHost {
                 self.profile_digest,
                 &request.body.run_id,
                 source.structured_intent.provenance.source_digest,
+            )
+            .await?;
+        agentd
+            .validate_desktop_source(
+                self.profile_digest,
+                &request.body.run_id,
+                source.structured_intent.provenance.source_digest,
+                &request.body.source_envelope_json,
             )
             .await?;
         let now_unix_micros = now_ms

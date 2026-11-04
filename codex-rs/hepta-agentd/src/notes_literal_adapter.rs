@@ -39,10 +39,16 @@ use crate::notes_literal_prepare::utc_millis;
 #[path = "notes_literal_read.rs"]
 mod read;
 pub use read::AgentdNotesRetainedIntents;
+#[path = "desktop_adapter_prepare.rs"]
+mod desktop_prepare;
 #[path = "notes_literal_history.rs"]
 mod history;
 #[path = "notes_thread_recorded.rs"]
 pub(crate) mod recorded;
+#[cfg(test)]
+pub(crate) use desktop_prepare::prepare_desktop_operation_before;
+#[path = "desktop_thread_recorded.rs"]
+pub(crate) mod desktop_recorded;
 #[path = "notes_ui_runtime.rs"]
 mod ui_runtime;
 pub use ui_runtime::AgentdNotesUiRuntime;
@@ -95,6 +101,7 @@ pub enum AgentdNotesPreparedObjective {
 pub(crate) enum NotesAdapterProfile {
     Literal,
     OriginalThread,
+    OriginalDesktop,
 }
 
 struct ThreadPreparation<'a> {
@@ -112,6 +119,7 @@ pub struct AgentdNotesLiteralAdapter {
     pub(crate) observer: AgentdNotesDocumentObserver,
     grants: Arc<AgentdUnixFinalUseGrantProvider>,
     pub(crate) bindings: AgentdNotesLiteralBindings,
+    pub(crate) profile_digest: Digest32,
     input_schema_digest: Digest32,
     normalization_digest: Digest32,
     pub(crate) blocking: Arc<Semaphore>,
@@ -177,6 +185,9 @@ impl AgentdConfig {
             NotesAdapterProfile::OriginalThread => {
                 codex_hepta_objective::thread_notes_admission_profile_json_v1
             }
+            NotesAdapterProfile::OriginalDesktop => {
+                codex_hepta_objective::desktop_thread_admission_profile_json_v1
+            }
         };
         let expected = encode_profile(
             &bindings.principal_scope,
@@ -207,10 +218,14 @@ impl AgentdConfig {
         let sender =
             self.original_objective_sender(Arc::clone(&attachment.checkpoint), deadline)?;
         let identity = self.identity().clone();
-        let configured = self.with_notes_objective(AgentdNotesObjectiveConfig {
-            profile_digest,
-            target: observer.target().clone(),
-        })?;
+        let configured = if profile == NotesAdapterProfile::OriginalDesktop {
+            self
+        } else {
+            self.with_notes_objective(AgentdNotesObjectiveConfig {
+                profile_digest,
+                target: observer.target().clone(),
+            })?
+        };
         let adapter = AgentdNotesLiteralAdapter {
             identity,
             writer,
@@ -219,6 +234,7 @@ impl AgentdConfig {
             observer,
             grants: Arc::clone(&attachment.grants),
             bindings,
+            profile_digest,
             input_schema_digest: selected.expected_input_schema_digest,
             normalization_digest: selected.expected_normalization_profile_digest,
             blocking: Arc::new(Semaphore::new(1)),
@@ -247,6 +263,9 @@ impl AgentdNotesLiteralAdapter {
             NotesAdapterProfile::Literal => ("organ.notes.literal.run.v1", "notes.literal"),
             NotesAdapterProfile::OriginalThread => {
                 ("organ.notes.original-turn.run.v1", "notes.thread")
+            }
+            NotesAdapterProfile::OriginalDesktop => {
+                ("organ.desktop.original-turn.run.v1", "desktop.thread")
             }
         };
         let binding = serde_json::to_vec(&(
@@ -421,6 +440,11 @@ impl AgentdNotesLiteralAdapter {
         end: Instant,
         phase: &mut NotesUiCallPhase,
     ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
+        if self.profile == NotesAdapterProfile::OriginalDesktop {
+            return Err(invalid(
+                "Desktop requires its exact six-tool preparation entry",
+            ));
+        }
         if self.profile == NotesAdapterProfile::OriginalThread && thread.is_none() {
             return Err(invalid(
                 "original Notes thread preparation requires verified human input",
@@ -529,6 +553,9 @@ impl AgentdNotesLiteralAdapter {
             NotesAdapterProfile::Literal => literal_notes_source_json_v1,
             NotesAdapterProfile::OriginalThread => {
                 codex_hepta_objective::thread_notes_source_json_v1
+            }
+            NotesAdapterProfile::OriginalDesktop => {
+                return Err(invalid("Desktop cannot compile a legacy Notes source"));
             }
         };
         let source = encode_source(LiteralNotesSourceContext {

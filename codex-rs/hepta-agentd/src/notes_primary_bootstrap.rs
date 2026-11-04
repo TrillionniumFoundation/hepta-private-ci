@@ -20,6 +20,68 @@ pub(crate) async fn primary_notes_runtime(
     ),
     AgentdError,
 > {
+    primary_notes_runtime_bounded(
+        config,
+        recovered_host,
+        bootstrap,
+        final_use,
+        grants,
+        verifier,
+        reconcile_interval,
+        expected,
+        None,
+    )
+    .await
+}
+
+pub(crate) async fn primary_notes_runtime_before(
+    config: &AgentdConfig,
+    recovered_host: &AgentdProductionWriterHost,
+    bootstrap: UnixDatagram,
+    final_use: FinalUseAuthority,
+    grants: Arc<dyn AgentdFinalUseGrantProvider>,
+    verifier: Arc<dyn ProductionAuthorityVerifier>,
+    reconcile_interval: Duration,
+    expected: Option<&NotesTargetIdentity>,
+    end: crate::calculator_deadline::Deadline,
+) -> Result<
+    (
+        AgentdProductionOperationRuntimeConfig,
+        AgentdNotesDocumentObserver,
+    ),
+    AgentdError,
+> {
+    primary_notes_runtime_bounded(
+        config,
+        recovered_host,
+        bootstrap,
+        final_use,
+        grants,
+        verifier,
+        reconcile_interval,
+        expected,
+        Some(end.capped(Duration::from_secs(2))?),
+    )
+    .await
+}
+
+async fn primary_notes_runtime_bounded(
+    config: &AgentdConfig,
+    recovered_host: &AgentdProductionWriterHost,
+    bootstrap: UnixDatagram,
+    final_use: FinalUseAuthority,
+    grants: Arc<dyn AgentdFinalUseGrantProvider>,
+    verifier: Arc<dyn ProductionAuthorityVerifier>,
+    reconcile_interval: Duration,
+    expected: Option<&NotesTargetIdentity>,
+    total: Option<crate::calculator_deadline::Deadline>,
+) -> Result<
+    (
+        AgentdProductionOperationRuntimeConfig,
+        AgentdNotesDocumentObserver,
+    ),
+    AgentdError,
+> {
     let deadline = Instant::now() + Duration::from_secs(2);
     let writer = recovered_host.writer();
     if recovered_host.destination_count() != 0
@@ -35,11 +97,18 @@ pub(crate) async fn primary_notes_runtime(
     verifier
         .verify(writer.authority(), writer.owner_agent_id())
         .map_err(AgentdError::GenerationFenced)?;
-    tokio::time::timeout(remaining(deadline)?, writer.verify_current_authority())
-        .await
-        .map_err(|_| io::Error::new(io::ErrorKind::TimedOut, "primary Notes owner deadline"))??;
-    let (offer, endpoint, recovery) = receive_session(&bootstrap, deadline, expected)?;
-    let configured = tokio::time::timeout(remaining(deadline)?, async {
+    tokio::time::timeout(
+        remaining_before(deadline, total)?,
+        writer.verify_current_authority(),
+    )
+    .await
+    .map_err(|_| io::Error::new(io::ErrorKind::TimedOut, "primary Notes owner deadline"))??;
+    let (offer, endpoint, recovery) =
+        receive_session(&bootstrap, bounded_instant(deadline, total)?, expected)?;
+    if total.is_some() {
+        remaining_before(deadline, total)?;
+    }
+    let configured = tokio::time::timeout(remaining_before(deadline, total)?, async {
         let channel = Arc::new(AgentdNotesChannel::from_private_channels(
             endpoint, recovery,
         )?);
@@ -64,7 +133,12 @@ pub(crate) async fn primary_notes_runtime(
     let configured = match configured {
         Ok(Ok(configured)) => configured,
         Ok(Err(error)) => {
-            let _ = acknowledge(&bootstrap, &offer, RegistrationStatus::Rejected, deadline);
+            let _ = acknowledge(
+                &bootstrap,
+                &offer,
+                RegistrationStatus::Rejected,
+                bounded_instant(deadline, total)?,
+            );
             return Err(error);
         }
         Err(_) => {
@@ -73,6 +147,35 @@ pub(crate) async fn primary_notes_runtime(
             );
         }
     };
-    acknowledge(&bootstrap, &offer, RegistrationStatus::Attached, deadline)?;
+    acknowledge(
+        &bootstrap,
+        &offer,
+        RegistrationStatus::Attached,
+        bounded_instant(deadline, total)?,
+    )?;
+    if total.is_some() {
+        remaining_before(deadline, total)?;
+    }
     Ok(configured)
+}
+
+fn remaining_before(
+    deadline: Instant,
+    total: Option<crate::calculator_deadline::Deadline>,
+) -> io::Result<Duration> {
+    let local = remaining(deadline)?;
+    match total {
+        Some(total) => Ok(local.min(total.remaining()?)),
+        None => Ok(local),
+    }
+}
+
+fn bounded_instant(
+    deadline: Instant,
+    total: Option<crate::calculator_deadline::Deadline>,
+) -> io::Result<Instant> {
+    match total {
+        None => Ok(deadline),
+        Some(total) => Ok(Instant::now() + remaining_before(deadline, Some(total))?),
+    }
 }

@@ -5,6 +5,9 @@ use super::*;
 #[path = "root_agentd_filesystem.rs"]
 mod filesystem;
 
+#[path = "root_desktop_startup.rs"]
+mod desktop_startup;
+
 #[path = "root_notes_startup.rs"]
 mod notes_startup;
 pub use notes_startup::RootNotesPolicyPredecessor;

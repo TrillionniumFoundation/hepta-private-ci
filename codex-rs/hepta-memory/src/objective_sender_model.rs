@@ -12,6 +12,10 @@ use std::str::FromStr;
 
 use crate::framing::frame_part;
 
+#[path = "objective_sender_desktop.rs"]
+mod desktop;
+pub use desktop::OriginalDesktopThreadReference;
+
 pub(super) const MAX_REQUESTS: i64 = 1_024;
 pub(super) const MAX_EVENTS: i64 = 16_384;
 pub(super) const MAX_EVENTS_PER_REQUEST: i64 = 64;
@@ -46,6 +50,10 @@ pub struct ObjectiveSenderOrigin {
     /// grant or permission. None preserves legacy binding bytes and hashes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub original_notes_thread: Option<OriginalNotesThreadReference>,
+    /// Explicit new Desktop profile; absence preserves all legacy bytes.
+    /// This is navigation data, never permission to execute or replay.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_desktop_thread: Option<OriginalDesktopThreadReference>,
 }
 
 /// Raw navigation identity in the existing protected sender binding. This DTO
@@ -159,6 +167,12 @@ impl ObjectiveSenderRequest {
         let envelope: Envelope = serde_json::from_str(&original).map_err(|_| Error::Malformed)?;
         if let Some(reference) = &origin.original_notes_thread {
             reference.validate_shape()?;
+        }
+        if let Some(reference) = &origin.original_desktop_thread {
+            reference.validate_shape()?;
+            if origin.original_notes_thread.is_some() {
+                return Err(Error::Identity);
+            }
         }
         let body = &envelope.body;
         for value in [&envelope.issuer_id, &envelope.message_id, &body.run_id] {

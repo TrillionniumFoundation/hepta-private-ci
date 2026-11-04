@@ -313,7 +313,7 @@ fn validate_profile(profile: &Profile, issuer_id: &str) -> io::Result<()> {
     Ok(())
 }
 
-fn validate_empty_deployment(file: &File) -> io::Result<()> {
+pub(super) fn validate_empty_deployment(file: &File) -> io::Result<()> {
     let metadata = file.metadata()?;
     // SAFETY: both fcntl operations read metadata of the retained live file.
     let (flags, seals) = unsafe {
@@ -340,7 +340,7 @@ fn validate_empty_deployment(file: &File) -> io::Result<()> {
     Ok(())
 }
 
-fn seal_deployment(mut file: File, bytes: &[u8]) -> io::Result<()> {
+pub(super) fn seal_deployment(mut file: File, bytes: &[u8]) -> io::Result<()> {
     validate_empty_deployment(&file)?;
     if bytes.is_empty() || bytes.len() > DEPLOYMENT_BOUND {
         return Err(io::Error::other(

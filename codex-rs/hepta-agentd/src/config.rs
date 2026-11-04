@@ -13,6 +13,9 @@ use codex_hepta_paths::HeptaFleetRoot;
 
 use crate::AgentdError;
 
+#[path = "config_desktop.rs"]
+mod desktop;
+
 #[path = "config_sockets.rs"]
 mod sockets;
 pub(crate) use sockets::AgentdSocketInputs;
@@ -104,10 +107,13 @@ pub struct AgentdConfig {
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
     notes_objective: Option<crate::AgentdNotesObjectiveConfig>,
+    desktop_objective: Option<crate::AgentdDesktopObjectiveConfig>,
     #[cfg(target_os = "linux")]
     notes_ui: Option<crate::AgentdNotesUiRuntime>,
     #[cfg(target_os = "linux")]
     notes_thread_tools: Option<crate::AgentdNotesThreadToolRuntime>,
+    #[cfg(target_os = "linux")]
+    desktop_thread_tools: Option<crate::AgentdDesktopThreadToolRuntime>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
@@ -262,10 +268,13 @@ impl AgentdConfig {
             production_operations: None,
             production_writer_host: None,
             notes_objective: None,
+            desktop_objective: None,
             #[cfg(target_os = "linux")]
             notes_ui: None,
             #[cfg(target_os = "linux")]
             notes_thread_tools: None,
+            #[cfg(target_os = "linux")]
+            desktop_thread_tools: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
@@ -451,7 +460,10 @@ impl AgentdConfig {
         mut self,
         runtime: crate::AgentdNotesUiRuntime,
     ) -> Result<Self, AgentdError> {
-        if self.notes_ui.is_some() || self.notes_thread_tools.is_some() {
+        if self.notes_ui.is_some()
+            || self.notes_thread_tools.is_some()
+            || self.desktop_thread_tools.is_some()
+        {
             return Err(AgentdError::Invalid(
                 "original Notes UI already configured".into(),
             ));
@@ -471,7 +483,10 @@ impl AgentdConfig {
         mut self,
         runtime: crate::AgentdNotesThreadToolRuntime,
     ) -> Result<Self, AgentdError> {
-        if self.notes_ui.is_some() || self.notes_thread_tools.is_some() {
+        if self.notes_ui.is_some()
+            || self.notes_thread_tools.is_some()
+            || self.desktop_thread_tools.is_some()
+        {
             return Err(AgentdError::Invalid(
                 "original Notes operation mode already selected".into(),
             ));
@@ -758,7 +773,7 @@ impl AgentdConfig {
         config: crate::AgentdNotesObjectiveConfig,
     ) -> Result<Self, AgentdError> {
         config.validate()?;
-        if self.notes_objective.is_some() {
+        if self.notes_objective.is_some() || self.desktop_objective.is_some() {
             return Err(AgentdError::Invalid(
                 "Notes Objective adapter already configured".into(),
             ));

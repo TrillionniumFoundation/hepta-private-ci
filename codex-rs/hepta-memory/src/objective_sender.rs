@@ -29,6 +29,7 @@ pub use model::ObjectiveSenderObservationKind;
 pub use model::ObjectiveSenderOrigin;
 pub use model::ObjectiveSenderRequest;
 pub use model::ObjectiveSenderWriterFence;
+pub use model::OriginalDesktopThreadReference;
 pub use model::OriginalNotesThreadReference;
 pub use read::ObjectiveSenderRetainedCursor;
 pub use read::ObjectiveSenderRetainedPage;
@@ -533,3 +534,11 @@ mod protected_checkpoint_tests;
 #[cfg(test)]
 #[path = "objective_sender_generation_tests.rs"]
 mod generation_tests;
+
+#[cfg(test)]
+#[path = "objective_sender_desktop_tests.rs"]
+mod desktop_tests;
+
+#[cfg(all(test, unix))]
+#[path = "desktop_turn_writer_tests.rs"]
+mod desktop_writer_tests;

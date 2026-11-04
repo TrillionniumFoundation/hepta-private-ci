@@ -237,9 +237,31 @@ pub use deployment_issuer::RootIssuedNotesGrantSelection;
 pub use deployment_issuer::RootNotesGrantAdmission;
 mod android_runtime;
 #[cfg(target_os = "linux")]
+mod calculator_bootstrap;
+#[cfg(target_os = "linux")]
+mod calculator_channel;
+#[cfg(target_os = "linux")]
+mod calculator_deadline;
+#[cfg(target_os = "linux")]
+mod calculator_observer;
+#[cfg(target_os = "linux")]
 mod cpu_policy;
 #[cfg(target_os = "linux")]
 mod cpu_policy_consumer;
+#[cfg(target_os = "linux")]
+mod desktop_launch;
+#[cfg(target_os = "linux")]
+mod desktop_root_composition;
+#[cfg(target_os = "linux")]
+mod desktop_startup;
+#[cfg(target_os = "linux")]
+mod desktop_thread_catalog;
+#[cfg(target_os = "linux")]
+mod desktop_thread_execution;
+#[cfg(target_os = "linux")]
+mod desktop_thread_seed;
+#[cfg(target_os = "linux")]
+mod desktop_thread_tool;
 mod error;
 mod event_buffer;
 mod evidence_frontier;
@@ -350,6 +372,12 @@ pub use browser_servo::BrowserServoPort;
 pub use browser_servo::BrowserServoProcessConfig;
 pub use browser_servo::BrowserServoTransport;
 pub use browser_servo::ChildBrowserTransport;
+#[cfg(target_os = "linux")]
+pub use calculator_channel::AgentdCalculatorChannel;
+#[cfg(target_os = "linux")]
+pub use calculator_channel::AgentdCalculatorRecoveryChannel;
+#[cfg(target_os = "linux")]
+pub use calculator_observer::AgentdCalculatorStateObserver;
 pub use client::AgentdClient;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
@@ -467,6 +495,28 @@ pub use cpu_policy::ObservedCpuDemand;
 pub use cpu_policy_consumer::CpuPolicyConsumer;
 #[cfg(target_os = "linux")]
 pub use cpu_policy_consumer::CpuPolicySubmission;
+#[cfg(target_os = "linux")]
+pub use desktop_root_composition::AgentdDesktopProductionAttachment;
+#[cfg(target_os = "linux")]
+pub use desktop_root_composition::attach_root_desktop_operation_host_with_startup;
+#[cfg(target_os = "linux")]
+pub use desktop_startup::AgentdDesktopStartupRelease;
+#[cfg(target_os = "linux")]
+pub use desktop_thread_catalog::original_desktop_thread_tools;
+#[cfg(target_os = "linux")]
+pub use desktop_thread_execution::ORIGINAL_DESKTOP_THREAD_ENVIRONMENTS_CONFIG;
+#[cfg(target_os = "linux")]
+pub use desktop_thread_execution::ORIGINAL_DESKTOP_THREAD_EXECUTION_CONFIG;
+#[cfg(target_os = "linux")]
+pub use desktop_thread_seed::DesktopThreadSeedOptions;
+#[cfg(target_os = "linux")]
+pub use desktop_thread_seed::DesktopThreadSeedReceipt;
+#[cfg(target_os = "linux")]
+pub use desktop_thread_seed::seed_original_desktop_thread;
+#[cfg(target_os = "linux")]
+pub use desktop_thread_seed::verify_original_desktop_thread_seed;
+#[cfg(target_os = "linux")]
+pub use desktop_thread_tool::AgentdDesktopThreadToolRuntime;
 pub use error::AgentdError;
 pub use evidence_frontier::EvidenceRecoveryFrontierV1;
 pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
@@ -623,6 +673,7 @@ pub use prompt_runtime::PromptRuntimeStageDisposition;
 pub use runtime::run;
 pub use runtime_tasks::RuntimeTaskFailure;
 pub use runtime_tasks::RuntimeTasks;
+pub use state::AgentdDesktopObjectiveConfig;
 pub use state::AgentdNotesObjectiveConfig;
 pub use topology_plasticity_host::AgentdTopologyAdmissionInputV1;
 pub use topology_plasticity_host::AgentdTopologyAnchorStoreV1;

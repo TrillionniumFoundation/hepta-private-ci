@@ -38,6 +38,7 @@ impl AgentdNotesLiteralAdapter {
                 .ok_or_else(|| invalid("original control path is not UTF-8"))?
                 .into(),
             original_notes_thread: None,
+            original_desktop_thread: None,
         })
     }
 

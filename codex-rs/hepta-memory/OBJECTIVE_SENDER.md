@@ -5,7 +5,7 @@ This slice implements Objective submission retention inside the existing
 database, lease, process lock and retained live authority verifier. It does not
 open another store, allocate an effect operation or send an Objective.
 
-The implementation base is Hepta commit
+The original retention slice began at Hepta commit
 `16418ddc3416a38a122b883cee46e2d3583cbd41` (tree
 `43fde98e9ea789b81b941e48bb65300c76c4292c`, PR #3398). No Cargo dependency or
 lockfile change is required.
@@ -43,10 +43,12 @@ this commit leaves an unknown request with no new sending opportunity.
 
 ## Independent current-cut acknowledgement
 
-The embedding host must implement `ObjectiveSenderCheckpoint`. There is no
-default implementation. The current source tree does not contain a production
-host service that independently authenticates, durably publishes and returns
-this CognitiveStore current-cut acknowledgement.
+The embedding host must supply `ObjectiveSenderCheckpoint`; this capability has
+no default implementation. The original Agentd Root composition supplies its
+retained protected checkpoint through the original host factory. This module
+does not create or independently qualify that service. See the
+[Root launcher contract](../hepta-agentd/PRODUCTION_LAUNCHER.md) for the actual
+handoff and owner requirements; an echo callback remains insufficient.
 
 After each committed request, observation or cancellation, the capability:
 
@@ -346,3 +348,60 @@ is added and legacy rows are never repaired. `retained_owner_requests` returns
 one complete physical read-only snapshot under the existing 1024-request / 32 MiB
 limits and original record/event checks; full requests remain private host data.
 Recovered data and tickets cannot regain a sending permission.
+
+## Versioned original Desktop references
+
+The independent Notes/Calculator candidate adds
+`ObjectiveSenderOrigin.original_desktop_thread: Option<OriginalDesktopThreadReference>`.
+The bounded reference contains `profile`, `tool`, `app_server_session_id`,
+`thread_id`, `turn_id`, `call_id` and `callback_sha256`. The profile is exactly
+`organ.desktop.thread-tool.v1`; only `hepta_notes_replace` and
+`hepta_calculator_evaluate` are effect references. Session IDs are at most 256
+bytes, thread/turn/call IDs at most 128 bytes, and the callback digest is a
+nonzero original digest. Structural validation rejects a simultaneous
+`original_notes_thread` reference.
+
+The field defaults to `None` and is omitted when absent, preserving legacy
+origin serialization and hash inputs. Existing Rust struct literals must
+explicitly supply `original_desktop_thread: None` where they have no new
+reference. This adds no SQL table, migration, second ledger or rewrite of old
+rows. The existing Notes-only reference, catalog and thread retain their
+original profile; a new six-tool Desktop thread has its own seed and source
+compiler. Reference metadata is not a Root grant, human admission or proof that
+Core actually made the call.
+
+Agentd derives one original Run binding from the Agent, App Server session,
+thread and turn, shared by both effect tools. Its call binding additionally
+includes call ID and tool. The same original sender prevents a second request
+for that Run, while the writer's already-prepared operation also fences a turn
+whose source signing or sender acknowledgement was lost. A later application,
+call ID or argument set cannot acquire another send opportunity. No unbounded
+application-side history is added to substitute for this original ownership.
+
+The owning callback runtime verifies its actual in-progress Core item and
+original human authorization before preparation. For a later effect request in
+an occupied turn it returns `requested_effect_performed: false`, the refused
+`callback`, and the first request under `original_reference` and nested
+`original_operation`. The first tool, target, destination, operation and typed
+receipt remain identified as that first operation. Its success cannot be
+attributed to the later application's callback.
+
+The candidate's status lookup uses `retained_owner_requests` as one complete
+physical read-only cut under the existing 1,024-request / 32 MiB limits, followed
+by exact signed source, callback, policy, payload and original operation checks.
+It is not a latest-sixteen-Core-turn heuristic or a new UI index. Missing
+versioned references, ambiguous retained order or absent history remain
+unknown. The original causal receipt and independent current application state
+are separate observations. Reading a current Calculator result or Notes
+revision does not establish an earlier effect, checkpoint acknowledgement or
+new sending right.
+
+`objective_sender_desktop_tests.rs` and `desktop_turn_writer_tests.rs` cover
+the new origin and shared original ownership contracts. The Calculator golden
+and retirement tests use explicit fixture authority plus the actual original
+writer/target APIs; a retry of metadata retirement is derived from its durable
+typed terminal, never a reconstructed effect permit. These tests do not qualify
+real Root authority, a GUI effect or product restart. Source-specific executed
+results, the unresolved earlier Memory-suite failure and the joint runtime's
+remaining gates are recorded in
+[the Desktop candidate handbook](../hepta-agentd/DESKTOP_ORGAN_CANDIDATE.md).

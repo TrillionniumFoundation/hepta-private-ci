@@ -146,7 +146,7 @@ impl ObjectiveRuntimeHost {
     }
 
     pub(crate) async fn reconcile_notes(&self, agentd: &AgentdState) -> Result<(), AgentdError> {
-        if agentd.notes_objective.get().is_none() {
+        if agentd.notes_objective.get().is_none() && agentd.desktop_objective.get().is_none() {
             return Ok(());
         }
         let records = {
@@ -165,6 +165,7 @@ impl ObjectiveRuntimeHost {
         };
         for record in records {
             agentd.execute_notes_objective(&record).await?;
+            agentd.execute_desktop_objective(&record).await?;
         }
         Ok(())
     }
