@@ -87,7 +87,8 @@ def fetch_artifact(spec):
             require(info.filename not in members, "duplicate member")
             # ZipFile.read checks each member CRC.
             members[info.filename] = archive.read(info)
-    require("receipt.json" in members or spec["kind"] == "legacy-env", "original top-level receipt missing")
+    require(spec.get("receipt_path", "receipt.json") in members or spec["kind"] == "legacy-env",
+            "original declared receipt missing")
     return metadata, raw, members
 
 

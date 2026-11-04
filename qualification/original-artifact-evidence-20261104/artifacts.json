@@ -256,5 +256,18 @@
     "reader": "qualification/windows-memory-recovery-current/generate.py",
     "expected_original_status": "failed",
     "workflow_head": "b12f9b216d91bb760582a9df0d569f7e051a1016"
+  },
+  {
+    "key": "tee-3616-builder-version-failure",
+    "kind": "tee-negative",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "3616f6fcb1a2fdf77398a3a04bb906301af7b153",
+    "workflow_head": "3616f6fcb1a2fdf77398a3a04bb906301af7b153",
+    "run_id": 41760763714,
+    "artifact_id": 13289229371,
+    "bytes": 34668,
+    "sha256": "09e35e87906ddc00df06f14153e348bcb023efc5a789557a7b051e6689674747",
+    "receipt_path": "bazel9-output-backport/evidence/receipt.json",
+    "expected_original_status": "failed"
   }
 ]
