@@ -15,7 +15,7 @@ async fn only_prewrite_failures_prove_non_transmission() {
     let path = directory.path().join("phase.sock");
     let missing = signed_input(
         &endpoint(path.clone()),
-        &owner().route,
+        &owner().unwrap().route,
         "text:human-scope:3",
         "text",
         false,
@@ -31,7 +31,14 @@ async fn only_prewrite_failures_prove_non_transmission() {
     let mut wrong = endpoint(path);
     wrong.owner_pid += 1;
     assert!(matches!(
-        signed_input(&wrong, &owner().route, "text:human-scope:3", "text", false).await,
+        signed_input(
+            &wrong,
+            &owner().unwrap().route,
+            "text:human-scope:3",
+            "text",
+            false
+        )
+        .await,
         Err(TextSessionError::NotTransmitted(_))
     ));
     rejected_peer.await.unwrap();
@@ -50,7 +57,7 @@ async fn only_prewrite_failures_prove_non_transmission() {
     assert!(matches!(
         signed_input(
             &endpoint(path),
-            &owner().route,
+            &owner().unwrap().route,
             "text:human-scope:3",
             "text",
             false
@@ -61,19 +68,19 @@ async fn only_prewrite_failures_prove_non_transmission() {
     received.await.unwrap();
 }
 
-fn closed_outcome(through_sequence: u64, text: &str) -> TextUnsignedClosure {
+fn closed_outcome(through_sequence: u64, text: &str) -> anyhow::Result<TextUnsignedClosure> {
     let body = crate::AuthBusTextBody {
         spawn_generation: 2,
         thread_id: "original-thread".into(),
         text: text.into(),
     };
-    TextUnsignedClosure::Closed {
+    Ok(TextUnsignedClosure::Closed {
         through_sequence,
-        payload_sha256: *codex_hepta_types::Digest32::of_bytes(
-            &crate::authbus_ingress::payload(&body).unwrap(),
-        )
+        payload_sha256: *codex_hepta_types::Digest32::of_bytes(&crate::authbus_ingress::payload(
+            &body,
+        )?)
         .as_array(),
-    }
+    })
 }
 
 #[tokio::test]
@@ -91,8 +98,8 @@ async fn lost_close_reply_stays_unknown_until_matching_original_closure_proof() 
             drop(stream);
             let retry = response(&listener, serde_json::json!({
             "schema_version":1,"operation":"close_unsigned","request_id":"text:human-scope:3",
-            "outcome":closed_outcome(3, "same input"),
-        })).await;
+            "outcome":closed_outcome(3, "same input").unwrap(),
+        })).await.unwrap();
             assert_eq!(lost, retry);
             assert_eq!(retry["operation"], "close_unsigned");
         });
@@ -100,7 +107,7 @@ async fn lost_close_reply_stays_unknown_until_matching_original_closure_proof() 
     assert!(matches!(
         close_unsigned(
             &endpoint,
-            &owner().route,
+            &owner().unwrap().route,
             "text:human-scope:3",
             "same input"
         )
@@ -110,13 +117,13 @@ async fn lost_close_reply_stays_unknown_until_matching_original_closure_proof() 
     assert_eq!(
         close_unsigned(
             &endpoint,
-            &owner().route,
+            &owner().unwrap().route,
             "text:human-scope:3",
             "same input"
         )
         .await
         .unwrap(),
-        closed_outcome(3, "same input")
+        closed_outcome(3, "same input").unwrap()
     );
     server.await.unwrap();
 }
@@ -125,8 +132,8 @@ async fn lost_close_reply_stays_unknown_until_matching_original_closure_proof() 
 async fn unsigned_closure_rejects_wrong_payload_watermark_and_preserves_a_retained_old_generation()
 {
     for outcome in [
-        closed_outcome(2, "same input"),
-        closed_outcome(3, "different input"),
+        closed_outcome(2, "same input").unwrap(),
+        closed_outcome(3, "different input").unwrap(),
     ] {
         let directory = tempfile::tempdir().unwrap();
         let path = directory.path().join("invalid.sock");
@@ -134,12 +141,12 @@ async fn unsigned_closure_rejects_wrong_payload_watermark_and_preserves_a_retain
         let server = tokio::spawn(async move {
             response(&listener, serde_json::json!({
             "schema_version":1,"operation":"close_unsigned","request_id":"text:human-scope:3","outcome":outcome,
-        })).await;
+        })).await.unwrap();
         });
         assert!(matches!(
             close_unsigned(
                 &endpoint(path),
-                &owner().route,
+                &owner().unwrap().route,
                 "text:human-scope:3",
                 "same input"
             )
@@ -159,12 +166,12 @@ async fn unsigned_closure_rejects_wrong_payload_watermark_and_preserves_a_retain
             response(&listener, serde_json::json!({
         "schema_version":1,"operation":"close_unsigned","request_id":"text:human-scope:3",
         "outcome":TextUnsignedClosure::Retained { envelope: original },
-    })).await;
+    })).await.unwrap();
         });
     assert_eq!(
         close_unsigned(
             &endpoint(path),
-            &owner().route,
+            &owner().unwrap().route,
             "text:human-scope:3",
             &expected.body.text
         )

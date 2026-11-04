@@ -30,15 +30,19 @@ impl NotesPrivateChannel for Application {
         let request: Value = serde_json::from_slice(bytes).map_err(|error| error.to_string())?;
         assert_eq!(
             request["target"],
-            serde_json::to_value(&self.target).unwrap()
+            serde_json::to_value(&self.target).map_err(|error| error.to_string())?
         );
         assert_eq!(request["expected_revision"], 0);
         self.effects.fetch_add(1, Ordering::SeqCst);
         let receipt = json!({"schema_version":1,"target":self.target,
             "operation_id":request["operation_id"],"payload_sha256":Sha256Digest::for_bytes(bytes).as_str(),
             "result":{"status":"applied","previous_revision":0,"revision":1,
-                "text_sha256":Sha256Digest::for_bytes(request["text"].as_str().unwrap().as_bytes()).as_str()}});
-        *self.receipt.lock().unwrap() = Some(receipt.clone());
+                "text_sha256":Sha256Digest::for_bytes(request["text"].as_str().ok_or("fixture request text is not a string")?.as_bytes()).as_str()}});
+        *self
+            .receipt
+            .lock()
+            .unwrap_or_else(|_| panic!("application fixture receipt mutex poisoned")) =
+            Some(receipt.clone());
         if self.lose_reply.swap(false, Ordering::SeqCst) {
             return Err("fixture lost application reply".into());
         }
@@ -51,7 +55,7 @@ impl NotesPrivateChannel for Application {
             self.observations.fetch_add(1, Ordering::SeqCst);
             self.receipt
                 .lock()
-                .unwrap()
+                .unwrap_or_else(|_| panic!("application fixture receipt mutex poisoned"))
                 .clone()
                 .ok_or("no fixture receipt")?
         } else {
@@ -216,12 +220,16 @@ async fn notes_objective_roundtrip(execution: ExecutionFixture) -> Result<(), Bo
                 target: target.clone(),
             })?;
         assert!(config.take_production_operations().is_none());
-        let notes = config.notes_objective().unwrap();
+        let notes = config
+            .notes_objective()
+            .ok_or("fixture Notes objective missing")?;
         notes.validate_host(&host)?;
         let mut wrong_notes = notes.clone();
         wrong_notes.target.task_id += 1;
         assert!(wrong_notes.validate_host(&host).is_err());
-        let configured_host = config.production_writer_host().unwrap();
+        let configured_host = config
+            .production_writer_host()
+            .ok_or("fixture production writer missing")?;
         assert!(Arc::ptr_eq(&host, &configured_host));
         let (identity, registry, _lock) = config.into_parts();
         registry.compare_and_transition(
@@ -231,8 +239,12 @@ async fn notes_objective_roundtrip(execution: ExecutionFixture) -> Result<(), Bo
         )?;
         let state = AgentdState::new(identity, registry, /*event_capacity*/ 16)?;
         state.refresh_generation()?;
-        state
-            .attach_cognitive_store(host.cognitive_runtime().available_store().unwrap().clone())?;
+        state.attach_cognitive_store(
+            host.cognitive_runtime()
+                .available_store()
+                .ok_or("fixture cognitive store missing")?
+                .clone(),
+        )?;
         state.attach_production_operations(configured_host)?;
         state.mark_runtime_prerequisites_ready()?;
         state.mark_app_server_ready()?;
@@ -248,7 +260,10 @@ async fn notes_objective_roundtrip(execution: ExecutionFixture) -> Result<(), Bo
             .join("notes-objective-test-profile.json");
         fs::write(&profile_file, profile_json)?;
         fs::set_permissions(&profile_file, fs::Permissions::from_mode(0o600))?;
-        state.notes_objective.set(notes).unwrap();
+        state
+            .notes_objective
+            .set(notes)
+            .map_err(|_| "fixture Notes objective already configured")?;
         let runtime =
             crate::objective_runtime::ObjectiveRuntimeHost::open(state.identity(), &profile_file)?;
         let run_id = "notes.original.run.1";

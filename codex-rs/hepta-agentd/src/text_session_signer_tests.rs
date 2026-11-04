@@ -10,24 +10,23 @@ mod unsigned_protocol;
 async fn response(
     listener: &tokio::net::UnixListener,
     value: serde_json::Value,
-) -> serde_json::Value {
-    let (mut stream, _) = listener.accept().await.unwrap();
-    let length = stream.read_u32().await.unwrap() as usize;
+) -> anyhow::Result<serde_json::Value> {
+    let (mut stream, _) = listener.accept().await?;
+    let length = stream.read_u32().await? as usize;
     assert!(length <= 32768);
     let mut bytes = vec![0; length];
-    stream.read_exact(&mut bytes).await.unwrap();
-    let request = serde_json::from_slice(&bytes).unwrap();
-    let bytes = serde_json::to_vec(&value).unwrap();
+    stream.read_exact(&mut bytes).await?;
+    let request = serde_json::from_slice(&bytes)?;
+    let bytes = serde_json::to_vec(&value)?;
     stream
         .write_all(&(bytes.len() as u32).to_be_bytes())
-        .await
-        .unwrap();
-    stream.write_all(&bytes).await.unwrap();
-    request
+        .await?;
+    stream.write_all(&bytes).await?;
+    Ok(request)
 }
 
-fn owner() -> TextOwnerReceipt {
-    TextOwnerReceipt {
+fn owner() -> anyhow::Result<TextOwnerReceipt> {
+    Ok(TextOwnerReceipt {
         schema_version: 1,
         protocol: "hepta.ui-chat-owner.v1".into(),
         principal_id: "human".into(),
@@ -36,7 +35,7 @@ fn owner() -> TextOwnerReceipt {
         expires_at_ms: u64::MAX,
         route: AgentdTextSessionConfig {
             control_socket: "/original/agentd.sock".into(),
-            agent_id: AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").unwrap(),
+            agent_id: AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?,
             spawn_generation: 2,
             thread_id: "original-thread".into(),
             app_server_session_id: "original-session".into(),
@@ -46,12 +45,12 @@ fn owner() -> TextOwnerReceipt {
         can_resolve_approvals: false,
         intent_namespace: "text:human-scope".into(),
         next_intent_sequence: 3,
-    }
+    })
 }
 
 #[test]
 fn old_owner_receipt_does_not_gain_approval_permission_on_decode_or_reconnect() {
-    let original = owner();
+    let original = owner().unwrap();
     let mut wire = serde_json::to_value(&original).unwrap();
     wire.as_object_mut()
         .unwrap()
@@ -77,8 +76,8 @@ async fn recovery_pages_original_namespace_without_requesting_a_new_signature() 
     let socket_path = directory.path().join("protocol-fixture.sock");
     let listener = tokio::net::UnixListener::bind(&socket_path).unwrap();
     let server = tokio::spawn(async move {
-        let first = response(&listener, serde_json::json!({"schema_version":1,"operation":"pending","through_sequence":2,"entry":entry("text:human-scope",1)})).await;
-        let second = response(&listener, serde_json::json!({"schema_version":1,"operation":"pending","through_sequence":2,"entry":null})).await;
+        let first = response(&listener, serde_json::json!({"schema_version":1,"operation":"pending","through_sequence":2,"entry":entry("text:human-scope",1)})).await.unwrap();
+        let second = response(&listener, serde_json::json!({"schema_version":1,"operation":"pending","through_sequence":2,"entry":null})).await.unwrap();
         assert_eq!(
             first,
             serde_json::json!({"schema_version":1,"operation":"pending","after_sequence":0,"through_sequence":2})
@@ -93,7 +92,7 @@ async fn recovery_pages_original_namespace_without_requesting_a_new_signature() 
         owner_uid: unsafe { libc::geteuid() },
         owner_pid: std::process::id(),
     };
-    let observed = pending(&endpoint, &owner()).await.unwrap();
+    let observed = pending(&endpoint, &owner().unwrap()).await.unwrap();
     assert_eq!(observed.len(), 1);
     assert_eq!(observed[0].request_id, "text:human-scope:1");
     assert_eq!(observed[0].envelope.body.spawn_generation, 1);
@@ -108,7 +107,7 @@ async fn recovery_rejects_another_namespace_or_a_number_above_hello_watermark() 
         let listener = tokio::net::UnixListener::bind(&socket_path).unwrap();
         let value = entry(namespace, number);
         let server = tokio::spawn(async move {
-            response(&listener, serde_json::json!({"schema_version":1,"operation":"pending","through_sequence":2,"entry":value})).await;
+            response(&listener, serde_json::json!({"schema_version":1,"operation":"pending","through_sequence":2,"entry":value})).await.unwrap();
         });
         let endpoint = TextSignerEndpoint {
             socket_path,
@@ -116,7 +115,7 @@ async fn recovery_rejects_another_namespace_or_a_number_above_hello_watermark() 
             owner_pid: std::process::id(),
         };
         assert!(matches!(
-            pending(&endpoint, &owner()).await,
+            pending(&endpoint, &owner().unwrap()).await,
             Err(TextSessionError::Identity)
         ));
         server.await.unwrap();

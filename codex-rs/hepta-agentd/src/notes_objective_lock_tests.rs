@@ -97,7 +97,12 @@ async fn fixture() -> anyhow::Result<(
         /*event_capacity*/ 16,
     )?;
     state.refresh_generation()?;
-    state.attach_cognitive_store(host.cognitive_runtime().available_store().unwrap().clone())?;
+    state.attach_cognitive_store(
+        host.cognitive_runtime()
+            .available_store()
+            .ok_or_else(|| anyhow::anyhow!("fixture cognitive store missing"))?
+            .clone(),
+    )?;
     state.attach_production_operations(host.clone())?;
     state.mark_runtime_prerequisites_ready()?;
     // Only readiness is supplied; this negative fixture supplies neither an
@@ -173,11 +178,11 @@ async fn fixture() -> anyhow::Result<(
             profile_digest: digest,
             target,
         })
-        .unwrap();
+        .map_err(|_| anyhow::anyhow!("fixture Notes objective already configured"))?;
     state
         .runs
         .lock()
-        .unwrap()
+        .unwrap_or_else(|_| panic!("Notes run fixture mutex poisoned"))
         .start_revalidated_run_start(now_ms, &record)
         .map_err(run_error)?;
     Ok((directory, config, state, host, record))

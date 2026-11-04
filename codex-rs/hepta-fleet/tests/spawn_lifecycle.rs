@@ -16,6 +16,7 @@ fn registered() -> Result<(tempfile::TempDir, FleetRegistry, AgentId)> {
     let registry = FleetRegistry::initialize(root.clone())?;
     let workspace = directory.path().join("workspace");
     std::fs::create_dir(&workspace)?;
+    let workspace = std::fs::canonicalize(workspace)?;
     let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
     registry.register(AgentManifest::new(
         agent.clone(),
