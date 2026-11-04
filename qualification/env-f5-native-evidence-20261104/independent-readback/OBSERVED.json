@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.env.f5.independent-native-rejection-observation.v1",
+  "readback_run": 41784515736,
+  "readback_job": 126423461691,
+  "readback_conclusion": "success",
+  "readback_source": "c5b22edeea35a1e80b3b5943b2305e3c77798785",
+  "original_product_source": "f5bddc124052837befca7735b9e5a46ab708e5a5",
+  "original_tree": "d1440d79ec6cf406185a6b709c472b3557db524a",
+  "original_run": 41782882626,
+  "original_job": 126419485455,
+  "artifact_id": 13299399930,
+  "archive_bytes": 4437,
+  "archive_sha256": "c9529e6341df86f4cc8c408390de337cada0f605fa116978899c5266d3bc855a",
+  "all_six_members_crc_verified": true,
+  "source_input_files": 3,
+  "complete_transitive_input_binding": false,
+  "original_negative_control": {
+    "distinct_survivor_pids": 2,
+    "failed": 2,
+    "failed_cases": [
+      "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+      "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running"
+    ],
+    "filtered": 31,
+    "passed": 0
+  },
+  "exact_xml": {
+    "exact_original_log_bound": true,
+    "rust_exit_code": 101,
+    "wrapper_errors": 1,
+    "wrapper_failures": 0,
+    "wrapper_tests": 1
+  },
+  "original_restored": true,
+  "original_final_git_clean_exit": 0,
+  "positive_receipt_sha256_recorded": "050996c006d17657b44bda26302484e6d252380ab584f63b06011b9cb19c6380",
+  "positive_receipt_independently_verified_here": false,
+  "reader_native_execution": false,
+  "original_failed_history_reclassified": false,
+  "full_core_or_science_qualification": false,
+  "files": [
+    {
+      "path": "qualification/env-f5-native-evidence-20261104/independent-readback/original-readonly-job.log",
+      "git_blob_sha": "c592415bb41368eb80d0e446f95e43bbe41dac95",
+      "sha256": "104cacbc5f218eacdff12cfa4aa49d7c39ab931cdf79949158e692a641170fa4",
+      "bytes": 27727
+    },
+    {
+      "path": "qualification/env-f5-native-evidence-20261104/independent-readback/READBACK.json",
+      "git_blob_sha": "39bd91f00c87744ca50cfd2a7b03b2a3ccf01e06",
+      "sha256": "bfbae0eeced6c7de4f62edf3b18b8aeae65042f4f2ce66aaca7906e6075de7f7",
+      "bytes": 10449
+    },
+    {
+      "path": "qualification/env-f5-native-evidence-20261104/independent-readback/mutant-test.log",
+      "git_blob_sha": "828f3ae6368bed2a632fb5b621b55fba1ac5a543",
+      "sha256": "bab2fee197eae1538f2b2a6b02357fca1b5768eef57de2522917ff2e510436c0",
+      "bytes": 1350
+    },
+    {
+      "path": "qualification/env-f5-native-evidence-20261104/independent-readback/mutant-test.xml",
+      "git_blob_sha": "0031c2ea0ab363d998f738b14d969a8c37fcb626",
+      "sha256": "d088601ae40a29ce8a0028d0291823f3389dbbd69cf15367157ca9030ff5d160",
+      "bytes": 1724
+    }
+  ]
+}
