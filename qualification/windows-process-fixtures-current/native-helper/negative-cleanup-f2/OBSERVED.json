@@ -1,0 +1,521 @@
+{
+  "schema": "hepta.env-f2-original-outcomes.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "f2d0fcd44cedd662f5cbccff1278ade26354f350",
+  "source_tree": "880306e3f39083cf0366fc48990208f84128ecc6",
+  "actual_merge": "6579544c4b154eda1d19b7f7fe6aca12c432b50e",
+  "actual_merge_tree": "880306e3f39083cf0366fc48990208f84128ecc6",
+  "run_id": 41777409210,
+  "jobs": [
+    {
+      "id": 126400865538,
+      "name": "generate",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./.github/actions/prepare-bazel-ci",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58",
+          "conclusion": "success"
+        },
+        {
+          "name": "Produce actual lock and formatter bytes before the original native gates",
+          "conclusion": "success"
+        },
+        {
+          "name": "Retain actual generation and all failed commands",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run ./.github/actions/prepare-bazel-ci",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126401476762,
+      "name": "Original Windows Git and queue suites (source-head)",
+      "conclusion": "failure",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./.github/actions/prepare-bazel-ci",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check actual report acceptance against retained original cases",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run original suites with fresh reports and no PowerShell prewarm",
+          "conclusion": "success"
+        },
+        {
+          "name": "Retain original outcomes including failures",
+          "conclusion": "success"
+        },
+        {
+          "name": "Reject surviving descendants when containment is deliberately omitted",
+          "conclusion": "failure"
+        },
+        {
+          "name": "Retain the separate native rejection control",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check clean source",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run ./.github/actions/prepare-bazel-ci",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126401476783,
+      "name": "Original Windows Git and queue suites (base-merge)",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run ./.github/actions/prepare-bazel-ci",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check actual report acceptance against retained original cases",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run original suites with fresh reports and no PowerShell prewarm",
+          "conclusion": "success"
+        },
+        {
+          "name": "Retain original outcomes including failures",
+          "conclusion": "success"
+        },
+        {
+          "name": "Reject surviving descendants when containment is deliberately omitted",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Retain the separate native rejection control",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Check clean source",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run ./.github/actions/prepare-bazel-ci",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "observed": {
+    "source": {
+      "status": "passed",
+      "source_commit": "f2d0fcd44cedd662f5cbccff1278ade26354f350",
+      "source_unchanged": true,
+      "native": {
+        "git-utils-unit-tests": {
+          "log_present": true,
+          "bytes": 4161,
+          "sha256": "8778397f4ac75ace93613e67cc73c03abcaa5c21ed920af254f3e346f2bd41be",
+          "summaries": [
+            [
+              1,
+              0,
+              0,
+              0,
+              32
+            ],
+            [
+              33,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "summary_count": 2,
+          "known_failed_cases": [],
+          "other_failed_case_count": 0,
+          "parent_before_child_launch": false,
+          "parent_after_child_launch": false,
+          "child_script_started": false
+        },
+        "queue-queue_service-test": {
+          "log_present": true,
+          "bytes": 2770,
+          "sha256": "9d8d0a0956c00b9c2fa3d15285d53fb59f88b7ed277521c1413dbe7ea641b73b",
+          "summaries": [
+            [
+              35,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "summary_count": 1,
+          "known_failed_cases": [],
+          "other_failed_case_count": 0,
+          "parent_before_child_launch": false,
+          "parent_after_child_launch": false,
+          "child_script_started": false
+        }
+      },
+      "idle_controls": {
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_other_core_cases": 2331,
+        "names": [
+          "tasks::idle_work::tests::cancelled_idle_fence_releases_followers_without_bypassing_their_fence",
+          "tasks::idle_work::tests::deferred_idle_contributors_wait_for_fence_and_preserve_registration_order",
+          "tasks::idle_work::tests::deferred_idle_work_rejects_capacity_overflow"
+        ],
+        "scope": "Only the three selected idle-work controls; not the full core suite.",
+        "log_sha256": "09e41915558130b46804d1b7545ac16d897614c675afb7423996a0ad2493e0a5",
+        "xml_sha256": "6f6d8a1819b743a389ecba00c76d283227fb71abfd228621591ad7fdf3458ea5"
+      }
+    },
+    "merge": {
+      "status": "passed",
+      "source_commit": "6579544c4b154eda1d19b7f7fe6aca12c432b50e",
+      "source_unchanged": true,
+      "native": {
+        "git-utils-unit-tests": {
+          "log_present": true,
+          "bytes": 4161,
+          "sha256": "849266dda3e1ff90c9e49227e59f53c468a792f63cc08e740244d2290833f0fa",
+          "summaries": [
+            [
+              1,
+              0,
+              0,
+              0,
+              32
+            ],
+            [
+              33,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "summary_count": 2,
+          "known_failed_cases": [],
+          "other_failed_case_count": 0,
+          "parent_before_child_launch": false,
+          "parent_after_child_launch": false,
+          "child_script_started": false
+        },
+        "queue-queue_service-test": {
+          "log_present": true,
+          "bytes": 2770,
+          "sha256": "0e96d7302a2d643e40cd9de379f77a637eaf94536a7c2e17cc2d90e4f2637d97",
+          "summaries": [
+            [
+              35,
+              0,
+              0,
+              0,
+              0
+            ]
+          ],
+          "summary_count": 1,
+          "known_failed_cases": [],
+          "other_failed_case_count": 0,
+          "parent_before_child_launch": false,
+          "parent_after_child_launch": false,
+          "child_script_started": false
+        }
+      },
+      "idle_controls": {
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_other_core_cases": 2331,
+        "names": [
+          "tasks::idle_work::tests::cancelled_idle_fence_releases_followers_without_bypassing_their_fence",
+          "tasks::idle_work::tests::deferred_idle_contributors_wait_for_fence_and_preserve_registration_order",
+          "tasks::idle_work::tests::deferred_idle_work_rejects_capacity_overflow"
+        ],
+        "scope": "Only the three selected idle-work controls; not the full core suite.",
+        "log_sha256": "18ee92f7a6ee40f0c0d4627ff0feabe5b11de966ead1cf12996c9eab11da1ccd",
+        "xml_sha256": "2dd78f1a02e16feae92dc6f548a08359fc4c2687934669a840b47f679380acb2"
+      }
+    },
+    "negative": {
+      "status": "failed",
+      "source_commit": "f2d0fcd44cedd662f5cbccff1278ade26354f350",
+      "source_restored": true,
+      "clean_exit_code": 0,
+      "reader_controls": {
+        "synthetic_accepted": 1,
+        "synthetic_rejected": 7,
+        "synthetic_cases_are_native_evidence": false
+      },
+      "rejection": null,
+      "native_product_acceptance": false
+    },
+    "negative_failure": {
+      "type": "PermissionError",
+      "winerror": 5,
+      "operation": "path.unlink() of the previous generated Git-unit test.log",
+      "mutant_command_executed": false,
+      "readonly_attribute_not_recorded_by_old_helper": true
+    },
+    "generation": {
+      "source_commit": "f2d0fcd44cedd662f5cbccff1278ade26354f350",
+      "base_commit": "00963996f16c067fbd04517d22d3d7e53d1d09a6",
+      "status": "committed-lock-qualified",
+      "commands": [
+        {
+          "name": "initial-clean-source",
+          "argv": [
+            "git",
+            "--no-replace-objects",
+            "diff",
+            "--exit-code",
+            "HEAD",
+            "--"
+          ],
+          "exit_code": 0,
+          "seconds": 0.28925209199999813,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "committed-lock-first",
+          "argv": [
+            "just",
+            "bazel-lock-check"
+          ],
+          "exit_code": 0,
+          "seconds": 22.251252026000003,
+          "log_sha256": "b79f3d356b5a41f10b0a26465b322ea77eb3ddb25d6d08eed3a5ce5bf7b432be"
+        },
+        {
+          "name": "original-formatter",
+          "argv": [
+            "just",
+            "fmt",
+            "--base",
+            "00963996f16c067fbd04517d22d3d7e53d1d09a6"
+          ],
+          "exit_code": 0,
+          "seconds": 0.7019871819999821,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "original-formatter-check",
+          "argv": [
+            "just",
+            "fmt",
+            "--check",
+            "--base",
+            "00963996f16c067fbd04517d22d3d7e53d1d09a6"
+          ],
+          "exit_code": 0,
+          "seconds": 0.6966222650000304,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "actual-cargo-metadata",
+          "argv": [
+            "cargo",
+            "metadata",
+            "--all-features",
+            "--format-version",
+            "1"
+          ],
+          "exit_code": 0,
+          "seconds": 16.63180511600001,
+          "log_sha256": "242a1b9c0ed02de6bcae0fb929e3d835114dcbc2e0881967e454a6216651aaa7"
+        },
+        {
+          "name": "actual-locked-metadata",
+          "argv": [
+            "cargo",
+            "metadata",
+            "--locked",
+            "--all-features",
+            "--format-version",
+            "1"
+          ],
+          "exit_code": 0,
+          "seconds": 1.024301486000013,
+          "log_sha256": "d9e3fbd6fedcc99c0b7cdf1899d27a7cc2959583dca3486aea826c7359e22f1d"
+        },
+        {
+          "name": "original-lock-update",
+          "argv": [
+            "just",
+            "bazel-lock-update"
+          ],
+          "exit_code": 0,
+          "seconds": 20.22041223100001,
+          "log_sha256": "3184d1044cbfdc3c2271752eb042577f9ac46ebe785421ddf69756366ee64b2d"
+        },
+        {
+          "name": "original-lock-check",
+          "argv": [
+            "just",
+            "bazel-lock-check"
+          ],
+          "exit_code": 0,
+          "seconds": 4.7785539239999935,
+          "log_sha256": "928bcacf6cb8329320e63593314d7b3bb9b98a52ade03d7eec7a19e4083d928d"
+        }
+      ],
+      "scope": "Real lock generation and formatting; native product qualification is separate.",
+      "cargo_delta": {
+        "packages": 1517,
+        "added_dependencies": {
+          "codex-git-utils": [
+            "base64 0.22.1"
+          ]
+        },
+        "versions_sources_checksums_unchanged": true
+      },
+      "changed_paths": [],
+      "committed_cargo_equals_generated": true,
+      "committed_bazel_equals_generated": true,
+      "source_unchanged": true
+    }
+  },
+  "artifact_metadata": [
+    {
+      "id": 13298630083,
+      "name": "windows-process-native-rejection-f2d0fcd44cedd662f5cbccff1278ade26354f350",
+      "bytes": 1060,
+      "digest": "sha256:317be529f29c8c8ec51f94249fa0ca9e83a58bf803b461e4acf254c0e974c2f1",
+      "expired": false
+    },
+    {
+      "id": 13298087697,
+      "name": "windows-process-env-union-base-merge-6579544c4b154eda1d19b7f7fe6aca12c432b50e",
+      "bytes": 4516092,
+      "digest": "sha256:244695d4fbaa79acaf70e62165bc361834dad1105fa8211f8e5ddf9ec020b7ab",
+      "expired": false
+    },
+    {
+      "id": 13297991262,
+      "name": "windows-process-fixtures-generated-f2d0fcd44cedd662f5cbccff1278ade26354f350",
+      "bytes": 4299008,
+      "digest": "sha256:9b1e3aff5fbb4b2d1e632168830e139d019d0d67334ea1781fc45e5f23efa48f",
+      "expired": false
+    },
+    {
+      "id": 13297179732,
+      "name": "windows-process-env-union-source-head-f2d0fcd44cedd662f5cbccff1278ade26354f350",
+      "bytes": 4468698,
+      "digest": "sha256:823b3d4daa9b3798ec58e2ede095fbd7345b9ef805ca3806b9bf8f3a788841a1",
+      "expired": false
+    }
+  ],
+  "retained_job_logs": [
+    {
+      "path": "original-source-job.log",
+      "git_blob_sha": "6ed1a6e50711b543b2241d2b3db02d07ba22f19d",
+      "sha256": "e145ea5866ac789fca00d4c499dff0b45594f8e4c6ba94bb17a257a4edd55274",
+      "bytes": 206950
+    },
+    {
+      "path": "original-merge-job.log",
+      "git_blob_sha": "822e05e1995431486874e1e930985ab3388d33d1",
+      "sha256": "797303e754ff4cfa2f6c935c3e859842f35224bcc46350e7739e4dfcf9eaf017",
+      "bytes": 181369
+    },
+    {
+      "path": "original-generation-job.log",
+      "git_blob_sha": "81628f35a388569f3cf2d09296be3378fbd5ded5",
+      "sha256": "936adeb352687071990856d04be782846a9b582dc90729a82b083379292ea999",
+      "bytes": 129247
+    }
+  ],
+  "followup": {
+    "source": "run_negative.py",
+    "before": {
+      "git_blob_sha": "de4b5e506d9fdbae393f13448fb0f10376799898",
+      "sha256": "ba8b5de6b951cc74fcfa9b3a05807fae33012b711770045776c69920d8aa64b9",
+      "bytes": 12011
+    },
+    "after": {
+      "git_blob_sha": "b89cf9140d8faf912d63386c23e285ba648ca4a9",
+      "sha256": "37ee03979e851eebad13a43771b76387e031580ef3cb04f67dbfd19e0d9f064c",
+      "bytes": 14429
+    },
+    "reason": "Inspect the actual generated file attribute; clear only an observed Windows READONLY bit before removing this exact regular report. All other IO failures remain failures. The two actual filesystem cleanup controls and the original no-containment rejection must execute on the successor.",
+    "product_rust_change": false,
+    "original_positive_commands_change": false,
+    "original_case_or_timeout_change": false,
+    "negative_control_demonstrated": false
+  },
+  "qualification_scope": "Both original native Git33/Queue35 and the three selected idle-work controls passed on f2 and its same-tree actual merge. The overall source job failed because the additional negative-control cleanup failed before mutation. No claim of a passed no-containment rejection or a full core suite.",
+  "local_execution": false,
+  "original_library_deletions": 0,
+  "all_blockers_closed": false
+}

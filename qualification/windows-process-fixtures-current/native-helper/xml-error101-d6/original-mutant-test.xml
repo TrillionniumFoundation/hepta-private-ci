@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+<testsuite name="codex-rs\git-utils\git-utils-unit-tests.bat" tests="1" failures="0" errors="1">
+<testcase name="codex-rs\git-utils\git-utils-unit-tests.bat" status="run" duration="3" time="3"><error message="exited with error code 101"></error></testcase>
+<system-out><![CDATA[Executing tests from //codex-rs/git-utils:git-utils-unit-tests
+-----------------------------------------------------------------------------
+
+running 2 tests
+test git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running ... FAILED
+test git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running ... FAILED
+
+failures:
+
+---- git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running stdout ----
+
+thread 'git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running' (3476) panicked at git-utils/src\git_process_tests.rs:234:5:
+Git wrapper child process 7632 survived timeout cleanup
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running stdout ----
+
+thread 'git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running' (9800) panicked at git-utils/src\git_process_tests.rs:234:5:
+Git wrapper child process 852 survived timeout cleanup
+
+
+failures:
+    git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running
+    git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 31 filtered out; finished in 3.27s
+
+]]></system-out>
+</testsuite>
+</testsuites>

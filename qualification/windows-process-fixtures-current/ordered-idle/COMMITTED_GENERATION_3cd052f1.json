@@ -1,0 +1,138 @@
+{
+  "schema": "actual-hosted-committed-generation-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+  "source_tree": "30980769da2c5106fd98c8fda47982c26d499bdf",
+  "run_id": 41768053006,
+  "run_attempt": 1,
+  "job_id": 126370987903,
+  "actual_result": {
+    "source_commit": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+    "base_commit": "00963996f16c067fbd04517d22d3d7e53d1d09a6",
+    "status": "committed-lock-qualified",
+    "commands": [
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 0,
+        "seconds": 0.26156681400000537,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "committed-lock-first",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 17.483186837000005,
+        "log_sha256": "444e014a18cad2317d3b531286c582c16f1fc1dd54e7195d4f332df2cd60f880"
+      },
+      {
+        "name": "original-formatter",
+        "argv": [
+          "just",
+          "fmt",
+          "--base",
+          "00963996f16c067fbd04517d22d3d7e53d1d09a6"
+        ],
+        "exit_code": 0,
+        "seconds": 0.6021951299999984,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "original-formatter-check",
+        "argv": [
+          "just",
+          "fmt",
+          "--check",
+          "--base",
+          "00963996f16c067fbd04517d22d3d7e53d1d09a6"
+        ],
+        "exit_code": 0,
+        "seconds": 0.6108029440000138,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "actual-cargo-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "seconds": 18.478579802,
+        "log_sha256": "ac74eaaf271b1f05d2c156b03be50d8afe20b244ae14bf2dd21172f00425d28a"
+      },
+      {
+        "name": "actual-locked-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--locked",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "seconds": 0.8188243439999923,
+        "log_sha256": "d9e3fbd6fedcc99c0b7cdf1899d27a7cc2959583dca3486aea826c7359e22f1d"
+      },
+      {
+        "name": "original-lock-update",
+        "argv": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "seconds": 22.187002839,
+        "log_sha256": "e860ef1e70da7499d6a02aaadfecc677659c7101c2db54eb8fa8f8d29c1ec776"
+      },
+      {
+        "name": "original-lock-check",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 3.707200985,
+        "log_sha256": "cd737e96809b1433300b958fd39af3d1c034b7361afde3950fe2b0aaa578176e"
+      }
+    ],
+    "scope": "Real lock generation and formatting; native product qualification is separate.",
+    "cargo_delta": {
+      "packages": 1517,
+      "added_dependencies": {
+        "codex-git-utils": [
+          "base64 0.22.1"
+        ]
+      },
+      "versions_sources_checksums_unchanged": true
+    },
+    "changed_paths": [],
+    "committed_cargo_equals_generated": true,
+    "committed_bazel_equals_generated": true,
+    "source_unchanged": true
+  },
+  "returned_job_log": {
+    "git_blob_sha": "b58d0f7aa017869f0fdbf6108035628844a078a3",
+    "sha256": "56d4d64d0de2dc9e28bbd93fce371184959543f7e2cdf88813694216c011502c",
+    "bytes": 129159
+  },
+  "status_scope": "Actual original generation and formatting only, not native product qualification. The following test synchronization change requires the same gate on its own source.",
+  "original_windows_jobs": {
+    "source_head": 126372448786,
+    "base_merge": 126372448911
+  },
+  "original_windows_results_at_recording": "pending; not counted as passes",
+  "local_execution": false
+}

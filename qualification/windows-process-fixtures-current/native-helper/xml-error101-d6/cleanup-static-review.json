@@ -1,0 +1,28 @@
+{
+  "schema": "hepta-windows-negative-report-cleanup-static-followup-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewer": "chain_blockers",
+  "prior_review_blob": "9f88754b30866e35855ee44b92fb55593e97fe13",
+  "before": {
+    "git_blob": "de4b5e506d9fdbae393f13448fb0f10376799898",
+    "bytes": 12011,
+    "sha256": "ba8b5de6b951cc74fcfa9b3a05807fae33012b711770045776c69920d8aa64b9"
+  },
+  "after": {
+    "git_blob": "b89cf9140d8faf912d63386c23e285ba648ca4a9",
+    "bytes": 14429,
+    "sha256": "37ee03979e851eebad13a43771b76387e031580ef3cb04f67dbfd19e0d9f064c"
+  },
+  "confirmed_new_blockers": [],
+  "findings": [
+    "Only generated report cleanup and its controls/receipt fields changed. Exact validate_rejection, the existing eight synthetic reader controls and report glob function bodies (excluding between-function blank separators) and original Bazel argv remain byte-identical to the reviewed de4 source.",
+    "A report must be a regular file with no leaf reparse attribute before read/chmod/unlink. Only an actual Windows READONLY bit causes chmod; other I/O errors propagate. The removed original report bytes/hash and observed attribute are recorded; no source path is selected for removal.",
+    "Exactly one prior report for each log/XML suffix is required. Successful removal is checked before the actual no-Job mutation; fresh report uniqueness and the original 0/2/31 survivor failure/XML/exit-3 requirements remain.",
+    "The two new cleanup controls create only owned temporary files, require a true Windows READONLY observation, remove that file, and reject a real directory without removing it. They are separated from native product acceptance."
+  ],
+  "limitations": [
+    "Static byte/diff review only; no Windows file operation, Python control, Bazel mutant or native test was run by this reviewer. The earlier WinError5 remains an actual failed qualification and is not reclassified.",
+    "This validates the bounded known generated-report path selection in the reviewed workflow design, not arbitrary hostile concurrent filesystem replacement. The helper reads each report completely and does not claim a separate report memory/RSS cap.",
+    "The original subprocess/job timeout and ordinary finally-restoration boundaries from prior review remain. This is not a production or original-test acceptance claim."
+  ]
+}

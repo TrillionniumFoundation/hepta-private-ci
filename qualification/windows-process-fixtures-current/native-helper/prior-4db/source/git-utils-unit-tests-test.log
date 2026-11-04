@@ -1,0 +1,83 @@
+Executing tests from //codex-rs/git-utils:git-utils-unit-tests
+-----------------------------------------------------------------------------
+
+running 33 tests
+test apply::tests::apply_then_revert_success ... ok
+test apply::tests::extract_paths_handles_quoted_headers ... ok
+test apply::tests::extract_paths_ignores_dev_null_header ... ok
+test apply::tests::extract_paths_unescapes_c_style_in_quoted_headers ... ok
+test apply::tests::parse_output_unescapes_quoted_paths ... ok
+test apply::tests::apply_modify_conflict ... ok
+test apply::tests::apply_modify_skipped_missing_index ... ok
+test baseline::tests::diff_reports_added_modified_and_deleted_files ... ok
+test apply::tests::apply_add_success ... ok
+test baseline::tests::ensure_recovers_from_unborn_repository ... ok
+test baseline::tests::reset_creates_fresh_baseline ... ok
+test baseline::tests::status_scan_does_not_write_added_file_blobs ... ok
+Initialized empty Git repository in D:/tmp/.tmpqM46v6/remote.git/
+test baseline::tests::reset_drops_previous_history ... ok
+Initialized empty Git repository in D:/tmp/.tmpqM46v6/repo/.git/
+test apply::tests::preflight_blocks_partial_changes ... ok
+Initialized empty Git repository in D:/tmp/.tmpInSC4d/.git/
+Initialized empty Git repository in D:/tmp/.tmpEgjHSs/.git/
+[main (root-commit) e58f3ca] base commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 base.txt
+[main (root-commit) 4a3fd66] initial
+ 1 file changed, 1 insertion(+)
+ create mode 100644 tracked.txt
+[main (root-commit) e58f3ca] base commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 base.txt
+Switched to a new branch 'feature'
+test branch::tests::merge_base_returns_none_when_branch_missing ... ok
+test fsmonitor::tests::detects_supported_builtin_fsmonitor_values ... ok
+[feature 32cb651] feature commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 feature.txt
+Switched to branch 'main'
+test apply::tests::revert_preflight_does_not_stage_index ... ok
+[main 4a7570f] main commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 main.txt
+To D:\tmp\.tmpqM46v6\remote.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+Switched to branch 'feature'
+Switched to a new branch 'feature'
+[feature bd937d2] feature commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 feature.txt
+Switched to a new branch 'rewrite'
+rm 'base.txt'
+rm 'feature.txt'
+test branch::tests::merge_base_returns_shared_commit ... ok
+test info::tests::canonicalize_git_remote_url_handles_ghe_without_lowercasing_path ... ok
+test info::tests::canonicalize_git_remote_url_normalizes_github_variants ... ok
+test info::tests::canonicalize_git_remote_url_rejects_non_repository_values ... ok
+
+running 1 test
+[rewrite (root-commit) 08bf53d] rewrite main
+ 1 file changed, 1 insertion(+)
+ create mode 100644 new-main.txt
+branch 'main' set up to track 'origin/main'.
+test info::tests::git_metadata_commands_do_not_inherit_stdin ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 32 filtered out; finished in 0.37s
+
+test info::tests::git_metadata_commands_do_not_inherit_stdin ... ok
+Switched to branch 'feature'
+test info::tests::local_git_branches_excludes_detached_head_entry ... ok
+test status::tests::canceling_one_consumer_preserves_the_shared_status_scan ... ok
+test status::tests::canceling_the_last_consumer_allows_a_fresh_status_scan ... ok
+test status::tests::completed_status_requests_are_not_reused_while_a_consumer_retains_them ... ok
+test status::tests::completed_status_requests_start_fresh_scans_and_prune_expired_entries ... ok
+test status::tests::concurrent_status_requests_share_one_repository_scan ... ok
+test status::tests::status_requests_do_not_share_different_repositories ... ok
+test branch::tests::merge_base_prefers_upstream_when_remote_ahead ... ok
+test status::tests::status_requests_from_sibling_directories_use_the_known_worktree_root ... ok
+test git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running ... ok
+test git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 38.58s
+

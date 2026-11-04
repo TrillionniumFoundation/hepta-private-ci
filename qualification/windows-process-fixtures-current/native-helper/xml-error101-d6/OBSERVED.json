@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.windows-native-process.xml-error101.successor-evidence.v1",
+  "parent": "d6e18bbecd78e061785283eb3171729aded28367",
+  "candidate_reader": {
+    "git_blob_sha": "09fcbb0b49b5a69e0cdfd439db72e1d4f809acd4",
+    "sha256": "cb977cd617c1426d2694c6fd4825dcabf860b7613a616b089521a582eab0cf0e",
+    "bytes": 18356
+  },
+  "original_failure": {
+    "run_id": 41779589324,
+    "job_id": 126408511161,
+    "job_conclusion": "failure",
+    "artifact_id": 13298389026,
+    "bytes": 4431,
+    "sha256": "f2ecef472cb37e5909849330d7e72e317c7713d7aad8a34e148b1198e75c349a",
+    "raw_native_rejection": {
+      "distinct_survivor_pids": 2,
+      "failed": 2,
+      "failed_cases": [
+        "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+        "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running"
+      ],
+      "filtered": 31,
+      "passed": 0
+    },
+    "restored": true,
+    "git_clean_exit": 0,
+    "qualification_failed_at_xml": true
+  },
+  "original_xml": {
+    "path": "original-mutant-test.xml",
+    "git_blob_sha": "00cc5b3aa0485f3951719f73734c9f81020ad3ba",
+    "sha256": "81a29987e3a11dff3b4288c6378ecd38936ac12b4c7e7113d7a1b33ac6a31abd",
+    "bytes": 1723
+  },
+  "original_log": {
+    "path": "original-mutant-test.log",
+    "git_blob_sha": "3428bc5f9989e684afca5b6d395ee9e9a5697c38",
+    "sha256": "e05159953dd97ffeca2a5082937a056e8a32f7e1139bbb688f0935e02fd6e6f0",
+    "bytes": 1349
+  },
+  "independent_readback": {
+    "commit": "6273fa876d6c7242a0f75032e071c117e81957c7",
+    "run_id": 41781761858,
+    "job_id": 126414683443,
+    "status": "success",
+    "path": "original-readonly-job.log",
+    "git_blob_sha": "45f84b1f13392ecdafc4481dd79c7e0cec1045c2",
+    "sha256": "1b871fdcbcdb39962d0f27a2198b2872ee26cd513fc354058aa63939e987843a",
+    "bytes": 27406,
+    "report": "ORIGINAL_READBACK.json"
+  },
+  "actual_reader_replay": {
+    "commit": "777c418ee2ca30187d7ac10c2d44a6746c5e8f15",
+    "run_id": 41782498003,
+    "job_id": 126417048793,
+    "status": "success",
+    "path": "candidate-replay-job.log",
+    "git_blob_sha": "fe57bf50e1072d07eeb3b63d3315e4bbe4ec6ef9",
+    "sha256": "0a4273e3967a36c56addee44e452d6fefcaee5e2b40bfcd0016da8cd02df43ae",
+    "bytes": 29326,
+    "report": "CANDIDATE_XML_REPLAY.json"
+  },
+  "static_reviews": [
+    {
+      "path": "cleanup-static-review.json",
+      "git_blob_sha": "102340fe879a64584ffc5b571058093628dabba5",
+      "sha256": "ca95d447fc75446b79c9d012003f14fb788ba58c37552c612bfecb6cf9c5d1b6",
+      "bytes": 2371
+    },
+    {
+      "path": "xml-static-review.json",
+      "git_blob_sha": "34c751896500cb9d96ec4d79156efb7698fb8e84",
+      "sha256": "2e462013abed9392cce45d4a6c7b78d1f11d34871d1c16cb6fc4337760aec2ff",
+      "bytes": 2669
+    }
+  ],
+  "production_changed": false,
+  "native_fixture_changed": false,
+  "native_argv_or_deadlines_changed": false,
+  "original_failure_reclassified": false,
+  "current_successor_native_qualification_pending": true,
+  "synthetic_and_replay_are_native_execution": false,
+  "scientific_acceptance": false
+}

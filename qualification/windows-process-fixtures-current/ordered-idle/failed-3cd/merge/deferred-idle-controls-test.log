@@ -1,0 +1,10 @@
+Executing tests from //codex-rs/core:core-unit-tests
+-----------------------------------------------------------------------------
+
+running 3 tests
+test tasks::idle_work::tests::deferred_idle_work_rejects_capacity_overflow ... ok
+test tasks::idle_work::tests::deferred_idle_contributors_wait_for_fence_and_preserve_registration_order ... ok
+test tasks::idle_work::tests::cancelled_idle_fence_releases_followers_without_bypassing_their_fence ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 2331 filtered out; finished in 0.00s
+

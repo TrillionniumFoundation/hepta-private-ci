@@ -761,6 +761,16 @@ impl CodexThread {
         self.io.submit_turn_input(request, mode).await
     }
 
+    /// Observes the current turn's remaining terminalization work, if any.
+    ///
+    /// This wait is bounded by the terminalizer watchdog. It does not release
+    /// any fence or guarantee idle admission: callers must still submit through
+    /// the normal routing API. Idle lifecycle callbacks must defer this wait
+    /// until after returning, because they are part of that terminalization.
+    pub fn pending_turn_terminalization(&self) -> Option<futures::future::BoxFuture<'static, ()>> {
+        self.session.pending_turn_terminalization()
+    }
+
     /// Persist whether this thread is eligible for future memory generation.
     pub async fn set_thread_memory_mode(&self, mode: ThreadMemoryMode) -> anyhow::Result<()> {
         self.session.set_thread_memory_mode(mode).await
