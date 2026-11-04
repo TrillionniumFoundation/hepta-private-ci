@@ -134,18 +134,30 @@ pub(super) fn run(
     while channel.exchange(|bytes| {
         let command =
             serde_json::from_slice(bytes).map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-        let value = runtime
-            .block_on(drive_original(execute(&owner, command)))
+        let value = block_on_original(&runtime, execute(&owner, command))
             .map_err(|_| HostIssuerTransportError::Unavailable)?;
         serde_json::to_vec(&value).map_err(|_| HostIssuerTransportError::Unavailable)
     })? {}
     Ok(())
 }
 
-// Keep the original future owned by block_on so Tokio still applies its size gate.
-async fn drive_original<F: std::future::Future>(future: F) -> F::Output {
+fn block_on_original<F: std::future::Future>(
+    runtime: &tokio::runtime::Runtime,
+    future: F,
+) -> F::Output {
+    // Match locked Tokio 1.53.3: retain its original large-future boxing path.
+    const BOX_FUTURE_THRESHOLD: usize = if cfg!(debug_assertions) { 2048 } else { 16384 };
+    if std::mem::size_of::<F>() > BOX_FUTURE_THRESHOLD {
+        return runtime.block_on(future);
+    }
     let mut future = std::pin::pin!(future);
-    std::future::poll_fn(|context| poll_original(future.as_mut(), context)).await
+    runtime.block_on(pinned_original(future.as_mut()))
+}
+
+fn pinned_original<F: std::future::Future>(
+    mut future: std::pin::Pin<&mut F>,
+) -> impl std::future::Future<Output = F::Output> + '_ {
+    std::future::poll_fn(move |context| poll_original(future.as_mut(), context))
 }
 
 // Keep the concrete command poll outside scheduler inlining.
