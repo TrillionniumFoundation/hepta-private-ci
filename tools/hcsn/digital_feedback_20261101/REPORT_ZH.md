@@ -6,7 +6,7 @@
 
 **32/32 个注册拟合全部完成且主比较输入完整。四个主收益门槛全部未达到；四个必需候选的 256 个 fit×domain×candidate 质量检查，整体通过数为 0。当前封存方案不予收益验收，`acceptance=false`。** 完成的实验应按该结论收尾，不再仅以“running”描述；缺失报告与统计文件的问题可以关闭。解析核优势、质量达标、完整历史成本、开放域能力等科学或产品门槛仍未通过，不能据此宣称全部研究 blocker 已闭合。
 
-这是一个有限区间、固定物理动力学的读出与反馈实验。`fpt_feedback` 比较同一 FPT 家族内多轮与单轮反馈，`ordinary_feedback` 比较普通家族内多轮与单轮反馈。它们不是解析核替换的 D−B 主检验。预注册的 `analytic_increment` 只是未做多重比较校正的次级描述指标，仍须服从同信息、质量和成本边界。依据：[冻结协议](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/903946f15dd79bc53a39a479230e366df04a371f/tools/hcsn/digital_feedback_20261101/protocol.json)、[冻结统计方法](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/903946f15dd79bc53a39a479230e366df04a371f/tools/hcsn/digital_feedback_20261101/statistics.py)、[本次完整统计](evidence/ANALYSIS.json)。
+这是一个有限区间、固定物理动力学的读出与反馈实验。`fpt_feedback` 比较同一首达时模型家族内多轮与单轮反馈，`ordinary_feedback` 比较普通家族内多轮与单轮反馈。它们不是解析核替换的 D−B 主检验。预注册的 `analytic_increment` 只是未做多重比较校正的次级描述指标，仍须服从同信息、质量和成本边界。依据：[冻结协议](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/903946f15dd79bc53a39a479230e366df04a371f/tools/hcsn/digital_feedback_20261101/protocol.json)、[冻结统计方法](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/903946f15dd79bc53a39a479230e366df04a371f/tools/hcsn/digital_feedback_20261101/statistics.py)、[本次完整统计](evidence/ANALYSIS.json)。
 
 ## 一、确认设计与完整性
 
