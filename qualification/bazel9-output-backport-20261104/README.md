@@ -25,3 +25,7 @@ The upstream destructor waits for the pipe to drain, then bounds cancellation fo
 This is an isolated research branch, with no pull request or product-default integration yet. The `.bazelrc` override is confined to this branch and requires its prepared directory. Native execution is pending until the actual hosted workflow finishes. Static hunk application and independent source review are not claimed as C++, GTest or Rust execution.
 
 Posture: **Draft / HOLD_NO_GO / DENY_ALL**. No main merge, deployment, activation or original source deletion.
+
+## First hosted construction failure
+
+Source `58290bcdf0ae2ee7eb12bcd6a8af2627873cd959` fetched and verified the exact upstream source and applied the exact patch, then failed at the builder-version probe before C++ compilation or any test. Bazel8.4.2 rejected the `--version` shortcut placed after startup options. The complete decoded job log and original artifact identity are retained under `first-58290/`. The successor uses the official `version --gnu_format` command after the same startup options, retaining strict version equality. No source patch, build target, test case, assertion, retry count or time budget is changed.

@@ -152,7 +152,7 @@ def prepare(work):
         require(bazel is not None, "Bazelisk executable missing")
         builder = [bazel, "--nosystem_rc", "--nohome_rc",
                    "--output_base=" + str(work / "b"), "--output_user_root=" + str(work / "u")]
-        version = run("builder-version", [*builder, "--version"], source, builder_env)
+        version = run("builder-version", [*builder, "version", "--gnu_format"], source, builder_env)
         require(version == "bazel " + manifest["upstream_builder_version"], "builder version mismatch")
         run("build-original-tw-target", [*builder, "build", "--lockfile_mode=error",
                                          "//tools/test:tw"], source, builder_env)

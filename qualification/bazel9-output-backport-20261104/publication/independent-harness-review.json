@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewer_scope": "Read-only source, manifest, original upstream byte checks and workflow wiring; no compiler, C++ tests, Bazel target or product test was run by this review.",
+  "candidate_commit": "b8eaf1ab48228db97a5b7310a490d8ecdd24cfad",
+  "inputs": [
+    {
+      "name": "helper",
+      "blob": "59ee8feccfc40b5a18e92fb67b9ac6af9645e86b",
+      "bytes": 14485,
+      "sha256": "03b400a928dad5188e01c9da066cd900987e571a64981cb69547d6542608ec03"
+    },
+    {
+      "name": "patch",
+      "blob": "4735950cc19b2723918903f6c04ceedcd5d6598d",
+      "bytes": 4562,
+      "sha256": "06146cf94199fc7ba4c800487f452ee171776645634403f46866268d521b676c"
+    },
+    {
+      "name": "manifest",
+      "blob": "792487efd15ac04d6074a88753804e87c4d14e79",
+      "bytes": 2992,
+      "sha256": "2aa1b97593bbaed86ddd3d895b8524654d952bfb9d525e8623f2b9f43c4b78a0"
+    },
+    {
+      "name": "workflow",
+      "blob": "322eb1aad233074865bc29136309d544e4835fdd",
+      "bytes": 2217,
+      "sha256": "865d2cc0cd27a9530d06243e4d13e95ff5575a35c3526dd54de033a985a94afb"
+    },
+    {
+      "name": "original_robrix_reader",
+      "blob": "7973fd6166cc5f9487797eee8b9ce863c7b3ede6",
+      "bytes": 7985,
+      "sha256": "9d2d538747e0248531020bcdfecbbb1fe7b681c8e9f29e93abff9403ebfb6807"
+    }
+  ],
+  "upstream": {
+    "repository": "bazelbuild/bazel",
+    "base": "93f38093f8e24875c1d015e67311853756bdb27e",
+    "fix": "e50ebd4a0a0bf5f557aa8d4873d9a226f8e89c57",
+    "builder_pin": "8.4.2",
+    "builder_pin_blob": "7857a9473eb17eb073f5fe2f8b4f9d5a2a1d85e8",
+    "build_blob": "30975c0db3e6a6d1cd16988349a7847aa67f80c4",
+    "original_rc_blob": "d1ed26b01860a5e7364b353eeb695ea2a3f065d6",
+    "exact_changed_lines_equal_official_fix": true,
+    "whole_text_patch_application": [
+      {
+        "path": "tools/test/windows/tw.cc",
+        "original_bytes": 69181,
+        "patched_bytes": 69951,
+        "patched_sha256": "cd93a25fb82003bb9fa538a6207d340c9fa326277a33dc962dfe63cdac544899",
+        "full_patch_text_applied": true
+      },
+      {
+        "path": "tools/test/windows/tw_test.cc",
+        "original_bytes": 29016,
+        "patched_bytes": 30991,
+        "patched_sha256": "17f9b278e5df0bc794a27c94799537958596bc76f008b01e8716baa56e21bb7c",
+        "full_patch_text_applied": true
+      }
+    ],
+    "original_test_names_exact": 18,
+    "additional_upstream_tests": 2
+  },
+  "findings": {
+    "confirmed_blocker_in_reviewed_scope": false,
+    "gtest": "Fresh output directory, uncached original tw_test, command exit zero, exact 20 unique named cases, all run/completed, root/suite zero failure/error/disabled/skipped and no corresponding elements. The source BUILD links both tw and tw_test to the same tw_lib.",
+    "windows_paths": "Subprocess argument arrays carry native absolute paths and GTEST_OUTPUT=xml:<path> without a second shell split. Final wrapper PE machine is checked as x86_64; actual Windows build remains required.",
+    "copy_scope": "Full installed embedded-tools files/symlinks are copied and compared, only tools/test/tw.exe differs, and original install and override are re-inventoried after original Robrix qualification.",
+    "wiring": "Push-only isolated research branch, fixed 30-minute job; prepare precedes unchanged original Robrix reader and Clippy, finalizer always runs and demands original status/count/source invariance. Candidate .bazelrc diff is only ci-windows official bazel_tools repository override.",
+    "original_robrix_reader_unchanged": true
+  },
+  "boundaries": [
+    "This reviewed helper inventories files and symlinks, not empty directories. The parent is separately adding directory records; that changes the helper hash and is not native execution evidence.",
+    "The official bounded thread drain does not prove output completeness for indefinitely surviving writers; the original complete Robrix summary remains mandatory.",
+    "The ci-windows override requires preparation in every workflow that later consumes it. This isolated research workflow supplies it; global integration has not been qualified.",
+    "No XML mutation controls, C++ compilation, 20 GTest executions or Robrix cases were executed by this static review. Source identity and version pins are not a substitute for actual hosted results.",
+    "The compiled binary's official-origin qualification depends on the pinned checkout and build environment; this review does not independently validate a downloaded builder binary artifact."
+  ]
+}

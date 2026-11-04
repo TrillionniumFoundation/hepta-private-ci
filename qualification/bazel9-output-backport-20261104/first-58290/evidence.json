@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "58290bcdf0ae2ee7eb12bcd6a8af2627873cd959",
+  "source_tree": "0560d9170e3caad39c2e4e5d801300a7d945c533",
+  "run_id": 41759867371,
+  "job_id": 126344745660,
+  "status": "FAILED_BEFORE_CPP_BUILD_AND_GTEST",
+  "actual_error": "Bazel8.4.2 reports Unknown startup option: '--version' when that shortcut follows startup options.",
+  "upstream_fetch_and_patch_completed_before_version_probe": true,
+  "gtest_executed": false,
+  "robrix_executed": false,
+  "original_installed_tools_modified": false,
+  "negative_log": {
+    "path": "first-58290/job.log.gz",
+    "decoded_bytes": 151553,
+    "decoded_sha256": "8b1fe91b4e652bc71d635f57d21f95f013e1103ec010dd297586ab130b192d0a",
+    "gzip_bytes": 151586,
+    "gzip_sha256": "4375d7c7557bc3c3bfd3355baad4038ea9a3e461c1467e48a7bbf13275fe9cfb"
+  },
+  "artifact": [
+    {
+      "id": 13289763751,
+      "name": "bazel9-output-backport-58290bcdf0ae2ee7eb12bcd6a8af2627873cd959",
+      "size": 34640,
+      "digest": "sha256:e76fe9e4b434ee57bdd460d01561d4bb0299e2c40e2bcb6ca3c3a11f2cba796f"
+    }
+  ],
+  "successor": {
+    "change": "Use the official version command and --gnu_format after unchanged startup options. Keep exact version equality, source hashes, build/test targets, original cases and budget unchanged.",
+    "official_version_command_git_blob": "10af9f1109bbc6121d60c16d27cbcafbe294fc5f",
+    "previous_helper_git_blob": "3020382ee10cb097a81f55ce5f5418e562e721cb",
+    "new_helper_git_blob": "244cd84754e9990ed1009152708167d0b1c3810c",
+    "new_helper_sha256": "b5fb4ebbcfe0afc33eb12608d3afb3ad43e4ac7c4c3ce7d8796301e1668a1cac"
+  },
+  "posture": "Draft / HOLD_NO_GO / DENY_ALL"
+}
