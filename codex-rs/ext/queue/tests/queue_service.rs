@@ -2953,9 +2953,24 @@ async fn registered_queue_waits_for_terminal_cleanup_without_admitting_other_cal
         assert_eq!(vec![queued.clone()], queue.list(thread_id).await?);
         assert_eq!(1, responses.requests().len());
 
+        // Core publishes A's TurnComplete before entering its idle callbacks.
+        // Consume that exact completion while the gate still holds, so the
+        // next observed completion proves that the deferred B actually ran.
+        let initial_turn_id = wait_for_event_match(test.codex.as_ref(), |event| {
+            if let EventMsg::TurnComplete(completed) = event {
+                Some(completed.turn_id.clone())
+            } else {
+                None
+            }
+        })
+        .await;
         release.notify_one();
         wait_for_event_match(test.codex.as_ref(), |event| {
-            matches!(event, EventMsg::TurnComplete(_)).then_some(())
+            matches!(
+                event,
+                EventMsg::TurnComplete(completed) if completed.turn_id != initial_turn_id
+            )
+            .then_some(())
         })
         .await;
         anyhow::Ok(())
@@ -3041,8 +3056,10 @@ async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence
         .await?;
     let queue = install_registered_queue(&test, installed.as_ref())?;
 
-    tokio::time::timeout(Duration::from_secs(/*secs*/ 10), async {
+    let mut phase = "submitting the initial turn";
+    let outcome = tokio::time::timeout(Duration::from_secs(/*secs*/ 10), async {
         test.submit_text_turn("initial user A").await?;
+        phase = "waiting for the initial idle contributor";
         entered.notified().await;
         let completion = test
             .codex
@@ -3068,6 +3085,7 @@ async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence
             },
         )?;
         release.notify_one();
+        phase = "waiting for deferred automatic admission after queued input";
 
         assert_eq!(
             automatic_rx.await??,
@@ -3075,11 +3093,15 @@ async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence
                 reason: NotSubmittedReason::NotIdle,
             }
         );
+        phase = "checking the persisted queue";
         assert!(queue.list(thread_id).await?.is_empty());
+        phase = "waiting for the second actual model request";
         server.wait_for_request_count(/*count*/ 2).await;
         anyhow::Ok(())
     })
-    .await??;
+    .await;
+    outcome
+        .with_context(|| format!("original ten-second queue budget expired while {phase}"))??;
     assert_eq!(server.requests().await.len(), 2);
     release_response
         .send(())

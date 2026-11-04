@@ -1,7 +1,14 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
-from windows_current_ci import assess, execute_groups, valid_source
+from windows_current_ci import (
+    SANDBOX_HELPERS,
+    assess,
+    execute_groups,
+    publish_sandbox_helpers,
+    valid_source,
+)
 
 GROUP = {
     "id": "original",
@@ -82,6 +89,69 @@ class StrictWindowsReceiptTests(unittest.TestCase):
                 {**before, "trackedChanges": " M source.rs"},
             )
         )
+
+
+class SandboxHelperArtifactTests(unittest.TestCase):
+    def fixture(self, root):
+        manifest = root / "codex-rs/windows-sandbox-rs/Cargo.toml"
+        manifest.parent.mkdir(parents=True)
+        manifest.write_text("[package]\nname = 'codex-windows-sandbox'\n")
+        target = root / "target"
+        profile = target / "dev-small"
+        profile.mkdir(parents=True)
+        records = []
+        for name in SANDBOX_HELPERS:
+            binary = profile / (name + ".exe")
+            binary.write_bytes(b"MZ-unit-test-artifact-" + name.encode())
+            records.append(
+                {
+                    "reason": "compiler-artifact",
+                    "manifest_path": str(manifest),
+                    "target": {"name": name, "kind": ["bin"]},
+                    "profile": {"test": False},
+                    "executable": str(binary),
+                }
+            )
+        return target, records
+
+    def test_both_real_artifact_paths_and_identical_bytes_are_required(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            target, records = self.fixture(root)
+            result = publish_sandbox_helpers(
+                root, target, "\n".join(json.dumps(item) for item in records)
+            )
+            self.assertEqual([item["name"] for item in result], list(SANDBOX_HELPERS))
+            for item in result:
+                self.assertEqual(
+                    Path(item["source"]).read_bytes(),
+                    Path(item["testSibling"]).read_bytes(),
+                )
+
+    def test_missing_or_wrong_manifest_artifact_is_rejected(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            target, records = self.fixture(root)
+            with self.assertRaisesRegex(ValueError, "both original"):
+                publish_sandbox_helpers(root, target, json.dumps(records[0]))
+            records[0]["manifest_path"] = str(root / "other/Cargo.toml")
+            with self.assertRaisesRegex(ValueError, "different manifest"):
+                publish_sandbox_helpers(
+                    root, target, "\n".join(json.dumps(item) for item in records)
+                )
+
+    def test_existing_different_helper_is_never_overwritten_or_accepted(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            target, records = self.fixture(root)
+            sibling = target / "dev-small/deps" / (SANDBOX_HELPERS[0] + ".exe")
+            sibling.parent.mkdir()
+            sibling.write_bytes(b"unrelated existing executable")
+            with self.assertRaisesRegex(ValueError, "changed"):
+                publish_sandbox_helpers(
+                    root, target, "\n".join(json.dumps(item) for item in records)
+                )
+            self.assertEqual(sibling.read_bytes(), b"unrelated existing executable")
 
 
 if __name__ == "__main__":
