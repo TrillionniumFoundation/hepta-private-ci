@@ -51,6 +51,10 @@ pub(crate) struct FleetHarness {
 
 impl FleetHarness {
     pub(crate) fn new() -> Result<Self> {
+        // Keep macOS socket paths below SUN_LEN without shortening agent identities.
+        #[cfg(target_os = "macos")]
+        let temp = tempfile::tempdir_in("/tmp")?;
+        #[cfg(not(target_os = "macos"))]
         let temp = tempfile::tempdir()?;
         let root = temp.path().canonicalize()?;
         let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
