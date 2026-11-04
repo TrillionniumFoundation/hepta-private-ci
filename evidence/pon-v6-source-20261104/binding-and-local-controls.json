@@ -1,0 +1,188 @@
+{
+  "schema": "hepta-v6-local-controls-v1",
+  "chain_binding": {
+    "chain_base": "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+    "chain_ordered_merge": "914dffbf7d0a1fb11d3f8b5fc3e4854146913c0b",
+    "chain_source": "44d3def32f515b98fc41f074fe1b88e97f046191",
+    "chain_tree": "f3e07fc21a74e9a4367610ba10f5883213609320",
+    "changed_files": [
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v6.json",
+      "scripts/hepta_smollm_execution_source_v1.py",
+      ".github/workflows/hepta-public-initial-v2.yml",
+      ".github/workflows/hepta-pon-native-pair.yml"
+    ],
+    "historical_files_sha256": {
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v1.json": "4b92ec8b9aa385148dc7bfc4d35630a05b5ced93fef1c503305ff8e28d0b1e6a",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v2.json": "7db8bb705a7bf17e08aba973a7a4d2f9c14693d4a6af782abdc7c254dc91699a",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v3.json": "9dcd7666bb6462712356ee73a5f17d5d3fdecfea44a3ff8dad01dca10a25dfa3",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v4.json": "cc88782c649504cbab886ba5040f183e27fb87d278d682492d68253101bc8f31",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v5.json": "57ebcfa34d3e578679c3040fab3e4065683bd032592a183574767d5d3eaa9404",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.plan.json": "01ec1a644f37b9fc7a4c6616f589768df97f8eed7a289b5de86afadaa7ce6165",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.profile": "695d12e8dce5c289a063effdbcc2289148b4708a4a6ead77199da734e0dba2c8",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.sources.json": "c4a529e9710f18feaa4996457991876d3999d36bdde285903e72d7180f8bbd0c",
+      "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.target.json": "4c443932649d5be08577307d67332a520ea0cf5499fc24f54f98a85bbb948b4b"
+    },
+    "installed_native_executed": false,
+    "native_pair_executed": false,
+    "observation": {
+      "chain_commit": "44d3def32f515b98fc41f074fe1b88e97f046191",
+      "chain_tree": "f3e07fc21a74e9a4367610ba10f5883213609320",
+      "historical_profile_sha256": "695d12e8dce5c289a063effdbcc2289148b4708a4a6ead77199da734e0dba2c8",
+      "historical_sources_sha256": "c4a529e9710f18feaa4996457991876d3999d36bdde285903e72d7180f8bbd0c",
+      "installation_authorized": false,
+      "manifest_sha256": "2ed9941e5e2051f4773364b2e379c9e8866a0fde0a3a5afd6f5b5357244d5dc8",
+      "model_compatibility_changed": false,
+      "product_qualification": false,
+      "profile": "hepta-integrated-chain-execution-v6",
+      "schema": "hepta-smollm-public-initial-execution-source-verified-v1",
+      "verified_source_files": 42
+    },
+    "ordinary_model_cli_executed": false,
+    "qualification": false,
+    "schema": "hepta-v6-source-finalization-v1"
+  },
+  "yaml_shell_steps": 123,
+  "suites": [
+    {
+      "name": "source-active-v6",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_smollm_execution_source_v*.py",
+        "-v"
+      ],
+      "selected_profile": "hepta-integrated-chain-execution-v6",
+      "minimum_tests": 63,
+      "observed_tests": 63,
+      "returncode": 0,
+      "log_sha256": "61adff6dc87c2da91552c5a705bb2a38c6c8bf9fc11ed3ed72695ef926789fd4",
+      "passed": true,
+      "log": "source-active-v6.log"
+    },
+    {
+      "name": "diverse-installed-context",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_neural_*diverse_v3.py",
+        "-v"
+      ],
+      "selected_profile": null,
+      "minimum_tests": 32,
+      "observed_tests": 32,
+      "returncode": 0,
+      "log_sha256": "6cb865de367b8bbd435f7dee02ad943788665bbbc9cf1592a9228775db351978",
+      "passed": true,
+      "log": "diverse-installed-context.log"
+    }
+  ],
+  "native_executed": false,
+  "model_executed": false,
+  "pressure_executed": false,
+  "installed_controls_executed": false,
+  "installation_authorized": false,
+  "qualification": false,
+  "hepta_base_sha": "5b00b3aac4d4fd0d26d07436886748c0425e33e5",
+  "hepta_candidate_commit": null,
+  "hepta_source_scope": "Exact9 changed source/workflow file bytes over the reviewed base; partial source mirror, not a native Hepta checkout. The publishing owner must run fresh native CI on the resulting Hepta commit.",
+  "source_files": [
+    {
+      "path": ".github/workflows/hepta-pon-native-pair.yml",
+      "action": "update",
+      "mode": "100644",
+      "base_blob": "f02ba9ae74904b533ff2351323049f6eadb9ba64",
+      "blob": "a7bb92f6a47f15439a6dace2e49792aec62c9986",
+      "sha256": "9f38db2e10c8135a79a4d6f33c1754c4f25464f7aba2c52f28808f572662b19f",
+      "bytes": 97024
+    },
+    {
+      "path": ".github/workflows/hepta-public-initial-v2.yml",
+      "action": "update",
+      "mode": "100644",
+      "base_blob": "b041defd791a2e21387b50fc29942b7091a37845",
+      "blob": "d8213d2f70b2876598bf9a7144b9e2ea70e112d1",
+      "sha256": "df6bb5a7e85849d7537dab8520506fb4a8b6243809f9bc50d6a48b8e74d0545f",
+      "bytes": 30988
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v6.json",
+      "action": "add",
+      "mode": "100644",
+      "base_blob": null,
+      "blob": "39d8968f038cebcaaa702b909629f6858d0aeebf",
+      "sha256": "2ed9941e5e2051f4773364b2e379c9e8866a0fde0a3a5afd6f5b5357244d5dc8",
+      "bytes": 7086
+    },
+    {
+      "path": "scripts/hepta_neural_evidence_diverse_v3.py",
+      "action": "update",
+      "mode": "100644",
+      "base_blob": "a2a0b07010644f79a30dfa4cf15a0697ea288b24",
+      "blob": "7912b53f9378a6035cccbcc787c92fde4958e4ed",
+      "sha256": "4bb9676c0075b93110e681f7d5e01e162df92ac2274564182a69726730bd80c7",
+      "bytes": 23789
+    },
+    {
+      "path": "scripts/hepta_neural_study_diverse_v3.py",
+      "action": "update",
+      "mode": "100644",
+      "base_blob": "e524f6825bd0940d94defdec803abef4d482dbbb",
+      "blob": "e72870e23477820f3861865c67b6fdf6883f4f4d",
+      "sha256": "4e070398926f6c69a7483ad8f3e61602102d1b60820a1c0ee95ea12a2be10680",
+      "bytes": 17059
+    },
+    {
+      "path": "scripts/hepta_smollm_execution_source_v1.py",
+      "action": "update",
+      "mode": "100644",
+      "base_blob": "ffa06dc38886fd954cdbae55ef479e996324baf7",
+      "blob": "44e585c3f51e382ace261d150801790fe5ca6c2e",
+      "sha256": "6a1d28dca0b5430325f7049a2b8c280d1d8ffa5b8a5d37f59d7272921aaef71b",
+      "bytes": 10187
+    },
+    {
+      "path": "scripts/test_hepta_smollm_execution_source_v1.py",
+      "action": "update",
+      "mode": "100644",
+      "base_blob": "211e6422a925fda7819e7821108075ecd9fc47de",
+      "blob": "83e74cea4207fd361d5a4c7225764099a8b8b8d9",
+      "sha256": "5cdba4a42b1d0e2d181e45b7814cfbb0c008c1b45490ce8d47ddd12e9f68ca6b",
+      "bytes": 21376
+    },
+    {
+      "path": "scripts/test_hepta_smollm_execution_source_v5.py",
+      "action": "update",
+      "mode": "100644",
+      "base_blob": "9a64c4aa6dad7aa76f2a5792f2a7bd3d5a87a475",
+      "blob": "1b23c488b362a97502c8d81c2fdc0c4f1c578b57",
+      "sha256": "4e08328787dfe2a45aa38230e5fce98d930815bed8ad211226b46e1e37bc5017",
+      "bytes": 8425
+    },
+    {
+      "path": "scripts/test_hepta_smollm_execution_source_v6.py",
+      "action": "add",
+      "mode": "100644",
+      "base_blob": null,
+      "blob": "2f664442c6b2374359eee9d3d214e37bb5ec24e2",
+      "sha256": "c965c830cd5278ab721f819e744f33d952ae9bef23abb911b32276cd011d6932",
+      "bytes": 12186
+    }
+  ],
+  "execution_closure_files_changed": [],
+  "historical_profiles_immutable": true,
+  "ci_qualification": false,
+  "whole_pq_migration_closed": false,
+  "all_effects_recovery_closed": false
+}

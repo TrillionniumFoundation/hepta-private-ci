@@ -17,9 +17,9 @@ concurrency:
   # exact source independently while earlier native lanes finish unchanged.
   cancel-in-progress: false
 jobs:
-  # Follow-up PRs targeting the pinned Cell continuation retain its original
-  # c165 source/base pair and all four native recovery lanes. The pressure
-  # follow-up pins its direct Chain descendant without changing either budget.
+  # Keep all four native effect-owner recovery lanes on this exact Hepta
+  # candidate while the paired Chain uses the one frozen V6 source tuple.
+  # Pressure retains its original hardware and both original budgets.
   effect-recovery:
     if: github.event.pull_request.head.repo.full_name == github.repository && ((github.head_ref == 'codex/p0-pair-pressure-20261103' || github.base_ref == 'codex/p0-pair-pressure-20261103') || github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031' || (github.head_ref == 'fix/hepta-pn-cell-closure-20261031' || github.base_ref == 'fix/hepta-pn-cell-closure-20261031'))
     strategy:
@@ -111,9 +111,10 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: ${{ (github.head_ref == 'codex/p0-pair-pressure-20261103' || github.base_ref == 'codex/p0-pair-pressure-20261103') && '78d13ecb327a95609429082b05b42c19751cd2c2' || ((github.head_ref == 'codex/p0-pair-pressure-20261103' || github.base_ref == 'codex/p0-pair-pressure-20261103') || github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031' || (github.head_ref == 'fix/hepta-pn-cell-closure-20261031' || github.base_ref == 'fix/hepta-pn-cell-closure-20261031')) && 'c16507147b65285ea94dead22d3b93c5db7295af' || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && '540d72356a921da31dde1113537382e5c0f0c4fd' || '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' }}
-      CHAIN_BASE_SHA: ${{ ((github.head_ref == 'codex/p0-pair-pressure-20261103' || github.base_ref == 'codex/p0-pair-pressure-20261103') || github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031' || (github.head_ref == 'fix/hepta-pn-cell-closure-20261031' || github.base_ref == 'fix/hepta-pn-cell-closure-20261031')) && '1d11f875493f8125e36b9adceacb342df108e5e5' || '9fedf7ecbbe07177069c030592b4e03dcffebb81' }}
-      HEPTA_PON_CHAIN_SOURCE: ${{ (github.head_ref == 'codex/p0-pair-pressure-20261103' || github.base_ref == 'codex/p0-pair-pressure-20261103') && (matrix.lane == 'source-head' && '78d13ecb327a95609429082b05b42c19751cd2c2' || '1cdfe294cd405d9e6ec763e815e3c6c8279f2030') || ((github.head_ref == 'codex/p0-pair-pressure-20261103' || github.base_ref == 'codex/p0-pair-pressure-20261103') || github.head_ref == 'fix/hepta-provider-operation-binding-20261030' || github.head_ref == 'fix/hepta-v4-ordinary-cli-20261031' || (github.head_ref == 'fix/hepta-pn-cell-closure-20261031' || github.base_ref == 'fix/hepta-pn-cell-closure-20261031')) && (matrix.lane == 'source-head' && 'c16507147b65285ea94dead22d3b93c5db7295af' || 'd1b8ae970bb5e014b6feaa49030823e1d8228c90') || github.head_ref == 'fix/hepta-final-use-mldsa65-v2-20261029' && (matrix.lane == 'source-head' && '540d72356a921da31dde1113537382e5c0f0c4fd' || 'cff37ba978684ad1750d66b120ec2913d7c13f8f') || (matrix.lane == 'source-head' && '147bae52e9abbc6f91f89f85e42c5dff4ae53d23' || 'f52fadb096d98589a5ac6c573659764815cae04d') }}
+      CHAIN_SOURCE_SHA: 44d3def32f515b98fc41f074fe1b88e97f046191
+      CHAIN_EXECUTION_PROFILE: hepta-integrated-chain-execution-v6
+      CHAIN_BASE_SHA: dd6e1c3cbeacbdc532b0679297835b3a0aac78f0
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '44d3def32f515b98fc41f074fe1b88e97f046191' || '914dffbf7d0a1fb11d3f8b5fc3e4854146913c0b' }}
       TRNM_FROM_ZERO_HOST_OWNER: ${{ github.run_id }}.${{ github.run_attempt }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -145,6 +146,28 @@ jobs:
             test "$(git -C ../chain show -s --format=%P HEAD)" = "$CHAIN_BASE_SHA $CHAIN_SOURCE_SHA"
             test "$(git -C ../chain rev-parse HEAD^{tree})" = "$(git -C ../chain merge-tree --write-tree "$CHAIN_BASE_SHA" "$CHAIN_SOURCE_SHA")"
           fi
+          python3 -I -B - "$CHAIN_SOURCE_SHA" "$CHAIN_EXECUTION_PROFILE" <<'PYSOURCE' > "$RUNNER_TEMP/pon-pair/execution-source.json"
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, str(Path('scripts').resolve()))
+          import hepta_smollm_execution_source_v1 as execution
+          source, profile = sys.argv[1:]
+          manifest = execution.checked_manifest(profile)
+          chain = Path('../chain').resolve()
+          assert manifest['chain_commit'] == source
+          assert execution.git('rev-parse', source + '^{tree}', repository=chain) == manifest['chain_tree']
+          tested_tree = execution.git('rev-parse', 'HEAD^{tree}', repository=chain)
+          assert tested_tree == manifest['chain_tree'], 'V6 refuses merged source changes'
+          if os.environ['HEPTA_CI_LANE'] == 'source-head':
+              execution.verify(chain, profile)
+          print(json.dumps(dict(schema='hepta-native-pair-execution-source-v1',
+              profile=profile, chain_commit=source, chain_tree=manifest['chain_tree'],
+              manifest_sha256=execution.selected_source(profile)[2],
+              tested_commit=execution.git('rev-parse', 'HEAD', repository=chain),
+              tested_tree=tested_tree,
+              lane=os.environ['HEPTA_CI_LANE'], product_qualification=False), sort_keys=True))
+          PYSOURCE
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/execution-source-controls.json" --minimum-tests 63 -- python3 -m unittest discover -s scripts -p 'test_hepta_smollm_execution_source_v*.py' -v
           (cd ../chain && bash scripts/project-preflight.sh --audit)
           python3 -m unittest -v scripts.tests.test_hepta_ci_candidate
           python3 scripts/hepta_ci_candidate.py \
@@ -1115,7 +1138,7 @@ jobs:
           retention-days: 14
 
   # Separate source-head installed-image controls. The original four Cell lanes
-  # and native c165... PoN pair remain mandatory and retain their own results.
+  # and the native V6 PoN pair remain mandatory and retain their own results.
   cell-installed-host-v3:
     needs: [cell-host-scope, cell-host-v2]
     if: ${{ always() && !cancelled() && needs.cell-host-scope.outputs.required == 'true' }}
@@ -1129,8 +1152,8 @@ jobs:
       TESTED_SHA: ${{ github.event.pull_request.head.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
       HEPTA_CI_LANE: source-head
-      CHAIN_INSTALLED_SOURCE_SHA: 1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c
-      CHAIN_INSTALLED_TREE: 535660af742d62b6578b5e4334e0f2d2c17527e0
+      CHAIN_INSTALLED_SOURCE_SHA: 44d3def32f515b98fc41f074fe1b88e97f046191
+      CHAIN_INSTALLED_TREE: f3e07fc21a74e9a4367610ba10f5883213609320
       RUSTUP_TOOLCHAIN: "1.95.0"
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
@@ -1153,7 +1176,7 @@ jobs:
           printf 'CARGO_TARGET_DIR=%s/installed-cell-target\nTRNM_CI_RECEIPT_DIR=%s/installed-cell\n' "$RUNNER_TEMP" "$RUNNER_TEMP" >> "$GITHUB_ENV"
           python3 scripts/hepta_ci_candidate.py --source "$SOURCE_SHA" --tested "$TESTED_SHA" --base "$BASE_SHA" --lane "$HEPTA_CI_LANE" > "$RUNNER_TEMP/installed-cell/hepta-candidate.json"
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/artifact-controls.json" --minimum-tests 17 -- python3 -m unittest -v scripts.tests.test_hepta_ci_installed_cell
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/execution-source-controls.json" --minimum-tests 51 -- python3 -m unittest discover -s scripts -p 'test_hepta_smollm_execution_source*.py' -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/execution-source-controls.json" --minimum-tests 63 -- python3 -m unittest discover -s scripts -p 'test_hepta_smollm_execution_source*.py' -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/diverse-source-controls.json" --minimum-tests 32 -- python3 -m unittest discover -s scripts -p 'test_hepta_neural_*diverse_v3.py' -v
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -1189,14 +1212,14 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$CHAIN_INSTALLED_SOURCE_SHA"
           test "$(git rev-parse HEAD^{tree})" = "$CHAIN_INSTALLED_TREE"
-          python3 ../hepta/scripts/hepta_smollm_execution_source_v1.py --chain "$GITHUB_WORKSPACE/chain" --profile hepta-integrated-chain-execution-v5 > "$RUNNER_TEMP/installed-cell/execution-source.json"
+          python3 ../hepta/scripts/hepta_smollm_execution_source_v1.py --chain "$GITHUB_WORKSPACE/chain" --profile hepta-integrated-chain-execution-v6 > "$RUNNER_TEMP/installed-cell/execution-source.json"
           python3 - <<'PYSOURCE'
           import json, os
           from pathlib import Path
           value = json.loads((Path(os.environ['RUNNER_TEMP']) / 'installed-cell/execution-source.json').read_bytes())
           assert value['chain_commit'] == os.environ['CHAIN_INSTALLED_SOURCE_SHA']
           assert value['chain_tree'] == os.environ['CHAIN_INSTALLED_TREE']
-          assert value['profile'] == 'hepta-integrated-chain-execution-v5'
+          assert value['profile'] == 'hepta-integrated-chain-execution-v6'
           PYSOURCE
           python3 ../hepta/scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/installed-cell/chain-preflight.json" -- bash scripts/project-preflight.sh --audit
       - name: Prepare the Chain's original pinned PQ provider with its real smoke controls
@@ -1234,8 +1257,9 @@ jobs:
         run: |
           python3 scripts/hepta_ci_installed_controls.py --chain "$GITHUB_WORKSPACE/chain" --chain-sha "$CHAIN_INSTALLED_SOURCE_SHA" --chain-tree "$CHAIN_INSTALLED_TREE" --host "$RUNNER_TEMP/installed-cell-bin/hepta-neural-agentd" --cell "$CARGO_TARGET_DIR/release/trnm-cell" --imported "$RUNNER_TEMP/installed-cell/verified-native.json" --output "$RUNNER_TEMP/installed-cell"
       # Current-source groups retain their actual selectors and separate receipts.
-      # The c165 pair above remains unchanged; its TPQ1 and SQL results cannot
-      # qualify these PNQ2/continuous owners or the unsupported growth/PQ mix.
+      # The same-source PoN pair has a separate native build profile. Its TPQ1
+      # and SQL results cannot qualify these PNQ2/continuous owners or the
+      # unsupported growth/PQ mix.
       - name: Exercise current PQ startup History recovery and original growth CLI
         working-directory: chain
         env:

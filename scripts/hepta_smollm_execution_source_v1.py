@@ -40,6 +40,12 @@ CHAIN_COMMIT_V5 = "1c7e8ab7cd6a321cad4e6c7f7e8a197d7b3be14c"
 CHAIN_TREE_V5 = "535660af742d62b6578b5e4334e0f2d2c17527e0"
 MANIFEST_NAME_V5 = "smollm2-public-initial-v2.execution-sources-v5.json"
 MANIFEST_SHA256_V5 = "57ebcfa34d3e578679c3040fab3e4065683bd032592a183574767d5d3eaa9404"
+# Freeze only after the final reviewed Chain source and its ordered merge exist.
+PROFILE_V6 = "hepta-integrated-chain-execution-v6"
+CHAIN_COMMIT_V6 = "44d3def32f515b98fc41f074fe1b88e97f046191"
+CHAIN_TREE_V6 = "f3e07fc21a74e9a4367610ba10f5883213609320"
+MANIFEST_NAME_V6 = "smollm2-public-initial-v2.execution-sources-v6.json"
+MANIFEST_SHA256_V6 = "2ed9941e5e2051f4773364b2e379c9e8866a0fde0a3a5afd6f5b5357244d5dc8"
 HISTORICAL_PROFILE_SHA256 = (
     "695d12e8dce5c289a063effdbcc2289148b4708a4a6ead77199da734e0dba2c8"
 )
@@ -73,7 +79,13 @@ def registered_sources():
         PROFILE_V3: (CHAIN_COMMIT_V3, MANIFEST_NAME_V3, MANIFEST_SHA256_V3),
         PROFILE_V4: (CHAIN_COMMIT_V4, MANIFEST_NAME_V4, MANIFEST_SHA256_V4),
         PROFILE_V5: (CHAIN_COMMIT_V5, MANIFEST_NAME_V5, MANIFEST_SHA256_V5),
+        PROFILE_V6: (CHAIN_COMMIT_V6, MANIFEST_NAME_V6, MANIFEST_SHA256_V6),
     }
+
+
+def registered_trees():
+    """Keep commit-and-tree profiles explicit while retaining legacy identities."""
+    return {PROFILE_V5: CHAIN_TREE_V5, PROFILE_V6: CHAIN_TREE_V6}
 
 
 def selected_source(profile):
@@ -118,18 +130,18 @@ def checked_manifest(profile):
             "historical_sources_sha256",
             "files",
         }
-        | ({"chain_tree"} if profile == PROFILE_V5 else set())
+        | ({"chain_tree"} if profile in registered_trees() else set())
         and value["schema"]
         == "hepta-smollm-public-initial-execution-sources-"
-        + ("v2" if profile == PROFILE_V5 else "v1")
+        + ("v2" if profile in registered_trees() else "v1")
         and value["profile"] == profile
         and value["chain_commit"] == commit,
         "closed exact execution-source identity",
     )
-    if profile == PROFILE_V5:
+    if profile in registered_trees():
         require(
-            re.fullmatch(r"[0-9a-f]{40}", CHAIN_TREE_V5) is not None
-            and value["chain_tree"] == CHAIN_TREE_V5,
+            re.fullmatch(r"[0-9a-f]{40}", registered_trees()[profile]) is not None
+            and value["chain_tree"] == registered_trees()[profile],
             "exact integrated Chain tree required",
         )
     for name, field, expected in (
@@ -175,7 +187,7 @@ def verify(chain, profile):
     # Reuse the existing reader's environment, replacement and hook policy.
     head = git("rev-parse", "HEAD", repository=chain)
     require(head == value["chain_commit"], "exact integrated Chain commit required")
-    if profile == PROFILE_V5:
+    if profile in registered_trees():
         require(
             git("rev-parse", "HEAD^{tree}", repository=chain) == value["chain_tree"],
             "exact integrated Chain tree required",
@@ -250,7 +262,7 @@ def verify(chain, profile):
         "product_qualification": False,
         "installation_authorized": False,
     }
-    if profile == PROFILE_V5:
+    if profile in registered_trees():
         result["chain_tree"] = value["chain_tree"]
     return result
 
