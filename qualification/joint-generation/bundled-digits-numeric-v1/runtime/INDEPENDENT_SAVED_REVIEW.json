@@ -1,0 +1,84 @@
+{
+  "verdict": "PASS_SAVED_SYNTHETIC_QUALIFICATION",
+  "freeze_sha256": "9f4953db9e05651997b7597e3acc8e08e462e4f674ab0f87a5d535fed054d54c",
+  "result_sha256": "cf0fbe0a483c7772d0324cd4a53defc1af09782c0790ef3a32624453d89c14e5",
+  "receipt_sha256": "92bad886c56a2f94298477a3ca53a2bd50ae0a61e390e241a24a5a467c40be1b",
+  "scope": "Saved JSON and frozen source/runtime installation hashes only. Stdlib arithmetic with struct binary32 rounding. No candidate imports, NumPy imports, model runs, new probes, data files, or training.",
+  "checked": {
+    "saved_FD_probes": 72,
+    "raw_FD_losses": 288,
+    "FD_derivative_recomputations": 144,
+    "Adam_model_coordinates": 72,
+    "Adam_micro_coordinates": 4,
+    "Adam_after_exact_struct_float32_matches": 76,
+    "loss_reference_records": 4,
+    "finite_records": 8,
+    "runtime_files_rehashed": 1131,
+    "all_bindings_match": true,
+    "exact_output_inventory": true,
+    "operation_counts": {
+      "backward_calls": 4,
+      "backward_examples": 8,
+      "backward_matmuls": 24,
+      "dense_backward_macs": 445840,
+      "dense_forward_macs": 587152,
+      "forward_calls": 16,
+      "forward_examples": 20,
+      "forward_matmuls": 52,
+      "models": 4,
+      "updates": 6
+    },
+    "reference_forwards": 292,
+    "reference_dense_MACs": 19209992,
+    "maximum_FD_stability_tolerance_fraction": 0.0021492294112363357,
+    "maximum_gradient_tolerance_fraction": 0.005208768872054487,
+    "gradient_max_error_by_arm": {
+      "A": 2.3221327360989363e-08,
+      "B": 1.93761676148263e-08,
+      "C": 1.2597954748838625e-08,
+      "L": 1.702945592180205e-08
+    }
+  },
+  "interventions": {
+    "A": {
+      "detected": [
+        true,
+        true
+      ],
+      "maximum_pixel_changes": [
+        0.005659520626068115,
+        0.00863504409790039
+      ]
+    },
+    "B": {
+      "detected": [
+        false,
+        false
+      ],
+      "maximum_pixel_changes": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "costs": {
+    "child_cpu_seconds": 0.6693549999999999,
+    "parent_cpu_observed_prefix_seconds": 0.183775425,
+    "sum_observed_CPU_seconds": 0.8531304249999999,
+    "child_peak_rss_kib": 27168,
+    "supervisor_wall_observed_prefix_seconds": 0.7778080819989555,
+    "retained_output_bytes": 75125,
+    "unknown_additional": "Supervisor final tail, preparation, tools and reviews are additional unknown nonzero costs; no strict global CPU or all-in memory guarantee."
+  },
+  "limitations": [
+    "Saved slopes independently recomputed from saved plus/minus losses. Raw losses and analytic gradients were not independently regenerated, and no full-parameter gradient proof is claimed.",
+    "Adam scalar recurrence independently recalculated only for preregistered72 model coordinates and4 fixture coordinates; saved gradient inputs are not independently regenerated.",
+    "B byte identity and singleton correctness rely on the reviewed frozen assertions having completed; raw images/checkpoints are intentionally not retained. A measured local sensitivity does not identify semantic class use, reconstruction benefit or generalization.",
+    "Reported finite-array counts and operation counters checked for completeness/consistency, not independent instrumentation of native operations.",
+    "Passing local dual-epsilon probes does not prove absence of ReLU kinks elsewhere.",
+    "This is exactly four synthetic model updates plus two tiny optimizer fixtures, not real TRAIN Q, model-quality evidence, or authorization to access/export TRAIN or heldouts.",
+    "The ordinary successful run does not qualify abnormal-signal paths, malicious runtime behavior, transient thread absence, or parent-death handling."
+  ],
+  "HOLD_NEW_TRAIN": "UNCHANGED",
+  "real_training_authorized": false
+}

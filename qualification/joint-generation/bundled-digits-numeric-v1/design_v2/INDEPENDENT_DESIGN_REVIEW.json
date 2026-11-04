@@ -1,0 +1,88 @@
+{
+  "review_type": "Independent v2 design-only delta and arithmetic review",
+  "review_date_utc": "2026-11-04",
+  "freeze_sha256": "af7c37953ce5d44a68695fdc7e25e70c8785fd74e898ba49814e739f7ec1737f",
+  "verdict": "PASS_DESIGN_ONLY_WITH_EXPLICIT_EXECUTION_PREREQUISITES",
+  "design_deliverable_complete": true,
+  "execution_admitted": false,
+  "HOLD_NEW_TRAIN": "UNCHANGED",
+  "scope": "Read only v2 design documents and freeze; checked v1 frozen documents and original independent review hashes. Ran stdlib-only JSON/hash/integer arithmetic checks on these documents. No model, dataset, samples, raw source, TRAIN, selection, final or private_manager read; no model imports, inference, training, synthetic model execution or network writes.",
+  "bindings": {
+    "DESIGN.md": "368705d1942e2d785bf375d89ebb05b9c0d168dc0465524ef5f431d64e438922",
+    "BUDGET.json": "c379157deba0be605dee291e795bae1c17c9c28cb288973895226b16362bc84a",
+    "ADMISSION.md": "bf1f0047b8573483f2c582e7aaca84b357de30d0669b573c7f31c293f4246fe6",
+    "v2_file_hashes_match": true,
+    "v1_all_four_files_unchanged": true,
+    "original_independent_review_unchanged": true,
+    "original_independent_review_sha256": "a74fe2ce7ad0fc79e6dc9a855c124ce4b1c4b43fedc0a064a790a1cebc5bdd5d"
+  },
+  "prior_findings_disposition": [
+    {
+      "id": "D01",
+      "disposition": "Resolved at design level",
+      "finding": "Mandatory L linear baseline restores the prior requirement. It uses identical schedules, loss, corruption and seed set, but has smaller capacity and distinct initialization shape. L is descriptive, not selected or used for additional inferential claims. Selection thresholds explicitly apply only to A/B/C, while missing/nonfinite L execution still prevents complete four-arm reporting."
+    },
+    {
+      "id": "D02",
+      "disposition": "Resolved as a preregistered local diagnostic with restricted interpretation",
+      "finding": "A/B now each receive exactly 16 uniform and 16 cyclic probability interventions at the final Q checkpoint, using previously fixed probes and no labels. Same h and weights are required; full encoder work is charged. B byte identity is mandatory. A detection threshold is fixed at strictly greater than 1e-7; no detection is reported without retries, tuning or extra probes. This satisfies the requirement to preregister an actual output intervention, but successful detection remains unobserved and is not guaranteed.",
+      "claim_boundary": "A/B tests enabling the connection during both training and inference. The intervention does not separate gradient-mediated learning from inference effects, identify semantic class information, prove denoising benefit or demonstrate sensitivity of the later T checkpoints. Those limitations are expressly disclosed. No detected Q sensitivity must never be summarized as demonstrated conditioning use."
+    },
+    {
+      "id": "D03",
+      "disposition": "Resolved as scope separation, not budget approval",
+      "finding": "Next possible admission is explicitly source implementation plus separately frozen finite synthetic qualification only. All TRAIN export/Q/T/S/F allowances remain unapproved. The revised 2,860-second worker-limit sum is clearly a new proposal, not executed cost, historical-cap continuation, strict256 exception or aggregate runtime guarantee."
+    },
+    {
+      "id": "D04",
+      "disposition": "Execution prerequisite retained; not a blocker to completing a design-only deliverable",
+      "finding": "Source, runtime and fixtures are intentionally future artifacts. No implementation feasibility or resource-enforcement guarantee is made. The design may be accepted as complete within this documentary scope without permitting implementation or execution."
+    },
+    {
+      "id": "D05",
+      "disposition": "Resolved at design level, fixture verification still required",
+      "finding": "Top52-bit midpoint uniform values are exactly representable binary64 and strictly between zero and one. New v2 key domain and changed streams are recorded before execution. Bootstrap retains unbiased raw64-bit rejection sampling. Group ordering and binary64 metric reduction order are explicit. Initialization operation order and no-FMA rule are given. Remaining numerical/operator implementation details belong in the future source freeze and known-answer fixtures."
+    }
+  ],
+  "arithmetic_checks": {
+    "L_parameters": 4810,
+    "L_forward_MAC_per_example": 4736,
+    "L_forward_backward_MAC_per_example": 14208,
+    "Q_examples_per_arm": 3928,
+    "T_examples_per_arm": 31200,
+    "Q_runs": 4,
+    "T_runs": 12,
+    "Q_diagnostic_full_forwards": 192,
+    "Q_exact_diagnostic_dense_MAC": 5827712,
+    "Q_common_diagnostic_dense_MAC_ceiling": 6925056,
+    "Q_common_training_MAC_ceiling_sum": 1700101248,
+    "T_common_training_MAC_ceiling_sum": 40511577600,
+    "S_calls": 15552,
+    "S_exact_dense_forward_MAC": 433356480,
+    "S_common_dense_forward_MAC_ceiling": 560929536,
+    "F_calls": 18096,
+    "F_exact_dense_forward_MAC": 504245040,
+    "F_common_dense_forward_MAC_ceiling": 652686528,
+    "total_workers_if_all_admitted": 20,
+    "worker_CPU_limit_sum_seconds": 2860,
+    "supervisor_CPU_limit_sum_seconds": 180,
+    "all_checked_arithmetic_pass": true
+  },
+  "scientific_scope": [
+    "A/B parameter allocation, initialization and stipulated dense operations remain matched, except the intended fixed conditioning mask. B has less useful capacity, explicitly acknowledged. Source/runtime evidence is required to verify actual matching.",
+    "C retains 750 more parameters and 740 more forward MACs per example than A/B; it is a competitive control, not a matched causal arm. L is a much smaller mandatory descriptive baseline.",
+    "All arms remain static finite functions. No universal static-class superiority or general multimodal capability follows from any result.",
+    "The six inferential endpoints remain only A/B and A/C, with paired image-group bootstrap, fixed ranks 82 and 9916, fixed margins and all-seed sign safeguards. L adds no multiplicity claim. Approximate coverage, unknown writer clustering and fixed-training-seed inference remain explicit.",
+    "Selection gates do not require favorable A contrasts. Passing Q or S never automatically admits a later phase. Null, negative, saturated, incomplete and infeasible outcomes remain reportable without protocol repair."
+  ],
+  "future_execution_prerequisites": [
+    "Obtain explicit narrow implementation/synthetic authorization and freeze its exact finite fixture workload and guards. This review itself authorizes neither.",
+    "Independently review exact source/runtime/fixtures, including stable cross-entropy and softmax, all-arm argmax tie behavior, float32 reduction/operator conventions, zero-mask dense operations, Adam reference vectors, PRNG endpoints, singleton serialization and intervention hook behavior. Bind all details before real data access.",
+    "Verify thread/descendant restrictions, existing-lock ownership, per-process hard limits, wall/reap behavior, bounded output schema, failed-artifact retention and full wait4 accounting. No normal-success or documentary design proves abnormal-failure behavior.",
+    "TRAIN export and each Q/T/S/F phase require their own exact actor, input/output and resource admission. Explicit authority must cover actual work; a complete design is not authority to spend its proposed budgets.",
+    "Charge optimizer/nonlinear/PRNG/statistical/import/serialization/hash/review work beyond dense MACs. Retain supervisor tails and unmeasured review/tool cost as unknown, not zero. No guaranteed fit, runtime, power or performance."
+  ],
+  "author_artifacts_modified": false,
+  "runtime_guarantee": false,
+  "review_cost": "Document-only review/tool cost not separately measured; unknown additional cost, never included as zero in proposed worker totals."
+}
