@@ -318,6 +318,48 @@ impl AgentdConfig {
         self.cognitive_ranker.clone()
     }
 
+    #[cfg(target_os = "linux")]
+    pub(crate) fn require_unconfigured_production_hosts(&self) -> Result<(), AgentdError> {
+        if self.production_writer_host.is_some() || self.production_operations.is_some() {
+            return Err(AgentdError::Invalid(
+                "production host is already configured".to_string(),
+            ));
+        }
+        Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn install_production_hosts(
+        &mut self,
+        host: std::sync::Arc<crate::AgentdProductionWriterHost>,
+        operations: crate::AgentdProductionOperationRuntimeConfig,
+    ) -> Result<(), AgentdError> {
+        self.require_unconfigured_production_hosts()?;
+        operations.validate_for(self)?;
+        let writer = host.writer();
+        if writer.owner_agent_id() != &self.identity.agent_id
+            || writer.generation() != self.identity.spawn_generation
+            || writer.authority() != &operations.authority
+            || writer.lease_id() != operations.lease_id
+            || writer.generation() != operations.lease_generation
+        {
+            return Err(AgentdError::GenerationFenced(
+                "production recovered writer identity differs from Agentd".to_string(),
+            ));
+        }
+        // After every metadata callback and recovery await, recheck the same
+        // live verifier immediately before publishing either handle.
+        operations
+            .verifier
+            .verify(&operations.authority, &self.identity.agent_id)
+            .map_err(AgentdError::GenerationFenced)?;
+        // No fallible operation follows either assignment. The caller has
+        // revalidated this same original owner before this exclusive commit.
+        self.production_writer_host = Some(host);
+        self.production_operations = Some(operations);
+        Ok(())
+    }
+
     /// Attach an externally-authorized long-lived production operation host.
     /// Default process-environment startup never manufactures or loads this
     /// authority; an embedding must provide the complete verified runtime

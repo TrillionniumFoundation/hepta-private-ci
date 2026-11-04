@@ -61,8 +61,9 @@ jobs:
     name: Argument comment lint package
     runs-on: ubuntu-24.04
     env:
-      CARGO_DYLINT_VERSION: 5.0.0
-      DYLINT_LINK_VERSION: 5.0.0
+      CARGO_DYLINT_VERSION: 6.3.2
+      DYLINT_LINK_VERSION: 6.3.2
+      DYLINT_BOOTSTRAP_TOOLCHAIN: 1.97.0
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -82,13 +83,15 @@ jobs:
             ~/.cargo/registry/index
             ~/.cargo/registry/cache
             ~/.cargo/git/db
-          key: argument-comment-lint-${{ runner.os }}-${{ env.CARGO_DYLINT_VERSION }}-${{ env.DYLINT_LINK_VERSION }}-${{ hashFiles('tools/argument-comment-lint/Cargo.lock', 'tools/argument-comment-lint/rust-toolchain', '.github/workflows/rust-ci.yml', '.github/workflows/rust-ci-full.yml') }}
+          key: argument-comment-lint-${{ runner.os }}-${{ env.CARGO_DYLINT_VERSION }}-${{ env.DYLINT_LINK_VERSION }}-${{ env.DYLINT_BOOTSTRAP_TOOLCHAIN }}-${{ hashFiles('tools/argument-comment-lint/Cargo.lock', 'tools/argument-comment-lint/rust-toolchain', '.github/workflows/rust-ci.yml', '.github/workflows/rust-ci-full.yml') }}
       - name: Install cargo-dylint tooling
         if: ${{ steps.cargo_dylint_cache.outputs.cache-hit != 'true' }}
         shell: bash
         run: |
-          cargo install --locked cargo-dylint --version "$CARGO_DYLINT_VERSION"
-          cargo install --locked dylint-link --version "$DYLINT_LINK_VERSION"
+          rustup toolchain install "$DYLINT_BOOTSTRAP_TOOLCHAIN" --profile minimal --no-self-update
+          rustup run "$DYLINT_BOOTSTRAP_TOOLCHAIN" rustc -Vv
+          cargo "+$DYLINT_BOOTSTRAP_TOOLCHAIN" install --locked cargo-dylint --version "$CARGO_DYLINT_VERSION"
+          cargo "+$DYLINT_BOOTSTRAP_TOOLCHAIN" install --locked dylint-link --version "$DYLINT_LINK_VERSION"
       - name: Check Python wrapper syntax
         run: python3 -m py_compile tools/argument-comment-lint/wrapper_common.py tools/argument-comment-lint/run.py tools/argument-comment-lint/run-prebuilt-linter.py tools/argument-comment-lint/test_wrapper_common.py
       - name: Test Python wrapper helpers
@@ -131,7 +134,7 @@ jobs:
         shell: bash
         run: |
           sudo DEBIAN_FRONTEND=noninteractive apt-get update
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libdbus-1-dev libcap-dev
       - name: Run argument comment lint on codex-rs via Bazel
         if: ${{ runner.os != 'Windows' }}
         env:
@@ -236,7 +239,7 @@ jobs:
           set -euo pipefail
           if command -v apt-get >/dev/null 2>&1; then
             sudo apt-get update -y
-            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libdbus-1-dev libcap-dev
           fi
       - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
         with:

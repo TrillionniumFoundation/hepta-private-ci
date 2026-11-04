@@ -1,0 +1,156 @@
+name: Native Windows Bazel process environment
+
+on:
+  pull_request:
+    paths:
+      - ".bazelrc"
+      - "codex-rs/git-utils/**"
+      - "codex-rs/ext/queue/**"
+      - "codex-rs/utils/pty/**"
+      - ".github/workflows/windows-bazel-process-native.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-bazel-process-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native:
+    name: Original Bazel Git and queue process controls (${{ matrix.ref-kind }})
+    strategy:
+      fail-fast: false
+      matrix:
+        ref-kind: [source-head, base-merge]
+    runs-on: windows-latest
+    timeout-minutes: 120
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      PYTHONIOENCODING: "utf-8"
+      CANDIDATE_SHA: ${{ matrix.ref-kind == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          persist-credentials: false
+      - name: Prepare Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Record unchanged source and original runner configuration
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import platform
+          from pathlib import Path
+          import subprocess
+          root = Path.cwd()
+          output = Path(os.environ["RUNNER_TEMP"]) / "bazel-process-evidence"
+          output.mkdir()
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if head != os.environ["CANDIDATE_SHA"]:
+              raise RuntimeError("source head differs from workflow identity")
+          inputs = [
+              ".bazelrc",
+              "defs.bzl",
+              "workspace_root_test_launcher.bat.tpl",
+              "MODULE.bazel.lock",
+              "codex-rs/Cargo.lock",
+              "codex-rs/git-utils/BUILD.bazel",
+              "codex-rs/git-utils/src/git_process.rs",
+              "codex-rs/git-utils/src/git_process_tests.rs",
+              "codex-rs/ext/queue/BUILD.bazel",
+              "codex-rs/ext/queue/tests/queue_service.rs",
+              "codex-rs/utils/pty/src/win/job.rs",
+          ]
+          source = {
+              "head": head,
+              "tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "platform": platform.platform(),
+              "cpu_count": os.cpu_count(),
+              "input_git_objects": subprocess.check_output(["git", "ls-tree", "HEAD", "--", *inputs], text=True),
+              "inputs": {p: hashlib.sha256((root / p).read_bytes()).hexdigest() for p in inputs},
+              "environment": {k: os.environ.get(k) for k in ["TEMP", "TMP", "BAZEL_OUTPUT_BASE", "BAZEL_OUTPUT_USER_ROOT", "RUST_TEST_THREADS"]},
+              "scope": ["//codex-rs/git-utils:git-utils-unit-tests", "//codex-rs/ext/queue:queue-queue_service-test"],
+              "diagnostic_only": False,
+              "pre_test_powershell_probe": False,
+          }
+          (output / "source.json").write_text(json.dumps(source, indent=2) + "\n")
+          PY
+      - name: Run original Bazel process suites without cached test results
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- \
+            test \
+            --platforms=//:windows_x86_64_msvc \
+            --skip_incompatible_explicit_targets \
+            --test_tag_filters=-argument-comment-lint \
+            --test_verbose_timeout_warnings \
+            --nocache_test_results \
+            --build_metadata=COMMIT_SHA=$CANDIDATE_SHA \
+            -- \
+            //codex-rs/git-utils:git-utils-unit-tests \
+            //codex-rs/ext/queue:queue-queue_service-test
+      - name: Retain the actual test logs and unchanged-input checks
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          root = Path.cwd()
+          output = Path(os.environ["RUNNER_TEMP"]) / "bazel-process-evidence"
+          source = json.loads((output / "source.json").read_text())
+          after = {p: hashlib.sha256((root / p).read_bytes()).hexdigest() for p in source["inputs"]}
+          if after != source["inputs"]:
+              raise RuntimeError("original source inputs changed while testing")
+          base = Path(os.environ["BAZEL_OUTPUT_BASE"]) / "execroot"
+          candidates = []
+          for package, target in [("git-utils", "git-utils-unit-tests"), ("ext/queue", "queue-queue_service-test")]:
+              found = list(base.glob("*/bazel-out/*/testlogs/codex-rs/" + package + "/" + target + "/test.*"))
+              for path in sorted(found):
+                  if path.name not in ("test.log", "test.xml"):
+                      continue
+                  data = path.read_bytes()
+                  destination = output / (target + "-" + path.name)
+                  if destination.exists():
+                      raise RuntimeError("ambiguous test log candidates")
+                  shutil.copyfile(path, destination)
+                  candidates.append({"source": str(path), "file": destination.name, "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()})
+          (output / "retained.json").write_text(json.dumps({"unchanged_inputs": True, "logs": candidates}, indent=2) + "\n")
+          print(json.dumps({"unchanged_inputs": True, "retained_logs": len(candidates)}))
+          if len(candidates) != 4:
+              raise RuntimeError("missing original test logs or reports")
+          PY
+      - name: Upload original process evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: windows-bazel-process-${{ matrix.ref-kind }}-${{ env.CANDIDATE_SHA }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/bazel-process-evidence
+            ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: error
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree

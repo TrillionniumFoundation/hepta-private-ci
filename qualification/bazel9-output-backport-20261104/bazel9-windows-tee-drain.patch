@@ -1,0 +1,118 @@
+diff --git a/tools/test/windows/tw.cc b/tools/test/windows/tw.cc
+index 6740df6..c377b83 100644
+--- a/tools/test/windows/tw.cc
++++ b/tools/test/windows/tw.cc
+@@ -86,5 +86,8 @@
+                      bazel::windows::AutoHandle* output2,
+                      std::unique_ptr<Tee>* result);
+ 
++  // Waits until the thread has streamed all data written to the input.
++  ~TeeImpl() override;
++
+  private:
+   static DWORD WINAPI ThreadFunc(LPVOID lpParam);
+@@ -101,6 +104,7 @@
+   bazel::windows::AutoHandle input_;
+   bazel::windows::AutoHandle output1_;
+   bazel::windows::AutoHandle output2_;
++  bazel::windows::AutoHandle thread_;
+ };
+ 
+ // Buffered input stream (based on a Windows HANDLE) with peek-ahead support.
+@@ -1502,15 +1506,32 @@
+                      bazel::windows::AutoHandle* output2,
+                      std::unique_ptr<Tee>* result) {
+   std::unique_ptr<TeeImpl> tee(new TeeImpl(input, output1, output2));
+-  bazel::windows::AutoHandle thread(
+-      CreateThread(nullptr, 0, ThreadFunc, tee.get(), 0, nullptr));
+-  if (!thread.IsValid()) {
++  tee->thread_ = CreateThread(nullptr, 0, ThreadFunc, tee.get(), 0, nullptr);
++  if (!tee->thread_.IsValid()) {
+     return false;
+   }
+   result->reset(tee.release());
+   return true;
+ }
+ 
++TeeImpl::~TeeImpl() {
++  if (!thread_.IsValid()) {
++    return;
++  }
++  // A writer may outlive the job of the test process (see
++  // WaitableProcess::WaitFor), so stop reading from it eventually.
++  static constexpr DWORD kTimeoutMsec = 5000;
++  if (WaitForSingleObject(thread_, kTimeoutMsec) == WAIT_TIMEOUT) {
++    // CancelSynchronousIo has no effect between two I/O calls and not all I/O
++    // can be canceled, so retry for a limited time.
++    ULONGLONG deadline = GetTickCount64() + kTimeoutMsec;
++    do {
++      CancelSynchronousIo(thread_);
++    } while (WaitForSingleObject(thread_, 10) == WAIT_TIMEOUT &&
++             GetTickCount64() < deadline);
++  }
++}
++
+ DWORD WINAPI TeeImpl::ThreadFunc(LPVOID lpParam) {
+   return reinterpret_cast<TeeImpl*>(lpParam)->MainFunc() ? 0 : 1;
+ }
+diff --git a/tools/test/windows/tw_test.cc b/tools/test/windows/tw_test.cc
+index defbb23..6ec30f0 100644
+--- a/tools/test/windows/tw_test.cc
++++ b/tools/test/windows/tw_test.cc
+@@ -475,6 +475,56 @@
+   write1 = INVALID_HANDLE_VALUE;  // closes handle so the Tee thread can exit
+ }
+ 
++TEST_F(TestWrapperWindowsTest, TestTeeStreamsRemainingDataOnDestruction) {
++  HANDLE read1_h, write1_h;
++  EXPECT_TRUE(CreatePipe(&read1_h, &write1_h, nullptr, 0));
++  bazel::windows::AutoHandle read1(read1_h), write1(write1_h);
++  HANDLE read2_h, write2_h;
++  EXPECT_TRUE(CreatePipe(&read2_h, &write2_h, nullptr, 0));
++  bazel::windows::AutoHandle read2(read2_h), write2(write2_h);
++  HANDLE read3_h, write3_h;
++  EXPECT_TRUE(CreatePipe(&read3_h, &write3_h, nullptr, 0));
++  bazel::windows::AutoHandle read3(read3_h), write3(write3_h);
++
++  std::unique_ptr<bazel::tools::test_wrapper::Tee> tee;
++  EXPECT_TRUE(TestOnly_CreateTee(&read1, &write2, &write3, &tee));
++
++  DWORD written, read;
++  char content[100];
++
++  EXPECT_TRUE(WriteFile(write1, "hello", 5, &written, nullptr));
++  EXPECT_EQ(written, 5);
++  write1 = INVALID_HANDLE_VALUE;
++  tee.reset();
++
++  EXPECT_TRUE(ReadFile(read2, content, 100, &read, nullptr));
++  EXPECT_EQ(std::string(content, read), "hello");
++  EXPECT_TRUE(ReadFile(read3, content, 100, &read, nullptr));
++  EXPECT_EQ(std::string(content, read), "hello");
++}
++
++TEST_F(TestWrapperWindowsTest, TestTeeStopsReadingOnDestructionAfterTimeout) {
++  HANDLE read1_h, write1_h;
++  EXPECT_TRUE(CreatePipe(&read1_h, &write1_h, nullptr, 0));
++  bazel::windows::AutoHandle read1(read1_h), write1(write1_h);
++  HANDLE read2_h, write2_h;
++  EXPECT_TRUE(CreatePipe(&read2_h, &write2_h, nullptr, 0));
++  bazel::windows::AutoHandle read2(read2_h), write2(write2_h);
++  HANDLE read3_h, write3_h;
++  EXPECT_TRUE(CreatePipe(&read3_h, &write3_h, nullptr, 0));
++  bazel::windows::AutoHandle read3(read3_h), write3(write3_h);
++
++  std::unique_ptr<bazel::tools::test_wrapper::Tee> tee;
++  EXPECT_TRUE(TestOnly_CreateTee(&read1, &write2, &write3, &tee));
++
++  // write1 stays open, so the Tee thread blocks in ReadFile until canceled.
++  ULONGLONG start = GetTickCount64();
++  tee.reset();
++  ULONGLONG elapsed_msec = GetTickCount64() - start;
++  EXPECT_GE(elapsed_msec, 4500u);
++  EXPECT_LT(elapsed_msec, 8000u);
++}
++
+ void AssertCdataEncodeBuffer(const wchar_t* wline, const char* input,
+                              DWORD size, const char* expected_output) {
+   bazel::windows::AutoHandle h(FopenContents(wline, input, size));

@@ -1,7 +1,11 @@
 use pretty_assertions::assert_eq;
+#[cfg(unix)]
 use std::collections::BTreeMap;
+#[cfg(unix)]
 use std::ffi::OsString;
+#[cfg(unix)]
 use std::path::Path;
+#[cfg(unix)]
 use std::path::PathBuf;
 use tempfile::TempDir;
 
@@ -94,12 +98,14 @@ async fn seeded(
     (store, access, receipt.memory)
 }
 
+#[cfg(unix)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct RecoveryTreeImage {
     directory: MetadataImage,
     entries: BTreeMap<OsString, EntryImage>,
 }
 
+#[cfg(unix)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct MetadataImage {
     length: u64,
@@ -123,12 +129,14 @@ struct MetadataImage {
     changed_nanoseconds: i64,
 }
 
+#[cfg(unix)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct EntryImage {
     metadata: MetadataImage,
     payload: EntryPayload,
 }
 
+#[cfg(unix)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum EntryPayload {
     Bytes(Vec<u8>),
@@ -195,6 +203,58 @@ async fn exact_current_cut_recovers_writable_generation_and_persists_activation(
         reopened.recovery_anchor().await.expect("reopen anchor"),
         advanced
     );
+}
+
+#[tokio::test]
+async fn graceful_close_retains_store_fence_until_sqlite_connections_finish() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(197);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("current witness");
+    let authority = recovery_authority(&owner);
+    let pool = store.pool.clone();
+    let connection = pool.acquire().await.expect("retain original connection");
+    let closing = tokio::spawn(store.close());
+
+    tokio::time::timeout(std::time::Duration::from_secs(5), async {
+        while !pool.is_closed() {
+            tokio::task::yield_now().await;
+        }
+    })
+    .await
+    .expect("graceful shutdown starts");
+    assert!(!closing.is_finished());
+    assert!(matches!(
+        CognitiveStore::open_with_recovery(
+            &layout(&temp, &owner),
+            CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+            &authority,
+            &RecoveryVerifier,
+        )
+        .await,
+        Err(CognitiveRecoveryError::Unavailable(reason))
+            if reason.contains("cannot fence active store handles")
+    ));
+
+    drop(connection);
+    tokio::time::timeout(std::time::Duration::from_secs(5), closing)
+        .await
+        .expect("graceful shutdown finishes")
+        .expect("close task succeeds");
+    drop(pool);
+    let recovered = CognitiveStore::open_with_recovery(
+        &layout(&temp, &owner),
+        CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+        &authority,
+        &RecoveryVerifier,
+    )
+    .await
+    .expect("recovery follows the completed close");
+    assert_eq!(
+        recovered.recovery_anchor().await.expect("recovered anchor"),
+        anchor
+    );
+    recovered.close().await;
 }
 
 #[tokio::test]
@@ -552,6 +612,7 @@ fn install_identity_attack(database: &Path, attack: IdentityAttack) {
     }
 }
 
+#[cfg(unix)]
 fn capture_recovery_tree(root: &Path) -> RecoveryTreeImage {
     let directory = MetadataImage::capture(&std::fs::symlink_metadata(root).expect("stat root"));
     let mut entries = BTreeMap::new();
@@ -575,6 +636,7 @@ fn capture_recovery_tree(root: &Path) -> RecoveryTreeImage {
     RecoveryTreeImage { directory, entries }
 }
 
+#[cfg(unix)]
 impl MetadataImage {
     fn capture(metadata: &std::fs::Metadata) -> Self {
         Self {
@@ -600,3 +662,7 @@ impl MetadataImage {
         }
     }
 }
+
+#[cfg(windows)]
+#[path = "cognitive_store_recovery_windows_tests.rs"]
+mod windows_spelling;

@@ -259,7 +259,8 @@ fn assert_invalid_metrics_manifest(codex_home: &Path, root: &AbsolutePathBuf, ma
         .expect("Part 1 attribution remains enabled");
     assert_eq!(
         roots.resolve_metrics_operation(&command(&["scripts/run.py"]), root),
-        None
+        None,
+        "invalid analytics manifest was accepted: {manifest}"
     );
 }
 fn assert_untrusted(codex_home: &Path, config_name: &str, root: &Path) {

@@ -1,3 +1,4 @@
+#[cfg(not(windows))]
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
@@ -97,13 +98,18 @@ impl Fixture {
 }
 
 fn write_private(path: &Path, bytes: &[u8]) {
-    let mut options = OpenOptions::new();
-    options.create_new(true).write(true);
-    #[cfg(unix)]
+    #[cfg(windows)]
+    crate::durable::write_private_new(path, bytes).expect("create private Windows fixture");
+    #[cfg(not(windows))]
     {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
+        let mut options = OpenOptions::new();
+        options.create_new(true).write(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let mut file = options.open(path).expect("create private test file");
+        file.write_all(bytes).expect("write private test file");
     }
-    let mut file = options.open(path).expect("create private test file");
-    file.write_all(bytes).expect("write private test file");
 }

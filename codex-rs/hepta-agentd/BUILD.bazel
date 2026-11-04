@@ -13,7 +13,13 @@ _UNIT_TEST_DEPENDENCIES = {
 
 codex_rust_crate(
     name = "hepta-agentd",
+    compile_data = [
+        "tests/fixtures/hos2_production_owner.json",
+        "tests/fixtures/notes-bootstrap-v2.json",
+    ],
+    crate_features = ["production-cognitive-write"],
     crate_name = "codex_hepta_agentd",
+    extra_binaries = ["//codex-rs/bwrap:bwrap"],
     # Process fixtures use the same production ledger crate identity as
     # Agentd. Qualification-only raw append must not reach this dependency.
     integration_test_timeout = "long",
@@ -27,7 +33,14 @@ rust_library(
     name = "hepta-agentd-cognitive-write-qualification-lib",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    compile_data = [
+        "tests/fixtures/hos2_production_owner.json",
+        "tests/fixtures/notes-bootstrap-v2.json",
+    ],
+    crate_features = [
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     crate_name = "codex_hepta_agentd",
     crate_root = "src/lib.rs",
     edition = "2024",
@@ -37,8 +50,15 @@ rust_library(
 
 rust_test(
     name = "hepta-agentd-cognitive-write-qualification-test-bin",
+    compile_data = [
+        "tests/fixtures/hos2_production_owner.json",
+        "tests/fixtures/notes-bootstrap-v2.json",
+    ],
     crate = ":hepta-agentd-cognitive-write-qualification-lib",
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = [
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
         "--remap-path-prefix=../codex-rs=",
         "--remap-path-prefix=codex-rs=",
@@ -70,7 +90,10 @@ rust_binary(
     name = "hepta-agentd-cognitive-product-qualification-bin",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = [
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     crate_name = "codex_hepta_agentd",
     crate_root = "src/main.rs",
     edition = "2024",
@@ -90,7 +113,10 @@ rust_binary(
 rust_test(
     name = "hepta-agentd-cognitive-product-qualification-test-bin",
     srcs = ["tests/cognitive_product_e2e.rs"] + glob(["tests/support/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = [
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     crate_name = "cognitive_product_e2e",
     crate_root = "tests/cognitive_product_e2e.rs",
     data = glob(["tests/support/**"]),
@@ -113,6 +139,7 @@ workspace_root_test(
     timeout = "long",
     runfile_env = {
         ":hepta-agentd-cognitive-product-qualification-bin": "CARGO_BIN_EXE_codex-hepta-agentd",
+        "//codex-rs/bwrap:bwrap": "CARGO_BIN_EXE_bwrap",
     },
     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
     test_bin = ":hepta-agentd-cognitive-product-qualification-test-bin",
@@ -133,4 +160,84 @@ exports_files(
         "tests/supervisord_product_e2e.rs",
     ],
     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)
+
+# The trusted Linux embedding explicitly supplies the original production owner.
+# Keep this explicitly injected UI variant separate from the default library.
+_DESKTOP_OBJECTIVE_FEATURES = [
+    "desktop-objective-ui",
+    "production-cognitive-write",
+]
+
+_DESKTOP_OBJECTIVE_COMPATIBILITY = select({
+    "@platforms//os:linux": [],
+    "//conditions:default": ["@platforms//:incompatible"],
+})
+
+rust_library(
+    name = "hepta-agentd-desktop-objective",
+    srcs = glob(["src/**/*.rs"]),
+    compile_data = [
+        "tests/fixtures/hos2_production_owner.json",
+        "tests/fixtures/notes-bootstrap-v2.json",
+    ],
+    crate_features = _DESKTOP_OBJECTIVE_FEATURES,
+    crate_name = "codex_hepta_agentd",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    target_compatible_with = _DESKTOP_OBJECTIVE_COMPATIBILITY,
+    visibility = ["//visibility:public"],
+    deps = all_crate_deps(),
+)
+
+rust_library(
+    name = "hepta-agentd-desktop-objective-test-lib",
+    testonly = True,
+    srcs = glob(["src/**/*.rs"]),
+    compile_data = [
+        "tests/fixtures/hos2_production_owner.json",
+        "tests/fixtures/notes-bootstrap-v2.json",
+    ],
+    crate_features = _DESKTOP_OBJECTIVE_FEATURES,
+    crate_name = "codex_hepta_agentd",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    target_compatible_with = _DESKTOP_OBJECTIVE_COMPATIBILITY,
+    visibility = ["//visibility:private"],
+    deps = rust_test_dependencies(_UNIT_TEST_DEPENDENCIES),
+)
+
+rust_test(
+    name = "hepta-agentd-desktop-objective-test-bin",
+    compile_data = [
+        "tests/fixtures/hos2_production_owner.json",
+        "tests/fixtures/notes-bootstrap-v2.json",
+    ],
+    crate = ":hepta-agentd-desktop-objective-test-lib",
+    crate_features = _DESKTOP_OBJECTIVE_FEATURES,
+    rustc_flags = [
+        "--remap-path-prefix=../codex-rs=",
+        "--remap-path-prefix=codex-rs=",
+    ],
+    tags = ["manual"],
+    target_compatible_with = _DESKTOP_OBJECTIVE_COMPATIBILITY,
+    visibility = ["//visibility:private"],
+    deps = rust_test_dependencies(
+        _UNIT_TEST_DEPENDENCIES,
+        normal_dev = True,
+    ),
+)
+
+workspace_root_test(
+    name = "hepta-agentd-desktop-objective-test",
+    timeout = "long",
+    args = ["production_composition::"],
+    env = {
+        "INSTA_SNAPSHOT_PATH": "src",
+        "INSTA_WORKSPACE_ROOT": ".",
+    },
+    target_compatible_with = _DESKTOP_OBJECTIVE_COMPATIBILITY,
+    test_bin = ":hepta-agentd-desktop-objective-test-bin",
+    test_threads = 1,
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
 )

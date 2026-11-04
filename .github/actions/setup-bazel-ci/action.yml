@@ -136,3 +136,8 @@ runs:
       if: runner.os == 'Windows'
       shell: pwsh
       run: ./.github/scripts/compute-bazel-windows-path.ps1
+
+    - name: Prepare and qualify the Bazel9 Windows output-drain backport
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: python qualification/bazel9-output-backport-20261104/build.py --work "$env:RUNNER_TEMP/bazel9-output-backport"

@@ -1,3 +1,4 @@
+use std::sync::Mutex;
 use std::sync::OnceLock;
 
 /// Controls whether V8 may generate executable code at runtime.
@@ -14,6 +15,7 @@ struct V8Initialization {
 }
 
 static V8_INITIALIZATION: OnceLock<Result<V8Initialization, String>> = OnceLock::new();
+pub(crate) static V8_ISOLATE_CREATION: Mutex<()> = Mutex::new(());
 
 /// Initializes the process-wide V8 platform with the requested JIT mode.
 ///
@@ -49,6 +51,12 @@ fn initialize_v8_with_mode(jit_mode: V8JitMode) -> Result<V8Initialization, Stri
     let platform = v8::new_default_platform(0, false).make_shared();
     v8::V8::initialize_platform(platform.clone());
     v8::V8::initialize();
+    // V8 15.0 initializes its shared PartitionAlloc-backed sandbox allocator
+    // lazily without a lock.
+    // Finish that initialization before publishing this OnceLock to threads
+    // that create isolates. Dropping this wrapper leaves the group-owned
+    // sandbox allocator alive and preserves its normal allocation policy.
+    drop(v8::new_default_allocator());
     Ok(V8Initialization {
         _platform: platform,
         jit_mode,

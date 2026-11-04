@@ -1,0 +1,2174 @@
+{
+  "schema_version": 2,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "recorded_utc": "2026-11-04T04:43:00Z",
+  "purpose": "Exact component product/CI runtime inputs for root-owned reviewed composition; not an automatically accepted union.",
+  "baseline": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+  "root_candidate_base": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+  "component_heads": {
+    "base": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+    "owner_state": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+    "memory": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+    "env": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+    "auth": "aaf74551dccf99f2d0d1525d02337cf804233817",
+    "v8": "083116160fe81198ae0c441aad22224c0c8d2940",
+    "tee": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+    "dylint": "30ad34c1895597a04dc42f0d233505aa7566a6b7"
+  },
+  "counts": {
+    "component_rows": 112,
+    "unique_paths": 101,
+    "actual_blob_readbacks": 112,
+    "additional_dylint_base_readbacks": 5
+  },
+  "admission": {
+    "base": "Root-owned candidate. Wrapper/CLI and scoped Core/Supervisor evidence do not qualify every full-CI target.",
+    "owner_state": "Qualified only within its original complete libraries and hosted scopes; new combined source needs original gates.",
+    "memory": "HOLD: current66fb canonicalizes only three owned TempDir positive fixtures, 3case/8assert preserved; original gates pending. Parent8fac Windows Path21/State210 passed, Memory261 passed/3 failed/7ignored. Parent generator/Linux/Mac/Bazel passed.",
+    "env": "HOLD: fresh 4db82e9 successor owned by Hepta agent, original source+merge gates pending. Do not substitute prior failing cfb results.",
+    "auth": "Original three-host RPC/units/Clippy qualified aaf; combined source still requires qualification.",
+    "v8": "Original two-host targeted allocator/native gates qualified 083; combined source still requires qualification.",
+    "tee": "Original shared-entry 20 C++ GTests plus unchanged 2 Robrix cases and original Clippy qualified 8f. Complete embedded-tools override preparation is mandatory for each Windows consumer.",
+    "dylint": "Qualified original maintained lint/bootstrap scope30ad: 8 outer Rust tests (9 UI cases inside aggregate), 6 Python tests, original nightly driver and Rust1.97 CLI bootstrap. Original committed-lock generation separately qualified. This component was absent from a3 and must be composed."
+  },
+  "excluded": [
+    "Historical proof/log/report files",
+    "Standalone diagnostic or qualification-only workflow files; the three original Dylint CI/release workflows are INCLUDED",
+    "Workspace codex-rs/Cargo.lock and MODULE.bazel.lock: root must run real resolver and original Bazel lock generation/check against final combined graph. The independent tools/argument-comment-lint/Cargo.lock is an INCLUDED original product input.",
+    "Foreign owner product tree wholesale adoption"
+  ],
+  "required_runtime_inputs": [
+    "qualification/bazel9-output-backport-20261104/build.py",
+    "qualification/bazel9-output-backport-20261104/bazel9-windows-tee-drain.patch",
+    "qualification/bazel9-output-backport-20261104/source-binding.json"
+  ],
+  "composition_boundaries": [
+    "Preserve maintenance Rust1.96/Bazel9/1517 dependency families; the ten added edges identified in the earlier bounded component comparison do not describe the larger owner tree's 502/487 package identity differences.",
+    "Env and Tee both change .bazelrc. Preserve all eight OS environment variables and the shared prepared tools override; neither complete file alone represents both changes.",
+    "The three path-utils files with distinct owner_state/Memory blobs require reviewed composition; Memory remains HOLD. Identical overlap blobs may be deduplicated.",
+    "CLI main.rs/hepta.rs/main_shared.rs bytes are identical between root base and Tee source.",
+    "Tee build.py contains both prepare and finalize and requires its exact patch and source-binding.json, even though these runtime inputs live beneath qualification/.",
+    "Any source mode must be retained from its immutable source Git tree; this path/blob mapping does not rewrite file modes.",
+    "Root owns reconciliation against cd496 owner products including schema16/17; this component map does not silently introduce them or assert compatibility.",
+    "Dylint's three original workflow changes must be three-way composed with root/owner workflow edits, not whole-file replacement. Its standalone lock is separate from the main1517-package graph."
+  ],
+  "paths": [
+    {
+      "path": ".bazelrc",
+      "distinct_blobs": [
+        "4be01309831bb9502fc5e1b2e63949e8a0e2828e",
+        "a7e99cb758f821a9b3dd2cf711ea3bba1c6aaee9"
+      ],
+      "requires_composition": true,
+      "inputs": [
+        {
+          "component": "env",
+          "source": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+          "status": "modified",
+          "blob": "4be01309831bb9502fc5e1b2e63949e8a0e2828e",
+          "bytes": 14043,
+          "sha256": "c851702682dcd66ee0d378803477060383b0de36cca183536708440515e85a6c",
+          "actual_bytes_verified": true
+        },
+        {
+          "component": "tee",
+          "source": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+          "status": "modified",
+          "blob": "a7e99cb758f821a9b3dd2cf711ea3bba1c6aaee9",
+          "bytes": 13824,
+          "sha256": "8e5380d7831effcdf7f7c2f73b83b45fcc663a06e91ef57a40e4f8023328ff50",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": ".gitattributes",
+      "distinct_blobs": [
+        "04021200e72ff015833d62ff3fbfe61733395a79"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "tee",
+          "source": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+          "status": "modified",
+          "blob": "04021200e72ff015833d62ff3fbfe61733395a79",
+          "bytes": 667,
+          "sha256": "f83660b732ed4f53ce01278017b8330e17689841c6234fb1ad84a2893f91486c",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": ".github/actions/setup-bazel-ci/action.yml",
+      "distinct_blobs": [
+        "ffd3ca66ab02a5d92820f78503ba3a5424c0c921"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "tee",
+          "source": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+          "status": "modified",
+          "blob": "ffd3ca66ab02a5d92820f78503ba3a5424c0c921",
+          "bytes": 5612,
+          "sha256": "b045593dac26daf34b66034fdfd645043a7de33d419867275f3091bbb1228a05",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": ".github/fixtures/windows-private-state-acquisition/path-check-open.patch",
+      "distinct_blobs": [
+        "990f6942839df90fabf67bec629b8fe3f8675fb7"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "990f6942839df90fabf67bec629b8fe3f8675fb7",
+          "bytes": 961,
+          "sha256": "24efb0448aaac1cc0a1b70bf661ad590fe0d1ee407d7787ea5b33c9923f2b320",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": ".github/fixtures/windows-private-state-acquisition/unchecked-create.patch",
+      "distinct_blobs": [
+        "ab7bf8dcf8d9d6f64ac74e35cf64788815fcf563"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "ab7bf8dcf8d9d6f64ac74e35cf64788815fcf563",
+          "bytes": 694,
+          "sha256": "93ed0742de0e4cfe226334fd2f71f1129ee42125f214ecf77297916d97696369",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": ".github/scripts/check_windows_private_state_acquisition.py",
+      "distinct_blobs": [
+        "8ea734ad6a7c314d891255ae84be7bef03b4f885"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "8ea734ad6a7c314d891255ae84be7bef03b4f885",
+          "bytes": 8438,
+          "sha256": "055cff7e9b36aa10e01606e2ea7a49f81689afedf837fd4227ff26c55ed54d4e",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": ".github/scripts/test_check_windows_private_state_acquisition.py",
+      "distinct_blobs": [
+        "b247e3e0d274c0b111eb51385dab2dce9f658bae"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "b247e3e0d274c0b111eb51385dab2dce9f658bae",
+          "bytes": 5492,
+          "sha256": "4258c1bc98e27e8b3dd66a2950d6183544cd00e0d43a7b810783f5f71aa27af3",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": ".github/scripts/test_run_bazel_clippy_targets.py",
+      "distinct_blobs": [
+        "c4d271eb206686adafdf2454e2d02cc4a2f5100f"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "base",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "status": "added",
+          "blob": "c4d271eb206686adafdf2454e2d02cc4a2f5100f",
+          "bytes": 3189,
+          "sha256": "a65e6893bd1e788fff80c9820912fde8929ca0844da99254b93904fd8578abb9",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "distinct_blobs": [
+        "b3a4d2baf1611d78e119280b90f044d874f21ecd"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "source": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+          "blob": "b3a4d2baf1611d78e119280b90f044d874f21ecd",
+          "bytes": 22280,
+          "sha256": "7dabca9d7ad13304150464b3abeda9b74007cf7ba742d1f98d982ddc73cf2b5e",
+          "actual_bytes_verified": true,
+          "component": "dylint",
+          "status": "modified",
+          "required_original_ci_input": true
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "distinct_blobs": [
+        "dce5c5451de6327101200325a1daf50266bbd72e"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "source": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+          "blob": "dce5c5451de6327101200325a1daf50266bbd72e",
+          "bytes": 12535,
+          "sha256": "55d34bb812cfb86d5142de36c468de7ed53a9a04da1973d96441ab7768a9c98c",
+          "actual_bytes_verified": true,
+          "component": "dylint",
+          "status": "modified",
+          "required_original_ci_input": true
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/rust-release-argument-comment-lint.yml",
+      "distinct_blobs": [
+        "88c91c0ed7d26d19cd84830d995d9202c901438e"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "source": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+          "blob": "88c91c0ed7d26d19cd84830d995d9202c901438e",
+          "bytes": 4980,
+          "sha256": "6244ff588914122be4025360675813b3fc92936b261248659a31e0c1bf92d94e",
+          "actual_bytes_verified": true,
+          "component": "dylint",
+          "status": "modified",
+          "required_original_ci_input": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/cli/src/hepta.rs",
+      "distinct_blobs": [
+        "27c294cd065862c50a7de0673d1836f6e66881d4"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "base",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "status": "modified",
+          "blob": "27c294cd065862c50a7de0673d1836f6e66881d4",
+          "bytes": 57,
+          "sha256": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971",
+          "actual_bytes_verified": true
+        },
+        {
+          "component": "tee",
+          "source": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+          "status": "modified",
+          "blob": "27c294cd065862c50a7de0673d1836f6e66881d4",
+          "bytes": 57,
+          "sha256": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/cli/src/main.rs",
+      "distinct_blobs": [
+        "27c294cd065862c50a7de0673d1836f6e66881d4"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "base",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "status": "modified",
+          "blob": "27c294cd065862c50a7de0673d1836f6e66881d4",
+          "bytes": 57,
+          "sha256": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971",
+          "actual_bytes_verified": true
+        },
+        {
+          "component": "tee",
+          "source": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+          "status": "modified",
+          "blob": "27c294cd065862c50a7de0673d1836f6e66881d4",
+          "bytes": 57,
+          "sha256": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/cli/src/main_shared.rs",
+      "distinct_blobs": [
+        "1bd3eb0bfb183f6a436ba56220906f91b49f0679"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "base",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "status": "added",
+          "blob": "1bd3eb0bfb183f6a436ba56220906f91b49f0679",
+          "bytes": 176978,
+          "sha256": "097ca019533619d964fa67f018e0a140645779f17a0e9a17212ad5398636a513",
+          "actual_bytes_verified": true
+        },
+        {
+          "component": "tee",
+          "source": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+          "status": "added",
+          "blob": "1bd3eb0bfb183f6a436ba56220906f91b49f0679",
+          "bytes": 176978,
+          "sha256": "097ca019533619d964fa67f018e0a140645779f17a0e9a17212ad5398636a513",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/code-mode-runtime/src/v8_init.rs",
+      "distinct_blobs": [
+        "5e25bcee28d2c06db48bd6e7e91eb1f4a211a15b"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "v8",
+          "source": "083116160fe81198ae0c441aad22224c0c8d2940",
+          "status": "modified",
+          "blob": "5e25bcee28d2c06db48bd6e7e91eb1f4a211a15b",
+          "bytes": 2614,
+          "sha256": "18f327943d19984a57ad9c5a3180a2900378e65b12928d526b364ced2a5a77ac",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/src/codex_thread.rs",
+      "distinct_blobs": [
+        "729df0733060a7820045e0738672e800ba535e9f"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "env",
+          "source": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+          "status": "modified",
+          "blob": "729df0733060a7820045e0738672e800ba535e9f",
+          "bytes": 47745,
+          "sha256": "ecb247ab2bd9662c75a0f0c9ea627afa7807d81b58cd675b3e3068891a7751e4",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/src/environment_selection.rs",
+      "distinct_blobs": [
+        "31f93b571795e1be60e3f0085baf892310a4a41e"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "base",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "status": "modified",
+          "blob": "31f93b571795e1be60e3f0085baf892310a4a41e",
+          "bytes": 73263,
+          "sha256": "8208278cc7068c259dc11ed9bca5985f150a8f66fb4aafc06c24c9045f7e9d5c",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/src/tasks/idle_work.rs",
+      "distinct_blobs": [
+        "afcf7cfaaa4a00070a208b7a4e2880d52adafaa9"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "env",
+          "source": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+          "status": "added",
+          "blob": "afcf7cfaaa4a00070a208b7a4e2880d52adafaa9",
+          "bytes": 2533,
+          "sha256": "bd5bdb94b152fb495b0101f20948fc7a709c17bcb4e2c9425223aab31936bbe4",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/src/tasks/idle_work_tests.rs",
+      "distinct_blobs": [
+        "0a70aa1cccf2460ef510436432b6a975e1f49a48"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "env",
+          "source": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+          "status": "added",
+          "blob": "0a70aa1cccf2460ef510436432b6a975e1f49a48",
+          "bytes": 3296,
+          "sha256": "52b9f260859501a51956d7dda168a30c18b0199439b294f70728d761725a48e8",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "distinct_blobs": [
+        "2ee949fb477313003f6eb02961e5cebf50432613"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "env",
+          "source": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+          "status": "modified",
+          "blob": "2ee949fb477313003f6eb02961e5cebf50432613",
+          "bytes": 176503,
+          "sha256": "0161b0acb05df2f9d153090cfd258f8ace71f7a3510d98ec6a55be5baabdf426",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/src/tasks/terminalization_completion.rs",
+      "distinct_blobs": [
+        "58380b295fcbe3502d72a714e1a98e7472459f8a"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "env",
+          "source": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+          "status": "added",
+          "blob": "58380b295fcbe3502d72a714e1a98e7472459f8a",
+          "bytes": 932,
+          "sha256": "912802dce5df821c04dd351373ffa7cd8269931ab5d1791595a61fe970095866",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/core/src/tools/handlers/multi_agents_tests.rs",
+      "distinct_blobs": [
+        "77e523a12c77c3e614dd9ac1632f1e8a692918d9"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "base",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "status": "modified",
+          "blob": "77e523a12c77c3e614dd9ac1632f1e8a692918d9",
+          "bytes": 160841,
+          "sha256": "b8c8cc939b2a6940f8b232930182c7a64213e6cd174a05728b9dc1fb7a7ffcb3",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/src/local_file_system.rs",
+      "distinct_blobs": [
+        "e15c792fd022d5b0fe5c957f4bca779a63dc15db"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "auth",
+          "source": "aaf74551dccf99f2d0d1525d02337cf804233817",
+          "status": "modified",
+          "blob": "e15c792fd022d5b0fe5c957f4bca779a63dc15db",
+          "bytes": 58271,
+          "sha256": "d5fbc1b366111a86a7339e0d9351371cd2cfbb17aef168d414f23f1b679f5c09",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs",
+      "distinct_blobs": [
+        "8e20ff3d7f2cf03bcddb661f103f2f0866519adc"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "auth",
+          "source": "aaf74551dccf99f2d0d1525d02337cf804233817",
+          "status": "modified",
+          "blob": "8e20ff3d7f2cf03bcddb661f103f2f0866519adc",
+          "bytes": 14200,
+          "sha256": "5360ab49201fa53b5584f22a44cef66b03b4f36a950db35e1867764559b2481f",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/src/remote.rs",
+      "distinct_blobs": [
+        "5ad375a0cf4d2b7193297fec49ccff25f0f4b321"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "auth",
+          "source": "aaf74551dccf99f2d0d1525d02337cf804233817",
+          "status": "modified",
+          "blob": "5ad375a0cf4d2b7193297fec49ccff25f0f4b321",
+          "bytes": 45886,
+          "sha256": "99722792b462bed16ec32a5e80bcd6145975443257d00d1d5d34f0ce5a9e8544",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+      "distinct_blobs": [
+        "5a7d58f85f080b0c070ebc8ce2914398858fa61c"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "auth",
+          "source": "aaf74551dccf99f2d0d1525d02337cf804233817",
+          "status": "modified",
+          "blob": "5a7d58f85f080b0c070ebc8ce2914398858fa61c",
+          "bytes": 4270,
+          "sha256": "7a4962b47a28ec246e001943cd9729457dc71e3ebd947a9b4ea20e16f0ee5c35",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/ext/queue/src/service.rs",
+      "distinct_blobs": [
+        "398ca3bf998ff0a5853a6934bef7fca67ff3e736"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "env",
+          "source": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+          "status": "modified",
+          "blob": "398ca3bf998ff0a5853a6934bef7fca67ff3e736",
+          "bytes": 83258,
+          "sha256": "59a2a2538612747cecb3e381e662815f889988b65baa816b1673ea3964de60bd",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "distinct_blobs": [
+        "fedaf7eda73d79403a2287d7ce8e7966a2c242f8"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "env",
+          "source": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+          "status": "modified",
+          "blob": "fedaf7eda73d79403a2287d7ce8e7966a2c242f8",
+          "bytes": 97163,
+          "sha256": "c4bede7a3ec5e44e30b769aa1d3d0ef23891902bd7a6c230c98ef3673262d992",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/git-utils/Cargo.toml",
+      "distinct_blobs": [
+        "4e6545c1f1400f6b4dc45ca0881652d7f63ee268"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "env",
+          "source": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+          "status": "modified",
+          "blob": "4e6545c1f1400f6b4dc45ca0881652d7f63ee268",
+          "bytes": 1123,
+          "sha256": "a6fa2b48595f7c4fbd4119a4a3204da5ba8ae1074c9f3aa0f43d12fcfbe7b73c",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/git-utils/src/git_process_tests.rs",
+      "distinct_blobs": [
+        "9d6bdfc1e4911043e7abdcdb8d31e2e28ac5e311"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "env",
+          "source": "4db82e9ced0af3d2efd2a6c61a5c3da14b5d6f37",
+          "status": "modified",
+          "blob": "9d6bdfc1e4911043e7abdcdb8d31e2e28ac5e311",
+          "bytes": 9362,
+          "sha256": "8588bab3410475127d9b0d8f29a318940a5d6311e29abfcef0258235bbba8402",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "distinct_blobs": [
+        "2b8fde5cb9c82d45d6123e50ce70cd72f2a1d08f"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "2b8fde5cb9c82d45d6123e50ce70cd72f2a1d08f",
+          "bytes": 26049,
+          "sha256": "201e03a4fb7522287827e51f229d467f6fc3e60de7bd70856a2a20dad7bee83e",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "distinct_blobs": [
+        "c49d9e33659ce0324977e94eac92a965149928bc"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "c49d9e33659ce0324977e94eac92a965149928bc",
+          "bytes": 10785,
+          "sha256": "fb7a1a4d36d8127c1e109cad313f891086604341e30a8f128d1fafd992163bac",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+      "distinct_blobs": [
+        "d7c3e8e45f6cf1144da14e19e3e21b1a81c9d559"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "d7c3e8e45f6cf1144da14e19e3e21b1a81c9d559",
+          "bytes": 23378,
+          "sha256": "f0d7bce572986a8883f9ff2743adc80e2c60d79da1d349dc06e39f6f0fc01ffc",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "distinct_blobs": [
+        "f58a0ee93dabce9f04199590a2e6ecb1cd9df56c"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "f58a0ee93dabce9f04199590a2e6ecb1cd9df56c",
+          "bytes": 10372,
+          "sha256": "1169011b1de9133a5197cefa14cf07337b4de0cf3477243a7ca076899cd24e89",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/control.rs",
+      "distinct_blobs": [
+        "4ebbe9a0f4f06bb677cc235cfb576dbdf45bdeb6"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "4ebbe9a0f4f06bb677cc235cfb576dbdf45bdeb6",
+          "bytes": 9016,
+          "sha256": "ac2d97f4190b231738e0886256f8fa6a055c516967cf6b9e8323a27a2d904f54",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/control_native_tests.rs",
+      "distinct_blobs": [
+        "91332a31f1c753128ecd85f31c8c5b7f5ae3e3d6"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "91332a31f1c753128ecd85f31c8c5b7f5ae3e3d6",
+          "bytes": 5347,
+          "sha256": "064a284419ccad02a16d24e742f4aa48ce2fca34796ca2dd68ae097d1d81c660",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/control_peer_tests.rs",
+      "distinct_blobs": [
+        "89507d3255a2fe27321a5fc2efcefdbce1ba0dc2"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "89507d3255a2fe27321a5fc2efcefdbce1ba0dc2",
+          "bytes": 1654,
+          "sha256": "634e7a0db6d533ed97be5804c22b0824803487a4e41619bf66421716e946e2ab",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "distinct_blobs": [
+        "6d2edda2a4e9ed7fb8c8405a6185a6a7fef57cf1"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "6d2edda2a4e9ed7fb8c8405a6185a6a7fef57cf1",
+          "bytes": 24282,
+          "sha256": "c7795f3637f9951b87ec33c2baf19c07c908aef93d5dbf7691a917d74c193c86",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "distinct_blobs": [
+        "b72f3e118d4e8e381285410b8d99a6e3981a581d"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "b72f3e118d4e8e381285410b8d99a6e3981a581d",
+          "bytes": 7722,
+          "sha256": "21a8394bdfc0937bb679e06d8d4626b13c54748e7da88ee5f713520e60185d1e",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/Cargo.toml",
+      "distinct_blobs": [
+        "8023be1ce2392a3bfe8f80ff7c8e82d964a9d17b"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "8023be1ce2392a3bfe8f80ff7c8e82d964a9d17b",
+          "bytes": 946,
+          "sha256": "aea1dc99aee81bcabf8c8515f3ccfcdbe20cae9334720da298d2092dc9b9db92",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "distinct_blobs": [
+        "2c1d39fe296007a0cc7822779ac91ba3c5cab66c"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "2c1d39fe296007a0cc7822779ac91ba3c5cab66c",
+          "bytes": 62765,
+          "sha256": "5239c0a25268d0d3e33469253cabc739a0233540a68f46d33ff8c2aa43ab1421",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_windows.rs",
+      "distinct_blobs": [
+        "99d1dc1d8d80db4afc072797656daca311e9ce73"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "99d1dc1d8d80db4afc072797656daca311e9ce73",
+          "bytes": 7681,
+          "sha256": "bb498f6a7278212a24991446366154233b304361ad1e4b134553c0cec87d2c9e",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "distinct_blobs": [
+        "6e89a0eeb33102f6b5d285e8739570a7db6cf7f6"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "6e89a0eeb33102f6b5d285e8739570a7db6cf7f6",
+          "bytes": 18228,
+          "sha256": "9132be56e1be0d8df26651d80ad0d10dd970408bdfccca0f2b73d9573279d298",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store_windows.rs",
+      "distinct_blobs": [
+        "b93795487b4eb9465e8b55b030d46b1ebd6f4cf6"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "b93795487b4eb9465e8b55b030d46b1ebd6f4cf6",
+          "bytes": 5486,
+          "sha256": "c3938f7d86845a78c9729671f1654bb4bf622ece9aafcf3b9436799033ee67e1",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/control.rs",
+      "distinct_blobs": [
+        "19153d4197279a62eef776ceeb4371c637638d7c"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "19153d4197279a62eef776ceeb4371c637638d7c",
+          "bytes": 33724,
+          "sha256": "79d5963fbb8273519a07827eed1843a1844381bc97f9393177cbf0a85a7eb081",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
+      "distinct_blobs": [
+        "70d7493c1bed2e64cbfadb84fdefc4d91ddc190c"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "70d7493c1bed2e64cbfadb84fdefc4d91ddc190c",
+          "bytes": 236285,
+          "sha256": "58b4ba178bd68613eb14bdf65a63a6d21cfaf64faccf553534d4674926f923ee",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/Cargo.toml",
+      "distinct_blobs": [
+        "cb4bfd2bcee54570ca60535432620178a6f4c17d"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "cb4bfd2bcee54570ca60535432620178a6f4c17d",
+          "bytes": 1477,
+          "sha256": "68447808be2ddac5ff50bc7f8baceac73738fe6c43ed68e3621945e14703e5e8",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "distinct_blobs": [
+        "26eb19879cc8f55e13307679b694cffd8920fd3b"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "26eb19879cc8f55e13307679b694cffd8920fd3b",
+          "bytes": 71886,
+          "sha256": "7d5b18424c1301518ae0154f8c29561e7701839f1f79f88322c22708379df71a",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "distinct_blobs": [
+        "79927d04f53c5075a774227f67d58d97a139b7f7"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "79927d04f53c5075a774227f67d58d97a139b7f7",
+          "bytes": 27111,
+          "sha256": "10ddf58087626a1b45d9d257f2896de7c48d75f1eb3df9d3a9d10b8d780ece49",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+      "distinct_blobs": [
+        "1bcd82a012961d73e84349c7003d1975ad12b17c"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "1bcd82a012961d73e84349c7003d1975ad12b17c",
+          "bytes": 8389,
+          "sha256": "beb9e87922f6874d8535539d042096c27a6e5f8ff1b48902fe4952b18975294f",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "distinct_blobs": [
+        "abfbea9b2001599d45d3d7ee35da33092f056f38"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "abfbea9b2001599d45d3d7ee35da33092f056f38",
+          "bytes": 19797,
+          "sha256": "9fdc637fbb4af703f5c8c6b608633fdc680ad5338bf89874a851b78e905ea453",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_windows_tests.rs",
+      "distinct_blobs": [
+        "a1282e0385017e36ed5b5f0fe0888ac0c36bb8da"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "added",
+          "blob": "a1282e0385017e36ed5b5f0fe0888ac0c36bb8da",
+          "bytes": 1805,
+          "sha256": "2dd835191731820d29ee8882c402158d2b4a077bb607b1c08b7b97aa1d81bb97",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_sync.rs",
+      "distinct_blobs": [
+        "1f6326de18cbfaf6c4f06a8aa153282927510eda"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "added",
+          "blob": "1f6326de18cbfaf6c4f06a8aa153282927510eda",
+          "bytes": 961,
+          "sha256": "d34401b8e8718914126aa513ccd257e1a76fe2838d4fcc71400fda246ed9a7ef",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "distinct_blobs": [
+        "4373abad74b9ee121d01b4cc606c1d390997fcc1"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "4373abad74b9ee121d01b4cc606c1d390997fcc1",
+          "bytes": 40711,
+          "sha256": "abb813f058c24c4b36beefc60f60c507d8896368e22553787de3eed6be48315e",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_windows.rs",
+      "distinct_blobs": [
+        "9aae0a0e5ec329cf1985d828833ab9302f2db7be"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "added",
+          "blob": "9aae0a0e5ec329cf1985d828833ab9302f2db7be",
+          "bytes": 4522,
+          "sha256": "2dfe7377781535a5abc105f38820856e7cedd18ed5b2b91b266b89a5129c1eae",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_windows_tests.rs",
+      "distinct_blobs": [
+        "db9e00fb422d595a0356fc033b25c21f68e6bc1d"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "added",
+          "blob": "db9e00fb422d595a0356fc033b25c21f68e6bc1d",
+          "bytes": 2156,
+          "sha256": "c4cefe5584714b59cdf766e43a2b48706d99c7b46eee8c129c4542b6006aae3f",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+      "distinct_blobs": [
+        "020cf7370c0a5bf64a067e770c6f99e8d077f089"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "020cf7370c0a5bf64a067e770c6f99e8d077f089",
+          "bytes": 1856,
+          "sha256": "04290d72494bd6c657b8831992fed7afe4fe51ec5833cb4ad69c0c7af6bd3253",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+      "distinct_blobs": [
+        "1f080c913fab362a68b7a988c7b871b57f24fe31"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "1f080c913fab362a68b7a988c7b871b57f24fe31",
+          "bytes": 26215,
+          "sha256": "f81c26a9e7ed3b9c5a251118003afdf37f4fded329441af3470dd44898f5d57e",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_turn_binding.rs",
+      "distinct_blobs": [
+        "090ca350ac2089e0a610b39914400abeb1d593fe"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "090ca350ac2089e0a610b39914400abeb1d593fe",
+          "bytes": 18235,
+          "sha256": "0794bf1a554508c56795b5b70184a8e1b0c2543a7c94e00dccca32827c9e7a95",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/Cargo.toml",
+      "distinct_blobs": [
+        "6a22394b289e2af3a7a65d6be3473b6187af77a4"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "6a22394b289e2af3a7a65d6be3473b6187af77a4",
+          "bytes": 677,
+          "sha256": "ef0f67376bcd0f2d14cd48473472929d31c4ba51457a57ccfc1ca206663fc8e0",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "distinct_blobs": [
+        "9a1ce796106e180ac14fda81228af6ceed3bcc86"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "9a1ce796106e180ac14fda81228af6ceed3bcc86",
+          "bytes": 108374,
+          "sha256": "8ef76560b7391d2996fa3e91a9e15730241c1a7e8ea34a4e742ba51e68b786b0",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable_windows.rs",
+      "distinct_blobs": [
+        "8353dc3edc7145df5a67c095647aa3d6ba7b967a"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "8353dc3edc7145df5a67c095647aa3d6ba7b967a",
+          "bytes": 3519,
+          "sha256": "148f23c38ddd62889091750f4bc42ef66c48fb8c68ad1a3c56664f508cbfbc01",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/BUILD.bazel",
+      "distinct_blobs": [
+        "b9ad95d989d193699b8cc43ee1ec9bb182905ca0"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "tee",
+          "source": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+          "status": "modified",
+          "blob": "b9ad95d989d193699b8cc43ee1ec9bb182905ca0",
+          "bytes": 609,
+          "sha256": "4b3f4fc83bd81e7aba44f942941dc485a76bd1d2900d55d6e539b5f4f5f92fe2",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/Cargo.toml",
+      "distinct_blobs": [
+        "3a5c9f790aca3e0ee660d69d6d8f592b28e76abc"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "tee",
+          "source": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+          "status": "modified",
+          "blob": "3a5c9f790aca3e0ee660d69d6d8f592b28e76abc",
+          "bytes": 2755,
+          "sha256": "16c8f5bb4a0f8681198c35a14970f918a716f48d89d305d0dade7d0496df0a5c",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "distinct_blobs": [
+        "985eaca97e067844c2fa1d060b285dc1a8a68efa"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "base",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "status": "modified",
+          "blob": "985eaca97e067844c2fa1d060b285dc1a8a68efa",
+          "bytes": 14240,
+          "sha256": "7ef521f4e419677c0567d291b5e38eda5f73ee427691f227db255eb4d84ec367",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "distinct_blobs": [
+        "95dd438315a26ec646b0bd7b2f14e6304cfa7361"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "base",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "status": "modified",
+          "blob": "95dd438315a26ec646b0bd7b2f14e6304cfa7361",
+          "bytes": 14801,
+          "sha256": "bbedf1e2eb96dba505ce6f167a725f52b7a6f4075e64758c440e3dc011021c8a",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs",
+      "distinct_blobs": [
+        "8c03be7f5802b41bbb0479abe5623e12d4a8587c"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "tee",
+          "source": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+          "status": "modified",
+          "blob": "8c03be7f5802b41bbb0479abe5623e12d4a8587c",
+          "bytes": 13371,
+          "sha256": "35939d5ef63a0e36e7d12e6c9d310314274e860b86aa4459cdf62ff049f81b4f",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/state/Cargo.toml",
+      "distinct_blobs": [
+        "02cb82d778fc02859a42c0658597799ad00f5559"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "02cb82d778fc02859a42c0658597799ad00f5559",
+          "bytes": 1080,
+          "sha256": "4f23f906aa42996fd57abb8c5e725b369ae01432ef90fcdd5cd370117699ac20",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery.rs",
+      "distinct_blobs": [
+        "d792fcb37c6056def7ae61efd32c2d028f49b44e"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "d792fcb37c6056def7ae61efd32c2d028f49b44e",
+          "bytes": 15491,
+          "sha256": "c98d571050a739df2dd61fa52d41f479e64f465cddc912bc9b76bf1712482d69",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_image.rs",
+      "distinct_blobs": [
+        "d697a393a58830a310cc6d659d23bc9949d6172b"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "d697a393a58830a310cc6d659d23bc9949d6172b",
+          "bytes": 14211,
+          "sha256": "cc149cf6e60db172970498756325cd00af3ac00f9ad298831bbe907c702b7cac",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_image_tests.rs",
+      "distinct_blobs": [
+        "18c47f067a11450f038e1cefd2ae44f2b331ef95"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "18c47f067a11450f038e1cefd2ae44f2b331ef95",
+          "bytes": 13195,
+          "sha256": "ce4669d751044b269784587de46f8f20fe2ba945c6c571da188970b16bb67c84",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_windows.rs",
+      "distinct_blobs": [
+        "679ccdd69aaa2ddfd043025390f56e5e37c9386a"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "added",
+          "blob": "679ccdd69aaa2ddfd043025390f56e5e37c9386a",
+          "bytes": 4265,
+          "sha256": "eef6c27b90678bdad87aca99b80c6948e2f34dc1041b0fe78aedec99fb287dfd",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+      "distinct_blobs": [
+        "2fe7f4c3dde1089373aa8f45a362d0b3357ff401"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "added",
+          "blob": "2fe7f4c3dde1089373aa8f45a362d0b3357ff401",
+          "bytes": 11298,
+          "sha256": "afbabdb771b27eb40c04a68585400942b140091798bb1850f1b7b23429e6e327",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/uds/Cargo.toml",
+      "distinct_blobs": [
+        "f09bb594ff764f48e9a8bda321e90b9cea16d195"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "f09bb594ff764f48e9a8bda321e90b9cea16d195",
+          "bytes": 989,
+          "sha256": "2766273bff5349b7946e8ccd4eb5cd1bf7e1fe7cc7574edb3a1d726cae9942bd",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/uds/src/lib.rs",
+      "distinct_blobs": [
+        "1fe59d7df88a6a155e37e36329535231d3c61a86"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "1fe59d7df88a6a155e37e36329535231d3c61a86",
+          "bytes": 14863,
+          "sha256": "abb1dfe9b8e7180b680bacb045a7409e24f666a3ef6cca8701a20e78a5f2348e",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/uds/src/lib_tests.rs",
+      "distinct_blobs": [
+        "1dfc7050e7c24a00754bc5089e61b7466ec7982c"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "1dfc7050e7c24a00754bc5089e61b7466ec7982c",
+          "bytes": 6348,
+          "sha256": "13df56141bf8321db8e79e6fb31cd3f9f8534c1fecc70e5fc2abc23b25999ee6",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local.rs",
+      "distinct_blobs": [
+        "500b2d8a3ba2f6e533b0bcd6a080d0f679b2396f"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "500b2d8a3ba2f6e533b0bcd6a080d0f679b2396f",
+          "bytes": 4074,
+          "sha256": "7da35c66f40b07666df2166117e1494c2ef1f8e48def8d93772d578e2c8251ea",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local_security.rs",
+      "distinct_blobs": [
+        "91042edf01dfdef6b3c74d928fc67a8ffa769407"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "91042edf01dfdef6b3c74d928fc67a8ffa769407",
+          "bytes": 10350,
+          "sha256": "a4b9ea2c0a319c3251877ed539a535d59d6de655b093075630b5b09077dc7566",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local_tests.rs",
+      "distinct_blobs": [
+        "c787014e5665cb59805c7345d5a297a49acecb34"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "c787014e5665cb59805c7345d5a297a49acecb34",
+          "bytes": 1704,
+          "sha256": "95fe84e4cf84788ec1705d9f049177a6232bd3ca945c35991c51f207b21697f0",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local_windows.rs",
+      "distinct_blobs": [
+        "329ba220740dff209d4696e1246f4add4719564c"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "329ba220740dff209d4696e1246f4add4719564c",
+          "bytes": 6249,
+          "sha256": "afbf9a116456ab6f7894a2768ce41e590de4d1afa4c1f5466fc484b34c2622d3",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/uds/src/owner_local_windows_tests.rs",
+      "distinct_blobs": [
+        "f8bcbe00939329b9f12de079dfbd0dc7cb0e1908"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "f8bcbe00939329b9f12de079dfbd0dc7cb0e1908",
+          "bytes": 7526,
+          "sha256": "2e6242f6b46fa5c3ca04db489176f0698880b138ad5534006947d08e67379f11",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/Cargo.toml",
+      "distinct_blobs": [
+        "4714f58d7f1b829b3e074e65040c2de789d6bf4d"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "4714f58d7f1b829b3e074e65040c2de789d6bf4d",
+          "bytes": 697,
+          "sha256": "5e23cfabdee9302d9d89057cc77b3ee8b7baacb1f5591639d227d9384ac19d05",
+          "actual_bytes_verified": true
+        },
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "4714f58d7f1b829b3e074e65040c2de789d6bf4d",
+          "bytes": 697,
+          "sha256": "5e23cfabdee9302d9d89057cc77b3ee8b7baacb1f5591639d227d9384ac19d05",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/lib.rs",
+      "distinct_blobs": [
+        "fc94d1f8b9f7c6ed8546ab357cdccdd59627ac61",
+        "f4c65951c6c830a752b2b2563d9716589959d83b"
+      ],
+      "requires_composition": true,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "modified",
+          "blob": "fc94d1f8b9f7c6ed8546ab357cdccdd59627ac61",
+          "bytes": 7680,
+          "sha256": "7087bbf2dd61ad06a7cb9094db7f44aca6aa6caffe8f85ae94db11f0cb843a98",
+          "actual_bytes_verified": true
+        },
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "modified",
+          "blob": "f4c65951c6c830a752b2b2563d9716589959d83b",
+          "bytes": 7114,
+          "sha256": "f909fd2d4d2c312b84c2972583573e99a5d4efb7f5c691df3a6b8912e3ffb589",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "distinct_blobs": [
+        "2186bad1fda6aec90239299b9628968a425baf16",
+        "03a8170a874621c362e1b135df654016207082d5"
+      ],
+      "requires_composition": true,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "added",
+          "blob": "2186bad1fda6aec90239299b9628968a425baf16",
+          "bytes": 26625,
+          "sha256": "2ac1f2c3eaa346cad787515777031ed1c82b1b2720cf00c35c7f0c8219c04080",
+          "actual_bytes_verified": true
+        },
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "03a8170a874621c362e1b135df654016207082d5",
+          "bytes": 26201,
+          "sha256": "ab6b480dc11705751f09f25ddf125f6d0ee7a3c42809d9d8867bac4803d5593d",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+      "distinct_blobs": [
+        "ba645e90dc5a95d74d50370c7b2da90280c71229",
+        "b4e85af5ba4f2a92d37bbec2c3fa1d65795ce6c4"
+      ],
+      "requires_composition": true,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "added",
+          "blob": "ba645e90dc5a95d74d50370c7b2da90280c71229",
+          "bytes": 6404,
+          "sha256": "55edcbb06d3ac763a18a3628a58e76ff2c625d4cff39d368ee8a4ce89796ce0d",
+          "actual_bytes_verified": true
+        },
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "b4e85af5ba4f2a92d37bbec2c3fa1d65795ce6c4",
+          "bytes": 5376,
+          "sha256": "05f8abf49d5a0d5f099695d6138e01525ac9b5e0b369e5172e0dd8f342e2f2a6",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory_tests.rs",
+      "distinct_blobs": [
+        "1e0f78fdf05b7aa3e315127ef640e6af343ae431"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "added",
+          "blob": "1e0f78fdf05b7aa3e315127ef640e6af343ae431",
+          "bytes": 4909,
+          "sha256": "62dcf6a66223b657412eb20479fdad8cd29d8e7af04f89961c8bad2d60f76dbb",
+          "actual_bytes_verified": true
+        },
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "1e0f78fdf05b7aa3e315127ef640e6af343ae431",
+          "bytes": 4909,
+          "sha256": "62dcf6a66223b657412eb20479fdad8cd29d8e7af04f89961c8bad2d60f76dbb",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_recovery.rs",
+      "distinct_blobs": [
+        "870a3df78436d675007caed69e52ebf7a0ebbf57"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "added",
+          "blob": "870a3df78436d675007caed69e52ebf7a0ebbf57",
+          "bytes": 11188,
+          "sha256": "dafb9ca55bdeb30aac54c03dc6f5dbf81b0b3939106ff51399018cb231b9a0e9",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_recovery_tests.rs",
+      "distinct_blobs": [
+        "53377cc04df88ae701ef1cf3eb2ad7c7f6245419"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "added",
+          "blob": "53377cc04df88ae701ef1cf3eb2ad7c7f6245419",
+          "bytes": 3254,
+          "sha256": "2aafbcfc0c2400cc0381fd54cb19b687ae2b10c46f277dcf0ce3f40643317d54",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_security.rs",
+      "distinct_blobs": [
+        "6289e7a878ef0494743b99734a60d368357c8562"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "added",
+          "blob": "6289e7a878ef0494743b99734a60d368357c8562",
+          "bytes": 3333,
+          "sha256": "bfa9700c839f6ddafcc833dc47f70fec0cc7706584d43f21d96a223d341281d0",
+          "actual_bytes_verified": true
+        },
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "6289e7a878ef0494743b99734a60d368357c8562",
+          "bytes": 3333,
+          "sha256": "bfa9700c839f6ddafcc833dc47f70fec0cc7706584d43f21d96a223d341281d0",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+      "distinct_blobs": [
+        "5ee4110ac4bd633cc07bbca3ebc4f4e0b6ff67ff"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "memory",
+          "source": "66fb4ab4757701ca2a9e63845497a36130c35a7e",
+          "status": "added",
+          "blob": "5ee4110ac4bd633cc07bbca3ebc4f4e0b6ff67ff",
+          "bytes": 10150,
+          "sha256": "bc31c4d507fd0172a02fb628bc5cc911063bab31ef4d6de71ca699d9269c45cc",
+          "actual_bytes_verified": true
+        },
+        {
+          "component": "owner_state",
+          "source": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+          "status": "added",
+          "blob": "5ee4110ac4bd633cc07bbca3ebc4f4e0b6ff67ff",
+          "bytes": 10150,
+          "sha256": "bc31c4d507fd0172a02fb628bc5cc911063bab31ef4d6de71ca699d9269c45cc",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/v8-poc/BUILD.bazel",
+      "distinct_blobs": [
+        "8fe152d6ce13dd84679e616f99bfc1344d15d288"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "v8",
+          "source": "083116160fe81198ae0c441aad22224c0c8d2940",
+          "status": "modified",
+          "blob": "8fe152d6ce13dd84679e616f99bfc1344d15d288",
+          "bytes": 328,
+          "sha256": "56d74a0e8e6cdb45c8b7114fb8613fd4983a33362f68c3b5e5cb72d0073e0d25",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/v8-poc/src/lib.rs",
+      "distinct_blobs": [
+        "df22478563ec4cb04fc3bebe0ed9e5ada8188d29"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "v8",
+          "source": "083116160fe81198ae0c441aad22224c0c8d2940",
+          "status": "modified",
+          "blob": "df22478563ec4cb04fc3bebe0ed9e5ada8188d29",
+          "bytes": 4076,
+          "sha256": "4a68c71ce57ed10941db3c52613d45d240401716bc3af6f0632b0448c9b5122c",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "patches/rules_rust_windows_process_wrapper_skip_temp_outputs.patch",
+      "distinct_blobs": [
+        "d6dccc1cce56c8e028d98efa69b6d2e01eab7d8c"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "base",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "status": "modified",
+          "blob": "d6dccc1cce56c8e028d98efa69b6d2e01eab7d8c",
+          "bytes": 3954,
+          "sha256": "23699b698cc8ef483efcc23804c1fc9b306e926b91cbd40a62cd8fb3f0a8d9e8",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "qualification/bazel9-output-backport-20261104/bazel9-windows-tee-drain.patch",
+      "distinct_blobs": [
+        "4735950cc19b2723918903f6c04ceedcd5d6598d"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "tee",
+          "source": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+          "status": "added",
+          "required_ci_runtime_input": true,
+          "blob": "4735950cc19b2723918903f6c04ceedcd5d6598d",
+          "bytes": 4562,
+          "sha256": "06146cf94199fc7ba4c800487f452ee171776645634403f46866268d521b676c",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "qualification/bazel9-output-backport-20261104/build.py",
+      "distinct_blobs": [
+        "1439f3fe2e7a342a9fe7a0ae1ab17014552c472f"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "tee",
+          "source": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+          "status": "added",
+          "required_ci_runtime_input": true,
+          "blob": "1439f3fe2e7a342a9fe7a0ae1ab17014552c472f",
+          "bytes": 14785,
+          "sha256": "dd5e70f9d434ca552c1654a20ad271f1c990c4bb10e3ea072f5b431d448d8e2f",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "qualification/bazel9-output-backport-20261104/source-binding.json",
+      "distinct_blobs": [
+        "78b1ce8059342c47e448f45c15a45612847471b6"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "tee",
+          "source": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+          "status": "added",
+          "required_ci_runtime_input": true,
+          "blob": "78b1ce8059342c47e448f45c15a45612847471b6",
+          "bytes": 3025,
+          "sha256": "ba90ba895444701a17b3618160ad3b63ed4e7bbdfaee9458fe16bd1195936af3",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "scripts/hepta-docs.py",
+      "distinct_blobs": [
+        "1db13e13c2ad32751ad70eaec4a89b5d996a583d"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "base",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "status": "modified",
+          "blob": "1db13e13c2ad32751ad70eaec4a89b5d996a583d",
+          "bytes": 79408,
+          "sha256": "9cada8fc8adc8d472e85bc7e909faa7949b221dfe956827a06b08ccb825ab92c",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "scripts/list-bazel-clippy-targets.sh",
+      "distinct_blobs": [
+        "501bf01462659464a6ea58e40ec6e44aa481e5d1"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "base",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "status": "modified",
+          "blob": "501bf01462659464a6ea58e40ec6e44aa481e5d1",
+          "bytes": 2657,
+          "sha256": "6ed9e681faa352068139dd586faf842a76bfd328bbb74e1148c35babe9a621ad",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "scripts/test_hepta_cleanup_consumers.py",
+      "distinct_blobs": [
+        "020a6ff2679c67a569ae610405429547a9dbf2d8"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "component": "base",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "status": "modified",
+          "blob": "020a6ff2679c67a569ae610405429547a9dbf2d8",
+          "bytes": 8811,
+          "sha256": "1ae615cbcd79a8d8fe5942f837057f433e3cc706295db7f4d7d78fe318c88ae1",
+          "actual_bytes_verified": true
+        }
+      ]
+    },
+    {
+      "path": "tools/argument-comment-lint/Cargo.lock",
+      "distinct_blobs": [
+        "cf5767bdeb7c70b1a25b10e3638168e0d0a839ac"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "source": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+          "blob": "cf5767bdeb7c70b1a25b10e3638168e0d0a839ac",
+          "bytes": 34658,
+          "sha256": "74818cca79e442bf5defaa30d0a0953088d2647672ef9a76343cc97c9e1871aa",
+          "actual_bytes_verified": true,
+          "component": "dylint",
+          "status": "modified",
+          "required_original_ci_input": false
+        }
+      ]
+    },
+    {
+      "path": "tools/argument-comment-lint/Cargo.toml",
+      "distinct_blobs": [
+        "1b00d573efecbe1e57c7f60fb754b4a277299c9b"
+      ],
+      "requires_composition": false,
+      "inputs": [
+        {
+          "source": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+          "blob": "1b00d573efecbe1e57c7f60fb754b4a277299c9b",
+          "bytes": 493,
+          "sha256": "df1a7ca1bca706a94c9bc3b92dfa13d0964adf6369b05e213e13ca84389f5070",
+          "actual_bytes_verified": true,
+          "component": "dylint",
+          "status": "modified",
+          "required_original_ci_input": false
+        }
+      ]
+    }
+  ],
+  "supersedes": "b6d1dedbd57050db1d0d0af3b5ca5a380d5cc2aa",
+  "coverage": {
+    "owner_local": {
+      "source": "9cf33449107981ee2ca4de486be8ffaaa37dfc61",
+      "included_in": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+      "actual_compare": "ahead",
+      "actual_merge_base": "9cf33449107981ee2ca4de486be8ffaaa37dfc61",
+      "product_paths": [
+        {
+          "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+          "blob": "b72f3e118d4e8e381285410b8d99a6e3981a581d",
+          "owner_state_blob": "b72f3e118d4e8e381285410b8d99a6e3981a581d",
+          "exact_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-matrixd/src/control.rs",
+          "blob": "19153d4197279a62eef776ceeb4371c637638d7c",
+          "owner_state_blob": "19153d4197279a62eef776ceeb4371c637638d7c",
+          "exact_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
+          "blob": "70d7493c1bed2e64cbfadb84fdefc4d91ddc190c",
+          "owner_state_blob": "70d7493c1bed2e64cbfadb84fdefc4d91ddc190c",
+          "exact_equal": true
+        },
+        {
+          "path": "codex-rs/uds/Cargo.toml",
+          "blob": "f09bb594ff764f48e9a8bda321e90b9cea16d195",
+          "owner_state_blob": "f09bb594ff764f48e9a8bda321e90b9cea16d195",
+          "exact_equal": true
+        },
+        {
+          "path": "codex-rs/uds/src/lib.rs",
+          "blob": "1fe59d7df88a6a155e37e36329535231d3c61a86",
+          "owner_state_blob": "1fe59d7df88a6a155e37e36329535231d3c61a86",
+          "exact_equal": true
+        },
+        {
+          "path": "codex-rs/uds/src/lib_tests.rs",
+          "blob": "1dfc7050e7c24a00754bc5089e61b7466ec7982c",
+          "owner_state_blob": "1dfc7050e7c24a00754bc5089e61b7466ec7982c",
+          "exact_equal": true
+        },
+        {
+          "path": "codex-rs/uds/src/owner_local.rs",
+          "blob": "500b2d8a3ba2f6e533b0bcd6a080d0f679b2396f",
+          "owner_state_blob": "500b2d8a3ba2f6e533b0bcd6a080d0f679b2396f",
+          "exact_equal": true
+        },
+        {
+          "path": "codex-rs/uds/src/owner_local_security.rs",
+          "blob": "91042edf01dfdef6b3c74d928fc67a8ffa769407",
+          "owner_state_blob": "91042edf01dfdef6b3c74d928fc67a8ffa769407",
+          "exact_equal": true
+        },
+        {
+          "path": "codex-rs/uds/src/owner_local_tests.rs",
+          "blob": "c787014e5665cb59805c7345d5a297a49acecb34",
+          "owner_state_blob": "c787014e5665cb59805c7345d5a297a49acecb34",
+          "exact_equal": true
+        },
+        {
+          "path": "codex-rs/uds/src/owner_local_windows.rs",
+          "blob": "329ba220740dff209d4696e1246f4add4719564c",
+          "owner_state_blob": "329ba220740dff209d4696e1246f4add4719564c",
+          "exact_equal": true
+        },
+        {
+          "path": "codex-rs/uds/src/owner_local_windows_tests.rs",
+          "blob": "f8bcbe00939329b9f12de079dfbd0dc7cb0e1908",
+          "owner_state_blob": "f8bcbe00939329b9f12de079dfbd0dc7cb0e1908",
+          "exact_equal": true
+        }
+      ],
+      "excluded_dependency_lock": "Run real combined workspace lock resolution instead of replacing root Cargo.lock."
+    },
+    "dylint": {
+      "source": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+      "not_in_root_base": true,
+      "actual_compare": "diverged",
+      "actual_merge_base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "base_identity_comparison": [
+        {
+          "path": ".github/workflows/rust-ci-full.yml",
+          "source": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+          "expected": "b3a4d2baf1611d78e119280b90f044d874f21ecd",
+          "which": "dylint",
+          "blob": "b3a4d2baf1611d78e119280b90f044d874f21ecd",
+          "bytes": 22280,
+          "sha256": "7dabca9d7ad13304150464b3abeda9b74007cf7ba742d1f98d982ddc73cf2b5e",
+          "actual_bytes_verified": true
+        },
+        {
+          "path": ".github/workflows/rust-ci-full.yml",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "which": "base",
+          "blob": "f6e022c211e3376b54ca4b1d7f6c5626a040b063",
+          "bytes": 21978,
+          "sha256": "4d4cd344e7ccfeee86fa998ca4e56779f4a93184b888ec47bf3920836e987e6d",
+          "actual_bytes_verified": true
+        },
+        {
+          "path": ".github/workflows/rust-ci.yml",
+          "source": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+          "expected": "dce5c5451de6327101200325a1daf50266bbd72e",
+          "which": "dylint",
+          "blob": "dce5c5451de6327101200325a1daf50266bbd72e",
+          "bytes": 12535,
+          "sha256": "55d34bb812cfb86d5142de36c468de7ed53a9a04da1973d96441ab7768a9c98c",
+          "actual_bytes_verified": true
+        },
+        {
+          "path": ".github/workflows/rust-ci.yml",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "which": "base",
+          "blob": "221a4235f9003c8930a9dfb2a9b4ec1d53833848",
+          "bytes": 12233,
+          "sha256": "d5dde11e1a5e93befaab6c9427a647d50f3cc87d8841cf75562222fa4c3ff376",
+          "actual_bytes_verified": true
+        },
+        {
+          "path": ".github/workflows/rust-release-argument-comment-lint.yml",
+          "source": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+          "expected": "88c91c0ed7d26d19cd84830d995d9202c901438e",
+          "which": "dylint",
+          "blob": "88c91c0ed7d26d19cd84830d995d9202c901438e",
+          "bytes": 4980,
+          "sha256": "6244ff588914122be4025360675813b3fc92936b261248659a31e0c1bf92d94e",
+          "actual_bytes_verified": true
+        },
+        {
+          "path": ".github/workflows/rust-release-argument-comment-lint.yml",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "which": "base",
+          "blob": "c5a71e1e6f2baa1554e027d18f7d507b70f3f4cb",
+          "bytes": 4716,
+          "sha256": "34b41b0f2847120c8b6b658a3e8d2255804f6f2792cfdd0e7262d74e332acbcd",
+          "actual_bytes_verified": true
+        },
+        {
+          "path": "tools/argument-comment-lint/Cargo.lock",
+          "source": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+          "expected": "cf5767bdeb7c70b1a25b10e3638168e0d0a839ac",
+          "which": "dylint",
+          "blob": "cf5767bdeb7c70b1a25b10e3638168e0d0a839ac",
+          "bytes": 34658,
+          "sha256": "74818cca79e442bf5defaa30d0a0953088d2647672ef9a76343cc97c9e1871aa",
+          "actual_bytes_verified": true
+        },
+        {
+          "path": "tools/argument-comment-lint/Cargo.lock",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "which": "base",
+          "blob": "1795ff683b86672de2bd2a48a41b4274e3f63d2a",
+          "bytes": 41781,
+          "sha256": "43deace1b5473447caf871bbf463c6f9b9c83e1382dc5f9db602394ac5d18421",
+          "actual_bytes_verified": true
+        },
+        {
+          "path": "tools/argument-comment-lint/Cargo.toml",
+          "source": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+          "expected": "1b00d573efecbe1e57c7f60fb754b4a277299c9b",
+          "which": "dylint",
+          "blob": "1b00d573efecbe1e57c7f60fb754b4a277299c9b",
+          "bytes": 493,
+          "sha256": "df1a7ca1bca706a94c9bc3b92dfa13d0964adf6369b05e213e13ca84389f5070",
+          "actual_bytes_verified": true
+        },
+        {
+          "path": "tools/argument-comment-lint/Cargo.toml",
+          "source": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+          "which": "base",
+          "blob": "db02b392f3a5e3f584c0a7e882ae76499af2ab12",
+          "bytes": 491,
+          "sha256": "a08ff6b2e444e84a06cf621907621d565fb81476b79e6b1f7ef756b1270b1a70",
+          "actual_bytes_verified": true
+        }
+      ],
+      "independent_artifact_replay": {
+        "checkpoint": "cd0233bf700e411d30ee902b62b8ec7981f95e11",
+        "job": 126315981484,
+        "verified_git_inputs": 1664,
+        "verified_outputs": 9,
+        "optimized_python_rejected": true
+      }
+    }
+  }
+}

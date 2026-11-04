@@ -18,7 +18,8 @@ fn open(root: &std::path::Path, name: &str, create: bool) -> std::fs::File {
 }
 
 fn directory(root: &std::path::Path) -> std::fs::File {
-    std::fs::File::open(root).unwrap()
+    open_ledger_directory(root)
+        .unwrap_or_else(|err| panic!("open segmented ledger directory: {err}"))
 }
 
 fn writer(

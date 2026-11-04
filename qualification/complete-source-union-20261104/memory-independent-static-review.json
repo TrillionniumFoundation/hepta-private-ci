@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.memory-owner-union.static-review.v1",
+  "reviewed_utc": "2026-11-04T04:54:51.284Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "inputs": [
+    {
+      "path": "codex-rs/state/src/sqlite_recovery.rs",
+      "owner_original": {
+        "git_blob_sha": "386c24205afaa7b5ce10b0acdb282aaf62774d5d",
+        "sha256": "43d372c8bbe807d2131b8a76e77464a5c404d5d6d62318cbd2135bcea163b6f2",
+        "bytes": 15312
+      },
+      "candidate": {
+        "git_blob_sha": "08632553d519ebcfd46450ad378da8cf76f288e8",
+        "sha256": "9a658db5fd9d5e3969ecb11d4caeff12f0e6adc13586673ec05cd8acb6c04b5c",
+        "bytes": 16408
+      }
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_image.rs",
+      "owner_original": {
+        "git_blob_sha": "f36733a73a0660843307b05386b0ac77fb6cd0ca",
+        "sha256": "56e28025dbf49974edf58bebef5c3a699dce48a3f0e1cbddce42b6d1b344ef18",
+        "bytes": 14254
+      },
+      "candidate": {
+        "git_blob_sha": "4ee013d881635a786d1cad5c2e313b89f3dd9b6f",
+        "sha256": "f2c05de61ec14d73796fe644e7f595a92124cd1046399eebb4695b12cf747ade",
+        "bytes": 14261
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "owner_original": {
+        "git_blob_sha": "ab13f85f13f663c3d04ac11d09b9a34090d915ed",
+        "sha256": "235b61d2f65983a8ac08e6daa7589740672374027027b046bfb1a140d0805d83",
+        "bytes": 27109
+      },
+      "candidate": {
+        "git_blob_sha": "1e7881b34be647ed30c09a7c29ad44f80460c7bc",
+        "sha256": "1ac3479990c3ccfedd620785a1f82d4ada528dc70cae97ea1d0412e6dcea8b3f",
+        "bytes": 26685
+      }
+    }
+  ],
+  "review_kind": "Exact source comparison and bounded static review only",
+  "observations": [
+    "Recovery candidate is exactly owner blob plus same_recovery_home and two home call-site substitutions; the original same_recovery_path implementation and all other bytes remain unchanged.",
+    "Windows home comparison only reconciles Disk / VerbatimDisk with equal drive and equal remaining components; no general canonicalization, case folding, UNC alias, or filesystem identity grant is added. Existing retained-handle checks remain responsible for admission.",
+    "Cold-image candidate changes only the home comparison. The owner's same_recovery_path(target, source) alias rejection and all source snapshot/read/copy restrictions remain unchanged.",
+    "Private-state candidate removes exactly one of two byte-identical recovery module plus seven re-export blocks. The canonical_existing_path API and all function bodies remain unchanged."
+  ],
+  "confirmed_new_blocker": false,
+  "limitations": [
+    "No compilation, native execution, archived-source execution, or independent repetition of prior native qualification was performed.",
+    "This does not qualify the combined tree, schemas 16/17, production writer, platform matrix, or complete owner behavior; those require root's original joint gates."
+  ],
+  "unrelated_source_changes": false
+}
