@@ -154,3 +154,7 @@ pub(super) fn open(root: &Path, access: DirectoryDisposition) -> io::Result<File
 #[cfg(test)]
 #[path = "private_state_windows_directory_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "private_state_windows_directory_api_tests.rs"]
+mod api_tests;
