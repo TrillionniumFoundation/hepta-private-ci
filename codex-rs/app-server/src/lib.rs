@@ -131,6 +131,7 @@ mod outgoing_message;
 mod request_processors;
 mod request_serialization;
 mod server_request_error;
+mod shutdown_signals;
 mod skills_watcher;
 mod thread_state;
 mod thread_status;
@@ -205,7 +206,7 @@ enum ShutdownAction {
     Finish,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum ShutdownSignal {
     Forceable,
     GracefulOnly,
@@ -270,29 +271,6 @@ async fn wait_for_embedded_drain(handle: Option<AppServerDrainHandle>) {
     match handle {
         Some(handle) => handle.wait_requested().await,
         None => std::future::pending::<()>().await,
-    }
-}
-
-async fn shutdown_signal() -> IoResult<ShutdownSignal> {
-    #[cfg(unix)]
-    {
-        use tokio::signal::unix::SignalKind;
-        use tokio::signal::unix::signal;
-
-        let mut term = signal(SignalKind::terminate())?;
-        let mut hangup = signal(SignalKind::hangup())?;
-        tokio::select! {
-            ctrl_c_result = tokio::signal::ctrl_c() => ctrl_c_result.map(|_| ShutdownSignal::Forceable),
-            _ = term.recv() => Ok(ShutdownSignal::Forceable),
-            _ = hangup.recv() => Ok(ShutdownSignal::GracefulOnly),
-        }
-    }
-
-    #[cfg(not(unix))]
-    {
-        tokio::signal::ctrl_c()
-            .await
-            .map(|_| ShutdownSignal::Forceable)
     }
 }
 
@@ -968,6 +946,12 @@ pub async fn run_main_with_transport_options(
     let single_client_mode = matches!(&transport, AppServerTransport::Stdio);
     let graceful_signal_restart_enabled =
         runtime_options.install_shutdown_signal_handler && !single_client_mode;
+    // Register before opening any acceptor, and keep these receivers alive
+    // while other select branches process connection events. Dropping a recv
+    // future must not leave an interval with no Unix signal subscription.
+    let mut shutdown_signals = graceful_signal_restart_enabled
+        .then(shutdown_signals::ShutdownSignals::register)
+        .transpose()?;
     let mut app_server_client_name_rx = None;
 
     match &transport {
@@ -1236,7 +1220,12 @@ pub async fn run_main_with_transport_options(
                         }
                         transport_shutdown_token.cancel();
                     }
-                    shutdown_signal_result = shutdown_signal(), if graceful_signal_restart_enabled && !shutdown_state.forced() => {
+                    shutdown_signal_result = async {
+                        match shutdown_signals.as_mut() {
+                            Some(signals) => signals.recv().await,
+                            None => std::future::pending().await,
+                        }
+                    }, if graceful_signal_restart_enabled && !shutdown_state.forced() => {
                         let signal = match shutdown_signal_result {
                             Ok(signal) => signal,
                             Err(err) => {

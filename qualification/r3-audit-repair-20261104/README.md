@@ -66,3 +66,33 @@ include two failing aggregate jobs; these are not nine independent defects.
 and source integrity do not qualify the complete Agentd process or a release.
 Other Core/App Server/WebSocket/Windows failures, external provider capacity,
 trusted production composition and the research benefit gates remain open.
+
+## Second repair batch
+
+The follow-up is based on the first published repair commit
+`e729e6c2becb528e3a6b49c9e5bbea57bd26637a`. Its production changes cover
+Hook metadata, bounded private attempted-call observations, terminalization
+admission, request-scoped WebSocket identity, ordered realtime handoffs and
+retained Unix shutdown signal subscriptions. Fixture changes repair the actual
+handshake, execution readiness, lease, queue and resume preconditions. Windows
+helper layout and bounded test-only observations preserve the original strict
+permission assertions.
+
+See [SECOND_BATCH_QUALIFICATION.md](SECOND_BATCH_QUALIFICATION.md) and
+`second-batch-qualification.json` for the 25 actual native validation phases,
+their complete JUnit identities, preserved failures, exact source trees and
+platform limits. `second-batch-generation-receipt.json` binds those generated
+documents. The accompanying final composed-source manifest and native-check
+receipt distinguish the source used for scoped formatting/lint checks from
+the separate earlier test trees. The final GitHub commit and full publication
+tree are recorded in the PR after publication.
+
+The two helper lock-generation runs remain separate. The first covers 805
+inputs; the combined Exec Server and CLI run covers 806 inputs and succeeds
+with the original update/check commands. Both generated locks are byte-identical
+to the existing lock. Their `windows-helper-*` receipts retain the fixed source
+identities and do not grant product or Windows execution qualification.
+
+The final original platform matrix remains the acceptance gate. In particular,
+the original Windows security failures, Windows Code Mode timing and Intel PTY
+drain cause are not closed by Linux passes or by added diagnostic output.

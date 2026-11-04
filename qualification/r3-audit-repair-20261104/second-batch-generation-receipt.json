@@ -1,0 +1,50 @@
+{
+  "status": "READY_FOR_ROOT_REVIEW_AND_COPY",
+  "files": [
+    {
+      "path": "generate_second_batch_qualification.py",
+      "bytes": 35534,
+      "sha256": "e86f65d894a71cb598a703a8902988ee4f85e3d5594293ceb410c47bd3996300"
+    },
+    {
+      "path": "SECOND_BATCH_QUALIFICATION.md",
+      "bytes": 10744,
+      "sha256": "2602a4540c7b630a1f1bbfb0c20b587233f68f15c809749291ec611d7253df5d"
+    },
+    {
+      "path": "second-batch-qualification.json",
+      "bytes": 343668,
+      "sha256": "cf2e962b3bcf20e2d19d4397d2a1d4d23f11905cf8f76c7c6947b312eda35e18"
+    }
+  ],
+  "evidence_artifact_count": 93,
+  "native_phase_count": 25,
+  "retained_historical_snapshot": {
+    "original_names": 48,
+    "native_pass_classification": 32
+  },
+  "current_disposition": {
+    "original_names": 48,
+    "native_pass_classification": 34,
+    "latest_native_pass_names": 35,
+    "diagnostic_only_drain_with_native_pass": 1,
+    "original_platform_gates_closed": 0
+  },
+  "additional_B23": "Actual negative3fail+2pass then fixed5pass, separate from original48",
+  "helper_inputs": {
+    "41851347278": 805,
+    "41865994466": 806
+  },
+  "output_scan": "No personal home paths, signed URLs, access-token fields, authorization headers or private-key markers in generated documents.",
+  "generation_boundary": "File parsing, hash/roster/source checks and documentation output only; no native execution or publication.",
+  "reproduction": [
+    "python3",
+    "generate_second_batch_qualification.py",
+    "--audit-root",
+    "AUDIT_EVIDENCE_DIRECTORY",
+    "--output",
+    "OUTPUT_DIRECTORY",
+    "--disposition-snapshot",
+    "architecture-audit/original-failure-disposition-before-pty-native.json"
+  ]
+}

@@ -528,6 +528,12 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
 
     record_phase("fixture_setup_start");
     let test = test_codex_exec();
+    // This case exercises resume selection, so keep unrelated plugin startup
+    // syncs from populating its temporary home with marketplace cache files.
+    std::fs::write(
+        test.home_path().join("config.toml"),
+        "[features]\nplugins = false\n",
+    )?;
     record_phase("fixture_setup_end");
     record_phase("mock_server_start");
     let server = MockServer::start().await;

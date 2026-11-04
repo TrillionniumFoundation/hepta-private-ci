@@ -1484,6 +1484,49 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
             }),
     )
     .await?;
+    let durable_response_items = |path: &Path| -> Result<(Vec<Value>, bool)> {
+        let mut items = Vec::new();
+        let mut saw_replacement = false;
+        for line in fs::read_to_string(path)?
+            .lines()
+            .filter(|line| !line.trim().is_empty())
+        {
+            let entry: RolloutLine = serde_json::from_str(line)?;
+            match entry.item {
+                RolloutItem::ResponseItem(envelope) => {
+                    items.push(serde_json::to_value(envelope.item)?);
+                }
+                RolloutItem::Compacted(compacted) => {
+                    items = compacted
+                        .replacement_history
+                        .context("v2 compaction must persist replacement history")?
+                        .into_iter()
+                        .map(|envelope| serde_json::to_value(envelope.item))
+                        .collect::<std::result::Result<Vec<_>, _>>()?;
+                    saw_replacement = true;
+                }
+                _ => {}
+            }
+        }
+        Ok((items, saw_replacement))
+    };
+    let item_create_time = |items: &[Value], text: &str| {
+        items
+            .iter()
+            .find(|item| {
+                item["content"].as_array().is_some_and(|content| {
+                    content.iter().any(|part| {
+                        part["text"].as_str() == Some(text)
+                            || part["encrypted_content"].as_str() == Some(text)
+                    })
+                })
+            })
+            .and_then(|item| {
+                item.pointer("/internal_chat_message_metadata_passthrough/create_time")
+                    .cloned()
+            })
+            .expect("matching durable message should include a creation timestamp")
+    };
     let image_url = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
     let user_notice = "<image_resize_notice>retained user image</image_resize_notice>";
     let tool_notice = "<image_resize_notice>discarded tool image</image_resize_notice>";
@@ -1613,6 +1656,18 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
         .await?;
     wait_for_turn_complete(&codex).await;
 
+    codex.flush_rollout().await?;
+    let rollout_path = codex.rollout_path().context("rollout path")?;
+    let (before_compact_history, saw_replacement) = durable_response_items(&rollout_path)?;
+    assert!(
+        !saw_replacement,
+        "the original timestamps must precede compaction"
+    );
+    let original_user_create_time =
+        item_create_time(&before_compact_history, "hello remote compact");
+    let delegated_task_create_time =
+        item_create_time(&before_compact_history, &delegated_task_ciphertext);
+
     let descendant_followup_ciphertext = "descendant follow-up task";
     let worker_path = AgentPath::root().join("worker").expect("valid worker path");
     codex
@@ -1641,27 +1696,20 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
 
     let response_requests = responses_mock.requests();
     let compact_request = &response_requests[3];
-    let item_create_time = |request: &responses::ResponsesRequest, text: &str| {
-        request
-            .input()
-            .into_iter()
-            .find(|item| {
-                item["content"].as_array().is_some_and(|content| {
-                    content.iter().any(|part| {
-                        part["text"].as_str() == Some(text)
-                            || part["encrypted_content"].as_str() == Some(text)
-                    })
-                })
-            })
-            .and_then(|item| {
-                item.pointer("/internal_chat_message_metadata_passthrough/create_time")
-                    .cloned()
-            })
-            .expect("matching message should include a creation timestamp")
-    };
-    let original_user_create_time = item_create_time(&response_requests[0], "hello remote compact");
-    let delegated_task_create_time =
-        item_create_time(&response_requests[1], &delegated_task_ciphertext);
+    // Creation timestamps remain internal and durable; this provider's wire copy
+    // intentionally omits the private metadata on every request.
+    assert!(response_requests.iter().all(|request| {
+        request.input().iter().all(|item| {
+            item.get("internal_chat_message_metadata_passthrough")
+                .is_none()
+        })
+    }));
+    codex.flush_rollout().await?;
+    let (follow_up_history, saw_replacement) = durable_response_items(&rollout_path)?;
+    assert!(
+        saw_replacement,
+        "follow-up must use the persisted replacement history"
+    );
     assert!(
         compact_request
             .inputs_of_type("agent_message")
@@ -1742,15 +1790,15 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
 
     let follow_up_request = response_requests.last().expect("follow-up request missing");
     assert_eq!(
-        item_create_time(follow_up_request, "hello remote compact"),
+        item_create_time(&follow_up_history, "hello remote compact"),
         original_user_create_time
     );
     assert_eq!(
-        item_create_time(follow_up_request, &delegated_task_ciphertext),
+        item_create_time(&follow_up_history, &delegated_task_ciphertext),
         delegated_task_create_time
     );
     assert!(
-        item_create_time(follow_up_request, "after compact")
+        item_create_time(&follow_up_history, "after compact")
             .as_f64()
             .is_some_and(|create_time| create_time > 0.0)
     );

@@ -24,6 +24,8 @@ use core_test_support::responses::start_websocket_server;
 use core_test_support::skip_if_no_network;
 use core_test_support::test_codex::test_codex;
 use core_test_support::wait_for_event;
+use core_test_support::wait_for_event_match;
+use core_test_support::wait_for_event_with_timeout;
 use pretty_assertions::assert_eq;
 use serde_json::Value;
 use serde_json::json;
@@ -132,7 +134,28 @@ async fn startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state
     assert!(turn_metadata(&prewarm)?.get("workspaces").is_none());
 
     std::fs::write(repo.path().join("untracked.txt"), "dirty\n")?;
-    test.submit_turn("inspect the workspace").await?;
+    // Keep the startup connection's thread settings while testing Git freshness.
+    // submit_turn would replace the permission profile with Disabled.
+    test.codex
+        .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
+            text: "inspect the workspace".into(),
+            text_elements: Vec::new(),
+        }]))
+        .await?;
+    let turn_id = wait_for_event_match(&test.codex, |event| match event {
+        EventMsg::TurnStarted(event) => Some(event.turn_id.clone()),
+        _ => None,
+    })
+    .await;
+    wait_for_event_with_timeout(
+        &test.codex,
+        |event| match event {
+            EventMsg::TurnComplete(event) => event.turn_id == turn_id,
+            _ => false,
+        },
+        Duration::from_secs(30),
+    )
+    .await;
     let turn = server
         .single_connection()
         .get(2)

@@ -497,6 +497,9 @@ async fn turn_input_submission_applies_thread_settings_only_after_accepted_input
         .send(())
         .expect("response gate should remain open");
     wait_for_event(codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
+    if let Some(completion) = codex.pending_turn_terminalization() {
+        completion.await;
+    }
 
     let rejected_cwd = test.config.cwd.join("rejected-environment");
     let rejected = codex

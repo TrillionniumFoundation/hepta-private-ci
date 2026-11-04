@@ -719,6 +719,91 @@ async fn mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools() -> Result<
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn mcp_tool_hook_cannot_call_tools_excluded_by_server_filters() -> Result<()> {
+    skip_if_no_network!(Ok(()));
+
+    for (enabled_tools, disabled_tools) in [
+        (Some(vec!["echo".to_string()]), None),
+        (None, Some(vec!["thread_hint".to_string()])),
+    ] {
+        let server = start_mock_server().await;
+        let response = mount_sse_once(
+            &server,
+            sse(vec![
+                ev_response_created("resp-filtered-hook"),
+                ev_assistant_message("msg-filtered-hook", "continued without the MCP hook"),
+                ev_completed("resp-filtered-hook"),
+            ]),
+        )
+        .await;
+        let marker_dir = TempDir::new()?;
+        let marker_file = marker_dir.path().join("thread_hint_called");
+        let marker_file_env = marker_file.to_string_lossy().into_owned();
+        let rmcp_test_server_bin = stdio_server_bin()?;
+        let test = test_codex()
+            .with_pre_build_hook(|home| {
+                write_thread_hint_mcp_tool_hook(home).expect("write filtered MCP hook fixture");
+            })
+            .with_config(move |config| {
+                enable_hooks_and_rmcp_server(
+                    config,
+                    rmcp_test_server_bin,
+                    AppToolApproval::Prompt,
+                    /*prefix_mcp_tool_names*/ true,
+                );
+                set_rmcp_marker_env(config, marker_file_env);
+                let mut servers = config.mcp_servers.get().clone();
+                let server = servers.get_mut(RMCP_SERVER).expect("configured MCP server");
+                server.enabled_tools = enabled_tools;
+                server.disabled_tools = disabled_tools;
+                config
+                    .mcp_servers
+                    .set(servers)
+                    .expect("filtered MCP config");
+            })
+            .build(&server)
+            .await?;
+        wait_for_mcp_server(&test.codex, RMCP_SERVER).await?;
+        test.codex
+            .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
+                text: "continue without calling an excluded hook tool".to_string(),
+                text_elements: Vec::new(),
+            }]))
+            .await?;
+        let mut completed = None;
+        loop {
+            match wait_for_event(&test.codex, |_| true).await {
+                EventMsg::HookCompleted(event)
+                    if event.run.event_name == HookEventName::UserPromptSubmit =>
+                {
+                    completed = Some(event);
+                }
+                EventMsg::TurnComplete(_) => break,
+                _ => {}
+            }
+        }
+        let completed = completed.context("expected excluded MCP hook completion")?;
+        assert_eq!(completed.run.status, HookRunStatus::Failed);
+        assert!(completed.run.entries.iter().any(|entry| {
+            entry.kind == HookOutputEntryKind::Error
+                && entry.text.contains("not connected and available")
+        }));
+        assert!(
+            !marker_file.exists(),
+            "an excluded hook tool must not reach the MCP transport"
+        );
+        assert!(
+            !response
+                .single_request()
+                .message_input_texts("developer")
+                .iter()
+                .any(|message| message.contains("manual history hint"))
+        );
+    }
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
@@ -957,13 +1042,30 @@ async fn pre_tool_use_blocks_mcp_tool_before_execution(
     let requests = responses.requests();
     assert_eq!(requests.len(), 2);
     let output_item = requests[1].function_call_output(call_id);
+    assert!(
+        output_item
+            .get("internal_chat_message_metadata_passthrough")
+            .is_none(),
+        "non-official model endpoints must not receive private tool metadata"
+    );
+    let local_input = requests[1].durable_input(&test.codex).await;
+    let local_output = local_input
+        .iter()
+        .find(|item| item["type"] == "function_call_output" && item["call_id"] == call_id)
+        .expect("blocked MCP call output must be persisted locally");
+    let local_output = serde_json::from_value(local_output.clone())?;
+    let retained_calls = codex_core::test_support::retained_executed_tool_calls_for_output(
+        &test.codex,
+        &local_output,
+    )
+    .expect("actual prompt output must retain its attempted calls");
     assert_eq!(
-        output_item["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
+        serde_json::to_value(retained_calls)?,
         json!([{
             "name": format!("{mcp_namespace}__echo"),
             "arguments": { "message": RMCP_ECHO_MESSAGE },
         }]),
-        "a blocked MCP request must still retain the original model-attempted call",
+        "a blocked MCP call must still retain the original model-attempted call locally",
     );
     let output = output_item
         .get("output")

@@ -54,7 +54,7 @@ async fn test_step(
     approval_mode: AppToolApproval,
     supports_sandbox_state_meta: bool,
 ) -> TestStep {
-    let tool = ToolInfo {
+    let mut tool = ToolInfo {
         server_name: SERVER_NAME.to_string(),
         supports_parallel_tool_calls: false,
         server_origin: None,
@@ -71,6 +71,12 @@ async fn test_step(
         connector_name: None,
         plugin_display_names: Vec::new(),
     };
+    if label == "hidden" {
+        tool.tool.meta = Some(
+            serde_json::from_value(serde_json::json!({ "ui": { "visibility": [] } }))
+                .expect("hidden tool metadata"),
+        );
+    }
     let client = Arc::new(
         RmcpClient::new_in_process_client(Arc::new(TestInProcessTransportFactory))
             .await
@@ -135,12 +141,60 @@ async fn test_step(
             config,
             /*plugins_available*/ false,
             Arc::new(crate::SelectedPluginSnapshot::default()),
-            vec![tool],
+            vec![tool]
+                .into_iter()
+                .filter(crate::tool_is_model_visible)
+                .collect(),
             calls,
         )),
         client,
         tool_catalog_revision,
     }
+}
+
+#[tokio::test]
+async fn configured_hook_call_preserves_model_and_environment_boundaries() {
+    let step = test_step(
+        "hidden",
+        AppToolApproval::Prompt,
+        /*supports_sandbox_state_meta*/ false,
+    )
+    .await;
+    assert!(step.step.tools().is_empty());
+    assert!(step.step.prepare_call(SERVER_NAME, TOOL_NAME).is_none());
+    let call = step
+        .step
+        .prepare_hook_call(SERVER_NAME, TOOL_NAME, Some("hidden-environment"))
+        .expect("configured hook can bind its permitted model-hidden tool");
+    assert!(Arc::ptr_eq(&call.client.client, &step.client));
+    assert_eq!(call.tool_approval_mode(), AppToolApproval::Prompt);
+    assert!(
+        step.step
+            .prepare_hook_call(SERVER_NAME, TOOL_NAME, Some("another-environment"))
+            .is_none()
+    );
+    assert!(
+        step.step
+            .prepare_hook_call(
+                "unconfigured-server",
+                TOOL_NAME,
+                /*environment_id*/ None
+            )
+            .is_none()
+    );
+    assert!(
+        step.step
+            .prepare_hook_call(SERVER_NAME, "unlisted-tool", /*environment_id*/ None)
+            .is_none()
+    );
+    *step.tool_catalog_revision.write().await += 1;
+    let error = call
+        .call(
+            /*arguments*/ None, /*meta*/ None, /*timeout*/ None,
+        )
+        .await
+        .expect_err("hook calls must reject a replaced catalog before transport");
+    assert!(format!("{error:#}").contains("catalog changed"));
 }
 
 #[tokio::test]

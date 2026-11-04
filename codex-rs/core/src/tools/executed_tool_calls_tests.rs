@@ -84,6 +84,7 @@ fn executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow() {
         internal_chat_message_metadata_passthrough: None,
     }];
     let mut retry_cache = HashMap::new();
+    assert_eq!(recorder.retained_calls_for_output(&items[0]), None);
     recorder.attach_pending_to_prompt(&mut items, &mut retry_cache);
 
     let calls = items[0]
@@ -105,6 +106,10 @@ fn executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow() {
         }),
     );
     let expected_calls = calls.clone();
+    assert_eq!(
+        recorder.retained_calls_for_output(&items[0]),
+        Some(expected_calls.clone()),
+    );
 
     {
         let state = recorder
@@ -135,6 +140,7 @@ fn executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow() {
 
     let mut compacted_retry_cache = HashMap::new();
     assert!(!recorder.attach_pending_to_prompt(&mut [], &mut compacted_retry_cache));
+    assert_eq!(recorder.retained_calls_for_output(&items[0]), None);
     let state = recorder
         .state
         .lock()

@@ -26,6 +26,8 @@ use codex_protocol::ThreadId;
 use codex_protocol::config_types::CollaborationModeMask;
 use codex_protocol::mcp::ClientMcpExtensions;
 use codex_protocol::mcp::OPENAI_FORM_EXTENSION_ID;
+use codex_protocol::models::ExecutedToolCall;
+use codex_protocol::models::ResponseItem;
 use codex_protocol::openai_models::ModelInfo;
 use codex_protocol::openai_models::ModelPreset;
 use codex_protocol::protocol::SessionSource;
@@ -65,6 +67,19 @@ pub fn set_thread_manager_test_mode(enabled: bool) {
 
 pub fn set_deterministic_process_ids(enabled: bool) {
     unified_exec::set_deterministic_process_ids_for_tests(enabled);
+}
+
+/// Reads actual prompt-retained metadata without attaching pending calls or editing history.
+pub fn retained_executed_tool_calls_for_output(
+    thread: &crate::CodexThread,
+    output: &ResponseItem,
+) -> Option<Vec<ExecutedToolCall>> {
+    thread
+        .session
+        .services
+        .executed_tool_calls
+        .as_ref()?
+        .retained_calls_for_output(output)
 }
 
 pub fn auth_manager_from_auth(auth: CodexAuth) -> Arc<AuthManager> {

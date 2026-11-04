@@ -209,14 +209,18 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         .resume(&server, Arc::clone(&test.home), rollout_path)
         .await
         .expect("resume the suspended root on a replacement runtime");
+    let expected_epoch = resumed
+        .codex
+        .recovery_epoch_if_idle(&turn_id)
+        .await
+        .expect("suspended history must expose an idle recovery candidate");
     assert_eq!(
         resumed
             .codex
             .recover_turn_if_idle(codex_core::RecoverTurnRequest {
                 turn_id: turn_id.clone(),
-                // The suspended rollout is the initial recovery generation;
-                // no in-memory epoch is exposed until admission succeeds.
-                expected_epoch: 0,
+                // Bind the request to the replacement runtime's current candidate.
+                expected_epoch,
                 thread_settings: Default::default(),
                 trace: None,
             })

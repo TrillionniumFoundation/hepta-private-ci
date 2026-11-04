@@ -336,7 +336,7 @@ impl CodexThread {
         self.session.flush_rollout().await
     }
 
-    /// Observes pending terminalization before submitting settings or history changes.
+    /// Observes pending terminalization before submitting settings, history, or mailbox changes.
     /// The session still performs its atomic admission and authority checks afterward.
     /// An idle callback must defer these submissions until the callback has returned.
     pub async fn submit_with_trace(
@@ -344,17 +344,33 @@ impl CodexThread {
         op: Op,
         trace: Option<W3cTraceContext>,
     ) -> CodexResult<String> {
+        self.submit_with_trace_and_lineage(
+            op, trace, /*parent_turn_id*/ None, /*root_turn_id*/ None,
+        )
+        .await
+    }
+
+    /// Preserves the selected runtime and turn lineage for internal operation callers.
+    /// Idle callbacks must defer mutations until they have returned, as above.
+    pub(crate) async fn submit_with_trace_and_lineage(
+        &self,
+        op: Op,
+        trace: Option<W3cTraceContext>,
+        parent_turn_id: Option<String>,
+        root_turn_id: Option<String>,
+    ) -> CodexResult<String> {
         if matches!(
             &op,
-            Op::ThreadSettings { .. } | Op::Compact | Op::ThreadRollback { .. }
+            Op::ThreadSettings { .. }
+                | Op::Compact
+                | Op::ThreadRollback { .. }
+                | Op::InterAgentCommunication { .. }
         ) && let Some(completion) = self.pending_turn_terminalization()
         {
             completion.await;
         }
         self.io
-            .submit_with_trace(
-                op, trace, /*parent_turn_id*/ None, /*root_turn_id*/ None,
-            )
+            .submit_with_trace(op, trace, parent_turn_id, root_turn_id)
             .await
     }
 
@@ -939,6 +955,7 @@ impl CodexThread {
     /// The caller must submit the associated user input while retaining its
     /// thread-operation lock. The subsequent turn persistence includes both
     /// these items and the user input, without an independent rollout flush.
+    /// Idle lifecycle callbacks must defer this operation until after returning.
     pub async fn inject_response_items_for_turn(
         &self,
         items: Vec<ResponseItem>,
@@ -949,6 +966,12 @@ impl CodexThread {
             ));
         }
 
+        // A terminal event may precede its owner's final persistence and idle
+        // callbacks. Observe that owner before constructing mutable context;
+        // Session still rechecks shutdown and every admission fence atomically.
+        if let Some(completion) = self.pending_turn_terminalization() {
+            completion.await;
+        }
         let turn_context = self.session.new_default_turn().await;
         if self.session.reference_context_item().await.is_none() {
             // This history-only API runs without run_turn, so it owns its initial step.

@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "status": "generated_candidate_only",
+  "steps": [
+    {
+      "name": "original-lock-update",
+      "command": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 21.057151507999997
+    },
+    {
+      "name": "original-lock-check",
+      "command": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 13.607315039999989
+    }
+  ],
+  "product_qualification": false,
+  "verify_inputs_only": false,
+  "workflow": {
+    "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",
+    "GITHUB_REF": "refs/heads/audit/windows-helper-lock-20261104",
+    "GITHUB_SHA": "ea84b04d25fbb40662414239d4836c0c161900aa",
+    "GITHUB_RUN_ID": "41851347278",
+    "GITHUB_RUN_ATTEMPT": "1"
+  },
+  "commit": "ea84b04d25fbb40662414239d4836c0c161900aa",
+  "parent": "e729e6c2becb528e3a6b49c9e5bbea57bd26637a",
+  "changed_paths": [
+    ".github/workflows/hepta-product-fixture-lock.yml",
+    "codex-rs/Cargo.lock",
+    "codex-rs/exec-server/BUILD.bazel",
+    "codex-rs/exec-server/Cargo.toml",
+    "codex-rs/exec-server/tests/common/exec_server.rs",
+    "qualification/product-fixture-lock-20261104/generate_lock.py",
+    "qualification/product-fixture-lock-20261104/helper-source-manifest.json"
+  ],
+  "committed_lock_sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
+  "generated_lock_sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
+  "generated_lock_bytes": 1738619,
+  "committed_lock_matches": true,
+  "source_inputs_unchanged": true,
+  "outputs": {
+    "MODULE.bazel.lock": {
+      "bytes": 1738619,
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    },
+    "MODULE.bazel.lock.patch": {
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    "helper-source-inputs.json": {
+      "bytes": 429,
+      "sha256": "830a586b1cf136f26d197a0da08281dc027d011bb6a172064842bcfd7f1af1cf"
+    },
+    "helper-source-manifest.json": {
+      "bytes": 2258,
+      "sha256": "27dac44bbe25948733bef33c82265af39a9d57dff668a6c5170470fa9a1f935f"
+    },
+    "original-lock-check.stderr": {
+      "bytes": 1204,
+      "sha256": "124b4b46cf861feb1278f1a4c0238b7e9bc386f2a41f4321ed73f1670da3243a"
+    },
+    "original-lock-check.stdout": {
+      "bytes": 18,
+      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+    },
+    "original-lock-update.stderr": {
+      "bytes": 3039,
+      "sha256": "b84a7d66576b5c2aa0d94cd5adbb0d1d0b1756c376323c4facc843f4f772bf15"
+    },
+    "original-lock-update.stdout": {
+      "bytes": 18,
+      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
+    },
+    "source-changed-paths.json": {
+      "bytes": 354,
+      "sha256": "11dd32057c8d4bd5b00f6bdd40ca1766ee4890808038424cf3668e6244daae54"
+    },
+    "source-commit.txt": {
+      "bytes": 41,
+      "sha256": "bbef120553dea17ad0b8f4fe6a09308ad01afeaacd12a3bc016921c42ffd8180"
+    },
+    "source-inputs-after.json": {
+      "bytes": 102192,
+      "sha256": "a6365524801a037af3e6b10344922e9972d1b812331037e6ecc6da7dc7406e17"
+    },
+    "source-inputs.json": {
+      "bytes": 102192,
+      "sha256": "a6365524801a037af3e6b10344922e9972d1b812331037e6ecc6da7dc7406e17"
+    },
+    "source-parent.txt": {
+      "bytes": 41,
+      "sha256": "c8008cba8686806a72ad3649f94978b5ccb0505f6ddf66887d7c3cf54d202f96"
+    },
+    "source.patch": {
+      "bytes": 20315,
+      "sha256": "9a8328e2b1d774f4e8974cfefc2c8649e528f9c4c93aaf838e603034e2a443e2"
+    }
+  }
+}

@@ -46,7 +46,7 @@ async fn websocket_model_switch_to_responses_lite_omits_top_level_tools() -> Res
         .with_model("gpt-5.2");
     let test = builder.build_with_websocket_server(&server).await?;
 
-    test.submit_turn("non-lite turn").await?;
+    test.submit_text_turn("non-lite turn").await?;
     test.codex
         .start_or_steer_turn(
             TurnInputRequest::user_input(vec![UserInput::Text {

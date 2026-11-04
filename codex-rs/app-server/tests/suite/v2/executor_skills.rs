@@ -159,12 +159,17 @@ stream_max_retries = 0
         .await?;
     let auto_env = app_server.auto_env()?;
     let environment_id = auto_env.selection().environment_id.clone();
-    let plugin_dir = auto_env.selection().cwd.join("plugin")?;
+    let file_system = auto_env.environment().get_filesystem();
+    // Use the target filesystem's canonical workspace spelling for this positive
+    // fixture. Restricted reads still pass through the original sandbox policy.
+    let workspace = file_system
+        .canonicalize(&auto_env.selection().cwd, /*sandbox*/ None)
+        .await?;
+    let plugin_dir = workspace.join("plugin")?;
     let manifest_dir = plugin_dir.join(".codex-plugin")?;
     let skill_dir = plugin_dir.join("skills/deploy")?;
     let agents_dir = skill_dir.join("agents")?;
     let reference_dir = skill_dir.join("references")?;
-    let file_system = auto_env.environment().get_filesystem();
     for directory in [&manifest_dir, &agents_dir, &reference_dir] {
         file_system
             .create_directory(

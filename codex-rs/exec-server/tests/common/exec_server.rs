@@ -1,9 +1,15 @@
 #![allow(dead_code)]
 
+#[cfg(windows)]
+use std::io::Write;
+#[cfg(windows)]
+use std::path::Path;
 use std::path::PathBuf;
 use std::process::Stdio;
 use std::time::Duration;
 
+#[cfg(windows)]
+use anyhow::Context;
 use anyhow::anyhow;
 use codex_exec_server_protocol::JSONRPCMessage;
 use codex_exec_server_protocol::JSONRPCNotification;
@@ -11,6 +17,8 @@ use codex_exec_server_protocol::JSONRPCRequest;
 use codex_exec_server_protocol::RequestId;
 use futures::SinkExt;
 use futures::StreamExt;
+#[cfg(windows)]
+use tempfile::NamedTempFile;
 use tempfile::TempDir;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::BufReader;
@@ -69,10 +77,73 @@ impl Drop for DisconnectableWebSocketProxy {
 
 pub(crate) fn test_codex_helper_paths() -> anyhow::Result<TestCodexHelperPaths> {
     let (helper_binary, codex_linux_sandbox_exe) = super::current_test_binary_helper_paths()?;
+    #[cfg(windows)]
+    stage_windows_sandbox_helpers(&helper_binary)?;
     Ok(TestCodexHelperPaths {
         codex_exe: helper_binary,
         codex_linux_sandbox_exe,
     })
+}
+
+#[cfg(windows)]
+fn stage_windows_sandbox_helpers(test_exe: &Path) -> anyhow::Result<()> {
+    let resources_dir = test_exe
+        .parent()
+        .context("Windows test executable should have a parent directory")?
+        .join("codex-resources");
+    std::fs::create_dir_all(&resources_dir)
+        .with_context(|| format!("create resources directory {}", resources_dir.display()))?;
+
+    for helper_name in ["codex-windows-sandbox-setup", "codex-command-runner"] {
+        // Resolve only this test run's declared binary, then use the existing
+        // production package layout for the wrapper's helper lookup.
+        let source = codex_utils_cargo_bin::cargo_bin(helper_name)?;
+        let expected = std::fs::read(&source)
+            .with_context(|| format!("read declared Windows helper {}", source.display()))?;
+        let destination = resources_dir.join(Path::new(helper_name).with_extension("exe"));
+        match std::fs::read(&destination) {
+            Ok(existing) => {
+                anyhow::ensure!(
+                    existing == expected,
+                    "staged Windows helper {} differs from declared source {}",
+                    destination.display(),
+                    source.display()
+                );
+                continue;
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => {
+                return Err(error).with_context(|| {
+                    format!("read staged Windows helper {}", destination.display())
+                });
+            }
+        }
+
+        let mut staged = NamedTempFile::new_in(&resources_dir)
+            .with_context(|| format!("stage Windows helper in {}", resources_dir.display()))?;
+        staged
+            .write_all(&expected)
+            .with_context(|| format!("write staged Windows helper {}", source.display()))?;
+        match staged.persist_noclobber(&destination) {
+            Ok(_) => {}
+            Err(error) if error.error.kind() == std::io::ErrorKind::AlreadyExists => {
+                let existing = std::fs::read(&destination).with_context(|| {
+                    format!("read concurrently staged helper {}", destination.display())
+                })?;
+                anyhow::ensure!(
+                    existing == expected,
+                    "concurrently staged Windows helper {} differs from declared source {}",
+                    destination.display(),
+                    source.display()
+                );
+            }
+            Err(error) => {
+                return Err(error.error)
+                    .with_context(|| format!("publish Windows helper {}", destination.display()));
+            }
+        }
+    }
+    Ok(())
 }
 
 pub(crate) async fn exec_server() -> anyhow::Result<ExecServerHarness> {

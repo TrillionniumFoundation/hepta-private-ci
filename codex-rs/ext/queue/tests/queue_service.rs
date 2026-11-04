@@ -432,11 +432,9 @@ impl QueueStore for FailDeleteOnceQueueStore {
         now_ms: i64,
         lease_expires_at_ms: i64,
     ) -> ThreadStoreFuture<'a, QueuedClientDispatchClaimOutcome> {
-        let lease_expires_at_ms = if self.short_dispatch_lease {
-            now_ms + 250
-        } else {
-            lease_expires_at_ms
-        };
+        // Keep the setup claim valid through the pre-submit persistence checks.
+        // The final authorization below installs the short lease used to prove
+        // ownership remains fenced after Core admission and lease expiry.
         self.inner.claim_client_binding_dispatch(
             process_lock,
             queued_item_id,

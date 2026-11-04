@@ -224,8 +224,10 @@ async fn wait_for_python_repl_ready_via_probe(
     let probe_window = tokio::time::Duration::from_millis(if cfg!(windows) { 750 } else { 250 });
 
     while tokio::time::Instant::now() < deadline {
+        // The PTY can echo input before Python is ready to read it. Keep the
+        // complete marker out of the probe so only Python's output can match it.
         writer
-            .send(format!("print('{marker}'){newline}").into_bytes())
+            .send(format!("print('__codex_' + 'pty_ready__'){newline}").into_bytes())
             .await?;
 
         let probe_deadline = tokio::time::Instant::now() + probe_window;
@@ -1112,8 +1114,15 @@ async fn pty_dropped_output_receiver_keeps_draining_child() -> anyhow::Result<()
     let script =
         "import signal, sys\nsignal.alarm(10)\nsys.stdout.buffer.write(b'x' * (4 * 1024 * 1024))";
     for inherited_fds in [&[][..], &[preserved_fd.as_raw_fd()][..]] {
+        let backend = if inherited_fds.is_empty() {
+            "portable"
+        } else {
+            "preserved_fds"
+        };
+        let spawn_started = std::time::Instant::now();
+        eprintln!("PTY dropped receiver: starting backend={backend}");
         let SpawnedProcess {
-            session: _session,
+            session,
             stdout_rx,
             exit_rx,
             ..
@@ -1127,8 +1136,22 @@ async fn pty_dropped_output_receiver_keeps_draining_child() -> anyhow::Result<()
             inherited_fds,
         )
         .await?;
+        let spawn_elapsed = spawn_started.elapsed();
         drop(stdout_rx);
-        let code = tokio::time::timeout(std::time::Duration::from_secs(2), exit_rx).await??;
+        let wait_started = std::time::Instant::now();
+        let result = tokio::time::timeout(std::time::Duration::from_secs(2), exit_rx).await;
+        let outcome = match &result {
+            Ok(Ok(_)) => "exit_observed",
+            Ok(Err(_)) => "exit_channel_closed",
+            Err(_) => "deadline_elapsed",
+        };
+        eprintln!(
+            "PTY dropped receiver: backend={backend} spawn_elapsed={spawn_elapsed:?} wait_elapsed={:?} outcome={outcome} has_exited={} exit_code={:?}",
+            wait_started.elapsed(),
+            session.has_exited(),
+            session.exit_code(),
+        );
+        let code = result??;
         assert_eq!(code, 0, "child should finish even when output is discarded");
     }
     Ok(())
@@ -1412,21 +1435,38 @@ async fn pty_preserving_inherited_fds_keeps_python_repl_running() -> anyhow::Res
     let (session, mut output_rx, exit_rx) = combine_spawned_output(spawned);
     let writer = session.writer_sender();
     let newline = "\n";
-    let mut output = wait_for_python_repl_ready_via_probe(
+    let readiness_started = std::time::Instant::now();
+    let readiness = wait_for_python_repl_ready_via_probe(
         &writer,
         &mut output_rx,
         /*timeout_ms*/ 5_000,
         newline,
     )
-    .await?;
+    .await;
+    eprintln!(
+        "PTY preserved-fd REPL: phase=readiness elapsed={:?} succeeded={} has_exited={} exit_code={:?}",
+        readiness_started.elapsed(),
+        readiness.is_ok(),
+        session.has_exited(),
+        session.exit_code(),
+    );
+    let mut output = readiness?;
     let marker = "__codex_preserved_py_pid:";
     writer
         .send(format!("import os; print('{marker}' + str(os.getpid())){newline}").into_bytes())
         .await?;
 
+    let pid_marker_started = std::time::Instant::now();
     let python_pid = match wait_for_marker_pid(&mut output_rx, marker, /*timeout_ms*/ 2_000).await {
         Ok(pid) => pid,
         Err(err) => {
+            eprintln!(
+                "PTY preserved-fd REPL: phase=pid_marker elapsed={:?} ready_output_bytes={} has_exited={} exit_code={:?}",
+                pid_marker_started.elapsed(),
+                output.len(),
+                session.has_exited(),
+                session.exit_code(),
+            );
             session.terminate();
             return Err(err);
         }
@@ -1443,6 +1483,89 @@ async fn pty_preserving_inherited_fds_keeps_python_repl_running() -> anyhow::Res
 
     assert_eq!(code, 0, "expected python to exit cleanly");
 
+    Ok(())
+}
+
+#[cfg(unix)]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn pty_python_repl_readiness_waits_for_execution_after_input_echo() -> anyhow::Result<()> {
+    use std::io::Write;
+    use std::os::fd::AsRawFd;
+    use std::os::fd::FromRawFd;
+
+    let python = find_python()
+        .ok_or_else(|| anyhow::anyhow!("Python is required for the PTY readiness regression"))?;
+    let mut fds = [0; 2];
+    if unsafe { libc::pipe(fds.as_mut_ptr()) } != 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let gate_read = unsafe { std::fs::File::from_raw_fd(fds[0]) };
+    let mut gate_write = unsafe { std::fs::File::from_raw_fd(fds[1]) };
+    let mut env_map: HashMap<String, String> = std::env::vars().collect();
+    env_map.insert(
+        "CODEX_PTY_REPL_GATE_FD".to_string(),
+        gate_read.as_raw_fd().to_string(),
+    );
+    let script = r"import os, sys, termios
+fd = int(os.environ['CODEX_PTY_REPL_GATE_FD'])
+attrs = termios.tcgetattr(0)
+attrs[3] |= termios.ECHO
+termios.tcsetattr(0, termios.TCSANOW, attrs)
+print('__pty_repl_gate_waiting__', flush=True)
+assert os.read(fd, 1) == b'1'
+os.close(fd)
+os.execv(sys.executable, [sys.executable])
+";
+    let spawned = spawn_pty_process(
+        &python,
+        &["-c".to_string(), script.to_string()],
+        Path::new("."),
+        &env_map,
+        &None,
+        TerminalSize::default(),
+        &[gate_read.as_raw_fd()],
+    )
+    .await?;
+    drop(gate_read);
+    let (session, mut output_rx, exit_rx) = combine_spawned_output(spawned);
+    wait_for_output_contains(
+        &mut output_rx,
+        "__pty_repl_gate_waiting__",
+        /*timeout_ms*/ 5_000,
+    )
+    .await?;
+    let writer = session.writer_sender();
+    let mut echo_rx = output_rx.resubscribe();
+    {
+        let readiness = wait_for_python_repl_ready_via_probe(
+            &writer,
+            &mut output_rx,
+            /*timeout_ms*/ 5_000,
+            "\n",
+        );
+        tokio::pin!(readiness);
+        tokio::select! {
+            result = &mut readiness => {
+                result?;
+                anyhow::bail!("PTY input echo satisfied readiness before Python could execute the probe");
+            }
+            result = wait_for_output_contains(&mut echo_rx, "__codex_", /*timeout_ms*/ 2_000) => {
+                result?;
+            }
+        }
+        assert!(
+            tokio::time::timeout(std::time::Duration::from_millis(250), &mut readiness)
+                .await
+                .is_err(),
+            "PTY input echo must not satisfy readiness while Python is waiting on the gate"
+        );
+
+        gate_write.write_all(b"1")?;
+        readiness.await?;
+    }
+    writer.send(b"exit()\n".to_vec()).await?;
+    let (_, code) = collect_output_until_exit(output_rx, exit_rx, /*timeout_ms*/ 5_000).await;
+    assert_eq!(code, 0, "expected the gated Python REPL to exit cleanly");
     Ok(())
 }
 

@@ -772,6 +772,32 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
                 .await;
         let stdout = String::from_utf8_lossy(&stdout);
 
+        // Observe only these owned fixture objects after the original child has
+        // completed. Preserve the original postcondition tuple and error checks.
+        {
+            use std::io::Write;
+
+            for (label, path) in [
+                ("outside_file", &outside_file),
+                ("protected_git_directory", &protected_git_dir),
+            ] {
+                let state = fs::metadata(path)
+                    .map(|metadata| (metadata.is_file(), metadata.is_dir(), metadata.len()))
+                    .map_err(|error| (error.kind(), error.raw_os_error()));
+                let _ = writeln!(
+                    std::io::stderr().lock(),
+                    "windows_boundary_diag legacy_metadata={label} path={path:?} state={state:?}"
+                );
+            }
+            let readback = fs::read_to_string(&outside_file)
+                .map(|value| (value.len(), value == "outside"))
+                .map_err(|error| (error.kind(), error.raw_os_error()));
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "windows_boundary_diag legacy_outside_readback={readback:?}"
+            );
+        }
+
         assert_eq!(
             (
                 exit_code,

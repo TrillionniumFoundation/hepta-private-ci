@@ -56,8 +56,7 @@ impl ThreadManagerState {
             log.push((thread_id, captured_op));
         }
         thread
-            .io
-            .submit_with_trace(op, /*trace*/ None, parent_turn_id, root_turn_id)
+            .submit_with_trace_and_lineage(op, /*trace*/ None, parent_turn_id, root_turn_id)
             .await
     }
 

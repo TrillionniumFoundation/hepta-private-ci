@@ -491,6 +491,162 @@ async fn stdio_eof_exits_with_remote_control_connection() -> Result<()> {
 }
 
 #[tokio::test]
+async fn connected_backend_handles_models_lookup_before_websocket_initialize() -> Result<()> {
+    timeout(DEFAULT_TIMEOUT, async {
+        let listener = TcpListener::bind("127.0.0.1:0").await?;
+        let address = listener.local_addr()?;
+        let mut backend = ConnectedRemoteControlBackend::from_listener(listener);
+
+        let enroll_response = fixture_http_request(
+            address,
+            "POST /backend-api/wham/remote/control/server/enroll HTTP/1.1",
+        )
+        .await?;
+        assert!(enroll_response.starts_with("HTTP/1.1 200 OK\r\n"));
+
+        // Complete this ordinary HTTP request before opening the WebSocket, so
+        // the original direct accept_async path deterministically sees it first.
+        let models_response = fixture_http_request(
+            address,
+            "GET /backend-api/v1/models?client_version=0.0.0 HTTP/1.1",
+        )
+        .await?;
+        if models_response.is_empty() {
+            // Retain the backend's actual handshake error in the unpatched
+            // regression, rather than replacing it with a response assertion.
+            backend.wait_until_initialized().await?;
+        }
+        let (status_and_headers, body) = models_response
+            .split_once("\r\n\r\n")
+            .context("models response should contain HTTP headers")?;
+        assert!(status_and_headers.starts_with("HTTP/1.1 200 OK\r\n"));
+        assert_eq!(
+            serde_json::from_str::<serde_json::Value>(body)?,
+            serde_json::json!({ "models": [] })
+        );
+
+        let (mut websocket, response) = tokio_tungstenite::connect_async(format!(
+            "ws://{address}/backend-api/wham/remote/control/server"
+        ))
+        .await?;
+        assert_eq!(response.status().as_u16(), 101);
+        let initialize = websocket
+            .next()
+            .await
+            .context("backend should send initialize")??;
+        let initialize: serde_json::Value = serde_json::from_str(initialize.to_text()?)?;
+        assert_eq!(initialize["type"], "client_message");
+        assert_eq!(initialize["client_id"], "client-id");
+        assert_eq!(initialize["stream_id"], "stream-id");
+        assert_eq!(initialize["message"]["id"], 1);
+        assert_eq!(initialize["message"]["method"], "initialize");
+        websocket
+            .send(Message::Text(
+                serde_json::json!({
+                    "type": "server_message",
+                    "client_id": "client-id",
+                    "stream_id": "stream-id",
+                    "message": {
+                        "id": 1,
+                        "result": {},
+                    },
+                })
+                .to_string()
+                .into(),
+            ))
+            .await?;
+        let initialized = websocket
+            .next()
+            .await
+            .context("backend should send initialized")??;
+        let initialized: serde_json::Value = serde_json::from_str(initialized.to_text()?)?;
+        assert_eq!(initialized["message"]["method"], "initialized");
+        backend.wait_until_initialized().await?;
+
+        // Drop the actual client transport without a WebSocket close frame.
+        // The fixture must observe EOF and finish its original disconnect loop.
+        drop(websocket);
+        backend.wait_for_disconnect().await?;
+        Ok(())
+    })
+    .await?
+}
+
+#[tokio::test]
+async fn models_http_request_is_not_a_websocket_upgrade() -> Result<()> {
+    timeout(DEFAULT_TIMEOUT, async {
+        let listener = TcpListener::bind("127.0.0.1:0").await?;
+        let address = listener.local_addr()?;
+        let original_accept = tokio::spawn(async move {
+            // These are the original backend's two lines after enrollment.
+            let (stream, _) = listener.accept().await?;
+            accept_async(stream)
+                .await
+                .err()
+                .context("ordinary HTTP must not pass a real WebSocket handshake")
+        });
+        fixture_http_request(
+            address,
+            "GET /backend-api/v1/models?client_version=0.0.0 HTTP/1.1",
+        )
+        .await?;
+        let error = original_accept.await??;
+        assert_eq!(
+            error.to_string(),
+            "WebSocket protocol error: No \"Connection: upgrade\" header"
+        );
+        Ok(())
+    })
+    .await?
+}
+
+#[tokio::test]
+async fn http_fixture_rejects_eof_before_request_headers_complete() -> Result<()> {
+    timeout(DEFAULT_TIMEOUT, async {
+        let requests: [&[u8]; 2] = [
+            b"",
+            b"GET /backend-api/wham/remote/control/server HTTP/1.1\r\nhost: fixture\r\n",
+        ];
+        for wire in requests {
+            let listener = TcpListener::bind("127.0.0.1:0").await?;
+            let address = listener.local_addr()?;
+            let parser =
+                tokio::spawn(async move { read_http_request(&listener).await.map(|_| ()) });
+            let mut stream = TcpStream::connect(address).await?;
+            stream.write_all(wire).await?;
+            stream.shutdown().await?;
+            let error = parser
+                .await?
+                .expect_err("an interrupted request must terminate with an EOF error");
+            assert_eq!(
+                error
+                    .downcast_ref::<std::io::Error>()
+                    .context("parser should preserve the EOF error kind")?
+                    .kind(),
+                ErrorKind::UnexpectedEof
+            );
+        }
+        Ok(())
+    })
+    .await?
+}
+
+async fn fixture_http_request(address: std::net::SocketAddr, request_line: &str) -> Result<String> {
+    let mut stream = TcpStream::connect(address).await?;
+    stream
+        .write_all(
+            format!(
+                "{request_line}\r\nhost: {address}\r\ncontent-length: 0\r\nconnection: close\r\n\r\n"
+            )
+            .as_bytes(),
+        )
+        .await?;
+    let mut response = String::new();
+    stream.read_to_string(&mut response).await?;
+    Ok(response)
+}
+
+#[tokio::test]
 async fn disable_waits_for_in_flight_durable_enable() -> Result<()> {
     let codex_home = TempDir::new()?;
     let mut backend = BlockingRemoteControlBackend::start(codex_home.path()).await?;
@@ -844,6 +1000,10 @@ struct ClientManagementRemoteControlBackend {
 impl ConnectedRemoteControlBackend {
     async fn start(codex_home: &std::path::Path) -> Result<Self> {
         let listener = configured_remote_control_listener(codex_home).await?;
+        Ok(Self::from_listener(listener))
+    }
+
+    fn from_listener(listener: TcpListener) -> Self {
         let (initialized_tx, initialized_rx) = oneshot::channel();
         let server_task = tokio::spawn(async move {
             let mut initialized_tx = Some(initialized_tx);
@@ -860,8 +1020,8 @@ impl ConnectedRemoteControlBackend {
                 )
                 .await?;
 
-                let (stream, _) = listener.accept().await?;
-                let mut websocket = accept_async(stream).await?;
+                let request = read_http_request(&listener).await?;
+                let mut websocket = accept_async(request.into_replayed_stream()).await?;
                 websocket
                     .send(Message::Text(
                         serde_json::json!({
@@ -936,10 +1096,10 @@ impl ConnectedRemoteControlBackend {
             result
         });
 
-        Ok(Self {
+        Self {
             initialized_rx: Some(initialized_rx),
             server_task,
-        })
+        }
     }
 
     async fn wait_until_initialized(&mut self) -> Result<()> {
@@ -1203,7 +1363,18 @@ impl Drop for ClientManagementRemoteControlBackend {
 struct HttpRequest {
     request_line: String,
     body: String,
+    wire_bytes: Vec<u8>,
     reader: BufReader<TcpStream>,
+}
+
+impl HttpRequest {
+    fn into_replayed_stream(self) -> impl tokio::io::AsyncRead + tokio::io::AsyncWrite + Unpin {
+        // Replay exactly the bytes inspected by the HTTP fixture, followed by
+        // the intact BufReader (including any bytes it read ahead). The actual
+        // WebSocket acceptor still validates the complete original handshake.
+        let (reader, writer) = tokio::io::split(self.reader);
+        tokio::io::join(std::io::Cursor::new(self.wire_bytes).chain(reader), writer)
+    }
 }
 
 async fn configured_remote_control_listener(codex_home: &std::path::Path) -> Result<TcpListener> {
@@ -1233,11 +1404,25 @@ async fn read_http_request(listener: &TcpListener) -> Result<HttpRequest> {
         let mut reader = BufReader::new(stream);
 
         let mut request_line = String::new();
-        reader.read_line(&mut request_line).await?;
+        if reader.read_line(&mut request_line).await? == 0 {
+            return Err(std::io::Error::new(
+                ErrorKind::UnexpectedEof,
+                "HTTP request closed before the request line",
+            )
+            .into());
+        }
+        let mut wire_bytes = request_line.as_bytes().to_vec();
         let mut content_length = 0;
         loop {
             let mut line = String::new();
-            reader.read_line(&mut line).await?;
+            if reader.read_line(&mut line).await? == 0 {
+                return Err(std::io::Error::new(
+                    ErrorKind::UnexpectedEof,
+                    "HTTP request closed before the header terminator",
+                )
+                .into());
+            }
+            wire_bytes.extend_from_slice(line.as_bytes());
             if line == "\r\n" {
                 break;
             }
@@ -1253,6 +1438,7 @@ async fn read_http_request(listener: &TcpListener) -> Result<HttpRequest> {
         if content_length > 0 {
             reader.read_exact(&mut body).await?;
         }
+        wire_bytes.extend_from_slice(&body);
 
         let request_line = request_line.trim_end().to_string();
         if request_line.starts_with("GET ") && request_line.contains("/v1/models?") {
@@ -1263,6 +1449,7 @@ async fn read_http_request(listener: &TcpListener) -> Result<HttpRequest> {
         return Ok(HttpRequest {
             request_line,
             body: String::from_utf8(body)?,
+            wire_bytes,
             reader,
         });
     }
