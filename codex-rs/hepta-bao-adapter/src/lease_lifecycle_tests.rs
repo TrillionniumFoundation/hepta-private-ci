@@ -238,3 +238,20 @@ fn expiry_is_durable_and_terminal_for_renewal() {
         SecretLeaseStateV1::Expired
     );
 }
+
+#[test]
+fn unavailable_storage_never_publishes_a_prepared_operation() {
+    let directory = tempfile::tempdir().unwrap();
+    let blocked_parent = directory.path().join("not-a-directory");
+    std::fs::write(&blocked_parent, b"existing bytes").unwrap();
+    let mut registry =
+        DurableLeaseRegistryV1::open(blocked_parent.join("lease-registry.json")).unwrap();
+
+    assert_eq!(
+        registry.prepare_issue("op:issue:1".into(), [3; 32]),
+        Err(LeaseRegistryErrorV1::Unavailable)
+    );
+    assert_eq!(registry.operation("op:issue:1"), None);
+    assert_eq!(registry.lease("lease:db:1"), None);
+    assert_eq!(std::fs::read(blocked_parent).unwrap(), b"existing bytes");
+}
