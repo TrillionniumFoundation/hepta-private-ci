@@ -3,6 +3,33 @@
 pub(crate) mod env;
 pub use env::is_wsl;
 
+#[cfg(windows)]
+mod private_state_windows;
+#[cfg(windows)]
+pub use private_state_windows::PrivateFileAccess;
+#[cfg(windows)]
+pub use private_state_windows::PrivateStateSnapshot;
+#[cfg(windows)]
+pub use private_state_windows::create_new_private_state_child;
+#[cfg(windows)]
+pub use private_state_windows::open_existing_private_state_directory;
+#[cfg(windows)]
+pub use private_state_windows::open_existing_private_state_directory_for_sync;
+#[cfg(windows)]
+pub use private_state_windows::open_frozen_private_state_child;
+#[cfg(windows)]
+pub use private_state_windows::open_private_state_child;
+#[cfg(windows)]
+pub use private_state_windows::open_private_state_directory;
+#[cfg(windows)]
+pub use private_state_windows::private_state_child_exists;
+#[cfg(windows)]
+pub use private_state_windows::private_state_directory_snapshot;
+#[cfg(windows)]
+pub use private_state_windows::private_state_file_snapshot;
+#[cfg(windows)]
+pub use private_state_windows::replace_private_state_child;
+
 use codex_utils_absolute_path::AbsolutePathBuf;
 use std::collections::HashSet;
 use std::io;

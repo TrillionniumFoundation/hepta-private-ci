@@ -35,19 +35,22 @@ impl SqliteConfig {
         guard: &ExistingSqliteRecoveryGuard,
         target: &std::path::Path,
     ) -> Result<(), SqliteRecoveryError> {
-        #[cfg(unix)]
+        #[cfg(any(unix, windows))]
         {
             use super::RetainedOptionalObject;
+            #[cfg(unix)]
             use std::fs::OpenOptions;
             use std::io::Write;
-            use std::os::unix::fs::FileExt;
+            #[cfg(unix)]
             use std::os::unix::fs::OpenOptionsExt;
 
             const MAX_DATABASE_BYTES: u64 = 128 * 1024 * 1024;
             const MAX_SIDECAR_BYTES: u64 = 128 * 1024 * 1024;
             const MAX_BUNDLE_BYTES: u64 = 256 * 1024 * 1024;
 
-            if target.parent() != Some(self.home())
+            if !target
+                .parent()
+                .is_some_and(|parent| super::same_recovery_home(parent, self.home()))
                 || target == guard.inner.database_path
                 || target.file_name().is_none()
             {
@@ -55,11 +58,11 @@ impl SqliteConfig {
             }
             guard.revalidate_for(self)?;
 
-            fn retained_bytes(
+            fn retained_size(
                 object: &super::RetainedObject,
                 maximum: u64,
                 allow_empty: bool,
-            ) -> Result<Vec<u8>, SqliteRecoveryError> {
+            ) -> Result<u64, SqliteRecoveryError> {
                 let size = object
                     .descriptor
                     .metadata()
@@ -68,12 +71,42 @@ impl SqliteConfig {
                 if (!allow_empty && size == 0) || size > maximum {
                     return Err(SqliteRecoveryError::Unavailable);
                 }
+                Ok(size)
+            }
+
+            fn optional_size(
+                object: &RetainedOptionalObject,
+            ) -> Result<Option<u64>, SqliteRecoveryError> {
+                match object {
+                    RetainedOptionalObject::Absent(_) => Ok(None),
+                    RetainedOptionalObject::Present(object) => {
+                        retained_size(object, MAX_SIDECAR_BYTES, true).map(Some)
+                    }
+                }
+            }
+
+            // Bound every retained descriptor and the complete bundle before
+            // allocating any file buffer. Identity is still revalidated after
+            // reading, so drift never becomes an accepted partial image.
+            let database_size = retained_size(&guard.inner.database, MAX_DATABASE_BYTES, false)?;
+            let wal_size = optional_size(&guard.inner.sidecars[0])?;
+            let journal_size = optional_size(&guard.inner.sidecars[2])?;
+            let total = database_size
+                .checked_add(wal_size.unwrap_or(0))
+                .and_then(|value| value.checked_add(journal_size.unwrap_or(0)))
+                .ok_or(SqliteRecoveryError::Unavailable)?;
+            if total > MAX_BUNDLE_BYTES {
+                return Err(SqliteRecoveryError::Unavailable);
+            }
+
+            fn retained_bytes(
+                object: &super::RetainedObject,
+                size: u64,
+            ) -> Result<Vec<u8>, SqliteRecoveryError> {
                 let size = usize::try_from(size).map_err(|_| SqliteRecoveryError::Unavailable)?;
                 let mut bytes = vec![0; size];
                 if !bytes.is_empty() {
-                    object
-                        .descriptor
-                        .read_exact_at(&mut bytes, 0)
+                    read_exact_at(&object.descriptor, &mut bytes, 0)
                         .map_err(super::indeterminate)?;
                 }
                 Ok(bytes)
@@ -81,47 +114,33 @@ impl SqliteConfig {
 
             fn optional_bytes(
                 object: &RetainedOptionalObject,
+                size: Option<u64>,
             ) -> Result<Option<Vec<u8>>, SqliteRecoveryError> {
-                match object {
-                    RetainedOptionalObject::Absent(_) => Ok(None),
-                    RetainedOptionalObject::Present(object) => {
-                        retained_bytes(object, MAX_SIDECAR_BYTES, true).map(Some)
+                match (object, size) {
+                    (RetainedOptionalObject::Absent(_), None) => Ok(None),
+                    (RetainedOptionalObject::Present(object), Some(size)) => {
+                        retained_bytes(object, size).map(Some)
                     }
+                    _ => Err(SqliteRecoveryError::Indeterminate),
                 }
             }
 
-            let database = retained_bytes(&guard.inner.database, MAX_DATABASE_BYTES, false)?;
-            let wal = optional_bytes(&guard.inner.sidecars[0])?;
+            let database = retained_bytes(&guard.inner.database, database_size)?;
+            let wal = optional_bytes(&guard.inner.sidecars[0], wal_size)?;
             // sidecars[1] is SHM and is intentionally not copied.
-            let journal = optional_bytes(&guard.inner.sidecars[2])?;
-            let total = u64::try_from(database.len())
-                .ok()
-                .and_then(|value| {
-                    value.checked_add(
-                        wal.as_ref()
-                            .and_then(|bytes| u64::try_from(bytes.len()).ok())
-                            .unwrap_or(0),
-                    )
-                })
-                .and_then(|value| {
-                    value.checked_add(
-                        journal
-                            .as_ref()
-                            .and_then(|bytes| u64::try_from(bytes.len()).ok())
-                            .unwrap_or(0),
-                    )
-                })
-                .ok_or(SqliteRecoveryError::Unavailable)?;
-            if total > MAX_BUNDLE_BYTES {
-                return Err(SqliteRecoveryError::Unavailable);
-            }
+            let journal = optional_bytes(&guard.inner.sidecars[2], journal_size)?;
             guard.revalidate_for(self)?;
 
             let target_wal = super::sqlite_sidecar_path(target, "-wal");
             let target_journal = super::sqlite_sidecar_path(target, "-journal");
             let mut created = Vec::new();
-            let write_private =
+            #[cfg(windows)]
+            let target_directory =
+                codex_utils_path::open_existing_private_state_directory_for_sync(self.home())
+                    .map_err(super::indeterminate)?;
+            let mut write_private =
                 |path: &std::path::Path, bytes: &[u8]| -> Result<(), SqliteRecoveryError> {
+                    #[cfg(unix)]
                     let mut file = OpenOptions::new()
                         .write(true)
                         .create_new(true)
@@ -129,22 +148,34 @@ impl SqliteConfig {
                         .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
                         .open(path)
                         .map_err(super::indeterminate)?;
+                    #[cfg(windows)]
+                    let mut file = {
+                        let name = path
+                            .file_name()
+                            .and_then(std::ffi::OsStr::to_str)
+                            .ok_or(SqliteRecoveryError::Indeterminate)?;
+                        codex_utils_path::create_new_private_state_child(&target_directory, name)
+                            .map_err(super::indeterminate)?
+                    };
+                    // CREATE_NEW succeeded: this invocation owns cleanup even
+                    // if the following write or file sync fails partway.
+                    created.push(path.to_path_buf());
                     file.write_all(bytes).map_err(super::indeterminate)?;
                     file.sync_all().map_err(super::indeterminate)
                 };
 
             let result = (|| {
                 write_private(target, &database)?;
-                created.push(target.to_path_buf());
                 if let Some(bytes) = wal.as_deref() {
                     write_private(&target_wal, bytes)?;
-                    created.push(target_wal.clone());
                 }
                 if let Some(bytes) = journal.as_deref() {
                     write_private(&target_journal, bytes)?;
-                    created.push(target_journal.clone());
                 }
+                #[cfg(unix)]
                 let directory = std::fs::File::open(self.home()).map_err(super::indeterminate)?;
+                #[cfg(windows)]
+                let directory = &target_directory;
                 directory.sync_all().map_err(super::indeterminate)?;
                 Ok(())
             })();
@@ -155,7 +186,7 @@ impl SqliteConfig {
             }
             result
         }
-        #[cfg(not(unix))]
+        #[cfg(not(any(unix, windows)))]
         {
             let _ = (guard, target);
             Err(SqliteRecoveryError::Unavailable)
@@ -163,7 +194,7 @@ impl SqliteConfig {
     }
 
     #[cfg_attr(
-        unix,
+        any(unix, windows),
         expect(
             clippy::disallowed_methods,
             reason = "this is codex-state's retained-descriptor cold-image connection shim"
@@ -173,10 +204,9 @@ impl SqliteConfig {
         &self,
         guard: &ExistingSqliteRecoveryGuard,
     ) -> Result<SqlitePool, SqliteRecoveryError> {
-        #[cfg(unix)]
+        #[cfg(any(unix, windows))]
         {
             use super::RetainedOptionalObject;
-            use std::os::unix::fs::FileExt;
             use std::sync::Arc;
 
             guard.revalidate_for(self)?;
@@ -199,11 +229,7 @@ impl SqliteConfig {
                 return Err(SqliteRecoveryError::Indeterminate);
             }
             let mut bytes = vec![0; size as usize];
-            guard
-                .inner
-                .database
-                .descriptor
-                .read_exact_at(&mut bytes, 0)
+            read_exact_at(&guard.inner.database.descriptor, &mut bytes, 0)
                 .map_err(super::indeterminate)?;
             guard.revalidate_for(self)?;
             if &bytes[..16] != b"SQLite format 3\0"
@@ -273,7 +299,7 @@ impl SqliteConfig {
             }
             Ok(pool)
         }
-        #[cfg(not(unix))]
+        #[cfg(not(any(unix, windows)))]
         {
             let _ = guard;
             Err(SqliteRecoveryError::Unavailable)
@@ -284,3 +310,12 @@ impl SqliteConfig {
 #[cfg(all(test, unix))]
 #[path = "sqlite_recovery_image_tests.rs"]
 mod tests;
+
+#[cfg(unix)]
+fn read_exact_at(file: &std::fs::File, bytes: &mut [u8], offset: u64) -> std::io::Result<()> {
+    use std::os::unix::fs::FileExt;
+    file.read_exact_at(bytes, offset)
+}
+
+#[cfg(windows)]
+use super::windows::read_exact_at;

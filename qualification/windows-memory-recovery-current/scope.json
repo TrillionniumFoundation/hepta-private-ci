@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "base_commit": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+  "base_cargo_blob": "d6c49a2eed9bddda69d9a46726014c5262c7b310",
+  "reviewed_provider_commit": "e9cf924b88e3ace17e6fb74498949866f83a69d9",
+  "state_qualification_head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+  "product_state": "DRAFT_HOLD",
+  "allowed_generated_source_paths": [
+    "codex-rs/utils/path-utils/Cargo.toml",
+    "codex-rs/utils/path-utils/src/lib.rs",
+    "codex-rs/utils/path-utils/src/private_state_windows.rs",
+    "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+    "codex-rs/utils/path-utils/src/private_state_windows_directory_tests.rs",
+    "codex-rs/utils/path-utils/src/private_state_windows_security.rs",
+    "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+    "codex-rs/utils/path-utils/src/private_state_windows_recovery.rs",
+    "codex-rs/utils/path-utils/src/private_state_windows_recovery_tests.rs",
+    "codex-rs/state/Cargo.toml",
+    "codex-rs/state/src/sqlite_recovery.rs",
+    "codex-rs/state/src/sqlite_recovery_image.rs",
+    "codex-rs/state/src/sqlite_recovery_image_tests.rs",
+    "codex-rs/state/src/sqlite_recovery_windows.rs",
+    "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_windows.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_windows_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_sync.rs",
+    "codex-rs/hepta-memory/src/cognitive_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+    "codex-rs/hepta-memory/Cargo.toml",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery_windows_tests.rs",
+    "qualification/windows-memory-recovery-current/generate.py"
+  ],
+  "package_count": 1517,
+  "expected_added_dependencies": {
+    "codex-hepta-memory": [
+      "codex-utils-path"
+    ],
+    "codex-state": [
+      "codex-utils-path"
+    ],
+    "codex-utils-path": [
+      "winapi-util",
+      "windows-sys 0.52.0"
+    ]
+  },
+  "excluded_upstream_scope": [
+    "migrations 16 and 17",
+    "schema oracle changes",
+    "HOS2 and objective sender state",
+    "capture_recovery_anchor export",
+    "verify_sender_store integration",
+    "new public CognitiveStore::close API"
+  ],
+  "original_ignored_memory_cases": [
+    "cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt",
+    "cognitive_retrieval::observation::tests::target_host_owner_retrieval_reports_latency_percentiles",
+    "cognitive_store_tests::kg_projection_crash_child",
+    "cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor",
+    "local_compact_executor_tests::host_restart_reopen_replay_process_soak",
+    "local_compact_executor_tests::sqlite_1000_operation_seeded_reopen_replay_stress",
+    "local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe"
+  ]
+}

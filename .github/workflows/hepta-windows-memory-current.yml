@@ -1,0 +1,66 @@
+name: Windows retained Memory recovery on current union
+
+on:
+  push:
+    branches: [fix/private-ci-windows-memory-recovery-20261104]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-memory-current-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    if: github.ref_name == 'fix/private-ci-windows-memory-recovery-20261104'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    outputs:
+      qualified: ${{ steps.lock.outputs.qualified }}
+    env:
+      RUSTUP_TOOLCHAIN: 1.96.0
+      GIT_CONFIG_COUNT: 1
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 32
+          filter: blob:none
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 230d2d69a8c68ae6f8c502118fd9a8ee33027c37
+          path: original-lock-source
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: /codex-rs/Cargo.lock
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: windows-memory-current-lock
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          toolchain: 1.96.0
+          components: rustfmt,clippy
+      - name: Produce actual locks and formatter bytes without running product code
+        id: lock
+        env:
+          HEPTA_EXPECTED_COMMIT: ${{ github.sha }}
+        run: >-
+          python3 qualification/windows-memory-recovery-current/generate.py
+          --output "$RUNNER_TEMP/windows-memory-generated"
+          --baseline-lock original-lock-source/codex-rs/Cargo.lock
+      - name: Preserve actual generation including all failed commands
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: windows-memory-generated-${{ github.sha }}
+          path: ${{ runner.temp }}/windows-memory-generated
+          if-no-files-found: error
+          retention-days: 14
