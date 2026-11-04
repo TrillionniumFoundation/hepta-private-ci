@@ -346,3 +346,30 @@ fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistr
     }
     Ok(())
 }
+
+#[cfg(windows)]
+#[test]
+fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistryError> {
+    let fleet = TestFleet::new()?;
+    let record = fleet
+        .registry
+        .register(fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?)?;
+    for root in [
+        record.layout.agent_root(),
+        record.layout.home_root(),
+        record.layout.run_root(),
+        record.layout.logs_root(),
+        record.layout.releases_root(),
+        record.layout.cognitive_root(),
+        record.layout.matrix_root(),
+        record.layout.matrix_secrets_root(),
+        record.layout.automation_root(),
+    ] {
+        // The owning private-state API verifies the actual retained object's
+        // current-user owner and DACL, rather than inferring them from a parent.
+        drop(codex_utils_path::open_existing_private_state_directory(
+            root,
+        )?);
+    }
+    Ok(())
+}
