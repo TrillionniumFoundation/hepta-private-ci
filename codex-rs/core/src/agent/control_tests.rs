@@ -317,12 +317,17 @@ fn history_contains_text<'a>(
 }
 
 async fn wait_for_recorded_user_message(thread: &CodexThread, needle: &str) {
-    timeout(Duration::from_secs(5), async {
+    let mut observed = Vec::new();
+    let result = timeout(Duration::from_secs(5), async {
         loop {
             let event = thread
                 .next_event()
                 .await
                 .expect("event stream should stay open");
+            if observed.len() == 16 {
+                observed.remove(0);
+            }
+            observed.push(format!("{:?}", event.msg));
             if let EventMsg::ItemCompleted(ItemCompletedEvent {
                 item: TurnItem::UserMessage(item),
                 ..
@@ -335,8 +340,11 @@ async fn wait_for_recorded_user_message(thread: &CodexThread, needle: &str) {
             }
         }
     })
-    .await
-    .expect("timed out waiting for user message recording");
+    .await;
+    assert!(
+        result.is_ok(),
+        "timed out waiting for user message recording: {observed:#?}"
+    );
 }
 
 fn history_contains_assistant_inter_agent_communication<'a>(
