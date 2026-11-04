@@ -3,6 +3,7 @@
 
 use super::*;
 use anyhow::Context;
+use pretty_assertions::assert_eq;
 use std::io::Write;
 use windows_sys::Win32::Security::Cryptography::BCRYPT_ALG_HANDLE;
 use windows_sys::Win32::Security::Cryptography::BCRYPT_SHA256_ALGORITHM;

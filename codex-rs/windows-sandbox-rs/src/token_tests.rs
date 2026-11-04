@@ -544,7 +544,7 @@ fn check_actual_event_descriptor(security: EventSecurity) -> Result<()> {
                 0,
                 std::ptr::null(),
                 1,
-                &mut read_entry,
+                &read_entry,
                 &mut read_token,
             )
         } != 0,
