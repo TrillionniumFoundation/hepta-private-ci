@@ -3976,7 +3976,8 @@ mod tests {
             let head = std::thread::spawn(move || {
                 let mut request = [0; 1024];
                 let _ = head_stream.read(&mut request);
-                std::thread::sleep(Duration::from_millis(50));
+                // Withhold HEAD beyond its deadline even on loaded Windows runners.
+                std::thread::sleep(Duration::from_millis(1000));
             });
 
             let (mut get_stream, _) = listener.accept().expect("accept GET probe request");
@@ -3992,7 +3993,8 @@ mod tests {
 
         let status = mcp_http_probe_url_with_timeout(
             &format!("http://{addr}/mcp"),
-            Duration::from_millis(10),
+            // Bound each request independently while allowing native socket scheduling.
+            Duration::from_millis(300),
         )
         .await;
         server.join().expect("probe server thread should finish");
