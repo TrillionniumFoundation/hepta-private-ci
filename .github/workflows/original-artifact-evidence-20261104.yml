@@ -19,12 +19,12 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - key: envf2-source
-            source: f2d0fcd44cedd662f5cbccff1278ade26354f350
+          - key: envf5-source
+            source: f5bddc124052837befca7735b9e5a46ab708e5a5
             script: verify.py
             full_source: true
-          - key: envf2-merge
-            source: 6579544c4b154eda1d19b7f7fe6aca12c432b50e
+          - key: envf5-merge
+            source: 97c601299dd3af35640ac79475f9010e3a30ee2b
             script: verify.py
             full_source: true
     env:
