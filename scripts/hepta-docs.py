@@ -55,6 +55,11 @@ WORKFLOW_REFERENCE_SCRIPTS = (
 WORKFLOW_REFERENCE_RE = re.compile(
     r"(?<![A-Za-z0-9_.-])(?P<path>\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml)(?![A-Za-z0-9_.-])"
 )
+# Only explicit owner/repository signing provenance is external. Keep rejecting
+# missing root-relative workflows, including ones written with ./ or prefixes.
+EXTERNAL_SIGNER_WORKFLOW_PREFIX_RE = re.compile(
+    r'"signer_workflow"\s*:\s*"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/$'
+)
 FILES = {
     "current": "docs/CURRENT.json",
     "system": "docs/governance/DOCUMENT_SYSTEM.json",
@@ -192,6 +197,12 @@ def verify_exact_workflow_references() -> None:
         except (OSError, UnicodeDecodeError):
             continue
         for match in WORKFLOW_REFERENCE_RE.finditer(text):
+            qualifier_end = match.start()
+            qualifier_start = max(0, qualifier_end - 256)
+            if EXTERNAL_SIGNER_WORKFLOW_PREFIX_RE.search(
+                text[qualifier_start:qualifier_end]
+            ):
+                continue
             workflow = match.group("path")
             if not (ROOT / workflow).is_file():
                 line = text.count("\n", 0, match.start()) + 1
