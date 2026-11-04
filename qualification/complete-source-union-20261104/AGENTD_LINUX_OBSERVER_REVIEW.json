@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "source_parent": "0cf81d65646b8907e42e781ea35a28437b5b0054",
+  "original_failure": {
+    "source": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+    "checkout": "4109e2a9610816ddf05cf893d0cbcced1a0aceb2",
+    "tree": "d237c3669d3c11f2ef11c03250ce39ca8d674044",
+    "run_id": 41771368391,
+    "job_id": 126384287502,
+    "full_decoded_log": {
+      "bytes": 6677386,
+      "sha256": "19e44140a8286d611af7436343b5c52228048c194e7e970ecb6a8438f0d7e542",
+      "git_blob": "8e550a498745c5f855e7e867b64a88cd73daf39e"
+    },
+    "excerpts": [
+      {
+        "path": "qualification/complete-source-union-20261104/r2-original-failures/cognitive-product.job-excerpt.log",
+        "bytes": 2948,
+        "sha256": "c3edb29f84b5a01d7037e4ae64cd6586edebff6ca480d510562cc1a50bf2a354",
+        "kind": "Exact timestamped original job excerpt, not a complete job-log claim",
+        "start_character": 6658200,
+        "end_character": 6661148
+      },
+      {
+        "path": "qualification/complete-source-union-20261104/r2-original-failures/supervisord-product.job-excerpt.log",
+        "bytes": 2652,
+        "sha256": "519a5c5ec08faa3d7414fd90935b45fbdd76c11bcf229b1a85638b0cd0005e31",
+        "kind": "Exact timestamped original job excerpt, not a complete job-log claim",
+        "start_character": 6661148,
+        "end_character": 6663800
+      }
+    ]
+  },
+  "source_decisions": [
+    {
+      "path": "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+      "reason": "Use the existing repository runfiles-aware cargo_bin resolver for the exact existing Agentd binary. The fixture previously embedded the compile-time CARGO_BIN_EXE path into a signed shell release even when the runtime wrapper supplied the actual runfile. Preserve both original cases, all 25 assertions, 120-second wait, five real children, signing, restart/release and rollback checks.",
+      "reference_path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "reference_blob": "5fbc27368d38672b0d0c884e73902c23395e93ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "reason": "Read physical KG generation facts under the existing migration 0014 revision_facts_v1 storage contract. Require an exact current-generation storage witness. Count immutable entities/relations from the latest receipt selected at that generation, retaining exact source citation and active/verified lifecycle restrictions. Preserve all 131 assertions, all 13 original cases including four existing provider ignores, real physical HTTP request observations and every digest comparison.",
+      "schema_blob": "1a78321beb35e3a927d2c4c06f883c0647aeef3b",
+      "writer_blob": "14702d68d7f9e5c25ac76d2605bdb958cecc0803",
+      "legacy_history_scope": "This fresh-product fixture requires the current storage witness; historical materialized generation compatibility remains covered by the existing owner store tests. No production storage behavior changes."
+    }
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+      "encoding": "utf-8",
+      "bytes": 26352,
+      "git": "c2ecc470dadc6a30ce5246ee689d70f3042ea009",
+      "sha256": "ef1130e8d18845498fc8edb1769f2d4475782fe1209efb8f7840a336b29bf0b0",
+      "before_git": "e7a2e3732ccfa954207a787d2e26dc58987a0e73"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "encoding": "utf-8",
+      "bytes": 98497,
+      "git": "3d8cc817959064df9e9f465f3bc7420efe2d97ab",
+      "sha256": "0e28557766ceea76a03ff4de80b9e6b04d8e8fa7cd700f6847d1c5402abed25a",
+      "before_git": "3d6c567a32cb8486702690778f9afdb292a3bda0"
+    }
+  ],
+  "static_inventory": [
+    {
+      "path": "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+      "testNamesUnchanged": true,
+      "beforeAssertions": 25,
+      "afterAssertions": 25
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "testNamesUnchanged": true,
+      "beforeAssertions": 131,
+      "afterAssertions": 131
+    }
+  ],
+  "execution": {
+    "new_compiler_runs": 0,
+    "new_native_tests": 0
+  },
+  "required": "Original Bazel GNU/musl product qualification and supervisord product targets, then complete original source/merge gates. Original negative receipts remain retained."
+}

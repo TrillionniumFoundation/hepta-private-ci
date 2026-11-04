@@ -1,5 +1,6 @@
 use std::fs;
 use std::fs::File;
+#[cfg(not(windows))]
 use std::fs::OpenOptions;
 use std::io::Read;
 use std::io::Write;
@@ -47,12 +48,21 @@ use crate::cognitive_model::SourceRevisionId;
 use crate::cognitive_path::canonical_path_without_redirection;
 use crate::framing::frame_part;
 
+#[cfg(windows)]
+#[path = "cognitive_store_windows.rs"]
+mod windows;
+
+#[path = "cognitive_store_sync.rs"]
+mod sync;
+use sync::sync_cognitive_directory;
+
 #[path = "cognitive_store_recovery.rs"]
 mod recovery;
 pub use recovery::CognitiveRecoveryAnchor;
 pub use recovery::CognitiveRecoveryError;
 pub use recovery::CognitiveRecoveryRequirement;
 pub use recovery::RecoveredCognitiveReadOnly;
+pub(crate) use recovery::capture as capture_recovery_anchor;
 
 const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
 const COGNITIVE_ACTIVE_DB_POINTER: &str = ".cognitive-active-v1";
@@ -61,6 +71,13 @@ const COGNITIVE_RECOVERED_DB_PREFIX: &str = "cognitive_recovered_v1_";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
+    ("cognitive_objective_sender_requests", "table"),
+    ("cognitive_objective_sender_requests_no_update", "trigger"),
+    ("cognitive_objective_sender_requests_no_delete", "trigger"),
+    ("cognitive_objective_sender_events", "table"),
+    ("cognitive_objective_sender_events_no_update", "trigger"),
+    ("cognitive_objective_sender_events_no_delete", "trigger"),
+    ("cognitive_objective_sender_events_append", "trigger"),
     ("shared_experience_use_events", "table"),
     ("shared_experience_use_no_update", "trigger"),
     ("shared_experience_use_no_delete", "trigger"),
@@ -198,9 +215,19 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_dispatch_claims_no_delete", "trigger"),
     ("cognitive_operation_dispatch_claims_active_lookup", "index"),
     ("cognitive_operation_dispatch_claims_expiry_lookup", "index"),
+    ("cognitive_operation_pre_boundary_rejections", "table"),
+    (
+        "cognitive_operation_pre_boundary_rejections_no_update",
+        "trigger",
+    ),
+    (
+        "cognitive_operation_pre_boundary_rejections_no_delete",
+        "trigger",
+    ),
+    ("cognitive_local_outbox_hos2_delivery", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "046f23bab5d4c779735c762159c79e61cfe3a6a8a35e18ff8ec4f40e5c4e2be2";
+    "55a697816bedf97c5fa3ef36a4d9d39d98f6f572d825a38541afe62e19203773";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -228,10 +255,12 @@ pub struct CognitiveStore {
 pub(crate) struct CognitiveStoreOpenGuard {
     _file: File,
     _path: PathBuf,
+    #[cfg(windows)]
+    _directory: File,
 }
 
 impl CognitiveStoreOpenGuard {
-    fn open_lock_file(root: &Path) -> Result<(File, PathBuf), CognitiveStoreError> {
+    fn open_lock_file(root: &Path) -> Result<Self, CognitiveStoreError> {
         let path = root.join(COGNITIVE_STORE_LOCK_FILENAME);
         #[cfg(unix)]
         let file = {
@@ -246,7 +275,9 @@ impl CognitiveStoreOpenGuard {
                 .open(&path)
                 .map_err(unavailable)?
         };
-        #[cfg(not(unix))]
+        #[cfg(windows)]
+        let (file, directory) = windows::open_lock_file(root, COGNITIVE_STORE_LOCK_FILENAME)?;
+        #[cfg(not(any(unix, windows)))]
         let file = OpenOptions::new()
             .read(true)
             .write(true)
@@ -265,33 +296,32 @@ impl CognitiveStoreOpenGuard {
                 ));
             }
         }
-        Ok((file, path))
+        Ok(Self {
+            _file: file,
+            _path: path,
+            #[cfg(windows)]
+            _directory: directory,
+        })
     }
 
     pub(crate) fn acquire_shared(root: &Path) -> Result<Arc<Self>, CognitiveStoreError> {
-        let (file, path) = Self::open_lock_file(root)?;
-        file.try_lock_shared().map_err(|error| {
+        let guard = Self::open_lock_file(root)?;
+        guard._file.try_lock_shared().map_err(|error| {
             CognitiveStoreError::Unavailable(format!(
                 "cognitive store is fenced by recovery: {error}"
             ))
         })?;
-        Ok(Arc::new(Self {
-            _file: file,
-            _path: path,
-        }))
+        Ok(Arc::new(guard))
     }
 
     pub(crate) fn acquire_exclusive(root: &Path) -> Result<Self, CognitiveStoreError> {
-        let (file, path) = Self::open_lock_file(root)?;
-        file.try_lock().map_err(|error| {
+        let guard = Self::open_lock_file(root)?;
+        guard._file.try_lock().map_err(|error| {
             CognitiveStoreError::Unavailable(format!(
                 "cognitive recovery cannot fence active store handles: {error}"
             ))
         })?;
-        Ok(Self {
-            _file: file,
-            _path: path,
-        })
+        Ok(guard)
     }
 }
 
@@ -317,6 +347,8 @@ impl CognitiveStore {
         let root = create_private_directory(layout.cognitive_root())?;
         let open_guard = CognitiveStoreOpenGuard::acquire_shared(&root)?;
         let path = resolve_active_database_path(&root)?;
+        #[cfg(windows)]
+        windows::prepare_database(&root, &path)?;
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
@@ -341,6 +373,19 @@ impl CognitiveStore {
             path,
             _open_guard: Some(open_guard),
         })
+    }
+
+    /// On completion, close the shared SQLite pool before releasing this
+    /// handle's store fence.
+    ///
+    /// Await this to completion before starting recovery. Cancelling this
+    /// future or dropping a store does not provide a shutdown barrier for
+    /// SQLx's connection-return tasks or SQLite's final WAL/SHM cleanup. The
+    /// pool is shared by all clones; other store handles must also be dropped
+    /// before recovery can obtain the exclusive fence.
+    pub async fn close(self) {
+        self.pool.close().await;
+        drop(self);
     }
 
     pub fn path(&self) -> &Path {
@@ -806,6 +851,7 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
     crate::logical_turn_registry::verify_logical_turn_registry(pool, owner).await?;
     crate::local_lease_outbox::verify_local_lease_outbox(pool, owner).await?;
     crate::local_compact_executor::verify_local_compact_events(pool, owner).await?;
+    crate::production_writer::verify_sender_store(pool, owner).await?;
     Ok(())
 }
 
@@ -1485,6 +1531,7 @@ fn valid_recovered_database_filename(value: &str) -> bool {
 }
 
 fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreError> {
+    #[cfg(not(windows))]
     let pointer = root.join(COGNITIVE_ACTIVE_DB_POINTER);
 
     #[cfg(unix)]
@@ -1515,7 +1562,15 @@ fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreEr
         }
         file
     };
-    #[cfg(not(unix))]
+    #[cfg(windows)]
+    let pointer_file = match windows::open_existing_child(root, COGNITIVE_ACTIVE_DB_POINTER) {
+        Ok(file) => file,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            return Ok(root.join(COGNITIVE_DB_FILENAME));
+        }
+        Err(error) => return Err(unavailable(error)),
+    };
+    #[cfg(not(any(unix, windows)))]
     let pointer_file = match File::open(&pointer) {
         Ok(file) => file,
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
@@ -1563,6 +1618,8 @@ fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreEr
             ));
         }
     }
+    #[cfg(windows)]
+    windows::validate_database(&canonical)?;
     Ok(path)
 }
 
@@ -1604,23 +1661,42 @@ pub(crate) fn publish_active_database(
             .mode(0o600)
             .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
             .open(&temporary)
-            .map_err(unavailable)?
+            .map_err(|error| {
+                unavailable(format!(
+                    "open cognitive active pointer temporary file: {error}"
+                ))
+            })?
     };
-    #[cfg(not(unix))]
+    #[cfg(windows)]
+    let mut file = windows::create_pointer_stage(root, &temporary)?;
+    #[cfg(not(any(unix, windows)))]
     let mut file = OpenOptions::new()
         .write(true)
         .create_new(true)
         .open(&temporary)
-        .map_err(unavailable)?;
+        .map_err(|error| {
+            unavailable(format!(
+                "open cognitive active pointer temporary file: {error}"
+            ))
+        })?;
 
     let result = (|| {
-        file.write_all(file_name.as_bytes()).map_err(unavailable)?;
-        file.write_all(b"\n").map_err(unavailable)?;
-        file.sync_all().map_err(unavailable)?;
-        fs::rename(&temporary, &pointer).map_err(unavailable)?;
-        File::open(root)
-            .and_then(|directory| directory.sync_all())
-            .map_err(unavailable)?;
+        file.write_all(file_name.as_bytes()).map_err(|error| {
+            unavailable(format!("write cognitive active pointer payload: {error}"))
+        })?;
+        file.write_all(b"\n").map_err(|error| {
+            unavailable(format!(
+                "write cognitive active pointer terminator: {error}"
+            ))
+        })?;
+        file.sync_all().map_err(|error| {
+            unavailable(format!(
+                "sync cognitive active pointer temporary file: {error}"
+            ))
+        })?;
+        fs::rename(&temporary, &pointer)
+            .map_err(|error| unavailable(format!("rename cognitive active pointer: {error}")))?;
+        sync_cognitive_directory(root)?;
         Ok(())
     })();
     if result.is_err() {
@@ -1630,6 +1706,9 @@ pub(crate) fn publish_active_database(
 }
 
 fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError> {
+    #[cfg(windows)]
+    windows::create_private_directories(path)?;
+    #[cfg(not(windows))]
     fs::create_dir_all(path).map_err(unavailable)?;
     let canonical = canonical_path_without_redirection(path)
         .map_err(unavailable)?
@@ -1650,6 +1729,8 @@ fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError>
 }
 
 fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
+    #[cfg(windows)]
+    windows::validate_database(_path)?;
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;

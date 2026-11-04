@@ -1,0 +1,195 @@
+name: Complete private registration and retained owner qualification
+
+on:
+  workflow_call:
+    inputs:
+      source_sha:
+        required: true
+        type: string
+    secrets:
+      BUILDBUDDY_API_KEY:
+        required: false
+  push:
+    branches: [qualification/private-ci-fleet-readers-20261104-gpt6]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: private-registration-qualified-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  reader-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.source_sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Exercise the original strict readers and new full-name coverage controls
+        env:
+          EXPECTED_SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+        run: |
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          python3 - <<'PY'
+          import subprocess
+          import unittest
+          suite = unittest.defaultTestLoader.discover("qualification/fleet-private-registration-current", pattern="test_readers.py")
+          if suite.countTestCases() != 28:
+              raise SystemExit("unexpected reader-control inventory")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if not result.wasSuccessful() or result.testsRun != 28 or result.skipped or result.expectedFailures or result.unexpectedSuccesses:
+              raise SystemExit("reader controls did not execute completely")
+          for name in ("run_native.py", "run_bazel.py"):
+              result = subprocess.run([
+                  "python3", "-O", "qualification/fleet-private-registration-current/" + name
+              ], capture_output=True, text=True)
+              if result.returncode == 0 or "optimized Python is not accepted" not in result.stderr:
+                  raise SystemExit("optimized reader was not rejected: " + name)
+          PY
+          git diff --exit-code HEAD --
+      - name: Validate both workflow files with the pinned original actionlint
+        run: |
+          tool="$RUNNER_TEMP/private-registration-actionlint"
+          mkdir "$tool"
+          curl --fail --location --silent --show-error https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz --output "$tool/archive.tar.gz"
+          echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  $tool/archive.tar.gz" | sha256sum --check
+          tar -xzf "$tool/archive.tar.gz" -C "$tool" actionlint
+          echo "c872d6db8c6bf83a8eaa704fc93999f027d55dffbc63b8a6abdccb47df5f4cd4  $tool/actionlint" | sha256sum --check
+          "$tool/actionlint" -version
+          "$tool/actionlint" .github/workflows/complete-source-generation.yml .github/workflows/fleet-private-registration-qualification.yml
+          git diff --exit-code HEAD --
+
+  native:
+    # The only product caller is the composed generation workflow, after its
+    # original committed-first lock checks qualify this unchanged source.
+    if: github.ref_name == 'integration/private-ci-complete-source-20261104-gpt6' && inputs.source_sha == github.sha
+    needs: reader-controls
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {runner: windows-2025, group: path-fleet, minutes: 30}
+          - {runner: ubuntu-24.04, group: path-fleet, minutes: 30}
+          - {runner: macos-15, group: path-fleet, minutes: 30}
+          - {runner: windows-2025, group: agentd, minutes: 80}
+          - {runner: ubuntu-24.04, group: agentd, minutes: 80}
+          - {runner: macos-15, group: agentd, minutes: 80}
+          - {runner: windows-2025, group: retained-memory, minutes: 30}
+          - {runner: ubuntu-24.04, group: retained-memory, minutes: 30}
+          - {runner: macos-15, group: retained-memory, minutes: 30}
+    name: Complete ${{ matrix.group }} libraries (${{ matrix.runner }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: ${{ matrix.minutes }}
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      RUSTUP_TOOLCHAIN: 1.96.0
+      RUST_MIN_STACK: '8388608'
+      NEXTEST_PROFILE: local
+      PYTHONIOENCODING: utf-8
+      PYTHONDONTWRITEBYTECODE: '1'
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
+      HEPTA_EXPECTED_COMMIT: ${{ inputs.source_sha }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          toolchain: 1.96.0
+          components: clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.151
+      - name: Install original Linux Agentd native prerequisites
+        if: runner.os == 'Linux' && matrix.group == 'agentd'
+        run: |
+          sudo apt-get update -y
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev libssl-dev bubblewrap
+      - name: Select this job's independent native output directory
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as stream:
+              stream.write("CARGO_TARGET_DIR=" + str(Path(os.environ["RUNNER_TEMP"]) / "private-registration-target") + "\n")
+          PY
+      - name: Run each complete original library and scoped original Clippy
+        env:
+          ORIGINAL_GROUP: ${{ matrix.group }}
+        run: |
+          python qualification/fleet-private-registration-current/run_native.py --group "$ORIGINAL_GROUP" --output "$RUNNER_TEMP/private-registration-native"
+      - name: Preserve complete input, inventory, JUnit and failure evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: private-registration-${{ matrix.group }}-${{ matrix.runner }}-${{ inputs.source_sha }}
+          path: ${{ runner.temp }}/private-registration-native
+          if-no-files-found: error
+          retention-days: 14
+
+  original-bazel:
+    if: github.ref_name == 'integration/private-ci-complete-source-20261104-gpt6' && inputs.source_sha == github.sha
+    needs: reader-controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [fleet-owner, retained-memory]
+    name: Original Linux Bazel ${{ matrix.group }} libraries
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+      HEPTA_EXPECTED_COMMIT: ${{ inputs.source_sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: private-registration-original
+      - name: Run the original three targets, complete inventories and scoped Clippy
+        shell: bash
+        env:
+          ORIGINAL_GROUP: ${{ matrix.group }}
+        run: |
+          export MEMORY_QUALIFICATION_BASH="$BASH"
+          python3 qualification/fleet-private-registration-current/run_bazel.py --group "$ORIGINAL_GROUP" --output "$RUNNER_TEMP/private-registration-bazel"
+      - name: Preserve every actual shard report and exact source
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: private-registration-bazel-${{ matrix.group }}-${{ inputs.source_sha }}
+          path: ${{ runner.temp }}/private-registration-bazel
+          if-no-files-found: error
+          retention-days: 14

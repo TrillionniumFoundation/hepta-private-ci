@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "product_state": "DRAFT_HOLD",
+  "activation": "Only called by the exact composed-source generation workflow after committed-lock-qualified on its unchanged source.",
+  "source_baseline_for_implementation": "59bc256880156acd4dad4f8e3880abe149b8a4ce",
+  "reference_native_runner": {
+    "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+    "blob": "4f7062a272d776a8aa43da00a068132a63b54e0a"
+  },
+  "reference_bazel_runner": {
+    "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+    "blob": "472ac6d42327c106c19c6e232f92c29b06ba502f"
+  },
+  "original_ignored_memory_cases": [
+    "cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt",
+    "cognitive_retrieval::observation::tests::target_host_owner_retrieval_reports_latency_percentiles",
+    "cognitive_store_tests::kg_projection_crash_child",
+    "cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor",
+    "local_compact_executor_tests::host_restart_reopen_replay_process_soak",
+    "local_compact_executor_tests::sqlite_1000_operation_seeded_reopen_replay_stress",
+    "local_lease_outbox_tests::qualification_durable_writer_crash_reopen_probe"
+  ],
+  "required_windows_full_names": {
+    "codex-utils-path": [
+      "private_state_windows::security_tests::create_new_directory_refuses_existing_private_state_without_mutation",
+      "private_state_windows::security_tests::create_new_directory_does_not_repair_existing_restricted_security",
+      "private_state_windows::directory::tests::create_new_rejects_junction_without_creating_redirected_leaf"
+    ],
+    "codex-hepta-fleet": [
+      "registry::tests::fresh_agent_roots_satisfy_private_owner_contract"
+    ],
+    "codex-hepta-agentd": [
+      "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit",
+      "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+      "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation",
+      "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store",
+      "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane"
+    ]
+  },
+  "meaning": "Every compiled library case is enumerated at the actual candidate. The historical case totals and schema-15 inventory are not reused for the schema-16/17 composition. The explicit required names are additional coverage checks, not selectors."
+}

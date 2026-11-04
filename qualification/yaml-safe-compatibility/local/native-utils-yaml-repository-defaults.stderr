@@ -1,0 +1,67 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+    Updating crates.io index
+    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+     Locking 5 packages to latest compatible versions
+      Adding annotate-snippets v0.12.5 (available: v0.12.17)
+      Adding arraydeque v0.5.1
+      Adding encoding_rs_io v0.1.8
+      Adding granit-parser v2.1.0
+      Adding serde-saphyr v2.1.0 (/tmp/chain-yaml-consumers-20261103/codex-rs/third_party/serde-saphyr-2.1.0)
+ Downloading crates ...
+  Downloaded annotate-snippets v0.12.5
+   Compiling proc-macro2 v1.0.106
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+   Compiling quote v1.0.45
+   Compiling unicode-ident v1.0.22
+   Compiling autocfg v1.5.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+   Compiling serde_core v1.0.228
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+   Compiling num-traits v0.2.19
+   Compiling cfg-if v1.0.4
+   Compiling encoding_rs v0.8.35
+   Compiling syn v2.0.117
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+   Compiling smallvec v1.15.1
+   Compiling unicode-width v0.2.1
+   Compiling serde v1.0.228
+   Compiling arraydeque v0.5.1
+   Compiling anstyle v1.0.13
+   Compiling annotate-snippets v0.12.5
+   Compiling granit-parser v2.1.0
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+   Compiling serde_derive v1.0.228
+   Compiling encoding_rs_io v0.1.8
+   Compiling hashbrown v0.17.1
+   Compiling equivalent v1.0.2
+   Compiling indexmap v2.14.0
+   Compiling serde-saphyr v2.1.0 (/tmp/chain-yaml-consumers-20261103/codex-rs/third_party/serde-saphyr-2.1.0)
+warning: variable does not need to be mutable
+    --> third_party/serde-saphyr-2.1.0/src/de/deserializer.rs:1142:41
+     |
+1142 |     fn deserialize_any<V: Visitor<'de>>(mut self, visitor: V) -> Result<V::Value, Self::Error> {
+     |                                         ----^^^^
+     |                                         |
+     |                                         help: remove this `mut`
+     |
+     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: `serde-saphyr` (lib) generated 1 warning (run `cargo fix --lib -p serde-saphyr` to apply 1 suggestion)
+   Compiling ryu v1.0.22
+   Compiling codex-utils-yaml v0.0.0 (/tmp/chain-yaml-consumers-20261103/codex-rs/utils/yaml)
+    Finished `test` profile [unoptimized] target(s) in 1m 02s
+────────────
+ Nextest run ID a7e9b21f-73bc-422a-aa13-159538aecd90 with nextest profile: local
+    Starting 10 tests across 1 binary
+        PASS [   0.009s] ( 1/10) codex-utils-yaml tests::compatibility_dispatch_keeps_event_scalar_and_alias_budgets
+        PASS [   0.009s] ( 2/10) codex-utils-yaml tests::metadata_strings_keep_scalar_text_and_explicit_tagged_null
+        PASS [   0.011s] ( 3/10) codex-utils-yaml tests::empty_documents_and_tagged_empty_nodes_keep_their_distinction
+        PASS [   0.013s] ( 4/10) codex-utils-yaml tests::mappings_keep_key_equivalence_and_the_target_duplicate_policy
+        PASS [   0.016s] ( 5/10) codex-utils-yaml tests::dynamic_numbers_keep_legacy_categories_and_overflow_behavior
+        PASS [   0.018s] ( 6/10) codex-utils-yaml tests::aliases_preserve_local_tags_and_values
+        PASS [   0.009s] ( 7/10) codex-utils-yaml tests::port_and_manifest_version_retain_integer_style_and_range_rules
+        PASS [   0.009s] ( 8/10) codex-utils-yaml tests::product_enum_preserves_scalar_and_tagged_unit_rules
+        PASS [   0.020s] ( 9/10) codex-utils-yaml tests::depth_budget_returns_errors_before_stack_exhaustion
+        PASS [   0.020s] (10/10) codex-utils-yaml tests::malformed_encoding_and_multiple_documents_remain_errors
+────────────
+     Summary [   0.021s] 10 tests run: 10 passed, 0 skipped

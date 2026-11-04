@@ -1,0 +1,22 @@
+2026-11-04T04:43:22.3562509Z ##[group]Bazel test log tail for //codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test
+2026-11-04T04:43:22.3562861Z exec ${PAGER:-/usr/bin/less} "$0" || exit 1
+2026-11-04T04:43:22.3563184Z Executing tests from //codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test
+2026-11-04T04:43:22.3563557Z -----------------------------------------------------------------------------
+2026-11-04T04:43:22.3563755Z 
+2026-11-04T04:43:22.3563820Z running 2 tests
+2026-11-04T04:43:22.3564008Z test supervisord_child_entry ... ok
+2026-11-04T04:43:22.3564399Z test five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes has been running for over 60 seconds
+2026-11-04T04:43:22.3565010Z test five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes ... FAILED
+2026-11-04T04:43:22.3565276Z 
+2026-11-04T04:43:22.3565340Z failures:
+2026-11-04T04:43:22.3565429Z 
+2026-11-04T04:43:22.3565620Z ---- five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes stdout ----
+2026-11-04T04:43:22.3568758Z Error: timed out waiting for agent 018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12 release agentd-v1; last=Some(SupervisordAgentStatus { agent_id: AgentId("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12"), lifecycle: Failed, lifecycle_generation: 2, active: false, healthy: false, process_id: None, spawn_generation: None, runtime_generation: None, current_release: Some(ReleaseId("agentd-v1")), previous_release: None, release_change_pending: false, control_fence: SupervisordControlFence { agent_id: AgentId("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12"), supervisor_epoch: SupervisorEpoch("3b76770d-96ed-4e82-a687-0bdab397070b"), lifecycle: Failed, lifecycle_generation: 2, spawn_generation: None, runtime_generation: None, current_release: Some(ReleaseId("agentd-v1")), previous_release: None, release_change_pending: false, state_digest: ControlStateDigest("78a1135d77dc6a8f941ee20bed78e7b2a5a4aa695542ae78d156d9afb23fc5ba") }, matrix: SupervisordMatrixStatus { configured: false, active: false, healthy: false, degraded: false, process_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None } })
+2026-11-04T04:43:22.3571647Z 
+2026-11-04T04:43:22.3571650Z 
+2026-11-04T04:43:22.3571725Z failures:
+2026-11-04T04:43:22.3571977Z     five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes
+2026-11-04T04:43:22.3572208Z 
+2026-11-04T04:43:22.3572418Z test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 120.10s
+2026-11-04T04:43:22.3572690Z 
+2026-11-04T04:43:22.3572874Z ##[endgroup]

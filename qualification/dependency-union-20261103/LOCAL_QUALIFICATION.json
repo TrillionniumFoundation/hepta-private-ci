@@ -1,0 +1,107 @@
+{
+  "schema": "combined-dependency-local-qualification-v1",
+  "production_package_count": 1517,
+  "cargo_lock_sha256": "4d84dbb8e5b04d4ff62db84134267ddc825d0c0bc03a53a37ea7a4cb667f0f42",
+  "cargo_manifest_sha256": "5dbcd973be2fec3241e7ee2530491c31c3325d4e9def202e3475ebf1dc9b36bd",
+  "policy_sha256": "3713c011667dcbeda9edf1b2644a813f2b5253ebb7b2f3e98ea60aab69407352",
+  "policy_unchanged_from": "1ef3216ffb86271d87e6aea049ce7ca7f2b76809",
+  "advisory_db_commit": "6c5fedf8ff03c485ed674d8f941e0180f3f72d70",
+  "tools": [
+    {
+      "name": "rustc",
+      "version": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+      "sha256": "ba4b837efb6612dfa8d941c5a72b8a50d1d03a0f36216743b173949aa8d9eb75"
+    },
+    {
+      "name": "cargo",
+      "version": "cargo 1.96.0 (30a34c682 2026-05-25)",
+      "sha256": "f30f9fd1b1d0b8fd10dc33219eb4cd4bec3543f40e434ac71f5a03fd0359063f"
+    }
+  ],
+  "exact_selected_versions": {
+    "aws-config": [
+      "1.8.12"
+    ],
+    "p256": [
+      "0.14.0"
+    ],
+    "crypto-bigint": [
+      "0.7.10"
+    ],
+    "matrix-sdk": [
+      "0.19.1"
+    ],
+    "matrix-sdk-crypto": [
+      "0.19.1"
+    ],
+    "matrix-sdk-sqlite": [
+      "0.19.1"
+    ],
+    "keyring": [
+      "3.6.3"
+    ],
+    "dbus-secret-service": [
+      "4.1.0"
+    ],
+    "serde_yaml": [],
+    "unsafe-libyaml": [],
+    "anymap2": []
+  },
+  "chacha20_versions": [
+    "0.10.2",
+    "0.9.1"
+  ],
+  "cargo_deny_summary": {
+    "advisories": {
+      "errors": 0,
+      "helps": 0,
+      "notes": 22,
+      "warnings": 2
+    },
+    "bans": {
+      "errors": 0,
+      "helps": 0,
+      "notes": 21,
+      "warnings": 115
+    },
+    "licenses": {
+      "errors": 0,
+      "helps": 1340,
+      "notes": 0,
+      "warnings": 1
+    },
+    "sources": {
+      "errors": 0,
+      "helps": 0,
+      "notes": 6,
+      "warnings": 1
+    }
+  },
+  "observed_successful_commands": [
+    [
+      "just",
+      "fmt"
+    ],
+    [
+      "cargo",
+      "metadata",
+      "--locked",
+      "--offline",
+      "--format-version",
+      "1",
+      "--all-features"
+    ],
+    [
+      "cargo",
+      "deny",
+      "--format",
+      "json",
+      "--all-features",
+      "--locked",
+      "check",
+      "--disable-fetch",
+      "--show-stats"
+    ]
+  ],
+  "scope": "Actual final combined Cargo graph and unchanged policy; native consumers, real generated Bazel lock and full original CI remain pending."
+}

@@ -1,0 +1,99 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+info: syncing channel updates for 1.95.0-x86_64-unknown-linux-gnu
+info: latest update on 2026-04-16 for version 1.95.0 (59807616e 2026-04-14)
+info: downloading 3 components
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/crossterm`
+From https://github.com/openai-oss-forks/crossterm
+ * [new ref]         45fecb9508105988f42fe6ff0441783ed3717f92 -> refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/tokio-tungstenite`
+From https://github.com/openai-oss-forks/tokio-tungstenite
+ * [new ref]         0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186 -> refs/commit/0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+From https://github.com/openai-oss-forks/tungstenite-rs
+ * [new ref]         4fffad30fe373adbdcffab9545e9e9bf4f2fc19f -> refs/commit/4fffad30fe373adbdcffab9545e9e9bf4f2fc19f
+[1m[92m    Updating[0m crates.io index
+[1m[92m    Updating[0m git repository `https://github.com/dzbarsky/rules_rust`
+From https://github.com/dzbarsky/rules_rust
+ * [new ref]             b56cbaa8465e74127f1ea216f813cd377295ad81 -> refs/commit/b56cbaa8465e74127f1ea216f813cd377295ad81
+[1m[92m    Updating[0m git repository `https://github.com/helix-editor/nucleo.git`
+From https://github.com/helix-editor/nucleo
+ * [new ref]         4253de9faabb4e5c6d81d946a5e35a90f87347ee -> refs/commit/4253de9faabb4e5c6d81d946a5e35a90f87347ee
+[1m[92m Downloading[0m crates ...
+[1m[92m  Downloaded[0m equivalent v1.0.2
+[1m[92m  Downloaded[0m arraydeque v0.5.1
+[1m[92m  Downloaded[0m cfg-if v1.0.4
+[1m[92m  Downloaded[0m encoding_rs_io v0.1.8
+[1m[92m  Downloaded[0m autocfg v1.5.0
+[1m[92m  Downloaded[0m anstyle v1.0.13
+[1m[92m  Downloaded[0m annotate-snippets v0.12.5
+[1m[92m  Downloaded[0m quote v1.0.45
+[1m[92m  Downloaded[0m unicode-ident v1.0.22
+[1m[92m  Downloaded[0m smallvec v1.15.1
+[1m[92m  Downloaded[0m ryu v1.0.22
+[1m[92m  Downloaded[0m serde_derive v1.0.228
+[1m[92m  Downloaded[0m serde_core v1.0.228
+[1m[92m  Downloaded[0m serde v1.0.228
+[1m[92m  Downloaded[0m indexmap v2.14.0
+[1m[92m  Downloaded[0m proc-macro2 v1.0.106
+[1m[92m  Downloaded[0m num-traits v0.2.19
+[1m[92m  Downloaded[0m hashbrown v0.17.1
+[1m[92m  Downloaded[0m unicode-width v0.2.1
+[1m[92m  Downloaded[0m syn v2.0.117
+[1m[92m  Downloaded[0m granit-parser v2.1.0
+[1m[92m  Downloaded[0m encoding_rs v0.8.35
+[1m[92m   Compiling[0m proc-macro2 v1.0.106
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m quote v1.0.45
+[1m[92m   Compiling[0m unicode-ident v1.0.22
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m autocfg v1.5.0
+[1m[92m   Compiling[0m serde_core v1.0.228
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m num-traits v0.2.19
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m encoding_rs v0.8.35
+[1m[92m   Compiling[0m syn v2.0.117
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m arraydeque v0.5.1
+[1m[92m   Compiling[0m smallvec v1.15.1
+[1m[92m   Compiling[0m serde v1.0.228
+[1m[92m   Compiling[0m unicode-width v0.2.1
+[1m[92m   Compiling[0m anstyle v1.0.13
+[1m[92m   Compiling[0m annotate-snippets v0.12.5
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m granit-parser v2.1.0
+[1m[92m   Compiling[0m serde_derive v1.0.228
+[1m[92m   Compiling[0m encoding_rs_io v0.1.8
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m indexmap v2.14.0
+[1m[92m   Compiling[0m serde-saphyr v2.1.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/serde-saphyr-2.1.0)
+[1m[33mwarning[0m[1m: variable does not need to be mutable[0m
+    [1m[94m--> [0mthird_party/serde-saphyr-2.1.0/src/de/deserializer.rs:1142:41
+     [1m[94m|[0m
+[1m[94m1142[0m [1m[94m|[0m     fn deserialize_any<V: Visitor<'de>>(mut self, visitor: V) -> Result<V::Value, Self::Error> {
+     [1m[94m|[0m                                         [1m[94m----[0m[1m[33m^^^^[0m
+     [1m[94m|[0m                                         [1m[94m|[0m
+     [1m[94m|[0m                                         [1m[94mhelp: remove this `mut`[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+[1m[33mwarning[0m: `serde-saphyr` (lib) generated 1 warning (run `cargo fix --lib -p serde-saphyr` to apply 1 suggestion)
+[1m[92m   Compiling[0m ryu v1.0.22
+[1m[92m   Compiling[0m codex-utils-yaml v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/yaml)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 40.76s
+────────────
+[32;1m Nextest run[0m ID [1m4088e9af-bea4-44bb-98c2-fcf69dee3ac6[0m with nextest profile: [1mlocal[0m
+[32;1m    Starting[0m [1m10[0m tests across [1m1[0m binary
+[32;1m        PASS[0m [   0.006s] ( 1/10) [35;1mcodex-utils-yaml[0m [36mtests[0m[36m::[0m[34;1maliases_preserve_local_tags_and_values[0m
+[32;1m        PASS[0m [   0.006s] ( 2/10) [35;1mcodex-utils-yaml[0m [36mtests[0m[36m::[0m[34;1mdynamic_numbers_keep_legacy_categories_and_overflow_behavior[0m
+[32;1m        PASS[0m [   0.007s] ( 3/10) [35;1mcodex-utils-yaml[0m [36mtests[0m[36m::[0m[34;1mcompatibility_dispatch_keeps_event_scalar_and_alias_budgets[0m
+[32;1m        PASS[0m [   0.005s] ( 4/10) [35;1mcodex-utils-yaml[0m [36mtests[0m[36m::[0m[34;1mmappings_keep_key_equivalence_and_the_target_duplicate_policy[0m
+[32;1m        PASS[0m [   0.007s] ( 5/10) [35;1mcodex-utils-yaml[0m [36mtests[0m[36m::[0m[34;1mmalformed_encoding_and_multiple_documents_remain_errors[0m
+[32;1m        PASS[0m [   0.010s] ( 6/10) [35;1mcodex-utils-yaml[0m [36mtests[0m[36m::[0m[34;1mempty_documents_and_tagged_empty_nodes_keep_their_distinction[0m
+[32;1m        PASS[0m [   0.006s] ( 7/10) [35;1mcodex-utils-yaml[0m [36mtests[0m[36m::[0m[34;1mmetadata_strings_keep_scalar_text_and_explicit_tagged_null[0m
+[32;1m        PASS[0m [   0.006s] ( 8/10) [35;1mcodex-utils-yaml[0m [36mtests[0m[36m::[0m[34;1mport_and_manifest_version_retain_integer_style_and_range_rules[0m
+[32;1m        PASS[0m [   0.022s] ( 9/10) [35;1mcodex-utils-yaml[0m [36mtests[0m[36m::[0m[34;1mdepth_budget_returns_errors_before_stack_exhaustion[0m
+[32;1m        PASS[0m [   0.006s] (10/10) [35;1mcodex-utils-yaml[0m [36mtests[0m[36m::[0m[34;1mproduct_enum_preserves_scalar_and_tagged_unit_rules[0m
+────────────
+[32;1m     Summary[0m [   0.023s] [1m10[0m tests run: [1m10[0m [32;1mpassed[0m, [1m0[0m [33;1mskipped[0m

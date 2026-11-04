@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "review": "Independent static review of complete-source generation boundary",
+  "script_blob": "4f4ed1a1aa3f8c784a5f2bf86b107ae6da44d929",
+  "controls_blob": "5234b01097a65fe12f688e9e11a6c116cb75fbac",
+  "workflow_blob": "b444e353098a6ca7dbe5779b329c0e3db4d4c42c",
+  "reviewed_by": "private_ci_blockers",
+  "executions": 0,
+  "observations": [
+    "Full tracked-byte snapshot includes symlink payloads and validates exact immutable Git blobs before generation.",
+    "Original formatter, complete metadata resolver and original Bazel lock commands are retained.",
+    "Only the two declared locks may change after the formatter snapshot.",
+    "Generation qualifies only if the first original lock check succeeds and all tracked bytes remain unchanged.",
+    "Complete untracked-source rejection is enforced."
+  ],
+  "boundary": "The local dependency allowlist is by reviewed package name. It does not independently predict each dependency edge. Actual immutable manifests and the original Cargo resolver produce the complete edge deltas, which are retained and must be reviewed before adoption. The exact scope records are separately source-bound.",
+  "status": "STATIC_REVIEW_NO_CONFIRMED_FALSE_PASS; original native execution pending"
+}

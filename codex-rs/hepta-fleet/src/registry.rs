@@ -529,7 +529,16 @@ fn create_private_directory(path: &Path) -> std::io::Result<()> {
     builder.mode(0o700).create(path)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn create_private_directory(path: &Path) -> std::io::Result<()> {
+    // Registration owns creation, not repair of an existing owner directory.
+    // FILE_CREATE preserves create_dir's occupied-name refusal while assigning
+    // the current user explicitly, including for elevated Windows tokens.
+    drop(codex_utils_path::create_new_private_state_directory(path)?);
+    Ok(())
+}
+
+#[cfg(not(any(unix, windows)))]
 fn create_private_directory(path: &Path) -> std::io::Result<()> {
     std::fs::create_dir(path)
 }

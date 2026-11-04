@@ -25,11 +25,20 @@ mod event_buffer;
 mod evidence_frontier;
 mod evidence_host;
 mod evidence_trust;
+#[cfg(target_os = "linux")]
+mod final_use_issuer;
+mod grant_provider_worker;
+#[cfg(target_os = "linux")]
+mod hos2_device;
 mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
 mod neuron_runtime;
+#[cfg(target_os = "linux")]
+mod notes_bootstrap;
+#[cfg(unix)]
+mod notes_channel;
 mod objective_runtime;
 mod plasticity_anchor_journal;
 mod plasticity_host;
@@ -37,6 +46,10 @@ mod plasticity_learning_producer;
 mod plasticity_owner_evidence;
 mod plasticity_process_bootstrap;
 mod plasticity_runtime;
+#[cfg(target_os = "linux")]
+mod production_authority;
+#[cfg(target_os = "linux")]
+mod production_composition;
 mod production_writer_host;
 mod prompt_runtime;
 mod qualification_writer;
@@ -62,6 +75,18 @@ pub use browser_servo::BrowserServoProcessConfig;
 pub use browser_servo::BrowserServoTransport;
 pub use browser_servo::ChildBrowserTransport;
 pub use client::AgentdClient;
+#[cfg(target_os = "linux")]
+pub use client::AgentdObjectiveClient;
+#[cfg(target_os = "linux")]
+pub use client::AgentdObjectiveClientError;
+#[cfg(target_os = "linux")]
+pub use client::AgentdObjectiveHistory;
+#[cfg(target_os = "linux")]
+pub use client::AgentdObjectivePeer;
+#[cfg(target_os = "linux")]
+pub use client::AgentdObjectiveWindow;
+#[cfg(target_os = "linux")]
+pub use client::ObjectiveClientMode;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
@@ -117,6 +142,12 @@ pub use codex_hepta_agent_protocol::MemoryFederationCapabilityId;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilitySnapshot;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilityState;
 pub use codex_hepta_agent_protocol::MemoryFederationScopeKind;
+pub use codex_hepta_agent_protocol::ObjectiveAdmissionOutcome;
+pub use codex_hepta_agent_protocol::ObjectiveAdmissionPublication;
+pub use codex_hepta_agent_protocol::ObjectiveAdmissionQuery;
+pub use codex_hepta_agent_protocol::ObjectiveAdmissionUnknownReason;
+pub use codex_hepta_agent_protocol::ObjectiveJournalAnchor;
+pub use codex_hepta_agent_protocol::ObjectivePublicationOutcome;
 pub use codex_hepta_agent_protocol::ObjectiveRunAdmission;
 pub use codex_hepta_agent_protocol::ObjectiveStartOutcome;
 pub use codex_hepta_agent_protocol::ReadinessSnapshot;
@@ -152,6 +183,16 @@ pub use error::AgentdError;
 pub use evidence_frontier::EvidenceRecoveryFrontierV1;
 pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
 pub use evidence_host::kernel_evidence_claims;
+#[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdFinalUseIssuerError;
+#[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdFinalUseIssuerPeer;
+#[cfg(target_os = "linux")]
+pub use final_use_issuer::AgentdUnixFinalUseGrantProvider;
+#[cfg(target_os = "linux")]
+pub use hos2_device::AgentdHos2Device;
+#[cfg(target_os = "linux")]
+pub use hos2_device::AgentdHos2Usage;
 pub use intelligence_ingress::AgentdIntelligenceInvocationProviderV1;
 pub use intelligence_ingress::AgentdIntelligenceInvocationV1;
 pub use intelligence_product::AgentdEvaluationBindingV1;
@@ -183,6 +224,8 @@ pub use lane_b_runtime::RunRecovery;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
 pub use neuron_runtime::AgentdNeuronOwner;
+#[cfg(unix)]
+pub use notes_channel::AgentdNotesChannel;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
 pub use plasticity_host::AgentdPlasticityHostErrorV1;
@@ -215,6 +258,16 @@ pub use plasticity_runtime::PlasticityRuntimeCallErrorV1;
 pub use plasticity_runtime::PlasticityRuntimeHandleV1;
 pub use plasticity_runtime::PlasticityRuntimeOwnerV1;
 pub use plasticity_runtime::plasticity_runtime_channel_v1;
+#[cfg(target_os = "linux")]
+pub use production_authority::AgentdFinalUseHostInputs;
+#[cfg(target_os = "linux")]
+pub use production_composition::AgentdProductionHostAttachment;
+#[cfg(target_os = "linux")]
+pub use production_composition::AgentdProductionHostInputs;
+#[cfg(target_os = "linux")]
+pub use production_composition::AgentdProductionNotesInputs;
+#[cfg(target_os = "linux")]
+pub use production_composition::attach_production_operation_host;
 pub use production_writer_host::AgentdFinalUseGrantProvider;
 pub use production_writer_host::AgentdProductionOperationRuntimeConfig;
 pub use production_writer_host::AgentdProductionWriterHost;
@@ -241,3 +294,12 @@ pub use topology_plasticity_host::rollover_agentd_topology_writer_v1;
 use control::AgentdControlServer;
 use event_buffer::EventBuffer;
 use state::AgentdState;
+
+#[cfg(all(target_os = "linux", feature = "desktop-objective-ui"))]
+mod desktop_objective_ui;
+#[cfg(all(target_os = "linux", feature = "desktop-objective-ui"))]
+pub use desktop_objective_ui::AgentdObjectiveUiError;
+#[cfg(all(target_os = "linux", feature = "desktop-objective-ui"))]
+pub use desktop_objective_ui::AgentdObjectiveUiInputs;
+#[cfg(all(target_os = "linux", feature = "desktop-objective-ui"))]
+pub use desktop_objective_ui::install_original_objective_ui;

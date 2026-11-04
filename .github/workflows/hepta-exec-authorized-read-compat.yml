@@ -1,0 +1,267 @@
+name: Hepta exec recovery and authorized-read conformance
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/exec/**"
+      - "codex-rs/exec-server/**"
+      - "codex-rs/rollout/**"
+      - ".github/workflows/hepta-exec-authorized-read-compat.yml"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/.config/nextest.toml"
+      - "scripts/run-nextest.py"
+      - "justfile"
+      - ".github/actions/setup-ci-tools/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-exec-authorized-read-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capability:
+    name: Original recovery and authorized-read scopes (${{ matrix.os }}, ${{ matrix.revision }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest, macos-15]
+        revision: [source-head, base-merge]
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      EXPECTED_SOURCE_SHA: ${{ matrix.revision == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact SHA without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$EXPECTED_SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          git show -s --format='source=%H tree=%T parents=%P'
+          git diff --check
+
+      - name: Initialize isolated Cargo target directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'CARGO_TARGET_DIR=%s/hepta-exec-authorized-read-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Install repository CI tools
+        uses: ./.github/actions/setup-ci-tools
+
+      - name: Install required Linux filesystem sandbox
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends bubblewrap apparmor-profiles
+          profile=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+          test -f "$profile"
+          sysctl -n kernel.apparmor_restrict_unprivileged_userns > "$RUNNER_TEMP/hepta-exec-userns-policy-before"
+          # Load Ubuntu's supplied bwrap-only namespace profile; retain the global restriction.
+          sudo apparmor_parser -r "$profile"
+          test "$(cat "$RUNNER_TEMP/hepta-exec-userns-policy-before")" = "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)"
+          bwrap --unshare-user --unshare-net --ro-bind / / --dev /dev --proc /proc --die-with-parent /usr/bin/true
+          command -v bwrap
+          bwrap --version
+
+      - name: Install pinned nextest
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+
+      - name: Install pinned Rust 1.96
+        working-directory: codex-rs
+        shell: bash
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt,clippy,rust-src
+
+      - name: Run original native scopes and retain each fresh result
+        shell: bash
+        run: |
+          python - <<'PYTEST'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import platform
+          import shutil
+          import subprocess
+          import time
+          import xml.etree.ElementTree as ET
+
+          root = Path.cwd()
+          output = root / "exec-native-evidence"
+          output.mkdir()
+          inputs = [
+              "codex-rs/exec/Cargo.toml",
+              "codex-rs/exec/tests/suite/resume.rs",
+              "codex-rs/exec-server/tests/file_system_unix.rs",
+              "codex-rs/exec-server/tests/authorized_read_rpc.rs",
+              "codex-rs/exec-server/src/client.rs",
+              "codex-rs/exec-server/src/client_stdio_tests.rs",
+              "codex-rs/exec-server/src/lib.rs",
+              "codex-rs/exec-server/src/remote_file_system.rs",
+              "codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs",
+              "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs",
+              "codex-rs/rollout/src/state_db.rs",
+              "codex-rs/rollout/src/state_db_tests.rs",
+              "codex-rs/Cargo.lock",
+              "codex-rs/rust-toolchain.toml",
+              "codex-rs/.config/nextest.toml",
+              "scripts/run-nextest.py",
+              "justfile",
+          ]
+          def digest(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+
+          before = {name: digest(root / name) for name in inputs}
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if head != os.environ["EXPECTED_SOURCE_SHA"]:
+              raise SystemExit("candidate source mismatch")
+          if os.environ.get("CODEX_SANDBOX_NETWORK_DISABLED"):
+              raise SystemExit("network-dependent original cases must execute")
+          identity = {
+              "source": head,
+              "tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "platform": platform.platform(),
+              "inputs": before,
+              "input_git_objects": subprocess.check_output(["git", "ls-tree", "HEAD", "--", *inputs], text=True),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+          }
+          identity["rustc"] = subprocess.check_output(
+              ["rustc", "--version", "--verbose"], cwd=root / "codex-rs", text=True)
+          if platform.system() == "Linux":
+              sandbox_binary = shutil.which("bwrap")
+              if sandbox_binary is None:
+                  raise SystemExit("the real Linux filesystem sandbox dependency is missing")
+              identity["bwrap"] = {
+                  "path": sandbox_binary,
+                  "sha256": digest(Path(sandbox_binary)),
+                  "version": subprocess.check_output([sandbox_binary, "--version"], text=True),
+              }
+              profile = Path("/usr/share/apparmor/extra-profiles/bwrap-userns-restrict")
+              userns_before = (Path(os.environ["RUNNER_TEMP"]) / "hepta-exec-userns-policy-before").read_text().strip()
+              userns_after = subprocess.check_output(
+                  ["sysctl", "-n", "kernel.apparmor_restrict_unprivileged_userns"], text=True).strip()
+              if userns_before != userns_after:
+                  raise SystemExit("global AppArmor user namespace policy changed")
+              identity["bwrap"]["apparmor_profile_sha256"] = digest(profile)
+              identity["bwrap"]["global_userns_policy_before"] = userns_before
+              identity["bwrap"]["global_userns_policy_after"] = userns_after
+              identity["bwrap"]["packages"] = subprocess.check_output(
+                  ["dpkg-query", "-W", "bubblewrap", "apparmor", "apparmor-profiles"], text=True)
+          (output / "source.json").write_text(json.dumps(identity, indent=2) + "\n")
+          server = ["just", "test", "--locked", "-p", "codex-exec-server",
+                    "--lib", "--test", "authorized_read_rpc"]
+          if platform.system() != "Windows":
+              server += ["--test", "file_system_unix"]
+          server += ["--no-tests", "fail", "--retries", "0", "--status-level", "all", "--final-status-level", "all"]
+          resume = ["just", "test", "--locked", "-p", "codex-exec", "--test", "all",
+                    "-E", "test(suite::resume::)", "--no-tests", "fail", "--retries", "0",
+                    "--status-level", "all", "--final-status-level", "all"]
+          resume += ["--success-output", "final"]
+          required_server = ["authorized_read_rpc_is_capability_gated_and_denies_outside_root"]
+          if platform.system() == "Windows":
+              required_server.append("client::tests::connect_stdio_command_initializes_json_rpc_client_on_windows")
+          else:
+              required_server.append("client_stdio_tests::native_stdio_peer_initializes_json_rpc_client")
+          if platform.system() == "Darwin":
+              required_server += [
+                  "file_system_bounded_authorized_read_enforces_limit_without_prefix::test_case_2_remote",
+                  "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::test_case_2_remote",
+              ]
+          elif platform.system() != "Windows":
+              required_server += ["remote_authorized_read_rejects_all_paths_without_stable_handle_capability"]
+          rollout = ["just", "test", "--locked", "-p", "codex-rollout", "--lib",
+                     "--no-tests", "fail", "--retries", "0", "--status-level", "all",
+                     "--final-status-level", "all"]
+          required_rollout = [
+              "state_db::tests::list_threads_db_rejects_mismatched_sqlite_config_without_cleanup",
+              "state_db::tests::index_reads_accept_config_before_native_home_canonicalization",
+          ]
+          if platform.system() != "Windows":
+              required_rollout.append(
+                  "state_db::tests::index_reads_accept_same_home_alias_but_reject_retargeted_or_missing_alias")
+          scopes = [
+              ("server", server, required_server),
+              ("rollout", rollout, required_rollout),
+              ("resume", resume, [
+                  "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db",
+                  "suite::resume::exec_resume_last_trusts_usable_state_db_candidate",
+                  "suite::resume::exec_resume_last_respects_cwd_filter_and_all_flag",
+              ]),
+          ]
+          outcomes = []
+          junit = root / "codex-rs/target/nextest/local/junit.xml"
+          for name, command, required in scopes:
+              junit.unlink(missing_ok=True)
+              started = time.monotonic()
+              with (output / f"{name}.log").open("w") as log:
+                  result = subprocess.run(command, cwd=root / "codex-rs",
+                                          stdout=log, stderr=subprocess.STDOUT)
+              record = {"scope": name, "command": command, "exit": result.returncode,
+                        "seconds": time.monotonic() - started, "required": required,
+                        "log_sha256": digest(output / f"{name}.log"), "valid": False}
+              if junit.exists():
+                  destination = output / f"{name}-junit.xml"
+                  shutil.copyfile(junit, destination)
+                  cases = ET.parse(destination).findall(".//testcase")
+                  names = [case.get("name", "") for case in cases]
+                  invalid = [case.get("name") for case in cases
+                             if any(case.find(tag) is not None for tag in ("failure", "error", "skipped"))]
+                  missing = [test for test in required if names.count(test) != 1]
+                  record.update({"passed": len(cases) - len(invalid), "invalid": invalid,
+                                 "missing": missing, "junit_sha256": digest(destination)})
+                  record["valid"] = result.returncode == 0 and bool(cases) and not invalid and not missing
+              (output / f"{name}.json").write_text(json.dumps(record, indent=2) + "\n")
+              outcomes.append(record)
+              print(json.dumps(record), flush=True)
+          after = {name: digest(root / name) for name in inputs}
+          unchanged = before == after
+          (output / "retained.json").write_text(json.dumps(
+              {"unchanged_inputs": unchanged, "after": after, "scopes": outcomes}, indent=2) + "\n")
+          if not unchanged or not all(record["valid"] for record in outcomes):
+              raise SystemExit("original native scope or source integrity failed; receipts retained")
+          PYTEST
+
+      - name: Verify Rust formatting
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.96.0 fmt --manifest-path codex-rs/Cargo.toml --package codex-exec --package codex-exec-server --package codex-rollout -- --check
+
+      - name: Preserve native source, output and JUnit evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-exec-native-${{ matrix.os }}-${{ matrix.revision }}-${{ env.EXPECTED_SOURCE_SHA }}
+          path: exec-native-evidence/
+          if-no-files-found: error
+
+      - name: Ensure test checkout remained immutable
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

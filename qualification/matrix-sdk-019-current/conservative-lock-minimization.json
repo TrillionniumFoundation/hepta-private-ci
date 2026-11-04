@@ -1,0 +1,174 @@
+{
+  "scope": "Actual Cargo solver attempts to retain baseline compatible transitive versions. Rejected constraints are retained as failures; no constraint is weakened.",
+  "attempts": [
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--offline",
+        "-p",
+        "pagable@0.4.2",
+        "--precise",
+        "0.4.1"
+      ],
+      "exit": 101,
+      "seconds": 0.8748316764831543,
+      "log_sha256": "8ab3f46f13ae58082b3ee91abe22a2bdc0288a71127967b0159261803cc65829"
+    },
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--offline",
+        "-p",
+        "pagable_derive@0.4.2",
+        "--precise",
+        "0.4.1"
+      ],
+      "exit": 101,
+      "seconds": 0.3768465518951416,
+      "log_sha256": "fb9850782f1ad36e5d3aa8cdc8ca6b0ab389c82c83ab106e3dfdc187884ff593"
+    },
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--offline",
+        "-p",
+        "indexmap@2.14.2",
+        "--precise",
+        "2.14.0"
+      ],
+      "exit": 101,
+      "seconds": 0.4208962917327881,
+      "log_sha256": "8b501546601e5f265851a804c6ce306a01160797f02014e4e0f3a7d33fc8a593"
+    },
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--offline",
+        "-p",
+        "bitflags@2.13.2",
+        "--precise",
+        "2.13.1"
+      ],
+      "exit": 101,
+      "seconds": 0.41849231719970703,
+      "log_sha256": "08d71324538a08fed8b02865b978558bc0e2d653dcecbb8abcd56f9d3dc3baee"
+    },
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--offline",
+        "-p",
+        "getrandom@0.4.3",
+        "--precise",
+        "0.4.2"
+      ],
+      "exit": 101,
+      "seconds": 0.5493988990783691,
+      "log_sha256": "a984860a0feb425394e66b28d34b2d6413545f06bfcad0cdbd4521ac2784777a"
+    },
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--offline",
+        "-p",
+        "base64@0.23.1",
+        "--precise",
+        "0.23.0"
+      ],
+      "exit": 101,
+      "seconds": 0.3657095432281494,
+      "log_sha256": "3846cc528a06bff29200d47792fd00a100779f40dc3ac98c7e0acf0cfb5cb4ce"
+    },
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--offline",
+        "-p",
+        "http@1.5.0",
+        "--precise",
+        "1.4.0"
+      ],
+      "exit": 101,
+      "seconds": 0.3605537414550781,
+      "log_sha256": "486d16c7f97cf88361e418a4a633ef7dfd8f7c76a73818d8d4a5e8780a77d94a"
+    },
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--offline",
+        "-p",
+        "hybrid-array@0.4.15",
+        "--precise",
+        "0.4.12"
+      ],
+      "exit": 101,
+      "seconds": 0.5052886009216309,
+      "log_sha256": "30a18aa5834597497d10b19ca7215878845b29ce20df0850e5af4fefb235005a"
+    },
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--offline",
+        "-p",
+        "reqwest@0.13.5",
+        "--precise",
+        "0.13.4"
+      ],
+      "exit": 101,
+      "seconds": 0.6626684665679932,
+      "log_sha256": "02698afb74a1215a69d564fa989b2d946ea78e0553445156e563aa1832229894"
+    },
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--offline",
+        "-p",
+        "rand@0.10.3",
+        "--precise",
+        "0.10.1"
+      ],
+      "exit": 101,
+      "seconds": 0.3989901542663574,
+      "log_sha256": "c36a7084283ac6f3a111a66b3f855b21f12eadedfda41bf0b43fa045709226a0"
+    },
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--offline",
+        "-p",
+        "deranged@0.5.9",
+        "--precise",
+        "0.5.5"
+      ],
+      "exit": 101,
+      "seconds": 0.32023191452026367,
+      "log_sha256": "460d86f155dc9d2bebedb84359728f214628fac0779b5129e58082bd50716eaa"
+    },
+    {
+      "command": [
+        "cargo",
+        "update",
+        "--offline",
+        "-p",
+        "num-conv@0.2.2",
+        "--precise",
+        "0.2.0"
+      ],
+      "exit": 101,
+      "seconds": 0.30713653564453125,
+      "log_sha256": "87ff2e14831eea5e5493a2dab35f20ed6f9082092f5453de7524a0af904912d7"
+    }
+  ],
+  "lock_sha256": "07106b95977ffea7f096a19efc929fd2c7fa1e8114e3d64c6bf2a993645d999d"
+}

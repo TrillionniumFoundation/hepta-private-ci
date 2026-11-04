@@ -87,6 +87,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
+Source/revision records remain authoritative when Memory Cell projections or
+learned artifacts are added. Recovery, correction and deletion must preserve their
+original owner lineage. The registry and implementation map keep production
+implementation unproved until the named product caller and executable product
+tests are established for the same candidate; source presence alone changes no
+writer or activation state.
+
 The bounded components are:
 
 - `schema and migration owner`

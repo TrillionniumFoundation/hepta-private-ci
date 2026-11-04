@@ -1,0 +1,151 @@
+name: hepta keyring provider qualification
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-keyring-provider-qualification.yml
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/keyring-store/**
+      - codex-rs/rmcp-client/Cargo.toml
+      - codex-rs/third_party/keyring-3.6.3/**
+      - codex-rs/third_party/dbus-secret-service-4.1.0/**
+      - third_party/dbus/**
+      - qualification/keyring-sync-provider/**
+      - MODULE.bazel
+      - MODULE.bazel.lock
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-keyring-provider-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  native-provider:
+    if: github.head_ref == 'fix/private-ci-keyring-provider-20261103' || github.head_ref == 'integration/private-ci-dependency-closure-20261103-gpt6'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CARGO_BUILD_JOBS: 2
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - name: Install native fixture prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential dbus gnome-keyring python3-dbus python3-gi pkg-config libssl-dev
+          rustup toolchain install 1.96.0 --profile minimal
+          echo "RUSTC=$(rustup which --toolchain 1.96.0 rustc)" >> "$GITHUB_ENV"
+          echo "RUSTDOC=$(rustup which --toolchain 1.96.0 rustdoc)" >> "$GITHUB_ENV"
+          dirname "$(rustup which --toolchain 1.96.0 cargo)" >> "$GITHUB_PATH"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.151
+      - name: Build pinned native client and retain original identity assertions
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/keyring-provider"
+          mkdir -p "$output"
+          git rev-parse HEAD > "$output/source-commit.txt"
+          sha256sum codex-rs/Cargo.toml codex-rs/Cargo.lock MODULE.bazel MODULE.bazel.lock third_party/dbus/* > "$output/source-inputs.sha256"
+          python3 qualification/keyring-sync-provider/build_pinned_client.py --output "$output/native"
+          echo "PKG_CONFIG_PATH=$output/native/lib/pkgconfig" >> "$GITHUB_ENV"
+      - name: Build old and new exact production consumers
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/keyring-provider"
+          git fetch --no-tags --filter=blob:none --depth=1 origin 4b1a326ec50c28e8803d390e81d2f03457cc7499
+          curl --fail --location --retry 3 https://static.crates.io/crates/keyring/keyring-3.6.3.crate --output "$output/keyring-3.6.3.crate"
+          python3 qualification/keyring-sync-provider/prepare_probes.py --official-crate "$output/keyring-3.6.3.crate" --output "$output/probes"
+          export CARGO_TARGET_DIR="$output/probe-target"
+          cargo build --manifest-path "$output/probes/baseline/Cargo.toml" > "$output/baseline-build.log" 2>&1
+          cargo build --manifest-path "$output/probes/candidate/Cargo.toml" > "$output/candidate-build.log" 2>&1
+          ldd "$CARGO_TARGET_DIR/debug/hepta-keyring-candidate-probe" > "$output/candidate-linkage.txt"
+          if grep -q libdbus "$output/candidate-linkage.txt"; then
+            echo 'candidate unexpectedly dynamically links host libdbus' >&2
+            exit 1
+          fi
+      - name: Recover old credentials on a real private Secret Service
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/keyring-provider"
+          python3 qualification/keyring-sync-provider/run_private_service.py \
+            --baseline "$output/probe-target/debug/hepta-keyring-baseline-probe" \
+            --candidate "$output/probe-target/debug/hepta-keyring-candidate-probe" \
+            --gnome-keyring /usr/bin/gnome-keyring-daemon \
+            --output "$output/service" --inputs "$output/probes/inputs-before.json"
+      - name: Run original secrets consumer tests with the candidate provider
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/keyring-provider"
+          export CARGO_TARGET_DIR="$output/consumer-target"
+          just test -p codex-secrets --locked --no-tests=fail --retries 0 > "$output/secrets-test.log" 2>&1
+          cp codex-rs/target/nextest/local/junit.xml "$output/secrets.junit.xml"
+      - name: Preserve actual native results
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: keyring-native-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/keyring-provider/source-*.txt
+            ${{ runner.temp }}/keyring-provider/source-inputs.sha256
+            ${{ runner.temp }}/keyring-provider/native/receipt.json
+            ${{ runner.temp }}/keyring-provider/probes/inputs-before.json
+            ${{ runner.temp }}/keyring-provider/probes/*/Cargo.lock
+            ${{ runner.temp }}/keyring-provider/*-build.log
+            ${{ runner.temp }}/keyring-provider/candidate-linkage.txt
+            ${{ runner.temp }}/keyring-provider/service
+            ${{ runner.temp }}/keyring-provider/secrets-test.log
+            ${{ runner.temp }}/keyring-provider/secrets.junit.xml
+          if-no-files-found: error
+          retention-days: 7
+
+  bazel-lock-and-client:
+    if: github.head_ref == 'fix/private-ci-keyring-provider-20261103' || github.head_ref == 'integration/private-ci-dependency-closure-20261103-gpt6'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: keyring-provider-qualification
+      - name: Generate lock and run original lock and native client checks
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/keyring-lock"
+          mkdir -p "$output"
+          git rev-parse HEAD > "$output/source-commit.txt"
+          sha256sum codex-rs/Cargo.toml codex-rs/Cargo.lock MODULE.bazel MODULE.bazel.lock > "$output/source-inputs.sha256"
+          ./scripts/check-module-bazel-lock.sh > "$output/committed-lock-check.log" 2>&1
+          cp MODULE.bazel.lock "$output/committed-MODULE.bazel.lock"
+          just bazel-lock-update > "$output/lock-update.log" 2>&1
+          cmp MODULE.bazel.lock "$output/committed-MODULE.bazel.lock"
+          cp MODULE.bazel.lock "$output/MODULE.bazel.lock"
+          ./scripts/check-module-bazel-lock.sh > "$output/lock-check.log" 2>&1
+          ./.github/scripts/run_bazel_with_buildbuddy.py test //third_party/dbus:native_identity_test > "$output/native-test.log" 2>&1
+          ./.github/scripts/run_bazel_with_buildbuddy.py build //codex-rs/keyring-store:keyring-store > "$output/keyring-build.log" 2>&1
+          ./.github/scripts/run_bazel_with_buildbuddy.py query 'deps(@crates//:keyring, 4)' --output=build > "$output/generated-target.bazel" 2> "$output/generated-target.log"
+          test -s "$output/generated-target.bazel"
+      - name: Retain exact lock and actual Bazel diagnostics
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: keyring-bazel-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/keyring-lock
+          if-no-files-found: error
+          retention-days: 7

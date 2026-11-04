@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "base_commit": "1ef3216ffb86271d87e6aea049ce7ca7f2b76809",
+  "base_tree": "79a3e2b173a8804e7518bbf90fae44042565cd20",
+  "original_failure_job": 126091750418,
+  "source_files": {
+    ".github/workflows/v8-canary.yml": {
+      "bytes": 18103,
+      "sha256": "79d78f7cd028402234bedc20eb36babb8f1fab3477e443ec333149c244f8cdc0",
+      "git_blob": "4ac92b3aa287ef56b121fa13f28e98dbd4660d96"
+    },
+    "scripts/hepta_ci_history.py": {
+      "bytes": 5580,
+      "sha256": "9261135b61e03ef908e15ecf21eee56a2c3a872ca25b7798f44b0f9d53cc770e",
+      "git_blob": "8e91bdd42cb41b7190616d071c1fc9c8aca5ead5"
+    },
+    "scripts/test_hepta_ci_history.py": {
+      "bytes": 10946,
+      "sha256": "cf1b0b73421346fdb703e6dd8ad4fd8407de80bef1395934b91a9d4a6074f12e",
+      "git_blob": "ccdd0feb07c6029e3aa70b7d5900234357a7b431"
+    }
+  },
+  "evidence_files": {
+    "qualification/ci-merge-base-history-20261103/ACTUAL_REPLAY.json": {
+      "bytes": 32974,
+      "sha256": "ad02f68f992b118a70e3720ea253c4f0acf4c1e075db0592251fd77bea268f8f",
+      "git_blob": "ef5d17190f7732330ce4bd3b70dbe1aa8c3eae54"
+    },
+    "qualification/ci-merge-base-history-20261103/CONTROL_COMMANDS.json": {
+      "bytes": 814,
+      "sha256": "035a50105801d579bc55f524b9c039b5f7f3d64d76556f95600d4022184fec1d",
+      "git_blob": "66aef41ec022f883d26ede0d9edc1a2e7e757ae8"
+    },
+    "qualification/ci-merge-base-history-20261103/CONTROL_INPUTS_BEFORE_FMT.json": {
+      "bytes": 434,
+      "sha256": "29c901a1b3fa91ab560a4ceb6aeba78aa64442596c30454d3fba479247c9922e",
+      "git_blob": "35bbe5be82b7a37d85bd7130b045645444e0d6fb"
+    },
+    "qualification/ci-merge-base-history-20261103/FORMAT_RECEIPT.json": {
+      "bytes": 1280,
+      "sha256": "f714518e5316dfaba681b68e87d86a4bef5f4de6abaf0d2b0f68b0ee538689e0",
+      "git_blob": "95267eee023880036d609d2f5acfd0911493d19f"
+    },
+    "qualification/ci-merge-base-history-20261103/INDEPENDENT_REVIEW.md": {
+      "bytes": 1760,
+      "sha256": "2c367a6a5f0f5d8cbcc8d58ff4bd2276ca26866473677170912d24bc20318088",
+      "git_blob": "7ec2dc6b84ae04ebb8d401fa99662456d992f254"
+    },
+    "qualification/ci-merge-base-history-20261103/README.md": {
+      "bytes": 4363,
+      "sha256": "8532cdb1abcf97a4124696d76c739c37cea549818927f51fdde42905af9a7de6",
+      "git_blob": "fcd08316ac63843b6f27c7d203215c446ed4180c"
+    },
+    "qualification/ci-merge-base-history-20261103/UNCHANGED_CONTROL_INPUTS.json": {
+      "bytes": 1652,
+      "sha256": "6c6af3ad017e792b3b7a7719f5c8d7cc690db8fa128986b276397b9d46bdba30",
+      "git_blob": "adeb5543f0e3946f1aae758d29edeef88ec93f41"
+    },
+    "qualification/ci-merge-base-history-20261103/controls-0.log": {
+      "bytes": 9744,
+      "sha256": "ae5056ae4b697e143265b438e37eadb5dcdd861f583b18779e91c01c9f93d4cd",
+      "git_blob": "b9c0a9b0076e6c6b1586219decc9588f335700b1"
+    },
+    "qualification/ci-merge-base-history-20261103/controls-1.log": {
+      "bytes": 105,
+      "sha256": "3e5917dfc1786bd7a112da89dae00c8042e7da2032f142c53166e98151766c7c",
+      "git_blob": "4e416d8c87cd76ccdb2807515e5571bda372b6c3"
+    },
+    "qualification/ci-merge-base-history-20261103/controls-2.log": {
+      "bytes": 104,
+      "sha256": "5364bc59c974600f54aeb8e9a535c025995eb09740598b8b3426f0ac87bb813e",
+      "git_blob": "b906479603fcbf6ec3fbea91174f5fa09c3572b9"
+    },
+    "qualification/ci-merge-base-history-20261103/original-job-126091750418.log": {
+      "bytes": 25285,
+      "sha256": "3aee50b2322a34f08d3447eb1d2a489245fe67c8d48691fc8689ebd3e1068fc0",
+      "git_blob": "9d344144188a1f5eba48ef8edbf6bd789a0fa8a7"
+    },
+    "qualification/ci-merge-base-history-20261103/original_hepta_ci_history.py": {
+      "bytes": 3461,
+      "sha256": "0137e2f86c7174b85a4d3709ab8b9025e61999be20a428b21df16ef753e89846",
+      "git_blob": "4f32f2dd7e796a46fda7ede9622cbf901f0278da"
+    },
+    "qualification/ci-merge-base-history-20261103/remote-comparison-oracle.json": {
+      "bytes": 24528,
+      "sha256": "a7556380f125b8268ee6123836f359b2353fc618b7eefee3a81a2e52af1b40c9",
+      "git_blob": "d5a1618489c313223eb3276860055033f37005ad"
+    },
+    "qualification/ci-merge-base-history-20261103/replay_actual.py": {
+      "bytes": 6353,
+      "sha256": "8bd0d8be1301103a1a5dce0827a831f9caca86422a5f67dba6ebfe6c3a4a9982",
+      "git_blob": "4d4e17dbcb0ec72753dc40f659973b2011eac193"
+    },
+    "qualification/ci-merge-base-history-20261103/tested-before-format/scripts/hepta_ci_history.py": {
+      "bytes": 5483,
+      "sha256": "31840c13a99ad823bec9437d3b69f38ec07e8b0443bb6351663d1936fa81b9ce",
+      "git_blob": "f8953169d9942d95442254549102a21c7034e540"
+    },
+    "qualification/ci-merge-base-history-20261103/tested-before-format/scripts/test_hepta_ci_history.py": {
+      "bytes": 10530,
+      "sha256": "456885ca3319feb7fcd8e9b4d815b46b3e2dc30f92180e0bce4d7c7fcfbd9dac",
+      "git_blob": "f6262416bb64025ff276668b0eb9b2e83e3febf0"
+    }
+  }
+}

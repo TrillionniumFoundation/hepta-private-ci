@@ -31,8 +31,20 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
+
+      - name: Fetch exact comparison commits
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
+          python3 scripts/hepta_ci_history.py --commit "$BASE_SHA" --commit "$HEAD_SHA"
 
       - name: Select dependency impact
         id: scope
@@ -137,7 +149,7 @@ jobs:
       - name: Prepare native test prerequisites before compilation
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config libdbus-1-dev
           sudo sysctl -w kernel.unprivileged_userns_clone=1
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0

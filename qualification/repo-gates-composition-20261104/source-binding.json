@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "base_source": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+  "base_tree": "49a9567143edd2b1aed5cc929afb04bdb6e39469",
+  "status": "CONCRETE_SOURCE_CANDIDATE_PENDING_COMBINED_ORIGINAL_GATES",
+  "changes": [
+    {
+      "path": ".github/scripts/test_run_bazel_clippy_targets.py",
+      "bytes": 3189,
+      "git_blob": "c4d271eb206686adafdf2454e2d02cc4a2f5100f",
+      "sha256": "a65e6893bd1e788fff80c9820912fde8929ca0844da99254b93904fd8578abb9"
+    },
+    {
+      "path": "scripts/hepta-docs.py",
+      "bytes": 79408,
+      "git_blob": "1db13e13c2ad32751ad70eaec4a89b5d996a583d",
+      "sha256": "9cada8fc8adc8d472e85bc7e909faa7949b221dfe956827a06b08ccb825ab92c"
+    },
+    {
+      "path": "scripts/test_hepta_cleanup_consumers.py",
+      "bytes": 8811,
+      "git_blob": "020a6ff2679c67a569ae610405429547a9dbf2d8",
+      "sha256": "1ae615cbcd79a8d8fe5942f837057f433e3cc706295db7f4d7d78fe318c88ae1"
+    }
+  ],
+  "ruff": {
+    "original_git_blob": "16c35d544e9a4fadd6eee942cdc912491b6cd2d7",
+    "new_git_blob": "c4d271eb206686adafdf2454e2d02cc4a2f5100f",
+    "version": "0.15.13",
+    "actual_diagnostic_source": "2082714a22f92a7263607fe0c2427d16d21ff78e",
+    "actual_diagnostic_run": 41756074610,
+    "actual_diagnostic_job": 126332372969,
+    "exact_tool_diff_only": true,
+    "original_test_function_count": 4,
+    "tests_or_assertions_changed": false,
+    "full_decoded_log_bytes": 21922,
+    "full_decoded_log_sha256": "8d0c67a15931e48dd11acaaf27eda3d795ebe9b1584b0c590569343c0ff2027b",
+    "diagnostic_result": "ruff format --diff returned1 and showed the exact one-file change; later --check was not reached under set -e"
+  },
+  "docs": {
+    "owner_source": "12be5271cf9a1d45e322736ab2af8009a1b62ac9",
+    "owner_pr": 4748,
+    "owner_original_run": 41746151863,
+    "owner_contract_job": 126300152132,
+    "owner_contract_conclusion": "success",
+    "owner_repo_check_job": 126300151941,
+    "owner_repo_check_conclusion": "success",
+    "owner_architecture_run": 41746151606,
+    "owner_architecture_conclusion": "success",
+    "owner_patch_applied_to_current_9fd_exactly": true,
+    "original_root_relative_matcher_unchanged": true,
+    "external_signed_provenance_unchanged": true,
+    "new_production_verifier_regressions": 2,
+    "original_failure": {
+      "source": "ced3c30c6096f6099fdf0fbabe406781ff16a16c",
+      "run": 41755668835,
+      "job": 126332441531,
+      "full_decoded_log_bytes": 1374836,
+      "full_decoded_log_sha256": "330c86bb724b16e13a8f3c5c05410677da9255d0fbc524a72330faa4eb09f9cc",
+      "stored_scope": "only the exact three-line failure excerpt, not the complete job log"
+    },
+    "original_owner_pass": {
+      "full_decoded_log_bytes": 1372626,
+      "full_decoded_log_sha256": "2c7c204592e5c3599c6c2980343355ca2f0df6e9390f4d7d8e00e22c908dadb7",
+      "stored_scope": "only the complete JSON pass line, not the complete job log"
+    }
+  },
+  "local_execution_claim": false,
+  "current_combined_execution_claim": false,
+  "posture": "Draft / HOLD_NO_GO / DENY_ALL",
+  "main_merged": false
+}

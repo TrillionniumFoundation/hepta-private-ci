@@ -1,0 +1,103 @@
+name: HIA SQLite v1 fixture original native test diagnostic
+
+on:
+  pull_request:
+    branches:
+      - dot/hia-v1-migration-trigger-rewind-20261102
+      - dot/hia-sqlite-fixture-native-probe-20261103
+      - dot/hia-v1-fixture-newer-owner-tables-20261103
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hia-sqlite-v1-probe-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  exact-source-original-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      HEPTA_CI_LANE: source-head
+      CODEX_REPO_ROOT: ${{ github.workspace }}
+      PYTHONPATH: scripts
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      RUST_BACKTRACE: "1"
+    steps:
+      - name: Checkout immutable source HEAD, never the implicit PR merge
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reject identity drift before build
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD HEAD^{tree}
+          git diff --check
+
+      - name: Prepare the same native host prerequisites as blocking CI
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+
+      - name: Resolve the original verified V8 dependencies
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Run the unchanged original SQLite migration test with exact source receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hia-v1-sqlite-original.json" \
+            --minimum-tests 1 \
+            --timeout-seconds 2400 \
+            -- cargo test --locked --manifest-path codex-rs/Cargo.toml \
+              -p codex-hepta-automation --test automation \
+              v1_store_migrates_atomically_to_dispatch_outcome_schema \
+              -- --exact --nocapture
+          python3 - "$RUNNER_TEMP/hia-v1-sqlite-original.json" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          receipt = json.loads(Path(sys.argv[1]).read_text())
+          assert receipt["status"] == "passed"
+          assert receipt["before"] == receipt["after"]
+          assert receipt["before"]["commit"] == receipt["source_sha"] == receipt["tested_sha"]
+          assert receipt["observed_passed_tests"] == 1
+          assert receipt["observed_failed_tests"] == 0
+          assert receipt["command_exit_code"] == 0
+          assert not receipt["timed_out"]
+          assert not receipt["output_limit_exceeded"]
+          PY
+
+      - name: Retain original output and failure receipt, never replace broad blocking CI
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hia-v1-sqlite-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hia-v1-sqlite-original.json*
+          if-no-files-found: warn
+          retention-days: 14

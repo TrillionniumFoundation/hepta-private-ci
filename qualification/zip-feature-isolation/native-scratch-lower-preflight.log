@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/1f1d02319616/private-ci-work/repo/qualification/zip-feature-isolation/replay.py", line 197, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/workspace/scratch/1f1d02319616/private-ci-work/repo/qualification/zip-feature-isolation/replay.py", line 35, in main
+    raise RuntimeError(
+RuntimeError: Native replay requires at least 160 MiB free

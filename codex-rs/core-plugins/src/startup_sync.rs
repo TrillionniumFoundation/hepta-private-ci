@@ -1036,6 +1036,15 @@ fn read_sha_file(sha_path: &Path) -> Option<String> {
 }
 
 fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String> {
+    if let Ok(metadata) = std::fs::symlink_metadata(destination)
+        && metadata.file_type().is_symlink()
+    {
+        return Err(format!(
+            "curated plugins extraction root {} is a symbolic link",
+            destination.display()
+        ));
+    }
+
     std::fs::create_dir_all(destination).map_err(|err| {
         format!(
             "failed to create curated plugins extraction directory {}: {err}",
@@ -1052,11 +1061,23 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
             .by_index(index)
             .map_err(|err| format!("failed to read curated plugins zip entry: {err}"))?;
         let Some(relative_path) = entry.enclosed_name() else {
+            let entry_name = entry
+                .name()
+                .map_err(|err| format!("failed to decode curated plugins zip entry name: {err}"))?;
             return Err(format!(
-                "curated plugins zip entry `{}` escapes extraction root",
-                entry.name()
+                "curated plugins zip entry `{entry_name}` escapes extraction root"
             ));
         };
+
+        if entry.is_symlink() {
+            return Err(format!(
+                "curated plugins zip entry `{}` is a symlink",
+                entry
+                    .name()
+                    .map(std::borrow::Cow::into_owned)
+                    .unwrap_or_else(|_| "<invalid>".to_string())
+            ));
+        }
 
         let mut components = relative_path.components();
         let Some(std::path::Component::Normal(_)) = components.next() else {
@@ -1071,6 +1092,19 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
         });
         if output_relative.as_os_str().is_empty() {
             continue;
+        }
+
+        let mut checked_path = destination.to_path_buf();
+        for component in output_relative.components() {
+            checked_path.push(component);
+            if let Ok(metadata) = std::fs::symlink_metadata(&checked_path)
+                && metadata.file_type().is_symlink()
+            {
+                return Err(format!(
+                    "curated plugins zip path {} traverses a symbolic link",
+                    checked_path.display()
+                ));
+            }
         }
 
         let output_path = destination.join(&output_relative);
@@ -1104,32 +1138,33 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
                 output_path.display()
             )
         })?;
-        apply_zip_permissions(&entry, &output_path)?;
+        apply_zip_permissions(entry.unix_mode(), &output_path)?;
     }
 
     Ok(())
 }
 
 #[cfg(unix)]
-fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> Result<(), String> {
+fn apply_zip_permissions(unix_mode: Option<u32>, output_path: &Path) -> Result<(), String> {
     use std::os::unix::fs::PermissionsExt;
 
-    let Some(mode) = entry.unix_mode() else {
+    let Some(mode) = unix_mode else {
         return Ok(());
     };
-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
-        format!(
-            "failed to set permissions on curated plugins file {}: {err}",
-            output_path.display()
-        )
-    })
+    // An archive may carry setuid, setgid, or sticky bits. Preserve only normal
+    // file permissions, including the executable bits needed by plugin scripts.
+    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode & 0o777)).map_err(
+        |err| {
+            format!(
+                "failed to set permissions on curated plugins file {}: {err}",
+                output_path.display()
+            )
+        },
+    )
 }
 
 #[cfg(not(unix))]
-fn apply_zip_permissions(
-    _entry: &zip::read::ZipFile<'_>,
-    _output_path: &Path,
-) -> Result<(), String> {
+fn apply_zip_permissions(_unix_mode: Option<u32>, _output_path: &Path) -> Result<(), String> {
     Ok(())
 }
 

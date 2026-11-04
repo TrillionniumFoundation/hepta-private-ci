@@ -1,0 +1,1742 @@
+{
+  "status": "generated-needs-adoption",
+  "commands": [
+    {
+      "name": "source-commit",
+      "argv": [
+        "git",
+        "--no-replace-objects",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0018622089999951186,
+      "log": {
+        "bytes": 41,
+        "sha256": "8309e042e919ba041aff346e33d87dfd21ef597b5624d0f595a9b783c948ca7c",
+        "git_blob": "f5b8d4e357aaab2a99c0ad06e9db728b0a160dbf"
+      }
+    },
+    {
+      "name": "source-tree",
+      "argv": [
+        "git",
+        "--no-replace-objects",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0018302189999985785,
+      "log": {
+        "bytes": 41,
+        "sha256": "f0407c9c710800f6ad42ce912dd8222bd7fcf0b8383a1841b6a14663d673bad5",
+        "git_blob": "cbfd453910e4fc94647ac851620328a774b67a93"
+      }
+    },
+    {
+      "name": "initial-clean-source",
+      "argv": [
+        "git",
+        "--no-replace-objects",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.5265198220000045,
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "rustc-identity",
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.012782170000001258,
+      "log": {
+        "bytes": 36,
+        "sha256": "7aaf71af0cccdebda4e70ae5216dcf348bccfeb5cc30d148247005558cec03ad",
+        "git_blob": "631651bfdbb443b7b66335ade839d0f06fb7b178"
+      }
+    },
+    {
+      "name": "committed-lock-first",
+      "argv": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 20.012073007999994,
+      "log": {
+        "bytes": 3214125,
+        "sha256": "439bf05648fc8f2840cd06239450fd977738faaacf865b6984f99c95acab0827",
+        "git_blob": "b08990caf38bebd4c9ea9877ae4798c8a8e895b8"
+      }
+    },
+    {
+      "name": "original-formatter",
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "a3bf4c98b619244f0c81ab900aa086495b31d62e"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 9.499753686000005,
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "original-formatter-check",
+      "argv": [
+        "just",
+        "fmt",
+        "--check",
+        "--base",
+        "a3bf4c98b619244f0c81ab900aa086495b31d62e"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 9.276237875999996,
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "actual-cargo-metadata",
+      "argv": [
+        "cargo",
+        "metadata",
+        "--all-features",
+        "--format-version",
+        "1"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 19.160429199999996,
+      "log": {
+        "bytes": 8214763,
+        "sha256": "1867578003f40ebb5d38df9c92cb69d3943d5275c6def78c124e8f500de011c1",
+        "git_blob": "aa44a45cd21fdf1545968f613eb8728356e51bbe"
+      }
+    },
+    {
+      "name": "actual-locked-metadata",
+      "argv": [
+        "cargo",
+        "metadata",
+        "--locked",
+        "--all-features",
+        "--format-version",
+        "1"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.0198762599999895,
+      "log": {
+        "bytes": 8153124,
+        "sha256": "293b50ff3e43ee85c70dbd67b36dd4eb65e75503ede081b281de0f46f78893e8",
+        "git_blob": "09df4550b076b14be817d626e19354b8288c145f"
+      }
+    },
+    {
+      "name": "original-lock-update",
+      "argv": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 22.822730398999994,
+      "log": {
+        "bytes": 1570,
+        "sha256": "219f73a6be79d15624e67592c0a2e6b8925794b414ffd250835a768c94810b61",
+        "git_blob": "6af9679b67210c297f64e16b78e890c314cff72e"
+      }
+    },
+    {
+      "name": "original-lock-check",
+      "argv": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.441885285000012,
+      "log": {
+        "bytes": 779,
+        "sha256": "13e4c7c81965f483e8eb14f70b195d7c7589f6d2b5a989069b2c7507de3fd5f9",
+        "git_blob": "a641bce339b640cc6f2e65e6640ccc45fd2a2246"
+      }
+    },
+    {
+      "name": "untracked-inputs",
+      "argv": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.02577557600000091,
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "complete-generated-diff",
+      "argv": [
+        "git",
+        "diff",
+        "--binary",
+        "--no-ext-diff",
+        "HEAD",
+        "--"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.5260144769999897,
+      "log": {
+        "bytes": 150199,
+        "sha256": "f511dea012eb153ad0d49751c64ce0006129e6e3d092020d0e72889ed7a5ac22",
+        "git_blob": "65e31fe156eb595d0878d5cee2ca628ed1ef56ef"
+      }
+    }
+  ],
+  "scope": "Actual composed source formatting and Cargo/Bazel resolution only; product qualification requires the committed generated successor and original gates.",
+  "source_commit": "59bc256880156acd4dad4f8e3880abe149b8a4ce",
+  "source_tree": "6c7694edda83dcc60068b99b1f69afb92fe2c698",
+  "source_input_count": 10926,
+  "formatter_changes": [
+    "codex-rs/hepta-fleet/src/registry_tests.rs",
+    "codex-rs/utils/path-utils/src/private_state_windows_directory.rs"
+  ],
+  "cargo_delta": {
+    "baseline_packages": 1517,
+    "generated_packages": 1518,
+    "registry_changes": [
+      {
+        "before": {
+          "name": "unicode-normalization",
+          "version": "0.1.25",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "5fd4f6878c9cb28d874b009da9e8d183b5abc80117c40bbd187a1fde336be6e8",
+          "dependencies": [
+            "tinyvec"
+          ]
+        },
+        "after": {
+          "name": "unicode-normalization",
+          "version": "0.1.26",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "75cd3fb03d5288b3ba9a1ee103ac7e9cbb59f0b03d64f8ddfcc04dd42758a85d",
+          "dependencies": [
+            "tinyvec"
+          ]
+        }
+      }
+    ],
+    "registry_dependency_changes": [
+      {
+        "package": [
+          "arboard",
+          "3.6.1",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "arboard",
+          "version": "3.6.1",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "0348a1c054491f4bfe6ab86a7b6ab1e44e45d899005de92f58b3df180b36ddaf",
+          "dependencies": [
+            "clipboard-win",
+            "image",
+            "log",
+            "objc2",
+            "objc2-app-kit",
+            "objc2-core-foundation",
+            "objc2-core-graphics",
+            "objc2-foundation",
+            "parking_lot",
+            "percent-encoding",
+            "windows-sys 0.59.0",
+            "wl-clipboard-rs",
+            "x11rb"
+          ]
+        },
+        "after": {
+          "name": "arboard",
+          "version": "3.6.1",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "0348a1c054491f4bfe6ab86a7b6ab1e44e45d899005de92f58b3df180b36ddaf",
+          "dependencies": [
+            "clipboard-win",
+            "image",
+            "log",
+            "objc2",
+            "objc2-app-kit",
+            "objc2-core-foundation",
+            "objc2-core-graphics",
+            "objc2-foundation",
+            "parking_lot",
+            "percent-encoding",
+            "windows-sys 0.60.2",
+            "wl-clipboard-rs",
+            "x11rb"
+          ]
+        }
+      },
+      {
+        "package": [
+          "dirs-sys",
+          "0.5.0",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "dirs-sys",
+          "version": "0.5.0",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "e01a3366d27ee9890022452ee61b2b63a67e6f13f58900b651ff5665f0bb1fab",
+          "dependencies": [
+            "libc",
+            "option-ext",
+            "redox_users 0.5.2",
+            "windows-sys 0.59.0"
+          ]
+        },
+        "after": {
+          "name": "dirs-sys",
+          "version": "0.5.0",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "e01a3366d27ee9890022452ee61b2b63a67e6f13f58900b651ff5665f0bb1fab",
+          "dependencies": [
+            "libc",
+            "option-ext",
+            "redox_users 0.5.2",
+            "windows-sys 0.61.2"
+          ]
+        }
+      },
+      {
+        "package": [
+          "errno",
+          "0.3.14",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "errno",
+          "version": "0.3.14",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb",
+          "dependencies": [
+            "libc",
+            "windows-sys 0.59.0"
+          ]
+        },
+        "after": {
+          "name": "errno",
+          "version": "0.3.14",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb",
+          "dependencies": [
+            "libc",
+            "windows-sys 0.61.2"
+          ]
+        }
+      },
+      {
+        "package": [
+          "hyper-util",
+          "0.1.20",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "hyper-util",
+          "version": "0.1.20",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "96547c2556ec9d12fb1578c4eaf448b04993e7fb79cbaad930a656880a6bdfa0",
+          "dependencies": [
+            "base64 0.22.1",
+            "bytes",
+            "futures-channel",
+            "futures-util",
+            "http 1.5.0",
+            "http-body 1.0.1",
+            "hyper",
+            "ipnet",
+            "libc",
+            "percent-encoding",
+            "pin-project-lite",
+            "socket2 0.5.10",
+            "system-configuration",
+            "tokio",
+            "tower-service",
+            "tracing",
+            "windows-registry"
+          ]
+        },
+        "after": {
+          "name": "hyper-util",
+          "version": "0.1.20",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "96547c2556ec9d12fb1578c4eaf448b04993e7fb79cbaad930a656880a6bdfa0",
+          "dependencies": [
+            "base64 0.22.1",
+            "bytes",
+            "futures-channel",
+            "futures-util",
+            "http 1.5.0",
+            "http-body 1.0.1",
+            "hyper",
+            "ipnet",
+            "libc",
+            "percent-encoding",
+            "pin-project-lite",
+            "socket2 0.6.3",
+            "system-configuration",
+            "tokio",
+            "tower-service",
+            "tracing",
+            "windows-registry"
+          ]
+        }
+      },
+      {
+        "package": [
+          "iana-time-zone",
+          "0.1.65",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "iana-time-zone",
+          "version": "0.1.65",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "e31bc9ad994ba00e440a8aa5c9ef0ec67d5cb5e5cb0cc7f8b744a35b389cc470",
+          "dependencies": [
+            "android_system_properties",
+            "core-foundation-sys",
+            "iana-time-zone-haiku",
+            "js-sys",
+            "log",
+            "wasm-bindgen",
+            "windows-core 0.58.0"
+          ]
+        },
+        "after": {
+          "name": "iana-time-zone",
+          "version": "0.1.65",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "e31bc9ad994ba00e440a8aa5c9ef0ec67d5cb5e5cb0cc7f8b744a35b389cc470",
+          "dependencies": [
+            "android_system_properties",
+            "core-foundation-sys",
+            "iana-time-zone-haiku",
+            "js-sys",
+            "log",
+            "wasm-bindgen",
+            "windows-core 0.62.2"
+          ]
+        }
+      },
+      {
+        "package": [
+          "is-terminal",
+          "0.4.17",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "is-terminal",
+          "version": "0.4.17",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46",
+          "dependencies": [
+            "hermit-abi",
+            "libc",
+            "windows-sys 0.59.0"
+          ]
+        },
+        "after": {
+          "name": "is-terminal",
+          "version": "0.4.17",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46",
+          "dependencies": [
+            "hermit-abi",
+            "libc",
+            "windows-sys 0.61.2"
+          ]
+        }
+      },
+      {
+        "package": [
+          "jiff",
+          "0.2.23",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "jiff",
+          "version": "0.2.23",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "1a3546dc96b6d42c5f24902af9e2538e82e39ad350b0c766eb3fbf2d8f3d8359",
+          "dependencies": [
+            "jiff-static",
+            "jiff-tzdb-platform",
+            "log",
+            "portable-atomic",
+            "portable-atomic-util",
+            "serde_core",
+            "windows-sys 0.59.0"
+          ]
+        },
+        "after": {
+          "name": "jiff",
+          "version": "0.2.23",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "1a3546dc96b6d42c5f24902af9e2538e82e39ad350b0c766eb3fbf2d8f3d8359",
+          "dependencies": [
+            "jiff-static",
+            "jiff-tzdb-platform",
+            "log",
+            "portable-atomic",
+            "portable-atomic-util",
+            "serde_core",
+            "windows-sys 0.61.2"
+          ]
+        }
+      },
+      {
+        "package": [
+          "nu-ansi-term",
+          "0.50.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "nu-ansi-term",
+          "version": "0.50.3",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5",
+          "dependencies": [
+            "windows-sys 0.59.0"
+          ]
+        },
+        "after": {
+          "name": "nu-ansi-term",
+          "version": "0.50.3",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5",
+          "dependencies": [
+            "windows-sys 0.61.2"
+          ]
+        }
+      },
+      {
+        "package": [
+          "oauth2",
+          "5.0.0",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "oauth2",
+          "version": "5.0.0",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "51e219e79014df21a225b1860a479e2dcd7cbd9130f4defd4bd0e191ea31d67d",
+          "dependencies": [
+            "base64 0.21.7",
+            "chrono",
+            "getrandom 0.2.17",
+            "http 1.5.0",
+            "rand 0.8.6",
+            "reqwest 0.12.28",
+            "serde",
+            "serde_json",
+            "serde_path_to_error",
+            "sha2 0.10.9",
+            "thiserror 1.0.69",
+            "url"
+          ]
+        },
+        "after": {
+          "name": "oauth2",
+          "version": "5.0.0",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "51e219e79014df21a225b1860a479e2dcd7cbd9130f4defd4bd0e191ea31d67d",
+          "dependencies": [
+            "base64 0.22.1",
+            "chrono",
+            "getrandom 0.2.17",
+            "http 1.5.0",
+            "rand 0.8.6",
+            "reqwest 0.12.28",
+            "serde",
+            "serde_json",
+            "serde_path_to_error",
+            "sha2 0.10.9",
+            "thiserror 1.0.69",
+            "url"
+          ]
+        }
+      },
+      {
+        "package": [
+          "os_pipe",
+          "1.2.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "os_pipe",
+          "version": "1.2.3",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "7d8fae84b431384b68627d0f9b3b1245fcf9f46f6c0e3dc902e9dce64edd1967",
+          "dependencies": [
+            "libc",
+            "windows-sys 0.48.0"
+          ]
+        },
+        "after": {
+          "name": "os_pipe",
+          "version": "1.2.3",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "7d8fae84b431384b68627d0f9b3b1245fcf9f46f6c0e3dc902e9dce64edd1967",
+          "dependencies": [
+            "libc",
+            "windows-sys 0.61.2"
+          ]
+        }
+      },
+      {
+        "package": [
+          "prost-build",
+          "0.14.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "prost-build",
+          "version": "0.14.3",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "343d3bd7056eda839b03204e68deff7d1b13aba7af2b2fd16890697274262ee7",
+          "dependencies": [
+            "heck",
+            "itertools 0.13.0",
+            "log",
+            "multimap",
+            "petgraph",
+            "prettyplease",
+            "prost",
+            "prost-types",
+            "regex",
+            "syn 2.0.117",
+            "tempfile"
+          ]
+        },
+        "after": {
+          "name": "prost-build",
+          "version": "0.14.3",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "343d3bd7056eda839b03204e68deff7d1b13aba7af2b2fd16890697274262ee7",
+          "dependencies": [
+            "heck",
+            "itertools 0.14.0",
+            "log",
+            "multimap",
+            "petgraph",
+            "prettyplease",
+            "prost",
+            "prost-types",
+            "regex",
+            "syn 2.0.117",
+            "tempfile"
+          ]
+        }
+      },
+      {
+        "package": [
+          "prost-derive",
+          "0.14.4",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "prost-derive",
+          "version": "0.14.4",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "b570b25f7617e43d59005d0990ccb79e950a423952cea19671b7a876da390adf",
+          "dependencies": [
+            "anyhow",
+            "itertools 0.13.0",
+            "proc-macro2",
+            "quote",
+            "syn 2.0.117"
+          ]
+        },
+        "after": {
+          "name": "prost-derive",
+          "version": "0.14.4",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "b570b25f7617e43d59005d0990ccb79e950a423952cea19671b7a876da390adf",
+          "dependencies": [
+            "anyhow",
+            "itertools 0.14.0",
+            "proc-macro2",
+            "quote",
+            "syn 2.0.117"
+          ]
+        }
+      },
+      {
+        "package": [
+          "quinn",
+          "0.11.9",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "quinn",
+          "version": "0.11.9",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "b9e20a958963c291dc322d98411f541009df2ced7b5a4f2bd52337638cfccf20",
+          "dependencies": [
+            "bytes",
+            "cfg_aliases 0.2.1",
+            "pin-project-lite",
+            "quinn-proto",
+            "quinn-udp",
+            "rustc-hash 2.1.1",
+            "rustls",
+            "socket2 0.5.10",
+            "thiserror 2.0.21",
+            "tokio",
+            "tracing",
+            "web-time"
+          ]
+        },
+        "after": {
+          "name": "quinn",
+          "version": "0.11.9",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "b9e20a958963c291dc322d98411f541009df2ced7b5a4f2bd52337638cfccf20",
+          "dependencies": [
+            "bytes",
+            "cfg_aliases 0.2.1",
+            "pin-project-lite",
+            "quinn-proto",
+            "quinn-udp",
+            "rustc-hash 2.1.1",
+            "rustls",
+            "socket2 0.6.3",
+            "thiserror 2.0.21",
+            "tokio",
+            "tracing",
+            "web-time"
+          ]
+        }
+      },
+      {
+        "package": [
+          "quinn-udp",
+          "0.5.14",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "quinn-udp",
+          "version": "0.5.14",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "addec6a0dcad8a8d96a771f815f0eaf55f9d1805756410b39f5fa81332574cbd",
+          "dependencies": [
+            "cfg_aliases 0.2.1",
+            "libc",
+            "once_cell",
+            "socket2 0.5.10",
+            "tracing",
+            "windows-sys 0.59.0"
+          ]
+        },
+        "after": {
+          "name": "quinn-udp",
+          "version": "0.5.14",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "addec6a0dcad8a8d96a771f815f0eaf55f9d1805756410b39f5fa81332574cbd",
+          "dependencies": [
+            "cfg_aliases 0.2.1",
+            "libc",
+            "once_cell",
+            "socket2 0.6.3",
+            "tracing",
+            "windows-sys 0.60.2"
+          ]
+        }
+      },
+      {
+        "package": [
+          "rustix",
+          "1.1.4",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "rustix",
+          "version": "1.1.4",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "b6fe4565b9518b83ef4f91bb47ce29620ca828bd32cb7e408f0062e9930ba190",
+          "dependencies": [
+            "bitflags 2.13.2",
+            "errno",
+            "libc",
+            "linux-raw-sys 0.12.1",
+            "windows-sys 0.59.0"
+          ]
+        },
+        "after": {
+          "name": "rustix",
+          "version": "1.1.4",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "b6fe4565b9518b83ef4f91bb47ce29620ca828bd32cb7e408f0062e9930ba190",
+          "dependencies": [
+            "bitflags 2.13.2",
+            "errno",
+            "libc",
+            "linux-raw-sys 0.12.1",
+            "windows-sys 0.61.2"
+          ]
+        }
+      },
+      {
+        "package": [
+          "rustls-platform-verifier",
+          "0.7.0",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "rustls-platform-verifier",
+          "version": "0.7.0",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "26d1e2536ce4f35f4846aa13bff16bd0ff40157cdb14cc056c7b14ba41233ba0",
+          "dependencies": [
+            "core-foundation 0.10.1",
+            "core-foundation-sys",
+            "jni",
+            "log",
+            "once_cell",
+            "rustls",
+            "rustls-native-certs",
+            "rustls-platform-verifier-android",
+            "rustls-webpki",
+            "security-framework 3.5.1",
+            "security-framework-sys",
+            "webpki-root-certs",
+            "windows-sys 0.59.0"
+          ]
+        },
+        "after": {
+          "name": "rustls-platform-verifier",
+          "version": "0.7.0",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "26d1e2536ce4f35f4846aa13bff16bd0ff40157cdb14cc056c7b14ba41233ba0",
+          "dependencies": [
+            "core-foundation 0.10.1",
+            "core-foundation-sys",
+            "jni",
+            "log",
+            "once_cell",
+            "rustls",
+            "rustls-native-certs",
+            "rustls-platform-verifier-android",
+            "rustls-webpki",
+            "security-framework 3.5.1",
+            "security-framework-sys",
+            "webpki-root-certs",
+            "windows-sys 0.61.2"
+          ]
+        }
+      },
+      {
+        "package": [
+          "tempfile",
+          "3.27.0",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "tempfile",
+          "version": "3.27.0",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd",
+          "dependencies": [
+            "fastrand",
+            "getrandom 0.4.3",
+            "once_cell",
+            "rustix 1.1.4",
+            "windows-sys 0.59.0"
+          ]
+        },
+        "after": {
+          "name": "tempfile",
+          "version": "3.27.0",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd",
+          "dependencies": [
+            "fastrand",
+            "getrandom 0.4.3",
+            "once_cell",
+            "rustix 1.1.4",
+            "windows-sys 0.61.2"
+          ]
+        }
+      },
+      {
+        "package": [
+          "winapi-util",
+          "0.1.11",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "before": {
+          "name": "winapi-util",
+          "version": "0.1.11",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22",
+          "dependencies": [
+            "windows-sys 0.48.0"
+          ]
+        },
+        "after": {
+          "name": "winapi-util",
+          "version": "0.1.11",
+          "source": "registry+https://github.com/rust-lang/crates.io-index",
+          "checksum": "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22",
+          "dependencies": [
+            "windows-sys 0.61.2"
+          ]
+        }
+      }
+    ],
+    "new_local_package": {
+      "name": "hepta-control-core",
+      "version": "0.1.0",
+      "dependencies": [
+        "serde",
+        "serde_json",
+        "sha2 0.10.9",
+        "unicode-normalization"
+      ]
+    },
+    "local_dependency_changes": [
+      {
+        "package": [
+          "codex-exec",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-exec",
+          "version": "0.0.0",
+          "dependencies": [
+            "anyhow",
+            "assert_cmd",
+            "clap",
+            "codex-app-server-client",
+            "codex-app-server-protocol",
+            "codex-apply-patch",
+            "codex-arg0",
+            "codex-cloud-config",
+            "codex-config",
+            "codex-core",
+            "codex-feedback",
+            "codex-git-utils",
+            "codex-history",
+            "codex-login",
+            "codex-model-provider-info",
+            "codex-otel",
+            "codex-protocol",
+            "codex-utils-absolute-path",
+            "codex-utils-cargo-bin",
+            "codex-utils-cli",
+            "codex-utils-oss",
+            "codex-utils-sandbox-summary",
+            "core_test_support",
+            "libc",
+            "opentelemetry",
+            "opentelemetry_sdk",
+            "owo-colors",
+            "predicates",
+            "pretty_assertions",
+            "serde",
+            "serde_json",
+            "supports-color 3.0.2",
+            "tempfile",
+            "tokio",
+            "tracing",
+            "tracing-opentelemetry",
+            "tracing-subscriber",
+            "ts-rs",
+            "uuid",
+            "walkdir",
+            "wiremock"
+          ]
+        },
+        "after": {
+          "name": "codex-exec",
+          "version": "0.0.0",
+          "dependencies": [
+            "anyhow",
+            "assert_cmd",
+            "clap",
+            "codex-app-server-client",
+            "codex-app-server-protocol",
+            "codex-apply-patch",
+            "codex-arg0",
+            "codex-cloud-config",
+            "codex-config",
+            "codex-core",
+            "codex-feedback",
+            "codex-git-utils",
+            "codex-history",
+            "codex-login",
+            "codex-model-provider-info",
+            "codex-otel",
+            "codex-protocol",
+            "codex-utils-absolute-path",
+            "codex-utils-cargo-bin",
+            "codex-utils-cli",
+            "codex-utils-oss",
+            "codex-utils-sandbox-summary",
+            "core_test_support",
+            "libc",
+            "opentelemetry",
+            "opentelemetry_sdk",
+            "owo-colors",
+            "predicates",
+            "pretty_assertions",
+            "serde",
+            "serde_json",
+            "sqlx",
+            "supports-color 3.0.2",
+            "tempfile",
+            "tokio",
+            "tracing",
+            "tracing-opentelemetry",
+            "tracing-subscriber",
+            "ts-rs",
+            "uuid",
+            "walkdir",
+            "wiremock"
+          ]
+        }
+      },
+      {
+        "package": [
+          "codex-hepta-agentd",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-hepta-agentd",
+          "version": "0.0.0",
+          "dependencies": [
+            "anyhow",
+            "app_test_support",
+            "codex-app-server",
+            "codex-app-server-client",
+            "codex-app-server-protocol",
+            "codex-arg0",
+            "codex-config",
+            "codex-features",
+            "codex-hepta-agent-protocol",
+            "codex-hepta-authbus",
+            "codex-hepta-automation",
+            "codex-hepta-bellman-operator",
+            "codex-hepta-codex-adapter",
+            "codex-hepta-cognitive-read",
+            "codex-hepta-cognitive-store",
+            "codex-hepta-cognitive-types",
+            "codex-hepta-context-compiler",
+            "codex-hepta-contracts",
+            "codex-hepta-control-plane",
+            "codex-hepta-evidence",
+            "codex-hepta-fleet",
+            "codex-hepta-infer-core",
+            "codex-hepta-infer-worker-host",
+            "codex-hepta-intelligence",
+            "codex-hepta-intelligence-eval",
+            "codex-hepta-intuition",
+            "codex-hepta-learning-artifacts",
+            "codex-hepta-learning-ledger",
+            "codex-hepta-memory",
+            "codex-hepta-memory-extension",
+            "codex-hepta-memory-retrieval",
+            "codex-hepta-ndu",
+            "codex-hepta-neuron",
+            "codex-hepta-objective",
+            "codex-hepta-operations",
+            "codex-hepta-paths",
+            "codex-hepta-plasticity",
+            "codex-hepta-prompt-optimizer",
+            "codex-hepta-prompt-registry",
+            "codex-hepta-supervisor",
+            "codex-hepta-types",
+            "codex-model-provider",
+            "codex-protocol",
+            "codex-state",
+            "codex-uds",
+            "codex-utils-absolute-path",
+            "codex-utils-cargo-bin",
+            "codex-utils-cli",
+            "codex-utils-home-dir",
+            "core_test_support",
+            "ed25519-dalek 2.2.0",
+            "http 1.5.0",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "sqlx",
+            "tempfile",
+            "thiserror 2.0.21",
+            "tokio",
+            "tokio-util",
+            "wiremock"
+          ]
+        },
+        "after": {
+          "name": "codex-hepta-agentd",
+          "version": "0.0.0",
+          "dependencies": [
+            "anyhow",
+            "app_test_support",
+            "codex-app-server",
+            "codex-app-server-client",
+            "codex-app-server-protocol",
+            "codex-arg0",
+            "codex-config",
+            "codex-features",
+            "codex-hepta-agent-protocol",
+            "codex-hepta-authbus",
+            "codex-hepta-automation",
+            "codex-hepta-bellman-operator",
+            "codex-hepta-codex-adapter",
+            "codex-hepta-cognitive-read",
+            "codex-hepta-cognitive-store",
+            "codex-hepta-cognitive-types",
+            "codex-hepta-context-compiler",
+            "codex-hepta-contracts",
+            "codex-hepta-control-plane",
+            "codex-hepta-evidence",
+            "codex-hepta-fleet",
+            "codex-hepta-infer-core",
+            "codex-hepta-infer-worker-host",
+            "codex-hepta-intelligence",
+            "codex-hepta-intelligence-eval",
+            "codex-hepta-intuition",
+            "codex-hepta-learning-artifacts",
+            "codex-hepta-learning-ledger",
+            "codex-hepta-memory",
+            "codex-hepta-memory-extension",
+            "codex-hepta-memory-retrieval",
+            "codex-hepta-ndu",
+            "codex-hepta-neuron",
+            "codex-hepta-objective",
+            "codex-hepta-operations",
+            "codex-hepta-paths",
+            "codex-hepta-plasticity",
+            "codex-hepta-prompt-optimizer",
+            "codex-hepta-prompt-registry",
+            "codex-hepta-supervisor",
+            "codex-hepta-types",
+            "codex-model-provider",
+            "codex-protocol",
+            "codex-state",
+            "codex-uds",
+            "codex-utils-absolute-path",
+            "codex-utils-cargo-bin",
+            "codex-utils-cli",
+            "codex-utils-home-dir",
+            "codex-utils-path",
+            "core_test_support",
+            "ed25519-dalek 2.2.0",
+            "hepta-control-core",
+            "http 1.5.0",
+            "insta",
+            "libc",
+            "pretty_assertions",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "sqlx",
+            "tempfile",
+            "thiserror 2.0.21",
+            "tokio",
+            "tokio-util",
+            "wiremock"
+          ]
+        }
+      },
+      {
+        "package": [
+          "codex-hepta-contracts",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-hepta-contracts",
+          "version": "0.0.0",
+          "dependencies": [
+            "codex-utils-cargo-bin",
+            "ed25519-dalek 2.2.0",
+            "pretty_assertions",
+            "rustix 1.1.4",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "tempfile",
+            "tokio",
+            "toml 0.9.11+spec-1.1.0",
+            "zeroize"
+          ]
+        },
+        "after": {
+          "name": "codex-hepta-contracts",
+          "version": "0.0.0",
+          "dependencies": [
+            "codex-utils-cargo-bin",
+            "codex-utils-path",
+            "ed25519-dalek 2.2.0",
+            "pretty_assertions",
+            "rustix 1.1.4",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "tempfile",
+            "tokio",
+            "toml 0.9.11+spec-1.1.0",
+            "zeroize"
+          ]
+        }
+      },
+      {
+        "package": [
+          "codex-hepta-fleet",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-hepta-fleet",
+          "version": "0.0.0",
+          "dependencies": [
+            "codex-hepta-contracts",
+            "codex-hepta-paths",
+            "ed25519-dalek 2.2.0",
+            "pretty_assertions",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "tempfile",
+            "thiserror 2.0.21",
+            "toml 0.9.11+spec-1.1.0"
+          ]
+        },
+        "after": {
+          "name": "codex-hepta-fleet",
+          "version": "0.0.0",
+          "dependencies": [
+            "codex-hepta-contracts",
+            "codex-hepta-paths",
+            "codex-utils-path",
+            "ed25519-dalek 2.2.0",
+            "pretty_assertions",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "tempfile",
+            "thiserror 2.0.21",
+            "toml 0.9.11+spec-1.1.0"
+          ]
+        }
+      },
+      {
+        "package": [
+          "codex-hepta-infer-worker-host",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-hepta-infer-worker-host",
+          "version": "0.0.0",
+          "dependencies": [
+            "codex-app-server-client",
+            "codex-app-server-protocol",
+            "codex-hepta-agentd",
+            "codex-hepta-codex-adapter",
+            "codex-hepta-contracts",
+            "codex-hepta-infer-core",
+            "codex-hepta-types",
+            "codex-utils-absolute-path",
+            "core_test_support",
+            "ed25519-dalek 2.2.0",
+            "libc",
+            "rustix 1.1.4",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "tempfile",
+            "tokio",
+            "tokio-util"
+          ]
+        },
+        "after": {
+          "name": "codex-hepta-infer-worker-host",
+          "version": "0.0.0",
+          "dependencies": [
+            "codex-app-server-client",
+            "codex-app-server-protocol",
+            "codex-arg0",
+            "codex-hepta-agentd",
+            "codex-hepta-codex-adapter",
+            "codex-hepta-contracts",
+            "codex-hepta-infer-core",
+            "codex-hepta-types",
+            "codex-utils-absolute-path",
+            "codex-utils-cargo-bin",
+            "core_test_support",
+            "ed25519-dalek 2.2.0",
+            "libc",
+            "pretty_assertions",
+            "rustix 1.1.4",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "tempfile",
+            "tokio",
+            "tokio-util"
+          ]
+        }
+      },
+      {
+        "package": [
+          "codex-hepta-memory",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-hepta-memory",
+          "version": "0.0.0",
+          "dependencies": [
+            "base64 0.22.1",
+            "codex-hepta-cognitive-read",
+            "codex-hepta-cognitive-types",
+            "codex-hepta-contracts",
+            "codex-hepta-kg",
+            "codex-hepta-memory-federation",
+            "codex-hepta-memory-retrieval",
+            "codex-hepta-operations",
+            "codex-hepta-paths",
+            "codex-hepta-types",
+            "codex-state",
+            "codex-utils-absolute-path",
+            "ed25519-dalek 2.2.0",
+            "futures",
+            "libc",
+            "pretty_assertions",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "sqlx",
+            "tempfile",
+            "thiserror 2.0.21",
+            "tokio",
+            "unicode-segmentation"
+          ]
+        },
+        "after": {
+          "name": "codex-hepta-memory",
+          "version": "0.0.0",
+          "dependencies": [
+            "base64 0.22.1",
+            "codex-hepta-cognitive-read",
+            "codex-hepta-cognitive-types",
+            "codex-hepta-contracts",
+            "codex-hepta-kg",
+            "codex-hepta-memory-federation",
+            "codex-hepta-memory-retrieval",
+            "codex-hepta-operations",
+            "codex-hepta-paths",
+            "codex-hepta-types",
+            "codex-state",
+            "codex-utils-absolute-path",
+            "codex-utils-path",
+            "ed25519-dalek 2.2.0",
+            "futures",
+            "libc",
+            "pretty_assertions",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "sqlx",
+            "tempfile",
+            "thiserror 2.0.21",
+            "tokio",
+            "unicode-segmentation"
+          ]
+        }
+      },
+      {
+        "package": [
+          "codex-hepta-native-gateway",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-hepta-native-gateway",
+          "version": "0.0.0",
+          "dependencies": [
+            "anyhow",
+            "codex-hepta-paths",
+            "codex-hepta-runtime",
+            "codex-hepta-wire",
+            "pretty_assertions",
+            "serde_json",
+            "tokio"
+          ]
+        },
+        "after": {
+          "name": "codex-hepta-native-gateway",
+          "version": "0.0.0",
+          "dependencies": [
+            "anyhow",
+            "codex-hepta-paths",
+            "codex-hepta-runtime",
+            "codex-hepta-wire",
+            "pretty_assertions",
+            "rustix 1.1.4",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "tokio"
+          ]
+        }
+      },
+      {
+        "package": [
+          "codex-hepta-ndu",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-hepta-ndu",
+          "version": "0.0.0",
+          "dependencies": [
+            "codex-hepta-contracts",
+            "codex-hepta-types",
+            "ed25519-dalek 2.2.0",
+            "pretty_assertions",
+            "tempfile"
+          ]
+        },
+        "after": {
+          "name": "codex-hepta-ndu",
+          "version": "0.0.0",
+          "dependencies": [
+            "codex-hepta-contracts",
+            "codex-hepta-neuron",
+            "codex-hepta-types",
+            "ed25519-dalek 2.2.0",
+            "pretty_assertions",
+            "tempfile"
+          ]
+        }
+      },
+      {
+        "package": [
+          "codex-hepta-operator-acceptance",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-hepta-operator-acceptance",
+          "version": "0.0.0",
+          "dependencies": [
+            "base64 0.22.1",
+            "ed25519-dalek 2.2.0",
+            "libc",
+            "pretty_assertions",
+            "rand 0.9.3",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "tempfile",
+            "thiserror 2.0.21",
+            "winapi-util"
+          ]
+        },
+        "after": {
+          "name": "codex-hepta-operator-acceptance",
+          "version": "0.0.0",
+          "dependencies": [
+            "base64 0.22.1",
+            "codex-utils-path",
+            "ed25519-dalek 2.2.0",
+            "libc",
+            "pretty_assertions",
+            "rand 0.9.3",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "tempfile",
+            "thiserror 2.0.21",
+            "winapi-util"
+          ]
+        }
+      },
+      {
+        "package": [
+          "codex-hepta-prompt-registry",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-hepta-prompt-registry",
+          "version": "0.0.0",
+          "dependencies": [
+            "codex-hepta-contracts",
+            "codex-hepta-types",
+            "ed25519-dalek 2.2.0",
+            "rustix 1.1.4",
+            "serde",
+            "serde_json",
+            "tempfile"
+          ]
+        },
+        "after": {
+          "name": "codex-hepta-prompt-registry",
+          "version": "0.0.0",
+          "dependencies": [
+            "codex-hepta-contracts",
+            "codex-hepta-types",
+            "codex-utils-path",
+            "ed25519-dalek 2.2.0",
+            "rustix 1.1.4",
+            "serde",
+            "serde_json",
+            "tempfile"
+          ]
+        }
+      },
+      {
+        "package": [
+          "codex-hepta-supervisor",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-hepta-supervisor",
+          "version": "0.0.0",
+          "dependencies": [
+            "anyhow",
+            "base64 0.22.1",
+            "codex-hepta-agent-protocol",
+            "codex-hepta-contracts",
+            "codex-hepta-control-plane",
+            "codex-hepta-fleet",
+            "codex-hepta-intelligence-eval",
+            "codex-hepta-matrix-protocol",
+            "codex-hepta-memory",
+            "codex-hepta-paths",
+            "codex-hepta-types",
+            "codex-uds",
+            "constant_time_eq 0.3.1",
+            "ed25519-dalek 2.2.0",
+            "jsonschema",
+            "libc",
+            "pretty_assertions",
+            "rustix 1.1.4",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "tempfile",
+            "thiserror 2.0.21",
+            "tokio",
+            "tokio-util",
+            "uuid",
+            "windows-sys 0.52.0",
+            "zeroize"
+          ]
+        },
+        "after": {
+          "name": "codex-hepta-supervisor",
+          "version": "0.0.0",
+          "dependencies": [
+            "anyhow",
+            "base64 0.22.1",
+            "codex-hepta-agent-protocol",
+            "codex-hepta-contracts",
+            "codex-hepta-control-plane",
+            "codex-hepta-fleet",
+            "codex-hepta-intelligence-eval",
+            "codex-hepta-matrix-protocol",
+            "codex-hepta-memory",
+            "codex-hepta-paths",
+            "codex-hepta-types",
+            "codex-uds",
+            "codex-utils-cargo-bin",
+            "constant_time_eq 0.3.1",
+            "ed25519-dalek 2.2.0",
+            "jsonschema",
+            "libc",
+            "pretty_assertions",
+            "rustix 1.1.4",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "tempfile",
+            "thiserror 2.0.21",
+            "tokio",
+            "tokio-util",
+            "uuid",
+            "windows-sys 0.52.0",
+            "zeroize"
+          ]
+        }
+      },
+      {
+        "package": [
+          "codex-state",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-state",
+          "version": "0.0.0",
+          "dependencies": [
+            "anyhow",
+            "chrono",
+            "codex-git-utils",
+            "codex-history",
+            "codex-protocol",
+            "codex-utils-absolute-path",
+            "libc",
+            "libsqlite3-sys",
+            "log",
+            "pretty_assertions",
+            "scopeguard",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "sqlx",
+            "strum 0.27.2",
+            "tokio",
+            "tracing",
+            "tracing-subscriber",
+            "uuid"
+          ]
+        },
+        "after": {
+          "name": "codex-state",
+          "version": "0.0.0",
+          "dependencies": [
+            "anyhow",
+            "chrono",
+            "codex-git-utils",
+            "codex-history",
+            "codex-protocol",
+            "codex-utils-absolute-path",
+            "codex-utils-path",
+            "libc",
+            "libsqlite3-sys",
+            "log",
+            "pretty_assertions",
+            "scopeguard",
+            "serde",
+            "serde_json",
+            "sha2 0.10.9",
+            "sqlx",
+            "strum 0.27.2",
+            "tokio",
+            "tracing",
+            "tracing-subscriber",
+            "uuid"
+          ]
+        }
+      },
+      {
+        "package": [
+          "codex-uds",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-uds",
+          "version": "0.0.0",
+          "dependencies": [
+            "async-io",
+            "libc",
+            "pretty_assertions",
+            "tempfile",
+            "tokio",
+            "tokio-util",
+            "uds_windows"
+          ]
+        },
+        "after": {
+          "name": "codex-uds",
+          "version": "0.0.0",
+          "dependencies": [
+            "async-io",
+            "libc",
+            "pretty_assertions",
+            "sha2 0.10.9",
+            "tempfile",
+            "tokio",
+            "tokio-util",
+            "uds_windows",
+            "windows-sys 0.61.2"
+          ]
+        }
+      },
+      {
+        "package": [
+          "codex-utils-path",
+          "0.0.0",
+          ""
+        ],
+        "before": {
+          "name": "codex-utils-path",
+          "version": "0.0.0",
+          "dependencies": [
+            "codex-utils-absolute-path",
+            "dunce",
+            "pretty_assertions",
+            "tempfile"
+          ]
+        },
+        "after": {
+          "name": "codex-utils-path",
+          "version": "0.0.0",
+          "dependencies": [
+            "codex-utils-absolute-path",
+            "dunce",
+            "pretty_assertions",
+            "tempfile",
+            "winapi-util",
+            "windows-sys 0.52.0"
+          ]
+        }
+      }
+    ],
+    "all_other_versions_sources_checksums_unchanged": true
+  },
+  "metadata_verification": {
+    "packages": 1518,
+    "resolve_nodes": 1518,
+    "reviewed_registry_records": 18,
+    "all_lock_package_identities_match_actual_metadata": true,
+    "reviewed_manifest_declarations_and_resolve_nodes_unchanged": true
+  },
+  "changed_paths": [
+    "MODULE.bazel.lock",
+    "codex-rs/Cargo.lock",
+    "codex-rs/hepta-fleet/src/registry_tests.rs",
+    "codex-rs/utils/path-utils/src/private_state_windows_directory.rs"
+  ],
+  "committed_cargo_equals_generated": false,
+  "committed_bazel_equals_generated": false,
+  "source_unchanged": false
+}

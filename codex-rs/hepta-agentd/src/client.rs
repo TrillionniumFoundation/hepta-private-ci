@@ -12,7 +12,10 @@ use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::SignedFinalUseGrant;
-use codex_uds::UnixStream;
+#[cfg(windows)]
+use codex_uds::OwnerLocalStream as ControlStream;
+#[cfg(unix)]
+use codex_uds::UnixStream as ControlStream;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
@@ -154,6 +157,27 @@ impl AgentdClient {
                 run_id,
                 conflict_digest,
             }),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Read one exact request's historical publication. This never retries the
+    /// request and cannot prove non-admission or an external-effect outcome.
+    pub async fn objective_admission(
+        &self,
+        query: crate::ObjectiveAdmissionQuery,
+    ) -> Result<crate::ObjectiveAdmissionOutcome, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::ObjectiveAdmission { query },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::ObjectiveAdmission { outcome } => Ok(outcome),
             payload => unexpected(payload),
         }
     }
@@ -717,7 +741,7 @@ impl AgentdClient {
 
     async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
         let expected_request_id = request.request_id;
-        let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
+        let stream = timeout(self.timeout, ControlStream::connect(&self.socket_path))
             .await
             .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))??;
         let (reader, mut writer) = tokio::io::split(stream);
@@ -785,3 +809,19 @@ fn unexpected<T>(payload: AgentdPayload) -> Result<T, AgentdError> {
         ))),
     }
 }
+
+#[cfg(target_os = "linux")]
+#[path = "objective_client.rs"]
+mod objective;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectiveClient;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectiveClientError;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectiveHistory;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectivePeer;
+#[cfg(target_os = "linux")]
+pub use objective::AgentdObjectiveWindow;
+#[cfg(target_os = "linux")]
+pub use objective::ObjectiveClientMode;

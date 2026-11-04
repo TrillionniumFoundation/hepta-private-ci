@@ -1,15 +1,100 @@
+diff --git a/util/process_wrapper/main.rs b/util/process_wrapper/main.rs
+index 3139b45..cb775cf 100644
 --- a/util/process_wrapper/main.rs
 +++ b/util/process_wrapper/main.rs
-@@ -213,6 +213,12 @@ fn consolidate_dependency_search_paths(
+@@ -18,4 +18,6 @@
+ mod rustc;
+ mod util;
++#[cfg(all(test, windows))]
++mod windows_archive_tests;
+ 
+ use std::collections::HashMap;
+@@ -213,6 +215,27 @@ fn consolidate_dependency_search_paths(
              let file_name_lower = file_name
                  .to_string_lossy()
                  .to_ascii_lowercase();
-+            if file_name_lower.contains(".tmp") || file_name_lower.ends_with(".rcgu.o") {
-+                // Native Windows Rust link actions can leave transient `*.exe.tmp*` and
-+                // per-codegen-unit `*.rcgu.o` outputs next to the final binary.
-+                // Those are not stable linker search-path inputs.
++            let llvm_temporary_archive = file_name_lower
++                .rsplit_once(".temp-archive-")
++                .filter(|(archive, _)| {
++                    archive.ends_with(".lib")
++                        || archive.ends_with(".rlib")
++                        || archive.ends_with(".a")
++                })
++                .and_then(|(_, suffix)| suffix.strip_suffix(".a"))
++                .is_some_and(|suffix| {
++                    suffix.len() == 7 && suffix.bytes().all(|byte| byte.is_ascii_hexdigit())
++                });
++            if file_name_lower.contains(".tmp")
++                || file_name_lower.ends_with(".rcgu.o")
++                || llvm_temporary_archive
++            {
++                // Native Windows Rust and LLVM actions leave temporary codegen and
++                // archive files beside final outputs. LLVM uses
++                // <archive>.temp-archive-%%%%%%%.a before its atomic rename.
++                // These temporary files are not dependency search-path inputs.
 +                continue;
 +            }
              if !seen.insert(file_name_lower) {
                  continue;
              }
+diff --git a/util/process_wrapper/windows_archive_tests.rs b/util/process_wrapper/windows_archive_tests.rs
+new file mode 100644
+index 0000000..6f3c262
+--- /dev/null
++++ b/util/process_wrapper/windows_archive_tests.rs
+@@ -0,0 +1,55 @@
++use super::*;
++
++#[test]
++fn preserve_final_archives_and_exclude_llvm_temp_files() -> Result<(), Box<dyn std::error::Error>> {
++    let stamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
++    let input = std::env::temp_dir().join(format!(
++        "rules rust archive inputs {} {stamp}",
++        std::process::id()
++    ));
++    fs::create_dir(&input)?;
++    let _input_guard = TemporaryDirectoryGuard::new(Some(input.clone()));
++    let stable = [
++        "exec-server.lib",
++        "libcomponent.rlib",
++        "component.a",
++        "owner-资料.lib",
++        "component.lib.temp-archive-9c734b8.txt",
++        "component.lib.temp-archive-abcdef.a",
++        "component.lib.temp-archive-12345678.a",
++        "component.lib.temp-archive-ghijklm.a",
++        "component.lib.temp-archive-1234abc.a.extra",
++        "custom.temp-archive-9c734b8.a",
++    ];
++    let temporary = [
++        "exec-server.lib.temp-archive-9c734b8.a",
++        "component.a.temp-archive-ABC1234.a",
++        "libcomponent.rlib.temp-archive-123abcd.a",
++        "component.exe.tmp123",
++        "component.rcgu.o",
++    ];
++    for name in stable.iter().chain(temporary.iter()) {
++        fs::write(input.join(name), name.as_bytes())?;
++    }
++
++    let (args, unified) =
++        consolidate_dependency_search_paths(&[format!("-Ldependency={}", input.display())])?;
++    let _unified_guard = TemporaryDirectoryGuard::new(unified.clone());
++    let unified = unified.expect("a nonempty dependency path must produce a directory");
++    assert_eq!(args, vec![format!("-Ldependency={}", unified.display())]);
++    for name in stable {
++        assert_eq!(
++            fs::read(unified.join(name))?,
++            name.as_bytes(),
++            "final or unrelated archive must be preserved: {name}"
++        );
++    }
++    for name in temporary {
++        assert!(
++            !unified.join(name).exists(),
++            "temporary compiler output must not become a dependency: {name}"
++        );
++    }
++    assert_eq!(fs::read_dir(&unified)?.count(), stable.len());
++    Ok(())
++}

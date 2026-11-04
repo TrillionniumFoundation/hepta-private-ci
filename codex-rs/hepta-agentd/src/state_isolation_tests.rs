@@ -40,6 +40,7 @@ use ed25519_dalek::SigningKey;
 
 use crate::AgentdPayload;
 use crate::LifecycleSnapshot;
+#[cfg(unix)]
 use crate::RunPhase;
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
@@ -476,7 +477,11 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         fs::set_permissions(&trust_file, fs::Permissions::from_mode(0o600)).expect("private trust");
     };
     write_trust(false);
-    let checkpoint_file = temp.path().join("run-start-replay-checkpoint.json");
+    let checkpoint_file = temp
+        .path()
+        .canonicalize()
+        .expect("physical fixture root")
+        .join("run-start-replay-checkpoint.json");
     // The external fixture witness is captured from the canonical empty owner,
     // never invented from a label or recaptured from a suspect backup.
     let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(

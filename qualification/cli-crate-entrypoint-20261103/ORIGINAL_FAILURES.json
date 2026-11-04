@@ -1,0 +1,2164 @@
+{
+  "schema": "cli-original-compiler-failures-v1",
+  "scope": "Decoded original job-log hashes and bounded verbatim diagnostic windows; full logs remain separately retained. Query-depth and include-placement failures are distinct.",
+  "failures": [
+    {
+      "job_id": 126171877168,
+      "run_id": 41701057334,
+      "head": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "failure": "query_depth_130_exceeds_default_128",
+      "decoded_full_log": {
+        "bytes": 661721,
+        "sha256": "fba0b37ac2c757461f047b0a806bd58dc7457ed46cbe2099516b96b67f6c89e7"
+      },
+      "excerpts": [
+        {
+          "line": 6923,
+          "text": "2026-11-03T20:18:09.7642010Z     STABLE_GIT_COMMIT='{STABLE_GIT_COMMIT}' \\"
+        },
+        {
+          "line": 6924,
+          "text": "2026-11-03T20:18:09.7644393Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/rbe-fastbuild/bin/codex-rs/cli/codex-0.params' -- bazel-out/rbe-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_96_0_rust_toolchain/bin/rustc @bazel-out/rbe-fastbuild/bin/codex-rs/cli/codex-1.params)"
+        },
+        {
+          "line": 6925,
+          "text": "2026-11-03T20:18:09.7647058Z # Configuration: 683f39a13ed3a4ec1639a2a79438d5d00810f74efd2ed62fa42219a9c09d1bb5"
+        },
+        {
+          "line": 6926,
+          "text": "2026-11-03T20:18:09.7647902Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 6927,
+          "text": "2026-11-03T20:18:09.7648519Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 6928,
+          "text": "2026-11-03T20:18:09.7648878Z   |"
+        },
+        {
+          "line": 6929,
+          "text": "2026-11-03T20:18:09.7649579Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 6930,
+          "text": "2026-11-03T20:18:09.7650758Z   = note: query depth increased by 130 when computing layout of `{async block@codex-rs/cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 6931,
+          "text": "2026-11-03T20:18:09.7651321Z "
+        },
+        {
+          "line": 6932,
+          "text": "2026-11-03T20:18:09.7651532Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 6933,
+          "text": "2026-11-03T20:18:09.7651792Z "
+        },
+        {
+          "line": 6934,
+          "text": "2026-11-03T20:18:09.7825230Z INFO: Build succeeded for only 1 of 2 top-level targets"
+        },
+        {
+          "line": 6935,
+          "text": "2026-11-03T20:18:09.7862491Z INFO: Found 2 targets..."
+        },
+        {
+          "line": 6936,
+          "text": "2026-11-03T20:18:09.9076799Z INFO: Elapsed time: 178.181s, Critical Path: 62.08s"
+        }
+      ],
+      "omitted_long_context_line_numbers": []
+    },
+    {
+      "job_id": 126171877988,
+      "run_id": 41701057334,
+      "head": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "failure": "query_depth_130_exceeds_default_128",
+      "decoded_full_log": {
+        "bytes": 788471,
+        "sha256": "53784a1f88977acc158f952314ba7bbc9cd051cdb9b6804955fe2446d67c0205"
+      },
+      "excerpts": [
+        {
+          "line": 7986,
+          "text": "2026-11-03T20:21:16.0866140Z     STABLE_GIT_COMMIT='{STABLE_GIT_COMMIT}' \\"
+        },
+        {
+          "line": 7987,
+          "text": "2026-11-03T20:21:16.0868910Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/rbe-fastbuild/bin/codex-rs/cli/codex-0.params' -- bazel-out/rbe-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_96_0_rust_toolchain/bin/rustc @bazel-out/rbe-fastbuild/bin/codex-rs/cli/codex-1.params)"
+        },
+        {
+          "line": 7988,
+          "text": "2026-11-03T20:21:16.0872330Z # Configuration: 3df51617188021e38d3aad2ab48efd97a13e9b7310c0639f24de19f2d9d627ba"
+        },
+        {
+          "line": 7989,
+          "text": "2026-11-03T20:21:16.0873347Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 7990,
+          "text": "2026-11-03T20:21:16.0874095Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 7991,
+          "text": "2026-11-03T20:21:16.0874587Z   |"
+        },
+        {
+          "line": 7992,
+          "text": "2026-11-03T20:21:16.0875408Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 7993,
+          "text": "2026-11-03T20:21:16.0876887Z   = note: query depth increased by 130 when computing layout of `{async block@codex-rs/cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 7994,
+          "text": "2026-11-03T20:21:16.0877694Z "
+        },
+        {
+          "line": 7995,
+          "text": "2026-11-03T20:21:16.0877894Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 7996,
+          "text": "2026-11-03T20:21:16.0878328Z "
+        },
+        {
+          "line": 7997,
+          "text": "2026-11-03T20:21:17.8319175Z [23,552 / 23,581] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 76s remote, remote-cache ... (5 actions running)"
+        },
+        {
+          "line": 7998,
+          "text": "2026-11-03T20:21:19.8211839Z [23,554 / 23,581] Compiling Rust bin //codex-rs/cli:codex-bin-unit-tests-bin (55 files); 10s remote, remote-cache ... (4 actions, 3 running)"
+        },
+        {
+          "line": 7999,
+          "text": "2026-11-03T20:21:20.5717967Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Compiling Rust bin //codex-rs/cli:codex-bin-unit-tests-bin (55 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/cli:codex-bin-unit-tests-bin) "
+        },
+        {
+          "line": 8020,
+          "text": "2026-11-03T20:21:20.5738509Z     STABLE_GIT_COMMIT='{STABLE_GIT_COMMIT}' \\"
+        },
+        {
+          "line": 8021,
+          "text": "2026-11-03T20:21:20.5741807Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/rbe-fastbuild/bin/codex-rs/cli/codex-bin-unit-tests-bin-0.params' -- bazel-out/rbe-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_96_0_rust_toolchain/bin/rustc @bazel-out/rbe-fastbuild/bin/codex-rs/cli/codex-bin-unit-tests-bin-1.params)"
+        },
+        {
+          "line": 8022,
+          "text": "2026-11-03T20:21:20.5745065Z # Configuration: feebf3a4b9e2cf3612e813f33e58b95062cfd6e047ad8a7a523e34fc9bd93c85"
+        },
+        {
+          "line": 8023,
+          "text": "2026-11-03T20:21:20.5745995Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 8024,
+          "text": "2026-11-03T20:21:20.5746716Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 8025,
+          "text": "2026-11-03T20:21:20.5747165Z   |"
+        },
+        {
+          "line": 8026,
+          "text": "2026-11-03T20:21:20.5747931Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 8027,
+          "text": "2026-11-03T20:21:20.5749262Z   = note: query depth increased by 130 when computing layout of `{async block@cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 8028,
+          "text": "2026-11-03T20:21:20.5749981Z "
+        },
+        {
+          "line": 8029,
+          "text": "2026-11-03T20:21:20.5750159Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 8030,
+          "text": "2026-11-03T20:21:20.5750760Z "
+        },
+        {
+          "line": 8031,
+          "text": "2026-11-03T20:21:20.8323993Z [23,557 / 23,581] Compiling Rust bin //codex-rs/cli:hepta-bin-unit-tests-bin (55 files); 11s remote, remote-cache ... (2 actions running)"
+        },
+        {
+          "line": 8032,
+          "text": "2026-11-03T20:21:30.8339882Z [23,558 / 23,581] Compiling Rust bin //codex-rs/cli:hepta (55 files); 19s remote, remote-cache"
+        },
+        {
+          "line": 8033,
+          "text": "2026-11-03T20:21:35.7737654Z [23,561 / 23,581] [Prepa] runfiles for //codex-rs/cli:hepta"
+        }
+      ],
+      "omitted_long_context_line_numbers": []
+    },
+    {
+      "job_id": 126171878025,
+      "run_id": 41701057334,
+      "head": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "failure": "query_depth_130_exceeds_default_128",
+      "decoded_full_log": {
+        "bytes": 887109,
+        "sha256": "e940dacd9b363ba4f7a4498f3afb1e76e2a59c5a5279508f035b347ce79abcf9"
+      },
+      "excerpts": [
+        {
+          "line": 8745,
+          "text": "2026-11-03T20:19:22.4046619Z     STABLE_GIT_COMMIT='{STABLE_GIT_COMMIT}' \\"
+        },
+        {
+          "line": 8746,
+          "text": "2026-11-03T20:19:22.4048256Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/rbe-fastbuild/bin/codex-rs/cli/codex-bin-unit-tests-bin-0.params' -- bazel-out/rbe-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_96_0_rust_toolchain/bin/rustc @bazel-out/rbe-fastbuild/bin/codex-rs/cli/codex-bin-unit-tests-bin-1.params)"
+        },
+        {
+          "line": 8747,
+          "text": "2026-11-03T20:19:22.4050123Z # Configuration: a47ec7087761e92dcae8f642fec408cc41dadb0394b57b334667c2d0dbf07087"
+        },
+        {
+          "line": 8748,
+          "text": "2026-11-03T20:19:22.4050786Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 8749,
+          "text": "2026-11-03T20:19:22.4051143Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 8750,
+          "text": "2026-11-03T20:19:22.4051380Z   |"
+        },
+        {
+          "line": 8751,
+          "text": "2026-11-03T20:19:22.4051788Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 8752,
+          "text": "2026-11-03T20:19:22.4052435Z   = note: query depth increased by 130 when computing layout of `{async block@cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 8753,
+          "text": "2026-11-03T20:19:22.4052775Z "
+        },
+        {
+          "line": 8754,
+          "text": "2026-11-03T20:19:22.4052880Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 8755,
+          "text": "2026-11-03T20:19:22.4053048Z "
+        },
+        {
+          "line": 8756,
+          "text": "2026-11-03T20:19:22.8748771Z INFO: From Clippy //codex-rs/hepta-agentd:hepta-agentd:"
+        },
+        {
+          "line": 8757,
+          "text": "2026-11-03T20:19:22.8750385Z warning: field `sequence` is never read"
+        },
+        {
+          "line": 8758,
+          "text": "2026-11-03T20:19:22.8750977Z    --> codex-rs/hepta-agentd/src/browser_servo.rs:317:5"
+        },
+        {
+          "line": 9177,
+          "text": "2026-11-03T20:19:24.7088237Z     STABLE_GIT_COMMIT='{STABLE_GIT_COMMIT}' \\"
+        },
+        {
+          "line": 9178,
+          "text": "2026-11-03T20:19:24.7089566Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/rbe-fastbuild/bin/codex-rs/cli/codex-0.params' -- bazel-out/rbe-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_96_0_rust_toolchain/bin/rustc @bazel-out/rbe-fastbuild/bin/codex-rs/cli/codex-1.params)"
+        },
+        {
+          "line": 9179,
+          "text": "2026-11-03T20:19:24.7090979Z # Configuration: 2b4776dbff90ae7170326201e6cb6924d46b81035480325410cbe121bf2bfa4c"
+        },
+        {
+          "line": 9180,
+          "text": "2026-11-03T20:19:24.7091451Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 9181,
+          "text": "2026-11-03T20:19:24.7091809Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9182,
+          "text": "2026-11-03T20:19:24.7092051Z   |"
+        },
+        {
+          "line": 9183,
+          "text": "2026-11-03T20:19:24.7092475Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9184,
+          "text": "2026-11-03T20:19:24.7093200Z   = note: query depth increased by 130 when computing layout of `{async block@codex-rs/cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9185,
+          "text": "2026-11-03T20:19:24.7102276Z "
+        },
+        {
+          "line": 9186,
+          "text": "2026-11-03T20:19:24.7102394Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9187,
+          "text": "2026-11-03T20:19:24.7102567Z "
+        },
+        {
+          "line": 9188,
+          "text": "2026-11-03T20:19:24.9789341Z INFO: From Clippy //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin:"
+        },
+        {
+          "line": 9189,
+          "text": "2026-11-03T20:19:24.9789762Z warning: field `sequence` is never read"
+        },
+        {
+          "line": 9190,
+          "text": "2026-11-03T20:19:24.9790019Z    --> hepta-agentd/src/browser_servo.rs:317:5"
+        },
+        {
+          "line": 9385,
+          "text": "2026-11-03T20:19:26.5000020Z     STABLE_GIT_COMMIT='{STABLE_GIT_COMMIT}' \\"
+        },
+        {
+          "line": 9386,
+          "text": "2026-11-03T20:19:26.5000965Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/rbe-fastbuild/bin/codex-rs/cli/codex-bin-unit-tests-bin.clippy.ok-0.params' -- bazel-out/rbe-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_96_0_rust_toolchain/bin/clippy-driver @bazel-out/rbe-fastbuild/bin/codex-rs/cli/codex-bin-unit-tests-bin.clippy.ok-1.params)"
+        },
+        {
+          "line": 9387,
+          "text": "2026-11-03T20:19:26.5001960Z # Configuration: a47ec7087761e92dcae8f642fec408cc41dadb0394b57b334667c2d0dbf07087"
+        },
+        {
+          "line": 9388,
+          "text": "2026-11-03T20:19:26.5002250Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 9389,
+          "text": "2026-11-03T20:19:26.5002472Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9390,
+          "text": "2026-11-03T20:19:26.5002619Z   |"
+        },
+        {
+          "line": 9391,
+          "text": "2026-11-03T20:19:26.5002869Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9392,
+          "text": "2026-11-03T20:19:26.5003273Z   = note: query depth increased by 130 when computing layout of `{async block@cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9393,
+          "text": "2026-11-03T20:19:26.5003484Z "
+        },
+        {
+          "line": 9394,
+          "text": "2026-11-03T20:19:26.5003549Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9395,
+          "text": "2026-11-03T20:19:26.5003653Z "
+        },
+        {
+          "line": 9396,
+          "text": "2026-11-03T20:19:26.5242731Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Clippy //codex-rs/cli:codex failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_binary rule target //codex-rs/cli:codex) "
+        },
+        {
+          "line": 9397,
+          "text": "2026-11-03T20:19:26.5243476Z   (cd /home/runner/.cache/codex-ci/o/execroot/_main && \\"
+        },
+        {
+          "line": 9398,
+          "text": "2026-11-03T20:19:26.5243842Z   exec env - \\"
+        },
+        {
+          "line": 9416,
+          "text": "2026-11-03T20:19:26.5246510Z     STABLE_GIT_COMMIT='{STABLE_GIT_COMMIT}' \\"
+        },
+        {
+          "line": 9417,
+          "text": "2026-11-03T20:19:26.5247676Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/rbe-fastbuild/bin/codex-rs/cli/codex.clippy.ok-0.params' -- bazel-out/rbe-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_96_0_rust_toolchain/bin/clippy-driver @bazel-out/rbe-fastbuild/bin/codex-rs/cli/codex.clippy.ok-1.params)"
+        },
+        {
+          "line": 9418,
+          "text": "2026-11-03T20:19:26.5248801Z # Configuration: 2b4776dbff90ae7170326201e6cb6924d46b81035480325410cbe121bf2bfa4c"
+        },
+        {
+          "line": 9419,
+          "text": "2026-11-03T20:19:26.5249078Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 9420,
+          "text": "2026-11-03T20:19:26.5249295Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9421,
+          "text": "2026-11-03T20:19:26.5249438Z   |"
+        },
+        {
+          "line": 9422,
+          "text": "2026-11-03T20:19:26.5249682Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9423,
+          "text": "2026-11-03T20:19:26.5250161Z   = note: query depth increased by 130 when computing layout of `{async block@codex-rs/cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9424,
+          "text": "2026-11-03T20:19:26.5250494Z "
+        },
+        {
+          "line": 9425,
+          "text": "2026-11-03T20:19:26.5250586Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9426,
+          "text": "2026-11-03T20:19:26.5250737Z "
+        },
+        {
+          "line": 9427,
+          "text": "2026-11-03T20:19:27.4610666Z [24,954 / 24,997] Clippy //codex-rs/app-server:app-server-unit-tests-bin; 12s remote, remote-cache ... (13 actions running)"
+        },
+        {
+          "line": 9428,
+          "text": "2026-11-03T20:19:27.6556519Z INFO: From Clippy //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin:"
+        },
+        {
+          "line": 9429,
+          "text": "2026-11-03T20:19:27.6557032Z warning: field `sequence` is never read"
+        },
+        {
+          "line": 9619,
+          "text": "2026-11-03T20:20:15.9144663Z ERROR: Build did NOT complete successfully"
+        },
+        {
+          "line": 9620,
+          "text": "2026-11-03T20:20:15.9145009Z FAILED: "
+        },
+        {
+          "line": 9621,
+          "text": "2026-11-03T20:20:19.7636886Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/a6fcb6bf-b40a-42b5-9a07-3f6b0fdfe712"
+        },
+        {
+          "line": 9622,
+          "text": "2026-11-03T20:20:19.7951905Z ##[error]ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Compiling Rust bin //codex-rs/cli:codex-bin-unit-tests-bin (55 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/cli:codex-bin-unit-tests-bin) "
+        },
+        {
+          "line": 9623,
+          "text": "error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9624,
+          "text": "  |"
+        },
+        {
+          "line": 9625,
+          "text": "  = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9626,
+          "text": "  = note: query depth increased by 130 when computing layout of `{async block@cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9627,
+          "text": ""
+        },
+        {
+          "line": 9628,
+          "text": "error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9629,
+          "text": ""
+        },
+        {
+          "line": 9630,
+          "text": ""
+        },
+        {
+          "line": 9631,
+          "text": "ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Compiling Rust bin //codex-rs/cli:codex (55 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_binary rule target //codex-rs/cli:codex) "
+        },
+        {
+          "line": 9632,
+          "text": "error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9633,
+          "text": "  |"
+        },
+        {
+          "line": 9634,
+          "text": "  = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9635,
+          "text": "  = note: query depth increased by 130 when computing layout of `{async block@codex-rs/cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9636,
+          "text": ""
+        },
+        {
+          "line": 9637,
+          "text": "error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9638,
+          "text": ""
+        },
+        {
+          "line": 9639,
+          "text": ""
+        },
+        {
+          "line": 9640,
+          "text": "ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Clippy //codex-rs/cli:codex-bin-unit-tests-bin failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_test rule target //codex-rs/cli:codex-bin-unit-tests-bin) "
+        },
+        {
+          "line": 9641,
+          "text": "error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9642,
+          "text": "  |"
+        },
+        {
+          "line": 9643,
+          "text": "  = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9644,
+          "text": "  = note: query depth increased by 130 when computing layout of `{async block@cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9645,
+          "text": ""
+        },
+        {
+          "line": 9646,
+          "text": "error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9647,
+          "text": ""
+        },
+        {
+          "line": 9648,
+          "text": ""
+        },
+        {
+          "line": 9649,
+          "text": "ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Clippy //codex-rs/cli:codex failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_binary rule target //codex-rs/cli:codex) "
+        },
+        {
+          "line": 9650,
+          "text": "error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9651,
+          "text": "  |"
+        },
+        {
+          "line": 9652,
+          "text": "  = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9653,
+          "text": "  = note: query depth increased by 130 when computing layout of `{async block@codex-rs/cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9654,
+          "text": ""
+        },
+        {
+          "line": 9655,
+          "text": "error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9656,
+          "text": "2026-11-03T20:20:19.7956744Z "
+        },
+        {
+          "line": 9657,
+          "text": "2026-11-03T20:20:19.7956814Z Bazel failed action diagnostics:"
+        },
+        {
+          "line": 9658,
+          "text": "2026-11-03T20:20:19.7956960Z --------------------------------"
+        },
+        {
+          "line": 9659,
+          "text": "2026-11-03T20:20:19.7957706Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Compiling Rust bin //codex-rs/cli:codex-bin-unit-tests-bin (55 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/cli:codex-bin-unit-tests-bin) "
+        },
+        {
+          "line": 9660,
+          "text": "2026-11-03T20:20:19.7958526Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9661,
+          "text": "2026-11-03T20:20:19.7958670Z   |"
+        },
+        {
+          "line": 9662,
+          "text": "2026-11-03T20:20:19.7958917Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9663,
+          "text": "2026-11-03T20:20:19.7959418Z   = note: query depth increased by 130 when computing layout of `{async block@cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9664,
+          "text": "2026-11-03T20:20:19.7959620Z "
+        },
+        {
+          "line": 9665,
+          "text": "2026-11-03T20:20:19.7959684Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9666,
+          "text": "2026-11-03T20:20:19.7959785Z "
+        },
+        {
+          "line": 9667,
+          "text": "2026-11-03T20:20:19.7959791Z "
+        },
+        {
+          "line": 9668,
+          "text": "2026-11-03T20:20:19.7960200Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Compiling Rust bin //codex-rs/cli:codex (55 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_binary rule target //codex-rs/cli:codex) "
+        },
+        {
+          "line": 9669,
+          "text": "2026-11-03T20:20:19.7960706Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9670,
+          "text": "2026-11-03T20:20:19.7960858Z   |"
+        },
+        {
+          "line": 9671,
+          "text": "2026-11-03T20:20:19.7961092Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9672,
+          "text": "2026-11-03T20:20:19.7961486Z   = note: query depth increased by 130 when computing layout of `{async block@codex-rs/cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9673,
+          "text": "2026-11-03T20:20:19.7961703Z "
+        },
+        {
+          "line": 9674,
+          "text": "2026-11-03T20:20:19.7961765Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9675,
+          "text": "2026-11-03T20:20:19.7961867Z "
+        },
+        {
+          "line": 9676,
+          "text": "2026-11-03T20:20:19.7961869Z "
+        },
+        {
+          "line": 9677,
+          "text": "2026-11-03T20:20:19.7962469Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Clippy //codex-rs/cli:codex-bin-unit-tests-bin failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_test rule target //codex-rs/cli:codex-bin-unit-tests-bin) "
+        },
+        {
+          "line": 9678,
+          "text": "2026-11-03T20:20:19.7963158Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9679,
+          "text": "2026-11-03T20:20:19.7963306Z   |"
+        },
+        {
+          "line": 9680,
+          "text": "2026-11-03T20:20:19.7963538Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9681,
+          "text": "2026-11-03T20:20:19.7963915Z   = note: query depth increased by 130 when computing layout of `{async block@cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9682,
+          "text": "2026-11-03T20:20:19.7964116Z "
+        },
+        {
+          "line": 9683,
+          "text": "2026-11-03T20:20:19.7964175Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9684,
+          "text": "2026-11-03T20:20:19.7964273Z "
+        },
+        {
+          "line": 9685,
+          "text": "2026-11-03T20:20:19.7964275Z "
+        },
+        {
+          "line": 9686,
+          "text": "2026-11-03T20:20:19.7964806Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Clippy //codex-rs/cli:codex failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_binary rule target //codex-rs/cli:codex) "
+        },
+        {
+          "line": 9687,
+          "text": "2026-11-03T20:20:19.7965425Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9688,
+          "text": "2026-11-03T20:20:19.7965565Z   |"
+        },
+        {
+          "line": 9689,
+          "text": "2026-11-03T20:20:19.7965798Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9690,
+          "text": "2026-11-03T20:20:19.7966188Z   = note: query depth increased by 130 when computing layout of `{async block@codex-rs/cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9691,
+          "text": "2026-11-03T20:20:19.7966398Z "
+        },
+        {
+          "line": 9692,
+          "text": "2026-11-03T20:20:19.7966456Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9693,
+          "text": "2026-11-03T20:20:19.7966606Z --------------------------------"
+        },
+        {
+          "line": 9694,
+          "text": "2026-11-03T20:20:19.7971337Z ##[error]Process completed with exit code 1."
+        },
+        {
+          "line": 9695,
+          "text": "2026-11-03T20:20:19.8023094Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+        },
+        {
+          "line": 9696,
+          "text": "2026-11-03T20:20:19.8023311Z with:"
+        }
+      ],
+      "omitted_long_context_line_numbers": []
+    },
+    {
+      "job_id": 126171877855,
+      "run_id": 41701057334,
+      "head": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "failure": "query_depth_130_exceeds_default_128",
+      "decoded_full_log": {
+        "bytes": 906077,
+        "sha256": "397def965a49cd59fcf87d1dde0f867fd06fce360bf442d6bd6187e445aca625"
+      },
+      "excerpts": [
+        {
+          "line": 9535,
+          "text": "2026-11-03T20:15:48.7375450Z     ZERO_AR_DATE=1 \\"
+        },
+        {
+          "line": 9536,
+          "text": "2026-11-03T20:15:48.7384900Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/darwin_arm64-fastbuild/bin/codex-rs/cli/codex.clippy.ok-0.params' -- bazel-out/darwin_arm64-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_aarch64_1_96_0_rust_toolchain/bin/clippy-driver @bazel-out/darwin_arm64-fastbuild/bin/codex-rs/cli/codex.clippy.ok-1.params)"
+        },
+        {
+          "line": 9537,
+          "text": "2026-11-03T20:15:48.7395510Z # Configuration: 4c849dca641d81ed2f9ce87c42f8c1fab18d06d63758ae55a9c2a551abbe97f4"
+        },
+        {
+          "line": 9538,
+          "text": "2026-11-03T20:15:48.7396940Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 9539,
+          "text": "2026-11-03T20:15:48.7397880Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9540,
+          "text": "2026-11-03T20:15:48.7398780Z   |"
+        },
+        {
+          "line": 9541,
+          "text": "2026-11-03T20:15:48.7400180Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9542,
+          "text": "2026-11-03T20:15:48.7402410Z   = note: query depth increased by 130 when computing layout of `{async block@codex-rs/cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9543,
+          "text": "2026-11-03T20:15:48.7403650Z "
+        },
+        {
+          "line": 9544,
+          "text": "2026-11-03T20:15:48.7404050Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9545,
+          "text": "2026-11-03T20:15:48.7404570Z "
+        },
+        {
+          "line": 9546,
+          "text": "2026-11-03T20:15:48.8523270Z [19,454 / 19,553] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 63s remote, remote-cache ... (24 actions, 19 running)"
+        },
+        {
+          "line": 9547,
+          "text": "2026-11-03T20:15:50.0489010Z [19,456 / 19,553] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 64s remote, remote-cache ... (24 actions, 23 running)"
+        },
+        {
+          "line": 9548,
+          "text": "2026-11-03T20:15:51.1557200Z [19,458 / 19,553] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 65s remote, remote-cache ... (24 actions running)"
+        },
+        {
+          "line": 9575,
+          "text": "2026-11-03T20:15:51.7738920Z     ZERO_AR_DATE=1 \\"
+        },
+        {
+          "line": 9576,
+          "text": "2026-11-03T20:15:51.7740920Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/darwin_arm64-fastbuild/bin/codex-rs/cli/codex-0.params' -- bazel-out/darwin_arm64-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_aarch64_1_96_0_rust_toolchain/bin/rustc @bazel-out/darwin_arm64-fastbuild/bin/codex-rs/cli/codex-1.params)"
+        },
+        {
+          "line": 9577,
+          "text": "2026-11-03T20:15:51.7742570Z # Configuration: 4c849dca641d81ed2f9ce87c42f8c1fab18d06d63758ae55a9c2a551abbe97f4"
+        },
+        {
+          "line": 9578,
+          "text": "2026-11-03T20:15:51.7743180Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 9579,
+          "text": "2026-11-03T20:15:51.7743620Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9580,
+          "text": "2026-11-03T20:15:51.7744650Z   |"
+        },
+        {
+          "line": 9581,
+          "text": "2026-11-03T20:15:51.7748100Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9582,
+          "text": "2026-11-03T20:15:51.7751380Z   = note: query depth increased by 130 when computing layout of `{async block@codex-rs/cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9583,
+          "text": "2026-11-03T20:15:51.7766680Z "
+        },
+        {
+          "line": 9584,
+          "text": "2026-11-03T20:15:51.7769550Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9585,
+          "text": "2026-11-03T20:15:51.7770410Z "
+        },
+        {
+          "line": 9586,
+          "text": "2026-11-03T20:15:52.1982300Z [19,488 / 19,553] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 66s remote, remote-cache ... (24 actions, 22 running)"
+        },
+        {
+          "line": 9587,
+          "text": "2026-11-03T20:15:53.0861530Z ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Clippy //codex-rs/cli:codex-bin-unit-tests-bin failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_test rule target //codex-rs/cli:codex-bin-unit-tests-bin) "
+        },
+        {
+          "line": 9588,
+          "text": "2026-11-03T20:15:53.0964010Z   (cd /Users/runner/.cache/codex-ci/o/execroot/_main && \\"
+        },
+        {
+          "line": 9612,
+          "text": "2026-11-03T20:15:53.1123160Z     ZERO_AR_DATE=1 \\"
+        },
+        {
+          "line": 9613,
+          "text": "2026-11-03T20:15:53.1124840Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/darwin_arm64-fastbuild/bin/codex-rs/cli/codex-bin-unit-tests-bin.clippy.ok-0.params' -- bazel-out/darwin_arm64-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_aarch64_1_96_0_rust_toolchain/bin/clippy-driver @bazel-out/darwin_arm64-fastbuild/bin/codex-rs/cli/codex-bin-unit-tests-bin.clippy.ok-1.params)"
+        },
+        {
+          "line": 9614,
+          "text": "2026-11-03T20:15:53.1126930Z # Configuration: 1554b0b8ac38442cc004eb8c828b5fa34082b046dcbe0c415ed157d28df4b199"
+        },
+        {
+          "line": 9615,
+          "text": "2026-11-03T20:15:53.1127530Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 9616,
+          "text": "2026-11-03T20:15:53.1128260Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9617,
+          "text": "2026-11-03T20:15:53.1128620Z   |"
+        },
+        {
+          "line": 9618,
+          "text": "2026-11-03T20:15:53.1129060Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9619,
+          "text": "2026-11-03T20:15:53.1129760Z   = note: query depth increased by 130 when computing layout of `{async block@cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9620,
+          "text": "2026-11-03T20:15:53.1130140Z "
+        },
+        {
+          "line": 9621,
+          "text": "2026-11-03T20:15:53.1130250Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9622,
+          "text": "2026-11-03T20:15:53.1130400Z "
+        },
+        {
+          "line": 9623,
+          "text": "2026-11-03T20:15:53.1389450Z ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Compiling Rust bin //codex-rs/cli:codex-bin-unit-tests-bin (55 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/cli:codex-bin-unit-tests-bin) "
+        },
+        {
+          "line": 9624,
+          "text": "2026-11-03T20:15:53.1390670Z   (cd /Users/runner/.cache/codex-ci/o/execroot/_main && \\"
+        },
+        {
+          "line": 9625,
+          "text": "2026-11-03T20:15:53.1391040Z   exec env - \\"
+        },
+        {
+          "line": 9649,
+          "text": "2026-11-03T20:15:53.1400020Z     ZERO_AR_DATE=1 \\"
+        },
+        {
+          "line": 9650,
+          "text": "2026-11-03T20:15:53.1401630Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/darwin_arm64-fastbuild/bin/codex-rs/cli/codex-bin-unit-tests-bin-0.params' -- bazel-out/darwin_arm64-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_aarch64_1_96_0_rust_toolchain/bin/rustc @bazel-out/darwin_arm64-fastbuild/bin/codex-rs/cli/codex-bin-unit-tests-bin-1.params)"
+        },
+        {
+          "line": 9651,
+          "text": "2026-11-03T20:15:53.1403270Z # Configuration: 1554b0b8ac38442cc004eb8c828b5fa34082b046dcbe0c415ed157d28df4b199"
+        },
+        {
+          "line": 9652,
+          "text": "2026-11-03T20:15:53.1403840Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 9653,
+          "text": "2026-11-03T20:15:53.1404260Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9654,
+          "text": "2026-11-03T20:15:53.1404820Z   |"
+        },
+        {
+          "line": 9655,
+          "text": "2026-11-03T20:15:53.1405270Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9656,
+          "text": "2026-11-03T20:15:53.1406040Z   = note: query depth increased by 130 when computing layout of `{async block@cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9657,
+          "text": "2026-11-03T20:15:53.1406450Z "
+        },
+        {
+          "line": 9658,
+          "text": "2026-11-03T20:15:53.1406530Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9659,
+          "text": "2026-11-03T20:15:53.1406810Z "
+        },
+        {
+          "line": 9660,
+          "text": "2026-11-03T20:15:53.2401210Z [19,494 / 19,553] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 67s remote, remote-cache ... (24 actions, 20 running)"
+        },
+        {
+          "line": 9661,
+          "text": "2026-11-03T20:15:54.2511220Z [19,501 / 19,553] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 68s remote, remote-cache ... (24 actions, 19 running)"
+        },
+        {
+          "line": 9662,
+          "text": "2026-11-03T20:15:55.4058140Z [19,511 / 19,553] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 69s remote, remote-cache ... (17 actions running)"
+        },
+        {
+          "line": 9678,
+          "text": "2026-11-03T20:16:11.1251470Z FAILED: "
+        },
+        {
+          "line": 9679,
+          "text": "2026-11-03T20:16:12.6797230Z FAILED: "
+        },
+        {
+          "line": 9680,
+          "text": "2026-11-03T20:16:14.7952570Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/3da0515d-7a61-452c-b68f-84913c954cbc"
+        },
+        {
+          "line": 9681,
+          "text": "2026-11-03T20:16:14.9476830Z ##[error]ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Clippy //codex-rs/cli:codex failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_binary rule target //codex-rs/cli:codex) "
+        },
+        {
+          "line": 9682,
+          "text": "error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9683,
+          "text": "  |"
+        },
+        {
+          "line": 9684,
+          "text": "  = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9685,
+          "text": "  = note: query depth increased by 130 when computing layout of `{async block@codex-rs/cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9686,
+          "text": ""
+        },
+        {
+          "line": 9687,
+          "text": "error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9688,
+          "text": ""
+        },
+        {
+          "line": 9689,
+          "text": ""
+        },
+        {
+          "line": 9690,
+          "text": "ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Compiling Rust bin //codex-rs/cli:codex (55 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_binary rule target //codex-rs/cli:codex) "
+        },
+        {
+          "line": 9691,
+          "text": "error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9692,
+          "text": "  |"
+        },
+        {
+          "line": 9693,
+          "text": "  = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9694,
+          "text": "  = note: query depth increased by 130 when computing layout of `{async block@codex-rs/cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9695,
+          "text": ""
+        },
+        {
+          "line": 9696,
+          "text": "error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9697,
+          "text": ""
+        },
+        {
+          "line": 9698,
+          "text": ""
+        },
+        {
+          "line": 9699,
+          "text": "ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Clippy //codex-rs/cli:codex-bin-unit-tests-bin failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_test rule target //codex-rs/cli:codex-bin-unit-tests-bin) "
+        },
+        {
+          "line": 9700,
+          "text": "error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9701,
+          "text": "  |"
+        },
+        {
+          "line": 9702,
+          "text": "  = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9703,
+          "text": "  = note: query depth increased by 130 when computing layout of `{async block@cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9704,
+          "text": ""
+        },
+        {
+          "line": 9705,
+          "text": "error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9706,
+          "text": ""
+        },
+        {
+          "line": 9707,
+          "text": ""
+        },
+        {
+          "line": 9708,
+          "text": "ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Compiling Rust bin //codex-rs/cli:codex-bin-unit-tests-bin (55 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/cli:codex-bin-unit-tests-bin) "
+        },
+        {
+          "line": 9709,
+          "text": "error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9710,
+          "text": "  |"
+        },
+        {
+          "line": 9711,
+          "text": "  = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9712,
+          "text": "  = note: query depth increased by 130 when computing layout of `{async block@cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9713,
+          "text": ""
+        },
+        {
+          "line": 9714,
+          "text": "error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9715,
+          "text": "2026-11-03T20:16:14.9505530Z "
+        },
+        {
+          "line": 9716,
+          "text": "2026-11-03T20:16:14.9505640Z Bazel failed action diagnostics:"
+        },
+        {
+          "line": 9717,
+          "text": "2026-11-03T20:16:14.9505960Z --------------------------------"
+        },
+        {
+          "line": 9718,
+          "text": "2026-11-03T20:16:14.9507070Z ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Clippy //codex-rs/cli:codex failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_binary rule target //codex-rs/cli:codex) "
+        },
+        {
+          "line": 9719,
+          "text": "2026-11-03T20:16:14.9508170Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9720,
+          "text": "2026-11-03T20:16:14.9508520Z   |"
+        },
+        {
+          "line": 9721,
+          "text": "2026-11-03T20:16:14.9509010Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9722,
+          "text": "2026-11-03T20:16:14.9509830Z   = note: query depth increased by 130 when computing layout of `{async block@codex-rs/cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9723,
+          "text": "2026-11-03T20:16:14.9510260Z "
+        },
+        {
+          "line": 9724,
+          "text": "2026-11-03T20:16:14.9510380Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9725,
+          "text": "2026-11-03T20:16:14.9510570Z "
+        },
+        {
+          "line": 9726,
+          "text": "2026-11-03T20:16:14.9510580Z "
+        },
+        {
+          "line": 9727,
+          "text": "2026-11-03T20:16:14.9511250Z ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Compiling Rust bin //codex-rs/cli:codex (55 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_binary rule target //codex-rs/cli:codex) "
+        },
+        {
+          "line": 9728,
+          "text": "2026-11-03T20:16:14.9512200Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9729,
+          "text": "2026-11-03T20:16:14.9512490Z   |"
+        },
+        {
+          "line": 9730,
+          "text": "2026-11-03T20:16:14.9512910Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9731,
+          "text": "2026-11-03T20:16:14.9513650Z   = note: query depth increased by 130 when computing layout of `{async block@codex-rs/cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9732,
+          "text": "2026-11-03T20:16:14.9514030Z "
+        },
+        {
+          "line": 9733,
+          "text": "2026-11-03T20:16:14.9514100Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9734,
+          "text": "2026-11-03T20:16:14.9514300Z "
+        },
+        {
+          "line": 9735,
+          "text": "2026-11-03T20:16:14.9514300Z "
+        },
+        {
+          "line": 9736,
+          "text": "2026-11-03T20:16:14.9515330Z ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Clippy //codex-rs/cli:codex-bin-unit-tests-bin failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_test rule target //codex-rs/cli:codex-bin-unit-tests-bin) "
+        },
+        {
+          "line": 9737,
+          "text": "2026-11-03T20:16:14.9516540Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9738,
+          "text": "2026-11-03T20:16:14.9516990Z   |"
+        },
+        {
+          "line": 9739,
+          "text": "2026-11-03T20:16:14.9517420Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9740,
+          "text": "2026-11-03T20:16:14.9518100Z   = note: query depth increased by 130 when computing layout of `{async block@cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9741,
+          "text": "2026-11-03T20:16:14.9518410Z "
+        },
+        {
+          "line": 9742,
+          "text": "2026-11-03T20:16:14.9518540Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9743,
+          "text": "2026-11-03T20:16:14.9518720Z "
+        },
+        {
+          "line": 9744,
+          "text": "2026-11-03T20:16:14.9518720Z "
+        },
+        {
+          "line": 9745,
+          "text": "2026-11-03T20:16:14.9519650Z ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Compiling Rust bin //codex-rs/cli:codex-bin-unit-tests-bin (55 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/cli:codex-bin-unit-tests-bin) "
+        },
+        {
+          "line": 9746,
+          "text": "2026-11-03T20:16:14.9520670Z error: queries overflow the depth limit!"
+        },
+        {
+          "line": 9747,
+          "text": "2026-11-03T20:16:14.9520960Z   |"
+        },
+        {
+          "line": 9748,
+          "text": "2026-11-03T20:16:14.9521380Z   = help: consider increasing the recursion limit by adding a `#![recursion_limit = \"256\"]` attribute to your crate (`codex`)"
+        },
+        {
+          "line": 9749,
+          "text": "2026-11-03T20:16:14.9522010Z   = note: query depth increased by 130 when computing layout of `{async block@cli/src/main.rs:1091:18: 1091:28}`"
+        },
+        {
+          "line": 9750,
+          "text": "2026-11-03T20:16:14.9522360Z "
+        },
+        {
+          "line": 9751,
+          "text": "2026-11-03T20:16:14.9522470Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9752,
+          "text": "2026-11-03T20:16:14.9522710Z --------------------------------"
+        },
+        {
+          "line": 9753,
+          "text": "2026-11-03T20:16:14.9534840Z ##[error]Process completed with exit code 1."
+        },
+        {
+          "line": 9754,
+          "text": "2026-11-03T20:16:14.9896280Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+        },
+        {
+          "line": 9755,
+          "text": "2026-11-03T20:16:14.9896670Z with:"
+        }
+      ],
+      "omitted_long_context_line_numbers": []
+    },
+    {
+      "job_id": 126191611382,
+      "run_id": 41714299549,
+      "head": "e5891fffb795531f0a8887a786eeaa55995a3065",
+      "failure": "crate_inner_attribute_inside_hepta_include",
+      "decoded_full_log": {
+        "bytes": 889239,
+        "sha256": "70a5c1e24ce590d9fd5af2558e066f7effe25cbc9ccce0a0ac9988e7a1582430"
+      },
+      "excerpts": [
+        {
+          "line": 9497,
+          "text": "2026-11-03T20:53:10.4860285Z     REPOSITORY_NAME='' \\"
+        },
+        {
+          "line": 9498,
+          "text": "2026-11-03T20:53:10.4860751Z     STABLE_GIT_COMMIT='{STABLE_GIT_COMMIT}' \\"
+        },
+        {
+          "line": 9499,
+          "text": "2026-11-03T20:53:10.4862894Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/rbe-fastbuild/bin/codex-rs/cli/hepta.clippy.ok-0.params' -- bazel-out/rbe-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_96_0_rust_toolchain/bin/clippy-driver @bazel-out/rbe-fastbuild/bin/codex-rs/cli/hepta.clippy.ok-1.params)"
+        },
+        {
+          "line": 9500,
+          "text": "2026-11-03T20:53:10.4865564Z # Configuration: 2b4776dbff90ae7170326201e6cb6924d46b81035480325410cbe121bf2bfa4c"
+        },
+        {
+          "line": 9501,
+          "text": "2026-11-03T20:53:10.4866354Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 9502,
+          "text": "2026-11-03T20:53:10.4867046Z error: an inner attribute is not permitted in this context"
+        },
+        {
+          "line": 9503,
+          "text": "2026-11-03T20:53:10.4867619Z  --> codex-rs/cli/src/main.rs:1:1"
+        },
+        {
+          "line": 9504,
+          "text": "2026-11-03T20:53:10.4868048Z   |"
+        },
+        {
+          "line": 9505,
+          "text": "2026-11-03T20:53:10.4868403Z 1 | #![recursion_limit = \"256\"]"
+        },
+        {
+          "line": 9506,
+          "text": "2026-11-03T20:53:10.4868811Z   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        },
+        {
+          "line": 9507,
+          "text": "2026-11-03T20:53:10.4869231Z 2 |"
+        },
+        {
+          "line": 9508,
+          "text": "2026-11-03T20:53:10.4869612Z 3 | use clap::Args;"
+        },
+        {
+          "line": 9509,
+          "text": "2026-11-03T20:53:10.4870133Z   | --------------- the inner attribute doesn't annotate this `use` import"
+        },
+        {
+          "line": 9510,
+          "text": "2026-11-03T20:53:10.4870667Z   |"
+        },
+        {
+          "line": 9511,
+          "text": "2026-11-03T20:53:10.4871374Z   = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files"
+        },
+        {
+          "line": 9535,
+          "text": "2026-11-03T20:53:12.2541715Z     REPOSITORY_NAME='' \\"
+        },
+        {
+          "line": 9536,
+          "text": "2026-11-03T20:53:12.2542276Z     STABLE_GIT_COMMIT='{STABLE_GIT_COMMIT}' \\"
+        },
+        {
+          "line": 9537,
+          "text": "2026-11-03T20:53:12.2545096Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/rbe-fastbuild/bin/codex-rs/cli/hepta-bin-unit-tests-bin.clippy.ok-0.params' -- bazel-out/rbe-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_96_0_rust_toolchain/bin/clippy-driver @bazel-out/rbe-fastbuild/bin/codex-rs/cli/hepta-bin-unit-tests-bin.clippy.ok-1.params)"
+        },
+        {
+          "line": 9538,
+          "text": "2026-11-03T20:53:12.2547341Z # Configuration: a47ec7087761e92dcae8f642fec408cc41dadb0394b57b334667c2d0dbf07087"
+        },
+        {
+          "line": 9539,
+          "text": "2026-11-03T20:53:12.2548185Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 9540,
+          "text": "2026-11-03T20:53:12.2548871Z error: an inner attribute is not permitted in this context"
+        },
+        {
+          "line": 9541,
+          "text": "2026-11-03T20:53:12.2549404Z  --> cli/src/main.rs:1:1"
+        },
+        {
+          "line": 9542,
+          "text": "2026-11-03T20:53:12.2549788Z   |"
+        },
+        {
+          "line": 9543,
+          "text": "2026-11-03T20:53:12.2550134Z 1 | #![recursion_limit = \"256\"]"
+        },
+        {
+          "line": 9544,
+          "text": "2026-11-03T20:53:12.2550539Z   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        },
+        {
+          "line": 9545,
+          "text": "2026-11-03T20:53:12.2550926Z 2 |"
+        },
+        {
+          "line": 9546,
+          "text": "2026-11-03T20:53:12.2551296Z 3 | use clap::Args;"
+        },
+        {
+          "line": 9547,
+          "text": "2026-11-03T20:53:12.2551889Z   | --------------- the inner attribute doesn't annotate this `use` import"
+        },
+        {
+          "line": 9548,
+          "text": "2026-11-03T20:53:12.2552451Z   |"
+        },
+        {
+          "line": 9549,
+          "text": "2026-11-03T20:53:12.2553100Z   = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files"
+        },
+        {
+          "line": 9574,
+          "text": "2026-11-03T20:53:13.6162457Z     RUNFILES_MANIFEST_ONLY=1 \\"
+        },
+        {
+          "line": 9575,
+          "text": "2026-11-03T20:53:13.6162791Z     STABLE_GIT_COMMIT='{STABLE_GIT_COMMIT}' \\"
+        },
+        {
+          "line": 9576,
+          "text": "2026-11-03T20:53:13.6164752Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/rbe-fastbuild/bin/codex-rs/cli/hepta-0.params' -- bazel-out/rbe-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_96_0_rust_toolchain/bin/rustc @bazel-out/rbe-fastbuild/bin/codex-rs/cli/hepta-1.params)"
+        },
+        {
+          "line": 9577,
+          "text": "2026-11-03T20:53:13.6166555Z # Configuration: 2b4776dbff90ae7170326201e6cb6924d46b81035480325410cbe121bf2bfa4c"
+        },
+        {
+          "line": 9578,
+          "text": "2026-11-03T20:53:13.6167128Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 9579,
+          "text": "2026-11-03T20:53:13.6167655Z error: an inner attribute is not permitted in this context"
+        },
+        {
+          "line": 9580,
+          "text": "2026-11-03T20:53:13.6168083Z  --> codex-rs/cli/src/main.rs:1:1"
+        },
+        {
+          "line": 9581,
+          "text": "2026-11-03T20:53:13.6168542Z   |"
+        },
+        {
+          "line": 9582,
+          "text": "2026-11-03T20:53:13.6168782Z 1 | #![recursion_limit = \"256\"]"
+        },
+        {
+          "line": 9583,
+          "text": "2026-11-03T20:53:13.6169061Z   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        },
+        {
+          "line": 9584,
+          "text": "2026-11-03T20:53:13.6169341Z 2 |"
+        },
+        {
+          "line": 9585,
+          "text": "2026-11-03T20:53:13.6169571Z 3 | use clap::Args;"
+        },
+        {
+          "line": 9586,
+          "text": "2026-11-03T20:53:13.6169900Z   | --------------- the inner attribute doesn't annotate this `use` import"
+        },
+        {
+          "line": 9587,
+          "text": "2026-11-03T20:53:13.6170319Z   |"
+        },
+        {
+          "line": 9588,
+          "text": "2026-11-03T20:53:13.6170847Z   = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files"
+        },
+        {
+          "line": 9614,
+          "text": "2026-11-03T20:53:16.5599241Z     RUNFILES_MANIFEST_ONLY=1 \\"
+        },
+        {
+          "line": 9615,
+          "text": "2026-11-03T20:53:16.5599528Z     STABLE_GIT_COMMIT='{STABLE_GIT_COMMIT}' \\"
+        },
+        {
+          "line": 9616,
+          "text": "2026-11-03T20:53:16.5601550Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/rbe-fastbuild/bin/codex-rs/cli/hepta-bin-unit-tests-bin-0.params' -- bazel-out/rbe-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_96_0_rust_toolchain/bin/rustc @bazel-out/rbe-fastbuild/bin/codex-rs/cli/hepta-bin-unit-tests-bin-1.params)"
+        },
+        {
+          "line": 9617,
+          "text": "2026-11-03T20:53:16.5603722Z # Configuration: a47ec7087761e92dcae8f642fec408cc41dadb0394b57b334667c2d0dbf07087"
+        },
+        {
+          "line": 9618,
+          "text": "2026-11-03T20:53:16.5604276Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 9619,
+          "text": "2026-11-03T20:53:16.5604999Z error: an inner attribute is not permitted in this context"
+        },
+        {
+          "line": 9620,
+          "text": "2026-11-03T20:53:16.5605407Z  --> cli/src/main.rs:1:1"
+        },
+        {
+          "line": 9621,
+          "text": "2026-11-03T20:53:16.5605657Z   |"
+        },
+        {
+          "line": 9622,
+          "text": "2026-11-03T20:53:16.5605887Z 1 | #![recursion_limit = \"256\"]"
+        },
+        {
+          "line": 9623,
+          "text": "2026-11-03T20:53:16.5606153Z   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        },
+        {
+          "line": 9624,
+          "text": "2026-11-03T20:53:16.5606442Z 2 |"
+        },
+        {
+          "line": 9625,
+          "text": "2026-11-03T20:53:16.5606956Z 3 | use clap::Args;"
+        },
+        {
+          "line": 9626,
+          "text": "2026-11-03T20:53:16.5607289Z   | --------------- the inner attribute doesn't annotate this `use` import"
+        },
+        {
+          "line": 9627,
+          "text": "2026-11-03T20:53:16.5607613Z   |"
+        },
+        {
+          "line": 9628,
+          "text": "2026-11-03T20:53:16.5608083Z   = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files"
+        },
+        {
+          "line": 9641,
+          "text": "2026-11-03T20:53:33.7249084Z ERROR: Build did NOT complete successfully"
+        },
+        {
+          "line": 9642,
+          "text": "2026-11-03T20:53:33.7249661Z FAILED: "
+        },
+        {
+          "line": 9643,
+          "text": "2026-11-03T20:53:34.9617370Z FAILED: "
+        },
+        {
+          "line": 9644,
+          "text": "2026-11-03T20:53:37.6764140Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/8b45c4f7-2473-4946-888e-8c816a5dd841"
+        },
+        {
+          "line": 9645,
+          "text": "2026-11-03T20:53:37.7127091Z ##[error]ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Clippy //codex-rs/cli:hepta failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_binary rule target //codex-rs/cli:hepta) "
+        },
+        {
+          "line": 9646,
+          "text": "error: an inner attribute is not permitted in this context"
+        },
+        {
+          "line": 9647,
+          "text": " --> codex-rs/cli/src/main.rs:1:1"
+        },
+        {
+          "line": 9648,
+          "text": "  |"
+        },
+        {
+          "line": 9649,
+          "text": "1 | #![recursion_limit = \"256\"]"
+        },
+        {
+          "line": 9650,
+          "text": "  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        },
+        {
+          "line": 9651,
+          "text": "2 |"
+        },
+        {
+          "line": 9652,
+          "text": "3 | use clap::Args;"
+        },
+        {
+          "line": 9653,
+          "text": "  | --------------- the inner attribute doesn't annotate this `use` import"
+        },
+        {
+          "line": 9654,
+          "text": "  |"
+        },
+        {
+          "line": 9655,
+          "text": "  = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files"
+        },
+        {
+          "line": 9656,
+          "text": ""
+        },
+        {
+          "line": 9657,
+          "text": "error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9658,
+          "text": ""
+        },
+        {
+          "line": 9659,
+          "text": ""
+        },
+        {
+          "line": 9660,
+          "text": "ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Clippy //codex-rs/cli:hepta-bin-unit-tests-bin failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_test rule target //codex-rs/cli:hepta-bin-unit-tests-bin) "
+        },
+        {
+          "line": 9661,
+          "text": "error: an inner attribute is not permitted in this context"
+        },
+        {
+          "line": 9662,
+          "text": " --> cli/src/main.rs:1:1"
+        },
+        {
+          "line": 9663,
+          "text": "  |"
+        },
+        {
+          "line": 9664,
+          "text": "1 | #![recursion_limit = \"256\"]"
+        },
+        {
+          "line": 9665,
+          "text": "  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        },
+        {
+          "line": 9666,
+          "text": "2 |"
+        },
+        {
+          "line": 9667,
+          "text": "3 | use clap::Args;"
+        },
+        {
+          "line": 9668,
+          "text": "  | --------------- the inner attribute doesn't annotate this `use` import"
+        },
+        {
+          "line": 9669,
+          "text": "  |"
+        },
+        {
+          "line": 9670,
+          "text": "  = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files"
+        },
+        {
+          "line": 9671,
+          "text": ""
+        },
+        {
+          "line": 9672,
+          "text": "error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9673,
+          "text": ""
+        },
+        {
+          "line": 9674,
+          "text": ""
+        },
+        {
+          "line": 9675,
+          "text": "ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Compiling Rust bin //codex-rs/cli:hepta (55 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_binary rule target //codex-rs/cli:hepta) "
+        },
+        {
+          "line": 9676,
+          "text": "error: an inner attribute is not permitted in this context"
+        },
+        {
+          "line": 9677,
+          "text": " --> codex-rs/cli/src/main.rs:1:1"
+        },
+        {
+          "line": 9678,
+          "text": "  |"
+        },
+        {
+          "line": 9679,
+          "text": "1 | #![recursion_limit = \"256\"]"
+        },
+        {
+          "line": 9680,
+          "text": "  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        },
+        {
+          "line": 9681,
+          "text": "2 |"
+        },
+        {
+          "line": 9682,
+          "text": "3 | use clap::Args;"
+        },
+        {
+          "line": 9683,
+          "text": "  | --------------- the inner attribute doesn't annotate this `use` import"
+        },
+        {
+          "line": 9684,
+          "text": "  |"
+        },
+        {
+          "line": 9685,
+          "text": "  = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files"
+        },
+        {
+          "line": 9686,
+          "text": ""
+        },
+        {
+          "line": 9687,
+          "text": "error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9688,
+          "text": ""
+        },
+        {
+          "line": 9689,
+          "text": ""
+        },
+        {
+          "line": 9690,
+          "text": "ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Compiling Rust bin //codex-rs/cli:hepta-bin-unit-tests-bin (55 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/cli:hepta-bin-unit-tests-bin) "
+        },
+        {
+          "line": 9691,
+          "text": "error: an inner attribute is not permitted in this context"
+        },
+        {
+          "line": 9692,
+          "text": " --> cli/src/main.rs:1:1"
+        },
+        {
+          "line": 9693,
+          "text": "  |"
+        },
+        {
+          "line": 9694,
+          "text": "1 | #![recursion_limit = \"256\"]"
+        },
+        {
+          "line": 9695,
+          "text": "  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        },
+        {
+          "line": 9696,
+          "text": "2 |"
+        },
+        {
+          "line": 9697,
+          "text": "3 | use clap::Args;"
+        },
+        {
+          "line": 9698,
+          "text": "  | --------------- the inner attribute doesn't annotate this `use` import"
+        },
+        {
+          "line": 9699,
+          "text": "  |"
+        },
+        {
+          "line": 9700,
+          "text": "  = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files"
+        },
+        {
+          "line": 9702,
+          "text": "error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9703,
+          "text": "2026-11-03T20:53:37.7136632Z "
+        },
+        {
+          "line": 9704,
+          "text": "2026-11-03T20:53:37.7136829Z Bazel failed action diagnostics:"
+        },
+        {
+          "line": 9705,
+          "text": "2026-11-03T20:53:37.7137151Z --------------------------------"
+        },
+        {
+          "line": 9706,
+          "text": "2026-11-03T20:53:37.7138236Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Clippy //codex-rs/cli:hepta failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_binary rule target //codex-rs/cli:hepta) "
+        },
+        {
+          "line": 9707,
+          "text": "2026-11-03T20:53:37.7139201Z error: an inner attribute is not permitted in this context"
+        },
+        {
+          "line": 9708,
+          "text": "2026-11-03T20:53:37.7139489Z  --> codex-rs/cli/src/main.rs:1:1"
+        },
+        {
+          "line": 9709,
+          "text": "2026-11-03T20:53:37.7139701Z   |"
+        },
+        {
+          "line": 9710,
+          "text": "2026-11-03T20:53:37.7139895Z 1 | #![recursion_limit = \"256\"]"
+        },
+        {
+          "line": 9711,
+          "text": "2026-11-03T20:53:37.7140103Z   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        },
+        {
+          "line": 9712,
+          "text": "2026-11-03T20:53:37.7140290Z 2 |"
+        },
+        {
+          "line": 9713,
+          "text": "2026-11-03T20:53:37.7140470Z 3 | use clap::Args;"
+        },
+        {
+          "line": 9714,
+          "text": "2026-11-03T20:53:37.7140732Z   | --------------- the inner attribute doesn't annotate this `use` import"
+        },
+        {
+          "line": 9715,
+          "text": "2026-11-03T20:53:37.7141010Z   |"
+        },
+        {
+          "line": 9716,
+          "text": "2026-11-03T20:53:37.7141384Z   = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files"
+        },
+        {
+          "line": 9717,
+          "text": "2026-11-03T20:53:37.7141736Z "
+        },
+        {
+          "line": 9718,
+          "text": "2026-11-03T20:53:37.7141839Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9719,
+          "text": "2026-11-03T20:53:37.7141992Z "
+        },
+        {
+          "line": 9720,
+          "text": "2026-11-03T20:53:37.7141995Z "
+        },
+        {
+          "line": 9721,
+          "text": "2026-11-03T20:53:37.7142885Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Clippy //codex-rs/cli:hepta-bin-unit-tests-bin failed: (Exit 1): process_wrapper failed: error executing Clippy command (from aspects [@@rules_rs++rules_rust+rules_rust//rust/private:clippy.bzl%rust_clippy_aspect] on rust_test rule target //codex-rs/cli:hepta-bin-unit-tests-bin) "
+        },
+        {
+          "line": 9722,
+          "text": "2026-11-03T20:53:37.7143957Z error: an inner attribute is not permitted in this context"
+        },
+        {
+          "line": 9723,
+          "text": "2026-11-03T20:53:37.7144238Z  --> cli/src/main.rs:1:1"
+        },
+        {
+          "line": 9724,
+          "text": "2026-11-03T20:53:37.7144429Z   |"
+        },
+        {
+          "line": 9725,
+          "text": "2026-11-03T20:53:37.7144764Z 1 | #![recursion_limit = \"256\"]"
+        },
+        {
+          "line": 9726,
+          "text": "2026-11-03T20:53:37.7145022Z   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        },
+        {
+          "line": 9727,
+          "text": "2026-11-03T20:53:37.7145213Z 2 |"
+        },
+        {
+          "line": 9728,
+          "text": "2026-11-03T20:53:37.7145382Z 3 | use clap::Args;"
+        },
+        {
+          "line": 9729,
+          "text": "2026-11-03T20:53:37.7145640Z   | --------------- the inner attribute doesn't annotate this `use` import"
+        },
+        {
+          "line": 9730,
+          "text": "2026-11-03T20:53:37.7145927Z   |"
+        },
+        {
+          "line": 9731,
+          "text": "2026-11-03T20:53:37.7146302Z   = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files"
+        },
+        {
+          "line": 9732,
+          "text": "2026-11-03T20:53:37.7146646Z "
+        },
+        {
+          "line": 9733,
+          "text": "2026-11-03T20:53:37.7146748Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9734,
+          "text": "2026-11-03T20:53:37.7146904Z "
+        },
+        {
+          "line": 9735,
+          "text": "2026-11-03T20:53:37.7146907Z "
+        },
+        {
+          "line": 9736,
+          "text": "2026-11-03T20:53:37.7147530Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Compiling Rust bin //codex-rs/cli:hepta (55 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_binary rule target //codex-rs/cli:hepta) "
+        },
+        {
+          "line": 9737,
+          "text": "2026-11-03T20:53:37.7148312Z error: an inner attribute is not permitted in this context"
+        },
+        {
+          "line": 9738,
+          "text": "2026-11-03T20:53:37.7148585Z  --> codex-rs/cli/src/main.rs:1:1"
+        },
+        {
+          "line": 9739,
+          "text": "2026-11-03T20:53:37.7148787Z   |"
+        },
+        {
+          "line": 9740,
+          "text": "2026-11-03T20:53:37.7148955Z 1 | #![recursion_limit = \"256\"]"
+        },
+        {
+          "line": 9741,
+          "text": "2026-11-03T20:53:37.7149156Z   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        },
+        {
+          "line": 9742,
+          "text": "2026-11-03T20:53:37.7149340Z 2 |"
+        },
+        {
+          "line": 9743,
+          "text": "2026-11-03T20:53:37.7149497Z 3 | use clap::Args;"
+        },
+        {
+          "line": 9744,
+          "text": "2026-11-03T20:53:37.7149752Z   | --------------- the inner attribute doesn't annotate this `use` import"
+        },
+        {
+          "line": 9745,
+          "text": "2026-11-03T20:53:37.7150235Z   |"
+        },
+        {
+          "line": 9746,
+          "text": "2026-11-03T20:53:37.7150601Z   = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files"
+        },
+        {
+          "line": 9747,
+          "text": "2026-11-03T20:53:37.7150954Z "
+        },
+        {
+          "line": 9748,
+          "text": "2026-11-03T20:53:37.7151046Z error: aborting due to 1 previous error"
+        },
+        {
+          "line": 9749,
+          "text": "2026-11-03T20:53:37.7151203Z "
+        },
+        {
+          "line": 9750,
+          "text": "2026-11-03T20:53:37.7151207Z "
+        },
+        {
+          "line": 9751,
+          "text": "2026-11-03T20:53:37.7151994Z ERROR: /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cli/BUILD.bazel:5:17: Compiling Rust bin //codex-rs/cli:hepta-bin-unit-tests-bin (55 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/cli:hepta-bin-unit-tests-bin) "
+        },
+        {
+          "line": 9752,
+          "text": "2026-11-03T20:53:37.7152873Z error: an inner attribute is not permitted in this context"
+        },
+        {
+          "line": 9753,
+          "text": "2026-11-03T20:53:37.7153137Z  --> cli/src/main.rs:1:1"
+        },
+        {
+          "line": 9754,
+          "text": "2026-11-03T20:53:37.7153331Z   |"
+        },
+        {
+          "line": 9755,
+          "text": "2026-11-03T20:53:37.7153500Z 1 | #![recursion_limit = \"256\"]"
+        },
+        {
+          "line": 9756,
+          "text": "2026-11-03T20:53:37.7153707Z   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        },
+        {
+          "line": 9757,
+          "text": "2026-11-03T20:53:37.7153894Z 2 |"
+        },
+        {
+          "line": 9758,
+          "text": "2026-11-03T20:53:37.7154052Z 3 | use clap::Args;"
+        },
+        {
+          "line": 9759,
+          "text": "2026-11-03T20:53:37.7154296Z   | --------------- the inner attribute doesn't annotate this `use` import"
+        },
+        {
+          "line": 9760,
+          "text": "2026-11-03T20:53:37.7154703Z   |"
+        },
+        {
+          "line": 9761,
+          "text": "2026-11-03T20:53:37.7155074Z   = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files"
+        }
+      ],
+      "omitted_long_context_line_numbers": []
+    },
+    {
+      "job_id": 126191611720,
+      "run_id": 41714299549,
+      "head": "e5891fffb795531f0a8887a786eeaa55995a3065",
+      "failure": "crate_inner_attribute_inside_hepta_include",
+      "decoded_full_log": {
+        "bytes": 739104,
+        "sha256": "1a56df69d05003c009db73c024eb0ffaa53ce1e217563fafe768c89bb9980811"
+      },
+      "excerpts": [
+        {
+          "line": 7642,
+          "text": "2026-11-03T20:52:33.5210165Z     RUNFILES_MANIFEST_ONLY=1 \\"
+        },
+        {
+          "line": 7643,
+          "text": "2026-11-03T20:52:33.5210323Z     STABLE_GIT_COMMIT='{STABLE_GIT_COMMIT}' \\"
+        },
+        {
+          "line": 7644,
+          "text": "2026-11-03T20:52:33.5211181Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/rbe-fastbuild/bin/codex-rs/cli/hepta-0.params' -- bazel-out/rbe-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_96_0_rust_toolchain/bin/rustc @bazel-out/rbe-fastbuild/bin/codex-rs/cli/hepta-1.params)"
+        },
+        {
+          "line": 7645,
+          "text": "2026-11-03T20:52:33.5212374Z # Configuration: 3df51617188021e38d3aad2ab48efd97a13e9b7310c0639f24de19f2d9d627ba"
+        },
+        {
+          "line": 7646,
+          "text": "2026-11-03T20:52:33.5212878Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 7647,
+          "text": "2026-11-03T20:52:33.5213275Z error: an inner attribute is not permitted in this context"
+        },
+        {
+          "line": 7648,
+          "text": "2026-11-03T20:52:33.5213586Z  --> codex-rs/cli/src/main.rs:1:1"
+        },
+        {
+          "line": 7649,
+          "text": "2026-11-03T20:52:33.5213808Z   |"
+        },
+        {
+          "line": 7650,
+          "text": "2026-11-03T20:52:33.5213979Z 1 | #![recursion_limit = \"256\"]"
+        },
+        {
+          "line": 7651,
+          "text": "2026-11-03T20:52:33.5214194Z   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        },
+        {
+          "line": 7652,
+          "text": "2026-11-03T20:52:33.5214402Z 2 |"
+        },
+        {
+          "line": 7653,
+          "text": "2026-11-03T20:52:33.5214630Z 3 | use clap::Args;"
+        },
+        {
+          "line": 7654,
+          "text": "2026-11-03T20:52:33.5222600Z   | --------------- the inner attribute doesn't annotate this `use` import"
+        },
+        {
+          "line": 7655,
+          "text": "2026-11-03T20:52:33.5222818Z   |"
+        },
+        {
+          "line": 7656,
+          "text": "2026-11-03T20:52:33.5223106Z   = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files"
+        },
+        {
+          "line": 7681,
+          "text": "2026-11-03T20:52:36.9361058Z     RUNFILES_MANIFEST_ONLY=1 \\"
+        },
+        {
+          "line": 7682,
+          "text": "2026-11-03T20:52:36.9361307Z     STABLE_GIT_COMMIT='{STABLE_GIT_COMMIT}' \\"
+        },
+        {
+          "line": 7683,
+          "text": "2026-11-03T20:52:36.9362731Z   bazel-out/rbe_platform-opt-exec-ST-fd45d9624a1f/bin/external/rules_rs++rules_rust+rules_rust/util/process_wrapper/process_wrapper '--wrapper-args=bazel-out/rbe-fastbuild/bin/codex-rs/cli/hepta-bin-unit-tests-bin-0.params' -- bazel-out/rbe-fastbuild/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_96_0_rust_toolchain/bin/rustc @bazel-out/rbe-fastbuild/bin/codex-rs/cli/hepta-bin-unit-tests-bin-1.params)"
+        },
+        {
+          "line": 7684,
+          "text": "2026-11-03T20:52:36.9364235Z # Configuration: feebf3a4b9e2cf3612e813f33e58b95062cfd6e047ad8a7a523e34fc9bd93c85"
+        },
+        {
+          "line": 7685,
+          "text": "2026-11-03T20:52:36.9364702Z # Execution platform: @@+rbe_platform_repository+rbe_platform//:rbe_platform"
+        },
+        {
+          "line": 7686,
+          "text": "2026-11-03T20:52:36.9365088Z error: an inner attribute is not permitted in this context"
+        },
+        {
+          "line": 7687,
+          "text": "2026-11-03T20:52:36.9365404Z  --> cli/src/main.rs:1:1"
+        },
+        {
+          "line": 7688,
+          "text": "2026-11-03T20:52:36.9365618Z   |"
+        },
+        {
+          "line": 7689,
+          "text": "2026-11-03T20:52:36.9365806Z 1 | #![recursion_limit = \"256\"]"
+        },
+        {
+          "line": 7690,
+          "text": "2026-11-03T20:52:36.9366039Z   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+        },
+        {
+          "line": 7691,
+          "text": "2026-11-03T20:52:36.9366250Z 2 |"
+        },
+        {
+          "line": 7692,
+          "text": "2026-11-03T20:52:36.9366449Z 3 | use clap::Args;"
+        },
+        {
+          "line": 7693,
+          "text": "2026-11-03T20:52:36.9366725Z   | --------------- the inner attribute doesn't annotate this `use` import"
+        },
+        {
+          "line": 7694,
+          "text": "2026-11-03T20:52:36.9367038Z   |"
+        },
+        {
+          "line": 7695,
+          "text": "2026-11-03T20:52:36.9367713Z   = note: inner attributes, like `#![no_std]`, annotate the item enclosing them, and are usually found at the beginning of source files"
+        }
+      ],
+      "omitted_long_context_line_numbers": []
+    }
+  ]
+}

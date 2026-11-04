@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "source": "0cf81d65646b8907e42e781ea35a28437b5b0054",
+  "tree": "24b1c33ca0f666a75e9899605a7e0eacc59ed160",
+  "run_id": 41777289308,
+  "job_id": 126400487803,
+  "artifact": {
+    "id": 13297307552,
+    "bytes": 4803151,
+    "sha256": "5075ba42579b65f79189bec60ab579a22408b46f9adba796200a699ae53a7674"
+  },
+  "conclusion": "failure",
+  "reason": "Original formatter and actual Cargo metadata succeeded; unchanged strict adoption boundary rejected 18 registry dependency-record transitions. The actual proposed bytes were retained for independent review. No generated-lock or product qualification claimed.",
+  "original_job_log": {
+    "bytes": 851764,
+    "sha256": "335c85099e859101b9e7aea210d96a108c14ac2cca8f006d09a506417f6cf6ca",
+    "git_blob": "eee29ad5d9b55f9749127ee282ddb46958faf95b",
+    "parts": [
+      {
+        "path": "qualification/complete-source-union-20261104/third-0cf/original-job.part-00.log.gz",
+        "encoding": "base64",
+        "bytes": 400053,
+        "git": "fa9d6cfd2a7b89e5982c604157518ad2fff8d8e6",
+        "sha256": "6688611a660811bec192445d2905c14ef1c0427cc21781cad68a9548ffc88ec4",
+        "original_offset": 0,
+        "original_bytes": 400000,
+        "original_sha256": "5d32854fe9ca6c4c2d6d96bc2112bc5758fe4cbf3f59ef40234c104c9405422f"
+      },
+      {
+        "path": "qualification/complete-source-union-20261104/third-0cf/original-job.part-01.log.gz",
+        "encoding": "base64",
+        "bytes": 400053,
+        "git": "462fd89bec8c1b40cc27d8b4410c7dc69d0bfe57",
+        "sha256": "99eb16f7b9c511857f675b38cf0880d45782048f765bbbf5bd25f77e68ed5c97",
+        "original_offset": 400000,
+        "original_bytes": 400000,
+        "original_sha256": "bf0c1761969e764930feaa0268f2f8527ba5b5c2e0ae78a0b7bb48583474cbe5"
+      },
+      {
+        "path": "qualification/complete-source-union-20261104/third-0cf/original-job.part-02.log.gz",
+        "encoding": "base64",
+        "bytes": 51787,
+        "git": "6f8ba3d5882159121c992f830c4591651d816410",
+        "sha256": "86bf1305f7d1a578fb3fa8a360918646530a8ca7bfc2566164d0f2e4c7004fdb",
+        "original_offset": 800000,
+        "original_bytes": 51764,
+        "original_sha256": "8add6aaa2cb633c6ce676efcf872f7ad32453731e43a82960960a9c3973a4938"
+      }
+    ]
+  },
+  "original_receipt": {
+    "status": "failed",
+    "commands": [
+      {
+        "name": "source-commit",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.001632042000004219,
+        "log": {
+          "bytes": 41,
+          "sha256": "8c92716395fb3a031b9249262c5c1cece798c2ef47fc2aae84c700aa9dc4f0cc",
+          "git_blob": "5de0f661f4119741a4e125bc86b7c9333887a009"
+        }
+      },
+      {
+        "name": "source-tree",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "rev-parse",
+          "HEAD^{tree}"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.0016026680000038596,
+        "log": {
+          "bytes": 41,
+          "sha256": "53a47b1d86167983e60cef90b922b5e15de022d37083baf7d94a3047c5403530",
+          "git_blob": "f156a25926d05afcf275163f0d0059ee34019782"
+        }
+      },
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.13842959799999477,
+        "log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        }
+      },
+      {
+        "name": "rustc-identity",
+        "argv": [
+          "rustc",
+          "--version"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.013507042999997054,
+        "log": {
+          "bytes": 36,
+          "sha256": "7aaf71af0cccdebda4e70ae5216dcf348bccfeb5cc30d148247005558cec03ad",
+          "git_blob": "631651bfdbb443b7b66335ade839d0f06fb7b178"
+        }
+      },
+      {
+        "name": "committed-lock-first",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 1,
+        "elapsed_seconds": 14.996595331999998,
+        "log": {
+          "bytes": 3214045,
+          "sha256": "49afa8d0cab29ab369de25feccf990e9a3fd407ae778368b95c4a273b1103ab1",
+          "git_blob": "2b5f8e1d70955d83c527a73eb5aa7c4c6374d670"
+        }
+      },
+      {
+        "name": "original-formatter",
+        "argv": [
+          "just",
+          "fmt",
+          "--base",
+          "a3bf4c98b619244f0c81ab900aa086495b31d62e"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 5.575800516000001,
+        "log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        }
+      },
+      {
+        "name": "original-formatter-check",
+        "argv": [
+          "just",
+          "fmt",
+          "--check",
+          "--base",
+          "a3bf4c98b619244f0c81ab900aa086495b31d62e"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 5.676498897999991,
+        "log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        }
+      },
+      {
+        "name": "actual-cargo-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 15.162972116999995,
+        "log": {
+          "bytes": 8214625,
+          "sha256": "f4f9f6a6b08e4a70e9092d3a6ed9743954544726b17939ed9266136810af2142",
+          "git_blob": "c01ef4b36b054f17e7ffbefd63698f0b4368bbd3"
+        }
+      }
+    ],
+    "scope": "Actual composed source formatting and Cargo/Bazel resolution only; product qualification requires the committed generated successor and original gates.",
+    "source_commit": "0cf81d65646b8907e42e781ea35a28437b5b0054",
+    "source_tree": "24b1c33ca0f666a75e9899605a7e0eacc59ed160",
+    "source_input_count": 10909,
+    "formatter_changes": [
+      "MODULE.bazel",
+      "codex-rs/core-plugins/src/startup_sync_tests.rs",
+      "defs.bzl"
+    ]
+  },
+  "actual_proposed_files": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "encoding": "utf-8",
+      "bytes": 417285,
+      "git": "f6440c0874841652de6c62f14dc230fde33aabbe",
+      "sha256": "55ecbc34ebcdfe8e9e9b528afa8012f1292e266d001bf901c7d5af9350f54078",
+      "prefix": "PROPOSED_CARGO_LOCK"
+    },
+    {
+      "path": "MODULE.bazel",
+      "encoding": "utf-8",
+      "bytes": 23134,
+      "git": "d4e8e6ea2a696094c3c718cb072c155dc705025b",
+      "sha256": "c50fe7e64e29a9adc37ca787ded04a9370859c66863c0a4583427db7681a80f5",
+      "prefix": "ORIGINAL_FORMATTED_FILE"
+    },
+    {
+      "path": "codex-rs/core-plugins/src/startup_sync_tests.rs",
+      "encoding": "utf-8",
+      "bytes": 55555,
+      "git": "fddc640f0e4245912c6c31509a891b3a62b4cdb4",
+      "sha256": "112e0be718eb4143e08bc7186702b72abb71da1eb47ad4938167d19eb7c1684c",
+      "prefix": "ORIGINAL_FORMATTED_FILE"
+    },
+    {
+      "path": "defs.bzl",
+      "encoding": "utf-8",
+      "bytes": 35348,
+      "git": "97f923babe58c62d3b3e1479a9495a2f172261dc",
+      "sha256": "55161221e269392591bd72e944f8937985caa655f4444c5274a2eddaa75407f7",
+      "prefix": "ORIGINAL_FORMATTED_FILE"
+    }
+  ],
+  "metadata_review": "pending independently verified original artifact projection"
+}

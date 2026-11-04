@@ -381,6 +381,8 @@ jobs:
         run: |
           bazel_clippy_args=(
             --config=clippy
+            # Manual test helpers can have native platform constraints.
+            --skip_incompatible_explicit_targets
             --build_metadata=COMMIT_SHA=${GITHUB_SHA}
             --build_metadata=TAG_job=clippy
           )

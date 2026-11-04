@@ -1,0 +1,50 @@
+{
+  "schema": "cli-entrypoint-local-checks-v1",
+  "checked_utc": "2026-11-03T21:36:40.157076+00:00",
+  "commands": [
+    {
+      "argv": [
+        "/workspace/scratch/1f1d02319616/recovered-tools-20261103/bin/just",
+        "fmt"
+      ],
+      "cwd": "/workspace/scratch/1f1d02319616/chain-cli-entrypoint-work-20261103/codex-rs",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/workspace/scratch/1f1d02319616/chain-cli-entrypoint-work-20261103",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "before": {
+    "codex-rs/cli/src/main.rs": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971",
+    "codex-rs/cli/src/hepta.rs": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971",
+    "codex-rs/cli/src/main_shared.rs": "097ca019533619d964fa67f018e0a140645779f17a0e9a17212ad5398636a513"
+  },
+  "after": {
+    "codex-rs/cli/src/main.rs": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971",
+    "codex-rs/cli/src/hepta.rs": "2e2869adc893f38e6ecf9219caa0016c7a1b31eba86fdea925300e5039088971",
+    "codex-rs/cli/src/main_shared.rs": "097ca019533619d964fa67f018e0a140645779f17a0e9a17212ad5398636a513"
+  },
+  "source_unchanged": true,
+  "historical_artifact_format_failure": {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit_code": 2,
+    "reason": "Original rustc diagnostic has a blank final line; raw diagnostic is now preserved byte-for-byte as a JSON string in OUTPUTS.json."
+  },
+  "full_cli_build_attempted": false,
+  "reason_full_build_not_attempted": "Local shared disk cannot hold the complete CLI graph; original hosted SDK, Clippy, release and native jobs are still required."
+}

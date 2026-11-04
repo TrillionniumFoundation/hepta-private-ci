@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "source_commit": "39cfa627df1b52f9cd340e8b3a94604af8260351",
+  "source_tree": "3cd86df84170fef90abe39895963f86380515ec8",
+  "run": 41776869104,
+  "job": 126399154422,
+  "status": "FAILED_STRICT_LOCK_ADOPTION",
+  "reason": "Actual original formatter, formatter check and complete Cargo metadata succeeded. The unchanged-package record guard rejected an arboard dependency-record difference. The package-identity set guard had already passed; no differing record has been adopted.",
+  "receipt": {
+    "status": "failed",
+    "commands": [
+      {
+        "name": "source-commit",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.0017039580000073329,
+        "log": {
+          "bytes": 41,
+          "sha256": "4854f426b88fe7c033dc47578ea554a4485cc65b93badbe5f1dc078142eddb54",
+          "git_blob": "35b932c5512fc452c9008075826a9bdb095685d6"
+        }
+      },
+      {
+        "name": "source-tree",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "rev-parse",
+          "HEAD^{tree}"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.0015915070000005471,
+        "log": {
+          "bytes": 41,
+          "sha256": "0aae6c477273603ea0cac56ceafaa9abb61045ec6f46ba406bc844cb67b40d11",
+          "git_blob": "d8192f7f05078c0cb07e20c4159de344b65720b3"
+        }
+      },
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.3951957290000081,
+        "log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        }
+      },
+      {
+        "name": "rustc-identity",
+        "argv": [
+          "rustc",
+          "--version"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.010744868000003294,
+        "log": {
+          "bytes": 36,
+          "sha256": "7aaf71af0cccdebda4e70ae5216dcf348bccfeb5cc30d148247005558cec03ad",
+          "git_blob": "631651bfdbb443b7b66335ade839d0f06fb7b178"
+        }
+      },
+      {
+        "name": "committed-lock-first",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 1,
+        "elapsed_seconds": 16.009778518999994,
+        "log": {
+          "bytes": 3214065,
+          "sha256": "5d9acaed9f73607e5d99d572ec2a89924813a285af19146ca73390d565f4425e",
+          "git_blob": "fdf6ade7ed4afe18242f7be9f7455a0f41e361c5"
+        }
+      },
+      {
+        "name": "original-formatter",
+        "argv": [
+          "just",
+          "fmt",
+          "--base",
+          "a3bf4c98b619244f0c81ab900aa086495b31d62e"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 7.046869200999993,
+        "log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        }
+      },
+      {
+        "name": "original-formatter-check",
+        "argv": [
+          "just",
+          "fmt",
+          "--check",
+          "--base",
+          "a3bf4c98b619244f0c81ab900aa086495b31d62e"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 7.040687570000017,
+        "log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        }
+      },
+      {
+        "name": "actual-cargo-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 16.738567364000005,
+        "log": {
+          "bytes": 8214625,
+          "sha256": "c83e10b2ba88baf59bd760b7f19632221f14b3d4fe961d3ffb28dcb3dbb23eff",
+          "git_blob": "924bffe20bf9d95608d8c89d73e584f3ea072d75"
+        }
+      }
+    ],
+    "scope": "Actual composed source formatting and Cargo/Bazel resolution only; product qualification requires the committed generated successor and original gates.",
+    "source_commit": "39cfa627df1b52f9cd340e8b3a94604af8260351",
+    "source_tree": "3cd86df84170fef90abe39895963f86380515ec8",
+    "source_input_count": 10907,
+    "formatter_changes": [
+      "MODULE.bazel",
+      "codex-rs/core-plugins/src/startup_sync_tests.rs",
+      "defs.bzl"
+    ]
+  },
+  "raw_log": {
+    "bytes": 139556,
+    "sha256": "c76557d337b2ac73ed1599f9303ebacdffdc7abf4152607e2659477e85c75ec3"
+  },
+  "artifact": {
+    "id": 13297586168,
+    "node_id": "MDg6QXJ0aWZhY3QxMzI5NzU4NjE2OA==",
+    "name": "complete-source-generation-39cfa627df1b52f9cd340e8b3a94604af8260351",
+    "size_in_bytes": 4498068,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13297586168",
+    "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13297586168/zip",
+    "expired": false,
+    "digest": "sha256:2caa5a4776c014381e7aa8053b45f8247c38c43212aea5b10d8023bd5fc542ca",
+    "created_at": "2026-11-04T05:04:45Z",
+    "updated_at": "2026-11-04T05:04:45Z",
+    "expires_at": "2026-11-18T05:04:44Z",
+    "workflow_run": {
+      "id": 41776869104,
+      "repository_id": 1320694176,
+      "head_repository_id": 1320694176,
+      "head_branch": "integration/private-ci-complete-source-20261104-gpt6",
+      "head_sha": "39cfa627df1b52f9cd340e8b3a94604af8260351"
+    }
+  },
+  "followup": "Retain actual proposed Cargo.lock and formatter bytes before the unchanged strict policy check, so rejected resolver output can be reviewed. Do not weaken any identity/checksum or native gate."
+}

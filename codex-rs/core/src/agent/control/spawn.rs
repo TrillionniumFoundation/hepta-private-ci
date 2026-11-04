@@ -21,9 +21,9 @@ use futures::future::BoxFuture;
 
 const AGENT_NAMES: &str = include_str!("../agent_names.txt");
 
-struct SpawnAgentThreadInheritance {
-    environments: Option<TurnEnvironmentSnapshot>,
-    exec_policy: Option<Arc<crate::exec_policy::ExecPolicyManager>>,
+pub(super) struct SpawnAgentThreadInheritance {
+    pub(super) environments: Option<TurnEnvironmentSnapshot>,
+    pub(super) exec_policy: Option<Arc<crate::exec_policy::ExecPolicyManager>>,
 }
 
 /// Initial input delivered after a spawned agent acquires execution capacity.
@@ -180,6 +180,7 @@ impl AgentControl {
         };
 
         for thread_id in descendant_ids {
+            let _transition = self.transitions.lock(thread_id).await;
             if self.state.agent_metadata_for_thread(thread_id).is_some() {
                 continue;
             }
@@ -191,6 +192,21 @@ impl AgentControl {
                         include_history: false,
                     })
                     .await?;
+                // The initial descendant walk may predate a close. Recheck under
+                // this agent's transition guard before publishing cold metadata.
+                if !agent_graph_store
+                    .list_thread_spawn_descendants(
+                        root_thread_id,
+                        Some(codex_agent_graph_store::ThreadSpawnEdgeStatus::Open),
+                    )
+                    .await
+                    .map_err(|err| {
+                        CodexErr::Fatal(format!("failed to recheck V2 agent {thread_id}: {err}"))
+                    })?
+                    .contains(&thread_id)
+                {
+                    return Ok(());
+                }
                 let stored_agent_path = stored_thread
                     .agent_path
                     .as_deref()
@@ -309,6 +325,7 @@ impl AgentControl {
         parent: Option<Arc<CodexThread>>,
     ) -> CodexResult<()> {
         let state = self.upgrade()?;
+        let transition = self.transitions.lock(thread_id).await;
         let parent = if let Some(parent) = parent {
             let parent_thread_id = parent.session.thread_id;
             let turn = parent.session.new_default_turn().await;
@@ -556,6 +573,7 @@ impl AgentControl {
                 config,
                 initial_history,
                 agent_control: self.clone(),
+                agent_transition: transition.clone(),
                 session_source,
                 parent_thread_id,
                 environment_selections,
@@ -569,8 +587,13 @@ impl AgentControl {
                 if let Some(parent_thread_id) = owner_thread_id {
                     self.validate_loaded_v2_child(&reloaded_thread.thread, parent_thread_id)?;
                 }
-                self.state.clear_evicted_environments(thread_id);
-                residency_slot.commit(reloaded_thread.thread_id);
+                state
+                    .with_current_runtime(thread_id, &reloaded_thread.thread, || {
+                        self.state.clear_evicted_environments(thread_id);
+                        residency_slot.commit(thread_id);
+                    })
+                    .await
+                    .ok_or(CodexErr::ThreadNotFound(thread_id))?;
                 state.notify_thread_created(reloaded_thread.thread_id);
                 Ok(())
             }
@@ -579,9 +602,14 @@ impl AgentControl {
                     if let Some(parent_thread_id) = owner_thread_id {
                         self.validate_loaded_v2_child(&thread, parent_thread_id)?;
                     }
-                    self.state.clear_evicted_environments(thread_id);
                     drop(residency_slot);
-                    self.touch_loaded_v2_residency(&state, thread_id).await;
+                    state
+                        .with_current_runtime(thread_id, &thread, || {
+                            self.state.clear_evicted_environments(thread_id);
+                            self.v2_residency.touch(thread_id);
+                        })
+                        .await
+                        .ok_or(CodexErr::ThreadNotFound(thread_id))?;
                     return Ok(());
                 }
                 Err(err)
@@ -701,11 +729,17 @@ impl AgentControl {
             }
             (None, _, _) => Box::pin(state.spawn_new_thread(config.clone(), self.clone())).await?,
         };
+        let transition = self.transitions.lock(new_thread.thread_id).await;
         agent_metadata.agent_id = Some(new_thread.thread_id);
-        reservation.commit(agent_metadata.clone());
-        if let Some(residency_slot) = residency_slot {
-            residency_slot.commit(new_thread.thread_id);
-        }
+        state
+            .with_current_runtime(new_thread.thread_id, &new_thread.thread, || {
+                reservation.commit(agent_metadata.clone());
+                if let Some(residency_slot) = residency_slot {
+                    residency_slot.commit(new_thread.thread_id);
+                }
+            })
+            .await
+            .ok_or(CodexErr::ThreadNotFound(new_thread.thread_id))?;
 
         if let Some(SessionSource::SubAgent(
             subagent_source @ SubAgentSource::ThreadSpawn {
@@ -751,6 +785,7 @@ impl AgentControl {
             notification_source.as_ref(),
         )
         .await;
+        drop(transition);
 
         match initial_input {
             SpawnInitialInput::UserInput(input) => {
@@ -795,7 +830,7 @@ impl AgentControl {
         })
     }
 
-    async fn spawn_forked_thread(
+    pub(super) async fn spawn_forked_thread(
         &self,
         state: &Arc<ThreadManagerState>,
         config: Config,
@@ -860,11 +895,23 @@ impl AgentControl {
         let parent_history_mode = parent_thread.config_snapshot().await.history_mode;
         // `record_conversation_items` only queues persistence writes asynchronously.
         // Flush before snapshotting store history for a fork.
+        #[cfg(test)]
+        state.record_startup_before_delivery_for_tests(
+            "fork-parent-flush",
+            Some(parent_thread_id),
+            /*thread_id*/ None,
+        );
         parent_thread.ensure_rollout_materialized().await;
         parent_thread.flush_rollout().await?;
 
         let destination_history_mode = matches!(parent_history_mode, ThreadHistoryMode::Paginated)
             .then_some(ThreadHistoryMode::Paginated);
+        #[cfg(test)]
+        state.record_startup_before_delivery_for_tests(
+            "fork-history-read",
+            Some(parent_thread_id),
+            /*thread_id*/ None,
+        );
         let mut forked_rollout_items =
             load_agent_model_context(state, parent_thread_id, parent_history_mode)
                 .await?
@@ -874,6 +921,12 @@ impl AgentControl {
                     ))
                 })?;
 
+        #[cfg(test)]
+        state.record_startup_before_delivery_for_tests(
+            "fork-history-ready",
+            Some(parent_thread_id),
+            /*thread_id*/ None,
+        );
         let selected_capability_roots = forked_rollout_items
             .iter()
             .find_map(|item| {
@@ -1058,6 +1111,12 @@ impl AgentControl {
         let mut thread_extension_init = ExtensionDataInit::new();
         thread_extension_init.insert(selected_capability_roots);
 
+        #[cfg(test)]
+        state.record_startup_before_delivery_for_tests(
+            "fork-dispatch",
+            Some(parent_thread_id),
+            /*thread_id*/ None,
+        );
         state
             .fork_thread_with_source(
                 config.clone(),
@@ -1159,6 +1218,7 @@ impl AgentControl {
         session_source: SessionSource,
     ) -> CodexResult<(ThreadId, MultiAgentVersion)> {
         let state = self.upgrade()?;
+        let transition = self.transitions.lock(thread_id).await;
         let stored_thread = state
             .read_stored_thread(ReadThreadParams {
                 thread_id,
@@ -1225,6 +1285,7 @@ impl AgentControl {
                 config: config.clone(),
                 initial_history,
                 agent_control: self.clone(),
+                agent_transition: transition.clone(),
                 session_source,
                 parent_thread_id,
                 environment_selections: None,
@@ -1235,7 +1296,12 @@ impl AgentControl {
             .await?;
         let mut agent_metadata = agent_metadata;
         agent_metadata.agent_id = Some(resumed_thread.thread_id);
-        reservation.commit(agent_metadata.clone());
+        state
+            .with_current_runtime(thread_id, &resumed_thread.thread, || {
+                reservation.commit(agent_metadata.clone());
+            })
+            .await
+            .ok_or(CodexErr::ThreadNotFound(thread_id))?;
         // Resumed threads are re-registered in-memory and need the same listener
         // attachment path as freshly spawned threads.
         state.notify_thread_created(resumed_thread.thread_id);

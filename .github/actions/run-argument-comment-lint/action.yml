@@ -22,7 +22,7 @@ runs:
       shell: bash
       run: |
         sudo DEBIAN_FRONTEND=noninteractive apt-get update
-        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libdbus-1-dev libcap-dev
 
     - name: Run argument comment lint on codex-rs via Bazel
       if: ${{ runner.os != 'Windows' }}

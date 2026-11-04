@@ -1,0 +1,150 @@
+BuildBuddy key unavailable; using local Bazel configuration.
+INFO: Invocation ID: 937805a3-9422-483a-b054-cb6764e704e9
+Computing main repo mapping: 
+WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+Computing main repo mapping: 
+Loading: 
+Loading: 3 packages loaded
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (9 packages loaded, 8 targets configured)
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (9 packages loaded, 8 targets configured)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (76 packages loaded, 455 targets configured)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (137 packages loaded, 1783 targets configured)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (178 packages loaded, 3524 targets configured)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (185 packages loaded, 3773 targets configured)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (191 packages loaded, 4955 targets configured)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (201 packages loaded, 6750 targets configured)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (202 packages loaded, 6752 targets configured)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (202 packages loaded, 6752 targets configured)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (208 packages loaded, 7319 targets configured)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (216 packages loaded, 8705 targets configured)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (219 packages loaded, 13173 targets configured)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (227 packages loaded, 21630 targets configured)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (229 packages loaded, 24635 targets configured)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (230 packages loaded, 35312 targets configured, 149 aspect applications)
+
+Analyzing: target //codex-rs/utils/yaml:yaml-unit-tests (231 packages loaded, 35715 targets configured, 151 aspect applications)
+
+INFO: Analyzed target //codex-rs/utils/yaml:yaml-unit-tests (232 packages loaded, 35864 targets configured, 151 aspect applications).
+[92 / 627] Writing repo mapping manifest for @@rules_rs++crate+crates__quote-1.0.45//:_bs_ [for tool]; 0s local ... (10 actions, 6 running)
+[248 / 1,516] Action external/llvm+/runtimes/glibc/build/c.s; 0s disk-cache, linux-sandbox ... (8 actions, 4 running)
+[430 / 1,520] Action external/llvm+/runtimes/glibc/build/c.s [for tool]; 1s disk-cache, linux-sandbox ... (28 actions, 4 running)
+[455 / 1,520] Copying files to directory external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory [for tool]; 0s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[469 / 1,520] Compiling libcxx/src/filesystem/directory_iterator.cpp [for tool]; 0s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[476 / 1,520] Compiling libcxx/src/filesystem/directory_iterator.cpp [for tool]; 1s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[490 / 1,520] Compiling libcxx/src/filesystem/directory_iterator.cpp [for tool]; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[499 / 1,520] Compiling libcxx/src/filesystem/directory_iterator.cpp [for tool]; 4s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[512 / 1,520] Compiling libcxx/src/filesystem/directory_iterator.cpp [for tool]; 5s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[525 / 1,520] Compiling libcxx/src/algorithm.cpp [for tool]; 4s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[533 / 1,520] Compiling libcxx/src/algorithm.cpp [for tool]; 5s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[555 / 1,520] Compiling libcxx/src/algorithm.cpp [for tool]; 2s disk-cache, linux-sandbox ... (29 actions, 4 running)
+[564 / 1,520] Compiling libcxx/src/algorithm.cpp [for tool]; 3s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[584 / 1,520] Compiling libcxx/src/algorithm.cpp [for tool]; 4s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[596 / 1,520] Compiling libcxx/src/filesystem/directory_entry.cpp [for tool]; 3s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[614 / 1,520] Compiling libcxxabi/src/cxa_demangle.cpp [for tool]; 1s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[619 / 1,520] Compiling libcxxabi/src/cxa_demangle.cpp [for tool]; 3s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[626 / 1,520] Compiling libcxxabi/src/cxa_demangle.cpp [for tool]; 4s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[627 / 1,520] Compiling libcxx/src/filesystem/directory_iterator.cpp; 3s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[632 / 1,520] Compiling libcxx/src/filesystem/directory_iterator.cpp; 4s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[647 / 1,520] Compiling libcxx/src/filesystem/directory_iterator.cpp; 5s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[664 / 1,520] Compiling libcxx/src/filesystem/filesystem_clock.cpp [for tool]; 0s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[673 / 1,520] Compiling libcxx/src/filesystem/filesystem_clock.cpp [for tool]; 1s disk-cache, linux-sandbox ... (29 actions, 4 running)
+[675 / 1,520] Compiling libcxx/src/filesystem/filesystem_clock.cpp [for tool]; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[680 / 1,520] Compiling libcxx/src/filesystem/directory_entry.cpp; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[682 / 1,520] Compiling libcxx/src/filesystem/directory_entry.cpp; 3s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[697 / 1,520] Compiling libcxx/src/filesystem/directory_entry.cpp; 4s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[710 / 1,520] Compiling libcxx/src/memory.cpp [for tool]; 1s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[731 / 1,520] Compiling libcxx/src/print.cpp [for tool]; 1s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[735 / 1,520] Compiling libcxx/src/print.cpp [for tool]; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[743 / 1,520] Compiling libcxx/src/chrono.cpp [for tool]; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[754 / 1,520] Compiling libcxx/src/chrono.cpp [for tool]; 3s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[766 / 1,520] Compiling libcxx/src/string.cpp [for tool]; 0s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[771 / 1,520] Compiling libcxx/src/string.cpp [for tool]; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[782 / 1,520] Compiling libcxx/src/locale.cpp [for tool]; 2s disk-cache, linux-sandbox ... (30 actions, 3 running)
+[791 / 1,520] Compiling libcxx/src/locale.cpp [for tool]; 3s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[793 / 1,520] Compiling libcxx/src/locale.cpp [for tool]; 4s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[798 / 1,520] Compiling libcxx/src/locale.cpp [for tool]; 5s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[802 / 1,520] Compiling libcxx/src/locale.cpp [for tool]; 6s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[818 / 1,520] Compiling libcxx/src/locale.cpp [for tool]; 7s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[821 / 1,520] Compiling libcxx/src/locale.cpp [for tool]; 9s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[826 / 1,520] Compiling libcxx/src/ios.cpp [for tool]; 1s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[839 / 1,520] Compiling libcxx/src/ios.instantiations.cpp [for tool]; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[848 / 1,520] Compiling libcxx/src/ios.instantiations.cpp [for tool]; 3s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[860 / 1,520] Compiling libcxx/src/locale.cpp; 1s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[877 / 1,520] Compiling libcxx/src/locale.cpp; 3s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[882 / 1,520] Compiling libcxx/src/locale.cpp; 4s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[898 / 1,520] Compiling libcxx/src/locale.cpp; 5s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[923 / 1,520] Compiling libcxx/src/locale.cpp; 6s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[946 / 1,520] Compiling libcxx/src/locale.cpp; 7s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[974 / 1,520] Compiling libcxx/src/locale.cpp; 8s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,008 / 1,520] Compiling libcxx/src/locale.cpp; 9s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,040 / 1,520] Compiling libcxx/src/filesystem/path.cpp [for tool]; 1s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,084 / 1,520] Compiling libcxx/src/iostream.cpp; 0s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,132 / 1,520] Compiling libcxx/src/iostream.cpp; 1s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,176 / 1,520] Compiling libcxx/src/hash.cpp [for tool]; 0s disk-cache, linux-sandbox ... (29 actions, 4 running)
+[1,226 / 1,520] Compiling libcxx/src/ios.instantiations.cpp; 0s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[1,244 / 1,520] Compiling libcxx/src/ios.instantiations.cpp; 1s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,276 / 1,520] Compiling libcxx/src/ios.instantiations.cpp; 2s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[1,285 / 1,520] Compiling libcxx/src/ios.instantiations.cpp; 3s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,291 / 1,520] Compiling libcxx/src/algorithm.cpp; 2s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[1,300 / 1,520] Compiling libcxx/src/algorithm.cpp; 3s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[1,301 / 1,520] Compiling libcxx/src/algorithm.cpp; 4s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,308 / 1,520] Compiling libcxx/src/filesystem/filesystem_clock.cpp; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,313 / 1,520] Compiling libcxx/src/filesystem/path.cpp; 2s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[1,320 / 1,520] Compiling libcxx/src/ios.cpp; 0s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,328 / 1,520] Compiling libcxx/src/print.cpp; 1s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,337 / 1,520] Compiling libcxx/src/print.cpp; 2s disk-cache, linux-sandbox ... (30 actions, 3 running)
+[1,346 / 1,520] Compiling libcxx/src/string.cpp; 0s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[1,354 / 1,520] Compiling libcxx/src/string.cpp; 1s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,357 / 1,520] Compiling libcxx/src/atomic.cpp; 1s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,363 / 1,520] Compiling libcxx/src/atomic.cpp; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,370 / 1,520] Compiling libcxx/src/condition_variable.cpp; 1s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[1,376 / 1,520] Compiling libcxx/src/thread.cpp; 0s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,396 / 1,520] Compiling libcxx/src/thread.cpp; 1s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,403 / 1,520] Compiling libcxx/src/print.cpp [for tool]; 1s disk-cache, linux-sandbox ... (29 actions, 4 running)
+[1,405 / 1,520] Compiling libcxx/src/print.cpp [for tool]; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,420 / 1,520] Compiling libcxx/src/filesystem/operations.cpp [for tool]; 2s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,424 / 1,520] Compiling libcxx/src/filesystem/operations.cpp [for tool]; 4s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[1,428 / 1,520] Compiling libcxx/src/filesystem/directory_iterator.cpp [for tool]; 2s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[1,431 / 1,520] Compiling libcxx/src/filesystem/directory_iterator.cpp [for tool]; 3s disk-cache, linux-sandbox ... (30 actions, 5 running)
+[1,434 / 1,520] Compiling libcxx/src/ostream.cpp [for tool]; 2s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[1,436 / 1,520] Compiling libcxx/src/locale.cpp [for tool]; 2s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[1,437 / 1,520] Compiling libcxx/src/locale.cpp [for tool]; 3s disk-cache, linux-sandbox ... (30 actions, 4 running)
+[1,441 / 1,520] Compiling libcxx/src/locale.cpp [for tool]; 4s disk-cache, linux-sandbox ... (29 actions, 5 running)
+[1,449 / 1,520] Compiling libcxx/src/locale.cpp [for tool]; 6s disk-cache, linux-sandbox ... (21 actions, 5 running)
+[1,456 / 1,520] Compiling libcxx/src/locale.cpp [for tool]; 7s disk-cache, linux-sandbox ... (16 actions, 4 running)
+[1,462 / 1,520] Compiling libcxx/src/locale.cpp [for tool]; 8s disk-cache, linux-sandbox ... (10 actions, 4 running)
+[1,470 / 1,520] Compiling libcxx/src/string.cpp [for tool]; 1s disk-cache, linux-sandbox ... (4 actions, 3 running)
+[1,483 / 1,520] Compiling Rust rlib @@rules_rs++crate+crates__encoding_rs-0.8.35//:encoding_rs v0.8.35 (22 files); 0s disk-cache, linux-sandbox ... (10 actions, 3 running)
+[1,487 / 1,520] Compiling Rust rlib @@rules_rs++crate+crates__encoding_rs-0.8.35//:encoding_rs v0.8.35 (22 files); 1s disk-cache, linux-sandbox ... (7 actions, 5 running)
+[1,497 / 1,520] Compiling Rust rlib @rules_rust//cargo/private/cargo_build_script_runner:cargo_build_script_runner (2 files) [for tool]; 1s disk-cache, linux-sandbox ... (2 actions, 1 running)
+[1,501 / 1,520] [Prepa] runfiles for @@rules_rs++rules_rust+rules_rust//cargo/private/cargo_build_script_runner:runner
+[1,507 / 1,520] Compiling Rust rlib @@rules_rs++crate+crates__serde_core-1.0.228//:serde_core v1.0.228 (20 files); 1s disk-cache, linux-sandbox ... (3 actions running)
+[1,509 / 1,520] Compiling Rust rlib @@rules_rs++crate+crates__serde_core-1.0.228//:serde_core v1.0.228 (20 files); 2s disk-cache, linux-sandbox ... (2 actions running)
+[1,512 / 1,520] Compiling Rust rlib @@rules_rs++crate+crates__syn-2.0.117//:syn v2.0.117 (97 files) [for tool]; 1s disk-cache, linux-sandbox
+[1,513 / 1,520] [Prepa] Compiling Rust proc-macro @@rules_rs++crate+crates__serde_derive-1.0.228//:serde_derive v1.0.228 (28 files) [for tool]
+[1,513 / 1,520] Compiling Rust proc-macro @@rules_rs++crate+crates__serde_derive-1.0.228//:serde_derive v1.0.228 (28 files) [for tool]; 1s disk-cache, linux-sandbox
+[1,514 / 1,520] [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__serde-1.0.228//:serde v1.0.228 (25 files)
+[1,516 / 1,520] Compiling Rust rlib @@rules_rs++crate+crates__granit-parser-2.1.0//:granit-parser v2.1.0 (75 files); 0s disk-cache, linux-sandbox
+[1,517 / 1,520] Compiling Rust rlib @@rules_rs++crate+crates__serde-saphyr-2.1.0//:serde-saphyr v2.1.0 (61 files); 0s disk-cache, linux-sandbox
+[1,519 / 1,520] [Prepa] runfiles for //codex-rs/utils/yaml:yaml-unit-tests
+INFO: Found 1 test target...
+Target //codex-rs/utils/yaml:yaml-unit-tests up-to-date:
+  bazel-bin/codex-rs/utils/yaml/yaml-unit-tests
+INFO: Elapsed time: 148.655s, Critical Path: 60.80s
+INFO: 1521 processes: 465 internal, 1057 linux-sandbox.
+INFO: Build completed successfully, 1521 total actions

@@ -1,0 +1,77 @@
+{
+  "source_commit": "9e1521d2ac6d171a0c307e2ae5a3b7a1ee6cacd0",
+  "tree": "9c13c3ffbbce2b40ec9d86f82cff129d173040a2",
+  "parent": "45f1e7d471c9e0720ce2c149da92629f785a01a4",
+  "changed_files": 11,
+  "complete_leaf_count": 9251,
+  "preimages": [
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "expected": "4df7761fa8ac7b838b81b7ac376ccf0d8d2123ba",
+      "actual": "4df7761fa8ac7b838b81b7ac376ccf0d8d2123ba",
+      "match": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_tests.rs",
+      "expected": "fbaeeb9f39b4d168c5e8fd3de6f1e9750901bbbe",
+      "actual": "fbaeeb9f39b4d168c5e8fd3de6f1e9750901bbbe",
+      "match": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/OBJECTIVE_SENDER.md",
+      "expected": "336e9c29e6192c058f8e2ebe8dfcd1866025a632",
+      "actual": "336e9c29e6192c058f8e2ebe8dfcd1866025a632",
+      "match": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition.rs",
+      "expected": "343169894cbb0d3c28dbc1ab919db485c124c3c9",
+      "actual": "343169894cbb0d3c28dbc1ab919db485c124c3c9",
+      "match": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "expected": "5e3c5fba361c30071afec7c969f5720b624bb662",
+      "actual": "5e3c5fba361c30071afec7c969f5720b624bb662",
+      "match": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_fixture.rs",
+      "expected": "ba41f5a812d08c7384a6f322401c785d8b3acd4e",
+      "actual": "ba41f5a812d08c7384a6f322401c785d8b3acd4e",
+      "match": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
+      "expected": "8f9ab9d173b4a7827b91e17ba10f4f6152bd1808",
+      "actual": "8f9ab9d173b4a7827b91e17ba10f4f6152bd1808",
+      "match": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_notes_tests.rs",
+      "expected": "9a24f6aaae3e4dece623e5ac501929cc604aa221",
+      "actual": "9a24f6aaae3e4dece623e5ac501929cc604aa221",
+      "match": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_sender_host_tests.rs",
+      "expected": "044c831c3af09f2e9f9cfe5bc0b5976ac7b44768",
+      "actual": "044c831c3af09f2e9f9cfe5bc0b5976ac7b44768",
+      "match": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/PRODUCTION_COMPOSITION.md",
+      "expected": "2d0b530728f017b639718fe3e03b02ad068840c8",
+      "actual": "2d0b530728f017b639718fe3e03b02ad068840c8",
+      "match": true
+    },
+    {
+      "path": ".github/workflows/hepta-objective-owner.yml",
+      "expected": "f661e8d7acaa3c1ea25a14baad1f10c9d5a479a4",
+      "actual": "f661e8d7acaa3c1ea25a14baad1f10c9d5a479a4",
+      "match": true
+    }
+  ],
+  "all_leaf_modes_and_blobs_match": true,
+  "qualification": "327 original memory tests pass plus original 8 skipped; scoped just fix and fmt pass on recorded original-source overlay. Agentd tests not yet executed."
+}

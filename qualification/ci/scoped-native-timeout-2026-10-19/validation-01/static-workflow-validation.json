@@ -1,0 +1,24 @@
+{
+  "workflow_before_sha256": "948571f133ca44df83f97aa81045458ca5dbb74bd10bb675d557283fefda302f",
+  "workflow_after_sha256": "96eb7f9ea698ea353c757c3ba9f4a82a3ea448b45f676a208e09187748f4b9e3",
+  "parsed_difference_only_two_approved_fields": true,
+  "workflow_executor_invocations": 1,
+  "child_argv_unchanged_after_removing_explicit_timeout": true,
+  "inner_seconds": 3600,
+  "outer_seconds": 4500,
+  "overhead_budget_seconds": 900,
+  "always_upload_unchanged": true,
+  "required_fanin_unchanged": true,
+  "scope_unchanged_and_workflow_change_selects_full_repo": {
+    "effects": true,
+    "inference": true,
+    "learning": true,
+    "lifecycle": true,
+    "objective": true,
+    "native": true,
+    "derived": true,
+    "full_repo": true
+  },
+  "python_executor_and_selected_tests_equal_base": true,
+  "bash_blocks_parsed": 9
+}

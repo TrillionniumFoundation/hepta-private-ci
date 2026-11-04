@@ -111,6 +111,10 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/hepta-command-records"
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/scope-tests.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_ci_scope
+          # Exact-checkout, fail-closed adversarial test-only ledger wiring regression.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/bazel-testonly-ledger.json" --minimum-tests 5 -- python3 -m unittest -v scripts.tests.test_hepta_bazel_legacy_ledger_qualification
+          # Verify hosted-macOS resource limits are scheduling-only and cannot mask test failures.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/macos-bazel-caps.json" --minimum-tests 5 -- python3 -m unittest -v scripts.tests.test_hepta_bazel_macos_resource_caps
           args=(--head "$SOURCE_SHA" --github-output "$GITHUB_OUTPUT")
           if [ "$FULL_SCOPE" = "true" ]; then
             args+=(--full)
@@ -131,7 +135,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config libdbus-1-dev
           sudo sysctl -w kernel.unprivileged_userns_clone=1
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0

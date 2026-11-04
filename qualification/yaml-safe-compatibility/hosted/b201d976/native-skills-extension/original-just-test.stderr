@@ -1,0 +1,2055 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+info: syncing channel updates for 1.95.0-x86_64-unknown-linux-gnu
+info: latest update on 2026-04-16 for version 1.95.0 (59807616e 2026-04-14)
+info: downloading 3 components
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/crossterm`
+From https://github.com/openai-oss-forks/crossterm
+ * [new ref]         45fecb9508105988f42fe6ff0441783ed3717f92 -> refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/tokio-tungstenite`
+From https://github.com/openai-oss-forks/tokio-tungstenite
+ * [new ref]         0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186 -> refs/commit/0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186
+[1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+From https://github.com/openai-oss-forks/tungstenite-rs
+ * [new ref]         4fffad30fe373adbdcffab9545e9e9bf4f2fc19f -> refs/commit/4fffad30fe373adbdcffab9545e9e9bf4f2fc19f
+[1m[92m    Updating[0m crates.io index
+[1m[92m    Updating[0m git repository `https://github.com/dzbarsky/rules_rust`
+From https://github.com/dzbarsky/rules_rust
+ * [new ref]             b56cbaa8465e74127f1ea216f813cd377295ad81 -> refs/commit/b56cbaa8465e74127f1ea216f813cd377295ad81
+[1m[92m    Updating[0m git repository `https://github.com/helix-editor/nucleo.git`
+From https://github.com/helix-editor/nucleo
+ * [new ref]         4253de9faabb4e5c6d81d946a5e35a90f87347ee -> refs/commit/4253de9faabb4e5c6d81d946a5e35a90f87347ee
+[1m[92m Downloading[0m crates ...
+[1m[92m  Downloaded[0m aws-smithy-observability v0.1.5
+[1m[92m  Downloaded[0m bit-vec v0.8.0
+[1m[92m  Downloaded[0m actix-codec v0.5.2
+[1m[92m  Downloaded[0m cfg_aliases v0.1.1
+[1m[92m  Downloaded[0m cpufeatures v0.2.17
+[1m[92m  Downloaded[0m chacha20 v0.9.1
+[1m[92m  Downloaded[0m crypto-common v0.2.2
+[1m[92m  Downloaded[0m crossbeam-deque v0.8.6
+[1m[92m  Downloaded[0m concurrent-queue v2.5.0
+[1m[92m  Downloaded[0m derive_more-impl v1.0.0
+[1m[92m  Downloaded[0m crypto_secretbox v0.1.1
+[1m[92m  Downloaded[0m aws-smithy-async v1.2.14
+[1m[92m  Downloaded[0m block-buffer v0.12.0
+[1m[92m  Downloaded[0m dirs v6.0.0
+[1m[92m  Downloaded[0m display_container v0.9.0
+[1m[92m  Downloaded[0m dirs-next v2.0.0
+[1m[92m  Downloaded[0m errno v0.3.14
+[1m[92m  Downloaded[0m equivalent v1.0.2
+[1m[92m  Downloaded[0m faster-hex v0.10.0
+[1m[92m  Downloaded[0m fixedbitset v0.5.7
+[1m[92m  Downloaded[0m fixed_decimal v0.7.2
+[1m[92m  Downloaded[0m gix-lock v21.0.2
+[1m[92m  Downloaded[0m gix-revwalk v0.29.0
+[1m[92m  Downloaded[0m http-range-header v0.4.2
+[1m[92m  Downloaded[0m http v0.2.12
+[1m[92m  Downloaded[0m lazy_static v1.5.0
+[1m[92m  Downloaded[0m num-complex v0.4.6
+[1m[92m  Downloaded[0m openssl v0.10.75
+[1m[92m  Downloaded[0m powerfmt v0.2.0
+[1m[92m  Downloaded[0m pin-utils v0.1.0
+[1m[92m  Downloaded[0m proc-macro-crate v3.4.0
+[1m[92m  Downloaded[0m psl-types v2.0.11
+[1m[92m  Downloaded[0m quinn v0.11.9
+[1m[92m  Downloaded[0m sha1 v0.10.6
+[1m[92m  Downloaded[0m sha2 v0.11.0
+[1m[92m  Downloaded[0m quickcheck v1.1.0
+[1m[92m  Downloaded[0m serde_derive_internals v0.29.1
+[1m[92m  Downloaded[0m strong_hash_derive v0.1.0
+[1m[92m  Downloaded[0m thiserror-impl-no-std v2.0.2
+[1m[92m  Downloaded[0m tinyvec_macros v0.1.1
+[1m[92m  Downloaded[0m termcolor v1.4.1
+[1m[92m  Downloaded[0m time-macros v0.2.27
+[1m[92m  Downloaded[0m yasna v0.5.2
+[1m[92m  Downloaded[0m unicode-bom v2.0.3
+[1m[92m  Downloaded[0m tree-sitter-language v0.1.7
+[1m[92m  Downloaded[0m zvariant_utils v2.1.0
+[1m[92m  Downloaded[0m windows-implement v0.58.0
+[1m[92m  Downloaded[0m zmij v1.0.19
+[1m[92m  Downloaded[0m zstd v0.13.4
+[1m[92m  Downloaded[0m windows-core v0.58.0
+[1m[92m  Downloaded[0m zerofrom-derive v0.1.6
+[1m[92m  Downloaded[0m zvariant_derive v4.2.0
+[1m[92m  Downloaded[0m zune-core v0.5.1
+[1m[92m  Downloaded[0m windows-interface v0.58.0
+[1m[92m  Downloaded[0m zune-jpeg v0.5.12
+[1m[92m  Downloaded[0m zvariant v4.2.0
+[1m[92m  Downloaded[0m unic-langid-impl v0.9.6
+[1m[92m  Downloaded[0m x509-parser v0.18.1
+[1m[92m  Downloaded[0m webpki-root-certs v1.0.10
+[1m[92m  Downloaded[0m zlib-rs v0.5.5
+[1m[92m  Downloaded[0m zbus v4.4.0
+[1m[92m  Downloaded[0m logos v0.15.1
+[1m[92m  Downloaded[0m vcpkg v0.2.15
+[1m[92m  Downloaded[0m unicode-width v0.2.1
+[1m[92m  Downloaded[0m tree-sitter-powershell v0.26.4
+[1m[92m  Downloaded[0m sha3 v0.10.9
+[1m[92m  Downloaded[0m zerocopy v0.8.37
+[1m[92m  Downloaded[0m pxfm v0.1.27
+[1m[92m  Downloaded[0m webpki-roots v1.0.10
+[1m[92m  Downloaded[0m starlark v0.14.2
+[1m[92m  Downloaded[0m aws-lc-sys v0.45.0
+[1m[92m  Downloaded[0m tree-sitter-bash v0.25.1
+[1m[92m  Downloaded[0m rust-embed v8.11.0
+[1m[92m  Downloaded[0m tracing v0.1.44
+[1m[92m  Downloaded[0m winnow v1.0.4
+[1m[92m  Downloaded[0m winnow v0.7.14
+[1m[92m  Downloaded[0m tracing-opentelemetry v0.32.1
+[1m[92m  Downloaded[0m ureq v3.1.4
+[1m[92m  Downloaded[0m tree-sitter v0.25.10
+[1m[92m  Downloaded[0m tower-http v0.6.8
+[1m[92m  Downloaded[0m typenum v1.20.0
+[1m[92m  Downloaded[0m sha1-checked v0.10.0
+[1m[92m  Downloaded[0m zstd-safe v7.4.0
+[1m[92m  Downloaded[0m x25519-dalek v2.0.1
+[1m[92m  Downloaded[0m unicode-segmentation v1.12.0
+[1m[92m  Downloaded[0m zerotrie v0.2.4
+[1m[92m  Downloaded[0m ring v0.17.14
+[1m[92m  Downloaded[0m zeroize v1.8.2
+[1m[92m  Downloaded[0m yansi v1.0.1
+[1m[92m  Downloaded[0m uuid v1.20.0
+[1m[92m  Downloaded[0m url v2.5.8
+[1m[92m  Downloaded[0m unicode-bidi v0.3.18
+[1m[92m  Downloaded[0m tokio v1.52.3
+[1m[92m  Downloaded[0m ts-rs v11.1.0
+[1m[92m  Downloaded[0m tracing-core v0.1.36
+[1m[92m  Downloaded[0m zbus_macros v4.4.0
+[1m[92m  Downloaded[0m yoke v0.8.2
+[1m[92m  Downloaded[0m writeable v0.6.2
+[1m[92m  Downloaded[0m zerovec v0.11.6
+[1m[92m  Downloaded[0m weezl v0.1.12
+[1m[92m  Downloaded[0m walkdir v2.5.0
+[1m[92m  Downloaded[0m utf8_iter v1.0.4
+[1m[92m  Downloaded[0m ureq-proto v0.5.3
+[1m[92m  Downloaded[0m zlib-rs v0.6.3
+[1m[92m  Downloaded[0m unicode-width v0.1.14
+[1m[92m  Downloaded[0m yoke-derive v0.8.2
+[1m[92m  Downloaded[0m linux-raw-sys v0.12.1
+[1m[92m  Downloaded[0m xmlparser v0.13.6
+[1m[92m  Downloaded[0m whoami v2.1.2
+[1m[92m  Downloaded[0m webbrowser v1.2.4
+[1m[92m  Downloaded[0m wait-timeout v0.2.1
+[1m[92m  Downloaded[0m utf8parse v0.2.2
+[1m[92m  Downloaded[0m protoc-bin-vendored-macos-aarch_64 v3.2.0
+[1m[92m  Downloaded[0m protoc-bin-vendored-macos-x86_64 v3.2.0
+[1m[92m  Downloaded[0m unarray v0.1.4
+[1m[92m  Downloaded[0m tonic v0.14.3
+[1m[92m  Downloaded[0m starlark_syntax v0.14.2
+[1m[92m  Downloaded[0m zerofrom v0.1.6
+[1m[92m  Downloaded[0m zbus_names v3.0.0
+[1m[92m  Downloaded[0m xdg-home v1.3.0
+[1m[92m  Downloaded[0m want v0.3.1
+[1m[92m  Downloaded[0m urlencoding v2.1.3
+[1m[92m  Downloaded[0m untrusted v0.9.0
+[1m[92m  Downloaded[0m unicode-normalization v0.1.25
+[1m[92m  Downloaded[0m unic-langid v0.9.6
+[1m[92m  Downloaded[0m type-map v0.5.1
+[1m[92m  Downloaded[0m windows_x86_64_gnu v0.52.6
+[1m[92m  Downloaded[0m rmcp v3.1.3
+[1m[92m  Downloaded[0m wildmatch v2.6.1
+[1m[92m  Downloaded[0m zstd-sys v2.1.2+zstd.1.5.7
+[1m[92m  Downloaded[0m which v8.0.0
+[1m[92m  Downloaded[0m unicode-properties v0.1.4
+[1m[92m  Downloaded[0m toml_edit v0.23.10+spec-1.0.0
+[1m[92m  Downloaded[0m tokio-test v0.4.5
+[1m[92m  Downloaded[0m tokio-native-tls v0.3.1
+[1m[92m  Downloaded[0m zerovec-derive v0.11.3
+[1m[92m  Downloaded[0m wildcard v0.3.0
+[1m[92m  Downloaded[0m thread_local v1.1.9
+[1m[92m  Downloaded[0m zeroize_derive v1.4.3
+[1m[92m  Downloaded[0m windows-strings v0.1.0
+[1m[92m  Downloaded[0m utf-8 v0.7.6
+[1m[92m  Downloaded[0m untrusted v0.7.1
+[1m[92m  Downloaded[0m tonic-prost-build v0.14.3
+[1m[92m  Downloaded[0m rama-http v0.3.0-alpha.4
+[1m[92m  Downloaded[0m quick-xml v0.41.0
+[1m[92m  Downloaded[0m vsimd v0.8.0
+[1m[92m  Downloaded[0m unicode-xid v0.2.6
+[1m[92m  Downloaded[0m unicase v2.9.0
+[1m[92m  Downloaded[0m uname v0.1.1
+[1m[92m  Downloaded[0m try-lock v0.2.5
+[1m[92m  Downloaded[0m tracing-log v0.2.0
+[1m[92m  Downloaded[0m subtle v2.6.1
+[1m[92m  Downloaded[0m sqlx v0.9.0
+[1m[92m  Downloaded[0m proptest v1.9.0
+[1m[92m  Downloaded[0m windows-targets v0.52.6
+[1m[92m  Downloaded[0m windows-result v0.2.0
+[1m[92m  Downloaded[0m version_check v0.9.5
+[1m[92m  Downloaded[0m universal-hash v0.5.1
+[1m[92m  Downloaded[0m unicode-ident v1.0.22
+[1m[92m  Downloaded[0m tower v0.5.3
+[1m[92m  Downloaded[0m toml_edit v0.24.0+spec-1.1.0
+[1m[92m  Downloaded[0m toml v0.9.11+spec-1.1.0
+[1m[92m  Downloaded[0m time v0.3.47
+[1m[92m  Downloaded[0m sqlx-sqlite v0.9.0
+[1m[92m  Downloaded[0m reqwest v0.12.28
+[1m[92m  Downloaded[0m protoc-bin-vendored-linux-x86_64 v3.2.0
+[1m[92m  Downloaded[0m regex-automata v0.4.13
+[1m[92m  Downloaded[0m protoc-bin-vendored-linux-aarch_64 v3.2.0
+[1m[92m  Downloaded[0m rama-http-core v0.3.0-alpha.4
+[1m[92m  Downloaded[0m tracing-subscriber v0.3.22
+[1m[92m  Downloaded[0m tracing-attributes v0.1.31
+[1m[92m  Downloaded[0m tracing-appender v0.2.4
+[1m[92m  Downloaded[0m tower-service v0.3.3
+[1m[92m  Downloaded[0m protoc-bin-vendored-win32 v3.2.0
+[1m[92m  Downloaded[0m tonic-prost v0.14.3
+[1m[92m  Downloaded[0m tonic-build v0.14.3
+[1m[92m  Downloaded[0m toml_writer v1.0.6+spec-1.1.0
+[1m[92m  Downloaded[0m tinyvec v1.10.0
+[1m[92m  Downloaded[0m tinystr v0.8.3
+[1m[92m  Downloaded[0m tiny_http v0.12.0
+[1m[92m  Downloaded[0m thiserror-no-std v2.0.2
+[1m[92m  Downloaded[0m thiserror v1.0.69
+[1m[92m  Downloaded[0m protoc-bin-vendored-linux-x86_32 v3.2.0
+[1m[92m  Downloaded[0m tempfile v3.27.0
+[1m[92m  Downloaded[0m protoc-bin-vendored-linux-ppcle_64 v3.2.0
+[1m[92m  Downloaded[0m sync_wrapper v1.0.2
+[1m[92m  Downloaded[0m syn v3.0.3
+[1m[92m  Downloaded[0m syn v2.0.117
+[1m[92m  Downloaded[0m syn v1.0.109
+[1m[92m  Downloaded[0m smallvec v1.15.1
+[1m[92m  Downloaded[0m simple_asn1 v0.6.4
+[1m[92m  Downloaded[0m serde_with v3.17.0
+[1m[92m  Downloaded[0m rustls v0.23.46
+[1m[92m  Downloaded[0m rustix v1.1.4
+[1m[92m  Downloaded[0m typeid v1.0.3
+[1m[92m  Downloaded[0m triomphe v0.1.15
+[1m[92m  Downloaded[0m tower-layer v0.3.3
+[1m[92m  Downloaded[0m toml_datetime v0.7.5+spec-1.1.0
+[1m[92m  Downloaded[0m toml v0.5.11
+[1m[92m  Downloaded[0m tokio-util v0.7.18
+[1m[92m  Downloaded[0m tokio-rustls v0.26.4
+[1m[92m  Downloaded[0m tokio-graceful v0.2.2
+[1m[92m  Downloaded[0m time-core v0.1.8
+[1m[92m  Downloaded[0m thiserror-impl v1.0.69
+[1m[92m  Downloaded[0m textwrap v0.11.0
+[1m[92m  Downloaded[0m sys-locale v0.3.2
+[1m[92m  Downloaded[0m synstructure v0.13.2
+[1m[92m  Downloaded[0m strsim v0.10.0
+[1m[92m  Downloaded[0m sqlx-postgres v0.9.0
+[1m[92m  Downloaded[0m sqlx-macros-core v0.9.0
+[1m[92m  Downloaded[0m signature v2.2.0
+[1m[92m  Downloaded[0m serde_urlencoded v0.7.1
+[1m[92m  Downloaded[0m rmcp-macros v3.1.3
+[1m[92m  Downloaded[0m reqwest v0.13.4
+[1m[92m  Downloaded[0m ts-rs-macros v11.1.0
+[1m[92m  Downloaded[0m toml_parser v1.1.3+spec-1.1.0
+[1m[92m  Downloaded[0m tokio-stream v0.1.18
+[1m[92m  Downloaded[0m tokio-macros v2.7.0
+[1m[92m  Downloaded[0m starlark_derive v0.14.2
+[1m[92m  Downloaded[0m smol_str v0.3.5
+[1m[92m  Downloaded[0m semver v1.0.27
+[1m[92m  Downloaded[0m seccompiler v0.5.0
+[1m[92m  Downloaded[0m rama-core v0.3.0-alpha.4
+[1m[92m  Downloaded[0m thiserror-impl v2.0.18
+[1m[92m  Downloaded[0m thiserror v2.0.18
+[1m[92m  Downloaded[0m starlark_map v0.14.2
+[1m[92m  Downloaded[0m spin v0.9.8
+[1m[92m  Downloaded[0m simd-adler32 v0.3.8
+[1m[92m  Downloaded[0m serial2 v0.2.33
+[1m[92m  Downloaded[0m sentry-tracing v0.46.1
+[1m[92m  Downloaded[0m scrypt v0.11.0
+[1m[92m  Downloaded[0m resolv-conf v0.7.6
+[1m[92m  Downloaded[0m regex v1.12.3
+[1m[92m  Downloaded[0m prost-derive v0.14.3
+[1m[92m  Downloaded[0m prost-build v0.14.3
+[1m[92m  Downloaded[0m parking_lot v0.12.5
+[1m[92m  Downloaded[0m moxcms v0.7.11
+[1m[92m  Downloaded[0m tagptr v0.2.0
+[1m[92m  Downloaded[0m strum_macros v0.28.0
+[1m[92m  Downloaded[0m strum v0.27.2
+[1m[92m  Downloaded[0m static_interner v0.1.2
+[1m[92m  Downloaded[0m static_assertions v1.1.0
+[1m[92m  Downloaded[0m sse-stream v0.2.5
+[1m[92m  Downloaded[0m sqlx-core v0.9.0
+[1m[92m  Downloaded[0m spki v0.7.3
+[1m[92m  Downloaded[0m socket2 v0.6.3
+[1m[92m  Downloaded[0m protoc-bin-vendored-linux-s390_64 v3.2.0
+[1m[92m  Downloaded[0m slab v0.4.12
+[1m[92m  Downloaded[0m serde_with_macros v3.17.0
+[1m[92m  Downloaded[0m potential_utf v0.1.4
+[1m[92m  Downloaded[0m termtree v0.5.1
+[1m[92m  Downloaded[0m take_mut v0.2.2
+[1m[92m  Downloaded[0m strum_macros v0.27.2
+[1m[92m  Downloaded[0m stable_deref_trait v1.2.1
+[1m[92m  Downloaded[0m sqlx-mysql v0.9.0
+[1m[92m  Downloaded[0m sorted_vector_map v0.2.1
+[1m[92m  Downloaded[0m socket2 v0.5.10
+[1m[92m  Downloaded[0m shlex v1.3.0
+[1m[92m  Downloaded[0m sharded-slab v0.1.7
+[1m[92m  Downloaded[0m sha1 v0.11.0
+[1m[92m  Downloaded[0m serde_repr v0.1.20
+[1m[92m  Downloaded[0m serde_json v1.0.149
+[1m[92m  Downloaded[0m serde v1.0.228
+[1m[92m  Downloaded[0m libsqlite3-sys v0.37.0
+[1m[92m  Downloaded[0m sentry-types v0.46.1
+[1m[92m  Downloaded[0m sentry-panic v0.46.1
+[1m[92m  Downloaded[0m sentry-contexts v0.46.1
+[1m[92m  Downloaded[0m sentry-actix v0.46.1
+[1m[92m  Downloaded[0m schemars_derive v0.8.22
+[1m[92m  Downloaded[0m schemars v0.9.0
+[1m[92m  Downloaded[0m schemafy_core v0.5.2
+[1m[92m  Downloaded[0m rustyline v14.0.0
+[1m[92m  Downloaded[0m rayon-core v1.13.0
+[1m[92m  Downloaded[0m rayon v1.11.0
+[1m[92m  Downloaded[0m rand v0.9.3
+[1m[92m  Downloaded[0m rama-socks5 v0.3.0-alpha.4
+[1m[92m  Downloaded[0m rama-net v0.3.0-alpha.4
+[1m[92m  Downloaded[0m pbkdf2 v0.12.2
+[1m[92m  Downloaded[0m opentelemetry-http v0.31.0
+[1m[92m  Downloaded[0m multimap v0.10.1
+[1m[92m  Downloaded[0m strsim v0.11.1
+[1m[92m  Downloaded[0m strong_hash v0.1.0
+[1m[92m  Downloaded[0m stringprep v0.1.5
+[1m[92m  Downloaded[0m streaming-iterator v0.1.9
+[1m[92m  Downloaded[0m similar v2.7.0
+[1m[92m  Downloaded[0m signal-hook-registry v1.4.8
+[1m[92m  Downloaded[0m sha2 v0.10.9
+[1m[92m  Downloaded[0m serde_path_to_error v0.1.20
+[1m[92m  Downloaded[0m serde_derive v1.0.228
+[1m[92m  Downloaded[0m sentry v0.46.1
+[1m[92m  Downloaded[0m self_cell v1.2.2
+[1m[92m  Downloaded[0m scopeguard v1.2.0
+[1m[92m  Downloaded[0m schemars_derive v1.2.1
+[1m[92m  Downloaded[0m schemars v1.2.1
+[1m[92m  Downloaded[0m rustls-webpki v0.103.16
+[1m[92m  Downloaded[0m rustls-pki-types v1.14.0
+[1m[92m  Downloaded[0m regex-lite v0.1.8
+[1m[92m  Downloaded[0m rcgen v0.14.7
+[1m[92m  Downloaded[0m rand_core v0.9.5
+[1m[92m  Downloaded[0m rand v0.10.1
+[1m[92m  Downloaded[0m rand v0.8.6
+[1m[92m  Downloaded[0m rama-utils v0.3.0-alpha.4
+[1m[92m  Downloaded[0m rama-udp v0.3.0-alpha.4
+[1m[92m  Downloaded[0m rama-tcp v0.3.0-alpha.4
+[1m[92m  Downloaded[0m radix_trie v0.2.1
+[1m[92m  Downloaded[0m quinn-proto v0.11.14
+[1m[92m  Downloaded[0m quick-error v2.0.1
+[1m[92m  Downloaded[0m percent-encoding v2.3.2
+[1m[92m  Downloaded[0m gix-path v0.11.2
+[1m[92m  Downloaded[0m sqlx-macros v0.9.0
+[1m[92m  Downloaded[0m shell-words v1.1.1
+[1m[92m  Downloaded[0m serde_spanned v1.1.1
+[1m[92m  Downloaded[0m serde_ignored v0.1.14
+[1m[92m  Downloaded[0m serde_html_form v0.3.2
+[1m[92m  Downloaded[0m rama-http-types v0.3.0-alpha.4
+[1m[92m  Downloaded[0m serde_core v1.0.228
+[1m[92m  Downloaded[0m sequence_trie v0.3.6
+[1m[92m  Downloaded[0m sentry-core v0.46.1
+[1m[92m  Downloaded[0m secrecy v0.10.3
+[1m[92m  Downloaded[0m sec1 v0.7.3
+[1m[92m  Downloaded[0m schemars v0.8.22
+[1m[92m  Downloaded[0m same-file v1.0.6
+[1m[92m  Downloaded[0m salsa20 v0.10.2
+[1m[92m  Downloaded[0m ryu v1.0.22
+[1m[92m  Downloaded[0m rustversion v1.0.22
+[1m[92m  Downloaded[0m rustc_version v0.4.1
+[1m[92m  Downloaded[0m rustc-hash v2.1.1
+[1m[92m  Downloaded[0m rustc-hash v1.1.0
+[1m[92m  Downloaded[0m rustc-demangle v0.1.27
+[1m[92m  Downloaded[0m rfc6979 v0.4.0
+[1m[92m  Downloaded[0m regex-syntax v0.8.8
+[1m[92m  Downloaded[0m ref-cast v1.0.25
+[1m[92m  Downloaded[0m rand_core v0.6.4
+[1m[92m  Downloaded[0m rand_chacha v0.9.0
+[1m[92m  Downloaded[0m rama-unix v0.3.0-alpha.4
+[1m[92m  Downloaded[0m rama-tls-rustls v0.3.0-alpha.4
+[1m[92m  Downloaded[0m rama-http-headers v0.3.0-alpha.4
+[1m[92m  Downloaded[0m rama-http-backend v0.3.0-alpha.4
+[1m[92m  Downloaded[0m rama-error v0.3.0-alpha.4
+[1m[92m  Downloaded[0m rama-dns v0.3.0-alpha.4
+[1m[92m  Downloaded[0m radix_trie v0.3.0
+[1m[92m  Downloaded[0m quote v1.0.45
+[1m[92m  Downloaded[0m quinn-udp v0.5.14
+[1m[92m  Downloaded[0m opaque-debug v0.3.1
+[1m[92m  Downloaded[0m memmap2 v0.9.10
+[1m[92m  Downloaded[0m sentry-debug-images v0.46.1
+[1m[92m  Downloaded[0m sentry-backtrace v0.46.1
+[1m[92m  Downloaded[0m self_cell v0.10.3
+[1m[92m  Downloaded[0m secret-service v4.0.0
+[1m[92m  Downloaded[0m schemafy_lib v0.5.2
+[1m[92m  Downloaded[0m schemafy v0.5.2
+[1m[92m  Downloaded[0m rustls-native-certs v0.8.3
+[1m[92m  Downloaded[0m rusticata-macros v4.1.0
+[1m[92m  Downloaded[0m rust-embed-utils v8.11.0
+[1m[92m  Downloaded[0m rust-embed-impl v8.11.0
+[1m[92m  Downloaded[0m ref-cast-impl v1.0.25
+[1m[92m  Downloaded[0m rand_xorshift v0.4.0
+[1m[92m  Downloaded[0m rand_chacha v0.3.1
+[1m[92m  Downloaded[0m rama-macros v0.3.0-alpha.4
+[1m[92m  Downloaded[0m prost-types v0.14.3
+[1m[92m  Downloaded[0m prost v0.14.3
+[1m[92m  Downloaded[0m proc-macro-error-attr2 v2.0.0
+[1m[92m  Downloaded[0m prettyplease v0.2.37
+[1m[92m  Downloaded[0m postcard v1.1.3
+[1m[92m  Downloaded[0m libc v0.2.186
+[1m[92m  Downloaded[0m protoc-bin-vendored v3.2.0
+[1m[92m  Downloaded[0m prodash v31.0.0
+[1m[92m  Downloaded[0m process-wrap v9.0.1
+[1m[92m  Downloaded[0m proc-macro2 v1.0.106
+[1m[92m  Downloaded[0m poly1305 v0.8.0
+[1m[92m  Downloaded[0m pkg-config v0.3.32
+[1m[92m  Downloaded[0m petgraph v0.8.3
+[1m[92m  Downloaded[0m opentelemetry_sdk v0.31.0
+[1m[92m  Downloaded[0m openssl-sys v0.9.111
+[1m[92m  Downloaded[0m nix v0.28.0
+[1m[92m  Downloaded[0m moka v0.12.13
+[1m[92m  Downloaded[0m http-body-util v0.1.3
+[1m[92m  Downloaded[0m gix-archive v0.30.0
+[1m[92m  Downloaded[0m publicsuffix v2.3.0
+[1m[92m  Downloaded[0m psl v2.1.184
+[1m[92m  Downloaded[0m predicates-tree v1.0.12
+[1m[92m  Downloaded[0m portable-atomic v1.13.1
+[1m[92m  Downloaded[0m png v0.18.0
+[1m[92m  Downloaded[0m piper v0.2.4
+[1m[92m  Downloaded[0m paste v1.0.15
+[1m[92m  Downloaded[0m parking_lot_core v0.9.12
+[1m[92m  Downloaded[0m pagable_derive v0.4.1
+[1m[92m  Downloaded[0m nix v0.29.0
+[1m[92m  Downloaded[0m ml-kem v0.2.3
+[1m[92m  Downloaded[0m lsp-types v0.97.0
+[1m[92m  Downloaded[0m lru v0.18.2
+[1m[92m  Downloaded[0m language-tags v0.3.2
+[1m[92m  Downloaded[0m keyring v3.6.3
+[1m[92m  Downloaded[0m jsonwebtoken v9.3.1
+[1m[92m  Downloaded[0m jiff-static v0.2.23
+[1m[92m  Downloaded[0m insta v1.46.3
+[1m[92m  Downloaded[0m include_dir_macros v0.7.4
+[1m[92m  Downloaded[0m hashbrown v0.16.1
+[1m[92m  Downloaded[0m granit-parser v2.1.0
+[1m[92m  Downloaded[0m getrandom v0.2.17
+[1m[92m  Downloaded[0m rand_core v0.10.1
+[1m[92m  Downloaded[0m proc-macro-error2 v2.0.1
+[1m[92m  Downloaded[0m ppv-lite86 v0.2.21
+[1m[92m  Downloaded[0m portable-pty v0.9.0
+[1m[92m  Downloaded[0m pin-project v1.1.10
+[1m[92m  Downloaded[0m pem v3.0.6
+[1m[92m  Downloaded[0m pastey v0.2.1
+[1m[92m  Downloaded[0m openssl-probe v0.1.6
+[1m[92m  Downloaded[0m num-iter v0.1.45
+[1m[92m  Downloaded[0m num-integer v0.1.46
+[1m[92m  Downloaded[0m nix v0.30.1
+[1m[92m  Downloaded[0m miniz_oxide v0.8.9
+[1m[92m  Downloaded[0m minimal-lexical v0.2.1
+[1m[92m  Downloaded[0m memchr v2.8.1
+[1m[92m  Downloaded[0m gix-submodule v0.28.0
+[1m[92m  Downloaded[0m gix-error v0.2.1
+[1m[92m  Downloaded[0m pretty_assertions v1.4.1
+[1m[92m  Downloaded[0m predicates v3.1.3
+[1m[92m  Downloaded[0m polyval v0.6.2
+[1m[92m  Downloaded[0m pin-project-internal v1.1.10
+[1m[92m  Downloaded[0m p256 v0.13.2
+[1m[92m  Downloaded[0m opentelemetry-appender-tracing v0.31.1
+[1m[92m  Downloaded[0m opentelemetry v0.31.0
+[1m[92m  Downloaded[0m num-conv v0.2.0
+[1m[92m  Downloaded[0m matchers v0.2.0
+[1m[92m  Downloaded[0m local-waker v0.1.4
+[1m[92m  Downloaded[0m indexmap v1.9.3
+[1m[92m  Downloaded[0m impl-more v0.1.9
+[1m[92m  Downloaded[0m image-webp v0.2.4
+[1m[92m  Downloaded[0m httparse v1.10.1
+[1m[92m  Downloaded[0m gimli v0.32.3
+[1m[92m  Downloaded[0m primeorder v0.13.6
+[1m[92m  Downloaded[0m predicates-core v1.0.9
+[1m[92m  Downloaded[0m pem-rfc7468 v0.7.0
+[1m[92m  Downloaded[0m pagable v0.4.1
+[1m[92m  Downloaded[0m outref v0.5.2
+[1m[92m  Downloaded[0m ordered-stream v0.2.0
+[1m[92m  Downloaded[0m opentelemetry-otlp v0.31.0
+[1m[92m  Downloaded[0m once_cell v1.21.4
+[1m[92m  Downloaded[0m nu-ansi-term v0.50.3
+[1m[92m  Downloaded[0m nom v8.0.0
+[1m[92m  Downloaded[0m nom v7.1.3
+[1m[92m  Downloaded[0m nibble_vec v0.1.0
+[1m[92m  Downloaded[0m native-tls v0.2.14
+[1m[92m  Downloaded[0m memoffset v0.9.1
+[1m[92m  Downloaded[0m md5 v0.8.0
+[1m[92m  Downloaded[0m litemap v0.8.1
+[1m[92m  Downloaded[0m linux-keyutils v0.2.4
+[1m[92m  Downloaded[0m jiff v0.2.23
+[1m[92m  Downloaded[0m itertools v0.14.0
+[1m[92m  Downloaded[0m io_tee v0.1.1
+[1m[92m  Downloaded[0m imara-diff v0.1.8
+[1m[92m  Downloaded[0m i18n-embed-impl v0.8.4
+[1m[92m  Downloaded[0m hyper v1.8.1
+[1m[92m  Downloaded[0m http v1.4.0
+[1m[92m  Downloaded[0m gix v0.81.0
+[1m[92m  Downloaded[0m flate2 v1.1.8
+[1m[92m  Downloaded[0m polling v3.11.0
+[1m[92m  Downloaded[0m pkcs8 v0.10.2
+[1m[92m  Downloaded[0m pin-project-lite v0.2.16
+[1m[92m  Downloaded[0m os_info v3.14.0
+[1m[92m  Downloaded[0m opentelemetry-semantic-conventions v0.31.0
+[1m[92m  Downloaded[0m opentelemetry-proto v0.31.0
+[1m[92m  Downloaded[0m oid-registry v0.8.1
+[1m[92m  Downloaded[0m num-traits v0.2.19
+[1m[92m  Downloaded[0m num-bigint v0.4.6
+[1m[92m  Downloaded[0m num v0.4.3
+[1m[92m  Downloaded[0m nonempty v0.12.0
+[1m[92m  Downloaded[0m mime_guess v2.0.5
+[1m[92m  Downloaded[0m maybe-async v0.2.10
+[1m[92m  Downloaded[0m matchit v0.8.4
+[1m[92m  Downloaded[0m lru-slab v0.1.2
+[1m[92m  Downloaded[0m logos-codegen v0.15.1
+[1m[92m  Downloaded[0m log v0.4.29
+[1m[92m  Downloaded[0m lock_free_hashtable v0.1.4
+[1m[92m  Downloaded[0m lock_api v0.4.14
+[1m[92m  Downloaded[0m litrs v1.0.0
+[1m[92m  Downloaded[0m link-section v0.17.2
+[1m[92m  Downloaded[0m kem v0.3.0-pre.0
+[1m[92m  Downloaded[0m jsonptr v0.7.1
+[1m[92m  Downloaded[0m iri-string v0.7.10
+[1m[92m  Downloaded[0m intl_pluralrules v7.0.2
+[1m[92m  Downloaded[0m intl-memoizer v0.5.3
+[1m[92m  Downloaded[0m indenter v0.3.4
+[1m[92m  Downloaded[0m include_dir v0.7.4
+[1m[92m  Downloaded[0m imara-diff v0.2.0
+[1m[92m  Downloaded[0m icu_locale_core v2.2.0
+[1m[92m  Downloaded[0m hashbrown v0.17.1
+[1m[92m  Downloaded[0m gix-ref v0.61.0
+[1m[92m  Downloaded[0m futures-util v0.3.32
+[1m[92m  Downloaded[0m option-ext v0.2.0
+[1m[92m  Downloaded[0m object v0.37.3
+[1m[92m  Downloaded[0m oauth2 v5.0.0
+[1m[92m  Downloaded[0m num_threads v0.1.7
+[1m[92m  Downloaded[0m num-rational v0.4.2
+[1m[92m  Downloaded[0m mio v1.2.0
+[1m[92m  Downloaded[0m md-5 v0.11.0
+[1m[92m  Downloaded[0m matchit v0.9.1
+[1m[92m  Downloaded[0m maplit v1.0.2
+[1m[92m  Downloaded[0m linktime-proc-macro v0.1.0
+[1m[92m  Downloaded[0m libdbus-sys v0.2.7
+[1m[92m  Downloaded[0m landlock v0.4.4
+[1m[92m  Downloaded[0m kstring v2.0.2
+[1m[92m  Downloaded[0m jobserver v0.1.34
+[1m[92m  Downloaded[0m itoa v1.0.17
+[1m[92m  Downloaded[0m is_terminal_polyfill v1.70.2
+[1m[92m  Downloaded[0m io-close v0.3.7
+[1m[92m  Downloaded[0m inout v0.1.4
+[1m[92m  Downloaded[0m image v0.25.9
+[1m[92m  Downloaded[0m ignore v0.4.25
+[1m[92m  Downloaded[0m idna v1.1.0
+[1m[92m  Downloaded[0m icu_properties_data v2.2.0
+[1m[92m  Downloaded[0m icu_properties v2.2.0
+[1m[92m  Downloaded[0m icu_normalizer_data v2.2.0
+[1m[92m  Downloaded[0m icu_normalizer v2.2.0
+[1m[92m  Downloaded[0m icu_locale_data v2.2.0
+[1m[92m  Downloaded[0m i18n-embed v0.15.4
+[1m[92m  Downloaded[0m hyper-util v0.1.20
+[1m[92m  Downloaded[0m hybrid-array v0.4.12
+[1m[92m  Downloaded[0m headers-core v0.3.0
+[1m[92m  Downloaded[0m hash32 v0.2.1
+[1m[92m  Downloaded[0m group v0.13.0
+[1m[92m  Downloaded[0m globset v0.4.18
+[1m[92m  Downloaded[0m gix-worktree-state v0.28.0
+[1m[92m  Downloaded[0m gix-validate v0.11.0
+[1m[92m  Downloaded[0m gix-traverse v0.55.0
+[1m[92m  Downloaded[0m gix-transport v0.55.1
+[1m[92m  Downloaded[0m gix-trace v0.1.18
+[1m[92m  Downloaded[0m gix-hash v0.23.0
+[1m[92m  Downloaded[0m gix-chunk v0.7.0
+[1m[92m  Downloaded[0m futures-sink v0.3.32
+[1m[92m  Downloaded[0m fluent v0.16.1
+[1m[92m  Downloaded[0m parking v2.2.1
+[1m[92m  Downloaded[0m openssl-probe v0.2.1
+[1m[92m  Downloaded[0m openssl-macros v0.1.1
+[1m[92m  Downloaded[0m mime v0.3.17
+[1m[92m  Downloaded[0m keccak v0.1.6
+[1m[92m  Downloaded[0m inventory v0.3.24
+[1m[92m  Downloaded[0m icu_plurals v2.2.0
+[1m[92m  Downloaded[0m iana-time-zone v0.1.65
+[1m[92m  Downloaded[0m hyper-tls v0.6.0
+[1m[92m  Downloaded[0m http-body v0.4.6
+[1m[92m  Downloaded[0m headers v0.4.1
+[1m[92m  Downloaded[0m h2 v0.4.16
+[1m[92m  Downloaded[0m gix-worktree-stream v0.30.0
+[1m[92m  Downloaded[0m gix-url v0.35.2
+[1m[92m  Downloaded[0m gix-tempfile v21.0.2
+[1m[92m  Downloaded[0m gix-revision v0.43.0
+[1m[92m  Downloaded[0m gix-odb v0.78.0
+[1m[92m  Downloaded[0m gix-merge v0.14.0
+[1m[92m  Downloaded[0m futures-lite v2.6.1
+[1m[92m  Downloaded[0m form_urlencoded v1.2.2
+[1m[92m  Downloaded[0m fnv v1.0.7
+[1m[92m  Downloaded[0m fluent-uri v0.1.4
+[1m[92m  Downloaded[0m ipnet v2.11.0
+[1m[92m  Downloaded[0m indexmap v2.14.0
+[1m[92m  Downloaded[0m idna_adapter v1.2.1
+[1m[92m  Downloaded[0m ident_case v1.0.1
+[1m[92m  Downloaded[0m icu_decimal v2.2.0
+[1m[92m  Downloaded[0m i18n-embed-fl v0.9.4
+[1m[92m  Downloaded[0m hyper-rustls v0.27.7
+[1m[92m  Downloaded[0m http-body v1.0.1
+[1m[92m  Downloaded[0m hash32 v0.3.1
+[1m[92m  Downloaded[0m gix-utils v0.3.1
+[1m[92m  Downloaded[0m logos-derive v0.15.1
+[1m[92m  Downloaded[0m icu_provider v2.2.0
+[1m[92m  Downloaded[0m icu_plurals_data v2.2.0
+[1m[92m  Downloaded[0m icu_locale v2.2.0
+[1m[92m  Downloaded[0m icu_collections v2.2.0
+[1m[92m  Downloaded[0m windows v0.58.0
+[1m[92m  Downloaded[0m hyper-timeout v0.5.2
+[1m[92m  Downloaded[0m hybrid-array v0.2.3
+[1m[92m  Downloaded[0m httpdate v1.0.3
+[1m[92m  Downloaded[0m hickory-proto v0.25.2
+[1m[92m  Downloaded[0m heapless v0.7.17
+[1m[92m  Downloaded[0m hashbrown v0.15.5
+[1m[92m  Downloaded[0m hashbrown v0.14.5
+[1m[92m  Downloaded[0m gix-worktree v0.50.0
+[1m[92m  Downloaded[0m gix-status v0.28.0
+[1m[92m  Downloaded[0m gix-pathspec v0.16.1
+[1m[92m  Downloaded[0m gix-hashtable v0.13.0
+[1m[92m  Downloaded[0m gix-glob v0.24.0
+[1m[92m  Downloaded[0m getrandom v0.4.2
+[1m[92m  Downloaded[0m fxhash v0.2.1
+[1m[92m  Downloaded[0m encoding_rs v0.8.35
+[1m[92m  Downloaded[0m icu_decimal_data v2.2.0
+[1m[92m  Downloaded[0m hostname v0.4.2
+[1m[92m  Downloaded[0m hkdf v0.12.4
+[1m[92m  Downloaded[0m hashlink v0.11.0
+[1m[92m  Downloaded[0m glob v0.3.3
+[1m[92m  Downloaded[0m gix-shallow v0.10.0
+[1m[92m  Downloaded[0m hkdf v0.13.0
+[1m[92m  Downloaded[0m hickory-resolver v0.25.2
+[1m[92m  Downloaded[0m heapless v0.8.0
+[1m[92m  Downloaded[0m gix-refspec v0.39.0
+[1m[92m  Downloaded[0m gix-protocol v0.59.0
+[1m[92m  Downloaded[0m gix-packetline v0.21.2
+[1m[92m  Downloaded[0m gix-pack v0.68.0
+[1m[92m  Downloaded[0m gix-object v0.58.0
+[1m[92m  Downloaded[0m gix-negotiate v0.29.0
+[1m[92m  Downloaded[0m gix-ignore v0.19.1
+[1m[92m  Downloaded[0m gix-features v0.46.2
+[1m[92m  Downloaded[0m gix-discover v0.49.0
+[1m[92m  Downloaded[0m gix-config v0.54.0
+[1m[92m  Downloaded[0m gix-commitgraph v0.35.0
+[1m[92m  Downloaded[0m getrandom v0.3.4
+[1m[92m  Downloaded[0m futures-intrusive v0.5.0
+[1m[92m  Downloaded[0m flume v0.12.0
+[1m[92m  Downloaded[0m home v0.5.12
+[1m[92m  Downloaded[0m hmac v0.13.0
+[1m[92m  Downloaded[0m hmac v0.12.1
+[1m[92m  Downloaded[0m hex v0.4.3
+[1m[92m  Downloaded[0m heck v0.5.0
+[1m[92m  Downloaded[0m hashbrown v0.12.3
+[1m[92m  Downloaded[0m gix-sec v0.13.2
+[1m[92m  Downloaded[0m gix-quote v0.7.0
+[1m[92m  Downloaded[0m gix-index v0.49.0
+[1m[92m  Downloaded[0m gix-filter v0.28.0
+[1m[92m  Downloaded[0m gix-dir v0.23.0
+[1m[92m  Downloaded[0m gix-diff v0.61.0
+[1m[92m  Downloaded[0m gix-config-value v0.17.1
+[1m[92m  Downloaded[0m gix-command v0.8.0
+[1m[92m  Downloaded[0m gix-blame v0.11.0
+[1m[92m  Downloaded[0m gix-bitmap v0.3.0
+[1m[92m  Downloaded[0m gix-attributes v0.31.0
+[1m[92m  Downloaded[0m gix-actor v0.40.0
+[1m[92m  Downloaded[0m gethostname v1.1.0
+[1m[92m  Downloaded[0m generic-array v0.14.7
+[1m[92m  Downloaded[0m futures-io v0.3.32
+[1m[92m  Downloaded[0m derive_more-impl v2.1.1
+[1m[92m  Downloaded[0m der v0.7.10
+[1m[92m  Downloaded[0m dbus v0.9.10
+[1m[92m  Downloaded[0m darling_core v0.24.0
+[1m[92m  Downloaded[0m curve25519-dalek v4.1.3
+[1m[92m  Downloaded[0m csv v1.4.0
+[1m[92m  Downloaded[0m crossbeam-channel v0.5.15
+[1m[92m  Downloaded[0m clap_builder v4.5.58
+[1m[92m  Downloaded[0m chrono v0.4.43
+[1m[92m  Downloaded[0m chacha20poly1305 v0.10.1
+[1m[92m  Downloaded[0m gix-fs v0.19.2
+[1m[92m  Downloaded[0m gix-date v0.15.1
+[1m[92m  Downloaded[0m gif v0.14.1
+[1m[92m  Downloaded[0m ghash v0.5.1
+[1m[92m  Downloaded[0m futures-task v0.3.32
+[1m[92m  Downloaded[0m futures-macro v0.3.32
+[1m[92m  Downloaded[0m futures-executor v0.3.32
+[1m[92m  Downloaded[0m futures-channel v0.3.32
+[1m[92m  Downloaded[0m futures v0.3.31
+[1m[92m  Downloaded[0m fs_extra v1.3.0
+[1m[92m  Downloaded[0m foldhash v0.2.0
+[1m[92m  Downloaded[0m foldhash v0.1.5
+[1m[92m  Downloaded[0m fluent-syntax v0.11.1
+[1m[92m  Downloaded[0m fluent-bundle v0.15.3
+[1m[92m  Downloaded[0m ff v0.13.1
+[1m[92m  Downloaded[0m event-listener v5.4.1
+[1m[92m  Downloaded[0m erased-serde v0.4.10
+[1m[92m  Downloaded[0m erased-serde v0.3.31
+[1m[92m  Downloaded[0m env_logger v0.11.9
+[1m[92m  Downloaded[0m elliptic-curve v0.13.8
+[1m[92m  Downloaded[0m either v1.15.0
+[1m[92m  Downloaded[0m dotenvy v0.15.7
+[1m[92m  Downloaded[0m diff v0.1.13
+[1m[92m  Downloaded[0m derive_more v2.1.1
+[1m[92m  Downloaded[0m derive_more v1.0.0
+[1m[92m  Downloaded[0m derivative v2.2.0
+[1m[92m  Downloaded[0m der-parser v10.0.0
+[1m[92m  Downloaded[0m dbus-secret-service v4.1.0
+[1m[92m  Downloaded[0m darling_core v0.21.3
+[1m[92m  Downloaded[0m darling v0.24.0
+[1m[92m  Downloaded[0m darling v0.21.3
+[1m[92m  Downloaded[0m ctr v0.9.2
+[1m[92m  Downloaded[0m ctor v1.0.6
+[1m[92m  Downloaded[0m csv-core v0.1.13
+[1m[92m  Downloaded[0m crypto-bigint v0.5.5
+[1m[92m  Downloaded[0m critical-section v1.2.0
+[1m[92m  Downloaded[0m crc32fast v1.5.0
+[1m[92m  Downloaded[0m cookie_store v0.22.1
+[1m[92m  Downloaded[0m cookie v0.18.1
+[1m[92m  Downloaded[0m convert_case v0.6.0
+[1m[92m  Downloaded[0m const_format_proc_macros v0.2.34
+[1m[92m  Downloaded[0m const_format v0.2.35
+[1m[92m  Downloaded[0m const-oid v0.9.6
+[1m[92m  Downloaded[0m const-hex v1.17.0
+[1m[92m  Downloaded[0m console v0.15.11
+[1m[92m  Downloaded[0m cmov v0.5.3
+[1m[92m  Downloaded[0m cmake v0.1.57
+[1m[92m  Downloaded[0m clru v0.6.3
+[1m[92m  Downloaded[0m clatter v2.2.0
+[1m[92m  Downloaded[0m clap_derive v4.5.55
+[1m[92m  Downloaded[0m clap v4.5.58
+[1m[92m  Downloaded[0m cipher v0.4.4
+[1m[92m  Downloaded[0m chardetng v0.1.17
+[1m[92m  Downloaded[0m chacha20 v0.10.0
+[1m[92m  Downloaded[0m age v0.11.2
+[1m[92m  Downloaded[0m futures-core v0.3.32
+[1m[92m  Downloaded[0m foreign-types-shared v0.1.1
+[1m[92m  Downloaded[0m foreign-types v0.3.2
+[1m[92m  Downloaded[0m fluent-langneg v0.13.1
+[1m[92m  Downloaded[0m env_home v0.1.0
+[1m[92m  Downloaded[0m env_filter v1.0.0
+[1m[92m  Downloaded[0m enumflags2_derive v0.7.12
+[1m[92m  Downloaded[0m endian-type v0.2.0
+[1m[92m  Downloaded[0m endian-type v0.1.2
+[1m[92m  Downloaded[0m endi v1.1.1
+[1m[92m  Downloaded[0m encoding_rs_io v0.1.8
+[1m[92m  Downloaded[0m embedded-io v0.6.1
+[1m[92m  Downloaded[0m embedded-io v0.4.0
+[1m[92m  Downloaded[0m dyn-clone v1.0.20
+[1m[92m  Downloaded[0m displaydoc v0.2.5
+[1m[92m  Downloaded[0m digest v0.10.7
+[1m[92m  Downloaded[0m deranged v0.5.5
+[1m[92m  Downloaded[0m debugserver-types v0.5.0
+[1m[92m  Downloaded[0m data-encoding v2.10.0
+[1m[92m  Downloaded[0m dashmap v6.1.0
+[1m[92m  Downloaded[0m ctutils v0.4.4
+[1m[92m  Downloaded[0m crossbeam-utils v0.8.21
+[1m[92m  Downloaded[0m crossbeam-queue v0.3.12
+[1m[92m  Downloaded[0m crossbeam-epoch v0.9.20
+[1m[92m  Downloaded[0m crc-catalog v2.4.0
+[1m[92m  Downloaded[0m cookie-factory v0.3.3
+[1m[92m  Downloaded[0m convert_case v0.10.0
+[1m[92m  Downloaded[0m color_quant v1.1.0
+[1m[92m  Downloaded[0m cmp_any v0.8.1
+[1m[92m  Downloaded[0m chunked_transfer v1.5.0
+[1m[92m  Downloaded[0m bstr v1.12.1
+[1m[92m  Downloaded[0m blake3 v1.8.2
+[1m[92m  Downloaded[0m axum v0.8.8
+[1m[92m  Downloaded[0m aws-sdk-sts v1.95.0
+[1m[92m  Downloaded[0m aws-lc-rs v1.18.1
+[1m[92m  Downloaded[0m aes v0.8.4
+[1m[92m  Downloaded[0m findshlibs v0.10.2
+[1m[92m  Downloaded[0m find-msvc-tools v0.1.9
+[1m[92m  Downloaded[0m fdeflate v0.3.7
+[1m[92m  Downloaded[0m fancy-regex v0.16.2
+[1m[92m  Downloaded[0m eventsource-stream v0.2.3
+[1m[92m  Downloaded[0m event-listener-strategy v0.5.4
+[1m[92m  Downloaded[0m ed25519-dalek v2.2.0
+[1m[92m  Downloaded[0m dupe v0.9.1
+[1m[92m  Downloaded[0m dunce v1.0.5
+[1m[92m  Downloaded[0m downcast-rs v1.2.1
+[1m[92m  Downloaded[0m dns-lookup v3.0.1
+[1m[92m  Downloaded[0m dirs-sys v0.5.0
+[1m[92m  Downloaded[0m debugid v0.8.0
+[1m[92m  Downloaded[0m darling_macro v0.21.3
+[1m[92m  Downloaded[0m curve25519-dalek-derive v0.1.1
+[1m[92m  Downloaded[0m cpufeatures v0.3.0
+[1m[92m  Downloaded[0m constant_time_eq v0.3.1
+[1m[92m  Downloaded[0m colorchoice v1.0.4
+[1m[92m  Downloaded[0m clap_lex v1.0.0
+[1m[92m  Downloaded[0m bytemuck v1.25.0
+[1m[92m  Downloaded[0m bumpalo v3.19.1
+[1m[92m  Downloaded[0m borsh v1.6.0
+[1m[92m  Downloaded[0m base64 v0.23.0
+[1m[92m  Downloaded[0m base64 v0.22.1
+[1m[92m  Downloaded[0m base64 v0.21.7
+[1m[92m  Downloaded[0m backtrace v0.3.76
+[1m[92m  Downloaded[0m aws-smithy-types v1.4.7
+[1m[92m  Downloaded[0m aws-smithy-runtime v1.9.5
+[1m[92m  Downloaded[0m aws-smithy-http-client v1.1.12
+[1m[92m  Downloaded[0m aws-sigv4 v1.3.7
+[1m[92m  Downloaded[0m aws-sdk-ssooidc v1.93.0
+[1m[92m  Downloaded[0m aws-sdk-sso v1.91.0
+[1m[92m  Downloaded[0m aws-runtime v1.5.17
+[1m[92m  Downloaded[0m aws-config v1.8.12
+[1m[92m  Downloaded[0m async-lock v3.4.2
+[1m[92m  Downloaded[0m arc-swap v1.9.0
+[1m[92m  Downloaded[0m anyhow v1.0.103
+[1m[92m  Downloaded[0m allocator-api2 v0.2.21
+[1m[92m  Downloaded[0m aho-corasick v1.1.4
+[1m[92m  Downloaded[0m aes-gcm v0.10.3
+[1m[92m  Downloaded[0m find-crate v0.6.3
+[1m[92m  Downloaded[0m filetime v0.2.27
+[1m[92m  Downloaded[0m filedescriptor v0.8.3
+[1m[92m  Downloaded[0m fd-lock v4.0.4
+[1m[92m  Downloaded[0m fastrand v2.3.0
+[1m[92m  Downloaded[0m enum-as-inner v0.6.1
+[1m[92m  Downloaded[0m dupe_derive v0.9.1
+[1m[92m  Downloaded[0m document-features v0.2.12
+[1m[92m  Downloaded[0m aws-smithy-runtime-api v1.12.0
+[1m[92m  Downloaded[0m aws-smithy-http v0.62.6
+[1m[92m  Downloaded[0m ascii v1.1.0
+[1m[92m  Downloaded[0m arrayvec v0.7.6
+[1m[92m  Downloaded[0m anstyle-parse v0.2.7
+[1m[92m  Downloaded[0m annotate-snippets v0.12.5
+[1m[92m  Downloaded[0m enumflags2 v0.7.12
+[1m[92m  Downloaded[0m digest v0.11.3
+[1m[92m  Downloaded[0m bytemuck_derive v1.10.2
+[1m[92m  Downloaded[0m blake2 v0.10.6
+[1m[92m  Downloaded[0m bit-set v0.8.0
+[1m[92m  Downloaded[0m base16ct v0.2.0
+[1m[92m  Downloaded[0m aws-types v1.3.11
+[1m[92m  Downloaded[0m async-executor v1.13.3
+[1m[92m  Downloaded[0m async-channel v2.5.0
+[1m[92m  Downloaded[0m async-broadcast v0.7.2
+[1m[92m  Downloaded[0m annotate-snippets v0.9.2
+[1m[92m  Downloaded[0m actix-service v2.0.3
+[1m[92m  Downloaded[0m ed25519 v2.2.3
+[1m[92m  Downloaded[0m ecdsa v0.16.9
+[1m[92m  Downloaded[0m crypto_box v0.9.1
+[1m[92m  Downloaded[0m byteorder v1.5.0
+[1m[92m  Downloaded[0m axum-core v0.5.6
+[1m[92m  Downloaded[0m aws-smithy-json v0.61.9
+[1m[92m  Downloaded[0m autocfg v1.5.0
+[1m[92m  Downloaded[0m arrayref v0.3.9
+[1m[92m  Downloaded[0m anstyle v1.0.13
+[1m[92m  Downloaded[0m anstream v0.6.21
+[1m[92m  Downloaded[0m ahash v0.8.12
+[1m[92m  Downloaded[0m aead v0.5.2
+[1m[92m  Downloaded[0m dirs-sys-next v0.1.2
+[1m[92m  Downloaded[0m byteorder-lite v0.1.0
+[1m[92m  Downloaded[0m block-padding v0.3.3
+[1m[92m  Downloaded[0m block-buffer v0.10.4
+[1m[92m  Downloaded[0m bitflags v1.3.2
+[1m[92m  Downloaded[0m beef v0.5.2
+[1m[92m  Downloaded[0m base64ct v1.8.3
+[1m[92m  Downloaded[0m base64-simd v0.8.0
+[1m[92m  Downloaded[0m aws-smithy-runtime-api-macros v1.0.0
+[1m[92m  Downloaded[0m atomic-waker v1.1.2
+[1m[92m  Downloaded[0m assert_cmd v2.1.2
+[1m[92m  Downloaded[0m asn1-rs-impl v0.2.0
+[1m[92m  Downloaded[0m allocative_derive v0.3.6
+[1m[92m  Downloaded[0m age-core v0.11.0
+[1m[92m  Downloaded[0m actix-utils v3.0.1
+[1m[92m  Downloaded[0m darling_macro v0.24.0
+[1m[92m  Downloaded[0m atoi v2.0.0
+[1m[92m  Downloaded[0m asynk-strim v0.1.5
+[1m[92m  Downloaded[0m asn1-rs-derive v0.6.0
+[1m[92m  Downloaded[0m crc v3.4.0
+[1m[92m  Downloaded[0m cobs v0.3.0
+[1m[92m  Downloaded[0m blocking v1.6.2
+[1m[92m  Downloaded[0m bech32 v0.9.1
+[1m[92m  Downloaded[0m atomic v0.5.3
+[1m[92m  Downloaded[0m async-trait v0.1.89
+[1m[92m  Downloaded[0m difflib v0.4.0
+[1m[92m  Downloaded[0m crypto-common v0.1.7
+[1m[92m  Downloaded[0m adler2 v2.0.1
+[1m[92m  Downloaded[0m Inflector v0.11.4
+[1m[92m  Downloaded[0m bitflags v2.13.1
+[1m[92m  Downloaded[0m aws-smithy-xml v0.60.13
+[1m[92m  Downloaded[0m aws-smithy-query v0.60.9
+[1m[92m  Downloaded[0m aws-credential-types v1.2.11
+[1m[92m  Downloaded[0m arraydeque v0.5.1
+[1m[92m  Downloaded[0m actix-server v2.6.0
+[1m[92m  Downloaded[0m async-task v4.7.1
+[1m[92m  Downloaded[0m async-io v2.6.0
+[1m[92m  Downloaded[0m asn1-rs v0.7.1
+[1m[92m  Downloaded[0m anstyle-query v1.1.5
+[1m[92m  Downloaded[0m allocative v0.3.6
+[1m[92m  Downloaded[0m addr2line v0.25.1
+[1m[92m  Downloaded[0m actix-http v3.11.2
+[1m[92m  Downloaded[0m async-fs v2.2.0
+[1m[92m  Downloaded[0m bytes-utils v0.1.4
+[1m[92m  Downloaded[0m actix-router v0.5.3
+[1m[92m  Downloaded[0m cfg_aliases v0.2.1
+[1m[92m  Downloaded[0m cbc v0.1.2
+[1m[92m  Downloaded[0m aws-sdk-signin v1.2.0
+[1m[92m  Downloaded[0m actix-web v4.12.1
+[1m[92m  Downloaded[0m cc v1.2.55
+[1m[92m  Downloaded[0m bytes v1.11.1
+[1m[92m  Downloaded[0m actix-rt v2.11.0
+[1m[92m  Downloaded[0m bytestring v1.5.0
+[1m[92m  Downloaded[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m proc-macro2 v1.0.106
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.106` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m quote v1.0.45
+[1m[92m   Compiling[0m unicode-ident v1.0.22
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.45` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m syn v2.0.117
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m libc v0.2.186
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m serde v1.0.228
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.228` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m serde_derive v1.0.228
+[1m[92m   Compiling[0m serde_core v1.0.228
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m memchr v2.8.1
+[1m[92m   Compiling[0m smallvec v1.15.1
+[1m[92m   Compiling[0m zeroize_derive v1.4.3
+[1m[92m   Compiling[0m zeroize v1.8.2
+[1m[92m   Compiling[0m version_check v0.9.5
+[1m[92m   Compiling[0m itoa v1.0.17
+[1m[92m   Compiling[0m getrandom v0.2.17
+[1m[92m   Compiling[0m scopeguard v1.2.0
+[1m[92m   Compiling[0m parking_lot_core v0.9.12
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m pin-project-lite v0.2.16
+[1m[92m   Compiling[0m portable-atomic v1.13.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.13.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.186` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m lock_api v0.4.14
+[1m[92m   Compiling[0m equivalent v1.0.2
+[1m[92m   Compiling[0m critical-section v1.2.0
+[1m[92m   Compiling[0m once_cell v1.21.4
+[1m[92m   Compiling[0m subtle v2.6.1
+[1m[92m   Compiling[0m generic-array v0.14.7
+[1m[92m   Compiling[0m typenum v1.20.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m rand_core v0.6.4
+[1m[92m   Compiling[0m parking_lot v0.12.5
+[1m[92m   Compiling[0m futures-core v0.3.32
+[1m[92m   Compiling[0m crypto-common v0.1.7
+[1m[92m   Compiling[0m thiserror-impl v2.0.18
+[1m[92m   Compiling[0m bytes v1.11.1
+[1m[92m   Compiling[0m log v0.4.29
+[1m[92m   Compiling[0m thiserror v2.0.18
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.18` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m jobserver v0.1.34
+[1m[92m   Compiling[0m find-msvc-tools v0.1.9
+[1m[92m   Compiling[0m shlex v1.3.0
+[1m[92m   Compiling[0m cc v1.2.55
+[1m[92m   Compiling[0m synstructure v0.13.2
+[1m[92m   Compiling[0m const-oid v0.9.6
+[1m[92m   Compiling[0m cpufeatures v0.2.17
+[1m[92m   Compiling[0m block-buffer v0.10.4
+[1m[92m   Compiling[0m digest v0.10.7
+[1m[92m   Compiling[0m zerofrom-derive v0.1.6
+[1m[92m   Compiling[0m displaydoc v0.2.5
+[1m[92m   Compiling[0m stable_deref_trait v1.2.1
+[1m[92m   Compiling[0m futures-io v0.3.32
+[1m[92m   Compiling[0m yoke-derive v0.8.2
+[1m[92m   Compiling[0m regex-syntax v0.8.8
+[1m[92m   Compiling[0m zerovec-derive v0.11.3
+[1m[92m   Compiling[0m autocfg v1.5.0
+[1m[92m   Compiling[0m futures-task v0.3.32
+[1m[92m   Compiling[0m futures-sink v0.3.32
+[1m[92m   Compiling[0m slab v0.4.12
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.228` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m socket2 v0.6.3
+[1m[92m   Compiling[0m errno v0.3.14
+[1m[92m   Compiling[0m allocator-api2 v0.2.21
+[1m[92m   Compiling[0m foldhash v0.2.0
+[1m[92m   Compiling[0m signal-hook-registry v1.4.8
+[1m[92m   Compiling[0m mio v1.2.0
+[1m[92m   Compiling[0m tokio-macros v2.7.0
+[1m[92m   Compiling[0m tokio v1.52.3
+[1m[92m   Compiling[0m futures-channel v0.3.32
+[1m[92m   Compiling[0m tracing-attributes v0.1.31
+[1m[92m   Compiling[0m futures-macro v0.3.32
+[1m[92m   Compiling[0m futures-util v0.3.32
+[1m[92m   Compiling[0m zmij v1.0.19
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.19` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m tracing-core v0.1.36
+[1m[92m   Compiling[0m aho-corasick v1.1.4
+[1m[92m   Compiling[0m regex-automata v0.4.13
+[1m[92m   Compiling[0m bitflags v2.13.1
+[1m[92m   Compiling[0m tracing v0.1.44
+[1m[92m   Compiling[0m percent-encoding v2.3.2
+[1m[92m   Compiling[0m fnv v1.0.7
+[1m[92m   Compiling[0m pkg-config v0.3.32
+[1m[92m   Compiling[0m fastrand v2.3.0
+[1m[92m   Compiling[0m num-traits v0.2.19
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m http v1.4.0
+[1m[92m   Compiling[0m getrandom v0.3.4
+[1m[92m   Compiling[0m serde_json v1.0.149
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m zerofrom v0.1.6
+[1m[92m   Compiling[0m powerfmt v0.2.0
+[1m[92m   Compiling[0m num-conv v0.2.0
+[1m[92m   Compiling[0m time-core v0.1.8
+[1m[92m   Compiling[0m time-macros v0.2.27
+[1m[92m   Compiling[0m deranged v0.5.5
+[1m[92m   Compiling[0m yoke v0.8.2
+[1m[92m   Compiling[0m http-body v1.0.1
+[1m[92m   Compiling[0m zerovec v0.11.6
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m tinystr v0.8.3
+[1m[92m   Compiling[0m num_threads v0.1.7
+[1m[92m   Compiling[0m utf8_iter v1.0.4
+[1m[92m   Compiling[0m time v0.3.47
+[1m[92m   Compiling[0m dunce v1.0.5
+[1m[92m   Compiling[0m indexmap v2.14.0
+[1m[92m   Compiling[0m http-body-util v0.1.3
+[1m[92m   Compiling[0m zerocopy v0.8.37
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.37` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m form_urlencoded v1.2.2
+[1m[92m   Compiling[0m tokio-util v0.7.18
+[1m[92m   Compiling[0m icu_properties_data v2.2.0
+[1m[92m   Compiling[0m icu_normalizer_data v2.2.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.2.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.2.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m untrusted v0.9.0
+[1m[92m   Compiling[0m base64 v0.22.1
+[1m[92m   Compiling[0m either v1.15.0
+[1m[92m   Compiling[0m writeable v0.6.2
+[1m[92m   Compiling[0m ppv-lite86 v0.2.21
+[1m[92m   Compiling[0m cmake v0.1.57
+[1m[92m   Compiling[0m crossbeam-utils v0.8.21
+[1m[92m   Compiling[0m fs_extra v1.3.0
+[1m[92m   Compiling[0m aws-lc-sys v0.45.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m sha2 v0.10.9
+[1m[92m   Compiling[0m ipnet v2.11.0
+[1m[92m   Compiling[0m litemap v0.8.1
+[1m[92m   Compiling[0m icu_locale_core v2.2.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.45.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m potential_utf v0.1.4
+[1m[92m   Compiling[0m zerotrie v0.2.4
+[1m[92m   Compiling[0m ring v0.17.14
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m icu_provider v2.2.0
+[1m[92m   Compiling[0m icu_collections v2.2.0
+[1m[92m   Compiling[0m bstr v1.12.1
+[1m[92m   Compiling[0m sync_wrapper v1.0.2
+[1m[92m   Compiling[0m atomic-waker v1.1.2
+[1m[92m   Compiling[0m aws-lc-rs v1.18.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m num-integer v0.1.46
+[1m[92m   Compiling[0m rustls-pki-types v1.14.0
+[1m[92m   Compiling[0m untrusted v0.7.1
+[1m[92m   Compiling[0m semver v1.0.27
+[1m[92m   Compiling[0m httpdate v1.0.3
+[1m[92m   Compiling[0m pin-utils v0.1.0
+[1m[92m   Compiling[0m rustc_version v0.4.1
+[1m[92m   Compiling[0m icu_properties v2.2.0
+[1m[92m   Compiling[0m icu_normalizer v2.2.0
+[1m[92m   Compiling[0m uuid v1.20.0
+[1m[92m   Compiling[0m winnow v1.0.4
+[1m[92m   Compiling[0m ryu v1.0.22
+[1m[92m   Compiling[0m httparse v1.10.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m toml_parser v1.1.3+spec-1.1.0
+[1m[92m   Compiling[0m idna_adapter v1.2.1
+[1m[92m   Compiling[0m rustls v0.23.46
+[1m[92m   Compiling[0m tinyvec_macros v0.1.1
+[1m[92m   Compiling[0m tinyvec v1.10.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m idna v1.1.0
+[1m[92m   Compiling[0m rustls-webpki v0.103.16
+[1m[92m   Compiling[0m sha1 v0.10.6
+[1m[92m   Compiling[0m hex v0.4.3
+[1m[92m   Compiling[0m toml_datetime v0.7.5+spec-1.1.0
+[1m[92m   Compiling[0m winnow v0.7.14
+[1m[92m   Compiling[0m try-lock v0.2.5
+[1m[92m   Compiling[0m crc32fast v1.5.0
+[1m[92m   Compiling[0m byteorder v1.5.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m want v0.3.1
+[1m[92m   Compiling[0m url v2.5.8
+[1m[92m   Compiling[0m rand_core v0.9.5
+[1m[92m   Compiling[0m rand_chacha v0.9.0
+[1m[92m   Compiling[0m h2 v0.4.16
+[1m[92m   Compiling[0m tower-service v0.3.3
+[1m[92m   Compiling[0m rand v0.9.3
+[1m[92m   Compiling[0m mime v0.3.17
+[1m[92m   Compiling[0m futures-executor v0.3.32
+[1m[92m   Compiling[0m hashbrown v0.16.1
+[1m[92m   Compiling[0m hyper v1.8.1
+[1m[92m   Compiling[0m regex v1.12.3
+[1m[92m   Compiling[0m openssl-probe v0.2.1
+[1m[92m   Compiling[0m rustls-native-certs v0.8.3
+[1m[92m   Compiling[0m hyper-util v0.1.20
+[1m[92m   Compiling[0m tokio-rustls v0.26.4
+[1m[92m   Compiling[0m tower-layer v0.3.3
+[1m[92m   Compiling[0m rustix v1.1.4
+[1m[92m   Compiling[0m vcpkg v0.2.15
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m linux-raw-sys v0.12.1
+[1m[92m   Compiling[0m tower v0.5.3
+[1m[92m   Compiling[0m toml_edit v0.23.10+spec-1.0.0
+[1m[92m   Compiling[0m webpki-roots v1.0.10
+[1m[92m   Compiling[0m psl-types v2.0.11
+[1m[92m   Compiling[0m proc-macro-crate v3.4.0
+[1m[92m   Compiling[0m lazy_static v1.5.0
+[1m[92m   Compiling[0m futures v0.3.31
+[1m[92m   Compiling[0m getrandom v0.4.2
+[1m[92m   Compiling[0m rand_core v0.10.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.2` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m spin v0.9.8
+[1m[92m   Compiling[0m async-trait v0.1.89
+[1m[92m   Compiling[0m heck v0.5.0
+[1m[92m   Compiling[0m unicode-xid v0.2.6
+[1m[92m   Compiling[0m anyhow v1.0.103
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.103` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m crossbeam-epoch v0.9.20
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.20` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m hyper-rustls v0.27.7
+[1m[92m   Compiling[0m openssl-sys v0.9.111
+[1m[92m   Compiling[0m num-bigint v0.4.6
+[1m[92m   Compiling[0m itertools v0.14.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.149` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.111` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m nibble_vec v0.1.0
+[1m[92m   Compiling[0m iana-time-zone v0.1.65
+[1m[92m   Compiling[0m strsim v0.11.1
+[1m[92m   Compiling[0m unicase v2.9.0
+[1m[92m   Compiling[0m same-file v1.0.6
+[1m[92m   Compiling[0m walkdir v2.5.0
+[1m[92m   Compiling[0m mime_guess v2.0.5
+[1m[92m   Compiling[0m const_format_proc_macros v0.2.34
+[1m[92m   Compiling[0m ahash v0.8.12
+[1m[92m   Compiling[0m iri-string v0.7.10
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m const_format v0.2.35
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m rama-macros v0.3.0-alpha.4
+[1m[92m   Compiling[0m wildcard v0.3.0
+[1m[92m   Compiling[0m smol_str v0.3.5
+[1m[92m   Compiling[0m foreign-types-shared v0.1.1
+[1m[92m   Compiling[0m openssl v0.10.75
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.75` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m foreign-types v0.3.2
+[1m[92m   Compiling[0m rama-utils v0.3.0-alpha.4
+[1m[92m   Compiling[0m flume v0.12.0
+[1m[92m   Compiling[0m tokio-graceful v0.2.2
+[1m[92m   Compiling[0m asynk-strim v0.1.5
+[1m[92m   Compiling[0m encoding_rs v0.8.35
+[1m[92m   Compiling[0m openssl-macros v0.1.1
+[1m[92m   Compiling[0m serde_derive_internals v0.29.1
+[1m[92m   Compiling[0m rama-error v0.3.0-alpha.4
+[1m[92m   Compiling[0m native-tls v0.2.14
+[1m[92m   Compiling[0m simd-adler32 v0.3.8
+[1m[92m   Compiling[0m data-encoding v2.10.0
+[1m[92m   Compiling[0m crc-catalog v2.4.0
+[1m[92m   Compiling[0m crc v3.4.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.14` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m rama-core v0.3.0-alpha.4
+[1m[92m   Compiling[0m tokio-stream v0.1.18
+[1m[92m   Compiling[0m cookie v0.18.1
+[1m[92m   Compiling[0m nom v8.0.0
+[1m[92m   Compiling[0m endian-type v0.2.0
+[1m[92m   Compiling[0m adler2 v2.0.1
+[1m[92m   Compiling[0m openssl-probe v0.1.6
+[1m[92m   Compiling[0m minimal-lexical v0.2.1
+[1m[92m   Compiling[0m nom v7.1.3
+[1m[92m   Compiling[0m miniz_oxide v0.8.9
+[1m[92m   Compiling[0m radix_trie v0.3.0
+[1m[92m   Compiling[0m rama-http-types v0.3.0-alpha.4
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m tempfile v3.27.0
+[1m[92m   Compiling[0m psl v2.1.184
+[1m[92m   Compiling[0m syn v1.0.109
+[1m[92m   Compiling[0m rayon-core v1.13.0
+[1m[92m   Compiling[0m anstyle v1.0.13
+[1m[92m   Compiling[0m litrs v1.0.0
+[1m[92m   Compiling[0m md5 v0.8.0
+[1m[92m   Compiling[0m dyn-clone v1.0.20
+[1m[92m   Compiling[0m rama-net v0.3.0-alpha.4
+[1m[92m   Compiling[0m document-features v0.2.12
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m tokio-native-tls v0.3.1
+[1m[92m   Compiling[0m tower-http v0.6.8
+[1m[92m   Compiling[0m chrono v0.4.43
+[1m[92m   Compiling[0m crossbeam-deque v0.8.6
+[1m[92m   Compiling[0m publicsuffix v2.3.0
+[1m[92m   Compiling[0m static_assertions v1.1.0
+[1m[92m   Compiling[0m schemars v0.8.22
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m cookie_store v0.22.1
+[1m[92m   Compiling[0m hyper-tls v0.6.0
+[1m[92m   Compiling[0m schemars_derive v0.8.22
+[1m[92m   Compiling[0m serde_urlencoded v0.7.1
+[1m[92m   Compiling[0m opentelemetry v0.31.0
+[1m[92m   Compiling[0m serde_repr v0.1.20
+[1m[92m   Compiling[0m option-ext v0.2.0
+[1m[92m   Compiling[0m termcolor v1.4.1
+[1m[92m   Compiling[0m cpufeatures v0.3.0
+[1m[92m   Compiling[0m ident_case v1.0.1
+[1m[92m   Compiling[0m gix-trace v0.1.18
+[1m[92m   Compiling[0m ref-cast v1.0.25
+[1m[92m   Compiling[0m parking v2.2.1
+[1m[92m   Compiling[0m unicode-segmentation v1.12.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.25` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m chacha20 v0.10.0
+[1m[92m   Compiling[0m ts-rs-macros v11.1.0
+[1m[92m   Compiling[0m dirs-sys v0.5.0
+[1m[92m   Compiling[0m reqwest v0.12.28
+[1m[92m   Compiling[0m gix-validate v0.11.0
+[1m[92m   Compiling[0m crossbeam-channel v0.5.15
+[1m[92m   Compiling[0m zstd-sys v2.1.2+zstd.1.5.7
+[1m[92m   Compiling[0m memoffset v0.9.1
+[1m[92m   Compiling[0m ref-cast-impl v1.0.25
+[1m[92m   Compiling[0m utf8parse v0.2.2
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m gix-path v0.11.2
+[1m[92m   Compiling[0m dirs v6.0.0
+[1m[92m   Compiling[0m ts-rs v11.1.0
+[1m[92m   Compiling[0m rand v0.10.1
+[1m[92m   Compiling[0m sharded-slab v0.1.7
+[1m[92m   Compiling[0m env_filter v1.0.0
+[1m[92m   Compiling[0m unicode-normalization v0.1.25
+[1m[92m   Compiling[0m heapless v0.7.17
+[1m[92m   Compiling[0m tracing-log v0.2.0
+[1m[92m   Compiling[0m thread_local v1.1.9
+[1m[92m   Compiling[0m bytemuck_derive v1.10.2
+[1m[92m   Compiling[0m enumflags2_derive v0.7.12
+[1m[92m   Compiling[0m nu-ansi-term v0.50.3
+[1m[92m   Compiling[0m cfg_aliases v0.1.1
+[1m[92m   Compiling[0m zlib-rs v0.5.5
+[1m[92m   Compiling[0m typeid v1.0.3
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m flate2 v1.1.8
+[1m[92m   Compiling[0m nix v0.28.0
+[1m[92m   Compiling[0m tracing-subscriber v0.3.22
+[1m[92m   Compiling[0m enumflags2 v0.7.12
+[1m[92m   Compiling[0m bytemuck v1.25.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m gix-utils v0.3.1
+[1m[92m   Compiling[0m env_logger v0.11.9
+[1m[92m   Compiling[0m codex-utils-absolute-path v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/absolute-path)
+[1m[92m   Compiling[0m rusticata-macros v4.1.0
+[1m[92m   Compiling[0m enum-as-inner v0.6.1
+[1m[92m   Compiling[0m hash32 v0.2.1
+[1m[92m   Compiling[0m logos-codegen v0.15.1
+[1m[92m   Compiling[0m asn1-rs-derive v0.6.0
+[1m[92m   Compiling[0m blake3 v1.8.2
+[1m[92m   Compiling[0m arrayvec v0.7.6
+[1m[92m   Compiling[0m asn1-rs-impl v0.2.0
+[1m[92m   Compiling[0m dupe_derive v0.9.1
+[1m[92m   Compiling[0m bit-vec v0.8.0
+[1m[92m   Compiling[0m allocative v0.3.6
+[1m[92m   Compiling[0m atomic v0.5.3
+[1m[92m   Compiling[0m regex-lite v0.1.8
+[1m[92m   Compiling[0m erased-serde v0.4.10
+[1m[92m   Compiling[0m tagptr v0.2.0
+[1m[92m   Compiling[0m linktime-proc-macro v0.1.0
+[1m[92m   Compiling[0m link-section v0.17.2
+[1m[92m   Compiling[0m zstd-safe v7.4.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@7.4.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m ctor v1.0.6
+[1m[92m   Compiling[0m moka v0.12.13
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m lock_free_hashtable v0.1.4
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m bit-set v0.8.0
+[1m[92m   Compiling[0m dupe v0.9.1
+[1m[92m   Compiling[0m asn1-rs v0.7.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m hickory-proto v0.25.2
+[1m[92m   Compiling[0m quickcheck v1.1.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m anstyle-parse v0.2.7
+[1m[92m   Compiling[0m cobs v0.3.0
+[1m[92m   Compiling[0m allocative_derive v0.3.6
+[1m[92m   Compiling[0m strong_hash_derive v0.1.0
+[1m[92m   Compiling[0m bumpalo v3.19.1
+[1m[92m   Compiling[0m oid-registry v0.8.1
+[1m[92m   Compiling[0m rama-http-headers v0.3.0-alpha.4
+[1m[92m   Compiling[0m anstyle-query v1.1.5
+[1m[92m   Compiling[0m constant_time_eq v0.3.1
+[1m[92m   Compiling[0m unicode-width v0.1.14
+[1m[92m   Compiling[0m resolv-conf v0.7.6
+[1m[92m   Compiling[0m colorchoice v1.0.4
+[1m[92m   Compiling[0m is_terminal_polyfill v1.70.2
+[1m[92m   Compiling[0m beef v0.5.2
+[1m[92m   Compiling[0m hashbrown v0.14.5
+[1m[92m   Compiling[0m arrayref v0.3.9
+[1m[92m   Compiling[0m dashmap v6.1.0
+[1m[92m   Compiling[0m anstream v0.6.21
+[1m[92m   Compiling[0m hickory-resolver v0.25.2
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0-alpha.4` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m strong_hash v0.1.0
+[1m[92m   Compiling[0m postcard v1.1.3
+[1m[92m   Compiling[0m sorted_vector_map v0.2.1
+[1m[92m   Compiling[0m fancy-regex v0.16.2
+[1m[92m   Compiling[0m static_interner v0.1.2
+[1m[92m   Compiling[0m convert_case v0.6.0
+[1m[92m   Compiling[0m Inflector v0.11.4
+[1m[92m   Compiling[0m schemafy_core v0.5.2
+[1m[92m   Compiling[0m codex-utils-rustls-provider v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/rustls-provider)
+[1m[92m   Compiling[0m triomphe v0.1.15
+[1m[92m   Compiling[0m prodash v31.0.0
+[1m[92m   Compiling[0m csv-core v0.1.13
+[1m[92m   Compiling[0m pagable_derive v0.4.1
+[1m[92m   Compiling[0m urlencoding v2.1.3
+[1m[92m   Compiling[0m clap_lex v1.0.0
+[1m[92m   Compiling[0m starlark_map v0.14.2
+[1m[92m   Compiling[0m sequence_trie v0.3.6
+[1m[92m   Compiling[0m take_mut v0.2.2
+[1m[92m   Compiling[0m bitflags v1.3.2
+[1m[92m   Compiling[0m zlib-rs v0.6.3
+[1m[92m   Compiling[0m inventory v0.3.24
+[1m[92m   Compiling[0m pagable v0.4.1
+[1m[92m   Compiling[0m gix-features v0.46.2
+[1m[92m   Compiling[0m fluent-uri v0.1.4
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m clap_builder v4.5.58
+[1m[92m   Compiling[0m csv v1.4.0
+[1m[92m   Compiling[0m schemafy_lib v0.5.2
+[1m[92m   Compiling[0m derive_more-impl v1.0.0
+[1m[92m   Compiling[0m zstd v0.13.4
+[1m[92m   Compiling[0m rama-dns v0.3.0-alpha.4
+[1m[92m   Compiling[0m logos-derive v0.15.1
+[1m[92m   Compiling[0m der-parser v10.0.0
+[1m[92m   Compiling[0m tracing-opentelemetry v0.32.1
+[1m[92m   Compiling[0m darling_core v0.21.3
+[1m[92m   Compiling[0m clap_derive v4.5.55
+[1m[92m   Compiling[0m fxhash v0.2.1
+[1m[92m   Compiling[0m serde_html_form v0.3.2
+[1m[92m   Compiling[0m concurrent-queue v2.5.0
+[1m[92m   Compiling[0m pem v3.0.6
+[1m[92m   Compiling[0m endian-type v0.1.2
+[1m[92m   Compiling[0m http-range-header v0.4.2
+[1m[92m   Compiling[0m heapless v0.8.0
+[1m[92m   Compiling[0m icu_locale_data v2.2.0
+[1m[92m   Compiling[0m paste v1.0.15
+[1m[92m   Compiling[0m matchit v0.9.1
+[1m[92m   Compiling[0m rama-http v0.3.0-alpha.4
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_data@2.2.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m radix_trie v0.2.1
+[1m[92m   Compiling[0m clap v4.5.58
+[1m[92m   Compiling[0m darling_macro v0.21.3
+[1m[92m   Compiling[0m codex-http-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/http-client)
+[1m[92m   Compiling[0m x509-parser v0.18.1
+[1m[92m   Compiling[0m logos v0.15.1
+[1m[92m   Compiling[0m rama-tcp v0.3.0-alpha.4
+[1m[92m   Compiling[0m derive_more v1.0.0
+[1m[92m   Compiling[0m schemafy v0.5.2
+[1m[92m   Compiling[0m lsp-types v0.97.0
+[1m[92m   Compiling[0m annotate-snippets v0.9.2
+[1m[92m   Compiling[0m derivative v2.2.0
+[1m[92m   Compiling[0m tokio-test v0.4.5
+[1m[92m   Compiling[0m fdeflate v0.3.7
+[1m[92m   Compiling[0m fd-lock v4.0.4
+[1m[92m   Compiling[0m hash32 v0.3.1
+[1m[92m   Compiling[0m globset v0.4.18
+[1m[92m   Compiling[0m yasna v0.5.2
+[1m[92m   Compiling[0m pxfm v0.1.27
+[1m[92m   Compiling[0m quick-error v2.0.1
+[1m[92m   Compiling[0m color_quant v1.1.0
+[1m[92m   Compiling[0m starlark v0.14.2
+[1m[92m   Compiling[0m indenter v0.3.4
+[1m[92m   Compiling[0m icu_decimal_data v2.2.0
+[1m[92m   Compiling[0m byteorder-lite v0.1.0
+[1m[92m   Compiling[0m home v0.5.12
+[1m[92m   Compiling[0m zune-core v0.5.1
+[1m[92m   Compiling[0m weezl v0.1.12
+[1m[92m   Compiling[0m gif v0.14.1
+[1m[92m   Compiling[0m zune-jpeg v0.5.12
+[1m[92m   Compiling[0m rustyline v14.0.0
+[1m[92m   Compiling[0m image-webp v0.2.4
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.2.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m display_container v0.9.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark@0.14.2` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m moxcms v0.7.11
+[1m[92m   Compiling[0m rcgen v0.14.7
+[1m[92m   Compiling[0m png v0.18.0
+[1m[92m   Compiling[0m rama-http-core v0.3.0-alpha.4
+[1m[92m   Compiling[0m starlark_syntax v0.14.2
+[1m[92m   Compiling[0m debugserver-types v0.5.0
+[1m[92m   Compiling[0m darling v0.21.3
+[1m[92m   Compiling[0m textwrap v0.11.0
+[1m[92m   Compiling[0m starlark_derive v0.14.2
+[1m[92m   Compiling[0m codex-utils-home-dir v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/home-dir)
+[1m[92m   Compiling[0m rama-udp v0.3.0-alpha.4
+[1m[92m   Compiling[0m rama-unix v0.3.0-alpha.4
+[1m[92m   Compiling[0m gix-error v0.2.1
+[1m[92m   Compiling[0m lru v0.18.2
+[1m[92m   Compiling[0m erased-serde v0.3.31
+[1m[92m   Compiling[0m thiserror v1.0.69
+[1m[92m   Compiling[0m strsim v0.10.0
+[1m[92m   Compiling[0m cmp_any v0.8.1
+[1m[92m   Compiling[0m maplit v1.0.2
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m codex-utils-cache v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/cache)
+[1m[92m   Compiling[0m rama-http-backend v0.3.0-alpha.4
+[1m[92m   Compiling[0m rama-socks5 v0.3.0-alpha.4
+[1m[92m   Compiling[0m icu_locale v2.2.0
+[1m[92m   Compiling[0m serde_with_macros v3.17.0
+[1m[92m   Compiling[0m image v0.25.9
+[1m[92m   Compiling[0m faster-hex v0.10.0
+[1m[92m   Compiling[0m rama-tls-rustls v0.3.0-alpha.4
+[1m[92m   Compiling[0m event-listener v5.4.1
+[1m[92m   Compiling[0m strum_macros v0.27.2
+[1m[92m   Compiling[0m fixed_decimal v0.7.2
+[1m[92m   Compiling[0m multimap v0.10.1
+[1m[92m   Compiling[0m thiserror-impl v1.0.69
+[1m[92m   Compiling[0m codex-execpolicy v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/execpolicy)
+[1m[92m   Compiling[0m icu_decimal v2.2.0
+[1m[92m   Compiling[0m strum v0.27.2
+[1m[92m   Compiling[0m codex-network-proxy v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/network-proxy)
+[1m[92m   Compiling[0m codex-utils-image v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/image)
+[1m[92m   Compiling[0m serde_with v3.17.0
+[1m[92m   Compiling[0m codex-utils-path-uri v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/path-uri)
+[1m[92m   Compiling[0m codex-utils-string v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/string)
+[1m[92m   Compiling[0m codex-extension-items v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/items)
+[1m[92m   Compiling[0m landlock v0.4.4
+[1m[92m   Compiling[0m codex-utils-redacted-string v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/redacted-string)
+[1m[92m   Compiling[0m chardetng v0.1.17
+[1m[92m   Compiling[0m strum_macros v0.28.0
+[1m[92m   Compiling[0m codex-async-utils v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/async-utils)
+[1m[92m   Compiling[0m quick-xml v0.41.0
+[1m[92m   Compiling[0m seccompiler v0.5.0
+[1m[92m   Compiling[0m sys-locale v0.3.2
+[1m[92m   Compiling[0m wildmatch v2.6.1
+[1m[92m   Compiling[0m codex-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/protocol)
+[1m[92m   Compiling[0m sha1-checked v0.10.0
+[1m[92m   Compiling[0m gix-hash v0.23.0
+[1m[92m   Compiling[0m block-padding v0.3.3
+[1m[92m   Compiling[0m jiff v0.2.23
+[1m[92m   Compiling[0m cfg_aliases v0.2.1
+[1m[92m   Compiling[0m gix-date v0.15.1
+[1m[92m   Compiling[0m inout v0.1.4
+[1m[92m   Compiling[0m event-listener-strategy v0.5.4
+[1m[92m   Compiling[0m prost-derive v0.14.3
+[1m[92m   Compiling[0m cipher v0.4.4
+[1m[92m   Compiling[0m gix-actor v0.40.0
+[1m[92m   Compiling[0m gix-hashtable v0.13.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m gix-object v0.58.0
+[1m[92m   Compiling[0m memmap2 v0.9.10
+[1m[92m   Compiling[0m async-channel v2.5.0
+[1m[92m   Compiling[0m hmac v0.12.1
+[1m[92m   Compiling[0m headers-core v0.3.0
+[1m[92m   Compiling[0m pin-project-internal v1.1.10
+[1m[92m   Compiling[0m pin-project v1.1.10
+[1m[92m   Compiling[0m headers v0.4.1
+[1m[92m   Compiling[0m gix-fs v0.19.2
+[1m[92m   Compiling[0m rand_chacha v0.3.1
+[1m[92m   Compiling[0m utf-8 v0.7.6
+[1m[92m   Compiling[0m rustversion v1.0.22
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.22` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m tungstenite v0.27.0 (https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30)
+[1m[92m   Compiling[0m rand v0.8.6
+[1m[92m   Compiling[0m gix-chunk v0.7.0
+[1m[92m   Compiling[0m shell-words v1.1.1
+[1m[92m   Compiling[0m nonempty v0.12.0
+[1m[92m   Compiling[0m tokio-tungstenite v0.28.0 (https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73)
+[1m[92m   Compiling[0m gix-tempfile v21.0.2
+[1m[92m   Compiling[0m hyper-timeout v0.5.2
+[1m[92m   Compiling[0m universal-hash v0.5.1
+[1m[92m   Compiling[0m opaque-debug v0.3.1
+[1m[92m   Compiling[0m tonic v0.14.3
+[1m[92m   Compiling[0m gix-lock v21.0.2
+[1m[92m   Compiling[0m arc-swap v1.9.0
+[1m[92m   Compiling[0m prost v0.14.3
+[1m[92m   Compiling[0m nix v0.30.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.30.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m tonic-prost v0.14.3
+[1m[92m   Compiling[0m codex-websocket-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/websocket-client)
+[1m[92m   Compiling[0m gix-commitgraph v0.35.0
+[1m[92m   Compiling[0m gix-quote v0.7.0
+[1m[92m   Compiling[0m eventsource-stream v0.2.3
+[1m[92m   Compiling[0m curve25519-dalek v4.1.3
+[1m[92m   Compiling[0m gix-sec v0.13.2
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m codex-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-client)
+[1m[92m   Compiling[0m gix-revwalk v0.29.0
+[1m[92m   Compiling[0m gix-ref v0.61.0
+[1m[92m   Compiling[0m filedescriptor v0.8.3
+[1m[92m   Compiling[0m unic-langid-impl v0.9.6
+[1m[92m   Compiling[0m aead v0.5.2
+[1m[92m   Compiling[0m serial2 v0.2.33
+[1m[92m   Compiling[0m curve25519-dalek-derive v0.1.1
+[1m[92m   Compiling[0m base64ct v1.8.3
+[1m[92m   Compiling[0m downcast-rs v1.2.1
+[1m[92m   Compiling[0m portable-pty v0.9.0
+[1m[92m   Compiling[0m pem-rfc7468 v0.7.0
+[1m[92m   Compiling[0m unic-langid v0.9.6
+[1m[92m   Compiling[0m codex-api v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-api)
+[1m[92m   Compiling[0m gix-command v0.8.0
+[1m[92m   Compiling[0m gix-packetline v0.21.2
+[1m[92m   Compiling[0m gix-glob v0.24.0
+[1m[92m   Compiling[0m gix-url v0.35.2
+[1m[92m   Compiling[0m opentelemetry_sdk v0.31.0
+[1m[92m   Compiling[0m clru v0.6.3
+[1m[92m   Compiling[0m http v0.2.12
+[1m[92m   Compiling[0m const-hex v1.17.0
+[1m[92m   Compiling[0m outref v0.5.2
+[1m[92m   Compiling[0m vsimd v0.8.0
+[1m[92m   Compiling[0m rustc-hash v2.1.1
+[1m[92m   Compiling[0m type-map v0.5.1
+[1m[92m   Compiling[0m base64-simd v0.8.0
+[1m[92m   Compiling[0m opentelemetry-proto v0.31.0
+[1m[92m   Compiling[0m http-body v0.4.6
+[1m[92m   Compiling[0m gix-pack v0.68.0
+[1m[92m   Compiling[0m gix-transport v0.55.1
+[1m[92m   Compiling[0m der v0.7.10
+[1m[92m   Compiling[0m codex-utils-pty v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/pty)
+[1m[92m   Compiling[0m gix-revision v0.43.0
+[1m[92m   Compiling[0m gix-shallow v0.10.0
+[1m[92m   Compiling[0m gix-config-value v0.17.1
+[1m[92m   Compiling[0m opentelemetry-http v0.31.0
+[1m[92m   Compiling[0m bytes-utils v0.1.4
+[1m[92m   Compiling[0m maybe-async v0.2.10
+[1m[92m   Compiling[0m unicode-bom v2.0.3
+[1m[92m   Compiling[0m tree-sitter-language v0.1.7
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-language@0.1.7` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m gix-config v0.54.0
+[1m[92m   Compiling[0m gix-protocol v0.59.0
+[1m[92m   Compiling[0m aws-smithy-types v1.4.7
+[1m[92m   Compiling[0m opentelemetry-otlp v0.31.0
+[1m[92m   Compiling[0m gix-refspec v0.39.0
+[1m[92m   Compiling[0m spki v0.7.3
+[1m[92m   Compiling[0m gix-odb v0.78.0
+[1m[92m   Compiling[0m gix-discover v0.49.0
+[1m[92m   Compiling[0m os_info v3.14.0
+[1m[92m   Compiling[0m gix-traverse v0.55.0
+[1m[92m   Compiling[0m gix-diff v0.61.0
+[1m[92m   Compiling[0m aes v0.8.4
+[1m[92m   Compiling[0m codex-file-system v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/file-system)
+[1m[92m   Compiling[0m opentelemetry-appender-tracing v0.31.1
+[1m[92m   Compiling[0m gethostname v1.1.0
+[1m[92m   Compiling[0m similar v2.7.0
+[1m[92m   Compiling[0m opentelemetry-semantic-conventions v0.31.0
+[1m[92m   Compiling[0m self_cell v1.2.2
+[1m[92m   Compiling[0m self_cell v0.10.3
+[1m[92m   Compiling[0m codex-otel v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/otel)
+[1m[92m   Compiling[0m gix v0.81.0
+[1m[92m   Compiling[0m pkcs8 v0.10.2
+[1m[92m   Compiling[0m fluent-syntax v0.11.1
+[1m[92m   Compiling[0m futures-lite v2.6.1
+[1m[92m   Compiling[0m zvariant_utils v2.1.0
+[1m[92m   Compiling[0m rustc-hash v1.1.0
+[1m[92m   Compiling[0m codex-git-utils v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/git-utils)
+[1m[92m   Compiling[0m rust-embed-utils v8.11.0
+[1m[92m   Compiling[0m aws-smithy-async v1.2.14
+[1m[92m   Compiling[0m serde_spanned v1.1.1
+[1m[92m   Compiling[0m serde_path_to_error v0.1.20
+[1m[92m   Compiling[0m aws-smithy-runtime-api-macros v1.0.0
+[1m[92m   Compiling[0m async-task v4.7.1
+[1m[92m   Compiling[0m windows_x86_64_gnu v0.52.6
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_gnu@0.52.6` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m aws-smithy-runtime-api v1.12.0
+[1m[92m   Compiling[0m toml v0.9.11+spec-1.1.0
+[1m[92m   Compiling[0m rust-embed-impl v8.11.0
+[1m[92m   Compiling[0m zvariant_derive v4.2.0
+[1m[92m   Compiling[0m x25519-dalek v2.0.1
+[1m[92m   Compiling[0m poly1305 v0.8.0
+[1m[92m   Compiling[0m nix v0.29.0
+[1m[92m   Compiling[0m toml v0.5.11
+[1m[92m   Compiling[0m piper v0.2.4
+[1m[92m   Compiling[0m async-io v2.6.0
+[1m[92m   Compiling[0m endi v1.1.1
+[1m[92m   Compiling[0m toml_writer v1.0.6+spec-1.1.0
+[1m[92m   Compiling[0m zvariant v4.2.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#async-io@2.6.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m blocking v1.6.2
+[1m[92m   Compiling[0m find-crate v0.6.3
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.29.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m i18n-config v0.4.8 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/i18n-config-0.4.8)
+[1m[33mwarning[0m[1m: hiding a lifetime that's elided elsewhere is confusing[0m
+   [1m[94m--> [0mthird_party/i18n-config-0.4.8/src/lib.rs:144:9
+    [1m[94m|[0m
+[1m[94m144[0m [1m[94m|[0m         &self,
+    [1m[94m|[0m         [1m[33m^^^^^[0m [1m[33mthe lifetime is elided here[0m
+[1m[94m145[0m [1m[94m|[0m     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                          [1m[33m^^[0m [1m[33m^^^^^[0m   [1m[33m^^[0m [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m                          [1m[33m|[0m  [1m[33m|[0m
+    [1m[94m|[0m                          [1m[33m|[0m  [1m[33mthe same lifetime is hidden here[0m
+    [1m[94m|[0m                          [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mhelp[0m: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    [1m[94m= [0m[1mnote[0m: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+[1m[96mhelp[0m: use `'_` for type paths
+    [1m[94m|[0m
+[1m[94m145[0m [1m[94m| [0m    ) -> Result<Option<(&'_ Crate[92m<'_>[0m, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                                  [92m++++[0m
+
+[1m[33mwarning[0m[1m: hiding a lifetime that's elided elsewhere is confusing[0m
+   [1m[94m--> [0mthird_party/i18n-config-0.4.8/src/lib.rs:155:26
+    [1m[94m|[0m
+[1m[94m155[0m [1m[94m|[0m     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                          [1m[33m^^^^^[0m                     [1m[33m^^[0m [1m[33m^^^^^[0m   [1m[33m^^[0m [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m                          [1m[33m|[0m                         [1m[33m|[0m  [1m[33m|[0m
+    [1m[94m|[0m                          [1m[33m|[0m                         [1m[33m|[0m  [1m[33mthe same lifetime is hidden here[0m
+    [1m[94m|[0m                          [1m[33m|[0m                         [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m                          [1m[33mthe lifetime is elided here[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mhelp[0m: the same lifetime is referred to in inconsistent ways, making the signature confusing
+[1m[96mhelp[0m: use `'_` for type paths
+    [1m[94m|[0m
+[1m[94m155[0m [1m[94m| [0m    pub fn active_config(&self) -> Result<Option<(&'_ Crate[92m<'_>[0m, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                                                            [92m++++[0m
+
+[1m[33mwarning[0m: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+[1m[92m   Compiling[0m intl-memoizer v0.5.3
+[1m[92m   Compiling[0m intl_pluralrules v7.0.2
+[1m[92m   Compiling[0m fluent-langneg v0.13.1
+[1m[92m   Compiling[0m hkdf v0.12.4
+[1m[92m   Compiling[0m salsa20 v0.10.2
+[1m[92m   Compiling[0m async-lock v3.4.2
+[1m[92m   Compiling[0m codex-utils-path v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/path-utils)
+[1m[92m   Compiling[0m polling v3.11.0
+[1m[92m   Compiling[0m signature v2.2.0
+[1m[92m   Compiling[0m async-fs v2.2.0
+[1m[92m   Compiling[0m fluent-bundle v0.15.3
+[1m[92m   Compiling[0m windows-targets v0.52.6
+[1m[92m   Compiling[0m i18n-embed-impl v0.8.4
+[1m[92m   Compiling[0m zbus_names v3.0.0
+[1m[92m   Compiling[0m async-executor v1.13.3
+[1m[92m   Compiling[0m zbus_macros v4.4.0
+[1m[92m   Compiling[0m async-broadcast v0.7.2
+[1m[92m   Compiling[0m tree-sitter v0.25.10
+[1m[92m   Compiling[0m num-rational v0.4.2
+[1m[92m   Compiling[0m num-iter v0.1.45
+[1m[92m   Compiling[0m num-complex v0.4.6
+[1m[92m   Compiling[0m tree-sitter-bash v0.25.1
+[1m[92m   Compiling[0m tree-sitter-powershell v0.26.4
+[1m[92m   Compiling[0m ordered-stream v0.2.0
+[1m[92m   Compiling[0m xdg-home v1.3.0
+[1m[92m   Compiling[0m glob v0.3.3
+[1m[92m   Compiling[0m env_home v0.1.0
+[1m[92m   Compiling[0m which v8.0.0
+[1m[92m   Compiling[0m zbus v4.4.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-powershell@0.26.4` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-bash@0.25.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m num v0.4.3
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter@0.25.10` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m windows-result v0.2.0
+[1m[92m   Compiling[0m fluent v0.16.1
+[1m[92m   Compiling[0m codex-features v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/features)
+[1m[92m   Compiling[0m toml_edit v0.24.0+spec-1.1.0
+[1m[92m   Compiling[0m rust-embed v8.11.0
+[1m[92m   Compiling[0m codex-model-provider-info v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/model-provider-info)
+[1m[92m   Compiling[0m cbc v0.1.2
+[1m[92m   Compiling[0m chacha20 v0.9.1
+[1m[92m   Compiling[0m dns-lookup v3.0.1
+[1m[92m   Compiling[0m serde_ignored v0.1.14
+[1m[92m   Compiling[0m proc-macro-error-attr2 v2.0.0
+[1m[92m   Compiling[0m streaming-iterator v0.1.9
+[1m[92m   Compiling[0m proc-macro-error2 v2.0.1
+[1m[92m   Compiling[0m codex-config v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/config)
+[1m[92m   Compiling[0m chacha20poly1305 v0.10.1
+[1m[92m   Compiling[0m secret-service v4.0.0
+[1m[92m   Compiling[0m i18n-embed v0.15.4
+[1m[92m   Compiling[0m windows-strings v0.1.0
+[1m[92m   Compiling[0m pbkdf2 v0.12.2
+[1m[92m   Compiling[0m cookie-factory v0.3.3
+[1m[92m   Compiling[0m linux-keyutils v0.2.4
+[1m[92m   Compiling[0m secrecy v0.10.3
+[1m[92m   Compiling[0m windows-implement v0.58.0
+[1m[92m   Compiling[0m windows-interface v0.58.0
+[1m[92m   Compiling[0m io_tee v0.1.1
+[1m[92m   Compiling[0m base64 v0.21.7
+[1m[92m   Compiling[0m age-core v0.11.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.21` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m windows-core v0.58.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m keyring v3.6.3
+[1m[92m   Compiling[0m scrypt v0.11.0
+[1m[92m   Compiling[0m codex-shell-command v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/shell-command)
+[1m[92m   Compiling[0m i18n-embed-fl v0.9.4
+[1m[92m   Compiling[0m aws-smithy-http v0.62.6
+[1m[92m   Compiling[0m aws-credential-types v1.2.11
+[1m[92m   Compiling[0m polyval v0.6.2
+[1m[92m   Compiling[0m aws-types v1.3.11
+[1m[92m   Compiling[0m dirs-sys-next v0.1.2
+[1m[92m   Compiling[0m bech32 v0.9.1
+[1m[92m   Compiling[0m codex-windows-sandbox v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/windows-sandbox-rs)
+[1m[92m   Compiling[0m keccak v0.1.6
+[1m[92m   Compiling[0m sha3 v0.10.9
+[1m[92m   Compiling[0m age v0.11.2
+[1m[92m   Compiling[0m dirs-next v2.0.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-types@1.3.11` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m ghash v0.5.1
+[1m[92m   Compiling[0m codex-keyring-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/keyring-store)
+[1m[92m   Compiling[0m windows v0.58.0
+[1m[92m   Compiling[0m ed25519 v2.2.3
+[1m[92m   Compiling[0m aws-smithy-observability v0.1.5
+[1m[92m   Compiling[0m aws-smithy-http-client v1.1.12
+[1m[92m   Compiling[0m ctr v0.9.2
+[1m[92m   Compiling[0m tracing-appender v0.2.4
+[1m[92m   Compiling[0m thiserror-impl-no-std v2.0.2
+[1m[92m   Compiling[0m debugid v0.8.0
+[1m[92m   Compiling[0m kem v0.3.0-pre.0
+[1m[92m   Compiling[0m hybrid-array v0.2.3
+[1m[92m   Compiling[0m ml-kem v0.2.3
+[1m[92m   Compiling[0m sentry-types v0.46.1
+[1m[92m   Compiling[0m thiserror-no-std v2.0.2
+[1m[92m   Compiling[0m aes-gcm v0.10.3
+[1m[92m   Compiling[0m aws-smithy-runtime v1.9.5
+[1m[92m   Compiling[0m ed25519-dalek v2.2.0
+[1m[92m   Compiling[0m codex-secrets v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/secrets)
+[1m[92m   Compiling[0m aws-sigv4 v1.3.7
+[1m[92m   Compiling[0m crypto_secretbox v0.1.1
+[1m[92m   Compiling[0m simple_asn1 v0.6.4
+[1m[92m   Compiling[0m libsqlite3-sys v0.37.0
+[1m[92m   Compiling[0m axum-core v0.5.6
+[1m[92m   Compiling[0m hashlink v0.11.0
+[1m[92m   Compiling[0m blake2 v0.10.6
+[1m[92m   Compiling[0m ff v0.13.1
+[1m[92m   Compiling[0m syn v3.0.3
+[1m[92m   Compiling[0m object v0.37.3
+[1m[92m   Compiling[0m base16ct v0.2.0
+[1m[92m   Compiling[0m chunked_transfer v1.5.0
+[1m[92m   Compiling[0m matchit v0.8.4
+[1m[92m   Compiling[0m prettyplease v0.2.37
+[1m[92m   Compiling[0m ascii v1.1.0
+[1m[92m   Compiling[0m tiny_http v0.12.0
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.2` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m axum v0.8.8
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.4` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.18` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m sec1 v0.7.3
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#object@0.37.3` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m darling_core v0.24.0
+[1m[92m   Compiling[0m group v0.13.0
+[1m[92m   Compiling[0m crypto_box v0.9.1
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m jsonwebtoken v9.3.1
+[1m[92m   Compiling[0m aws-runtime v1.5.17
+[1m[92m   Compiling[0m clatter v2.2.0
+[1m[92m   Compiling[0m codex-sandboxing v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/sandboxing)
+[1m[92m   Compiling[0m sentry-core v0.46.1
+[1m[92m   Compiling[0m codex-exec-server-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server-protocol)
+[1m[92m   Compiling[0m aws-smithy-json v0.61.9
+[1m[92m   Compiling[0m webbrowser v1.2.4
+[1m[92m   Compiling[0m crypto-bigint v0.5.5
+[1m[92m   Compiling[0m gimli v0.32.3
+[1m[92m   Compiling[0m foldhash v0.1.5
+[1m[92m   Compiling[0m hashbrown v0.15.5
+[1m[92m   Compiling[0m addr2line v0.25.1
+[1m[92m   Compiling[0m elliptic-curve v0.13.8
+[1m[92m   Compiling[0m codex-exec-server v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server)
+[1m[92m   Compiling[0m codex-agent-identity v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/agent-identity)
+[1m[92m   Compiling[0m darling_macro v0.24.0
+[1m[92m   Compiling[0m crossbeam-queue v0.3.12
+[1m[92m   Compiling[0m futures-intrusive v0.5.0
+[1m[92m   Compiling[0m codex-workload-identity v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/workload-identity)
+[1m[92m   Compiling[0m codex-terminal-detection v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/terminal-detection)
+[1m[92m   Compiling[0m findshlibs v0.10.2
+[1m[92m   Compiling[0m codex-utils-template v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/template)
+[1m[92m   Compiling[0m rustc-demangle v0.1.27
+[1m[92m   Compiling[0m fixedbitset v0.5.7
+[1m[92m   Compiling[0m sqlx-core v0.9.0
+[1m[92m   Compiling[0m petgraph v0.8.3
+[1m[92m   Compiling[0m backtrace v0.3.76
+[1m[92m   Compiling[0m codex-login v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/login)
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#findshlibs@0.10.2` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m prost-types v0.14.3
+[1m[92m   Compiling[0m darling v0.24.0
+[1m[92m   Compiling[0m atoi v2.0.0
+[1m[92m   Compiling[0m rfc6979 v0.4.0
+[1m[92m   Compiling[0m schemars_derive v1.2.1
+[1m[92m   Compiling[0m sentry-contexts v0.46.1
+[1m[92m   Compiling[0m rmcp v3.1.3
+[1m[92m   Compiling[0m xmlparser v0.13.6
+[1m[92m   Compiling[0m aws-smithy-xml v0.60.13
+[1m[92m   Compiling[0m prost-build v0.14.3
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rmcp@3.1.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry-contexts@0.46.1` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m schemars v1.2.1
+[1m[92m   Compiling[0m ecdsa v0.16.9
+[1m[92m   Compiling[0m sqlx-sqlite v0.9.0
+[1m[92m   Compiling[0m rmcp-macros v3.1.3
+[1m[92m   Compiling[0m sentry-backtrace v0.46.1
+[1m[92m   Compiling[0m tonic-build v0.14.3
+[1m[92m   Compiling[0m primeorder v0.13.6
+[1m[92m   Compiling[0m oauth2 v5.0.0
+[1m[92m   Compiling[0m aws-smithy-query v0.60.9
+[1m[92m   Compiling[0m process-wrap v9.0.1
+[1m[92m   Compiling[0m reqwest v0.13.4
+[1m[92m   Compiling[0m sse-stream v0.2.5
+[1m[92m   Compiling[0m uname v0.1.1
+[1m[92m   Compiling[0m hostname v0.4.2
+[1m[92m   Compiling[0m base64 v0.23.0
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-x86_64 v3.2.0
+[1m[92m   Compiling[0m dotenvy v0.15.7
+[1m[92m   Compiling[0m protoc-bin-vendored-macos-aarch_64 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-x86_32 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-aarch_64 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-macos-x86_64 v3.2.0
+[1m[92m   Compiling[0m pastey v0.2.1
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-ppcle_64 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-win32 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored-linux-s390_64 v3.2.0
+[1m[92m   Compiling[0m protoc-bin-vendored v3.2.0
+[1m[92m   Compiling[0m sqlx-macros-core v0.9.0
+[1m[92m   Compiling[0m aws-sdk-sts v1.95.0
+[1m[92m   Compiling[0m p256 v0.13.2
+[1m[92m   Compiling[0m tonic-prost-build v0.14.3
+[1m[92m   Compiling[0m sentry-panic v0.46.1
+[1m[92m   Compiling[0m sentry-debug-images v0.46.1
+[1m[92m   Compiling[0m codex-utils-plugins v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/plugins)
+[1m[92m   Compiling[0m aws-sdk-ssooidc v1.93.0
+[1m[92m   Compiling[0m aws-sdk-sso v1.91.0
+[1m[92m   Compiling[0m aws-sdk-signin v1.2.0
+[1m[92m   Compiling[0m codex-utils-output-truncation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/output-truncation)
+[1m[92m   Compiling[0m predicates-core v1.0.9
+[1m[92m   Compiling[0m aws-config v1.8.12
+[1m[92m   Compiling[0m codex-plugin v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/plugin)
+[1m[92m   Compiling[0m sentry v0.46.1
+[1m[92m   Compiling[0m codex-code-mode-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/code-mode-protocol)
+[1m[92m   Compiling[0m sqlx-macros v0.9.0
+[1m[92m   Compiling[0m rayon v1.11.0
+[1m[92m   Compiling[0m nucleo-matcher v0.3.1 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+[1m[92m   Compiling[0m assert_cmd v2.1.2
+[1m[92m   Compiling[0m termtree v0.5.1
+[1m[92m   Compiling[0m difflib v0.4.0
+[1m[92m   Compiling[0m codex-collaboration-mode-templates v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/collaboration-mode-templates)
+[1m[92m   Compiling[0m codex-models-manager v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/models-manager)
+[1m[92m   Compiling[0m predicates v3.1.3
+[1m[92m   Compiling[0m predicates-tree v1.0.12
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.1.2` which wasn't produced by cargo metadata
+[1m[92m   Compiling[0m nucleo v0.5.0 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+[1m[92m   Compiling[0m sqlx v0.9.0
+[1m[92m   Compiling[0m codex-feedback v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/feedback)
+[1m[92m   Compiling[0m codex-aws-auth v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/aws-auth)
+[1m[92m   Compiling[0m codex-hepta-contracts v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-contracts)
+[1m[92m   Compiling[0m codex-response-debug-context v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/response-debug-context)
+[1m[92m   Compiling[0m codex-history v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/history)
+[1m[92m   Compiling[0m ignore v0.4.25
+[1m[92m   Compiling[0m wait-timeout v0.2.1
+[1m[92m   Compiling[0m arraydeque v0.5.1
+[1m[92m   Compiling[0m unicode-width v0.2.1
+[1m[92m   Compiling[0m annotate-snippets v0.12.5
+[1m[92m   Compiling[0m granit-parser v2.1.0
+[1m[92m   Compiling[0m codex-install-context v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/install-context)
+[1m[92m   Compiling[0m codex-file-search v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/file-search)
+[1m[92m   Compiling[0m codex-state v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/state)
+[1m[92m   Compiling[0m codex-model-provider v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/model-provider)
+[1m[92m   Compiling[0m codex-connectors v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/connectors)
+[1m[92m   Compiling[0m encoding_rs_io v0.1.8
+[1m[92m   Compiling[0m runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+[1m[92m   Compiling[0m codex-utils-cargo-bin v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/cargo-bin)
+[1m[92m   Compiling[0m serde-saphyr v2.1.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/serde-saphyr-2.1.0)
+[1m[33mwarning[0m[1m: variable does not need to be mutable[0m
+    [1m[94m--> [0mthird_party/serde-saphyr-2.1.0/src/de/deserializer.rs:1142:41
+     [1m[94m|[0m
+[1m[94m1142[0m [1m[94m|[0m     fn deserialize_any<V: Visitor<'de>>(mut self, visitor: V) -> Result<V::Value, Self::Error> {
+     [1m[94m|[0m                                         [1m[94m----[0m[1m[33m^^^^[0m
+     [1m[94m|[0m                                         [1m[94m|[0m
+     [1m[94m|[0m                                         [1m[94mhelp: remove this `mut`[0m
+     [1m[94m|[0m
+     [1m[94m= [0m[1mnote[0m: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+[1m[33mwarning[0m: `serde-saphyr` (lib) generated 1 warning (run `cargo fix --lib -p serde-saphyr` to apply 1 suggestion)
+[1m[92m   Compiling[0m codex-code-mode v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/code-mode)
+[1m[92m   Compiling[0m codex-rollout v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rollout)
+[1m[92m   Compiling[0m codex-rmcp-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rmcp-client)
+[1m[92m   Compiling[0m codex-exec-server-test-support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server/tests/support)
+[1m[92m   Compiling[0m codex-diagnostics v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/diagnostics)
+[1m[92m   Compiling[0m codex-experimental-api-macros v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-experimental-api-macros)
+[1m[92m   Compiling[0m include_dir_macros v0.7.4
+[1m[92m   Compiling[0m codex-app-server-protocol-noop-macros v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-protocol-noop-macros)
+[1m[92m   Compiling[0m jsonptr v0.7.1
+[1m[92m   Compiling[0m codex-skills v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/skills)
+[1m[92m   Compiling[0m codex-tools v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/tools)
+[1m[92m   Compiling[0m codex-app-server-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-protocol)
+[1m[92m   Compiling[0m include_dir v0.7.4
+[1m[92m   Compiling[0m codex-mcp v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-mcp)
+[1m[92m   Compiling[0m codex-utils-yaml v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/yaml)
+[1m[92m   Compiling[0m codex-context-fragments v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/context-fragments)
+[1m[92m   Compiling[0m codex-extension-api v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/extension-api)
+[1m[92m   Compiling[0m codex-analytics v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/analytics)
+[1m[92m   Compiling[0m console v0.15.11
+[1m[92m   Compiling[0m yansi v1.0.1
+[1m[92m   Compiling[0m diff v0.1.13
+[1m[92m   Compiling[0m pretty_assertions v1.4.1
+[1m[92m   Compiling[0m insta v1.46.3
+[1m[92m   Compiling[0m codex-skills-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/skills)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 10m 10s
+────────────
+[32;1m Nextest run[0m ID [1mc679b879-67ed-4607-b4cd-a7966b19a6ad[0m with nextest profile: [1mlocal[0m
+[32;1m    Starting[0m [1m175[0m tests across [1m3[0m binaries
+[32;1m        PASS[0m [   0.008s] (  1/175) [35;1mcodex-skills-extension[0m [36maliases::tests[0m[36m::[0m[34;1mrejects_unknown_roots_and_locators_outside_the_root[0m
+[32;1m        PASS[0m [   0.009s] (  2/175) [35;1mcodex-skills-extension[0m [36maliases::tests[0m[36m::[0m[34;1massigns_aliases_in_first_seen_order[0m
+[32;1m        PASS[0m [   0.009s] (  3/175) [35;1mcodex-skills-extension[0m [36maliases::tests[0m[36m::[0m[34;1mreturns_none_when_no_roots_are_provided[0m
+[32;1m        PASS[0m [   0.009s] (  4/175) [35;1mcodex-skills-extension[0m [36maliases::tests[0m[36m::[0m[34;1maliases_roots_used_by_only_one_skill[0m
+[32;1m        PASS[0m [   0.008s] (  5/175) [35;1mcodex-skills-extension[0m [36maliases::tests[0m[36m::[0m[34;1mshortens_filesystem_and_skill_resource_locators[0m
+[32;1m        PASS[0m [   0.008s] (  6/175) [35;1mcodex-skills-extension[0m [36maliases::tests[0m[36m::[0m[34;1mreuses_aliases_for_duplicate_roots[0m
+[32;1m        PASS[0m [   0.009s] (  7/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::character_ngram::tests[0m[36m::[0m[34;1mngrams_match_related_word_forms[0m
+[32;1m        PASS[0m [   0.010s] (  8/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::character_ngram::tests[0m[36m::[0m[34;1mngrams_match_cjk_without_word_boundaries[0m
+[32;1m        PASS[0m [   0.008s] (  9/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::character_routing_card::tests[0m[36m::[0m[34;1mconnector_dependencies_make_generic_skills_discoverable[0m
+[32;1m        PASS[0m [   0.009s] ( 10/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::character_ngram::tests[0m[36m::[0m[34;1mngrams_tolerate_a_typo[0m
+[32;1m        PASS[0m [   0.009s] ( 11/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::character_routing_card::tests[0m[36m::[0m[34;1mhost_interface_metadata_makes_unlisted_workflow_discoverable[0m
+[32;1m        PASS[0m [   0.008s] ( 12/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::character_routing_card::tests[0m[36m::[0m[34;1mstrong_baseline_match_is_preserved_alongside_routing_match[0m
+[32;1m        PASS[0m [   0.007s] ( 13/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::fielded_bm25::tests[0m[36m::[0m[34;1mbm25_drops_candidates_without_matching_terms[0m
+[32;1m        PASS[0m [   0.010s] ( 14/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::character_routing_card::tests[0m[36m::[0m[34;1mlong_routing_metadata_preserves_original_short_description_matches[0m
+[32;1m        PASS[0m [   0.008s] ( 15/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::fielded_bm25::tests[0m[36m::[0m[34;1mbm25_prioritizes_rare_terms[0m
+[32;1m        PASS[0m [   0.008s] ( 16/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::fielded_bm25::tests[0m[36m::[0m[34;1mbm25_weights_names_above_descriptions[0m
+[32;1m        PASS[0m [   0.008s] ( 17/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::lru::tests[0m[36m::[0m[34;1mlru_selector_filters_stale_or_duplicate_skills_and_respects_the_limit[0m
+[32;1m        PASS[0m [   0.008s] ( 18/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::lru::tests[0m[36m::[0m[34;1mlru_selector_preserves_recent_invocation_order[0m
+[32;1m        PASS[0m [   0.019s] ( 19/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::fielded_bm25::tests[0m[36m::[0m[34;1mbm25_reports_bounded_inputs[0m
+[32;1m        PASS[0m [   0.009s] ( 20/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::lru_plus_character_routing::tests[0m[36m::[0m[34;1mcold_start_uses_character_routing_metadata[0m
+[32;1m        PASS[0m [   0.009s] ( 21/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::lru_plus_character_routing::tests[0m[36m::[0m[34;1mrecent_and_text_matches_are_merged_without_duplicates[0m
+[32;1m        PASS[0m [   0.008s] ( 22/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::lru_plus_character_routing::tests[0m[36m::[0m[34;1mthree_way_fusion_retains_short_exact_matches[0m
+[32;1m        PASS[0m [   0.007s] ( 23/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::lru_plus_lexical::tests[0m[36m::[0m[34;1mcombined_fusion_keeps_a_top_ranked_skill_ahead_of_a_weak_overlap[0m
+[32;1m        PASS[0m [   0.007s] ( 24/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::lru_plus_lexical::tests[0m[36m::[0m[34;1mcombined_selector_merges_recent_and_newly_matching_skills[0m
+[32;1m        PASS[0m [   0.007s] ( 25/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::lru_plus_lexical::tests[0m[36m::[0m[34;1mcombined_selector_promotes_skills_supported_by_both_signals[0m
+[32;1m        PASS[0m [   0.007s] ( 26/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::lru_plus_lexical::tests[0m[36m::[0m[34;1mcombined_selector_uses_lexical_results_before_invocation_history_exists[0m
+[32;1m        PASS[0m [   0.008s] ( 27/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::multi_query_lexical::tests[0m[36m::[0m[34;1mmulti_query_promotes_each_clause_leader[0m
+[32;1m        PASS[0m [   0.007s] ( 28/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::multi_query_lexical::tests[0m[36m::[0m[34;1mquery_views_split_sentences_and_connectors[0m
+[32;1m        PASS[0m [   0.086s] ( 29/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::character_ngram::tests[0m[36m::[0m[34;1mngrams_report_bounded_inputs[0m
+[32;1m        PASS[0m [   0.008s] ( 30/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::multi_query_lexical::tests[0m[36m::[0m[34;1msingle_query_matches_the_underlying_selector[0m
+[32;1m        PASS[0m [   0.007s] ( 31/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::routing_card_lexical::tests[0m[36m::[0m[34;1mdependency_records_are_bounded[0m
+[32;1m        PASS[0m [   0.009s] ( 32/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::routing_card_lexical::tests[0m[36m::[0m[34;1mdependency_names_outrank_description_only_matches[0m
+[32;1m        PASS[0m [   0.038s] ( 33/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::multi_query_lexical::tests[0m[36m::[0m[34;1mmulti_query_preserves_bounded_input_signals[0m
+[32;1m        PASS[0m [   0.008s] ( 34/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::routing_card_lexical::tests[0m[36m::[0m[34;1mprefixes_do_not_match_field_terms[0m
+[32;1m        PASS[0m [   0.009s] ( 35/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::routing_card_lexical::tests[0m[36m::[0m[34;1mselector_reports_bounded_inputs[0m
+[32;1m        PASS[0m [   0.008s] ( 36/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::routing_card_lexical::tests[0m[36m::[0m[34;1mstop_word_name_requires_an_exact_query[0m
+[32;1m        PASS[0m [   0.007s] ( 37/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::rrf_lexical_char::tests[0m[36m::[0m[34;1mfusion_prefers_candidates_supported_by_both_rankings[0m
+[32;1m        PASS[0m [   0.009s] ( 38/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::rrf_lexical_char::tests[0m[36m::[0m[34;1mfusion_uses_rank_and_id_to_break_ties[0m
+[32;1m        PASS[0m [   0.009s] ( 39/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::rrf_lexical_char::tests[0m[36m::[0m[34;1mselector_reports_the_combined_input_bounds[0m
+[32;1m        PASS[0m [   0.009s] ( 40/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::weighted_lexical::tests[0m[36m::[0m[34;1mlexical_selector_caps_query_terms[0m
+[32;1m        PASS[0m [   0.008s] ( 41/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::weighted_lexical::tests[0m[36m::[0m[34;1mlexical_selector_prioritizes_an_exact_skill_name[0m
+[32;1m        PASS[0m [   0.007s] ( 42/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::weighted_lexical::tests[0m[36m::[0m[34;1mlexical_selector_respects_requested_limit[0m
+[32;1m        PASS[0m [   0.008s] ( 43/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::weighted_lexical::tests[0m[36m::[0m[34;1mlexical_selector_returns_nothing_for_stop_words_only[0m
+[32;1m        PASS[0m [   0.007s] ( 44/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::weighted_lexical::tests[0m[36m::[0m[34;1mlexical_selector_uses_descriptions_and_drops_zero_score_candidates[0m
+[32;1m        PASS[0m [   0.008s] ( 45/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::weighted_lexical::tests[0m[36m::[0m[34;1mselector_can_be_used_behind_the_shared_trait[0m
+[32;1m        PASS[0m [   0.007s] ( 46/175) [35;1mcodex-skills-extension[0m [36mextension::tests[0m[36m::[0m[34;1mempty_catalog_records_zero_metrics_without_a_fragment[0m
+[32;1m        PASS[0m [   0.008s] ( 47/175) [35;1mcodex-skills-extension[0m [36mhost_roots::tests[0m[36m::[0m[34;1mlayer_roots_preserve_scope_precedence_and_disabled_projects[0m
+[32;1m        PASS[0m [   0.008s] ( 48/175) [35;1mcodex-skills-extension[0m [36mhost_roots::tests[0m[36m::[0m[34;1mplugin_roots_preserve_plugin_resolution_metadata[0m
+[32;1m        PASS[0m [   0.036s] ( 49/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::weighted_lexical::tests[0m[36m::[0m[34;1mlexical_selector_reports_bounded_inputs[0m
+[32;1m        PASS[0m [   0.011s] ( 50/175) [35;1mcodex-skills-extension[0m [36mhost_roots::tests[0m[36m::[0m[34;1mrepo_ancestry_stops_at_project_root_and_preserves_root_to_cwd_order[0m
+[32;1m        PASS[0m [   0.009s] ( 51/175) [35;1mcodex-skills-extension[0m [36mhost_roots::tests[0m[36m::[0m[34;1mrepo_ancestry_without_project_marker_does_not_walk_parents[0m
+[32;1m        PASS[0m [   0.016s] ( 52/175) [35;1mcodex-skills-extension[0m [36mhost_roots::tests[0m[36m::[0m[34;1mresolved_project_layer_loads_skill_when_cwd_is_file[0m
+[32;1m        PASS[0m [   0.025s] ( 53/175) [35;1mcodex-skills-extension[0m [36mhost_roots::tests[0m[36m::[0m[34;1mresolved_config_and_repo_roots_preserve_order_and_dedupe_paths_not_names[0m
+[32;1m        PASS[0m [   0.017s] ( 54/175) [35;1mcodex-skills-extension[0m [36mhost_roots::tests[0m[36m::[0m[34;1mresolved_project_layer_loads_skill_without_git_marker[0m
+[32;1m        PASS[0m [   0.013s] ( 55/175) [35;1mcodex-skills-extension[0m [36mhost_roots::tests[0m[36m::[0m[34;1munique_extra_root_loads_as_recursive_user_root[0m
+[32;1m        PASS[0m [   0.051s] ( 56/175) [35;1mcodex-skills-extension[0m [36mhost_service::tests[0m[36m::[0m[34;1mset_extra_roots_replaces_runtime_roots_and_clears_cache[0m
+[32;1m        PASS[0m [   0.061s] ( 57/175) [35;1mcodex-skills-extension[0m [36mhost_service::tests[0m[36m::[0m[34;1mset_extra_roots_applies_to_config_loads_and_empty_clears[0m
+[32;1m        PASS[0m [   0.112s] ( 58/175) [35;1mcodex-skills-extension[0m [36mhost_roots::tests[0m[36m::[0m[34;1mrepo_ancestry_limits_concurrent_probes_and_preserves_order[0m
+[32;1m        PASS[0m [   0.230s] ( 59/175) [35;1mcodex-skills-extension[0m [36mdynamic_skill_selector::lru_plus_character_routing::tests[0m[36m::[0m[34;1mfusion_is_deterministic_capped_and_reports_input_bounds[0m
+[32;1m        PASS[0m [   0.012s] ( 60/175) [35;1mcodex-skills-extension[0m [36mhost_service::tests[0m[36m::[0m[34;1mskills_for_config_excludes_bundled_skills_when_disabled_in_config[0m
+[32;1m        PASS[0m [   0.029s] ( 61/175) [35;1mcodex-skills-extension[0m [36mhost_service::tests[0m[36m::[0m[34;1mskills_for_config_disables_plugin_skills_by_name[0m
+[32;1m        PASS[0m [   0.035s] ( 62/175) [35;1mcodex-skills-extension[0m [36mhost_service::tests[0m[36m::[0m[34;1mskills_for_config_reuses_cache_for_same_effective_config[0m
+[32;1m        PASS[0m [   0.055s] ( 63/175) [35;1mcodex-skills-extension[0m [36mhost_service::tests[0m[36m::[0m[34;1mskills_for_config_ignores_cwd_cache_when_session_flags_reenable_skill[0m
+[32;1m        PASS[0m [   0.057s] ( 64/175) [35;1mcodex-skills-extension[0m [36mhost_service::tests[0m[36m::[0m[34;1mskills_for_config_refreshes_cache_when_remote_plugin_id_changes[0m
+[32;1m        PASS[0m [   0.046s] ( 65/175) [35;1mcodex-skills-extension[0m [36mhost_service::tests[0m[36m::[0m[34;1mskills_for_cwd_loads_repo_and_user_roots_with_local_fs[0m
+[32;1m        PASS[0m [   0.015s] ( 66/175) [35;1mcodex-skills-extension[0m [36mhost_service::tests[0m[36m::[0m[34;1msnapshot_for_config_merges_extension_host_and_legacy_plugin_roots[0m
+[32;1m        PASS[0m [   0.034s] ( 67/175) [35;1mcodex-skills-extension[0m [36mhost_service::tests[0m[36m::[0m[34;1mskills_for_cwd_without_fs_skips_repo_roots[0m
+[32;1m        PASS[0m [   0.043s] ( 68/175) [35;1mcodex-skills-extension[0m [36mhost_service::tests[0m[36m::[0m[34;1mskills_for_cwd_uses_cached_result_until_force_reload[0m
+[32;1m        PASS[0m [   0.014s] ( 69/175) [35;1mcodex-skills-extension[0m [36mhost_service::tests[0m[36m::[0m[34;1msnapshot_for_config_preserves_host_precedence_for_symlinked_plugin_root[0m
+[32;1m        PASS[0m [   0.008s] ( 70/175) [35;1mcodex-skills-extension[0m [36minvocation::tests[0m[36m::[0m[34;1mdetects_executor_skill_document_reads[0m
+[32;1m        PASS[0m [   0.008s] ( 71/175) [35;1mcodex-skills-extension[0m [36minvocation::tests[0m[36m::[0m[34;1mdetects_executor_skill_script_runs[0m
+[32;1m        PASS[0m [   0.008s] ( 72/175) [35;1mcodex-skills-extension[0m [36minvocation::tests[0m[36m::[0m[34;1mignores_matching_paths_from_other_environments[0m
+[32;1m        PASS[0m [   0.023s] ( 73/175) [35;1mcodex-skills-extension[0m [36mhost_service::tests[0m[36m::[0m[34;1mwatchable_skill_root_paths_exclude_plugin_and_system_roots[0m
+[32;1m        PASS[0m [   0.049s] ( 74/175) [35;1mcodex-skills-extension[0m [36mhost_service::tests[0m[36m::[0m[34;1mskills_list_snapshots_share_host_roots_only_within_one_request[0m
+[32;1m        PASS[0m [   0.009s] ( 75/175) [35;1mcodex-skills-extension[0m [36mloader::discovery::tests[0m[36m::[0m[34;1mignores_symlinked_skill_files_and_directory_cycles[0m
+[32;1m        PASS[0m [   0.012s] ( 76/175) [35;1mcodex-skills-extension[0m [36mloader::discovery::tests[0m[36m::[0m[34;1mdiscovers_hidden_directory_through_visible_symlink[0m
+[32;1m        PASS[0m [   0.010s] ( 77/175) [35;1mcodex-skills-extension[0m [36mloader::discovery::tests[0m[36m::[0m[34;1mrespects_maximum_skill_scan_depth[0m
+[32;1m        PASS[0m [   0.010s] ( 78/175) [35;1mcodex-skills-extension[0m [36mloader::environment::io_tests[0m[36m::[0m[34;1mreads_skill_files_while_resolving_plugin_namespaces[0m
+[32;1m        PASS[0m [   0.016s] ( 79/175) [35;1mcodex-skills-extension[0m [36mloader::environment::io_tests[0m[36m::[0m[34;1mloads_nearest_plugin_namespaces_without_reading_unused_sibling_manifests[0m
+[32;1m        PASS[0m [   0.017s] ( 80/175) [35;1mcodex-skills-extension[0m [36mloader::environment::tests[0m[36m::[0m[34;1mdirect_environment_loader_preserves_plugin_dependencies_and_product_policy[0m
+[32;1m        PASS[0m [   0.014s] ( 81/175) [35;1mcodex-skills-extension[0m [36mloader::environment::tests[0m[36m::[0m[34;1mexecutor_bundle_preserves_parent_namespace_and_manifest_precedence[0m
+[32;1m        PASS[0m [   0.021s] ( 82/175) [35;1mcodex-skills-extension[0m [36mloader::environment::tests[0m[36m::[0m[34;1mexecutor_bundle_parser_matches_direct_environment_loader[0m
+[32;1m        PASS[0m [   0.015s] ( 83/175) [35;1mcodex-skills-extension[0m [36mloader::host::io_tests[0m[36m::[0m[34;1mhost_loading_reuses_walk_inventory_for_symlinked_skill_pack[0m
+[32;1m        PASS[0m [   0.011s] ( 84/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1mdirect_child_plugin_root_ignores_nested_skills[0m
+[32;1m        PASS[0m [   0.010s] ( 85/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1mdirect_child_plugin_root_skips_skills_resolving_outside_plugin_root[0m
+[32;1m        PASS[0m [   0.044s] ( 86/175) [35;1mcodex-skills-extension[0m [36mloader::environment::io_tests[0m[36m::[0m[34;1mreuses_walk_inventory_for_missing_skill_metadata[0m
+[32;1m        PASS[0m [   0.010s] ( 87/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1mdiscovers_nested_plugin_namespace_without_plugin_identity[0m
+[32;1m        PASS[0m [   0.012s] ( 88/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1minvalid_optional_metadata_fails_open[0m
+[32;1m        PASS[0m [   0.015s] ( 89/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1mfollows_directory_symlinks_except_for_system_scope[0m
+[32;1m        PASS[0m [   0.013s] ( 90/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1mloads_host_frontmatter_dependencies_and_policy[0m
+[32;1m        PASS[0m [   0.010s] ( 91/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1mloads_plugin_skill_interface_icons_from_local_and_shared_assets[0m
+[32;1m        PASS[0m [   0.014s] ( 92/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1mloads_host_interface_metadata_and_local_asset_paths[0m
+[32;1m        PASS[0m [   0.010s] ( 93/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1mplugin_root_accepts_maximum_length_qualified_skill_name[0m
+[32;1m        PASS[0m [   0.010s] ( 94/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1mplugin_root_rejects_overlong_qualified_skill_name[0m
+[32;1m        PASS[0m [   0.010s] ( 95/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1mrecursive_plugin_root_preserves_symlinked_skill_discovery_path[0m
+[32;1m        PASS[0m [   0.011s] ( 96/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1mrecursive_plugin_root_preserves_owner_namespace_and_shared_asset_policy[0m
+[32;1m        PASS[0m [   0.011s] ( 97/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1mrejects_interface_fields_that_escape_or_fail_validation[0m
+[32;1m        PASS[0m [   0.011s] ( 98/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1mrejects_plugin_skill_interface_icons_outside_shared_assets[0m
+[32;1m        PASS[0m [   0.011s] ( 99/175) [35;1mcodex-skills-extension[0m [36mloader::host::tests[0m[36m::[0m[34;1mskips_hidden_host_skills[0m
+[32;1m        PASS[0m [   0.012s] (100/175) [35;1mcodex-skills-extension[0m [36mloader::host_merge::tests[0m[36m::[0m[34;1mdeduplicated_symlinked_skill_preserves_first_discovery_path[0m
+[32;1m        PASS[0m [   0.009s] (101/175) [35;1mcodex-skills-extension[0m [36mloader::host_merge::tests[0m[36m::[0m[34;1mhost_root_scans_wait_for_shared_capacity[0m
+[32;1m        PASS[0m [   0.014s] (102/175) [35;1mcodex-skills-extension[0m [36mloader::host_merge::tests[0m[36m::[0m[34;1mduplicate_host_root_paths_preserve_first_root_scope[0m
+[32;1m        PASS[0m [   0.014s] (103/175) [35;1mcodex-skills-extension[0m [36mloader::host_merge::tests[0m[36m::[0m[34;1mmerges_host_root_results_in_input_order_when_scans_finish_out_of_order[0m
+[32;1m        PASS[0m [   0.013s] (104/175) [35;1mcodex-skills-extension[0m [36mloader::host_merge::tests[0m[36m::[0m[34;1mnative_plugin_skill_replaces_migrated_command_with_the_same_name[0m
+[32;1m        PASS[0m [   0.012s] (105/175) [35;1mcodex-skills-extension[0m [36mloader::host_merge::tests[0m[36m::[0m[34;1moverlapping_plugin_roots_keep_one_canonical_skill[0m
+[32;1m        PASS[0m [   0.015s] (106/175) [35;1mcodex-skills-extension[0m [36mloader::host_merge::tests[0m[36m::[0m[34;1mnested_migrated_command_root_preserves_native_skill_precedence[0m
+[32;1m        PASS[0m [   0.011s] (107/175) [35;1mcodex-skills-extension[0m [36mloader::host_merge::tests[0m[36m::[0m[34;1mpreserves_plugin_skill_errors[0m
+[32;1m        PASS[0m [   0.011s] (108/175) [35;1mcodex-skills-extension[0m [36mloader::host_merge::tests[0m[36m::[0m[34;1mproduct_filtered_native_skill_does_not_hide_migrated_command[0m
+[32;1m        PASS[0m [   0.012s] (109/175) [35;1mcodex-skills-extension[0m [36mloader::host_merge::tests[0m[36m::[0m[34;1mrecognizes_symlinked_migrated_command_roots[0m
+[32;1m        PASS[0m [   0.012s] (110/175) [35;1mcodex-skills-extension[0m [36mloader::host_merge::tests[0m[36m::[0m[34;1mreuses_owner_managed_plugin_root_snapshots[0m
+[32;1m        PASS[0m [   0.013s] (111/175) [35;1mcodex-skills-extension[0m [36mloader::namespace::tests[0m[36m::[0m[34;1mancestor_symlink_roots_preserve_inherited_plugin_namespace[0m
+[32;1m        PASS[0m [   0.014s] (112/175) [35;1mcodex-skills-extension[0m [36mloader::namespace::tests[0m[36m::[0m[34;1mnearest_valid_manifest_overrides_or_falls_back_to_outer_namespace[0m
+[32;1m        PASS[0m [   0.012s] (113/175) [35;1mcodex-skills-extension[0m [36mloader::namespace::tests[0m[36m::[0m[34;1mnested_plugin_namespaces_do_not_apply_to_plain_siblings[0m
+[32;1m        PASS[0m [   0.012s] (114/175) [35;1mcodex-skills-extension[0m [36mloader::namespace::tests[0m[36m::[0m[34;1msymlinked_external_directories_do_not_inherit_plugin_namespace[0m
+[32;1m        PASS[0m [   0.009s] (115/175) [35;1mcodex-skills-extension[0m [36mprovider::executor::tests[0m[36m::[0m[34;1msandboxed_skill_read_uses_only_the_authorized_seam_and_rechecks_its_bound[0m
+[32;1m        PASS[0m [   0.008s] (116/175) [35;1mcodex-skills-extension[0m [36mprovider::executor::tests[0m[36m::[0m[34;1munsupported_sandboxed_skill_read_does_not_fallback[0m
+[32;1m        PASS[0m [   0.010s] (117/175) [35;1mcodex-skills-extension[0m [36mprovider::host::tests[0m[36m::[0m[34;1mhost_catalog_entries_carry_their_render_metadata[0m
+[32;1m        PASS[0m [   0.010s] (118/175) [35;1mcodex-skills-extension[0m [36mprovider::host::tests[0m[36m::[0m[34;1mhost_catalog_preserves_symlinked_skill_discovery_paths[0m
+[32;1m        PASS[0m [   0.008s] (119/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mcatalog_budget_uses_context_percentage_or_character_fallback[0m
+[32;1m        PASS[0m [   0.008s] (120/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mcatalog_emits_omission_marker_when_every_minimum_skill_line_exceeds_budget[0m
+[32;1m        PASS[0m [   0.008s] (121/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mcatalog_preserves_report_when_no_fragment_fits_budget[0m
+[32;1m        PASS[0m [   0.008s] (122/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mcatalog_report_counts_partial_description_truncation[0m
+[32;1m        PASS[0m [   0.009s] (123/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mcharacter_fallback_counts_multibyte_metadata_by_characters[0m
+[32;1m        PASS[0m [   0.008s] (124/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mdescription_selection_follows_render_policy[0m
+[32;1m        PASS[0m [   0.007s] (125/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mexecutor_aliases_preserve_literal_backslashes_in_package_ids[0m
+[32;1m        PASS[0m [   0.008s] (126/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mmixed_catalog_prefers_executor_inclusion_over_total_aliased_inclusion[0m
+[32;1m        PASS[0m [   0.013s] (127/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mhost_alias_roots_follow_core_discovery_order[0m
+[32;1m        PASS[0m [   0.008s] (128/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mmixed_catalog_reserves_executor_omission_marker_by_omitting_host_first[0m
+[32;1m        PASS[0m [   0.008s] (129/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mmixed_catalogs_alias_all_skill_sources_under_budget_pressure[0m
+[32;1m        PASS[0m [   0.008s] (130/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mmixed_catalogs_keep_absolute_authority_aware_rendering_under_budget_pressure[0m
+[32;1m        PASS[0m [   0.009s] (131/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1momission_notice_follows_render_policy_and_is_charged_to_catalog_budget[0m
+[32;1m        PASS[0m [   0.007s] (132/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mordering_follows_render_policy[0m
+[32;1m        PASS[0m [   0.008s] (133/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mpath_aliases_are_not_used_without_budget_pressure[0m
+[32;1m        PASS[0m [   0.008s] (134/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mpath_aliases_retain_every_skill_under_budget_pressure[0m
+[32;1m        PASS[0m [   0.008s] (135/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mskill_prompt_contents_are_bounded_at_utf8_boundaries[0m
+[32;1m        PASS[0m [   0.007s] (136/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1msubstantial_description_shortening_emits_warning[0m
+[32;1m        PASS[0m [   0.016s] (137/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1msingleton_plugin_versions_share_the_marketplace_alias_root[0m
+[32;1m        PASS[0m [   0.008s] (138/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1msubstantial_description_shortening_warning_starts_above_threshold[0m
+[32;1m        PASS[0m [   0.008s] (139/175) [35;1mcodex-skills-extension[0m [36mrender_observability::tests[0m[36m::[0m[34;1mrecords_core_equivalent_catalog_render_metrics_with_surface[0m
+[32;1m        PASS[0m [   0.008s] (140/175) [35;1mcodex-skills-extension[0m [36mshadow_selection_experiment::task_context::tests[0m[36m::[0m[34;1mcurrent_turn_observations_are_pending_and_late_observations_are_ignored[0m
+[32;1m        PASS[0m [   0.008s] (141/175) [35;1mcodex-skills-extension[0m [36mshadow_selection_experiment::task_context::tests[0m[36m::[0m[34;1mhistory_and_augmented_query_are_bounded_at_utf8_boundaries[0m
+[32;1m        PASS[0m [   0.007s] (142/175) [35;1mcodex-skills-extension[0m [36mshadow_selection_experiment::task_context::tests[0m[36m::[0m[34;1mprior_requests_survive_continuations_and_keep_short_substantive_input[0m
+[32;1m        PASS[0m [   0.008s] (143/175) [35;1mcodex-skills-extension[0m [36mshadow_selection_experiment::tests[0m[36m::[0m[34;1mrank_buckets_distinguish_results_above_twenty[0m
+[32;1m        PASS[0m [   0.008s] (144/175) [35;1mcodex-skills-extension[0m [36mshadow_selection_experiment::tests[0m[36m::[0m[34;1mrecent_invocations_refresh_recency_and_evict_old_skills[0m
+[32;1m        PASS[0m [   0.011s] (145/175) [35;1mcodex-skills-extension::executor_file_system_authority[0m [34;1mexecutor_discovery_preserves_posix_and_windows_locator_alias_roots[0m
+[32;1m        PASS[0m [   0.015s] (146/175) [35;1mcodex-skills-extension::executor_file_system_authority[0m [34;1mdirect_executor_discovery_preserves_hidden_nested_and_probed_metadata[0m
+[32;1m        PASS[0m [   0.025s] (147/175) [35;1mcodex-skills-extension::executor_file_system_authority[0m [34;1mexecutor_discovery_routes_produce_equivalent_catalog_metadata[0m
+[32;1m        PASS[0m [   0.023s] (148/175) [35;1mcodex-skills-extension::executor_file_system_authority[0m [34;1mhigh_level_discovery_cache_separates_filesystem_permission_contexts[0m
+[32;1m        PASS[0m [   0.017s] (149/175) [35;1mcodex-skills-extension::executor_file_system_authority[0m [34;1mhigh_level_discovery_reuses_materialized_skill_contents_for_reads[0m
+[32;1m        PASS[0m [   0.014s] (150/175) [35;1mcodex-skills-extension::executor_file_system_authority[0m [34;1mselected_root_id_distinguishes_identical_executor_paths[0m
+[32;1m        PASS[0m [   0.013s] (151/175) [35;1mcodex-skills-extension::executor_file_system_authority[0m [34;1mskill_loading_and_reads_use_the_supplied_executor_file_system[0m
+[32;1m        PASS[0m [   0.011s] (152/175) [35;1mcodex-skills-extension::executor_file_system_authority[0m [34;1mwindows_executor_skill_read_rejects_disabled_sandbox_on_any_orchestrator[0m
+[32;1m        PASS[0m [   0.014s] (153/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mdefault_context_truncates_catalog_descriptions[0m
+[32;1m        PASS[0m [   0.009s] (154/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mexecutor_catalog_emits_at_most_four_warnings[0m
+[32;1m        PASS[0m [   0.100s] (155/175) [35;1mcodex-skills-extension::executor_file_system_authority[0m [34;1mhigh_level_discovery_batches_more_than_128_roots[0m
+[32;1m        PASS[0m [   0.009s] (156/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mexecutor_orchestrator_and_host_share_catalog_world_state_flow[0m
+[32;1m        PASS[0m [   0.013s] (157/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mextreme_budget_pressure_removes_descriptions_before_omitting_entries[0m
+[32;1m        PASS[0m [   0.011s] (158/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mhost_world_state_records_catalog_metrics_on_publish_and_change[0m
+[32;1m        PASS[0m [   0.024s] (159/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mhost_catalog_compacts_shared_paths_under_budget_pressure[0m
+[32;1m        PASS[0m [   0.010s] (160/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mhost_world_state_uses_provider_catalog_with_core_compatible_rendering[0m
+[32;1m        PASS[0m [   0.011s] (161/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1minstalled_extension_uses_host_service_snapshot[0m
+[32;1m        PASS[0m [   0.015s] (162/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mmodel_context_window_scales_executor_and_orchestrator_catalogs[0m
+[32;1m        PASS[0m [   0.013s] (163/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mmoderate_budget_pressure_keeps_every_catalog_entry[0m
+[32;1m        PASS[0m [   0.009s] (164/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mnonempty_executor_empty_host_records_catalog_metrics[0m
+[32;1m        PASS[0m [   0.010s] (165/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1morchestrator_catalog_snapshot_caches_failure[0m
+[32;1m        PASS[0m [   0.008s] (166/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mpersisted_host_snapshot_deduplicates_warning_after_reinitialization[0m
+[32;1m        PASS[0m [   0.010s] (167/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mprompt_hidden_skill_can_still_be_invoked[0m
+[32;1m        PASS[0m [   0.010s] (168/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mroot_qualified_locator_selects_only_the_matching_executor_skill[0m
+[32;1m        PASS[0m [   0.011s] (169/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mselected_executor_catalog_follows_step_availability_and_reuses_its_cache[0m
+[32;1m        PASS[0m [   0.037s] (170/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mshadow_lru_selector_recovers_a_skill_invoked_on_an_earlier_turn[0m
+[32;1m        PASS[0m [   0.031s] (171/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mshadow_selection_uses_host_catalog_when_instructions_are_disabled[0m
+[32;1m        PASS[0m [   0.024s] (172/175) [35;1mcodex-skills-extension::skills_extension[0m [34;1mskills_list_only_returns_model_visible_bounded_metadata[0m
+[32;1m        PASS[0m [   0.049s] (173/175) [35;1mcodex-skills-extension::skills_extension[0m [36mshadow_task_context_tests[0m[36m::[0m[34;1mtask_context_recovers_prior_requests_and_explicit_intent_without_changing_controls[0m
+[32;1m        PASS[0m [   0.337s] (174/175) [35;1mcodex-skills-extension[0m [36mrender::tests[0m[36m::[0m[34;1mhost_only_prompts_preserve_existing_behavior_with_and_without_aliases[0m
+[32;1m        PASS[0m [   0.316s] (175/175) [35;1mcodex-skills-extension::executor_file_system_authority[0m [34;1mpre_discovered_executor_catalog_snapshot[0m
+────────────
+[32;1m     Summary[0m [   0.944s] [1m175[0m tests run: [1m175[0m [32;1mpassed[0m, [1m0[0m [33;1mskipped[0m

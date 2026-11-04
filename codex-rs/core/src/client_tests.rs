@@ -17,6 +17,7 @@ use crate::GenerateAttestationFuture;
 use crate::config::Config;
 use crate::model_provider_policy::ModelProviderPolicyContext;
 use crate::responses_metadata::CodexResponsesMetadata;
+use crate::responses_metadata::CodexResponsesRequestKind;
 use crate::test_support::TestCodexResponsesRequestKind;
 use crate::test_support::responses_metadata as test_responses_metadata;
 use codex_api::AgentIdentityTelemetry;
@@ -64,6 +65,7 @@ use codex_protocol::openai_models::ReasoningEffort;
 use codex_protocol::protocol::InternalSessionSource;
 use codex_protocol::protocol::SessionSource;
 use codex_protocol::protocol::SubAgentSource;
+use codex_protocol::protocol::ThreadSource;
 use codex_rollout_trace::CompactionTraceContext;
 use codex_rollout_trace::ExecutionStatus;
 use codex_rollout_trace::InferenceTraceAttempt;
@@ -329,6 +331,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         "thread-a".to_string(),
         "window-a".to_string(),
     );
+    metadata_a.request_kind = Some(CodexResponsesRequestKind::Turn);
     metadata_a.sandbox_mode = Some("workspace-write".to_string());
     metadata_a.turn_started_at_unix_ms = Some(1);
     let identity_a =
@@ -339,6 +342,9 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     volatile_metadata.session_id = "session-after-restart".to_string();
     volatile_metadata.window_id = "window-after-restart".to_string();
     volatile_metadata.turn_started_at_unix_ms = Some(2);
+    volatile_metadata.request_kind = Some(CodexResponsesRequestKind::Prewarm);
+    volatile_metadata.parent_turn_id = Some("parent-turn-after-prewarm".to_string());
+    volatile_metadata.root_turn_id = Some("root-turn-after-prewarm".to_string());
     assert_eq!(
         identity_a,
         WebsocketConnectionIdentity::from_provider(
@@ -349,34 +355,80 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         .expect("volatile identity")
     );
 
-    let mut changed_metadata = metadata_a.clone();
-    changed_metadata.sandbox_mode = Some("danger-full-access".to_string());
-    assert_ne!(
-        identity_a,
-        WebsocketConnectionIdentity::from_provider(
-            &provider,
-            Some("feature-a"),
-            &changed_metadata,
-        )
-        .expect("changed compatibility identity")
-    );
+    let mut changed_sandbox = volatile_metadata.clone();
+    changed_sandbox.sandbox_mode = Some("danger-full-access".to_string());
+    let mut changed_parent = volatile_metadata.clone();
+    changed_parent.parent_thread_id = Some(ThreadId::new());
+    let mut changed_fork = volatile_metadata.clone();
+    changed_fork.forked_from_thread_id = Some(ThreadId::new());
+    let mut changed_source = volatile_metadata.clone();
+    changed_source.thread_source = Some(ThreadSource::GuardianReview);
+    let mut changed_review = volatile_metadata.clone();
+    changed_review.auto_review_enabled = Some(true);
+    let mut changed_request_kind = volatile_metadata.clone();
+    changed_request_kind.request_kind = Some(CodexResponsesRequestKind::Memory);
+    let mut changed_extra = volatile_metadata.clone();
+    changed_extra
+        .extra
+        .insert("fiber_run_id".to_string(), "another-run".to_string());
+    for (field, changed_metadata) in [
+        ("sandbox", changed_sandbox),
+        ("parent thread", changed_parent),
+        ("fork source", changed_fork),
+        ("thread source", changed_source),
+        ("review policy", changed_review),
+        ("non-turn request kind", changed_request_kind),
+        ("client metadata", changed_extra),
+    ] {
+        assert_ne!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                Some("feature-a"),
+                &changed_metadata,
+            )
+            .expect("changed compatibility identity"),
+            "{field} changes must still replace the connection"
+        );
+    }
     assert_ne!(
         identity_a,
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-b"), &metadata_a,)
             .expect("changed beta identity")
     );
 
-    let mut changed_provider = provider;
-    changed_provider.base_url = "https://other.example.test/v1".to_string();
-    assert_ne!(
-        identity_a,
-        WebsocketConnectionIdentity::from_provider(
-            &changed_provider,
-            Some("feature-a"),
-            &metadata_a,
-        )
-        .expect("changed provider identity")
+    let mut changed_base_url = provider.clone();
+    changed_base_url.base_url = "https://other.example.test/v1".to_string();
+    let mut changed_name = provider.clone();
+    changed_name.name = "provider-b".to_string();
+    let mut changed_query = provider.clone();
+    changed_query
+        .query_params
+        .as_mut()
+        .expect("provider query parameters")
+        .insert("api-version".to_string(), "2026-09-01".to_string());
+    let mut changed_headers = provider;
+    changed_headers.headers.insert(
+        http::header::AUTHORIZATION,
+        http::HeaderValue::from_static("Bearer alternate-test-authority"),
     );
+    for (field, changed_provider) in [
+        ("base URL", changed_base_url),
+        ("provider name", changed_name),
+        ("query parameters", changed_query),
+        ("authorization headers", changed_headers),
+    ] {
+        assert_ne!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(
+                &changed_provider,
+                Some("feature-a"),
+                &volatile_metadata,
+            )
+            .expect("changed provider identity"),
+            "{field} changes must still replace the connection"
+        );
+    }
 }
 
 #[tokio::test]

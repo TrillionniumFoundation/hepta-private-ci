@@ -1,0 +1,38 @@
+{
+  "ordered_parents": [
+    "c7629f5366434bc146ef961b873d2babe79e93aa",
+    "4b1a326ec50c28e8803d390e81d2f03457cc7499"
+  ],
+  "merge": "Normal non-conflicting two-parent merge; root history and complete i18n backport history retained.",
+  "scoped_ports": [
+    {
+      "commit": "55f60c17bd2f7c48adedcff5b6b119c18d84700d",
+      "base": "93932f8393f5af30dafbf59c462537615d3e5080",
+      "paths": [
+        "codex-rs/hepta-operator-acceptance/BUILD.bazel",
+        "scripts/hepta_ci_scope.py",
+        "scripts/tests/test_hepta_ci_scope.py"
+      ]
+    },
+    {
+      "commit": "d0ac7098d29313376ebb1b60ed09e5ef5d1b5449",
+      "base": "adaeb1854c9b2abe3f8c65a4407344d07e1c7589",
+      "paths": [
+        ".github/scripts/run_bazel_with_buildbuddy.py",
+        ".github/scripts/test_run_bazel_native_msvc_toolchain.py"
+      ]
+    }
+  ],
+  "port_verification": "Each original preimage matched the exact donor base file, and each applied postimage matched the exact donor head file before required formatting. Other donor-branch histories were not merged.",
+  "python_tests": {
+    "windows_wrapper": 46,
+    "hepta_ci_scope": 19,
+    "failures": 0,
+    "skipped": 0
+  },
+  "fmt": "Original just fmt --base c7629f5366434bc146ef961b873d2babe79e93aa succeeded after installing the official descriptor-selected DotSlash/buildifier runtime.",
+  "same_db_advisory_rejections_remaining": 7,
+  "policy_unchanged": true,
+  "full_union_qualified": false,
+  "status": "DRAFT / HOLD_NO_GO"
+}

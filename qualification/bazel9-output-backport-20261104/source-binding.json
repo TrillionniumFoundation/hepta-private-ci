@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "product_parent": "767f069c96a6cd2735b3a4166799a1de79017d25",
+  "bazel_version": "9.0.0",
+  "upstream_repository": "https://github.com/bazelbuild/bazel.git",
+  "upstream_base_commit": "93f38093f8e24875c1d015e67311853756bdb27e",
+  "upstream_builder_version": "8.4.2",
+  "fix_commit": "e50ebd4a0a0bf5f557aa8d4873d9a226f8e89c57",
+  "fix_date": "2026-11-03T22:18:15Z",
+  "fix_url": "https://github.com/bazelbuild/bazel/commit/e50ebd4a0a0bf5f557aa8d4873d9a226f8e89c57",
+  "patch_sha256": "06146cf94199fc7ba4c800487f452ee171776645634403f46866268d521b676c",
+  "files": {
+    "tools/test/windows/tw.cc": {
+      "original_bytes": 69181,
+      "original_git_blob": "6740df6a6f5ce39280ceaa28c60c1cc9a5e13fe8",
+      "original_sha256": "ab6503875a106c0ffd30bac39c60c65185e5bb9f6dccf85b01c0bfb0a9a1bc80",
+      "patched_bytes": 69951,
+      "patched_git_blob": "c377b83a665c3ec14144005e4491c5a2028f3fec",
+      "patched_sha256": "cd93a25fb82003bb9fa538a6207d340c9fa326277a33dc962dfe63cdac544899"
+    },
+    "tools/test/windows/tw_test.cc": {
+      "original_bytes": 29016,
+      "original_git_blob": "defbb23fe142ec1ab9db9979168b1ca2adf2bba5",
+      "original_sha256": "cf3a5acdab35a5e491e3b7b41aedbf7f67a856598a87217f9b2f7df9b17d9aa4",
+      "patched_bytes": 30991,
+      "patched_git_blob": "6ec30f037ef8c98cf2a64704aa60153a282c606b",
+      "patched_sha256": "17f9b278e5df0bc794a27c94799537958596bc76f008b01e8716baa56e21bb7c"
+    }
+  },
+  "original_gtest_cases": [
+    "TestWrapperWindowsTest.TestGetFileListRelativeTo",
+    "TestWrapperWindowsTest.TestToZipEntryPaths",
+    "TestWrapperWindowsTest.TestToZipEntryPathsLongPathRoot",
+    "TestWrapperWindowsTest.TestCreateZip",
+    "TestWrapperWindowsTest.TestGetMimeType",
+    "TestWrapperWindowsTest.TestUndeclaredOutputsManifest",
+    "TestWrapperWindowsTest.TestCreateUndeclaredOutputsAnnotations",
+    "TestWrapperWindowsTest.TestTee",
+    "TestWrapperWindowsTest.TestCdataEscapeNullTerminator",
+    "TestWrapperWindowsTest.TestCdataEscapeCdataEndings",
+    "TestWrapperWindowsTest.TestCdataEscapeSingleOctets",
+    "TestWrapperWindowsTest.TestCdataEscapeDoubleOctets",
+    "TestWrapperWindowsTest.TestCdataEscapeAndAppend",
+    "TestWrapperWindowsTest.TestIFStreamNoData",
+    "TestWrapperWindowsTest.TestIFStreamLessDataThanPageSize",
+    "TestWrapperWindowsTest.TestIFStreamExactlySinglePageSize",
+    "TestWrapperWindowsTest.TestIFStreamLessDataThanDoublePageSize",
+    "TestWrapperWindowsTest.TestIFStreamLessDataThanTriplePageSize"
+  ],
+  "additional_upstream_cases": [
+    "TestWrapperWindowsTest.TestTeeStreamsRemainingDataOnDestruction",
+    "TestWrapperWindowsTest.TestTeeStopsReadingOnDestructionAfterTimeout"
+  ],
+  "required_gtest_count": 20,
+  "changes": "Exact upstream main-source changes and exact two added tests; new test insertion context re-anchored to Bazel9.0.0. No other upstream changes.",
+  "budget_minutes": 30,
+  "original_robrix_counts": [
+    2,
+    0,
+    0,
+    0,
+    0
+  ],
+  "closure": false,
+  "bazelisk_version": "v1.28.1"
+}

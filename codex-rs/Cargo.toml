@@ -176,6 +176,7 @@ members = [
     "utils/fuzzy-match",
     "utils/stream-parser",
     "utils/template",
+    "utils/yaml",
     "codex-client",
     "codex-api",
     "state",
@@ -317,6 +318,7 @@ codex-shell-command = { path = "shell-command" }
 codex-shell-escalation = { path = "shell-escalation" }
 codex-skills-extension = { path = "ext/skills" }
 codex-skills = { path = "skills" }
+codex-utils-yaml = { path = "utils/yaml" }
 codex-state = { path = "state" }
 codex-stdio-to-uds = { path = "stdio-to-uds" }
 codex-terminal-detection = { path = "terminal-detection" }
@@ -367,7 +369,7 @@ assert_matches = "1.5.0"
 async-channel = "2.3.1"
 async-io = "2.6.0"
 async-stream = "0.3.6"
-aws-config = "1"
+aws-config = "=1.8.12"
 aws-credential-types = "1"
 aws-sigv4 = "1"
 aws-types = "1"
@@ -433,11 +435,11 @@ lazy_static = "1"
 libc = "0.2.182"
 # Keep SQLx's bundled SQLite on a version containing the WAL-reset corruption fix:
 # https://www.sqlite.org/wal.html#the_wal_reset_bug
-libsqlite3-sys = { version = "0.37", default-features = false }
+libsqlite3-sys = { version = "=0.38.2", default-features = false }
 log = "0.4"
 lru = "0.18.2"
 maplit = "1.0.2"
-matrix-sdk = { version = "0.18.0", default-features = false, features = ["e2e-encryption", "sqlite"] }
+matrix-sdk = { version = "=0.19.1", default-features = false, features = ["e2e-encryption", "sqlite", "rustls-aws-lc-rs"] }
 memchr = "2.7.6"
 mime_guess = "2.0.5"
 multimap = "0.10.0"
@@ -470,6 +472,7 @@ rcgen = { version = "0.14.7", default-features = false, features = [
     "pem",
 ] }
 regex = "1.12.3"
+ryu = "1.0"
 regex-lite = "0.1.8"
 reqwest = { version = "0.12", features = ["cookies"] }
 rmcp = { version = "=3.1.3", default-features = false }
@@ -490,7 +493,7 @@ serde_ignored = "0.1.14"
 serde_json = "1"
 serde_path_to_error = "0.1.20"
 serde_with = "3.17"
-serde_yaml = "0.9"
+serde-saphyr = { version = "=2.1.0", default-features = false, features = ["deserialize", "comments"] }
 serial_test = "3.2.0"
 sha1 = "0.10.6"
 scopeguard = "1.2.0"
@@ -568,7 +571,11 @@ which = "8"
 whoami = "1.6.1"
 wildmatch = "2.6.1"
 winapi-util = "0.1.11"
-zip = "2.4.2"
+# Preserve the existing formats and libbz2 C backend. In zip 9 the selector
+# named `bzip2-rs` enables bzip2/bzip2-sys instead of the new Rust backend.
+zip = { version = "9.0.0", default-features = false, features = [
+    "aes-crypto", "bzip2-rs", "deflate64", "deflate", "lzma", "time", "zstd", "xz",
+] }
 zstd = "0.13"
 
 wiremock = "0.6"
@@ -661,15 +668,33 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
-# Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
-# bitmap import and patched chunk dependency without changing their public API.
-imbl = { path = "third_party/imbl-6.1.0" }
-# Matrix SDK 0.18.0 pins rusqlite 0.37/libsqlite3-sys 0.35. Hepta's SQLx 0.9
-# deliberately uses libsqlite3-sys 0.37 for the WAL-reset corruption fix, and
-# Cargo permits only one native SQLite `links` crate in a graph. The vendored
-# crate is upstream matrix-sdk-sqlite 0.18.0 with only its rusqlite constraint
-# advanced to 0.39, which uses the already-selected libsqlite3-sys 0.37.
-matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.18.0" }
+# Replace Matrix's abandoned event-context typemap while retaining native
+# Send + Sync and wasm Clone bounds. All other SDK implementation is upstream.
+matrix-sdk = { path = "third_party/matrix-sdk-0.19.1" }
+# Preserve Starlark implementation while aligning the exact BLAKE3 patch
+# required by Matrix store encryption.
+starlark = { path = "third_party/starlark-0.14.2" }
+# Restore the upstream OS entropy source for Secret Service DH keys and IVs,
+# retaining 4.1.0 zeroization and API behavior.
+dbus-secret-service = { path = "third_party/dbus-secret-service-4.1.0" }
+# Keep Secret Service encryption while isolating its synchronous provider from
+# the unmaintained asynchronous zbus dependency family.
+keyring = { path = "third_party/keyring-3.6.3" }
+# Preserve workspace YAML consumer semantics using the maintained Rust parser.
+serde-saphyr = { path = "third_party/serde-saphyr-2.1.0" }
+# Keep AWS login support while moving its ES256 signer to the maintained
+# P-256 dependency family and an operating-system-seeded cryptographic RNG.
+aws-config = { path = "third_party/aws-config-1.8.12" }
+# Backport upstream's maintained TOML parser without changing age encryption,
+# i18n-config's configuration schema, or the source allowlist.
+i18n-config = { path = "third_party/i18n-config-0.4.8" }
+# Declare ZIP's selected C bzip2 backend on its optional dependency, avoiding
+# same-named feature activation and graph-tool forwarding discrepancies.
+# The vendored Rust implementation is unchanged.
+zip = { path = "third_party/zip-9.0.0" }
+# Align the unchanged SQLx 0.9 implementation with Matrix's native SQLite
+# dependency. Cargo permits a single sqlite3 links package in the graph.
+sqlx-sqlite = { path = "third_party/sqlx-sqlite-0.9.0" }
 # Uncomment to debug local changes.
 # ratatui = { path = "../../ratatui" }
 crossterm = { git = "https://github.com/openai-oss-forks/crossterm", rev = "45fecb9508105988f42fe6ff0441783ed3717f92" }

@@ -16,10 +16,111 @@ use wiremock::ResponseTemplate;
 use wiremock::matchers::header_exists;
 use wiremock::matchers::method;
 use wiremock::matchers::path;
+#[cfg(unix)]
+use zip::HasZipMetadata;
+use zip::System;
+use zip::ZipArchive;
 use zip::ZipWriter;
 use zip::write::SimpleFileOptions;
 
 const TEST_CURATED_PLUGIN_SHA: &str = "0123456789abcdef0123456789abcdef01234567";
+
+#[test]
+fn extract_zipball_preserves_compressed_payloads() {
+    for method in [
+        zip::CompressionMethod::Stored,
+        zip::CompressionMethod::Deflated,
+        zip::CompressionMethod::Bzip2,
+        zip::CompressionMethod::Zstd,
+        zip::CompressionMethod::Xz,
+    ] {
+        let payload = b"curated plugin archive compression compatibility\n";
+        let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+        let options = SimpleFileOptions::default().compression_method(method);
+        writer
+            .start_file("repository/nested/plugin.txt", options)
+            .expect("start compressed archive entry");
+        writer.write_all(payload).expect("write compressed payload");
+        let bytes = writer
+            .finish()
+            .expect("finish compressed archive")
+            .into_inner();
+        let destination = tempdir().expect("extraction directory");
+
+        extract_zipball_to_dir(&bytes, destination.path()).expect("extract compressed archive");
+
+        assert_eq!(
+            std::fs::read(destination.path().join("nested/plugin.txt"))
+                .expect("extracted compressed payload"),
+            payload,
+            "compression method {method:?}",
+        );
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn extract_zipball_strips_privilege_bits_and_preserves_regular_unix_permissions() {
+    use std::os::unix::fs::PermissionsExt;
+
+    for mode in [
+        0o4755_u32, 0o2755, 0o1755, 0o755, 0o4644, 0o2644, 0o1644, 0o644,
+    ] {
+        let normal_mode = mode & 0o777;
+        let payload = b"plugin fixture\n";
+        let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+        let options = SimpleFileOptions::default()
+            .compression_method(zip::CompressionMethod::Stored)
+            .unix_permissions(normal_mode);
+        writer
+            .start_file("repository/plugin.txt", options)
+            .expect("start archive entry");
+        writer.write_all(payload).expect("write archive entry");
+        let mut bytes = writer.finish().expect("finish archive").into_inner();
+
+        // Writer APIs may sanitize special bits. Put them directly in the ZIP
+        // central directory so the regression exercises untrusted metadata.
+        let central = bytes
+            .windows(/*size*/ 4)
+            .position(|signature| signature == b"PK\x01\x02")
+            .expect("central directory");
+        let attributes_range = central + 38..central + 42;
+        let attributes = u32::from_le_bytes(
+            bytes[attributes_range.clone()]
+                .try_into()
+                .expect("external attributes"),
+        ) | ((mode & 0o7000) << 16);
+        bytes[attributes_range].copy_from_slice(&attributes.to_le_bytes());
+        let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read fixture");
+        let archived_header = archive
+            .by_index(/*file_number*/ 0)
+            .expect("read fixture entry")
+            .central_header_start() as usize;
+        // Verify the raw metadata: ZipFile::unix_mode() also sanitizes special
+        // bits in newer ZIP releases, so it cannot prove the fixture has them.
+        let archived_mode = u32::from_le_bytes(
+            bytes[archived_header + 38..archived_header + 42]
+                .try_into()
+                .expect("archived external attributes"),
+        ) >> 16;
+        assert_eq!(archived_mode & 0o7777, mode);
+
+        let destination = tempdir().expect("extraction directory");
+        extract_zipball_to_dir(&bytes, destination.path()).expect("extract archive");
+        let output = destination.path().join("plugin.txt");
+        assert_eq!(
+            (
+                std::fs::read(&output).expect("extracted payload"),
+                std::fs::metadata(&output)
+                    .expect("extracted metadata")
+                    .permissions()
+                    .mode()
+                    & 0o7777,
+            ),
+            (payload.to_vec(), normal_mode),
+        );
+    }
+}
 
 #[tokio::test]
 async fn github_http_routes_repository_ref_and_zipball_urls() {
@@ -1381,4 +1482,140 @@ fn curated_repo_backup_archive_zip_bytes(sha: &str) -> Vec<u8> {
         .expect("write plugin manifest");
 
     writer.finish().expect("finish zip writer").into_inner()
+}
+
+#[cfg(unix)]
+#[test]
+fn downloaded_zip_permissions_do_not_preserve_privileged_bits() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let directory = tempfile::tempdir().unwrap_or_else(|error| panic!("{error:?}"));
+    let path = directory.path().join("payload");
+    std::fs::write(&path, b"fixture").unwrap_or_else(|error| panic!("{error:?}"));
+    apply_zip_permissions(Some(0o104755), &path).unwrap_or_else(|error| panic!("{error:?}"));
+    let metadata = std::fs::metadata(&path).unwrap_or_else(|error| panic!("{error:?}"));
+    assert_eq!(metadata.permissions().mode() & 0o7777, 0o755);
+}
+
+#[cfg(unix)]
+#[test]
+fn zip_archive_rejects_symlinked_extraction_root() {
+    let tmp = tempdir().expect("create tempdir");
+    let destination = tmp.path().join("staging");
+    let outside = tmp.path().join("outside");
+    std::fs::create_dir_all(&outside).expect("create outside");
+    std::os::unix::fs::symlink(&outside, &destination).expect("create symlink root");
+
+    let archive = curated_repo_zipball_bytes(TEST_CURATED_PLUGIN_SHA);
+    let error = extract_zipball_to_dir(&archive, &destination)
+        .expect_err("symlinked extraction root must be rejected");
+    assert!(error.contains("symbolic link"), "{error}");
+    assert!(!outside.join(".agents").exists());
+}
+
+#[cfg(unix)]
+#[test]
+fn zip_archive_rejects_preexisting_symlink_path() {
+    let tmp = tempdir().expect("create tempdir");
+    let destination = tmp.path().join("staging");
+    let outside = tmp.path().join("outside");
+    std::fs::create_dir_all(&destination).expect("create staging");
+    std::fs::create_dir_all(&outside).expect("create outside");
+    std::os::unix::fs::symlink(&outside, destination.join("plugins"))
+        .expect("create staging symlink");
+
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    writer
+        .start_file(
+            "repo-root/plugins/untrusted.txt",
+            SimpleFileOptions::default(),
+        )
+        .expect("start zip file");
+    writer
+        .write_all(b"should not escape")
+        .expect("write zip file");
+    let archive = writer.finish().expect("finish zip").into_inner();
+
+    let error = extract_zipball_to_dir(&archive, &destination)
+        .expect_err("symlink ancestor must be rejected");
+    assert!(error.contains("symbolic link"), "{error}");
+    assert!(!outside.join("untrusted.txt").exists());
+}
+
+#[test]
+fn extract_zipball_rejects_symlink_entries() {
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    let options = SimpleFileOptions::default().system(System::Unix);
+    writer
+        .add_symlink("root/link", "../../outside", options)
+        .expect("add symlink entry");
+    let bytes = writer.finish().expect("finish zip").into_inner();
+    {
+        let mut archive =
+            ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read symlink fixture");
+        let entry = archive.by_name("root/link").expect("read symlink entry");
+        assert!(
+            entry.is_symlink(),
+            "fixture must contain a real symlink entry"
+        );
+    }
+    let destination = tempdir().expect("destination");
+
+    let err = extract_zipball_to_dir(&bytes, destination.path())
+        .expect_err("symlink archive entries must be rejected");
+    assert!(err.contains("is a symlink"));
+    assert_eq!(
+        std::fs::symlink_metadata(destination.path().join("link"))
+            .expect_err("rejected symlink must not be created")
+            .kind(),
+        std::io::ErrorKind::NotFound
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn extract_zipball_masks_special_permission_bits() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    let entry_mode = 0o107755;
+    // unix_permissions() masks special bits before the archive is written.
+    let options = SimpleFileOptions::default()
+        .system(System::Unix)
+        .external_attributes(entry_mode << 16);
+    writer
+        .start_file("root/plugin", options)
+        .expect("start executable entry");
+    writer.write_all(b"plugin").expect("write plugin");
+    let bytes = writer.finish().expect("finish zip").into_inner();
+    // ZIP 9 masks special bits in unix_mode(); inspect the retained archive
+    // attributes so the fixture proves SUID, SGID and sticky bits were present.
+    let mut archive = ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read fixture");
+    let raw_mode = archive
+        .by_name("root/plugin")
+        .expect("fixture entry")
+        .get_metadata()
+        .external_attributes
+        >> 16;
+    assert_eq!(
+        raw_mode, entry_mode,
+        "fixture must retain all original mode bits"
+    );
+    assert_eq!(
+        raw_mode & 0o7000,
+        0o7000,
+        "fixture must contain SUID/SGID/sticky"
+    );
+    let destination = tempdir().expect("destination");
+
+    extract_zipball_to_dir(&bytes, destination.path()).expect("extract archive");
+    let mode = std::fs::metadata(destination.path().join("plugin"))
+        .expect("plugin metadata")
+        .permissions()
+        .mode();
+    assert_eq!(mode & 0o7000, 0, "SUID/SGID/sticky bits must be masked");
+    assert_eq!(mode & 0o777, 0o755);
 }

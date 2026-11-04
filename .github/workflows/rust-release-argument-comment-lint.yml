@@ -29,8 +29,9 @@ jobs:
     runs-on: ${{ matrix.runs_on || matrix.runner }}
     timeout-minutes: 60
     env:
-      CARGO_DYLINT_VERSION: 5.0.0
-      DYLINT_LINK_VERSION: 5.0.0
+      CARGO_DYLINT_VERSION: 6.3.2
+      DYLINT_LINK_VERSION: 6.3.2
+      DYLINT_BOOTSTRAP_TOOLCHAIN: 1.97.0
 
     strategy:
       fail-fast: false
@@ -69,7 +70,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
         with:
           toolchain: nightly-2025-09-18
           targets: ${{ matrix.target }}
@@ -79,8 +80,10 @@ jobs:
         shell: bash
         run: |
           install_root="${RUNNER_TEMP}/argument-comment-lint-tools"
-          cargo install --locked cargo-dylint --version "$CARGO_DYLINT_VERSION" --root "$install_root"
-          cargo install --locked dylint-link --version "$DYLINT_LINK_VERSION"
+          rustup toolchain install "$DYLINT_BOOTSTRAP_TOOLCHAIN" --profile minimal --no-self-update
+          rustup run "$DYLINT_BOOTSTRAP_TOOLCHAIN" rustc -Vv
+          cargo "+$DYLINT_BOOTSTRAP_TOOLCHAIN" install --locked cargo-dylint --version "$CARGO_DYLINT_VERSION" --root "$install_root"
+          cargo "+$DYLINT_BOOTSTRAP_TOOLCHAIN" install --locked dylint-link --version "$DYLINT_LINK_VERSION"
           echo "INSTALL_ROOT=$install_root" >> "$GITHUB_ENV"
 
       - name: Cargo build

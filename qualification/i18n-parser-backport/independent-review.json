@@ -1,0 +1,32 @@
+{
+  "schema": "independent-readonly-i18n-review-v1",
+  "candidate_head": "5e584c763e70a9d9b69bd80c465a7a7988de44ea",
+  "official_archive_sha256": "3e06b90c8a0d252e203c94344b21e35a30f3a3a85dc7db5af8f8df9f3e0c63ef",
+  "official_files_included": 8,
+  "byte_identical_official_files": 5,
+  "changed_official_files": [
+    "Cargo.toml",
+    "Cargo.toml.orig",
+    "src/lib.rs"
+  ],
+  "rust_functional_delta": "two from_str calls and concrete CannotDeserializeToml error payload; remaining source change is import formatting",
+  "baseline_test_git_blob_sha": "5cb66a03385ed25a77c49ba02f10e9acbb8a2cd0",
+  "test_delta": "age version comment only; six test bodies unchanged",
+  "unchanged_lock_package_records": 1518,
+  "lock_changed_records": [
+    "basic-toml 0.1.10 removed",
+    "i18n-config 0.4.8 path parser replacement",
+    "codex-secrets test dependency"
+  ],
+  "age_package_record_unchanged": true,
+  "age_version": "0.11.2",
+  "native_inputs_independently_rehashed": 13,
+  "native_log_sha256": "eeb2b601e865c4130c9bf88a5ca7e1702653e65f684938ce8f01c108d3cee791",
+  "native_junit_sha256": "d4494429d607253ed0f45e7540c98094626ad495f74c02a60006787cbfc7fba5",
+  "native_testcases_verified": 15,
+  "native_skips": 0,
+  "native_executed_by_reviewer": false,
+  "review_result": "No blocking source/configuration/encryption compatibility defect identified in this bounded change. The public error payload type and diagnostic text are not byte/API-type identical; current consumer display use is the intended compatibility boundary. Arbitrary TOML dialect equivalence and complete platform CI are not established.",
+  "cargo_or_build_executed_by_reviewer": false,
+  "other_agent_files_modified": false
+}

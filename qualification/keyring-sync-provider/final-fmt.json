@@ -1,0 +1,31 @@
+[
+  {
+    "command": [
+      "uv",
+      "run",
+      "--frozen",
+      "--project",
+      "scripts",
+      "ruff",
+      "format",
+      "qualification/keyring-sync-provider/reject_dh.py",
+      "qualification/keyring-sync-provider/build_pinned_client.py",
+      "qualification/keyring-sync-provider/prepare_probes.py",
+      "qualification/keyring-sync-provider/run_private_service.py"
+    ],
+    "exit": 0,
+    "stdout": "4 files reformatted\n",
+    "stderr": "Using CPython 3.12.14 interpreter at: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3\nCreating virtual environment at: scripts/.venv\nInstalled 1 package in 4ms\n",
+    "seconds": 0.0483435589999317
+  },
+  {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "",
+    "seconds": 0.3741634090001753
+  }
+]

@@ -1,0 +1,1203 @@
+{
+  "base_head": "16418ddc3416a38a122b883cee46e2d3583cbd41",
+  "base_tree": "43fde98e9ea789b81b941e48bb65300c76c4292c",
+  "original_blob_count": 9111,
+  "Cargo_toml": {
+    "path": "codex-rs/Cargo.toml",
+    "mode": "100644",
+    "bytes": 22142,
+    "sha256": "6d29426b44fc9b072d3dde607d11236d3e127f9758fd03058f10b017e1f0ca13",
+    "git_blob": "0edcff9d268e910d2f38641116e7a081116417a0"
+  },
+  "Cargo_lock": {
+    "path": "codex-rs/Cargo.lock",
+    "mode": "100644",
+    "bytes": 417880,
+    "sha256": "83651f11dea7f58dc96f3d119c120ab2bd8019e418979ab091ef49de7cceb9e8",
+    "git_blob": "655cb6c88b86e0a00d1c1514ab2acf9ae86a7d34"
+  },
+  "explicit_workspace_member_entries": 187,
+  "effective_original_workspace_members": 193,
+  "workspace_not_rewritten_or_narrowed": true,
+  "verification_scope": "The seven final execution receipts verify all 9111 original blobs plus exactly 19 candidate paths before and after their commands, with no unrecorded difference; original Cargo.lock hash remains fixed.",
+  "member_count_source": {
+    "existing_receipt_path": "/workspace/scratch/3d6a75235bcb/work/hepta-integration/production-composition/validation/owner-metadata-no-deps.json",
+    "bytes": 1076080,
+    "sha256": "0dfcb129abab10e2200df4498d256ba374243328a57ed5ebde587c9b93eb1058",
+    "git_blob": "5e706ff471e923801079f589432ed7433a282625",
+    "command": [
+      "cargo",
+      "metadata",
+      "--format-version",
+      "1",
+      "--locked",
+      "--offline",
+      "--no-deps"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "53a5d08c910e7e06809291e63e931e6e0a4161e2945524b8c3ed219b63fa9ac1",
+    "scope": "Exact complete original workspace manifests and target-entry sources for metadata. Not a full compilation checkout.",
+    "not_rerun_during_packaging": true
+  },
+  "members": [
+    {
+      "name": "codex-agent-graph-store",
+      "manifest": "codex-rs/agent-graph-store/Cargo.toml",
+      "git_blob": "15d116823b73afa82021f3ca55a28ce25e9044aa",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-agent-identity",
+      "manifest": "codex-rs/agent-identity/Cargo.toml",
+      "git_blob": "36d5eb41fd694a9eb283cbd6af4bc0977fa36c80",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-analytics",
+      "manifest": "codex-rs/analytics/Cargo.toml",
+      "git_blob": "8546427469212f824055765ffe79dd174aab3f7f",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-ansi-escape",
+      "manifest": "codex-rs/ansi-escape/Cargo.toml",
+      "git_blob": "edb5b6e514cc2d36596a5dce7e9f6963cc2def8d",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-app-server-client",
+      "manifest": "codex-rs/app-server-client/Cargo.toml",
+      "git_blob": "cfe7a3d47f690470979c4386d5a89e640a4270d0",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-app-server-daemon",
+      "manifest": "codex-rs/app-server-daemon/Cargo.toml",
+      "git_blob": "fee57321978f8033232071940d85e5a1b8942b51",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-app-server-protocol-noop-macros",
+      "manifest": "codex-rs/app-server-protocol-noop-macros/Cargo.toml",
+      "git_blob": "93a24b070beffa187ab27f331e35cdcefe21c4b8",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-app-server-protocol",
+      "manifest": "codex-rs/app-server-protocol/Cargo.toml",
+      "git_blob": "da3876496ae9b90bdf3cea620b5a2eac6324e239",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-app-server-test-client",
+      "manifest": "codex-rs/app-server-test-client/Cargo.toml",
+      "git_blob": "901afb70d00f16e004913c764337d92afc82808b",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-app-server-transport",
+      "manifest": "codex-rs/app-server-transport/Cargo.toml",
+      "git_blob": "7beaa4e42b225d14975aa6cc3368d66b13a03470",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-app-server",
+      "manifest": "codex-rs/app-server/Cargo.toml",
+      "git_blob": "7008939cb5c05ba76d39d76e063108f2dc0e449c",
+      "mode": "100644"
+    },
+    {
+      "name": "app_test_support",
+      "manifest": "codex-rs/app-server/tests/common/Cargo.toml",
+      "git_blob": "8dd43051c7e4087c3c7213f05799db1b43dbe759",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-apply-patch",
+      "manifest": "codex-rs/apply-patch/Cargo.toml",
+      "git_blob": "8e1d7f651f47a76de2a6ed6226aa2ec1a55cf5d6",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-arg0",
+      "manifest": "codex-rs/arg0/Cargo.toml",
+      "git_blob": "bb45db45521a60e80088f9032431d28ff4e717ed",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-async-utils",
+      "manifest": "codex-rs/async-utils/Cargo.toml",
+      "git_blob": "093bbe0972b4a4fce1f8a7ef87b3c1f04f5b9ca0",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-aws-auth",
+      "manifest": "codex-rs/aws-auth/Cargo.toml",
+      "git_blob": "6bb5a69ae9dbf82efcf6b637e30d521e19a8ecfe",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-backend-client",
+      "manifest": "codex-rs/backend-client/Cargo.toml",
+      "git_blob": "512d9606170bd8fcdc12c98d82dda43e47910a65",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-build-info",
+      "manifest": "codex-rs/build-info/Cargo.toml",
+      "git_blob": "f9cc3d040fb872382d7801e7720f41447f62e1f9",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-bwrap",
+      "manifest": "codex-rs/bwrap/Cargo.toml",
+      "git_blob": "ed7010c8fdaea270f028ceb9a053e60c278d2b4c",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-chatgpt",
+      "manifest": "codex-rs/chatgpt/Cargo.toml",
+      "git_blob": "04b9cb7df6786401aa2c2cbad225cc40a26d277d",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-cli",
+      "manifest": "codex-rs/cli/Cargo.toml",
+      "git_blob": "d2360ef42c5a8c8a9ffe3231f85220597847f0ab",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-cloud-config",
+      "manifest": "codex-rs/cloud-config/Cargo.toml",
+      "git_blob": "ecb33d34beb89a3112cbd316e6bcf672b089a833",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-cloud-tasks-client",
+      "manifest": "codex-rs/cloud-tasks-client/Cargo.toml",
+      "git_blob": "8efd78cb22d0b6458e9ec9138f0df03590f75d75",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-cloud-tasks-mock-client",
+      "manifest": "codex-rs/cloud-tasks-mock-client/Cargo.toml",
+      "git_blob": "b249b654e02f36360389a12ccc14bffb787b9726",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-cloud-tasks",
+      "manifest": "codex-rs/cloud-tasks/Cargo.toml",
+      "git_blob": "12bd6fdf7fd03e8b9c16de911f4ca69d625fba90",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-code-mode-host",
+      "manifest": "codex-rs/code-mode-host/Cargo.toml",
+      "git_blob": "685397aadfa0a681dcad1b2f84f3b9ae8964186a",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-code-mode-protocol",
+      "manifest": "codex-rs/code-mode-protocol/Cargo.toml",
+      "git_blob": "cad10b47ebf4e577d9d9278703424f266ba6cc71",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-code-mode-runtime",
+      "manifest": "codex-rs/code-mode-runtime/Cargo.toml",
+      "git_blob": "e3708b657ebd5e05a289acffea1dccb2061db4fd",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-code-mode",
+      "manifest": "codex-rs/code-mode/Cargo.toml",
+      "git_blob": "0ef5079bebb7f523b4b5557ec07e46d3c5230465",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-api",
+      "manifest": "codex-rs/codex-api/Cargo.toml",
+      "git_blob": "01cacbe2b4608ab8ea0853ce21e1b11768f9eb80",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-backend-openapi-models",
+      "manifest": "codex-rs/codex-backend-openapi-models/Cargo.toml",
+      "git_blob": "7baf01935d36ad701d79d0c6e7e9ece0b056142f",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-client",
+      "manifest": "codex-rs/codex-client/Cargo.toml",
+      "git_blob": "bc67e383a83d13d9a841ef3017ff4fc58284d4c3",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-experimental-api-macros",
+      "manifest": "codex-rs/codex-experimental-api-macros/Cargo.toml",
+      "git_blob": "2e148a21d782b2ca20f5c81fc4ea896523d4d80d",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-home",
+      "manifest": "codex-rs/codex-home/Cargo.toml",
+      "git_blob": "a8fa625dcfc1a38ebfc0bbdd18ec57ce7c1e625b",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-mcp",
+      "manifest": "codex-rs/codex-mcp/Cargo.toml",
+      "git_blob": "6134f2126db203999727d05f61921836dfed06b7",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-collaboration-mode-templates",
+      "manifest": "codex-rs/collaboration-mode-templates/Cargo.toml",
+      "git_blob": "2c17b1fd2ad989bda8a38e80dee1c5380f887c03",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-config",
+      "manifest": "codex-rs/config/Cargo.toml",
+      "git_blob": "37a1c32439b633761727924dc9e762ae0781658d",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-connectors",
+      "manifest": "codex-rs/connectors/Cargo.toml",
+      "git_blob": "ac3ce9241c2d6f4deb3ac09ced64087fd51b29b3",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-context-fragments",
+      "manifest": "codex-rs/context-fragments/Cargo.toml",
+      "git_blob": "ca84916ce99b61eef9f5b02cf7dd102c399e5732",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-core-api",
+      "manifest": "codex-rs/core-api/Cargo.toml",
+      "git_blob": "b82d5ee4802d68b29f574bc8ebee1334cf751caa",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-core-plugins",
+      "manifest": "codex-rs/core-plugins/Cargo.toml",
+      "git_blob": "0899163accb0edc3e98b27b9b9fdfd86adab46ae",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-core",
+      "manifest": "codex-rs/core/Cargo.toml",
+      "git_blob": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d",
+      "mode": "100644"
+    },
+    {
+      "name": "core_test_support",
+      "manifest": "codex-rs/core/tests/common/Cargo.toml",
+      "git_blob": "a4851eb1d9ef3f9bc0d1535f84e937bfb82aaf93",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-diagnostics",
+      "manifest": "codex-rs/diagnostics/Cargo.toml",
+      "git_blob": "2eb2125a102e121ed5a51d8dad3013c7cc258cf0",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-exec-server-protocol",
+      "manifest": "codex-rs/exec-server-protocol/Cargo.toml",
+      "git_blob": "9dac711e1a0f404be080113747997690e9cf4a49",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-exec-server",
+      "manifest": "codex-rs/exec-server/Cargo.toml",
+      "git_blob": "746bfb231d61c1a67163ff55c46cd7e92964457a",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-exec-server-test-support",
+      "manifest": "codex-rs/exec-server/tests/support/Cargo.toml",
+      "git_blob": "85ad347b6c5494746f3f017096c7c6a8f4392435",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-exec",
+      "manifest": "codex-rs/exec/Cargo.toml",
+      "git_blob": "9c3a236bf7c5d678bdf03aaa140fe40f2e7a807e",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-execpolicy",
+      "manifest": "codex-rs/execpolicy/Cargo.toml",
+      "git_blob": "42040222336513132da0b6a274bcd3fc80589f99",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-agent-extension",
+      "manifest": "codex-rs/ext/agent/Cargo.toml",
+      "git_blob": "6c3f10a43319a122e2da129e31ba34aa4f1df49a",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-connectors-extension",
+      "manifest": "codex-rs/ext/connectors/Cargo.toml",
+      "git_blob": "1aead727731475bc9590ac90efb37c2ae7adef64",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-extension-api",
+      "manifest": "codex-rs/ext/extension-api/Cargo.toml",
+      "git_blob": "c6eb90ec97d6fae953e8899edca318c492d5138c",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-git-attribution",
+      "manifest": "codex-rs/ext/git-attribution/Cargo.toml",
+      "git_blob": "e96d0dbcd577bcc0645f3f6175bbe31429f87159",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-goal-extension",
+      "manifest": "codex-rs/ext/goal/Cargo.toml",
+      "git_blob": "22ee1794fdf1341819bb8041882b84124ef2362e",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-guardian-v2",
+      "manifest": "codex-rs/ext/guardian-v2/Cargo.toml",
+      "git_blob": "ebe48e99b3927ba3d4f407a21e662dbe93bdbce8",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-governance",
+      "manifest": "codex-rs/ext/hepta-governance/Cargo.toml",
+      "git_blob": "229991524ea3a5219054f2b36b87c7708a2d93a6",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-memory-extension",
+      "manifest": "codex-rs/ext/hepta-memory/Cargo.toml",
+      "git_blob": "2d17c6481dbe0d75bd057e2edc9e3ee46de88c73",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-prompt-extension",
+      "manifest": "codex-rs/ext/hepta-prompt/Cargo.toml",
+      "git_blob": "152fea264155931b3994e98e3c754b8f79c57718",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-history-notes-extension",
+      "manifest": "codex-rs/ext/history-notes/Cargo.toml",
+      "git_blob": "08fb92dd74557893eb7cf6fa989e798d72a92660",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-image-generation-extension",
+      "manifest": "codex-rs/ext/image-generation/Cargo.toml",
+      "git_blob": "ad10b2b0a640744ce3986a22990cc46aa24b89b3",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-extension-items",
+      "manifest": "codex-rs/ext/items/Cargo.toml",
+      "git_blob": "4d58b29bc7004171361e4828e1dda712815ad8d1",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-mcp-extension",
+      "manifest": "codex-rs/ext/mcp/Cargo.toml",
+      "git_blob": "e639081358ca76910ed744f5abc426f60a65a74e",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-memories-extension",
+      "manifest": "codex-rs/ext/memories/Cargo.toml",
+      "git_blob": "e283140b15ef1547c642310138fc8b04c4ce7607",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-queue-extension",
+      "manifest": "codex-rs/ext/queue/Cargo.toml",
+      "git_blob": "007cbbbde0e7cdd4c067d70e5b3d40f40f1d6187",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-skills-extension",
+      "manifest": "codex-rs/ext/skills/Cargo.toml",
+      "git_blob": "256d0aaa8710fff8d7a9d5c8eba242cd282b868e",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-web-search-extension",
+      "manifest": "codex-rs/ext/web-search/Cargo.toml",
+      "git_blob": "84d5a8cad1ec4749e3cea6aa6a9a86eb7178523b",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-external-agent-migration",
+      "manifest": "codex-rs/external-agent-migration/Cargo.toml",
+      "git_blob": "3db739977ce9e94f66a3c4c9f22ce869610fa910",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-features",
+      "manifest": "codex-rs/features/Cargo.toml",
+      "git_blob": "95be6c400dd0d22ca7304146714a2678164fb38b",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-feedback",
+      "manifest": "codex-rs/feedback/Cargo.toml",
+      "git_blob": "8a01696952358c792d622afe675b609b8b315138",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-file-search",
+      "manifest": "codex-rs/file-search/Cargo.toml",
+      "git_blob": "e235898982f6eba908c5c0751eae91a5b25cdb1a",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-file-system",
+      "manifest": "codex-rs/file-system/Cargo.toml",
+      "git_blob": "382eacb43d3353b2046806f91ba0f976866c9282",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-file-watcher",
+      "manifest": "codex-rs/file-watcher/Cargo.toml",
+      "git_blob": "afb14fcde634f5478f4d6f981c52bf982b03b0f0",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-git-utils",
+      "manifest": "codex-rs/git-utils/Cargo.toml",
+      "git_blob": "a0bd7872854cffa38dd559805a1dea2d06db85ae",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-agent-protocol",
+      "manifest": "codex-rs/hepta-agent-protocol/Cargo.toml",
+      "git_blob": "ca7afd5c2905cdc02666b0cb20c1f6238a84dbba",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-agentd",
+      "manifest": "codex-rs/hepta-agentd/Cargo.toml",
+      "git_blob": "02a6d35d00d9c2ef8795b108b01ab26ac1052605",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-authbus-p1-3-qualification",
+      "manifest": "codex-rs/hepta-authbus-p1-3-qualification/Cargo.toml",
+      "git_blob": "49874f52adebb338f8fd7038ac84fb13d3be8157",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-authbus",
+      "manifest": "codex-rs/hepta-authbus/Cargo.toml",
+      "git_blob": "5b14273ea4ff6ff2e71dda151560ae6ba7f90dba",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-automation",
+      "manifest": "codex-rs/hepta-automation/Cargo.toml",
+      "git_blob": "4a5f0fa0db6a0f27d685012c89f87d0406f2f41b",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-bao-adapter",
+      "manifest": "codex-rs/hepta-bao-adapter/Cargo.toml",
+      "git_blob": "fc8435728a0eeae5c1a2292b8ef33d2ae5c55e90",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-bellman-operator",
+      "manifest": "codex-rs/hepta-bellman-operator/Cargo.toml",
+      "git_blob": "5231fed894f15b6e5ba6255523709067ea656e3d",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-codex-adapter",
+      "manifest": "codex-rs/hepta-codex-adapter/Cargo.toml",
+      "git_blob": "0af5dc81a2488f2b273f79c13ef281db2be048c2",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-cognitive-read",
+      "manifest": "codex-rs/hepta-cognitive-read/Cargo.toml",
+      "git_blob": "9804ca394a12c4bf31f01031853d7e52c73dbb75",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-cognitive-store",
+      "manifest": "codex-rs/hepta-cognitive-store/Cargo.toml",
+      "git_blob": "34598e61d6aaff043e048907b48967086d6ecc83",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-cognitive-types",
+      "manifest": "codex-rs/hepta-cognitive-types/Cargo.toml",
+      "git_blob": "c836b15097ff4812e735e3feff1d552a87c2cae8",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-compact-engine",
+      "manifest": "codex-rs/hepta-compact-engine/Cargo.toml",
+      "git_blob": "60bc6fb1ee73f31eac3a152db40be10b52b495e3",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-context-compiler",
+      "manifest": "codex-rs/hepta-context-compiler/Cargo.toml",
+      "git_blob": "2ce0fb9520b8440a9b20a441d2c7bcbc4529dba0",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-contracts",
+      "manifest": "codex-rs/hepta-contracts/Cargo.toml",
+      "git_blob": "8023be1ce2392a3bfe8f80ff7c8e82d964a9d17b",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-control-plane",
+      "manifest": "codex-rs/hepta-control-plane/Cargo.toml",
+      "git_blob": "37cd75393a4ef4164d96ba827a3531f37d668d15",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-evidence",
+      "manifest": "codex-rs/hepta-evidence/Cargo.toml",
+      "git_blob": "7d5a851797a8c8fdc9c14382418158f9c9789dad",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-fleet",
+      "manifest": "codex-rs/hepta-fleet/Cargo.toml",
+      "git_blob": "a271fa91b84d9ea0100703ff491c6826b0aabc6e",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-infer-core",
+      "manifest": "codex-rs/hepta-infer-core/Cargo.toml",
+      "git_blob": "d89bf7c4764cdaaa4b040a447a295965ea0142c5",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-infer-worker-host",
+      "manifest": "codex-rs/hepta-infer-worker-host/Cargo.toml",
+      "git_blob": "bffa8bfcb7abffd460886a27b2f63a6a0ecb21df",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-inferd",
+      "manifest": "codex-rs/hepta-inferd/Cargo.toml",
+      "git_blob": "4b7d6a9e0a775e3da69a873d3d92ff643662731a",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-intelligence-eval",
+      "manifest": "codex-rs/hepta-intelligence-eval/Cargo.toml",
+      "git_blob": "c9096b1f1c77b27b7b94d7be86e4679212960295",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-intelligence",
+      "manifest": "codex-rs/hepta-intelligence/Cargo.toml",
+      "git_blob": "162205d6bc62834e1b04fed33dd67f5955f218d1",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-intuition",
+      "manifest": "codex-rs/hepta-intuition/Cargo.toml",
+      "git_blob": "26e2f53c1c2a33d5ab30e56ff504d2c52779bfc5",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-kg",
+      "manifest": "codex-rs/hepta-kg/Cargo.toml",
+      "git_blob": "892dbf28b9bc2ecdf0fe72c79eff19294140c198",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-learning-artifacts",
+      "manifest": "codex-rs/hepta-learning-artifacts/Cargo.toml",
+      "git_blob": "725a63c9f2475ad632c7c189fd9ca271702a8899",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-learning-ledger",
+      "manifest": "codex-rs/hepta-learning-ledger/Cargo.toml",
+      "git_blob": "1d76cad44498e9538cefff1e20202482520257ff",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-matrix-protocol",
+      "manifest": "codex-rs/hepta-matrix-protocol/Cargo.toml",
+      "git_blob": "8312e8b0a739d033976c0058a25e5850e3af66a9",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-matrix-sdk",
+      "manifest": "codex-rs/hepta-matrix-sdk/Cargo.toml",
+      "git_blob": "1a8864fd643349c4db345b0e2dfbcb4a4d53719a",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-matrix-store",
+      "manifest": "codex-rs/hepta-matrix-store/Cargo.toml",
+      "git_blob": "211f8fb711d2c91d1421da930c067c28b61315b0",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-matrixd",
+      "manifest": "codex-rs/hepta-matrixd/Cargo.toml",
+      "git_blob": "c7b4306766955aafb24d1f66c55803a35c2aee96",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-memory-federation",
+      "manifest": "codex-rs/hepta-memory-federation/Cargo.toml",
+      "git_blob": "49113a3bccd7a2f56b18459924d3ec9151cbf980",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-memory-retrieval",
+      "manifest": "codex-rs/hepta-memory-retrieval/Cargo.toml",
+      "git_blob": "913ad075e730da2b3bbff7fcfa153c457141a944",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-memory",
+      "manifest": "codex-rs/hepta-memory/Cargo.toml",
+      "git_blob": "6ba04f39f78e7d6295c9922d279e37e0492180f2",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-native-gateway",
+      "manifest": "codex-rs/hepta-native-gateway/Cargo.toml",
+      "git_blob": "1902d731437c9338fdcd5c376749e42354bb6c70",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-ndu",
+      "manifest": "codex-rs/hepta-ndu/Cargo.toml",
+      "git_blob": "d92d388b0c5bd29552ed0b2719551af973b5cfc4",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-neuron",
+      "manifest": "codex-rs/hepta-neuron/Cargo.toml",
+      "git_blob": "dbd650a75e7ebe47d2642bc653468355d42cd2e3",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-objective",
+      "manifest": "codex-rs/hepta-objective/Cargo.toml",
+      "git_blob": "39085cf5d2edb3766cd1c17cd721d17389ed93cc",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-operations",
+      "manifest": "codex-rs/hepta-operations/Cargo.toml",
+      "git_blob": "af2e656fcacea8db6ea84d8bdc8715f3aa62e739",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-operator-acceptance",
+      "manifest": "codex-rs/hepta-operator-acceptance/Cargo.toml",
+      "git_blob": "5f54bdf40f505adec2e5b0681bc4d7a48ad097af",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-paths",
+      "manifest": "codex-rs/hepta-paths/Cargo.toml",
+      "git_blob": "2c16f5b19d830d4370d9d1b294fd97eae6b8d1af",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-plasticity",
+      "manifest": "codex-rs/hepta-plasticity/Cargo.toml",
+      "git_blob": "07cb9e40d44990874991620f89af8c0078575de1",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-prompt-optimizer",
+      "manifest": "codex-rs/hepta-prompt-optimizer/Cargo.toml",
+      "git_blob": "f463e790c182452434287c7ccba68dd78a7c69ca",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-prompt-registry",
+      "manifest": "codex-rs/hepta-prompt-registry/Cargo.toml",
+      "git_blob": "6a22394b289e2af3a7a65d6be3473b6187af77a4",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-runtime",
+      "manifest": "codex-rs/hepta-runtime/Cargo.toml",
+      "git_blob": "83f681ba2fc42402c78aa8ef33889b2b7191bf33",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-shadow-qualification",
+      "manifest": "codex-rs/hepta-shadow-qualification/Cargo.toml",
+      "git_blob": "91b8dfb7204a5244374b81ee3ce12b5d08af8e0d",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-supervisor",
+      "manifest": "codex-rs/hepta-supervisor/Cargo.toml",
+      "git_blob": "3ed96436070a4e0d5a06aca8f247c25f28a798f1",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-types",
+      "manifest": "codex-rs/hepta-types/Cargo.toml",
+      "git_blob": "753e54835f933be4bf647417b2fb4c90a5e55181",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hepta-wire",
+      "manifest": "codex-rs/hepta-wire/Cargo.toml",
+      "git_blob": "ab9372f8287d8596794c1ea63d49217b45fd6759",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-history",
+      "manifest": "codex-rs/history/Cargo.toml",
+      "git_blob": "bd938d2c2ea45333b8f040f41399674a28e54644",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-hooks",
+      "manifest": "codex-rs/hooks/Cargo.toml",
+      "git_blob": "0cdf84418a713110811febd88c5ec8c4e3a0cbfa",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-http-client",
+      "manifest": "codex-rs/http-client/Cargo.toml",
+      "git_blob": "2d54ca7158900eda362091c71e8d1bd742459d4c",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-install-context",
+      "manifest": "codex-rs/install-context/Cargo.toml",
+      "git_blob": "ee84ad2962acf57a698e399b38dbc0a03c51bd11",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-keyring-store",
+      "manifest": "codex-rs/keyring-store/Cargo.toml",
+      "git_blob": "a6bcd7cd92e64d5bc87b53a4c7d2a6f8cf8f3a65",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-linux-sandbox",
+      "manifest": "codex-rs/linux-sandbox/Cargo.toml",
+      "git_blob": "0f7c68a152a75cfc2f0369dc098dcf2b996185f2",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-lmstudio",
+      "manifest": "codex-rs/lmstudio/Cargo.toml",
+      "git_blob": "e84bcfed51c3683e87ea7ae2e0a7809aade43a76",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-login",
+      "manifest": "codex-rs/login/Cargo.toml",
+      "git_blob": "2971dec6c1a81cb80379477333371bba6e8fbece",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-mcp-server",
+      "manifest": "codex-rs/mcp-server/Cargo.toml",
+      "git_blob": "e32d5c6c9cc8e569a49396e085191811835cfdb7",
+      "mode": "100644"
+    },
+    {
+      "name": "mcp_test_support",
+      "manifest": "codex-rs/mcp-server/tests/common/Cargo.toml",
+      "git_blob": "515aa01b5a4a098a6f49cad9d5e4ad3cbbe54f77",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-memories-read",
+      "manifest": "codex-rs/memories/read/Cargo.toml",
+      "git_blob": "2c0c5f2c954ceb8b986057bdd929badca4ecd64d",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-memories-write",
+      "manifest": "codex-rs/memories/write/Cargo.toml",
+      "git_blob": "bf031a6a164f5a098757efdb6c791d9e2705ca50",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-message-history",
+      "manifest": "codex-rs/message-history/Cargo.toml",
+      "git_blob": "176b9579097499b050e24823217eec93502c004b",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-model-provider-info",
+      "manifest": "codex-rs/model-provider-info/Cargo.toml",
+      "git_blob": "827dd8744b54ffcaa98673c0c262f5265b717ebf",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-model-provider",
+      "manifest": "codex-rs/model-provider/Cargo.toml",
+      "git_blob": "377dc7a5c258538df7c52e0f821169fbfc1fa09a",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-models-manager",
+      "manifest": "codex-rs/models-manager/Cargo.toml",
+      "git_blob": "2655bb2e7fd80fc1737549d6b5b4a78f607643a9",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-network-proxy",
+      "manifest": "codex-rs/network-proxy/Cargo.toml",
+      "git_blob": "82407b00d104568250c63f87be6aea8113199e44",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-ollama",
+      "manifest": "codex-rs/ollama/Cargo.toml",
+      "git_blob": "29c0852092c0ebdb9846f50f91384e4720f15d71",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-otel",
+      "manifest": "codex-rs/otel/Cargo.toml",
+      "git_blob": "6efa93043db5e52f6ec45212435b377ca847d9ad",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-plugin",
+      "manifest": "codex-rs/plugin/Cargo.toml",
+      "git_blob": "3e55f55c332a06a99a9f6415f2235c3d18cd4fb1",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-process-hardening",
+      "manifest": "codex-rs/process-hardening/Cargo.toml",
+      "git_blob": "60a5729ff57a961dd9ccc145f8ae7171fe0b3176",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-prompts",
+      "manifest": "codex-rs/prompts/Cargo.toml",
+      "git_blob": "6302d49e2ff3e1e67722a3fc891a7e6e90a72362",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-protocol",
+      "manifest": "codex-rs/protocol/Cargo.toml",
+      "git_blob": "221275fe73543cc9cd5d882514855204d673353e",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-response-debug-context",
+      "manifest": "codex-rs/response-debug-context/Cargo.toml",
+      "git_blob": "fcdb6c9630c4d04da55b9c64318e4c111afce441",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-responses-api-proxy",
+      "manifest": "codex-rs/responses-api-proxy/Cargo.toml",
+      "git_blob": "05d638843f64eacad298a79011798f3a2ef924f7",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-rmcp-client",
+      "manifest": "codex-rs/rmcp-client/Cargo.toml",
+      "git_blob": "6772ebe10fb650cb35e5706b59360aeba92aba58",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-rollout-trace",
+      "manifest": "codex-rs/rollout-trace/Cargo.toml",
+      "git_blob": "b368c9acc5ffc3a0ba3a27ae7ea1ab48e38baa31",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-rollout",
+      "manifest": "codex-rs/rollout/Cargo.toml",
+      "git_blob": "1bb4b54f146488e737a3d5bdaeef9dc1510d0b03",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-sandboxing",
+      "manifest": "codex-rs/sandboxing/Cargo.toml",
+      "git_blob": "2c0885729b4ea05f0b597b37823f4758839ecb62",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-secrets",
+      "manifest": "codex-rs/secrets/Cargo.toml",
+      "git_blob": "2a294ee39134e0a4d4160ed7b422d5fe3c2ba6da",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-shell-command",
+      "manifest": "codex-rs/shell-command/Cargo.toml",
+      "git_blob": "999295ec314a37a523f65bd050e8b95453cc7c77",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-shell-escalation",
+      "manifest": "codex-rs/shell-escalation/Cargo.toml",
+      "git_blob": "92ae8b033f3c38edb1609e6347084be6dd9fdc47",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-skills",
+      "manifest": "codex-rs/skills/Cargo.toml",
+      "git_blob": "7342975aaea0e3ecc61da41f145674cd154a12c9",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-state",
+      "manifest": "codex-rs/state/Cargo.toml",
+      "git_blob": "334f8c7a98199777a025abfa91aa18f0b7bbb008",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-stdio-to-uds",
+      "manifest": "codex-rs/stdio-to-uds/Cargo.toml",
+      "git_blob": "6b5c037d755d4dc8006424aa836b29036cea8185",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-terminal-detection",
+      "manifest": "codex-rs/terminal-detection/Cargo.toml",
+      "git_blob": "9b1bf3a51663289c68b61f566201df8d05e385cf",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-test-binary-support",
+      "manifest": "codex-rs/test-binary-support/Cargo.toml",
+      "git_blob": "12d995b9720b942daf802ce30c2976b3f36e7371",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-thread-manager-sample",
+      "manifest": "codex-rs/thread-manager-sample/Cargo.toml",
+      "git_blob": "9e857ad0bc7fa670089008eeddf7d593a4a6f45f",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-thread-store",
+      "manifest": "codex-rs/thread-store/Cargo.toml",
+      "git_blob": "f79e8d6c81eb4eac00149b45121fa052cdecef64",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-tools",
+      "manifest": "codex-rs/tools/Cargo.toml",
+      "git_blob": "e621bb830bb4d564c772f5e558c57919de8b32db",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-tui",
+      "manifest": "codex-rs/tui/Cargo.toml",
+      "git_blob": "95db9bee4158d69882f480f6b0842c47a510ca59",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-uds",
+      "manifest": "codex-rs/uds/Cargo.toml",
+      "git_blob": "66ba1d9d2d915dae795b2cda4eef7d2d4bd91539",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-absolute-path",
+      "manifest": "codex-rs/utils/absolute-path/Cargo.toml",
+      "git_blob": "7c5b4840d15d81deed1d1ea30c0b269d399772bc",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-approval-presets",
+      "manifest": "codex-rs/utils/approval-presets/Cargo.toml",
+      "git_blob": "6efd2c482b4386b505a15d96bf60504050633e61",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-audio",
+      "manifest": "codex-rs/utils/audio/Cargo.toml",
+      "git_blob": "90540228a6bf5608329d2f2773225271229b9813",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-build-identity",
+      "manifest": "codex-rs/utils/build-identity/Cargo.toml",
+      "git_blob": "d21f6b0fff86daef23570d5c583edbf18eeecafb",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-cache",
+      "manifest": "codex-rs/utils/cache/Cargo.toml",
+      "git_blob": "3c120c032e8d595a7675f0474ab6d91b0b52a59e",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-cargo-bin",
+      "manifest": "codex-rs/utils/cargo-bin/Cargo.toml",
+      "git_blob": "a56e5758306799cc5962eaf57e8ad3a26b73033f",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-cli",
+      "manifest": "codex-rs/utils/cli/Cargo.toml",
+      "git_blob": "9d330c5ce6badd0d15e6c401cd777fb3d13c8d08",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-elapsed",
+      "manifest": "codex-rs/utils/elapsed/Cargo.toml",
+      "git_blob": "7ba5e6ae6614fddadaa1ba1e1f8299ffc251d78f",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-fuzzy-match",
+      "manifest": "codex-rs/utils/fuzzy-match/Cargo.toml",
+      "git_blob": "704386e74f6924a016c30bfbaa6447b093f70be0",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-home-dir",
+      "manifest": "codex-rs/utils/home-dir/Cargo.toml",
+      "git_blob": "2d2de0230e38004d562b8ab5546888cd5da74851",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-image",
+      "manifest": "codex-rs/utils/image/Cargo.toml",
+      "git_blob": "7ba28f49962a5ec0e35aad82ce2b93cfeffbfa09",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-json-to-toml",
+      "manifest": "codex-rs/utils/json-to-toml/Cargo.toml",
+      "git_blob": "57a28696c8fc2148525480511551b256b35d8b02",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-oss",
+      "manifest": "codex-rs/utils/oss/Cargo.toml",
+      "git_blob": "78cc0cb2f8ed60f3d4b8a3bb007b348d700024ac",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-output-truncation",
+      "manifest": "codex-rs/utils/output-truncation/Cargo.toml",
+      "git_blob": "17176c9f5643b3a4f1d5a678a25076094cb7441d",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-path-uri",
+      "manifest": "codex-rs/utils/path-uri/Cargo.toml",
+      "git_blob": "5bb6328139c7fe2f7759e7edf34be0de9e2f0371",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-path",
+      "manifest": "codex-rs/utils/path-utils/Cargo.toml",
+      "git_blob": "4714f58d7f1b829b3e074e65040c2de789d6bf4d",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-plugins",
+      "manifest": "codex-rs/utils/plugins/Cargo.toml",
+      "git_blob": "1a4576d59d0fcf04a54236f57976e42683c266a6",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-pty",
+      "manifest": "codex-rs/utils/pty/Cargo.toml",
+      "git_blob": "2a27ab72ea290862887abfc857c86efe6fad12c1",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-readiness",
+      "manifest": "codex-rs/utils/readiness/Cargo.toml",
+      "git_blob": "076651d5227baa047d95a42e9e8795c65dc0bc52",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-redacted-string",
+      "manifest": "codex-rs/utils/redacted-string/Cargo.toml",
+      "git_blob": "39f60d8eb109312fba4b052e69649b1c9382a1a4",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-rustls-provider",
+      "manifest": "codex-rs/utils/rustls-provider/Cargo.toml",
+      "git_blob": "af79eff69252fc01244e2ae721b5a263c1d2fc4c",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-sandbox-summary",
+      "manifest": "codex-rs/utils/sandbox-summary/Cargo.toml",
+      "git_blob": "ab6df005dac274f638a16c387779458950525728",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-sleep-inhibitor",
+      "manifest": "codex-rs/utils/sleep-inhibitor/Cargo.toml",
+      "git_blob": "f2abb6df2110e7f3de215cb34a0cd627c0345649",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-stream-parser",
+      "manifest": "codex-rs/utils/stream-parser/Cargo.toml",
+      "git_blob": "6eb5fb9a8747b95cb3dbd113f4ebfcda53b8fed5",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-string",
+      "manifest": "codex-rs/utils/string/Cargo.toml",
+      "git_blob": "8710cffe4697ae4cce6e97d6bac35566db426672",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-utils-template",
+      "manifest": "codex-rs/utils/template/Cargo.toml",
+      "git_blob": "f24caec190455f3ac685004fc1f6e474ee8f8ed9",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-v8-poc",
+      "manifest": "codex-rs/v8-poc/Cargo.toml",
+      "git_blob": "9615ab977f9dfdb35467d1eadaf0bc6dfa641625",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-websocket-client",
+      "manifest": "codex-rs/websocket-client/Cargo.toml",
+      "git_blob": "19baf9842b591c6aba15d5253f124a737d0d1cdf",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-windows-sandbox",
+      "manifest": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "mode": "100644"
+    },
+    {
+      "name": "codex-workload-identity",
+      "manifest": "codex-rs/workload-identity/Cargo.toml",
+      "git_blob": "b64177282accbb1975aa7adbe2411ace4da52662",
+      "mode": "100644"
+    }
+  ],
+  "limit": "A complete unchanged workspace is not a claim that all workspace packages were built or tested. Execution qualification is codex-hepta-memory --lib only."
+}

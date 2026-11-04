@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "scope": "Actual rustfmt output adoption; product gates remain required",
+  "source_commit": "c43c9accc5ce797239724eb1e7f8d055f7237b7c",
+  "source_tree": "260cc7635e3b090961262531058496fe93827f5d",
+  "source_inputs": 10951,
+  "run_id": 41782603947,
+  "job_id": 126417392078,
+  "commands": [
+    {
+      "name": "source-commit",
+      "argv": [
+        "git",
+        "--no-replace-objects",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "source-tree",
+      "argv": [
+        "git",
+        "--no-replace-objects",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "initial-clean-source",
+      "argv": [
+        "git",
+        "--no-replace-objects",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "rustc-identity",
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "committed-lock-first",
+      "argv": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "original-formatter",
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "a3bf4c98b619244f0c81ab900aa086495b31d62e"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "original-formatter-check",
+      "argv": [
+        "just",
+        "fmt",
+        "--check",
+        "--base",
+        "a3bf4c98b619244f0c81ab900aa086495b31d62e"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "actual-cargo-metadata",
+      "argv": [
+        "cargo",
+        "metadata",
+        "--all-features",
+        "--format-version",
+        "1"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "actual-locked-metadata",
+      "argv": [
+        "cargo",
+        "metadata",
+        "--locked",
+        "--all-features",
+        "--format-version",
+        "1"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "original-lock-update",
+      "argv": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "original-lock-check",
+      "argv": [
+        "just",
+        "bazel-lock-check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "untracked-inputs",
+      "argv": [
+        "git",
+        "ls-files",
+        "--others",
+        "--exclude-standard"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "complete-generated-diff",
+      "argv": [
+        "git",
+        "diff",
+        "--binary",
+        "--no-ext-diff",
+        "HEAD",
+        "--"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "first_committed_lock_passed": true,
+  "both_generated_locks_identical_to_commit": true,
+  "original_formatter_only_path": "codex-rs/core/src/session/turn.rs",
+  "old_blob": "5d4a12c07b158bf35ed32d6b7ef6d65455d1639b",
+  "new_blob": "942935e6d73ef3e3fc53c1fd73dd490e0247354e",
+  "bytes": 132572,
+  "sha256": "20b756ac6cfbf03a5cec343366cc8e529a653e615befaa2362b3524837ce100a",
+  "diff": [
+    {
+      "op": "+",
+      "oldLine": 863,
+      "newLine": 863,
+      "text": "            display_roots.push(("
+    },
+    {
+      "op": "+",
+      "oldLine": 863,
+      "newLine": 864,
+      "text": "                turn_environment.selection.environment_id.clone(),"
+    },
+    {
+      "op": "+",
+      "oldLine": 863,
+      "newLine": 865,
+      "text": "                cwd.clone(),"
+    },
+    {
+      "op": "+",
+      "oldLine": 863,
+      "newLine": 866,
+      "text": "            ));"
+    },
+    {
+      "op": "-",
+      "oldLine": 863,
+      "newLine": 867,
+      "text": "            display_roots.push((turn_environment.selection.environment_id.clone(), cwd.clone()));"
+    }
+  ],
+  "interpretation": "The actual pinned formatter wraps one push tuple over four lines and adds its trailing comma. No source logic or gate changes; no Cargo/Bazel lock changes. Run qualified=false because the formatted source differs. Original alias and native qualification jobs were skipped and have not passed at this source.",
+  "decoded_original_log": {
+    "bytes": 1069952,
+    "sha256": "f0329c3759aa87f42641ff6356d01eed51ac4e2f030016ad939b551f87d059d8",
+    "git_blob": "a7e53a45c302712f09bccafae42d2cd54cf70a70",
+    "compression": "RFC1952 gzip with stored DEFLATE blocks, complete consecutive chunks",
+    "chunks": [
+      {
+        "path": "qualification/complete-source-union-20261104/fifth-c43/job-126417392078.part-01.log.gz",
+        "offset": 0,
+        "decoded_bytes": 400000,
+        "decoded_sha256": "b23375e9ebd03117430c0314544228f914ceb7208be31b766368ec54c7c06511",
+        "bytes": 400053,
+        "git_blob": "455c074eccb47053acb0a1c9c3a5393e4561dd46",
+        "sha256": "ad392cee517d67a8a89346006ca5e9cea5cf7fae10746312bf8707b278163d2c"
+      },
+      {
+        "path": "qualification/complete-source-union-20261104/fifth-c43/job-126417392078.part-02.log.gz",
+        "offset": 400000,
+        "decoded_bytes": 400000,
+        "decoded_sha256": "b97a258425ccfbbdedae48b37a8c2c35ca5b3b91aa395328630421c1e64b035f",
+        "bytes": 400053,
+        "git_blob": "24c44d70b958744e8099d3d6e687a1f04b5d9a6b",
+        "sha256": "cf18798b8f437c39782172a9df7a80d845d2d4b4a2bcf15cce321d840f447a80"
+      },
+      {
+        "path": "qualification/complete-source-union-20261104/fifth-c43/job-126417392078.part-03.log.gz",
+        "offset": 800000,
+        "decoded_bytes": 269952,
+        "decoded_sha256": "8d959aa143aa54892ac498af96b04084caf05fb14b8c0dd04697935e5a3d4867",
+        "bytes": 269995,
+        "git_blob": "f9b8ed8a648bda9d57f85f3e911d230216ffddd9",
+        "sha256": "c62e1b75e2956980240e78eb1205c6445caf1558e4a914352c2320aa00ebe41e"
+      }
+    ]
+  },
+  "artifact": {
+    "id": 13299583533,
+    "bytes": 6764147,
+    "sha256": "001a3d86e853748bfb208e184a9f327484746d7a32d1b646b494924d95e6c8d6"
+  },
+  "negative_evidence_preserved": true
+}

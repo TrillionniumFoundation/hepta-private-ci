@@ -32,6 +32,20 @@ use thiserror::Error;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::framing::frame_part;
+use crate::production_hos2::Hos2ProtocolConflict;
+use crate::production_hos2::Hos2TerminalReceipt;
+
+#[path = "local_hos2_ordering.rs"]
+mod hos2_ordering;
+pub(crate) use hos2_ordering::validate_hos2_predecessor;
+
+#[derive(Clone, Copy)]
+enum ReconciliationEvidence<'a> {
+    General(LocalReconcileOutcome),
+    Hos2Terminal(&'a Hos2TerminalReceipt),
+    NotesTerminal(&'a crate::production_notes::NotesTerminalReceipt),
+    Hos2ProtocolConflict(&'a Hos2ProtocolConflict),
+}
 
 pub const LOCAL_LEASE_OUTBOX_NAMESPACE: &str = "local_development_only";
 pub const LOCAL_LEASE_OUTBOX_SCHEMA_VERSION: u32 = 1;
@@ -242,6 +256,16 @@ impl LocalOutcomeState {
             Self::RolledBack => "rolled_back",
         }
     }
+}
+
+/// Original one-transaction outcome policy. Keep the exact transition
+/// precondition set and replay rule together so callers cannot accidentally
+/// mix a transition kind with a different replay authorization.
+struct LocalOutcomeTransitionV1<'a> {
+    kind: &'a str,
+    allowed: &'a [LocalOutcomeState],
+    resulting_state: LocalOutcomeState,
+    allow_exact_replay: bool,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -1505,6 +1529,15 @@ impl LocalLeaseOutbox {
         }
         let lease = self.current_lease(transaction).await?;
         ensure_current_active(&lease, self)?;
+        if topic == crate::HOS2_INSTALL_TOPIC_V1 {
+            hos2_ordering::validate_hos2_admission(
+                transaction,
+                &self.owner_agent_id,
+                operation.as_ref(),
+                &payload_json,
+            )
+            .await?;
+        }
         // CognitiveStore::open/reopen performs the complete append-only
         // journal audit. Under this BEGIN IMMEDIATE owner transaction the hot
         // path validates only the exact occurrence/operation rows it consumes.
@@ -2073,6 +2106,11 @@ impl LocalLeaseOutbox {
             ));
         }
 
+        if outbox.topic == crate::HOS2_INSTALL_TOPIC_V1 {
+            let request = crate::Hos2InstallBudgetV1::from_json(&outbox.payload_json)
+                .map_err(LocalLeaseOutboxError::Corrupt)?;
+            validate_hos2_predecessor(&mut transaction, &self.owner_agent_id, &request).await?;
+        }
         let kind = "indeterminate";
         let payload = format!("dispatch_started_pending_ack:{}", operation_digest.as_str());
         let payload_digest = Sha256Digest::for_bytes(payload.as_bytes());
@@ -2343,27 +2381,97 @@ impl LocalLeaseOutbox {
         occurrence_key: impl Into<String>,
         outcome: LocalReconcileOutcome,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
-        self.append_reconciliation(occurrence_key.into(), outcome)
-            .await
+        self.append_reconciliation(
+            occurrence_key.into(),
+            ReconciliationEvidence::General(outcome),
+        )
+        .await
+    }
+
+    pub(crate) async fn reconcile_notes_terminal(
+        &self,
+        occurrence_key: &str,
+        receipt: &crate::production_notes::NotesTerminalReceipt,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        self.append_reconciliation(
+            occurrence_key.to_string(),
+            ReconciliationEvidence::NotesTerminal(receipt),
+        )
+        .await
+    }
+
+    pub(crate) async fn reconcile_hos2_terminal(
+        &self,
+        occurrence_key: &str,
+        receipt: &Hos2TerminalReceipt,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        self.append_reconciliation(
+            occurrence_key.to_string(),
+            ReconciliationEvidence::Hos2Terminal(receipt),
+        )
+        .await
+    }
+
+    pub(crate) async fn record_hos2_protocol_conflict(
+        &self,
+        occurrence_key: &str,
+        evidence: &Hos2ProtocolConflict,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        self.append_reconciliation(
+            occurrence_key.to_string(),
+            ReconciliationEvidence::Hos2ProtocolConflict(evidence),
+        )
+        .await
     }
 
     async fn append_reconciliation(
         &self,
         occurrence_key: String,
-        outcome: LocalReconcileOutcome,
+        evidence: ReconciliationEvidence<'_>,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
-        let (kind, resulting_state) = match outcome {
-            LocalReconcileOutcome::Committed => {
-                ("reconcile_committed", LocalOutcomeState::Committed)
+        let outcome = match evidence {
+            ReconciliationEvidence::General(outcome) => outcome,
+            ReconciliationEvidence::Hos2Terminal(receipt) => receipt.outcome(),
+            ReconciliationEvidence::NotesTerminal(receipt) => receipt.outcome(),
+            ReconciliationEvidence::Hos2ProtocolConflict(_) => {
+                LocalReconcileOutcome::StillIndeterminate
             }
-            LocalReconcileOutcome::Rejected => ("reconcile_rejected", LocalOutcomeState::Rejected),
-            LocalReconcileOutcome::StillIndeterminate => (
-                "reconcile_still_indeterminate",
-                LocalOutcomeState::Indeterminate,
-            ),
         };
-        let payload = outcome.as_str().to_string();
+        let (kind, resulting_state) =
+            if matches!(evidence, ReconciliationEvidence::Hos2ProtocolConflict(_)) {
+                // The existing local rollback slot disables this intent without
+                // claiming that the destination is terminal or an effect undone.
+                ("rolled_back", LocalOutcomeState::RolledBack)
+            } else {
+                match outcome {
+                    LocalReconcileOutcome::Committed => {
+                        ("reconcile_committed", LocalOutcomeState::Committed)
+                    }
+                    LocalReconcileOutcome::Rejected => {
+                        ("reconcile_rejected", LocalOutcomeState::Rejected)
+                    }
+                    LocalReconcileOutcome::StillIndeterminate => (
+                        "reconcile_still_indeterminate",
+                        LocalOutcomeState::Indeterminate,
+                    ),
+                }
+            };
+        let payload = match evidence {
+            ReconciliationEvidence::NotesTerminal(receipt) => receipt.as_str().to_string(),
+            ReconciliationEvidence::Hos2Terminal(receipt) => {
+                receipt.to_json().map_err(LocalLeaseOutboxError::Invalid)?
+            }
+            ReconciliationEvidence::Hos2ProtocolConflict(conflict) => {
+                conflict.to_json().map_err(LocalLeaseOutboxError::Invalid)?
+            }
+            ReconciliationEvidence::General(outcome) => outcome.as_str().to_string(),
+        };
+        validate_text(
+            &payload,
+            "reconciliation payload",
+            /*max_bytes*/ 65_536,
+        )?;
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
 
         let mut transaction = self
@@ -2400,6 +2508,44 @@ impl LocalLeaseOutbox {
             &admission,
             &outbox,
         )?;
+
+        if outbox.topic == crate::HOS2_INSTALL_TOPIC_V1 {
+            match evidence {
+                ReconciliationEvidence::Hos2Terminal(receipt) => receipt
+                    .matches(&outbox.payload_json)
+                    .map_err(LocalLeaseOutboxError::Invalid)?,
+                ReconciliationEvidence::Hos2ProtocolConflict(conflict) => conflict
+                    .matches(&occurrence_key, &outbox.payload_json)
+                    .map_err(LocalLeaseOutboxError::Invalid)?,
+                ReconciliationEvidence::NotesTerminal(_) => {
+                    return Err(LocalLeaseOutboxError::Invalid(
+                        "Notes evidence targets HOS2".to_string(),
+                    ));
+                }
+                ReconciliationEvidence::General(LocalReconcileOutcome::StillIndeterminate) => {}
+                ReconciliationEvidence::General(
+                    LocalReconcileOutcome::Committed | LocalReconcileOutcome::Rejected,
+                ) => {
+                    return Err(LocalLeaseOutboxError::AccessDenied(
+                        "HOS2 terminal settlement requires the native observation owner"
+                            .to_string(),
+                    ));
+                }
+            }
+        } else if let ReconciliationEvidence::NotesTerminal(receipt) = evidence {
+            if outbox.topic != crate::NOTES_REPLACE_TOPIC_V1 {
+                return Err(LocalLeaseOutboxError::Invalid(
+                    "Notes evidence targets another outbox".to_string(),
+                ));
+            }
+            receipt
+                .matches(&outbox.payload_json)
+                .map_err(LocalLeaseOutboxError::Invalid)?;
+        } else if !matches!(evidence, ReconciliationEvidence::General(_)) {
+            return Err(LocalLeaseOutboxError::Invalid(
+                "HOS2 observation targets a different outbox".to_string(),
+            ));
+        }
 
         let current = current_outcome(
             &mut transaction,
@@ -2579,11 +2725,13 @@ impl LocalLeaseOutbox {
             .append_outcome_in_transaction(
                 &mut transaction,
                 occurrence_key,
-                kind,
                 payload,
-                allowed,
-                resulting_state,
-                allow_exact_replay,
+                LocalOutcomeTransitionV1 {
+                    kind,
+                    allowed,
+                    resulting_state,
+                    allow_exact_replay,
+                },
             )
             .await?;
         transaction
@@ -2606,11 +2754,13 @@ impl LocalLeaseOutbox {
         self.append_outcome_in_transaction(
             transaction,
             occurrence_key,
-            "reconcile_committed",
             receipt,
-            &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
-            LocalOutcomeState::Committed,
-            /*allow_exact_replay*/ true,
+            LocalOutcomeTransitionV1 {
+                kind: "reconcile_committed",
+                allowed: &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
+                resulting_state: LocalOutcomeState::Committed,
+                allow_exact_replay: true,
+            },
         )
         .await
     }
@@ -2619,12 +2769,15 @@ impl LocalLeaseOutbox {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         occurrence_key: String,
-        kind: &str,
         payload: String,
-        allowed: &[LocalOutcomeState],
-        resulting_state: LocalOutcomeState,
-        allow_exact_replay: bool,
+        policy: LocalOutcomeTransitionV1<'_>,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        let LocalOutcomeTransitionV1 {
+            kind,
+            allowed,
+            resulting_state,
+            allow_exact_replay,
+        } = policy;
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         validate_text(&payload, "outcome payload", /*max_bytes*/ 65_536)?;
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
@@ -2651,6 +2804,18 @@ impl LocalLeaseOutbox {
         .await?
         .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
         ensure_current_occurrence_fence(self, &admission, &outbox)?;
+        if outbox.topic == crate::HOS2_INSTALL_TOPIC_V1 {
+            if matches!(kind, "reconcile_committed" | "reconcile_rejected") {
+                return Err(LocalLeaseOutboxError::AccessDenied(
+                    "HOS2 terminal settlement requires the native observation owner".to_string(),
+                ));
+            }
+            if kind == "indeterminate" && !allow_exact_replay {
+                let request = crate::Hos2InstallBudgetV1::from_json(&outbox.payload_json)
+                    .map_err(LocalLeaseOutboxError::Corrupt)?;
+                validate_hos2_predecessor(transaction, &self.owner_agent_id, &request).await?;
+            }
+        }
         let current = current_outcome(
             transaction,
             &self.lease_id,
@@ -3033,6 +3198,22 @@ impl LocalLeaseOutbox {
             event_rows,
             outbox_rows,
         })
+    }
+
+    /// Reuse the original host-bound lease fence in a caller-owned SQLite write
+    /// transaction without appending an effect or opening a second transaction.
+    pub(crate) async fn require_current_transaction(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+    ) -> Result<LocalLease, LocalLeaseOutboxError> {
+        if self.binding().is_none() {
+            return Err(LocalLeaseOutboxError::Invalid(
+                "owner transaction requires a host-bound lease".to_string(),
+            ));
+        }
+        let lease = self.current_lease(transaction).await?;
+        ensure_current_active(&lease, self)?;
+        Ok(lease)
     }
 
     async fn current_lease(

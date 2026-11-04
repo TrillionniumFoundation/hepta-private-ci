@@ -1,0 +1,366 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "review": "Independent static review of exact registry transition and locked-metadata generation boundary",
+  "reviewer": "private_ci_blockers",
+  "status": "NO_CONFIRMED_BLOCKER_IN_REVIEWED_DELTA",
+  "execution": {
+    "python_controls": 0,
+    "cargo": 0,
+    "bazel": 0,
+    "syntax_compilation": false,
+    "statement": "No executor or native test was invoked for this static review. The 30 controls and actual generation remain required."
+  },
+  "inputs": [
+    {
+      "path": "qualification/complete-source-union-20261104/generate.py",
+      "git_blob": "9e0977def7a715f8579cda491194cdbab3ea72c4",
+      "bytes": 18799,
+      "sha256": "fd0c47da93353ad5dded7287b79f7db7bf121e19f079c46b51cf9db1f97bd11f"
+    },
+    {
+      "path": "qualification/complete-source-union-20261104/test_generate.py",
+      "git_blob": "36c4c612612a1d58e9e6ac741db44e1f12354a92",
+      "bytes": 12562,
+      "sha256": "8accf0006528680a06984bcab40d956530d3d7935f0c83c9f06467a365ae9ce2"
+    },
+    {
+      "path": "qualification/complete-source-union-20261104/scope.json",
+      "git_blob": "850d85d90c626f2749d9086cdcf837d0a9f9d057",
+      "bytes": 212223,
+      "sha256": "6f99e711f5b07bf05c8c13c81f81e84ca442c2d4db65c6355e369036ccbbb903"
+    }
+  ],
+  "baseline": {
+    "source_commit": "0cf81d65646b8907e42e781ea35a28437b5b0054",
+    "generator_blob": "2b7fa0438d62b72decbe0d309fba2b162d121320",
+    "tests_blob": "5234b01097a65fe12f688e9e11a6c116cb75fbac",
+    "scope_blob": "d1762b0691bf444390d637b5c67e36d2681e2b9b"
+  },
+  "evidence": {
+    "projection_blob": "0c5fa56ee4d5c3778305381ae0d328bb35a2b1c1",
+    "projection_sha256": "90e690fd4463222c166e979ae189e725da118247d4d162fd595a55d9273d8459",
+    "independent_run": 41778545855,
+    "independent_job": 126404487847,
+    "original_metadata_packages": 1518,
+    "original_resolve_nodes": 1518,
+    "exact_reviewed_rows": [
+      {
+        "identity": [
+          "arboard",
+          "3.6.1",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "dirs-sys",
+          "0.5.0",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "errno",
+          "0.3.14",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "hyper-util",
+          "0.1.20",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "iana-time-zone",
+          "0.1.65",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "is-terminal",
+          "0.4.17",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "jiff",
+          "0.2.23",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "nu-ansi-term",
+          "0.50.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "oauth2",
+          "5.0.0",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "os_pipe",
+          "1.2.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "prost-build",
+          "0.14.3",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "prost-derive",
+          "0.14.4",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "quinn",
+          "0.11.9",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "quinn-udp",
+          "0.5.14",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "rustix",
+          "1.1.4",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "rustls-platform-verifier",
+          "0.7.0",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "tempfile",
+          "3.27.0",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      },
+      {
+        "identity": [
+          "winapi-util",
+          "0.1.11",
+          "registry+https://github.com/rust-lang/crates.io-index"
+        ],
+        "complete_before": true,
+        "complete_after": true,
+        "package_id": true,
+        "manifest_dependencies": true,
+        "manifest_features": true,
+        "resolve_node": true
+      }
+    ]
+  },
+  "findings": [
+    "All eighteen complete lock-record before/after transitions and each frozen metadata package ID, selected declaration fields, manifest features and full resolve node equal the independently read original Cargo proposal.",
+    "Registry transitions reject duplicate identities, empty transitions, non-dependency metadata changes, missing or extra dependency entries, and an incomplete applied inventory. Other registry/Git package changes remain rejected.",
+    "Metadata compares unique package identities and IDs with the generated lock and requires an exact one-to-one resolver-node inventory. Each reviewed registry node is compared in full, including feature activation, dependency kinds and targets.",
+    "All ten original control function bodies remain byte-identical; only their fixture CONFIG gains the two empty transition fields. Twenty new methods yield thirty controls to execute.",
+    "Original formatter, Cargo metadata, Bazel lock-update/check command sequence and qualification requiring first lock-check success and an unchanged checkout remain unchanged.",
+    "The local-package allowlist adds only codex-hepta-fleet. Formatter scope adds twenty-eight source/configuration paths; none are removed."
+  ],
+  "limitations": [
+    "The static review did not execute Python parsing, the thirty controls, Cargo resolution or any product/native gate.",
+    "metadata_document is a parser for one compact Cargo metadata v1 JSON line surrounded by diagnostics; it is not a general-purpose validator of arbitrary JSON streams.",
+    "Full resolver nodes are independently frozen only for the eighteen reviewed registry records. Local-package dependency changes remain governed by the existing package-name allowlist and must be reviewed in the actual generated delta.",
+    "Correctness and security of the newly composed product sources are outside this generation-boundary review. Generated-needs-adoption is not a qualified unchanged source."
+  ],
+  "scope_delta": [
+    {
+      "key": "allowed_formatter_paths",
+      "removed": [],
+      "added": [
+        ".github/workflows/hepta-exec-authorized-read-compat.yml",
+        ".github/workflows/hepta-operator-acceptance-native.yml",
+        ".github/workflows/windows-core-lifecycle.yml",
+        ".github/workflows/windows-ordinary-consumers.yml",
+        ".github/workflows/windows-retained-recovery.yml",
+        "codex-rs/app-server/src/request_processors/thread_processor.rs",
+        "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+        "codex-rs/core/src/client.rs",
+        "codex-rs/core/src/client_tests.rs",
+        "codex-rs/core/src/compact_remote_request.rs",
+        "codex-rs/core/src/session/mcp_runtime.rs",
+        "codex-rs/core/src/session/turn.rs",
+        "codex-rs/core/src/session_startup_prewarm.rs",
+        "codex-rs/core/tests/suite/mod.rs",
+        "codex-rs/core/tests/suite/terminalization_submission.rs",
+        "codex-rs/exec-server/src/client.rs",
+        "codex-rs/exec-server/src/client_stdio_tests.rs",
+        "codex-rs/exec-server/src/lib.rs",
+        "codex-rs/git-utils/Cargo.toml",
+        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+        "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+        "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+        "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs",
+        "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+        "codex-rs/hepta-fleet/Cargo.toml",
+        "codex-rs/hepta-fleet/src/registry.rs",
+        "qualification/complete-source-union-20261104/generate.py",
+        "qualification/complete-source-union-20261104/test_generate.py"
+      ]
+    },
+    {
+      "key": "allowed_local_dependency_packages",
+      "removed": [],
+      "added": [
+        "codex-hepta-fleet"
+      ]
+    },
+    {
+      "key": "policy",
+      "before": "string",
+      "after": "string"
+    },
+    {
+      "key": "expected_registry_record_change_count",
+      "before": "undefined",
+      "after": "number"
+    },
+    {
+      "key": "reviewed_registry_dependency_changes",
+      "before": "undefined",
+      "after": 18
+    },
+    {
+      "key": "reviewed_registry_metadata",
+      "before": "undefined",
+      "after": 18
+    },
+    {
+      "key": "independent_registry_review",
+      "before": "undefined",
+      "after": "object"
+    }
+  ]
+}

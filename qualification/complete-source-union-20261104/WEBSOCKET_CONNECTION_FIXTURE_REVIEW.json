@@ -1,0 +1,78 @@
+{
+  "schema": "hepta.appserver.websocket-metadata.fixture.static-review.v1",
+  "reviewer": "hepta_blockers",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "owner_pr": 4773,
+  "owner_commit": "a90bd4b9d18a9b28dff44f80753d2c49b14f6ee3",
+  "owner_parent": "2ab0e25ba649664b9fb8e77a09aa6da10c8e5449",
+  "adoption_base": "59bc256880156acd4dad4f8e3880abe149b8a4ce",
+  "input_bindings": [
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/client_metadata.rs",
+      "base": {
+        "git_blob_sha": "3904bee7703e1f6f554b3af4bd68da065006b27d",
+        "sha256": "a4579d1130def79b785cc2844a1bf3c046fcff78aca95f74a3df57d61f504dfc",
+        "bytes": 22271
+      },
+      "owner_parent": {
+        "git_blob_sha": "3904bee7703e1f6f554b3af4bd68da065006b27d",
+        "sha256": "a4579d1130def79b785cc2844a1bf3c046fcff78aca95f74a3df57d61f504dfc",
+        "bytes": 22271
+      },
+      "candidate": {
+        "git_blob_sha": "008eca8de3b35c32c408f41aad6b387ef21f48bb",
+        "sha256": "7858456aedfa1c1a923400848450edc21dc691179446c59d815680d8c8cfca90",
+        "bytes": 22353
+      },
+      "root_and_owner_parent_identical": true
+    },
+    {
+      "path": "codex-rs/core/src/client_tests.rs",
+      "base": {
+        "git_blob_sha": "06cfae068feebe6692740638f466b0d2bff38293",
+        "sha256": "e34be3a427d886c17d6a447325ca138ad811c0c6ea1d879d1a4002e010a8e600",
+        "bytes": 52806
+      },
+      "owner_parent": {
+        "git_blob_sha": "06cfae068feebe6692740638f466b0d2bff38293",
+        "sha256": "e34be3a427d886c17d6a447325ca138ad811c0c6ea1d879d1a4002e010a8e600",
+        "bytes": 52806
+      },
+      "candidate": {
+        "git_blob_sha": "3a7fe78f26c3450ec3a2f6c307ba3622a3bbe7d8",
+        "sha256": "0a247891e05c3040223a203995979998db763ffc7258064568812410619c25de",
+        "bytes": 53010
+      },
+      "root_and_owner_parent_identical": true
+    },
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "git_blob_sha": "247de45a878b5e4514990e99b2289fc3dc087a47",
+      "sha256": "564d36eb2ef39e1a6b3e187f2b3b95fbb3fa7d7c87fbc41979e4aa0948778230",
+      "bytes": 162374,
+      "root_and_owner_parent_identical": true
+    },
+    {
+      "path": "codex-rs/core/src/responses_metadata.rs",
+      "git_blob_sha": "b42ab50cc071737e3ed287fcb757b4d006800386",
+      "sha256": "a7ea434f3d106afabcf1e297bafad30619cd17c6ebd42b71e3f99257cfb284d6",
+      "bytes": 25458
+    }
+  ],
+  "findings": [
+    "The owner patch changes exactly two test files from its frozen parent. Both parent test blobs equal the root 59bc files byte for byte, so the two owner blobs can be adopted without replacing distinct root changes at that base.",
+    "Current WebsocketConnectionIdentity normalizes only Prewarm to Turn and parent/root turn IDs for reuse comparison. It serializes turn_recovery_compatibility_projection, which includes extra client metadata.",
+    "The first client turn adds fiber_run_id and origin. Its identity therefore differs from the prewarm identity; current production needs_new clears last_request, last_response_rx and warmup state before opening a new connection.",
+    "The revised fixture supplies prewarm and first-turn responses on separate connections and reads request (1,0), retaining prewarm (0,0). It now requires previous_response_id absent across the identity change.",
+    "All existing fiber/origin/thread-source/turn/session/window/context assertions and original deadlines remain. The connection-identity negative table adds changed client metadata while preserving the existing volatile-equality and provider/security inequality checks.",
+    "No production identity, authorization, API host allowlist, retry, timeout or response reuse logic is weakened."
+  ],
+  "scope": {
+    "source_static_review_only": true,
+    "native_executed": false,
+    "owner_pr_test_claims_independently_verified": false,
+    "full_current_appserver_and_core_native_required": true,
+    "scientific_qualification": false
+  },
+  "conclusion": "No confirmed narrow blocker; adopt exact two test blobs on the byte-matching 59bc baseline, then run the original current combined gates."
+}

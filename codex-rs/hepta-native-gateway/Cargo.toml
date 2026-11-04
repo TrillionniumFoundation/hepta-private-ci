@@ -17,16 +17,23 @@ workspace = true
 anyhow = { workspace = true }
 codex-hepta-paths = { workspace = true }
 codex-hepta-runtime = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+sha2 = { workspace = true }
 tokio = { workspace = true, features = [
     "io-util",
     "macros",
     "net",
     "rt-multi-thread",
     "signal",
+    "sync",
     "time",
 ] }
+
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, features = ["fs"] }
 
 [dev-dependencies]
 codex-hepta-wire = { path = "../hepta-wire" }
 pretty_assertions = { workspace = true }
+tokio = { workspace = true, features = ["test-util"] }

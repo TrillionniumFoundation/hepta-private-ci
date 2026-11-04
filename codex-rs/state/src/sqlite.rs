@@ -127,6 +127,16 @@ impl SqliteConfig {
         Self::from_sqlite_home(sqlite_home)
     }
 
+    /// Open an isolated, single-connection in-memory database for schema tests.
+    ///
+    /// Repeated pool acquisitions retain the same in-memory database.
+    pub async fn open_in_memory_pool_for_testing() -> Result<SqlitePool, Error> {
+        SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect("sqlite::memory:")
+            .await
+    }
+
     pub fn home(&self) -> &Path {
         self.sqlite_home.as_path()
     }

@@ -1,11 +1,19 @@
+#[cfg(any(unix, test))]
 use std::io::ErrorKind;
+#[cfg(unix)]
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-use codex_uds::UnixListener;
-use codex_uds::UnixStream;
+#[cfg(windows)]
+use codex_uds::OwnerLocalListener as ControlListener;
+#[cfg(windows)]
+use codex_uds::OwnerLocalStream as ControlStream;
+#[cfg(unix)]
+use codex_uds::UnixListener as ControlListener;
+#[cfg(unix)]
+use codex_uds::UnixStream as ControlStream;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
@@ -29,7 +37,8 @@ const IO_TIMEOUT: Duration = Duration::from_secs(2);
 const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 
 pub(crate) struct AgentdControlServer {
-    listener: UnixListener,
+    listener: ControlListener,
+    #[cfg(unix)]
     socket_path: PathBuf,
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
@@ -42,13 +51,16 @@ impl AgentdControlServer {
         state: Arc<AgentdState>,
         cancellation: CancellationToken,
     ) -> Result<Self, AgentdError> {
+        #[cfg(unix)]
         prepare_socket(&socket_path).await?;
-        let listener = UnixListener::bind(&socket_path)
+        let listener = ControlListener::bind(&socket_path)
             .await
             .map_err(|error| io_context("bind agentd control socket", &socket_path, error))?;
+        #[cfg(unix)]
         set_owner_only(&socket_path).await?;
         Ok(Self {
             listener,
+            #[cfg(unix)]
             socket_path,
             state,
             cancellation,
@@ -62,9 +74,21 @@ impl AgentdControlServer {
                 _ = self.cancellation.cancelled() => return Ok(()),
                 accepted = self.listener.accept() => accepted?,
             };
+            // Unix preserves its original kernel-UID check before a permit.
+            // Windows returns a pending owner-local connection with no control
+            // I/O capability. Authenticate it within the same bounded handler
+            // and restore the thread token before reading any application bytes.
+            #[cfg(unix)]
+            if let Err(error) = ensure_control_peer(&stream) {
+                eprintln!("rejecting unauthenticated Agentd control peer: {error}");
+                continue;
+            }
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
-                let mut stream = stream;
                 let _ = timeout(OVERLOAD_WRITE_TIMEOUT, async {
+                    #[cfg(windows)]
+                    let mut stream = stream.authenticate().await?;
+                    #[cfg(unix)]
+                    let mut stream = stream;
                     stream.write_all(AGENTD_CONTROL_OVERLOAD_FRAME).await?;
                     stream.shutdown().await
                 })
@@ -74,12 +98,18 @@ impl AgentdControlServer {
             let state = Arc::clone(&self.state);
             tokio::spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                let _ = timeout(IO_TIMEOUT, async {
+                    #[cfg(windows)]
+                    let stream = stream.authenticate().await?;
+                    serve_connection(stream, state).await
+                })
+                .await;
             });
         }
     }
 }
 
+#[cfg(unix)]
 impl Drop for AgentdControlServer {
     fn drop(&mut self) {
         if let Err(error) = std::fs::remove_file(&self.socket_path)
@@ -93,7 +123,10 @@ impl Drop for AgentdControlServer {
     }
 }
 
-async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
+async fn serve_connection(
+    stream: ControlStream,
+    state: Arc<AgentdState>,
+) -> Result<(), AgentdError> {
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
@@ -163,6 +196,7 @@ fn bounded_message(message: &str) -> String {
     message.chars().take(512).collect()
 }
 
+#[cfg(unix)]
 async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
     let parent = socket_path.parent().ok_or_else(|| {
         AgentdError::Invalid("agentd control socket has no parent directory".to_string())
@@ -170,7 +204,7 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
     codex_uds::prepare_private_socket_directory(parent)
         .await
         .map_err(|error| io_context("prepare agentd control socket directory", parent, error))?;
-    match UnixStream::connect(socket_path).await {
+    match ControlStream::connect(socket_path).await {
         Ok(_) => {
             return Err(AgentdError::Io(std::io::Error::new(
                 ErrorKind::AddrInUse,
@@ -226,7 +260,15 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
 
-#[cfg(not(unix))]
-async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
-    Ok(())
+#[cfg(any(unix, test))]
+fn ensure_control_peer(stream: &codex_uds::UnixStream) -> Result<(), AgentdError> {
+    stream.ensure_current_user_peer().map_err(AgentdError::Io)
 }
+
+#[cfg(test)]
+#[path = "control_peer_tests.rs"]
+mod peer_auth_tests;
+
+#[cfg(test)]
+#[path = "control_native_tests.rs"]
+mod native_tests;

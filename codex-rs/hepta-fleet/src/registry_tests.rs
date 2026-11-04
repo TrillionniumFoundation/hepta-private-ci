@@ -272,7 +272,10 @@ fn workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths()
         .map(|name| {
             let path = fleet._temp.path().join("sweep").join(name);
             fs::create_dir_all(&path)?;
-            WorkspaceBinding::new(&path, &fleet.root)
+            let canonical = path.canonicalize()?;
+            let binding = WorkspaceBinding::new(&canonical, &fleet.root)?;
+            assert_eq!(binding.as_path(), canonical.as_path());
+            Ok(binding)
         })
         .collect::<Result<Vec<_>, FleetRegistryError>>()?;
     // Every subset and both identity orders exercise parents, descendants,
@@ -341,5 +344,36 @@ fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistr
             root.display()
         );
     }
+    Ok(())
+}
+
+#[cfg(windows)]
+#[test]
+fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistryError> {
+    let fleet = TestFleet::new()?;
+    let record = fleet
+        .registry
+        .register(fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?)?;
+    // Exercise production registration below an ordinary temporary parent.
+    // This is the same existing-object owner validator used by CognitiveStore.
+    for root in [
+        record.layout.agent_root(),
+        record.layout.home_root(),
+        record.layout.run_root(),
+        record.layout.logs_root(),
+        record.layout.releases_root(),
+        record.layout.cognitive_root(),
+        record.layout.matrix_root(),
+        record.layout.matrix_secrets_root(),
+        record.layout.automation_root(),
+    ] {
+        drop(codex_utils_path::open_existing_private_state_directory(
+            root,
+        )?);
+    }
+    assert_eq!(
+        fleet.registry.load_agent(&record.manifest.agent_id)?,
+        record
+    );
     Ok(())
 }

@@ -31,13 +31,27 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          fetch-depth: 0
+          fetch-depth: ${{ github.event_name == 'pull_request' && 1 || 0 }}
           persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.12"
+
+      - name: Fetch exact pull request comparison inputs
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python3 scripts/hepta_ci_history.py --merge-base --commit "$BASE_SHA" --commit "$HEAD_SHA"
+
+      - name: Check exact history and original canary selector controls
+        run: |
+          python3 -m unittest -v scripts.test_hepta_ci_history
+          python3 .github/scripts/test_v8_canary_changes.py
 
       - name: Resolve exact v8 crate version
         id: v8_version
@@ -190,18 +204,18 @@ jobs:
           python-version: "3.12"
 
       - name: Set up Rust toolchain for Cargo smoke
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
         with:
-          toolchain: "1.95.0"
+          toolchain: "1.96.0"
 
       - name: Pin installed Cargo binary
         shell: bash
         run: |
           set -euo pipefail
           rustup_home="${RUSTUP_HOME:-${HOME}/.rustup}"
-          cargo_bin="$(find "${rustup_home}/toolchains" -path '*/1.95.0-*/bin/cargo' -type f -print -quit)"
+          cargo_bin="$(find "${rustup_home}/toolchains" -path '*/1.96.0-*/bin/cargo' -type f -print -quit)"
           if [[ -z "${cargo_bin}" || ! -x "${cargo_bin}" ]]; then
-            echo "Rust 1.95.0 Cargo binary is not installed under ${rustup_home}." >&2
+            echo "Rust 1.96.0 Cargo binary is not installed under ${rustup_home}." >&2
             exit 1
           fi
           echo "CARGO_1_95=${cargo_bin}" >> "${GITHUB_ENV}"
@@ -320,6 +334,8 @@ jobs:
           (
             cd codex-rs
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
+            RUSTC="${CARGO_1_95%/*}/rustc" \
+            RUSTDOC="${CARGO_1_95%/*}/rustdoc" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
             "${CARGO_1_95}" "${cargo_args[@]}"
@@ -380,9 +396,9 @@ jobs:
           architecture: x64
 
       - name: Set up Codex Rust toolchain for Cargo smoke
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
         with:
-          toolchain: "1.95.0"
+          toolchain: "1.96.0"
           targets: ${{ matrix.target }}
 
       - name: Install rusty_v8 Rust toolchain
@@ -471,7 +487,7 @@ jobs:
             cd codex-rs
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
-            cargo +1.95.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
+            cargo +1.96.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
           )
 
       - name: Upload staged artifacts

@@ -1,0 +1,6 @@
+error: failed to select a version for the requirement `imbl = "^7.0.2"`
+candidate versions found which didn't match: 6.1.0
+location searched: crates.io index
+required by package `matrix-sdk v0.19.1`
+    ... which satisfies dependency `matrix-sdk = "=0.19.1"` of package `codex-hepta-matrix-sdk v0.0.0 (/workspace/scratch/1f1d02319616/private-ci-matrix-work-20261103/codex-rs/hepta-matrix-sdk)`
+As a reminder, you're using offline mode (--offline) which can sometimes cause surprising resolution failures, if this error is too confusing you may wish to retry without `--offline`.

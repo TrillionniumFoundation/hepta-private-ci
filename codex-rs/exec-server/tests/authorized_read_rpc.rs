@@ -53,7 +53,8 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
     ))
     .await?;
 
-    let temp = tempfile::tempdir()?;
+    // Stable-handle policies grant the real namespace returned by the kernel.
+    let temp = tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?;
     let allowed_dir = temp.path().join("allowed");
     let denied_dir = temp.path().join("denied");
     std::fs::create_dir_all(&allowed_dir)?;
@@ -101,6 +102,15 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
         };
         assert_eq!(*code, -32600);
         assert_eq!(message, "Permission denied");
+    } else {
+        // Unsupported platforms must not fall through to a generic read
+        // that only happens to fail on the test sandbox. The capability
+        // contract requires an explicit fail-closed unsupported response.
+        let ExecServerError::Server { code, message } = &denied else {
+            bail!("expected unsupported authorized-read rejection, got {denied:?}");
+        };
+        assert_eq!(*code, -32603);
+        assert_eq!(message, "bounded authorized file reads are unsupported");
     }
     assert!(!denied.to_string().contains("secret.txt"));
 

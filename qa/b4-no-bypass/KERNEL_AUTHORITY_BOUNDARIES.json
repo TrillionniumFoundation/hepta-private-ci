@@ -33,7 +33,7 @@
         "claim": "final_use_claim_raw",
         "with_verified_use": "final_use_delivery_raw",
         "with_dispatch_boundary": "final_use_dispatch_raw",
-        "open_state_dir_with_issuer_keys": "final_use_open_state",
+        "open_state_dir_with_issuer_keys": "final_use_keyring_open_state",
         "with_verified_effect": "final_use_guarded_effect",
         "with_verified_use_async": "final_use_async_dispatch_fence",
         "enter_verified_use": "final_use_delivery_raw"
@@ -155,12 +155,23 @@
       "typeMarker": "FinalUseAuthority",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "FinalUseAuthority\\s*::\\s*open_state_dir(?:_with_clock|_with_trust|_with_recovered_trust|_with_issuer_keys)?\\s*\\("
+        "FinalUseAuthority\\s*::\\s*open_state_dir(?:_with_clock|_with_trust|_with_recovered_trust)?\\s*\\("
       ],
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
         "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+      ]
+    },
+    {
+      "id": "final_use_keyring_open_state",
+      "typeMarker": "FinalUseAuthority",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "callPatterns": [
+        "FinalUseAuthority\\s*::\\s*open_state_dir_with_issuer_keys\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/production_authority.rs"
       ]
     },
     {
