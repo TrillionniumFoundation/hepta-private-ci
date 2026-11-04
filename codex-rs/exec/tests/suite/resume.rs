@@ -673,7 +673,46 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
     drop(server);
     record_phase("drop_server_end");
     record_phase("drop_fixture_start");
-    drop(test);
+    let (home, cwd) = test.into_temp_dirs();
+    record_phase("home_inventory_start");
+    let mut inventory = std::collections::BTreeMap::<String, (u64, u64)>::new();
+    let mut inventory_errors = Vec::new();
+    for entry in WalkDir::new(home.path()).follow_links(false) {
+        let entry = match entry {
+            Ok(entry) => entry,
+            Err(error) => {
+                inventory_errors.push(error.to_string());
+                continue;
+            }
+        };
+        if !entry.file_type().is_file() {
+            continue;
+        }
+        let relative = entry.path().strip_prefix(home.path())?;
+        let top_level = relative
+            .components()
+            .next()
+            .expect("file beneath the actual fixture home")
+            .as_os_str()
+            .to_string_lossy()
+            .into_owned();
+        let totals = inventory.entry(top_level).or_default();
+        totals.0 += 1;
+        match entry.metadata() {
+            Ok(metadata) => totals.1 += metadata.len(),
+            Err(error) => inventory_errors.push(error.to_string()),
+        }
+    }
+    eprintln!("resume_cwd_filter home_inventory={inventory:?} errors={inventory_errors:?}");
+    record_phase("home_inventory_end");
+    record_phase("close_home_start");
+    home.close()
+        .context("remove actual codex-exec home fixture")?;
+    record_phase("close_home_end");
+    record_phase("close_cwd_start");
+    cwd.close()
+        .context("remove actual codex-exec cwd fixture")?;
+    record_phase("close_cwd_end");
     record_phase("drop_fixture_end");
     record_phase("test_body_end");
 
