@@ -215,3 +215,52 @@ pub fn all_model_presets() -> &'static Vec<ModelPreset> {
 pub fn builtin_collaboration_mode_presets() -> Vec<CollaborationModeMask> {
     collaboration_mode_presets::builtin_collaboration_mode_presets()
 }
+
+/// Replays the production history and image-detail projection for integration assertions.
+/// Callers must supply the model capabilities used by the captured request.
+pub fn format_history_items_for_request(
+    items: Vec<codex_protocol::models::ResponseItem>,
+    input_modalities: &[codex_protocol::openai_models::InputModality],
+    use_responses_lite: bool,
+) -> Vec<codex_protocol::models::ResponseItem> {
+    let mut history = crate::context_manager::ContextManager::new();
+    history.replace_annotated(
+        items
+            .into_iter()
+            .map(codex_history::ResponseItemEnvelope::new)
+            .collect(),
+    );
+    let prompt = crate::Prompt {
+        input: history.for_prompt(input_modalities),
+        ..Default::default()
+    };
+    prompt.get_formatted_input_for_request(use_responses_lite)
+}
+
+/// Projects actual history and the same base-instructions Message used by lite requests.
+/// AdditionalTools is generated outside message history and has no content annotations.
+pub async fn format_thread_history_for_request(
+    thread: &crate::CodexThread,
+    input_modalities: &[codex_protocol::openai_models::InputModality],
+    use_responses_lite: bool,
+) -> Vec<codex_protocol::models::ResponseItem> {
+    let prompt = crate::Prompt {
+        input: thread
+            .session
+            .clone_history()
+            .await
+            .for_prompt(input_modalities),
+        base_instructions: thread.session.get_base_instructions().await,
+        ..Default::default()
+    };
+    let mut input = prompt.get_formatted_input_for_request(use_responses_lite);
+    if use_responses_lite && !prompt.base_instructions.text.is_empty() {
+        input.insert(
+            0,
+            crate::context::ContextualUserFragment::into(crate::context::BaseInstructionsFragment(
+                prompt.base_instructions.text,
+            )),
+        );
+    }
+    input
+}
