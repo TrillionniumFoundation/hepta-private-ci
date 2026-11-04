@@ -5,6 +5,24 @@ This is the next development and prospective confirmation after PR #4560,
 their original identity. This directory adds a new experiment; it changes no
 parent study or production neuron.
 
+## Completed confirmation (2026-11-04 audit)
+
+All 32 registered confirmation fits are archived and have been reconstructed
+from immutable source `903946f15dd79bc53a39a479230e366df04a371f`.
+All four primary benefit gates are unmet; none of the 256 required candidate /
+fit / domain quality checks passes all eight criteria. The frozen result is
+`acceptance=false`. Completing the record does not establish analytic-kernel
+D-minus-B benefit or open-domain value.
+
+[REPORT_ZH.md](REPORT_ZH.md), [ANALYSIS.json](evidence/ANALYSIS.json), and the
+[completion audit](evidence/CONFIRMATION_COMPLETION_AUDIT.json) retain the full
+results, failure costs and scope. Historical measured stage CPU has a lower
+bound of 8,326.229650 seconds; controller self CPU is not archived for either
+development stage or the aborted first formal stage. The 28 guarded process
+exits in the latter stage still consumed 55.072509 CPU seconds.
+See [completion reproduction](audit/COMPLETION_REPRODUCE.md) for a byte-verified,
+no-training reconstruction of all 37 archives and frozen inference.
+
 ## Scientific question
 
 Can repeated actual-policy supervision improve belief, continuation Q and
@@ -65,8 +83,8 @@ loss or a counterfactual reset effect across different policies.
 - `REPRODUCE.md`: exact phase commands and artifact interpretation.
 
 The source/protocol, formal fitted models and confirmation evidence are published
-in separate stages. Formal conclusions are given in `REPORT_ZH.md` and
-`evidence/ANALYSIS.json` only after the corresponding frozen run completes.
+in separate stages. The completed frozen run's conclusions are now recorded in
+[REPORT_ZH.md](REPORT_ZH.md) and [ANALYSIS.json](evidence/ANALYSIS.json).
 
 The final plan uses 32 new fits, 6003 through 6065 in steps of two. Development
 variance planning requested 122 to 632 fits across the four primary comparisons.
