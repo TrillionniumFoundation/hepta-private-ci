@@ -1,17 +1,20 @@
 {
   "schema_version": 1,
-  "purpose": "Unmerged artifact-only lock generation; product source and generated lock are admitted together through the product PR.",
+  "purpose": "Unmerged artifact-only lock generation for the combined reviewed Exec Server and CLI helper test layouts; preserve original source-only scope and original generator commands.",
   "expected_repository": "TrillionniumFoundation/hepta-private-ci",
   "expected_ref": "refs/heads/audit/windows-helper-lock-20261104",
   "source_base": "e729e6c2becb528e3a6b49c9e5bbea57bd26637a",
   "required_parent_count": 1,
-  "required_changed_path_count": 7,
+  "required_changed_path_count": 9,
   "artifact_generation_paths": [
     ".github/workflows/hepta-product-fixture-lock.yml",
     "qualification/product-fixture-lock-20261104/generate_lock.py",
     "qualification/product-fixture-lock-20261104/helper-source-manifest.json"
   ],
-  "source_patch_sha256": "0cd19b83dff84500c53e1534ecd96a609f7fe0f7f20a9d7269d0a686bc0a3573",
+  "source_patch_sha256": [
+    "0cd19b83dff84500c53e1534ecd96a609f7fe0f7f20a9d7269d0a686bc0a3573",
+    "39d3939af6073feb94157b45dfb898e5dfc97b0592bbccf6166e366cb3ca44b3"
+  ],
   "expected_cargo_package_count": 1502,
   "dependency_scope": "Only codex-exec-server adds the already-existing workspace dev dependency codex-utils-cargo-bin; package identities/versions remain unchanged.",
   "production_source_changed": false,
@@ -35,11 +38,22 @@
       "path": "codex-rs/Cargo.lock",
       "expected_sha256": "c9778dfe2a3c1e8c06f5ca41d84d544c70bc07171f3b8ae5c3bc5f041d51496e",
       "expected_git_blob": "9743ef2f4f4c8521265c0187524278c256114163"
+    },
+    {
+      "path": "codex-rs/cli/BUILD.bazel",
+      "expected_sha256": "25bfe4bd6ee523d5859654f34ba3caab21778d3372c239c83f8e07565a03e532",
+      "expected_git_blob": "a64e4a8d12045dcd4f83e2a02c262e52e87ef4c8"
+    },
+    {
+      "path": "codex-rs/cli/tests/sandbox_cloud_config.rs",
+      "expected_sha256": "85c638b37cbbd21fde7d63eaadc93210d244d26c15ea3914d75e8aaf387d1fa6",
+      "expected_git_blob": "59f5e95058985857df3f7604f320861f0db22f8b"
     }
   ],
   "initial_module_lock": {
     "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7",
     "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
   },
-  "admission": "A generated artifact is not product acceptance; root imports exact bytes only after source hashes and original update/check receipts verify."
+  "admission": "A generated artifact is not product acceptance; root imports exact bytes only after source hashes and original update/check receipts verify.",
+  "expected_parent": "ea84b04d25fbb40662414239d4836c0c161900aa"
 }

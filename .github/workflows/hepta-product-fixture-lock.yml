@@ -22,10 +22,10 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 2
+          fetch-depth: 3
           filter: blob:none
           persist-credentials: false
-      - name: Verify the reviewed parent and seven source paths before setup
+      - name: Verify the reviewed parent and nine source paths before setup
         env:
           EXPECTED_SOURCE_SHA: ${{ github.sha }}
         run: python3 qualification/product-fixture-lock-20261104/generate_lock.py --verify-inputs-only --expected-source "$EXPECTED_SOURCE_SHA" --output "$RUNNER_TEMP/product-fixture-lock/preflight"

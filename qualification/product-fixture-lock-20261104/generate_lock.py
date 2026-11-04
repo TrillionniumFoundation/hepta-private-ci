@@ -84,10 +84,12 @@ def main() -> None:
                 if os.environ.get(variable) != expected:
                     raise RuntimeError(f"artifact source identity differs: {variable}")
         parents = git_text("show", "-s", "--format=%P", "HEAD").split()
-        if parents != [helper_manifest["source_base"]] or len(parents) != helper_manifest["required_parent_count"]:
-            raise RuntimeError("artifact commit must have the reviewed e729 base as its only parent")
+        if parents != [helper_manifest["expected_parent"]] or len(parents) != helper_manifest["required_parent_count"]:
+            raise RuntimeError("artifact commit must have the reviewed prior helper source as its only parent")
+        source_base = helper_manifest["source_base"]
+        subprocess.run(["git", "merge-base", "--is-ancestor", source_base, commit], cwd=REPOSITORY, check=True)
         changed = subprocess.check_output(
-            ["git", "diff", "--no-renames", "--name-only", "-z", parents[0], commit, "--"],
+            ["git", "diff", "--no-renames", "--name-only", "-z", source_base, commit, "--"],
             cwd=REPOSITORY,
         ).decode().split("\0")
         changed_paths = sorted(name for name in changed if name)
@@ -96,8 +98,8 @@ def main() -> None:
             + helper_manifest["artifact_generation_paths"]
         )
         if changed_paths != allowed_paths or len(changed_paths) != helper_manifest["required_changed_path_count"]:
-            raise RuntimeError("artifact commit must change exactly the four reviewed helper and three generator paths")
-        receipt.update(parent=parents[0], changed_paths=changed_paths)
+            raise RuntimeError("artifact source must differ from e729 only in the six reviewed helper and three generator paths")
+        receipt.update(parent=parents[0], source_base=source_base, changed_paths=changed_paths)
         observed_helper = {}
         for entry in helper_manifest["files"]:
             name = entry["path"]
@@ -123,7 +125,7 @@ def main() -> None:
         (output / "source-commit.txt").write_text(commit + "\n")
         (output / "source-parent.txt").write_text(parents[0] + "\n")
         (output / "source-changed-paths.json").write_text(json.dumps(changed_paths, indent=2) + "\n")
-        (output / "source.patch").write_text(git_text("diff", "--no-ext-diff", parents[0], commit, "--") + "\n")
+        (output / "source.patch").write_text(git_text("diff", "--no-ext-diff", source_base, commit, "--") + "\n")
         (output / "source-inputs.json").write_text(json.dumps(before, indent=2) + "\n")
         (output / "helper-source-inputs.json").write_text(json.dumps(observed_helper, indent=2) + "\n")
         shutil.copyfile(HELPER_MANIFEST, output / "helper-source-manifest.json")
