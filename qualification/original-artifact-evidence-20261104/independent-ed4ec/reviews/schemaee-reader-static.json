@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.schema-original-reader.static-review.v1",
+  "reviewed_utc": "2026-11-04T05:09:46.213Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "input": {
+    "git_blob_sha": "db11b285b1912e2f32eca5d28a0f8e3e4cad154d",
+    "sha256": "8052ffcd6a14c79040e044118b9ff30a87540a4588f19fcc512441b17b33d541",
+    "bytes": 14861
+  },
+  "scope": [
+    "complete_native",
+    "bound_generation",
+    "their bound_sources/bound_outputs/inspect call context"
+  ],
+  "observations": [
+    "Compiled inventory is restricted to the one original library and every nonignored case must match the runner filter; the single original ignored generator is named exactly and all four required schema comparison tests must be runnable.",
+    "JUnit must contain exactly one direct suite, unique cases, the entire runnable name set, no extra skipped name beyond the original ignored helper, and no failure/error/rerun/flaky node. Counters are reconciled to the actual case nodes.",
+    "Generated inventory retains the complete original schema path set. Exactly three distinct changed paths must equal the frozen spec and receipt delta set; each original identity comes from exact Git bytes and each generated payload is checked by size/SHA256/Git-blob identity.",
+    "The exact artifact-member set, tracked change set, empty untracked output and complete command list bind the retained evidence. This review does not independently execute either generator or the original library."
+  ],
+  "confirmed_new_blocker_in_reviewed_scope": false,
+  "limitations": [
+    "No Python controls, artifact download, native test or archived code was executed by this review.",
+    "The imported generic transport, GitBytes and duplicate-key parser were not re-audited here.",
+    "Unchanged-through-native is checked against the source-bound original receipt and inventories; this does not claim continuous observation of all intermediate process states.",
+    "Complete library evidence does not qualify full CI, full product acceptance or scientific gates."
+  ]
+}
