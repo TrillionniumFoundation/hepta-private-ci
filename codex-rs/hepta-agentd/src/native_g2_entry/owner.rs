@@ -142,6 +142,8 @@ pub(super) fn run(
     Ok(())
 }
 
+// Avoid inlining the large command poll body into scheduler specializations.
+#[inline(never)]
 async fn execute(
     owner: &AgentdG2NativeOperationHost,
     command: Command,
