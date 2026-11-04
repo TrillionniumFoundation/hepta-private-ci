@@ -1,10 +1,7 @@
 diff --git a/src/client/windows.rs b/src/client/windows.rs
 --- a/src/client/windows.rs
 +++ b/src/client/windows.rs
-@@ -775,7 +775,8 @@
-         pub(super) strings: [*const u16; 1],
-     }
- 
+@@ -778,4 +778,5 @@
 -    #[link(name = "Dnsapi")]
 +    #[cfg_attr(target_env = "gnu", link(name = "dnsapi"))]
 +    #[cfg_attr(not(target_env = "gnu"), link(name = "Dnsapi"))]
