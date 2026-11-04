@@ -1,0 +1,365 @@
+{
+  "schema_version": 1,
+  "title": "Mac ARM executor skill fixture canonical environment selection",
+  "observed_at": "2026-11-04T18:12:43.733Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": {
+    "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+    "actual_ci_merge": "8e20cb5ec8261053ea472f06f79a0def072f3dce",
+    "tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+    "checkout_log_line": 167
+  },
+  "original_failure": {
+    "run": 41875454075,
+    "job": 126733764648,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41875454075/job/126733764648",
+    "full_decoded_job_log": {
+      "job_id": 126733764648,
+      "observed_at": "2026-11-04T18:06:33.889Z",
+      "bytes": 2289251,
+      "sha256": "00b885a3ad2c085ce5d685649bbf355af4ee8b247fc5338d9cb305dd73aad511",
+      "lines": 10098,
+      "replacement_characters": false
+    },
+    "app_server_target": "//codex-rs/app-server:app-server-all-test",
+    "reported_target_result": "FAILED in 6 out of 20 shard attempts in 75.1s",
+    "failures": [
+      {
+        "case": "suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted",
+        "distinct_recorded_attempts": 3,
+        "first_failure_excerpt": [
+          {
+            "line": 7796,
+            "text": "writing message to stdin: Request(JSONRPCRequest { id: Integer(1), method: \"thread/start\", params: Some(Object {\"model\": String(\"mock-model\"), \"modelProvider\": Null, \"cwd\": Null, \"runtimeWorkspaceRoots\": Null, \"approvalPolicy\": Null, \"approvalsReviewer\": Null, \"sandbox\": Null, \"permissions\": Null, \"config\": Null, \"serviceName\": Null, \"baseInstructions\": Null, \"developerInstructions\": Null, \"personality\": Null, \"multiAgentMode\": Null, \"ephemeral\": Null, \"historyMode\": Null, \"sessionStartSource\": Null, \"threadSource\": Null, \"projectId\": Null, \"environments\": Array [Object {\"environmentId\": String(\"local\"), \"cwd\": String(\"/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmp7CI52s\"), \"runtimeWorkspaceRoots\": Null}], \"dynamicTools\": Null, \"selectedCapabilityRoots\": Array [Object {\"id\": String(\"demo-plugin@1\"), \"location\": Object {\"type\": String(\"environment\"), \"environmentId\": String(\"local\"), \"path\": String(\"file:///private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmp7CI52s/plugin\")}}], \"mockExperimentalField\": Null}), trace: None })"
+          },
+          {
+            "line": 7800,
+            "text": "read message from stdout: Response(JSONRPCResponse { id: Integer(1), result: Object {\"thread\": Object {\"id\": String(\"01a1a79c-6b39-7340-b5f2-757ac0e21105\"), \"extra\": Null, \"sessionId\": String(\"01a1a79c-6b39-7340-b5f2-757ac0e21105\"), \"forkedFromId\": Null, \"parentThreadId\": Null, \"preview\": String(\"\"), \"ephemeral\": Bool(false), \"section\": Null, \"sectionEnteredAt\": Null, \"projectId\": Null, \"historyMode\": String(\"legacy\"), \"modelProvider\": String(\"mock_provider\"), \"createdAt\": Number(1793813408), \"updatedAt\": Number(1793813408), \"recencyAt\": Number(1793813408), \"status\": Object {\"type\": String(\"idle\")}, \"path\": String(\"/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpANQGYz/sessions/2026/11/04/rollout-2026-11-04T17-30-08-01a1a79c-6b39-7340-b5f2-757ac0e21105.jsonl\"), \"cwd\": String(\"/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpANQGYz\"), \"cliVersion\": String(\"0.0.0\"), \"source\": String(\"vscode\"), \"canAcceptDirectInput\": Bool(true), \"threadSource\": Null, \"agentNickname\": Null, \"agentRole\": Null, \"gitInfo\": Null, \"name\": Null, \"turns\": Array []}, \"model\": String(\"mock-model\"), \"modelProvider\": String(\"mock_provider\"), \"serviceTier\": Null, \"cwd\": String(\"/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpANQGYz\"), \"runtimeWorkspaceRoots\": Array [String(\"/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmp7CI52s\")], \"instructionSources\": Array [], \"approvalPolicy\": String(\"never\"), \"approvalsReviewer\": String(\"user\"), \"sandbox\": Object {\"type\": String(\"workspaceWrite\"), \"writableRoots\": Array [String(\"/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmp7CI52s\")], \"networkAccess\": Bool(false), \"excludeTmpdirEnvVar\": Bool(true), \"excludeSlashTmp\": Bool(true)}, \"activePermissionProfile\": Object {\"id\": String(\"workspace\"), \"extends\": Null}, \"reasoningEffort\": Null, \"multiAgentMode\": String(\"explicitRequestOnly\")} })"
+          },
+          {
+            "line": 7818,
+            "text": "[mcp stderr] 2026-11-04T17:30:09.211531Z  WARN codex_skills_extension::tools::read: skills.read provider request failed error=failed to read executor skill resource skill://demo-plugin@1/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmp7CI52s/plugin/skills/deploy/references/details.md through the authorized sandbox turn_id=01a1a79c-6c0c-757d-9f64-b1529b5f8881 call_id=reference resource=\"skill://demo-plugin@1/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmp7CI52s/plugin/skills/deploy/references/details.md\""
+          },
+          {
+            "line": 7828,
+            "text": "Error: expected ident at line 1 column 3"
+          }
+        ],
+        "status_lines": [
+          {
+            "line": 7734,
+            "text": "test suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted ... FAILED"
+          },
+          {
+            "line": 7851,
+            "text": "test suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted ... FAILED"
+          },
+          {
+            "line": 7968,
+            "text": "test suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted ... FAILED"
+          },
+          {
+            "line": 9603,
+            "text": "test suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted ... FAILED"
+          }
+        ],
+        "wrapper_duplicate_line": 9603
+      },
+      {
+        "case": "suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference",
+        "distinct_recorded_attempts": 3,
+        "first_failure_excerpt": [
+          {
+            "line": 8166,
+            "text": "writing message to stdin: Request(JSONRPCRequest { id: Integer(1), method: \"thread/start\", params: Some(Object {\"model\": String(\"mock-model\"), \"modelProvider\": Null, \"cwd\": Null, \"runtimeWorkspaceRoots\": Null, \"approvalPolicy\": Null, \"approvalsReviewer\": Null, \"sandbox\": Null, \"permissions\": Null, \"config\": Null, \"serviceName\": Null, \"baseInstructions\": Null, \"developerInstructions\": Null, \"personality\": Null, \"multiAgentMode\": Null, \"ephemeral\": Null, \"historyMode\": Null, \"sessionStartSource\": Null, \"threadSource\": Null, \"projectId\": Null, \"environments\": Array [Object {\"environmentId\": String(\"local\"), \"cwd\": String(\"/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpwBAxnX\"), \"runtimeWorkspaceRoots\": Null}], \"dynamicTools\": Null, \"selectedCapabilityRoots\": Array [Object {\"id\": String(\"demo-plugin@1\"), \"location\": Object {\"type\": String(\"environment\"), \"environmentId\": String(\"local\"), \"path\": String(\"file:///private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpwBAxnX/plugin\")}}], \"mockExperimentalField\": Null}), trace: None })"
+          },
+          {
+            "line": 8170,
+            "text": "read message from stdout: Response(JSONRPCResponse { id: Integer(1), result: Object {\"thread\": Object {\"id\": String(\"01a1a79d-e276-76ec-9a11-11fe9a088b1d\"), \"extra\": Null, \"sessionId\": String(\"01a1a79d-e276-76ec-9a11-11fe9a088b1d\"), \"forkedFromId\": Null, \"parentThreadId\": Null, \"preview\": String(\"\"), \"ephemeral\": Bool(false), \"section\": Null, \"sectionEnteredAt\": Null, \"projectId\": Null, \"historyMode\": String(\"legacy\"), \"modelProvider\": String(\"mock_provider\"), \"createdAt\": Number(1793813504), \"updatedAt\": Number(1793813504), \"recencyAt\": Number(1793813504), \"status\": Object {\"type\": String(\"idle\")}, \"path\": String(\"/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpE10z5s/sessions/2026/11/04/rollout-2026-11-04T17-31-44-01a1a79d-e276-76ec-9a11-11fe9a088b1d.jsonl\"), \"cwd\": String(\"/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpE10z5s\"), \"cliVersion\": String(\"0.0.0\"), \"source\": String(\"vscode\"), \"canAcceptDirectInput\": Bool(true), \"threadSource\": Null, \"agentNickname\": Null, \"agentRole\": Null, \"gitInfo\": Null, \"name\": Null, \"turns\": Array []}, \"model\": String(\"mock-model\"), \"modelProvider\": String(\"mock_provider\"), \"serviceTier\": Null, \"cwd\": String(\"/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpE10z5s\"), \"runtimeWorkspaceRoots\": Array [String(\"/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpwBAxnX\")], \"instructionSources\": Array [], \"approvalPolicy\": String(\"never\"), \"approvalsReviewer\": String(\"user\"), \"sandbox\": Object {\"type\": String(\"workspaceWrite\"), \"writableRoots\": Array [String(\"/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpwBAxnX\")], \"networkAccess\": Bool(false), \"excludeTmpdirEnvVar\": Bool(true), \"excludeSlashTmp\": Bool(true)}, \"activePermissionProfile\": Object {\"id\": String(\"workspace\"), \"extends\": Null}, \"reasoningEffort\": Null, \"multiAgentMode\": String(\"explicitRequestOnly\")} })"
+          },
+          {
+            "line": 8186,
+            "text": "[mcp stderr] 2026-11-04T17:31:45.230254Z  WARN codex_skills_extension::tools::read: skills.read provider request failed error=failed to read executor skill resource skill://demo-plugin@1/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpwBAxnX/plugin/skills/deploy/references/details.md through the authorized sandbox turn_id=01a1a79d-e337-7423-9d93-3ef3de0450cf call_id=reference resource=\"skill://demo-plugin@1/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/.tmpwBAxnX/plugin/skills/deploy/references/details.md\""
+          },
+          {
+            "line": 8196,
+            "text": "Error: expected ident at line 1 column 3"
+          }
+        ],
+        "status_lines": [
+          {
+            "line": 8098,
+            "text": "test suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference ... FAILED"
+          },
+          {
+            "line": 8219,
+            "text": "test suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference ... FAILED"
+          },
+          {
+            "line": 8340,
+            "text": "test suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference ... FAILED"
+          }
+        ],
+        "wrapper_duplicate_line": null
+      }
+    ],
+    "attempt_scope": "Two original cases each failed in three Bazel attempts; the later wrapper tail replays one existing failure. Attempts are not unique test cases."
+  },
+  "source_proof": [
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/executor_skills.rs",
+      "blob": "6731fefddbc5ab1158234877939ebdc10ddfd206",
+      "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "ranges": [
+        [
+          98,
+          114
+        ],
+        [
+          160,
+          168
+        ],
+        [
+          384,
+          398
+        ],
+        [
+          583,
+          595
+        ]
+      ],
+      "finding": "Restricted profile grants :workspace_roots only; the resource fixture already canonicalizes through the target filesystem, but thread/start still injects the original automatic cwd. Reference error text reaches an unchanged JSON-success assertion.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/app-server/tests/suite/v2/executor_skills.rs"
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/test_app_server.rs",
+      "blob": "4d9f37e14bbc1b04d4129728dbf2dce9dbed0457",
+      "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "ranges": [
+        [
+          222,
+          228
+        ],
+        [
+          480,
+          485
+        ],
+        [
+          518,
+          527
+        ]
+      ],
+      "finding": "auto_env_params retains environment identity and defaults runtime_workspace_roots to None; the automatic wrapper requires environments omitted and then delegates to the exact same public thread/start sender.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/app-server/tests/common/test_app_server.rs"
+    },
+    {
+      "path": "codex-rs/app-server-protocol/src/protocol/v2/turn.rs",
+      "blob": "75bdcb47e305b1b0fb1f192d537bed94042b9564",
+      "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "ranges": [
+        [
+          41,
+          46
+        ]
+      ],
+      "finding": "cwd type is LegacyAppPathString; omitted runtime workspace roots default to cwd.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/app-server-protocol/src/protocol/v2/turn.rs"
+    },
+    {
+      "path": "codex-rs/utils/path-uri/src/api_path_string.rs",
+      "blob": "d6753a0a0ee46e62261e7c21d9759433f9be566e",
+      "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "ranges": [
+        [
+          153,
+          156
+        ]
+      ],
+      "finding": "Existing From<PathUri> conversion uses that target URI's inferred native path spelling; no host-native canonicalize is introduced.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/utils/path-uri/src/api_path_string.rs"
+    },
+    {
+      "path": "codex-rs/core/src/session/turn_context.rs",
+      "blob": "db4aa7d964091adb63c4787368b6d9341d303e75",
+      "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "ranges": [
+        [
+          95,
+          104
+        ],
+        [
+          452,
+          474
+        ]
+      ],
+      "finding": "Runtime sandbox context copies selected environment cwd and workspace roots.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/core/src/session/turn_context.rs"
+    },
+    {
+      "path": "codex-rs/ext/skills/src/tools/read.rs",
+      "blob": "6b5b19ef6cfd1054bae07714f456efc89cfa6efb",
+      "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "ranges": [
+        [
+          121,
+          137
+        ],
+        [
+          142,
+          166
+        ]
+      ],
+      "finding": "Read resolves actual environment sandbox context; provider failures are returned to the model as failed-to-read errors.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/ext/skills/src/tools/read.rs"
+    },
+    {
+      "path": "codex-rs/ext/skills/src/provider/executor.rs",
+      "blob": "93c4d87f13c669fb27484fef7f9020c7de6dbf1b",
+      "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "ranges": [
+        [
+          121,
+          145
+        ],
+        [
+          166,
+          172
+        ],
+        [
+          294,
+          322
+        ]
+      ],
+      "finding": "Package/authority checks remain; references reach bounded authorized read. Main content may use captured environment contents. Inner authorized-read errors are intentionally redacted.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/ext/skills/src/provider/executor.rs"
+    },
+    {
+      "path": "codex-rs/exec-server/src/local_file_system.rs",
+      "blob": "d959d20b56356a6a910141f65b013ee183ab8ed5",
+      "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "ranges": [
+        [
+          154,
+          195
+        ],
+        [
+          1384,
+          1422
+        ]
+      ],
+      "finding": "macOS stable handle path is checked against the materialized original sandbox root policy before secure identity-preserving reopen/read.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/exec-server/src/local_file_system.rs"
+    },
+    {
+      "path": "codex-rs/protocol/src/models.rs",
+      "blob": "e8bcab9c981c7e613dec75b3c42aa1ed091c9877",
+      "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "ranges": [
+        [
+          548,
+          567
+        ]
+      ],
+      "finding": "PermissionProfile forwards workspace roots into FileSystemSandboxPolicy materialization without filesystem canonicalization.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/protocol/src/models.rs"
+    },
+    {
+      "path": "codex-rs/protocol/src/permissions.rs",
+      "blob": "1537230e0a8f1685530eb03c2c782a587ad6bb6a",
+      "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "ranges": [
+        [
+          874,
+          895
+        ],
+        [
+          964,
+          983
+        ],
+        [
+          1484,
+          1497
+        ],
+        [
+          1549,
+          1569
+        ],
+        [
+          1584,
+          1589
+        ]
+      ],
+      "finding": "Materialized roots are compared lexically with starts_with. The trusted-top-level-alias normalization helper elsewhere in the file is not on this access-check path.",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/protocol/src/permissions.rs"
+    }
+  ],
+  "assessment": {
+    "measured": "First actual thread/start requests select /var/... environment cwd while their selected capability roots and requested reference resources use /private/var/... . Runtime roots returned by the server retain /var/.... Both original reference reads report failure before the fixture parses the response as success JSON.",
+    "source_inference": "For the shown restricted :workspace_roots profile, stable canonical /private/var/... reference paths fail the unchanged lexical access match against raw /var/... roots. Previous fixture correction canonicalized only the resources, leaving the selected environment inconsistent.",
+    "not_observed": "The provider intentionally discards the underlying authorized-read error; no specific inner errno/syscall or successful repaired macOS run is claimed."
+  },
+  "candidate": {
+    "base_head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+    "actual_test_merge": "8e20cb5ec8261053ea472f06f79a0def072f3dce",
+    "tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+    "path": "codex-rs/app-server/tests/suite/v2/executor_skills.rs",
+    "old_blob": "6731fefddbc5ab1158234877939ebdc10ddfd206",
+    "new_blob": "a31ab6b9139ce122a95cecfd2171fac92ba3121d",
+    "old_sha256": "9b96409f1d4cd1e96acc478a1667b7dd79b584d5da6b9f4b25982a6ad04c7cb6",
+    "new_sha256": "76fdfdbd3f85dca29b405d6f8b8e4b73ad2a30646cdf1db6c9e50e26db357e5b",
+    "new_bytes": 24045,
+    "patch_sha256": "9fa6f22ddb72f272825509326300fd8082ab08235d02839b75f93d5385b9d7b4",
+    "change": "Use the existing target-filesystem canonical workspace for the thread environment cwd, retaining the automatic environment identity and its omitted runtime roots, via unchanged public thread/start RPC.",
+    "scope": "TEST_FIXTURE_ONLY",
+    "status": "STATIC_CANDIDATE_PENDING_ROOT_REVIEW_AND_MACOS_ORIGINAL_CASES",
+    "preservation": {
+      "all_five_case_definitions": true,
+      "all_original_assertions": true,
+      "mac_read_timeout_60s_and_other_20s": true,
+      "original_skip_conditions_unchanged": true,
+      "original_permission_profile_and_approval_exchange": true,
+      "real_public_json_rpc": true,
+      "real_authorized_read_and_capability_check": true,
+      "original_symlink_denial_and_post_approval_read": true,
+      "no_new_helper_or_dependency": true,
+      "no_native_source_ref_build_or_workflow_mutation": true
+    },
+    "source_review_limit": "Provider intentionally redacts inner authorized-read error. Fixed code shows canonical resource path versus noncanonical declared workspace root is rejected by lexical policy matching; no inner errno or repaired runtime result is claimed.",
+    "qualification_required": [
+      "suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference",
+      "suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted",
+      "suite::v2::executor_skills::restricted_executor_skill_rejects_reference_until_permission_approved",
+      "suite::v2::executor_skills::explicit_executor_skill_can_read_referenced_file",
+      "suite::v2::executor_skills::selected_executor_root_exposes_plugin_skill_and_forwards_budget_warning"
+    ],
+    "publication_status": "UNREACHABLE_GITHUB_BLOB_CREATED_NO_REF_UPDATE",
+    "patch": "diff --git a/codex-rs/app-server/tests/suite/v2/executor_skills.rs b/codex-rs/app-server/tests/suite/v2/executor_skills.rs\nindex 6731fefddbc5ab1158234877939ebdc10ddfd206..a31ab6b9139ce122a95cecfd2171fac92ba3121d 100644\n--- a/codex-rs/app-server/tests/suite/v2/executor_skills.rs\n+++ b/codex-rs/app-server/tests/suite/v2/executor_skills.rs\n@@ -383,9 +383,14 @@\n \n     timeout(READ_TIMEOUT, app_server.initialize()).await??;\n \n-    let request_id = app_server\n-        .send_thread_start_request_with_auto_env(ThreadStartParams {\n-            model: Some(\"mock-model\".to_string()),\n+    // Use the canonical target cwd for the thread as well as its skill root.\n+    let mut environment_params = app_server.auto_env_params()?;\n+    environment_params.cwd = workspace.into();\n+\n+    let request_id = app_server\n+        .send_thread_start_request(ThreadStartParams {\n+            model: Some(\"mock-model\".to_string()),\n+            environments: Some(vec![environment_params]),\n             selected_capability_roots: Some(vec![SelectedCapabilityRoot {\n                 id: \"demo-plugin@1\".to_string(),\n                 location: CapabilityRootLocation::Environment {\n"
+  },
+  "invariants": {
+    "same_environment_id": true,
+    "same_target_filesystem": true,
+    "same_existing_workspace_object": true,
+    "capability_root_still_plugin_subdirectory": true,
+    "workspace_roots_field_remains_omitted": true,
+    "real_json_rpc_sender_unchanged": true,
+    "permission_profile_and_capability_root_checks_unchanged": true,
+    "reference_symlink_outside_root_and_grant_exchange_unchanged": true,
+    "all_original_assertions_timeouts_and_skips_byteequal": true,
+    "no_new_helpers_dependencies_prod_source_or_environment_variables": true
+  },
+  "validation_state": {
+    "static_api_and_full_function_review": "complete",
+    "patch_apply_to_exact_preimage_and_postimage_hash": "verified",
+    "native_cargo_run": "not run",
+    "mac_original_cases_after_patch": "pending",
+    "root_review": "candidate direction accepted; independent full blob review pending",
+    "required_original_cases": [
+      "suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference",
+      "suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted",
+      "suite::v2::executor_skills::restricted_executor_skill_rejects_reference_until_permission_approved",
+      "suite::v2::executor_skills::explicit_executor_skill_can_read_referenced_file",
+      "suite::v2::executor_skills::selected_executor_root_exposes_plugin_skill_and_forwards_budget_warning"
+    ],
+    "qualification_limits": "All five original cases are required, including the outside-reference denial before permission and permitted read after permission. A Linux result alone cannot close macOS qualification."
+  }
+}

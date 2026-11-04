@@ -96,3 +96,40 @@ identities and do not grant product or Windows execution qualification.
 The final original platform matrix remains the acceptance gate. In particular,
 the original Windows security failures, Windows Code Mode timing and Intel PTY
 drain cause are not closed by Linux passes or by added diagnostic output.
+
+## Immutable helper evidence
+
+The seven `windows-helper-*` JSON files that contain historical repository paths
+are now explicitly typed evidence indexes. Each index identifies the original
+bytes by Git blob, length and SHA-256 and links to the unchanged full record at
+commit `ff72d462d74f9eb856aa9edbc368caad9c466708`. That commit records the
+evidence; the generator execution commits remain
+`ea84b04d25fbb40662414239d4836c0c161900aa` for 805 inputs and
+`3dd8aa36c60802312584743e6dcfa73e1e5a29a5` for 806 inputs.
+
+This distinction lets the current document-path check validate current
+repository references while preserving the original historical source maps,
+commands, elapsed times and lock results. The raw records remain immutable and
+fully available through the pinned links. Neither the document checker nor the
+original generator receipts have been changed.
+
+## Third repair batch and current project audit
+
+The published ff72 source has a complete failed/cancelled original CI record. This
+follow-up preserves that record, the full 48-name/121-platform ledger, exact-source
+native positives and causal negatives, formatting failures and recovery, and the
+remaining platform/security/external gates. It adds complete failed-target log
+collection, UI history/build timing, original Windows helper preparation and one
+separate explicit-musl product process scope.
+
+Start with [the current Chinese audit](CURRENT_AUDIT_PROGRESS.zh-CN.md),
+[technical qualification](THIRD_BATCH_QUALIFICATION.md),
+[the complete evidence index](third-evidence-index.json), and
+[the current 23-item ledger](current-blockers.json).
+[The project plan](PROJECT_DIRECTION_AND_PLAN.zh-CN.md) preserves all 40 modules
+and 91 work packages. [B16 source preparation](B16_R0_SOURCE_AND_MIGRATION.zh-CN.md)
+and its [independent addendum](B16_R0_INDEPENDENT_ADDENDUM.zh-CN.md) distinguish
+actual normal-caller source gaps from later real authority/operator acceptance.
+
+The candidate remains Draft. Native selected-case passes, static checks and a
+complete report do not establish original platform, main or production acceptance.

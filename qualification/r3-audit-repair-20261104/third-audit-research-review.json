@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "kind": "independent_chinese_comprehensive_report_scope_review",
+  "input": {
+    "blob": "c2da17a0f01cec6155f7207b92df6c4402e839ba",
+    "chars": 15223,
+    "utf8_bytes": 27320,
+    "sha256": "bc93fcbfaad8ae45a56fc7a29dfc94d4c19ab1e52d876153b7e21358aebc08ad",
+    "full_text_read": true
+  },
+  "reviewer": "research_audit",
+  "file_mutated": false,
+  "verdict": "CORE_CONCLUSIONS_ACCEPTED_WITH_TWO_FACTUAL_UNIT_OR_CLASSIFICATION_CORRECTIONS_AND_ONE_SCOPE_CLARIFICATION",
+  "findings": [
+    {
+      "id": "R1",
+      "section": "2 整合策略",
+      "kind": "classification_precision",
+      "status": "correction_requested",
+      "text": "13 个组件的 27 个冲突路径",
+      "problem": "The completed three-tree comparison found 27 paths changed differently on both branches, not 27 established text merge conflicts.",
+      "replacement": "13 个组件的 27 个双方不同变化路径已有保留、迁移或延期决定",
+      "basis": "Original reviewed 17:02 Library HTML version1 explicitly says 双方不同变化 27; 这不等于已确认27个文本冲突.",
+      "effect": "Avoids overstating mechanical merge conflicts or implying a merge-conflict execution result."
+    },
+    {
+      "id": "R2",
+      "section": "6 研究",
+      "kind": "counting_unit",
+      "status": "correction_requested",
+      "text": "25,506,732 项记录中的算术检查",
+      "problem": "25,506,732 is 15,595,691 numeric comparisons plus 9,911,041 equality comparisons, not the number of distinct raw records.",
+      "replacement": "完成 25,506,732 次记录一致性比较，其中 15,595,691 次为数值比较、9,911,041 次为相等性比较",
+      "basis": {
+        "research_head": "77b24407b9898aa44769502fbb22c24fb7193a58",
+        "report_blob": "7261cae919c01871977214136df50c0400948c53",
+        "reproduce_blob": "643e13c259763bb3b3a1d99ee94eda3b1ce2ecca"
+      },
+      "effect": "Preserves verified arithmetic breadth without inflating unique record or independent sample count."
+    },
+    {
+      "id": "R3",
+      "section": "8 B08 row",
+      "kind": "case_scope",
+      "status": "clarification_requested",
+      "text": "修复后 Linux 三例通过",
+      "problem": "If this means the current three-case Core batch, only namespaced belongs to this new B08 regression; turn_state belongs to B10 and suspension/resume to B09. There are separately real earlier three retained-recorder boundary unit passes, which must not be silently conflated.",
+      "replacement": "新增 namespaced 原例 Linux 通过；先前三个 retained recorder 边界单元的通过范围另保，原平台仍待验",
+      "effect": "Prevents a batch total from being attributed as three new cases for one blocker."
+    }
+  ],
+  "accepted": {
+    "selected_candidate": "One #4797 candidate; no main/release/full platform success claim.",
+    "p0_direction": "Canonical P0–P8 direction is preserved; no proposed change.",
+    "research_decision": "32/32 fits complete; four primary intervals span zero; 0/4 benefit gates; 0/256 all-eight checks; HOLD is not harm/null/equivalence evidence.",
+    "research_estimand": "Feedback-within-family comparisons are not the independent analytic-kernel D-minus-B primary increment.",
+    "research_cost": "8326.229650133 seconds lower bound and three missing controller costs match frozen completion; the aborted process CPU is retained.",
+    "research_replay_limit": "No full model/teacher/RNG/decoder/optimizer replay claimed.",
+    "b16_existing_scope": "Old c2 normal Notes observation is correctly scoped; c42/#293 is not represented as inheriting all old wiring.",
+    "bao_counts": "13 critical adapter capabilities (11 partial, 2 gap, 0 closed) is distinct from 13 scoped implementations among 60 external surfaces.",
+    "hia_boundary": "DENY_ALL/safety_certificate=false and independent acceptance requirements remain intact.",
+    "windows_history": "The original auto-review receipt is explicitly unavailable; no decision id/original reason invented and no general Root prohibition inferred.",
+    "targeted_native_reporting": "Report keeps three distinct source trees, 20 selected total and eight final selected cases separate, 62 filtered-out skips, controller exit1/false and initial helper hash mismatch.",
+    "native_reporting_limit": "This review checks scope and arithmetic of those presented results; it does not replace root/CI's independent raw-JUnit and source provenance review."
+  },
+  "b16_increment_pending_primary_addendum": {
+    "reported_by_root_and_architecture": "Current c42 services uses the same Notes normal Root tree as old c2; c42 lacks old c2 joint UI consumer source.",
+    "services_tree": "247dfcc7a451b8bd6926fe2d5013120ace0c984d",
+    "need": "Await full architecture R0 primary-source receipt before adding exact file/tree absence conclusions.",
+    "effect": "Both normal producer and chosen paired UI consumer are real code gaps; absent external signed inputs are not the sole blocker.",
+    "historical_external_report_rewrite": false
+  },
+  "verification_limits": [
+    "Chain 27/6/9/12 counts have not been independently tied to a primary receipt in this review. Do not mark them false solely for that reason; root should preserve its actual fixed source and qualify them as an independent Chain candidate result.",
+    "Current inventory/time changes are not reported as contradictions against the fixed snapshot.",
+    "The final source/time placeholder remains root-owned until final source/hygiene.",
+    "No source/target mutation, new native Cargo/Bazel lane or workflow run occurred."
+  ],
+  "artifacts_used": [
+    {
+      "blob": "c2da17a0f01cec6155f7207b92df6c4402e839ba",
+      "role": "full comprehensive draft"
+    },
+    {
+      "blob": "7261cae919c01871977214136df50c0400948c53",
+      "role": "fixed #4798 research REPORT_ZH"
+    },
+    {
+      "blob": "643e13c259763bb3b3a1d99ee94eda3b1ce2ecca",
+      "role": "fixed #4798 reproducibility boundaries"
+    },
+    {
+      "blob": "0b98a426215dd3b947389587379599bb936b15c5",
+      "role": "external closure plan"
+    },
+    {
+      "blob": "295e4d892b53e3dab44c1181e5c152955d508bea",
+      "role": "original 23-blocker ledger at 17:02"
+    },
+    {
+      "library_file_id": "libfile_80ac18769b7c8191b7bd5878ba6924c3",
+      "version": 1,
+      "role": "reviewed historical HTML; secondary evidence for original fork comparison and B19 scope"
+    }
+  ]
+}

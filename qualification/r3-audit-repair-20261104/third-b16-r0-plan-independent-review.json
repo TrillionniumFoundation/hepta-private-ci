@@ -1,0 +1,157 @@
+{
+  "schema": "hepta.b16-r0.finite-independent-plan-review.v1",
+  "reviewed_at_utc": "2026-11-04 19:46:09 UTC",
+  "reviewed_documents": {
+    "json": {
+      "blob": "428fe82692a0a400211356b6a94b219e8e31b441",
+      "bytes": 270283,
+      "sha256": "9428044d76918df5e9d47a747af6f02be394a9f8eb09dc0c3f044603bb0a0967"
+    },
+    "markdown": {
+      "blob": "1a156dcca8cecd9107777ad28aa891587edb35de",
+      "bytes": 13699,
+      "sha256": "f7d3c074d16b9b0897330bcad6017aefb2d8bc3fd07b36c6c5fbc0e087ca52a7"
+    },
+    "hashes_recomputed": true
+  },
+  "scope": "Document internal consistency plus fixed two-file arg0 comparison and a concrete cross-cohort dependency; not a second complete branch/source audit.",
+  "verdict": "COUNTS_AND_CLASSIFICATIONS_PASS; R1_SOURCE_PREPARATION_ACCEPTABLE; R4_COMPILED_DEPENDENCY_NEEDS_EXPLICIT_GATE",
+  "consistency": {
+    "file_decisions": 102,
+    "unique_repository_paths": 102,
+    "state_counts": {
+      "DONOR_ONLY": 63,
+      "DIVERGENT_SOURCE": 27,
+      "SAME": 8,
+      "CURRENT_ONLY": 4
+    },
+    "actual_state_mismatches": [],
+    "primary_cohorts": [
+      "C1_root_handoff",
+      "C2_registry_arg0",
+      "C3_protected_current",
+      "C4_issuer_final_use",
+      "C5_listener_custody",
+      "C6_joint_normal_caller"
+    ],
+    "record_cohorts": {
+      "C1_root_handoff": 5,
+      "C2_registry_arg0": 11,
+      "C3_protected_current": 15,
+      "C4_issuer_final_use": 15,
+      "C5_listener_custody": 12,
+      "C5_listener_custody_optional_native_g2_component": 5,
+      "C6_joint_normal_caller": 37,
+      "C6_preserve_existing_objective_ui": 1,
+      "C2_android_mcp_nonminimal_prerequisite": 1
+    },
+    "auxiliary_cohorts": [
+      "C5_listener_custody_optional_native_g2_component",
+      "C6_preserve_existing_objective_ui",
+      "C2_android_mcp_nonminimal_prerequisite"
+    ],
+    "inventory_crates": 9,
+    "inventory_counts": {
+      "hepta-agentd": 319,
+      "hepta-memory": 85,
+      "hepta-contracts": 29,
+      "hepta-objective": 7,
+      "arg0": 1,
+      "uds": 10,
+      "app-server-transport": 11,
+      "app-server": 11,
+      "hepta-agent-protocol": 1
+    },
+    "inventory_sum": 474,
+    "inventory_unique_paths": 474,
+    "invalid_inventory_rows": [],
+    "dependency_missing_edges": [],
+    "dependency_cycles": [],
+    "desktop_ui_rows": 21,
+    "desktop_ui_unique_paths": 21
+  },
+  "count_interpretation": [
+    "102 records are 102 unique repository/path decisions, not 102 necessarily changed source files.",
+    "The six primary cohorts have three explicitly named subcategories (optional native G2, preserve UI, nonminimal Android/MCP dependency). Those subcategories are not three new atomic product cohorts.",
+    "474 inventory rows are 474 unique source/build paths across nine complete-tree inventories. This review verifies the manifest arithmetic and row consistency, not every remote tree again.",
+    "813 Agentd all-blob path differences have a wider denominator than its 319 source/build inventory rows. Neither count equals the old 89-path PR diff."
+  ],
+  "r1": {
+    "status": "CAN_PREPARE_WITHOUT_ROOT_OR_CREDENTIAL_TRANSITION",
+    "source": {
+      "path": "codex-rs/arg0/src/lib.rs",
+      "current": {
+        "blob": "f44dc145b15d656fc04d87affe6e760de090ee35",
+        "bytes": 26288,
+        "sha256": "28f501911b19dfbfdc7e89226a728e5f2e1d9bc28d894b01062e6352206a78b9"
+      },
+      "donor": {
+        "blob": "4e41e7affbb627df162b7b6780203b75a7dd839f",
+        "bytes": 27263,
+        "sha256": "819d8383407768ba4739f9e46462c2caf1e37ad949fa5058d1ae6d8a58a7b215"
+      }
+    },
+    "exact_diff": "diff --git a/codex-rs/arg0/src/lib.rs b/codex-rs/arg0/src/lib.rs\n--- a/codex-rs/arg0/src/lib.rs\n+++ b/codex-rs/arg0/src/lib.rs\n@@ -58,6 +58,11 @@\n }\n \n pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {\n+    dispatch_helpers();\n+    prepare_regular_invocation()\n+}\n+\n+fn dispatch_helpers() {\n     // Determine if we were invoked via the special alias.\n     let mut args = std::env::args_os();\n     let argv0 = args.next().unwrap_or_default();\n@@ -153,7 +158,9 @@\n         };\n         std::process::exit(exit_code);\n     }\n+}\n \n+fn prepare_regular_invocation() -> Option<Arg0PathEntryGuard> {\n     // This modifies the environment, which is not thread-safe, so do this\n     // before creating any threads/the Tokio runtime.\n     load_dotenv();\n@@ -221,10 +228,27 @@\n     F: FnOnce(Arg0DispatchPaths) -> Fut + Send + 'static,\n     Fut: Future<Output = anyhow::Result<()>>,\n {\n+    arg0_dispatch_or_else_with_preflight(|| Ok(main_fn))\n+}\n+\n+/// Run a synchronous owner preflight only after helper dispatch and before\n+/// creating any threads. The preflight returns the ordinary async entry point.\n+/// Alias files and dotenv loading happen afterwards under the final owner, so\n+/// an embedding can drop privileges without leaving Root-owned helper aliases.\n+/// This does not authorize a privilege transition; the embedding must verify\n+/// its original inherited ownership and capabilities itself.\n+pub fn arg0_dispatch_or_else_with_preflight<P, F, Fut>(preflight: P) -> anyhow::Result<()>\n+where\n+    P: FnOnce() -> anyhow::Result<F>,\n+    F: FnOnce(Arg0DispatchPaths) -> Fut + Send + 'static,\n+    Fut: Future<Output = anyhow::Result<()>>,\n+{\n+    dispatch_helpers();\n+    let main_fn = preflight()?;\n     // Retain the TempDir so it exists for the lifetime of the invocation of\n     // this executable. Admittedly, we could invoke `keep()` on it, but it\n     // would be nice to avoid leaving temporary directories behind, if possible.\n-    let path_entry_guard = arg0_dispatch();\n+    let path_entry_guard = prepare_regular_invocation();\n     let current_exe = std::env::current_exe().ok();\n \n     // Regular invocation. Run the async entry point on a thread with the same\n",
+    "old_test_module": {
+      "tests_module_byteequal": true,
+      "old_tests": 7,
+      "names": [
+        "linux_sandbox_exe_path_prefers_codex_linux_sandbox_alias",
+        "path_env_can_prepend_package_path_before_arg0_alias_dir",
+        "package_path_survives_arg0_alias_setup_failure",
+        "run_main_with_arg0_guard_keeps_aliases_alive_until_main_returns",
+        "janitor_skips_dirs_without_lock_file",
+        "janitor_skips_dirs_with_held_lock",
+        "janitor_removes_dirs_with_unlocked_lock"
+      ]
+    },
+    "test_platform_limit": "Seven test definitions in the unchanged module. run_main_with_arg0_guard_keeps_aliases_alive_until_main_returns is cfg(unix), so do not claim seven selected tests on Windows without inspecting the actual roster.",
+    "static_reason": [
+      "The donor split only separates existing helper dispatch from regular dotenv/alias preparation, adds a synchronous FnOnce preflight, and makes the existing public wrapper delegate with || Ok(main_fn).",
+      "The new callback returns the existing async entry closure. It does not itself parse trusted input, drop credentials, call Root, install a new authority source or create a runtime.",
+      "Error propagation uses preflight()? before prepare_regular_invocation, current_exe capture, main thread spawn and runtime construction.",
+      "The helper dispatch body, regular preparation body, main runtime/guard lifetime, and complete original test module are preserved.",
+      "The existing public wrapper genuinely uses the new API; this is not an unused helper presented as product closure."
+    ],
+    "implementation_requirements": [
+      "Document the existing single-thread premise explicitly for the new callback: invoke before other threads exist and do not spawn threads or runtime work inside preflight. The later dotenv/PATH code still performs unsafe environment mutation under that premise.",
+      "Run new ordering/refusal/helper-dispatch tests in their own child process with an owned test home and marker paths. Do not read or mutate the developer home or share process-wide environment between parallel tests.",
+      "Prove refusal preserves the original error and prevents regular alias/dotenv/runtime/main effects; success preserves alias lifetime and ordering; actual supported helper dispatch precedes preflight.",
+      "Retain original assertions and collect an actual platform-specific selector roster with zero retries. No runtime PASS is available from this source review."
+    ],
+    "does_not_close": [
+      "B16",
+      "normal Root caller",
+      "trusted credential transition",
+      "real issuer/Current acceptance",
+      "Notes+Calculator normal product acceptance"
+    ]
+  },
+  "concrete_dependency_finding": {
+    "id": "R4_COMPILED_INTEGRATION_NEEDS_C1_SEAL",
+    "severity": "PLAN_DEPENDENCY_GATE_CLARIFICATION",
+    "existing_dag": "R4 requires only R2; R3 is the composition carrying C1.",
+    "source_path": "codex-rs/hepta-agentd/src/production_desktop_deployment.rs",
+    "source_blob": "c756a1ac5f22644a9b0b1c012c2dfd5879750a13",
+    "direct_call": "crate::authority_host_bootstrap_seal::validate_sealed(&file, size)?;",
+    "required_path": "codex-rs/hepta-agentd/src/authority_host_bootstrap_seal.rs",
+    "required_blob": "9f893000eac27b1155a0257908f983440e652731",
+    "decision_table_required_cohort": "C1_root_handoff",
+    "current_required_file": null,
+    "conclusion": "Parallel R4 source preparation after R2 is coherent. A claim that the full proposed C6 runtime can land/build after R2 alone is not established by the current split.",
+    "minimal_remedy": "Distinguish source-preparation dependencies from compiled-integration dependencies and put R3 before the latter; alternatively explicitly move the necessary C1 seal/type foundation to R2 and verify that actual smaller closure. Do not merely drop sealed-FD validation.",
+    "scope": "This is one proven edge, not a claim that every other dependency has been exhaustively resolved."
+  },
+  "unchanged_gates": [
+    "Keep the current generic original sender/checkpoint contract and normal current-user peer gate.",
+    "No whole donor/crate overwrite, inherited runtime PASS or product authority from file/CLI presence.",
+    "Keep actual joint recovery/renewal and operator acceptance separate from source preparation.",
+    "Windows token/loader/DLL production boundary remains untouched."
+  ],
+  "operations": {
+    "source_mutation": false,
+    "ref_mutation": false,
+    "native_or_cargo_execution": false,
+    "root_or_credential_operation": false
+  }
+}

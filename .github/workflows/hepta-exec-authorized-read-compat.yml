@@ -91,6 +91,16 @@ jobs:
         shell: bash
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy,rust-src
 
+      - name: Build declared Windows sandbox test helpers
+        if: runner.os == 'Windows'
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-windows-sandbox \
+            --bin codex-windows-sandbox-setup \
+            --bin codex-command-runner
+
       - name: Run original native scopes and retain each fresh result
         shell: bash
         run: |

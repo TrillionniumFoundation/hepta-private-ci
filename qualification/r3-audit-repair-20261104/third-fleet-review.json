@@ -1,0 +1,265 @@
+{
+  "schema": "hepta-six-agent-final-health-observation-review.v1",
+  "status": "CANDIDATE_NOT_EXECUTED",
+  "source": {
+    "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+    "merge": "8e20cb5ec8261053ea472f06f79a0def072f3dce",
+    "tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+    "run_id": 41875454075,
+    "job_id": 126733764738
+  },
+  "original_log": {
+    "sha256": "da804a71dc6b752f0eb4d48f6ea9302866cf414275aaeb68c20513f1207ca42c",
+    "bytes": 2490720,
+    "extraction_blob": "160808e80c9b468a95bd858436df30b8bc02ac45",
+    "bounded_target_block": {
+      "name": "fleet",
+      "start_line": 7958,
+      "end_line": 8006,
+      "text": "2026-11-04T17:34:05.3844610Z ==================== Test output for //codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test:\n2026-11-04T17:34:05.5074220Z \n2026-11-04T17:34:05.6078930Z running 2 tests\n2026-11-04T17:34:05.7087210Z test five_real_agentd_processes_roll_one_agent_without_stopping_peers has been running for over 60 seconds\n2026-11-04T17:34:05.8098670Z test six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated has been running for over 60 seconds\n2026-11-04T17:34:05.9103380Z test six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated ... FAILED\n2026-11-04T17:34:06.0110410Z test five_real_agentd_processes_roll_one_agent_without_stopping_peers ... ok\n2026-11-04T17:34:06.1119320Z \n2026-11-04T17:34:06.2344310Z failures:\n2026-11-04T17:34:06.3345980Z \n2026-11-04T17:34:06.4355560Z ---- six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated stdout ----\n2026-11-04T17:34:06.5364790Z FLEET_STAGE install agent=0\n2026-11-04T17:34:06.6360870Z FLEET_STAGE start agent=0\n2026-11-04T17:34:06.7371510Z FLEET_STAGE ready six-agent=0\n2026-11-04T17:34:06.8369390Z FLEET_STAGE install agent=1\n2026-11-04T17:34:06.9377180Z FLEET_STAGE start agent=1\n2026-11-04T17:34:07.0385540Z FLEET_STAGE ready six-agent=1\n2026-11-04T17:34:07.1399150Z FLEET_STAGE install agent=2\n2026-11-04T17:34:07.2408680Z FLEET_STAGE start agent=2\n2026-11-04T17:34:07.3422120Z FLEET_STAGE ready six-agent=2\n2026-11-04T17:34:07.4429940Z FLEET_STAGE install agent=3\n2026-11-04T17:34:07.5430250Z FLEET_STAGE start agent=3\n2026-11-04T17:34:07.6441280Z FLEET_STAGE ready six-agent=3\n2026-11-04T17:34:07.7472330Z FLEET_STAGE install agent=4\n2026-11-04T17:34:07.8459670Z FLEET_STAGE start agent=4\n2026-11-04T17:34:07.9463980Z FLEET_STAGE ready six-agent=4\n2026-11-04T17:34:08.0468450Z FLEET_STAGE install agent=5\n2026-11-04T17:34:08.1496030Z FLEET_STAGE start agent=5\n2026-11-04T17:34:08.4763150Z FLEET_STAGE ready six-agent=5\n2026-11-04T17:34:08.4770790Z FLEET_STAGE await-inactive agent=019153a4-3088-7e03-a56a-9b1964f75dd7\n2026-11-04T17:34:08.4792070Z FLEET_STOP_STATE Some(AgentSupervisorSnapshot { active: true, healthy: true, runtime_generation: Some(3), spawn_generation: Some(1), process_system_id: Some(34190), active_release: Some(\"six-initial-0\"), previous_release: None, release_change_pending: false, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: StopRequested }], logs: [], control_revision: 0, restart_pending: false, restart_attempt: 0, release_state_generation: 1, runtime_phase: Some(Stopping), runtime_release: Some(\"six-initial-0\"), runtime_incarnation: Some(\"unix-pid-34190-generation-1\"), runtime_fenced: false, release_change: None, has_last_command: true })\n2026-11-04T17:34:08.4806900Z FLEET_STAGE await-release agent=019153a4-3088-7e03-a56a-9b1964f75dd7 target=six-initial-0\n2026-11-04T17:34:08.4823350Z FLEET_RELEASE_STATE Some(AgentSupervisorSnapshot { active: false, healthy: false, runtime_generation: None, spawn_generation: None, process_system_id: None, active_release: Some(\"six-initial-0\"), previous_release: None, release_change_pending: false, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: StopRequested }, SupervisorEvent { generation: 4, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 4, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 4, kind: RestartQueued }], logs: [], control_revision: 0, restart_pending: true, restart_attempt: 1, release_state_generation: 1, runtime_phase: None, runtime_release: None, runtime_incarnation: None, runtime_fenced: false, release_change: None, has_last_command: true })\n2026-11-04T17:34:08.4842390Z FLEET_STAGE await-release agent=019153a4-3088-7e03-a56a-9b1964f75ddc target=six-agent-5-v2\n2026-11-04T17:34:08.4858070Z FLEET_RELEASE_STATE Some(AgentSupervisorSnapshot { active: true, healthy: false, runtime_generation: Some(3), spawn_generation: Some(1), process_system_id: Some(34410), active_release: Some(\"six-initial-5\"), previous_release: None, release_change_pending: true, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: DrainRequested }, SupervisorEvent { generation: 3, kind: UpgradeQueued { previous: \"six-initial-5\", target: \"six-agent-5-v2\" } }, SupervisorEvent { generation: 3, kind: StopRequested }], logs: [], control_revision: 0, restart_pending: false, restart_attempt: 0, release_state_generation: 1, runtime_phase: Some(Stopping), runtime_release: Some(\"six-initial-5\"), runtime_incarnation: Some(\"unix-pid-34410-generation-1\"), runtime_fenced: false, release_change: Some(ControlReleaseChange { origin_release: \"six-initial-5\", target_release: \"six-agent-5-v2\", prior_previous_release: None, phase: WaitingForTargetExit, explicit_rollback: false }), has_last_command: true })\n2026-11-04T17:34:08.4902680Z FLEET_RELEASE_STATE Some(AgentSupervisorSnapshot { active: true, healthy: true, runtime_generation: Some(6), spawn_generation: Some(5), process_system_id: Some(35021), active_release: Some(\"six-agent-5-v2\"), previous_release: Some(\"six-initial-5\"), release_change_pending: false, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: DrainRequested }, SupervisorEvent { generation: 3, kind: UpgradeQueued { previous: \"six-initial-5\", target: \"six-agent-5-v2\" } }, SupervisorEvent { generation: 3, kind: StopRequested }, SupervisorEvent { generation: 4, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 4, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 5, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 5, kind: Spawned }, SupervisorEvent { generation: 6, kind: Lifecycle(Running) }, SupervisorEvent { generation: 6, kind: Healthy }, SupervisorEvent { generation: 6, kind: UpgradeCommitted { previous: \"six-initial-5\", target: \"six-agent-5-v2\" } }], logs: [], control_revision: 0, restart_pending: false, restart_attempt: 0, release_state_generation: 2, runtime_phase: Some(Running), runtime_release: Some(\"six-agent-5-v2\"), runtime_incarnation: Some(\"unix-pid-35021-generation-5\"), runtime_fenced: false, release_change: None, has_last_command: true })\n2026-11-04T17:34:08.4927340Z FLEET_STAGE await-release agent=019153a4-3088-7e03-a56a-9b1964f75ddc target=six-initial-5\n2026-11-04T17:34:08.5049780Z FLEET_RELEASE_STATE Some(AgentSupervisorSnapshot { active: true, healthy: false, runtime_generation: Some(7), spawn_generation: Some(5), process_system_id: Some(35021), active_release: Some(\"six-agent-5-v2\"), previous_release: Some(\"six-initial-5\"), release_change_pending: true, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: DrainRequested }, SupervisorEvent { generation: 3, kind: UpgradeQueued { previous: \"six-initial-5\", target: \"six-agent-5-v2\" } }, SupervisorEvent { generation: 3, kind: StopRequested }, SupervisorEvent { generation: 4, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 4, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 5, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 5, kind: Spawned }, SupervisorEvent { generation: 6, kind: Lifecycle(Running) }, SupervisorEvent { generation: 6, kind: Healthy }, SupervisorEvent { generation: 6, kind: UpgradeCommitted { previous: \"six-initial-5\", target: \"six-agent-5-v2\" } }, SupervisorEvent { generation: 7, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 7, kind: DrainRequested }, SupervisorEvent { generation: 7, kind: ExplicitRollbackQueued { previous: \"six-agent-5-v2\", target: \"six-initial-5\" } }, SupervisorEvent { generation: 7, kind: StopRequested }], logs: [], control_revision: 0, restart_pending: false, restart_attempt: 0, release_state_generation: 2, runtime_phase: Some(Stopping), runtime_release: Some(\"six-agent-5-v2\"), runtime_incarnation: Some(\"unix-pid-35021-generation-5\"), runtime_fenced: false, release_change: Some(ControlReleaseChange { origin_release: \"six-agent-5-v2\", target_release: \"six-initial-5\", prior_previous_release: Some(\"six-initial-5\"), phase: WaitingForTargetExit, explicit_rollback: true }), has_last_command: true })\n2026-11-04T17:34:08.5109860Z FLEET_RELEASE_STATE Some(AgentSupervisorSnapshot { active: true, healthy: false, runtime_generation: Some(9), spawn_generation: Some(9), process_system_id: Some(35149), active_release: Some(\"six-initial-5\"), previous_release: Some(\"six-initial-5\"), release_change_pending: true, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: DrainRequested }, SupervisorEvent { generation: 3, kind: UpgradeQueued { previous: \"six-initial-5\", target: \"six-agent-5-v2\" } }, SupervisorEvent { generation: 3, kind: StopRequested }, SupervisorEvent { generation: 4, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 4, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 5, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 5, kind: Spawned }, SupervisorEvent { generation: 6, kind: Lifecycle(Running) }, SupervisorEvent { generation: 6, kind: Healthy }, SupervisorEvent { generation: 6, kind: UpgradeCommitted { previous: \"six-initial-5\", target: \"six-agent-5-v2\" } }, SupervisorEvent { generation: 7, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 7, kind: DrainRequested }, SupervisorEvent { generation: 7, kind: ExplicitRollbackQueued { previous: \"six-agent-5-v2\", target: \"six-initial-5\" } }, SupervisorEvent { generation: 7, kind: StopRequested }, SupervisorEvent { generation: 8, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 8, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 9, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 9, kind: Spawned }], logs: [], control_revision: 0, restart_pending: false, restart_attempt: 0, release_state_generation: 2, runtime_phase: Some(AwaitingHealth), runtime_release: Some(\"six-initial-5\"), runtime_incarnation: Some(\"unix-pid-35149-generation-9\"), runtime_fenced: false, release_change: Some(ControlReleaseChange { origin_release: \"six-agent-5-v2\", target_release: \"six-initial-5\", prior_previous_release: Some(\"six-initial-5\"), phase: TargetStarting, explicit_rollback: true }), has_last_command: true })\n2026-11-04T17:34:08.5178210Z FLEET_RELEASE_STATE Some(AgentSupervisorSnapshot { active: true, healthy: false, runtime_generation: Some(9), spawn_generation: Some(9), process_system_id: Some(35149), active_release: Some(\"six-initial-5\"), previous_release: Some(\"six-initial-5\"), release_change_pending: true, matrix: MatrixSupervisorSnapshot { configured: false, active: false, healthy: false, degraded: false, process_system_id: None, attached_agent_generation: None, binding_revision: None, restart_attempt: 0, last_error: None }, events: [SupervisorEvent { generation: 1, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 1, kind: Spawned }, SupervisorEvent { generation: 2, kind: Lifecycle(Running) }, SupervisorEvent { generation: 2, kind: Healthy }, SupervisorEvent { generation: 3, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 3, kind: DrainRequested }, SupervisorEvent { generation: 3, kind: UpgradeQueued { previous: \"six-initial-5\", target: \"six-agent-5-v2\" } }, SupervisorEvent { generation: 3, kind: StopRequested }, SupervisorEvent { generation: 4, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 4, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 5, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 5, kind: Spawned }, SupervisorEvent { generation: 6, kind: Lifecycle(Running) }, SupervisorEvent { generation: 6, kind: Healthy }, SupervisorEvent { generation: 6, kind: UpgradeCommitted { previous: \"six-initial-5\", target: \"six-agent-5-v2\" } }, SupervisorEvent { generation: 7, kind: Lifecycle(Draining) }, SupervisorEvent { generation: 7, kind: DrainRequested }, SupervisorEvent { generation: 7, kind: ExplicitRollbackQueued { previous: \"six-agent-5-v2\", target: \"six-initial-5\" } }, SupervisorEvent { generation: 7, kind: StopRequested }, SupervisorEvent { generation: 8, kind: Lifecycle(Stopped) }, SupervisorEvent { generation: 8, kind: Exited(ProcessExit { success: true, code: Some(0) }) }, SupervisorEvent { generation: 9, kind: Lifecycle(Starting) }, SupervisorEvent { generation: 9, kind: Spawned }], logs: [], control_revision: 0, restart_pending: false, restart_attempt: 0, release_state_generation: 2, runtime_phase: Some(AwaitingHealth), runtime_release: Some(\"six-initial-5\"), runtime_incarnation: Some(\"unix-pid-35149-generation-9\"), runtime_fenced: false, release_change: Some(ControlReleaseChange { origin_release: \"six-agent-5-v2\", target_release: \"six-initial-5\", prior_previous_release: Some(\"six-initial-5\"), phase: TargetStarting, explicit_rollback: true }), has_last_command: true })\n2026-11-04T17:34:08.7495630Z Error: 019153a4-3088-7e03-a56a-9b1964f75dd9 is not healthy at final boundary\n2026-11-04T17:34:08.7558730Z \n2026-11-04T17:34:08.7558740Z \n2026-11-04T17:34:08.7559930Z failures:\n2026-11-04T17:34:08.7562300Z     six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated\n2026-11-04T17:34:08.7563800Z \n2026-11-04T17:34:08.7564420Z test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 106.69s\n2026-11-04T17:34:08.7567990Z \n2026-11-04T17:34:08.7568690Z ================================================================================\n",
+      "sha256": "aa9b2683a8d8bdf71246ccda8bf83dd27668982052798d999d9ac4e158eac51f",
+      "bytes": 16359
+    }
+  },
+  "observations": [
+    "The target originally completed 2 tests: five-agent PASS, six-agent FAIL, 0 ignored, 106.69 s total. This is not 106.69 s for the failing case alone.",
+    "Failure AgentId ends dd9, SIX_AGENT_IDS[2]. Original error was snapshot.healthy at final boundary; snapshot.active had passed.",
+    "All original direct peer readiness, ingress, process identity and release checks before that assertion completed successfully. Actual per-peer health fields were not printed.",
+    "wait_release samples Supervisor.tick and returns on target release/readiness only. The final assert_peers_healthy_and_unchanged uses immutable FleetHarness and awaits five direct health+ingress exchanges; it does not tick Supervisor.",
+    "Supervisor.snapshot returns runtime.healthy. tick_runtime is the path assigning it from ManagedProcess.poll; UnixManagedProcess.poll samples the background HealthProbe atomic.",
+    "Background HealthProbe has 50 ms interval and 200 ms per read/write timeout. Any probe error maps to false; readiness also requires strict generation/PID/root identity. Neither probe error nor probe epoch was recorded in the original failure."
+  ],
+  "conclusion": {
+    "proven": "The final assertion observes a cached pre-direct-health Supervisor observation, not a refreshed final-boundary observation. The two health paths have different timing and exactness.",
+    "unproven": [
+      "The actual original false probe's cause (I/O timeout, transient readiness or exact identity rejection).",
+      "A single tick is newer than the preceding direct response. It samples latest available atomic observation, without a probe epoch guarantee.",
+      "Whether this candidate resolves the original Intel failure. No run has been launched."
+    ]
+  },
+  "candidate": {
+    "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+    "old_blob": "08afc2c6c333974567385a9f5630e0b6b71a6fbd",
+    "new_blob": "61f225f28bfb1be24457868b5822999f5e5e5861",
+    "bytes": 33492,
+    "sha256": "00c7e5769c4a9b36453517bdc2955e3e6e5fb383e2cdad2c9a297b5754533628",
+    "patch": "diff --git a/codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs b/codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs\nindex 08afc2c6c333974567385a9f5630e0b6b71a6fbd..61f225f28bfb1be24457868b5822999f5e5e5861 100644\n--- a/codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs\n+++ b/codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs\n@@ -464,6 +464,44 @@\n     ensure!(!final_target.release_change_pending);\n     assert_peers_healthy_and_unchanged(&fleet, target_peers, &target_peer_baseline).await?;\n \n+    // The direct control requests above do not refresh Supervisor's cached\n+    // health. Sample the driver's latest available observation at this boundary\n+    // without waiting for a new probe or allowing a peer restart to pass.\n+    let final_agent_ids: Vec<_> = agents.iter().map(|agent| agent.agent_id.clone()).collect();\n+    let final_identities = peer_snapshots(&fleet, &final_agent_ids)?;\n+    let cached_health_before: Vec<_> = final_agent_ids\n+        .iter()\n+        .map(|agent_id| {\n+            fleet\n+                .supervisor\n+                .snapshot(agent_id)\n+                .map(|snapshot| snapshot.healthy)\n+        })\n+        .collect();\n+    let report = fleet.supervisor.tick(Instant::now());\n+    ensure!(\n+        report.faults.is_empty(),\n+        \"Supervisor fault at final fleet health boundary: {:?}\",\n+        report.faults\n+    );\n+    let observed_identities = peer_snapshots(&fleet, &final_agent_ids)?;\n+    ensure!(\n+        observed_identities == final_identities,\n+        \"final health observation changed a fleet process or generation: before={final_identities:?}; after={observed_identities:?}\"\n+    );\n+    let cached_health_after: Vec<_> = final_agent_ids\n+        .iter()\n+        .map(|agent_id| {\n+            fleet\n+                .supervisor\n+                .snapshot(agent_id)\n+                .map(|snapshot| snapshot.healthy)\n+        })\n+        .collect();\n+    eprintln!(\n+        \"FLEET_FINAL_PROBE_REFRESH cached_health_before={cached_health_before:?}; cached_health_after={cached_health_after:?}\"\n+    );\n+\n     for agent in &agents {\n         let snapshot = fleet\n             .supervisor\n",
+    "patch_sha256": "8c65e3b82a0f4f41c13da455ba52d9342035cbc3d7cce1be1eeb72eaf35ba9e3",
+    "original_text_around_boundary": [
+      {
+        "line": 453,
+        "text": "    let (_, rolled_back) = wait_release(&mut fleet, &agents[5], \"six-initial-5\")"
+      },
+      {
+        "line": 454,
+        "text": "        .await"
+      },
+      {
+        "line": 455,
+        "text": "        .context(\"six-agent Agent 5 rollback readiness\")?;"
+      },
+      {
+        "line": 456,
+        "text": "    ensure!("
+      },
+      {
+        "line": 457,
+        "text": "        rolled_back.process_id != upgraded.process_id,"
+      },
+      {
+        "line": 458,
+        "text": "        \"Agent 5 explicit rollback did not replace the upgraded process\""
+      },
+      {
+        "line": 459,
+        "text": "    );"
+      },
+      {
+        "line": 460,
+        "text": "    let final_target = fleet"
+      },
+      {
+        "line": 461,
+        "text": "        .supervisor"
+      },
+      {
+        "line": 462,
+        "text": "        .snapshot(&agents[5].agent_id)"
+      },
+      {
+        "line": 463,
+        "text": "        .context(\"Agent 5 snapshot missing after explicit rollback\")?;"
+      },
+      {
+        "line": 464,
+        "text": "    ensure!(!final_target.release_change_pending);"
+      },
+      {
+        "line": 465,
+        "text": "    assert_peers_healthy_and_unchanged(&fleet, target_peers, &target_peer_baseline).await?;"
+      },
+      {
+        "line": 466,
+        "text": ""
+      },
+      {
+        "line": 467,
+        "text": "    for agent in &agents {"
+      },
+      {
+        "line": 468,
+        "text": "        let snapshot = fleet"
+      },
+      {
+        "line": 469,
+        "text": "            .supervisor"
+      },
+      {
+        "line": 470,
+        "text": "            .snapshot(&agent.agent_id)"
+      },
+      {
+        "line": 471,
+        "text": "            .context(\"six-agent snapshot missing at lifecycle boundary\")?;"
+      },
+      {
+        "line": 472,
+        "text": "        ensure!("
+      },
+      {
+        "line": 473,
+        "text": "            snapshot.active,"
+      },
+      {
+        "line": 474,
+        "text": "            \"{} is not active at final boundary\","
+      },
+      {
+        "line": 475,
+        "text": "            agent.agent_id"
+      },
+      {
+        "line": 476,
+        "text": "        );"
+      },
+      {
+        "line": 477,
+        "text": "        ensure!("
+      },
+      {
+        "line": 478,
+        "text": "            snapshot.healthy,"
+      },
+      {
+        "line": 479,
+        "text": "            \"{} is not healthy at final boundary\","
+      },
+      {
+        "line": 480,
+        "text": "            agent.agent_id"
+      },
+      {
+        "line": 481,
+        "text": "        );"
+      },
+      {
+        "line": 482,
+        "text": "    }"
+      },
+      {
+        "line": 483,
+        "text": "    Ok(())"
+      }
+    ],
+    "new_insertion": "    // The direct control requests above do not refresh Supervisor's cached\n    // health. Sample the driver's latest available observation at this boundary\n    // without waiting for a new probe or allowing a peer restart to pass.\n    let final_agent_ids: Vec<_> = agents.iter().map(|agent| agent.agent_id.clone()).collect();\n    let final_identities = peer_snapshots(&fleet, &final_agent_ids)?;\n    let cached_health_before: Vec<_> = final_agent_ids\n        .iter()\n        .map(|agent_id| {\n            fleet\n                .supervisor\n                .snapshot(agent_id)\n                .map(|snapshot| snapshot.healthy)\n        })\n        .collect();\n    let report = fleet.supervisor.tick(Instant::now());\n    ensure!(\n        report.faults.is_empty(),\n        \"Supervisor fault at final fleet health boundary: {:?}\",\n        report.faults\n    );\n    let observed_identities = peer_snapshots(&fleet, &final_agent_ids)?;\n    ensure!(\n        observed_identities == final_identities,\n        \"final health observation changed a fleet process or generation: before={final_identities:?}; after={observed_identities:?}\"\n    );\n    let cached_health_after: Vec<_> = final_agent_ids\n        .iter()\n        .map(|agent_id| {\n            fleet\n                .supervisor\n                .snapshot(agent_id)\n                .map(|snapshot| snapshot.healthy)\n        })\n        .collect();\n    eprintln!(\n        \"FLEET_FINAL_PROBE_REFRESH cached_health_before={cached_health_before:?}; cached_health_after={cached_health_after:?}\"\n    );\n\n"
+  },
+  "invariants": {
+    "single_ordinary_tick": true,
+    "new_waits": 0,
+    "new_sleeps": 0,
+    "new_timeouts": 0,
+    "new_retries": 0,
+    "new_helpers": 0,
+    "original_file_identical_after_removing_insertion": true,
+    "all_six_ids_in_existing_peer_snapshots": true,
+    "identity_fields": [
+      "agent_id",
+      "process_system_id",
+      "spawn_generation",
+      "runtime_generation"
+    ],
+    "tick_faults_must_be_empty": true,
+    "original_active_healthy_assertions_unchanged": true,
+    "original_release_and_automation_assertions_unchanged": true,
+    "production_files_changed": []
+  },
+  "validation_recipe": {
+    "pending": true,
+    "original_case": "six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated",
+    "sibling_case": "five_real_agentd_processes_roll_one_agent_without_stopping_peers",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test",
+    "platform": "original macOS Intel",
+    "attempts": "retain original CI behavior; any separately requested exact native command should use 0 retries",
+    "causal_positive": "If cached_health_before[2] is false and cached_health_after[2] true while identities remain identical, the new original-case trace establishes the cache-refresh path for that run. A true→true pass does not by itself prove the cause of the old run.",
+    "persistent_failure": "Preserve original final healthy failure and metadata. Do not add waits, retries, force readiness, weaken identity or restart peers."
+  },
+  "existing_controls": {
+    "source_only_not_new_pass": [
+      "unix::tests::health_probe_requires_exact_agent_generation_pid_and_roots",
+      "supervisor::tests::stale_runtime_is_fenced_without_touching_peer",
+      "supervisor::tests::successful_upgrade_and_explicit_rollback_change_only_target_agent",
+      "supervisor::tests::failed_spawn_and_failed_health_each_auto_rollback_once"
+    ],
+    "scope": "These existing unit controls use typed fake-driver or socket-response fixtures. They support the strict identity/lifecycle contract but do not recreate the original six-real-agent Intel scheduling condition, so are not offered as real negative proof of this failure."
+  },
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+      "blob": "08afc2c6c333974567385a9f5630e0b6b71a6fbd",
+      "sha256": "209ce066e9c3e47c877c2ba4d808d8fede92b40e9309cc1cec4a681958a9973b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "blob": "425ef256756698823c5fe17a1d4472049bf89d74",
+      "sha256": "59645c49bad0e5a2aad3bda84ef4c66bd3b29e239fb6884b331c5badca62357e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-agentd/tests/support/fleet.rs"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "blob": "015a17ecbea689271b12853eeb46d6f33b4f45ad",
+      "sha256": "dde662b3dffc2e509f711bd2738904be401106f7189ad0e224fc541115ad0fc8",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-supervisor/src/supervisor.rs"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "blob": "985eaca97e067844c2fa1d060b285dc1a8a68efa",
+      "sha256": "7ef521f4e419677c0567d291b5e38eda5f73ee427691f227db255eb4d84ec367",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-supervisor/src/tick.rs"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix.rs",
+      "blob": "d02b9b9b02af2b03f3904277f5028e1fb52672b4",
+      "sha256": "6d25f074cf050bc94b39a60634ac42a7c2a73fd096aab931ce3846a5577fba99",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-supervisor/src/unix.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "blob": "30ca641f202f4a839a93174c58bfa5ebbd0d8a16",
+      "sha256": "fed9b328b0922cb22181be6459b4eeb886cf90d51292c6a660132df5b1b8fc12",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-agentd/src/client.rs"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
+      "blob": "eb88a374cf9497fc794bba5b62b7c596a4a2200a",
+      "sha256": "d9f4468eb3cc26fd6045e0a61300e00f86cf05cf8841db57116f75706299598d",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-supervisor/src/unix_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+      "blob": "57e02419ce65511277113df3379982429d1b6a1d",
+      "sha256": "d0e951c4dfcdf6309476b53ce3bb5514480c91e65b546113907de31b49858fa7",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-supervisor/src/supervisor_tests.rs"
+    }
+  ]
+}

@@ -5,6 +5,7 @@ mod relay_support;
 
 use std::collections::HashMap;
 
+use anyhow::Context;
 use anyhow::Result;
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
@@ -59,6 +60,7 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
                 format!("printf '%s\\n' '{expected_output}'; exit {expected_exit}"),
             ]
         };
+        let exec_started = std::time::Instant::now();
         timeout(
             TEST_TIMEOUT,
             client.exec(ExecParams {
@@ -77,7 +79,14 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
                 network_proxy: None,
             }),
         )
-        .await??;
+        .await
+        .with_context(|| {
+            format!(
+                "forward exec phase timed out: process_id={process_id:?} elapsed={:?}",
+                exec_started.elapsed()
+            )
+        })??;
+        let read_started = std::time::Instant::now();
         let (output, exit_code) = timeout(TEST_TIMEOUT, async {
             let mut output = Vec::new();
             let mut after_seq = None;
@@ -101,7 +110,13 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
                 after_seq = response.next_seq.checked_sub(1);
             }
         })
-        .await??;
+        .await
+        .with_context(|| {
+            format!(
+                "forward read phase timed out: process_id={process_id:?} elapsed={:?}",
+                read_started.elapsed()
+            )
+        })??;
         assert_eq!(
             (String::from_utf8(output)?.replace("\r\n", "\n"), exit_code),
             (format!("{expected_output}\n"), Some(expected_exit))
@@ -112,6 +127,7 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
     let temp_dir = TempDir::new()?;
     let path = temp_dir.path().join("large-request.bin");
     let contents = vec![0xa5; 13 * 1024 * 1024];
+    let write_started = std::time::Instant::now();
     timeout(
         TEST_TIMEOUT,
         client.fs_write_file(FsWriteFileParams {
@@ -121,7 +137,14 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
             sandbox: None,
         }),
     )
-    .await??;
+    .await
+    .with_context(|| {
+        format!(
+            "forward large-file write phase timed out: payload_bytes={} elapsed={:?}",
+            contents.len(),
+            write_started.elapsed()
+        )
+    })??;
     // A following request must still arrive as its own complete message.
     let read_response = client
         .fs_read_file(FsReadFileParams {
@@ -134,7 +157,13 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
     connection.assert_encrypted()?;
     connection.close().await;
     let _ = shutdown_tx.send(());
-    timeout(TEST_TIMEOUT, forwarder).await???;
+    let shutdown_started = std::time::Instant::now();
+    timeout(TEST_TIMEOUT, forwarder).await.with_context(|| {
+        format!(
+            "forward shutdown phase timed out after {:?}",
+            shutdown_started.elapsed()
+        )
+    })???;
     destination.shutdown().await?;
     Ok(())
 }

@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.ui-checkout-independent-followup-review.v1",
+  "source_tree": "a69b20c4c3cfee9cf483496742d6bea1469d847a",
+  "job_id": "1a1a7e9399c-fc05-2ce4",
+  "blob": "67188fda30dcfac847cbe753ea027f9fe81f2cd9",
+  "bundle_sha256": "9c54e8b117597339332962c6eb5b3342c2e07f439ac9804bff4c321d30d46a9b",
+  "all_nine_file_hashes_verified": true,
+  "phase": {
+    "exit_code": 0,
+    "retries": 0,
+    "case_count": 13,
+    "cases": [
+      "test_actual_entry_runs_between_default_and_fixture_renderers",
+      "test_authentication_refuses_an_unexpected_origin_without_exposing_the_token",
+      "test_backend_pin_is_source_bound_and_event_pair_unchanged",
+      "test_divergent_merge_fetches_only_the_two_histories_and_no_unrelated_blob",
+      "test_gateway_changes_trigger_source_and_merge_evidence",
+      "test_gateway_dependency_closure_and_embedded_inputs_have_triggers",
+      "test_missing_immutable_base_propagates_fetch_failure_without_running_merge",
+      "test_official_tools_do_not_dirty_the_source_checkout",
+      "test_product_caller_history_constructs_exact_two_parent_source_tree",
+      "test_shallow_checkout_cannot_supply_the_immutable_base",
+      "test_source_head_gets_full_non_parent_base_history_without_checkout_change",
+      "test_transport_command_executes_the_authored_module_with_bound_identity",
+      "test_wrong_source_is_rejected_before_fetch"
+    ],
+    "source_unchanged": true,
+    "command": "python3 -m unittest discover -s scripts -p test_ui_product_foundation_ci.py -v",
+    "raw_duration_seconds": 47.297,
+    "process_duration_seconds": 47.41517320892308,
+    "status_sha256": "bfcbb8f1f4f8dba5e581b99914ce9cb74a57146e74228c01ffff337986869e9a",
+    "raw_sha256": "e6be7e149393d02f682f088e43c8dd0d5e3ef13ca94d6e64527e54547fc013dc"
+  },
+  "graph_scope": {
+    "six_unchanged_gateway_tests_git_head": "907d4f512819a71bece82e7f89944e9406466e36",
+    "native_worktree_candidate": "a69b20c4c3cfee9cf483496742d6bea1469d847a",
+    "limitation": "The six unchanged Gateway workflow tests retain their authored HEAD graph lookup; this is not a claim that they inspected a newly committed candidate graph."
+  },
+  "does_not_qualify": [
+    "Eight queued Rust fixture tests",
+    "GitHub authenticated fetch execution",
+    "Actual source-head UI product job",
+    "Actual synthetic-merge UI product job",
+    "Original 60-minute workflow budget"
+  ],
+  "verdict": "PASS_FOR_EXACT_13_CASE_NATIVE_PYTHON_PHASE_ONLY",
+  "mutation_boundary": "Read-only review; no native worktree or Git ref mutation."
+}

@@ -1,0 +1,135 @@
+{
+  "schema": "hepta.pr4804.musl_source_impact_review.v1",
+  "reviewed_at_utc": "2026-11-04 19:41:54 UTC",
+  "decision": "DO_NOT_IMPORT_AS_CURRENT_MUSL_FIX; DIFFERENT_DONOR_DEPENDENCY_VERSION",
+  "current_product": {
+    "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+    "tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+    "new_workflow_blob": "6aad46b1fe0edcf315ef8b1a5546225c59efe235",
+    "target": "//codex-rs/cli:hepta_linux_amd64_musl",
+    "platform": "@llvm//platforms:linux_amd64_musl",
+    "runtime_qualification": "NOT_EXECUTED"
+  },
+  "pr": {
+    "number": 4804,
+    "state": "open",
+    "draft": true,
+    "head": "04a42923aaf8c562ad161a17a4bbf35fe883a1b5",
+    "base": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+    "actual_parent": [
+      "14e2d89b3367232ec5dbe6187f09feed0f2b68d3"
+    ],
+    "head_tree": "e9e1c4dbac1a18442cc0044c585c989812742f40",
+    "updated_at": "2026-11-04T19:23:34Z",
+    "changed_files": 1,
+    "file_pagination": {
+      "page1": 1,
+      "page2": 0,
+      "terminal_empty": true
+    },
+    "actual_patch": {
+      "sha": "49cb38c91a7c172b46b56fdba8d5589086f280f0",
+      "filename": "MODULE.bazel",
+      "status": "modified",
+      "additions": 47,
+      "deletions": 1,
+      "changes": 48,
+      "blob_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/04a42923aaf8c562ad161a17a4bbf35fe883a1b5/MODULE.bazel",
+      "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/raw/04a42923aaf8c562ad161a17a4bbf35fe883a1b5/MODULE.bazel",
+      "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/MODULE.bazel?ref=04a42923aaf8c562ad161a17a4bbf35fe883a1b5",
+      "patch": "@@ -517,6 +517,52 @@ inject_repo(crate, \"v8_targets\")\n llvm = use_extension(\"@llvm//extensions:llvm.bzl\", \"llvm\")\n use_repo(llvm, \"llvm-project\")\n \n+kernel_headers = use_extension(\"@llvm//kernel/extension:kernel_headers.bzl\", \"kernel_headers\")\n+use_repo(kernel_headers, \"kernel_headers\")\n+\n+# rama-dns generates libresolv bindings for Linux GNU targets. Keep the\n+# executable libclang in the exec configuration and libc/kernel headers in the\n+# target configuration so cross builds cannot use the executor's system headers.\n+rama_dns_bindgen_headers = [\n+    \"@kernel_headers//:kernel_headers_directory\",\n+    \"@llvm//runtimes/glibc:glibc_headers_include_search_directory\",\n+]\n+\n+rama_dns_bindgen_tools = [\n+    \"@llvm-project//clang:libclang_interface_output\",\n+    \"@llvm//:builtin_resource_dir\",\n+]\n+\n+rama_dns_bindgen_args = \" \".join([\n+    \"--sysroot=/dev/null\",\n+    \"-nostdlibinc\",\n+    \"-isystem $(location @kernel_headers//:kernel_headers_directory)\",\n+    \"-isystem $(location @llvm//runtimes/glibc:glibc_headers_include_search_directory)\",\n+    \"-Xclang -internal-isystem -Xclang $(location @llvm//:builtin_resource_dir)/include\",\n+])\n+\n+crate.annotation(\n+    build_script_data_select = {\n+        \"aarch64-unknown-linux-gnu\": rama_dns_bindgen_headers,\n+        \"x86_64-unknown-linux-gnu\": rama_dns_bindgen_headers,\n+    },\n+    build_script_env_select = {\n+        \"aarch64-unknown-linux-gnu\": json.encode({\n+            \"BINDGEN_EXTRA_CLANG_ARGS\": \"--target=aarch64-unknown-linux-gnu \" + rama_dns_bindgen_args,\n+            \"LIBCLANG_PATH\": \"$(location @llvm-project//clang:libclang_interface_output)\",\n+        }),\n+        \"x86_64-unknown-linux-gnu\": json.encode({\n+            \"BINDGEN_EXTRA_CLANG_ARGS\": \"--target=x86_64-unknown-linux-gnu \" + rama_dns_bindgen_args,\n+            \"LIBCLANG_PATH\": \"$(location @llvm-project//clang:libclang_interface_output)\",\n+        }),\n+    },\n+    build_script_tools_select = {\n+        \"aarch64-unknown-linux-gnu\": rama_dns_bindgen_tools,\n+        \"x86_64-unknown-linux-gnu\": rama_dns_bindgen_tools,\n+    },\n+    crate = \"rama-dns\",\n+    gen_build_script = \"on\",\n+)\n crate.annotation(\n     # Provide the hermetic SDK path so the build script doesn't try to invoke an unhermetic `xcrun --show-sdk-path`.\n     build_script_data = [\n@@ -535,7 +581,7 @@ crate.annotation(\n     gen_build_script = \"on\",\n )\n \n-inject_repo(crate, \"llvm\", \"llvm-project\", \"macos_sdk\")\n+inject_repo(crate, \"kernel_headers\", \"llvm\", \"llvm-project\", \"macos_sdk\")\n \n crate.annotation(\n     # Provide the hermetic SDK path so the build script doesn't try to invoke an unavailable `xcrun --show-sdk-path`."
+    }
+  },
+  "findings": [
+    "Both current and donor MODULE explicitly feed //codex-rs:Cargo.lock into the main crate.from_cargo; this comparison is of the relevant Bazel dependency input, not an unrelated Cargo lock.",
+    "Current ff72 locks rama-dns 0.3.0-alpha.4, checksum e340fef2799277e204260b17af01bc23604712092eacd6defe40167f304baed8. Its recorded package dependency list contains no bindgen. The actual network-proxy manifest pins Rama dependencies to =0.3.0-alpha.4.",
+    "Donor 14e2 locks rama-dns 0.3.0, checksum 966b184189928bdd62d9b9e910dc0f3a334ec74486b7e3db09925335f308269a, with bindgen 0.72.1. This matches the crate/version named by the new PR's reported SDK prerequisite failure.",
+    "The sole patch adds target GNU-only rama-dns build-script tools/data/env for aarch64 and x86_64. It introduces no musl annotation, product runtime test, Cargo version change or existing workflow change.",
+    "The original existing source therefore does not establish this donor 0.3.0/_bs libclang failure as a blocker of ff72's explicit-musl CLI. This is a dependency-identity conclusion, not a claim that the unexecuted musl build will pass.",
+    "Importing this MODULE edit preemptively would change current build inputs without an observed same-source need. Replacing the donor file wholesale would additionally discard existing ff72 differences."
+  ],
+  "exact_lock_entries": {
+    "current": "name = \"rama-dns\"\nversion = \"0.3.0-alpha.4\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"e340fef2799277e204260b17af01bc23604712092eacd6defe40167f304baed8\"\ndependencies = [\n \"ahash\",\n \"hickory-resolver\",\n \"rama-core\",\n \"rama-net\",\n \"rama-utils\",\n \"serde\",\n \"tokio\",\n]",
+    "donor": "name = \"rama-dns\"\nversion = \"0.3.0\"\nsource = \"registry+https://github.com/rust-lang/crates.io-index\"\nchecksum = \"966b184189928bdd62d9b9e910dc0f3a334ec74486b7e3db09925335f308269a\"\ndependencies = [\n \"ahash\",\n \"arc-swap\",\n \"bindgen 0.72.1\",\n \"hickory-resolver\",\n \"libc\",\n \"moka\",\n \"parking_lot\",\n \"pin-project-lite\",\n \"rama-core\",\n \"rama-net\",\n \"rama-utils\",\n \"rand 0.10.3\",\n \"tokio\",\n \"windows-sys 0.61.2\",\n]"
+  },
+  "source_checks": {
+    "current_primary_cargo_lock": true,
+    "donor_primary_cargo_lock": true,
+    "current_no_rama_annotation": true,
+    "candidate_annotation_gnu_only": true,
+    "candidate_module_diff_only_reported_file": true
+  },
+  "sources": [
+    {
+      "key": "module-current",
+      "path": "MODULE.bazel",
+      "ref": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "blob": "a21061a8b741fc724edb580e229eb86d9debdc4f",
+      "bytes": 22949,
+      "sha256": "7a254eea81ecc408797788e56aacf0a3ac5a285b6ba0b0dbfe6a9ca57d1db1ae",
+      "git_hash_match": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/MODULE.bazel"
+    },
+    {
+      "key": "module-base",
+      "path": "MODULE.bazel",
+      "ref": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "blob": "28bb588a720f3ff63e0276bb9b3c70ab4b5e708a",
+      "bytes": 21711,
+      "sha256": "283c87450ceb3c16b64596714769f25061dadc378ea9e22d3c34829ddc6d792b",
+      "git_hash_match": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/14e2d89b3367232ec5dbe6187f09feed0f2b68d3/MODULE.bazel"
+    },
+    {
+      "key": "module-candidate",
+      "path": "MODULE.bazel",
+      "ref": "04a42923aaf8c562ad161a17a4bbf35fe883a1b5",
+      "blob": "49cb38c91a7c172b46b56fdba8d5589086f280f0",
+      "bytes": 23657,
+      "sha256": "cbf9df88b6d25a55ce24aa9c5885a315616cf75ced9f1b6d7317b9ed64e9de37",
+      "git_hash_match": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/04a42923aaf8c562ad161a17a4bbf35fe883a1b5/MODULE.bazel"
+    },
+    {
+      "key": "lock-current",
+      "path": "codex-rs/Cargo.lock",
+      "ref": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "blob": "9743ef2f4f4c8521265c0187524278c256114163",
+      "bytes": 413742,
+      "sha256": "c9778dfe2a3c1e8c06f5ca41d84d544c70bc07171f3b8ae5c3bc5f041d51496e",
+      "git_hash_match": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/Cargo.lock"
+    },
+    {
+      "key": "lock-base",
+      "path": "codex-rs/Cargo.lock",
+      "ref": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "blob": "28c511a97dadaa62fad3f1bec2ced4090fc87620",
+      "bytes": 417200,
+      "sha256": "5bd3faaf16a79eb12bcdcb89054e93da388bbd858f36439b9d6bcfb72f77d522",
+      "git_hash_match": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/14e2d89b3367232ec5dbe6187f09feed0f2b68d3/codex-rs/Cargo.lock"
+    },
+    {
+      "key": "network-manifest",
+      "path": "codex-rs/network-proxy/Cargo.toml",
+      "ref": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "blob": "82407b00d104568250c63f87be6aea8113199e44",
+      "bytes": 1958,
+      "sha256": "7b92255cf910a16b341a6c1682900bf3669288a7a1961a06bb7dc9d90aa11332",
+      "git_hash_match": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/network-proxy/Cargo.toml"
+    }
+  ],
+  "qualification_limits": [
+    "PR body reports original SDK jobs 126299951270 and 126788817702 plus source-format checks; this review read the body/real patch and fixed source, not those full original job logs.",
+    "The PR itself explicitly leaves original Bazel/SDK execution pending. No donor fix PASS, current-musl build PASS, or runtime PASS is claimed.",
+    "No Bazel/Cargo build, dependency resolution, source/ref modification, rerun or platform installation was performed.",
+    "GNU host/execution tools and target-musl dependencies are different configurations. This review does not prove absence of every possible host-tool or other bindgen failure."
+  ],
+  "next_actions": [
+    "Keep the reviewed current-source explicit-musl qualification workflow unchanged; let its exact checkout/source receipt establish the real first failure if any.",
+    "If a later deliberate Rama 0.3.0 cohort migration is proposed, review this annotation against that frozen source, existing ordinary Linux GNU gate, target-vs-exec configuration and real MODULE lock generation/check. Preserve all old assertions and runtime gates.",
+    "If actual current musl logs produce a bindgen failure, inspect the exact package/version/configuration and declared inputs before selecting a minimal fix; do not infer it from the similarly named donor PR."
+  ]
+}

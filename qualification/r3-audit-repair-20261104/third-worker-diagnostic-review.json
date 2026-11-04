@@ -1,0 +1,294 @@
+{
+  "schema": "hepta-infer-worker-cognitive-final-use-diagnostic.v1",
+  "status": "DIAGNOSTIC_ONLY_NOT_EXECUTED",
+  "base": {
+    "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+    "merge": "8e20cb5ec8261053ea472f06f79a0def072f3dce",
+    "tree": "f780fe13946102a33b329898af48810be9c7bf0c",
+    "run": 41875454075,
+    "job": 126733764738
+  },
+  "original_failure": {
+    "case": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+    "target": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests",
+    "target_result": {
+      "passed": 36,
+      "failed": 1,
+      "ignored": 0,
+      "total_seconds": 37.71
+    },
+    "time_scope": "37.71 seconds is target total, not per-stage/per-case elapsed.",
+    "message": "Error: Elapsed(())",
+    "full_log": {
+      "sha256": "da804a71dc6b752f0eb4d48f6ea9302866cf414275aaeb68c20513f1207ca42c",
+      "bytes": 2490720
+    },
+    "extract_blob": "160808e80c9b468a95bd858436df30b8bc02ac45",
+    "bounded_original_block": {
+      "name": "worker",
+      "start_line": 8155,
+      "end_line": 8208,
+      "text": "2026-11-04T17:58:54.7288780Z INFO: From Testing //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests:\n2026-11-04T17:58:54.7315550Z ==================== Test output for //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests:\n2026-11-04T17:58:54.7333840Z \n2026-11-04T17:58:54.7345260Z running 37 tests\n2026-11-04T17:58:54.7384670Z test final_use_authorizer::tests::connected_issuer_peer_uid_must_match_configured_owner ... ok\n2026-11-04T17:58:54.7387400Z test model_worker::tests::executes_authenticated_neuron_feature_tuple_from_loaded_manifest ... ok\n2026-11-04T17:58:54.7391790Z test model_worker::tests::loads_runs_and_unloads_exact_model_tuple ... ok\n2026-11-04T17:58:54.7393990Z test model_worker::tests::lost_driver_terminality_is_indeterminate ... ok\n2026-11-04T17:58:54.7413500Z test model_worker::tests::neuron_feature_path_rejects_payload_drift_and_driver_identity_drift ... ok\n2026-11-04T17:58:54.7416280Z test model_worker::tests::neuron_feature_worker_projects_exact_inference_control_receipt ... ok\n2026-11-04T17:58:54.7418500Z test model_worker::tests::rejects_changed_tokenizer_model_or_payload_tuple ... ok\n2026-11-04T17:58:54.7424470Z test native_app_server::agent_output::tests::completed_and_streamed_text_share_the_existing_byte_budget ... ok\n2026-11-04T17:58:54.7429050Z test native_app_server::agent_output::tests::completion_without_deltas_is_observed_once_and_other_turns_are_ignored ... ok\n2026-11-04T17:58:54.7433290Z test native_app_server::agent_output::tests::empty_messages_and_large_ids_cannot_bypass_the_metadata_budget ... ok\n2026-11-04T17:58:54.7437970Z test native_app_server::agent_output::tests::interleaved_messages_use_first_seen_order_and_authoritative_completions ... ok\n2026-11-04T17:58:54.7440550Z test final_use_authorizer::tests::forged_grant_never_reaches_effect_entry ... ok\n2026-11-04T17:58:54.7443100Z test final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token ... ok\n2026-11-04T17:58:54.7446730Z test final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back ... ok\n2026-11-04T17:58:54.7449700Z test native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity ... ok\n2026-11-04T17:58:54.7452630Z test native_app_server::tests::actual_usage_is_bound_monotonic_and_survives_terminal_failure ... ok\n2026-11-04T17:58:54.7457040Z test native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start ... ok\n2026-11-04T17:58:54.7461210Z test native_app_server::tests::disconnect_event_lag_cancel_and_deadline_have_explicit_boundary_statuses ... ok\n2026-11-04T17:58:54.7463880Z test native_app_server::tests::final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift ... ok\n2026-11-04T17:58:54.7468030Z test native_app_server::tests::in_progress_is_not_a_terminal_observation ... ok\n2026-11-04T17:58:54.7472300Z test native_app_server::tests::late_completed_cannot_upgrade_cancelled_or_timed_out_boundary ... ok\n2026-11-04T17:58:54.7476590Z test native_app_server::tests::lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread ... ok\n2026-11-04T17:58:54.7480680Z test native_app_server::tests::only_the_bound_turn_can_complete_the_native_request ... ok\n2026-11-04T17:58:54.7482630Z test native_app_server::tests::output_is_observed_bounded_and_never_predeclares_success ... ok\n2026-11-04T17:58:54.7486440Z test native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown ... ok\n2026-11-04T17:58:54.7489470Z test native_app_server::tests::owner_timeout_and_terminal_first_selection_cannot_authorize_success ... ok\n2026-11-04T17:58:54.7491630Z test native_app_server::tests::owner_loss_stays_denied_after_interrupt_grace_observes_completed ... ok\n2026-11-04T17:58:54.7495100Z test native_app_server::tests::success_requires_both_matching_completion_and_final_ready_owner ... ok\n2026-11-04T17:58:54.7496920Z test tests::payload_drift_is_rejected ... ok\n2026-11-04T17:58:54.7498150Z test tests::revoked_lease_is_rejected ... ok\n2026-11-04T17:58:54.7499250Z test tests::terminal_success_requires_exact_authority_binding ... ok\n2026-11-04T17:58:54.7500400Z test tests::timeout_never_becomes_success ... ok\n2026-11-04T17:58:54.7501950Z test native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider ... ok\n2026-11-04T17:58:54.7503620Z test tests::token_limit_is_enforced ... ok\n2026-11-04T17:58:54.7506880Z test native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims ... ok\n2026-11-04T17:58:54.7508920Z test tests::unobserved_terminal_state_is_indeterminate ... ok\n2026-11-04T17:58:54.7510700Z test native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone ... FAILED\n2026-11-04T17:58:54.7514190Z \n2026-11-04T17:58:54.7514400Z failures:\n2026-11-04T17:58:54.7514670Z \n2026-11-04T17:58:54.7515640Z ---- native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone stdout ----\n2026-11-04T17:58:54.7517090Z Error: Elapsed(())\n2026-11-04T17:58:54.7517410Z \n2026-11-04T17:58:54.7517410Z \n2026-11-04T17:58:54.7517600Z failures:\n2026-11-04T17:58:54.7521450Z     native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone\n2026-11-04T17:58:54.7523430Z \n2026-11-04T17:58:54.7524160Z test result: FAILED. 36 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 37.71s\n2026-11-04T17:58:54.7525990Z \n2026-11-04T17:58:54.7526360Z ================================================================================\n",
+      "sha256": "14e8b1215d4d51d4813ddaf5c228395c7672381e07648ea838be82e647627cc9",
+      "bytes": 5702
+    }
+  },
+  "source_findings": [
+    {
+      "source": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "lines": [
+        461,
+        476
+      ],
+      "finding": "run_once App Server connect/initialize is wrapped in timeout(RPC_TIMEOUT=5s).await??; timeout error currently propagates without stage attribution."
+    },
+    {
+      "source": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "lines": [
+        491,
+        506
+      ],
+      "finding": "run_once ThreadStart is independently wrapped in the same 5s timeout and bare .await??."
+    },
+    {
+      "source": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "lines": [
+        491,
+        535
+      ],
+      "finding": "Test prepares real CognitiveTestHost/independent test issuer, then awaits the positive driver run with its original error propagation."
+    },
+    {
+      "source": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "lines": [
+        575,
+        603
+      ],
+      "finding": "Tombstone race is bounded by its own unchanged 30s coordinator and maps expiration to explicit text."
+    },
+    {
+      "source": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "lines": [
+        631,
+        660
+      ],
+      "finding": "Correction race also uses unchanged 30s coordinator and explicit expiration text."
+    },
+    {
+      "source": "codex-rs/hepta-agentd/src/test_support.rs",
+      "lines": [
+        144,
+        168
+      ],
+      "finding": "Host socket/control readiness expiry returns a distinct string rather than raw Elapsed; deeper propagated errors cannot be ruled out from this fact alone."
+    },
+    {
+      "source": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "lines": [
+        150,
+        153
+      ],
+      "finding": "Issuer request timeout is explicitly mapped; no source evidence proves the observed failure is an issuer timeout."
+    }
+  ],
+  "candidate": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "old_blob": "79b05c7f9601dd61ac69b2f212305db5393ed138",
+      "new_blob": "fc66858f3be9161ef42f0cda8e37a79d16fc4a24",
+      "bytes": 65237,
+      "sha256": "62f8493ffbf423da0e6e13cb5777e8e4d17f1611f6a46cd052fd336b30106028",
+      "edits": [
+        {
+          "old": "        let mut client = timeout(\n            RPC_TIMEOUT,\n            RemoteAppServerClient::connect_with_bounded_events(",
+          "new": "        #[cfg(test)]\n        let test_connect_started = std::time::Instant::now();\n        #[cfg(test)]\n        eprintln!(\"INFER_TEST_RPC stage=connect event=start\");\n        let connection_result = timeout(\n            RPC_TIMEOUT,\n            RemoteAppServerClient::connect_with_bounded_events("
+        },
+        {
+          "old": "        .await??;\n        let codex_home = client\n",
+          "new": "        .await;\n        #[cfg(test)]\n        eprintln!(\n            \"INFER_TEST_RPC stage=connect event=finish elapsed_ms={} outcome={}\",\n            test_connect_started.elapsed().as_millis(),\n            match &connection_result {\n                Err(_) => \"outer_timeout\",\n                Ok(Err(_)) => \"inner_error\",\n                Ok(Ok(_)) => \"ok\",\n            }\n        );\n        let mut client = connection_result??;\n        let codex_home = client\n"
+        },
+        {
+          "old": "        let started: ThreadStartResponse = timeout(\n            RPC_TIMEOUT,\n            client.request_typed(ClientRequest::ThreadStart {",
+          "new": "        #[cfg(test)]\n        let test_thread_start_started = std::time::Instant::now();\n        #[cfg(test)]\n        eprintln!(\"INFER_TEST_RPC stage=thread_start event=start\");\n        let thread_start_result = timeout(\n            RPC_TIMEOUT,\n            client.request_typed(ClientRequest::ThreadStart {"
+        },
+        {
+          "old": "        .await??;\n        if started.model != self.config.model {\n",
+          "new": "        .await;\n        #[cfg(test)]\n        eprintln!(\n            \"INFER_TEST_RPC stage=thread_start event=finish elapsed_ms={} outcome={}\",\n            test_thread_start_started.elapsed().as_millis(),\n            match &thread_start_result {\n                Err(_) => \"outer_timeout\",\n                Ok(Err(_)) => \"inner_error\",\n                Ok(Ok(_)) => \"ok\",\n            }\n        );\n        let started: ThreadStartResponse = thread_start_result??;\n        if started.model != self.config.model {\n"
+        }
+      ],
+      "reversible_to_old_bytes": true
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "old_blob": "f519b7f49d76eab8e65989f80aad02847a5566ba",
+      "new_blob": "3b3f2dae67c9034b4466ac553370b797cc703e8c",
+      "bytes": 29815,
+      "sha256": "95bfd0ba661af868ac66ac53b2e73db78f467d885efb56c6936b358080ebf381",
+      "edits": [
+        {
+          "old": "    const CORRECTED_MEMORY: &str = \"corrected kumquat orchard final-use marker\";\n",
+          "new": "    const CORRECTED_MEMORY: &str = \"corrected kumquat orchard final-use marker\";\n\n    let diagnostic_started = std::time::Instant::now();\n    let report_stage = |stage: &'static str| {\n        eprintln!(\n            \"INFER_TEST_STAGE stage={stage} elapsed_ms={}\",\n            diagnostic_started.elapsed().as_millis()\n        );\n    };\n    report_stage(\"mock_setup\");\n"
+        },
+        {
+          "old": "    let host = CognitiveTestHost::start(\n",
+          "new": "    report_stage(\"host_start\");\n    let host = CognitiveTestHost::start(\n"
+        },
+        {
+          "old": "    let _accepted_memory = host\n",
+          "new": "    report_stage(\"seed_accepted_memory\");\n    let _accepted_memory = host\n"
+        },
+        {
+          "old": "    let authority_directory = tempfile::tempdir()?;\n",
+          "new": "    report_stage(\"issuer_start\");\n    let authority_directory = tempfile::tempdir()?;\n"
+        },
+        {
+          "old": "    let accepted = driver\n",
+          "new": "    report_stage(\"accepted_run\");\n    let accepted = driver\n"
+        },
+        {
+          "old": "    let accepted_record = durable\n",
+          "new": "    report_stage(\"accepted_run_assertions\");\n    let accepted_record = durable\n"
+        },
+        {
+          "old": "    let race_memory = host\n",
+          "new": "    report_stage(\"seed_tombstone_memory\");\n    let race_memory = host\n"
+        },
+        {
+          "old": "    let hook = Arc::new(FinalRevalidationTestHook {\n",
+          "new": "    report_stage(\"tombstone_race\");\n    let hook = Arc::new(FinalRevalidationTestHook {\n"
+        },
+        {
+          "old": "        hook.reached.notified().await;\n",
+          "new": "        report_stage(\"tombstone_hook_wait\");\n        hook.reached.notified().await;\n"
+        },
+        {
+          "old": "        let result = host\n            .tombstone(&race_memory, \"revoked during final-use race\")\n",
+          "new": "        report_stage(\"tombstone_mutation\");\n        let result = host\n            .tombstone(&race_memory, \"revoked during final-use race\")\n"
+        },
+        {
+          "old": "        hook.release.notify_one();\n",
+          "new": "        report_stage(\"tombstone_hook_release\");\n        hook.release.notify_one();\n"
+        },
+        {
+          "old": "    let correction_memory = host\n",
+          "new": "    report_stage(\"seed_correction_memory\");\n    let correction_memory = host\n"
+        },
+        {
+          "old": "    let correction_hook = Arc::new(FinalRevalidationTestHook {\n",
+          "new": "    report_stage(\"correction_race\");\n    let correction_hook = Arc::new(FinalRevalidationTestHook {\n"
+        },
+        {
+          "old": "        correction_hook.reached.notified().await;\n",
+          "new": "        report_stage(\"correction_hook_wait\");\n        correction_hook.reached.notified().await;\n"
+        },
+        {
+          "old": "        let result = host.correct(&correction_memory, CORRECTED_MEMORY).await;\n",
+          "new": "        report_stage(\"correction_mutation\");\n        let result = host.correct(&correction_memory, CORRECTED_MEMORY).await;\n"
+        },
+        {
+          "old": "        correction_hook.release.notify_one();\n",
+          "new": "        report_stage(\"correction_hook_release\");\n        correction_hook.release.notify_one();\n"
+        },
+        {
+          "old": "    drop(durable);\n",
+          "new": "    report_stage(\"durable_reopen\");\n    drop(durable);\n"
+        },
+        {
+          "old": "    issuer.await??;\n",
+          "new": "    report_stage(\"issuer_join\");\n    issuer.await??;\n"
+        },
+        {
+          "old": "    host.shutdown().await;\n",
+          "new": "    report_stage(\"host_shutdown\");\n    host.shutdown().await;\n"
+        },
+        {
+          "old": "    #[cfg(target_os = \"macos\")]\n    drop(short_root);\n",
+          "new": "    #[cfg(target_os = \"macos\")]\n    drop(short_root);\n    report_stage(\"complete\");\n"
+        }
+      ],
+      "reversible_to_old_bytes": true
+    }
+  ],
+  "patch": "diff --git a/codex-rs/hepta-infer-worker-host/src/native_app_server.rs b/codex-rs/hepta-infer-worker-host/src/native_app_server.rs\n--- a/codex-rs/hepta-infer-worker-host/src/native_app_server.rs\n+++ b/codex-rs/hepta-infer-worker-host/src/native_app_server.rs\n@@ -458,7 +458,11 @@\n         let ingress = owner.session_ingress().await?;\n         let ingress_socket_path = ingress.socket_path;\n         let socket_path = AbsolutePathBuf::from_absolute_path(ingress_socket_path.clone())?;\n-        let mut client = timeout(\n+        #[cfg(test)]\n+        let test_connect_started = std::time::Instant::now();\n+        #[cfg(test)]\n+        eprintln!(\"INFER_TEST_RPC stage=connect event=start\");\n+        let connection_result = timeout(\n             RPC_TIMEOUT,\n             RemoteAppServerClient::connect_with_bounded_events(\n                 RemoteAppServerConnectArgs {\n@@ -473,7 +477,18 @@\n                 /*event_channel_capacity*/ 256,\n             ),\n         )\n-        .await??;\n+        .await;\n+        #[cfg(test)]\n+        eprintln!(\n+            \"INFER_TEST_RPC stage=connect event=finish elapsed_ms={} outcome={}\",\n+            test_connect_started.elapsed().as_millis(),\n+            match &connection_result {\n+                Err(_) => \"outer_timeout\",\n+                Ok(Err(_)) => \"inner_error\",\n+                Ok(Ok(_)) => \"ok\",\n+            }\n+        );\n+        let mut client = connection_result??;\n         let codex_home = client\n             .codex_home()\n             .ok_or(\"App Server initialize response omitted codex home\")?\n@@ -488,7 +503,11 @@\n             .server_version()\n             .ok_or(\"App Server initialize response omitted server version\")?\n             .to_string();\n-        let started: ThreadStartResponse = timeout(\n+        #[cfg(test)]\n+        let test_thread_start_started = std::time::Instant::now();\n+        #[cfg(test)]\n+        eprintln!(\"INFER_TEST_RPC stage=thread_start event=start\");\n+        let thread_start_result = timeout(\n             RPC_TIMEOUT,\n             client.request_typed(ClientRequest::ThreadStart {\n                 request_id: RequestId::Integer(1),\n@@ -503,7 +522,18 @@\n                 },\n             }),\n         )\n-        .await??;\n+        .await;\n+        #[cfg(test)]\n+        eprintln!(\n+            \"INFER_TEST_RPC stage=thread_start event=finish elapsed_ms={} outcome={}\",\n+            test_thread_start_started.elapsed().as_millis(),\n+            match &thread_start_result {\n+                Err(_) => \"outer_timeout\",\n+                Ok(Err(_)) => \"inner_error\",\n+                Ok(Ok(_)) => \"ok\",\n+            }\n+        );\n+        let started: ThreadStartResponse = thread_start_result??;\n         if started.model != self.config.model {\n             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;\n             return Err(\"provider substituted the requested model\".into());\ndiff --git a/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs b/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs\n--- a/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs\n+++ b/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs\n@@ -460,6 +460,15 @@\n     const CORRECTION_MEMORY: &str = \"verified kumquat orchard final-use marker\";\n     const CORRECTED_MEMORY: &str = \"corrected kumquat orchard final-use marker\";\n \n+    let diagnostic_started = std::time::Instant::now();\n+    let report_stage = |stage: &'static str| {\n+        eprintln!(\n+            \"INFER_TEST_STAGE stage={stage} elapsed_ms={}\",\n+            diagnostic_started.elapsed().as_millis()\n+        );\n+    };\n+    report_stage(\"mock_setup\");\n+\n     let server = responses::start_mock_server().await;\n     let response = responses::sse(vec![\n         responses::ev_response_created(\"resp-cognitive-worker\"),\n@@ -488,6 +497,7 @@\n     let codex_linux_sandbox_exe = Some(cargo_bin(\"codex-linux-sandbox\")?);\n     #[cfg(not(target_os = \"linux\"))]\n     let codex_linux_sandbox_exe = None;\n+    report_stage(\"host_start\");\n     let host = CognitiveTestHost::start(\n         root,\n         agent_id,\n@@ -500,10 +510,12 @@\n         },\n     )\n     .await?;\n+    report_stage(\"seed_accepted_memory\");\n     let _accepted_memory = host\n         .seed_verified_memory(\"worker-final-use-accept\", ACCEPT_MEMORY)\n         .await?;\n \n+    report_stage(\"issuer_start\");\n     let authority_directory = tempfile::tempdir()?;\n     let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(\n         authority_directory.path(),\n@@ -521,6 +533,7 @@\n     let journal = std::env::temp_dir().join(format!(\"hepta-cognitive-worker-e2e-{nonce}.journal\"));\n     let mut durable = DurableInferenceControl::open(&journal, 8)?;\n \n+    report_stage(\"accepted_run\");\n     let accepted = driver\n         .run(\n             &mut durable,\n@@ -541,6 +554,7 @@\n         accepted.output.contains(\"fresh context accepted\"),\n         \"{accepted:?}\"\n     );\n+    report_stage(\"accepted_run_assertions\");\n     let accepted_record = durable\n         .native_record(ACCEPT_REQUEST_ID)\n         .cloned()\n@@ -565,9 +579,11 @@\n         \"physical model request must contain the exact verified cognitive context\"\n     );\n \n+    report_stage(\"seed_tombstone_memory\");\n     let race_memory = host\n         .seed_verified_memory(\"worker-final-use-race\", RACE_MEMORY)\n         .await?;\n+    report_stage(\"tombstone_race\");\n     let hook = Arc::new(FinalRevalidationTestHook {\n         reached: tokio::sync::Notify::new(),\n         release: tokio::sync::Notify::new(),\n@@ -585,10 +601,13 @@\n         &cancellation,\n     );\n     let mutation = async {\n+        report_stage(\"tombstone_hook_wait\");\n         hook.reached.notified().await;\n+        report_stage(\"tombstone_mutation\");\n         let result = host\n             .tombstone(&race_memory, \"revoked during final-use race\")\n             .await;\n+        report_stage(\"tombstone_hook_release\");\n         hook.release.notify_one();\n         result\n     };\n@@ -621,9 +640,11 @@\n             .is_some_and(|reason| reason.contains(\"cognitive final-use revalidation failed\"))\n     );\n \n+    report_stage(\"seed_correction_memory\");\n     let correction_memory = host\n         .seed_verified_memory(\"worker-final-use-correction-race\", CORRECTION_MEMORY)\n         .await?;\n+    report_stage(\"correction_race\");\n     let correction_hook = Arc::new(FinalRevalidationTestHook {\n         reached: tokio::sync::Notify::new(),\n         release: tokio::sync::Notify::new(),\n@@ -641,8 +662,11 @@\n         &correction_cancellation,\n     );\n     let correction = async {\n+        report_stage(\"correction_hook_wait\");\n         correction_hook.reached.notified().await;\n+        report_stage(\"correction_mutation\");\n         let result = host.correct(&correction_memory, CORRECTED_MEMORY).await;\n+        report_stage(\"correction_hook_release\");\n         correction_hook.release.notify_one();\n         result\n     };\n@@ -686,6 +710,7 @@\n         \"tombstone/correction races must not add a physical Responses API request\",\n     );\n \n+    report_stage(\"durable_reopen\");\n     drop(durable);\n     let reopened = DurableInferenceControl::open(&journal, 8)?;\n     assert_eq!(\n@@ -699,10 +724,13 @@\n     );\n     drop(reopened);\n     let _ = std::fs::remove_file(&journal);\n+    report_stage(\"issuer_join\");\n     issuer.await??;\n+    report_stage(\"host_shutdown\");\n     host.shutdown().await;\n     #[cfg(target_os = \"macos\")]\n     drop(short_root);\n+    report_stage(\"complete\");\n     Ok(())\n }\n \n",
+  "patch_sha256": "1bac196c59894ac3c889a81420f3a033a9c18ccde865293fa085bf643c07dfa6",
+  "checks": {
+    "all_old_driver_edits_reversible": true,
+    "all_old_test_bytes_unchanged_except_inserted_observations": true,
+    "rpc_timeout_5s": true,
+    "execution_timeout_20s": true,
+    "coordinator_30s_count": 2,
+    "native_turn_start_call_count": 1,
+    "no_new_waits": true,
+    "no_error_text_or_payload_logged": true,
+    "changes_to_issuer_host_or_production_authority": [],
+    "existing_source_order_test_preserved": true,
+    "new_top_level_helpers": 0,
+    "new_test_local_closures": 1
+  },
+  "observations": {
+    "driver_under_cfg_test": [
+      "connection begin/end elapsed_ms and outcome class",
+      "ThreadStart begin/end elapsed_ms and outcome class"
+    ],
+    "test_only": [
+      "fixed stage labels and monotonic elapsed from test diagnostic start",
+      "tombstone/correction hook wait, mutation, release markers",
+      "issuer join and real host shutdown markers"
+    ],
+    "data_not_read_or_printed": [
+      "prompt/content",
+      "memory content",
+      "keys/signatures/grants",
+      "raw error body",
+      "shared process-home logs",
+      "paths or environment values"
+    ],
+    "non_test_semantics": "Only temporary bindings split each existing timeout await from its original double-? propagation. No test clock/logging remains under non-test cfg. Original operation, arguments, timeout, ownership, error conversion and subsequent control flow are retained."
+  },
+  "limits": [
+    "Not a fix and not a root-cause conclusion.",
+    "No compilation or runtime qualification performed on this candidate.",
+    "A begin without finish may also mean the outer test/coordinator was cancelled; distinguish using the preserved original terminal error.",
+    "The two naked RPC timeouts are specific candidates, not an exhaustive proof of all possible deep Elapsed sources.",
+    "No evidence of another simultaneous consumer of the same final-use test hook was found in this original test source; no change is made to Notify/take or authority."
+  ],
+  "validation": {
+    "exact_original_case": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+    "selected_retries": 0,
+    "original_platform": "macOS Intel",
+    "purpose": "Obtain exact stage/outcome and elapsed before considering any repair. Keep original fresh-context success, tombstone/correction refusal, physical Responses request count and durable replay assertions.",
+    "safe_controls": [
+      "native_app_server::tests::cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start",
+      "native_app_server::tests::final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift",
+      "native_app_server::tests::owner_timeout_and_terminal_first_selection_cannot_authorize_success"
+    ],
+    "source_only_controls_not_claimed_pass": true
+  },
+  "sources": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "blob": "79b05c7f9601dd61ac69b2f212305db5393ed138",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-infer-worker-host/src/native_app_server.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "blob": "f519b7f49d76eab8e65989f80aad02847a5566ba",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/test_support.rs",
+      "blob": "bf8e4f1e212b7237dc76708ac1c9c0cd3490f84c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-agentd/src/test_support.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "blob": "5ba248accf42aea808b51929b73ccc4fde400c48",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "blob": "9b1bb255c443cdca02546a54f42cd06583f0493e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs"
+    }
+  ]
+}

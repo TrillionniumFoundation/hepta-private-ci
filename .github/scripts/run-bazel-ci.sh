@@ -163,6 +163,26 @@ print_bazel_test_log_tails() {
     fi
     echo "::endgroup::"
   done
+
+  # Preserve complete existing shard/attempt logs in the already-uploaded
+  # compact-log directory. Collection must never replace Bazel's exit status.
+  if [[ -n "${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}" ]]; then
+    if ! (
+      collector_script="$(dirname "${BASH_SOURCE[0]}")/collect_bazel_failed_test_logs.py"
+      collector_testlogs="$testlogs_dir"
+      collector_output="$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"
+      if [[ "${RUNNER_OS:-}" == "Windows" ]] && command -v cygpath >/dev/null 2>&1; then
+        collector_script="$(cygpath -w "$collector_script")" || exit 1
+        collector_testlogs="$(cygpath -w "$collector_testlogs")" || exit 1
+        collector_output="$(cygpath -w "$collector_output")" || exit 1
+      fi
+      printf '%s\n' "${failed_targets[@]}" \
+        | MSYS2_ARG_CONV_EXCL='*' python3 "$collector_script" \
+          --testlogs-dir "$collector_testlogs" --output-dir "$collector_output"
+    ); then
+      echo "::warning::Failed-test-log collection was incomplete; preserving Bazel exit status." >&2
+    fi
+  fi
 }
 
 print_bazel_action_failure_summary() {

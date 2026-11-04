@@ -1084,7 +1084,7 @@ impl TestCodex {
         .await
     }
 
-    async fn submit_turn_with_thread_settings(
+    pub async fn submit_turn_with_thread_settings(
         &self,
         prompt: &str,
         thread_settings: ThreadSettingsOverrides,

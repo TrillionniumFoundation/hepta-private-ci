@@ -221,41 +221,37 @@ async fn wait_for_python_repl_ready_via_probe(
     let mut collected = Vec::new();
     let marker = "__codex_pty_ready__";
     let deadline = tokio::time::Instant::now() + tokio::time::Duration::from_millis(timeout_ms);
-    let probe_window = tokio::time::Duration::from_millis(if cfg!(windows) { 750 } else { 250 });
+    let probe = format!("print('__codex_' + 'pty_ready__'){newline}");
+    // Input echo cannot contain the complete marker. Send one probe initially;
+    // repeated timed probes can queue behind a slow-starting interactive editor.
+    writer.send(probe.as_bytes().to_vec()).await?;
+    let mut probed_after_prompt = false;
 
     while tokio::time::Instant::now() < deadline {
-        // The PTY can echo input before Python is ready to read it. Keep the
-        // complete marker out of the probe so only Python's output can match it.
-        writer
-            .send(format!("print('__codex_' + 'pty_ready__'){newline}").into_bytes())
-            .await?;
-
-        let probe_deadline = tokio::time::Instant::now() + probe_window;
-        loop {
-            let now = tokio::time::Instant::now();
-            if now >= deadline || now >= probe_deadline {
-                break;
-            }
-            let remaining = std::cmp::min(
-                deadline.saturating_duration_since(now),
-                probe_deadline.saturating_duration_since(now),
-            );
-            match tokio::time::timeout(remaining, output_rx.recv()).await {
-                Ok(Ok(chunk)) => {
-                    collected.extend_from_slice(&chunk);
-                    if String::from_utf8_lossy(&collected).contains(marker) {
-                        return Ok(collected);
-                    }
+        let remaining = deadline.saturating_duration_since(tokio::time::Instant::now());
+        match tokio::time::timeout(remaining, output_rx.recv()).await {
+            Ok(Ok(chunk)) => {
+                collected.extend_from_slice(&chunk);
+                let text = String::from_utf8_lossy(&collected);
+                if text.contains(marker) {
+                    return Ok(collected);
                 }
-                Ok(Err(tokio::sync::broadcast::error::RecvError::Lagged(_))) => continue,
-                Ok(Err(tokio::sync::broadcast::error::RecvError::Closed)) => {
-                    anyhow::bail!(
-                        "PTY output closed while waiting for Python REPL readiness: {:?}",
-                        String::from_utf8_lossy(&collected)
-                    );
+                if !probed_after_prompt && text.contains(">>> ") {
+                    // Python may flush input while configuring its terminal.
+                    // A prompt permits one replacement probe; only its executed
+                    // marker establishes readiness, even if the prompt redraws.
+                    probed_after_prompt = true;
+                    writer.send(probe.as_bytes().to_vec()).await?;
                 }
-                Err(_) => break,
             }
+            Ok(Err(tokio::sync::broadcast::error::RecvError::Lagged(_))) => continue,
+            Ok(Err(tokio::sync::broadcast::error::RecvError::Closed)) => {
+                anyhow::bail!(
+                    "PTY output closed while waiting for Python REPL readiness: {:?}",
+                    String::from_utf8_lossy(&collected)
+                );
+            }
+            Err(_) => break,
         }
     }
 
@@ -1111,14 +1107,35 @@ async fn pty_dropped_output_receiver_keeps_draining_child() -> anyhow::Result<()
     };
     let preserved_fd = std::fs::File::open("/dev/null")?;
     let env_map: HashMap<String, String> = std::env::vars().collect();
-    let script =
-        "import signal, sys\nsignal.alarm(10)\nsys.stdout.buffer.write(b'x' * (4 * 1024 * 1024))";
+    let script = r"import signal, sys
+signal.alarm(10)
+with open(sys.argv[1], 'w') as progress:
+    progress.write('python_started')
+sys.stdout.buffer.write(b'x' * (4 * 1024 * 1024))
+with open(sys.argv[1], 'w') as progress:
+    progress.write('output_write_returned')
+";
     for inherited_fds in [&[][..], &[preserved_fd.as_raw_fd()][..]] {
         let backend = if inherited_fds.is_empty() {
             "portable"
         } else {
             "preserved_fds"
         };
+        let progress_path = std::env::temp_dir().join(format!(
+            "codex-pty-drain-{}-{backend}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)?
+                .as_nanos(),
+        ));
+        // The side channel distinguishes interpreter startup from output drain
+        // without retaining the output receiver or changing its two-second budget.
+        let progress_arg = progress_path
+            .to_str()
+            .ok_or_else(|| anyhow::anyhow!("PTY progress path is not UTF-8"))?
+            .to_string();
+        let progress_file = std::fs::File::create_new(&progress_path)?;
+        drop(progress_file);
         let spawn_started = std::time::Instant::now();
         eprintln!("PTY dropped receiver: starting backend={backend}");
         let SpawnedProcess {
@@ -1128,14 +1145,17 @@ async fn pty_dropped_output_receiver_keeps_draining_child() -> anyhow::Result<()
             ..
         } = spawn_pty_process(
             &python,
-            &["-c".to_string(), script.to_string()],
+            &["-c".to_string(), script.to_string(), progress_arg],
             Path::new("."),
             &env_map,
             &None,
             TerminalSize::default(),
             inherited_fds,
         )
-        .await?;
+        .await
+        .inspect_err(|_| {
+            let _ = std::fs::remove_file(&progress_path);
+        })?;
         let spawn_elapsed = spawn_started.elapsed();
         drop(stdout_rx);
         let wait_started = std::time::Instant::now();
@@ -1151,6 +1171,12 @@ async fn pty_dropped_output_receiver_keeps_draining_child() -> anyhow::Result<()
             session.has_exited(),
             session.exit_code(),
         );
+        let progress = std::fs::read_to_string(&progress_path);
+        eprintln!("PTY dropped receiver: backend={backend} child_phase={progress:?}");
+        if result.is_err() {
+            session.terminate();
+        }
+        let _ = std::fs::remove_file(&progress_path);
         let code = result??;
         assert_eq!(code, 0, "child should finish even when output is discarded");
     }
@@ -1514,6 +1540,8 @@ termios.tcsetattr(0, termios.TCSANOW, attrs)
 print('__pty_repl_gate_waiting__', flush=True)
 assert os.read(fd, 1) == b'1'
 os.close(fd)
+# Force the initial echoed probe to be lost before the real REPL starts.
+termios.tcflush(0, termios.TCIFLUSH)
 os.execv(sys.executable, [sys.executable])
 ";
     let spawned = spawn_pty_process(

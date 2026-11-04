@@ -1,0 +1,741 @@
+{
+  "schema": "hepta.prepublication.incremental_observation.v1",
+  "observed_at_utc": "2026-11-04T19:38:08Z",
+  "full_inventory_remains_at": "2026-11-04T16:58:59Z",
+  "incremental_only": true,
+  "query": "GET /repos/TrillionniumFoundation/hepta-private-ci/pulls?state=open&sort=updated&direction=desc&per_page=100&page=1",
+  "previous_incremental_cutoff": "2026-11-04T18:57:00Z",
+  "returned": 100,
+  "last_returned_updated_at": "2026-11-03T17:34:21Z",
+  "new_or_updated_after_previous_cutoff": [
+    {
+      "number": 4804,
+      "title": "fix(bazel): provide hermetic bindgen inputs for rama-dns",
+      "state": "open",
+      "draft": true,
+      "head": "04a42923aaf8c562ad161a17a4bbf35fe883a1b5",
+      "base": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "updated_at": "2026-11-04T19:23:34Z"
+    }
+  ],
+  "ordered_projection": [
+    {
+      "number": 4804,
+      "updated_at": "2026-11-04T19:23:34Z",
+      "head": "04a42923aaf8c562ad161a17a4bbf35fe883a1b5",
+      "base": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "draft": true
+    },
+    {
+      "number": 4800,
+      "updated_at": "2026-11-04T18:55:24Z",
+      "head": "1b390853e50aa2fdae2e6c68793f94742d2d667c",
+      "base": "a39a0871d9601ffccb5e0d95d8f39d54b3a63360",
+      "draft": true
+    },
+    {
+      "number": 4803,
+      "updated_at": "2026-11-04T18:49:05Z",
+      "head": "83ad164ff05cb34d444d51e23ee286fa0241c783",
+      "base": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "draft": true
+    },
+    {
+      "number": 4680,
+      "updated_at": "2026-11-04T18:38:21Z",
+      "head": "93932f8393f5af30dafbf59c462537615d3e5080",
+      "base": "cc36fe220f3d85dab84adad0695b06e3bae37fcd",
+      "draft": true
+    },
+    {
+      "number": 4802,
+      "updated_at": "2026-11-04T18:38:19Z",
+      "head": "5bc58bdf0af312e871d22fe70b9f917cc8aa65f0",
+      "base": "79eed5dd57b34af8861313397f13a05fa7a806d2",
+      "draft": true
+    },
+    {
+      "number": 4797,
+      "updated_at": "2026-11-04T17:13:58Z",
+      "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "draft": true
+    },
+    {
+      "number": 4801,
+      "updated_at": "2026-11-04T16:39:22Z",
+      "head": "79eed5dd57b34af8861313397f13a05fa7a806d2",
+      "base": "e8143cf165c60a3cb35930ebb7d5f3ffab9465c0",
+      "draft": true
+    },
+    {
+      "number": 4799,
+      "updated_at": "2026-11-04T15:40:41Z",
+      "head": "e8143cf165c60a3cb35930ebb7d5f3ffab9465c0",
+      "base": "e729e6c2becb528e3a6b49c9e5bbea57bd26637a",
+      "draft": true
+    },
+    {
+      "number": 4798,
+      "updated_at": "2026-11-04T13:58:49Z",
+      "head": "77b24407b9898aa44769502fbb22c24fb7193a58",
+      "base": "903946f15dd79bc53a39a479230e366df04a371f",
+      "draft": true
+    },
+    {
+      "number": 4729,
+      "updated_at": "2026-11-04T13:38:01Z",
+      "head": "5cb4ee7b63dc91e3c3023f0687f0ea7d2b0a8497",
+      "base": "4c93a641945044f904a656cbf1d23e358a074d52",
+      "draft": true
+    },
+    {
+      "number": 4696,
+      "updated_at": "2026-11-04T13:27:11Z",
+      "head": "8f825137f873c386116863451972fa6ddfcebb14",
+      "base": "4c6b1f0cc9ec50689d86a83bed0433ea0bd4c168",
+      "draft": true
+    },
+    {
+      "number": 4796,
+      "updated_at": "2026-11-04T12:13:34Z",
+      "head": "69488aba4910bfc9389206e5c18c4f9071fa08bf",
+      "base": "4399045fe28bc0346b0493ec3bb01d467ff5059a",
+      "draft": true
+    },
+    {
+      "number": 4795,
+      "updated_at": "2026-11-04T11:44:34Z",
+      "head": "0b8cc1067851c76165e0550344a6b6a1865f2ca8",
+      "base": "907d4f512819a71bece82e7f89944e9406466e36",
+      "draft": true
+    },
+    {
+      "number": 4794,
+      "updated_at": "2026-11-04T10:42:52Z",
+      "head": "a7f5e8685b23bf49ca3f60e4fcb15d240ad6b7e3",
+      "base": "907d4f512819a71bece82e7f89944e9406466e36",
+      "draft": true
+    },
+    {
+      "number": 4793,
+      "updated_at": "2026-11-04T09:39:53Z",
+      "head": "889d1e9990b74694f02d76c3c5a16d178fc40232",
+      "base": "907d4f512819a71bece82e7f89944e9406466e36",
+      "draft": true
+    },
+    {
+      "number": 4790,
+      "updated_at": "2026-11-04T09:23:25Z",
+      "head": "2d0120e208ed81515837a7530c9f6943af03e87f",
+      "base": "5b69a046d886cf4c2a73c50e58197360ea15d8f5",
+      "draft": true
+    },
+    {
+      "number": 4792,
+      "updated_at": "2026-11-04T08:42:33Z",
+      "head": "907d4f512819a71bece82e7f89944e9406466e36",
+      "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "draft": true
+    },
+    {
+      "number": 4788,
+      "updated_at": "2026-11-04T08:00:45Z",
+      "head": "7ac278880e53b2c59f19068d400cb0ed314a7914",
+      "base": "6957d050f3f527eefa6937fb7cc3f0640c194813",
+      "draft": true
+    },
+    {
+      "number": 4791,
+      "updated_at": "2026-11-04T07:53:44Z",
+      "head": "5468d183d1d4b8f45463c904214cbf0808c01a2b",
+      "base": "a90bd4b9d18a9b28dff44f80753d2c49b14f6ee3",
+      "draft": true
+    },
+    {
+      "number": 4778,
+      "updated_at": "2026-11-04T07:49:09Z",
+      "head": "875a511b25915b3e4e81c31a98cbbd22c5287150",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4776,
+      "updated_at": "2026-11-04T07:44:18Z",
+      "head": "5d19a578ac28a6ce7fc67a348b10297dc370c19f",
+      "base": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "draft": true
+    },
+    {
+      "number": 4785,
+      "updated_at": "2026-11-04T07:39:21Z",
+      "head": "54e811430324325cc72ce1efc932c81dc21bb192",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4782,
+      "updated_at": "2026-11-04T07:39:18Z",
+      "head": "b915772e36dccb9645f3b533940ba3075c68fa3a",
+      "base": "5d19a578ac28a6ce7fc67a348b10297dc370c19f",
+      "draft": true
+    },
+    {
+      "number": 4787,
+      "updated_at": "2026-11-04T07:36:05Z",
+      "head": "27059d0859477867fd7f43b81ad7e74df1710d3c",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4777,
+      "updated_at": "2026-11-04T07:29:28Z",
+      "head": "7f3bfbb560e94a41983a1a0d8984518c7bd5581f",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4789,
+      "updated_at": "2026-11-04T07:28:01Z",
+      "head": "c896807610b8031f893abd6fec4cfd83bf4f72ea",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4779,
+      "updated_at": "2026-11-04T07:14:21Z",
+      "head": "cee90ef57a53076e784d9db31811269d13cf5455",
+      "base": "5d9be0de14fc9a96b1df5071f57c156281f36705",
+      "draft": false
+    },
+    {
+      "number": 4786,
+      "updated_at": "2026-11-04T07:08:58Z",
+      "head": "bacb932a08774339243114579cd3b61c97365269",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4780,
+      "updated_at": "2026-11-04T07:08:39Z",
+      "head": "6957d050f3f527eefa6937fb7cc3f0640c194813",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4784,
+      "updated_at": "2026-11-04T06:56:15Z",
+      "head": "e72081b5f211ee0ab25290c2261971fbc90de931",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4783,
+      "updated_at": "2026-11-04T06:54:03Z",
+      "head": "3175caf0006df25ee5a7ab4e88130fdea47c6f5a",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4781,
+      "updated_at": "2026-11-04T06:44:02Z",
+      "head": "792615f1e053b823376c4ac4299fa04dc78c6baf",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4771,
+      "updated_at": "2026-11-04T06:15:42Z",
+      "head": "5c8f2ba19c33e374ce5182969a13b2f59f12985d",
+      "base": "0b835841f37156f6b4b51f1d5ef9ae983c017b0d",
+      "draft": true
+    },
+    {
+      "number": 4765,
+      "updated_at": "2026-11-04T06:12:07Z",
+      "head": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "draft": true
+    },
+    {
+      "number": 4772,
+      "updated_at": "2026-11-04T06:12:05Z",
+      "head": "b4b04c7466e5d0e43a88173294325b1b31751944",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4755,
+      "updated_at": "2026-11-04T06:03:39Z",
+      "head": "f5bddc124052837befca7735b9e5a46ab708e5a5",
+      "base": "00963996f16c067fbd04517d22d3d7e53d1d09a6",
+      "draft": true
+    },
+    {
+      "number": 4775,
+      "updated_at": "2026-11-04T06:03:02Z",
+      "head": "5ea4ef055707bc4b82e8ea6b0988fc2adf8a5622",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": false
+    },
+    {
+      "number": 4770,
+      "updated_at": "2026-11-04T05:56:18Z",
+      "head": "f7ef4ffc2962a8f842ad905f6e0278c1e87bf2ac",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4769,
+      "updated_at": "2026-11-04T05:56:17Z",
+      "head": "0b835841f37156f6b4b51f1d5ef9ae983c017b0d",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4774,
+      "updated_at": "2026-11-04T05:53:17Z",
+      "head": "3c7f802812379d0308b2ae904ff599f6795cd909",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": false
+    },
+    {
+      "number": 4737,
+      "updated_at": "2026-11-04T05:46:44Z",
+      "head": "052f4caa6c26396f37cecac6e133433d06a61eb2",
+      "base": "9cf33449107981ee2ca4de486be8ffaaa37dfc61",
+      "draft": true
+    },
+    {
+      "number": 4767,
+      "updated_at": "2026-11-04T05:43:42Z",
+      "head": "06078c22fec4721d5120a0fe880d8c68e5cd08f5",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4773,
+      "updated_at": "2026-11-04T05:33:20Z",
+      "head": "a90bd4b9d18a9b28dff44f80753d2c49b14f6ee3",
+      "base": "2ab0e25ba649664b9fb8e77a09aa6da10c8e5449",
+      "draft": false
+    },
+    {
+      "number": 4751,
+      "updated_at": "2026-11-04T05:09:08Z",
+      "head": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+      "base": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+      "draft": true
+    },
+    {
+      "number": 4768,
+      "updated_at": "2026-11-04T05:06:46Z",
+      "head": "5d9be0de14fc9a96b1df5071f57c156281f36705",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4766,
+      "updated_at": "2026-11-04T05:06:07Z",
+      "head": "2ab0e25ba649664b9fb8e77a09aa6da10c8e5449",
+      "base": "e516fc2e8c9186b1d6a8871d24352b68f2ab1061",
+      "draft": true
+    },
+    {
+      "number": 4764,
+      "updated_at": "2026-11-04T04:40:00Z",
+      "head": "361a8c5cec7eae33431b41a2efae48cfc51b7b15",
+      "base": "88fa654518df32d1b2398566c2017528abcf59fe",
+      "draft": true
+    },
+    {
+      "number": 4763,
+      "updated_at": "2026-11-04T04:16:58Z",
+      "head": "abf1e2effaf32a779c714c97f9d8a758b2b5bb3c",
+      "base": "fca22d0d1e19ba64a2502093d20774d41cc6377a",
+      "draft": true
+    },
+    {
+      "number": 4762,
+      "updated_at": "2026-11-04T04:15:55Z",
+      "head": "25f6744fc7b44b98b6d35295d94cb82edf3a2046",
+      "base": "51fb58859a49500d56220dabd3924c23f1923c79",
+      "draft": true
+    },
+    {
+      "number": 4758,
+      "updated_at": "2026-11-04T04:09:56Z",
+      "head": "88fa654518df32d1b2398566c2017528abcf59fe",
+      "base": "7bcfceeaeec9323f26c03e42f023baf886bae134",
+      "draft": false
+    },
+    {
+      "number": 4761,
+      "updated_at": "2026-11-04T03:56:20Z",
+      "head": "ddd71584533d4fb318aea1c2a6fe74038a60eb7c",
+      "base": "44dc4a4b9ee3f3c0642a72e0bea47c3109acd914",
+      "draft": false
+    },
+    {
+      "number": 4752,
+      "updated_at": "2026-11-04T03:46:32Z",
+      "head": "767f069c96a6cd2735b3a4166799a1de79017d25",
+      "base": "9b3521c42d4a81dd814a364d02e77d89be2e0a7d",
+      "draft": true
+    },
+    {
+      "number": 4757,
+      "updated_at": "2026-11-04T03:41:46Z",
+      "head": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+      "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "draft": false
+    },
+    {
+      "number": 4754,
+      "updated_at": "2026-11-04T03:40:39Z",
+      "head": "49a99a73c89740e34c07f908a531a8c1ef05b07d",
+      "base": "ced3c30c6096f6099fdf0fbabe406781ff16a16c",
+      "draft": true
+    },
+    {
+      "number": 4760,
+      "updated_at": "2026-11-04T03:29:30Z",
+      "head": "44dc4a4b9ee3f3c0642a72e0bea47c3109acd914",
+      "base": "b133bba3189cfd22ce35a890230cb410c1c2bbaf",
+      "draft": false
+    },
+    {
+      "number": 4759,
+      "updated_at": "2026-11-04T03:20:48Z",
+      "head": "b133bba3189cfd22ce35a890230cb410c1c2bbaf",
+      "base": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+      "draft": false
+    },
+    {
+      "number": 4750,
+      "updated_at": "2026-11-04T03:12:27Z",
+      "head": "7bcfceeaeec9323f26c03e42f023baf886bae134",
+      "base": "5c4851d50b578e0a5cc1883a98c6802cf934e066",
+      "draft": false
+    },
+    {
+      "number": 4497,
+      "updated_at": "2026-11-04T03:09:34Z",
+      "head": "4c93a641945044f904a656cbf1d23e358a074d52",
+      "base": "3a81000aae08c658276958d678874aca4db5eedd",
+      "draft": true
+    },
+    {
+      "number": 4753,
+      "updated_at": "2026-11-04T02:35:57Z",
+      "head": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+      "base": "3cc71d6ec7e5e084dcecceb2757bc940459f0ada",
+      "draft": true
+    },
+    {
+      "number": 4713,
+      "updated_at": "2026-11-04T02:20:14Z",
+      "head": "6666d5d3b07066796d59fcc4e6fcc6b678416bf5",
+      "base": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "draft": true
+    },
+    {
+      "number": 4731,
+      "updated_at": "2026-11-04T02:04:06Z",
+      "head": "fca22d0d1e19ba64a2502093d20774d41cc6377a",
+      "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "draft": true
+    },
+    {
+      "number": 4722,
+      "updated_at": "2026-11-04T02:03:46Z",
+      "head": "fb0db17119e862e225661b9b9ec6b05bd6bd1504",
+      "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "draft": true
+    },
+    {
+      "number": 4723,
+      "updated_at": "2026-11-04T01:56:10Z",
+      "head": "51fb58859a49500d56220dabd3924c23f1923c79",
+      "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "draft": true
+    },
+    {
+      "number": 4756,
+      "updated_at": "2026-11-04T01:56:05Z",
+      "head": "07d3564cfbdc7edd6a3e9d6b85d666177ab84106",
+      "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "draft": false
+    },
+    {
+      "number": 4714,
+      "updated_at": "2026-11-04T01:52:45Z",
+      "head": "eca650d221b58624d48f199b337cab2e01dac8ac",
+      "base": "4c493fb51564e2043dd938db8c3648aabe632535",
+      "draft": true
+    },
+    {
+      "number": 4726,
+      "updated_at": "2026-11-04T01:41:10Z",
+      "head": "1e27eb9b1a28bf23063efed9bc373a9aa0707040",
+      "base": "5c4851d50b578e0a5cc1883a98c6802cf934e066",
+      "draft": true
+    },
+    {
+      "number": 4742,
+      "updated_at": "2026-11-04T01:12:43Z",
+      "head": "30ad34c1895597a04dc42f0d233505aa7566a6b7",
+      "base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "draft": true
+    },
+    {
+      "number": 4745,
+      "updated_at": "2026-11-04T00:56:01Z",
+      "head": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+      "base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "draft": true
+    },
+    {
+      "number": 4701,
+      "updated_at": "2026-11-04T00:54:10Z",
+      "head": "1d74edfa5779d4181e33e055aedeb8ef13fe0b92",
+      "base": "34983c09a5435d7d163071ff7bfa1cef86983584",
+      "draft": true
+    },
+    {
+      "number": 4743,
+      "updated_at": "2026-11-04T00:47:43Z",
+      "head": "3cc71d6ec7e5e084dcecceb2757bc940459f0ada",
+      "base": "9b3521c42d4a81dd814a364d02e77d89be2e0a7d",
+      "draft": true
+    },
+    {
+      "number": 4748,
+      "updated_at": "2026-11-04T00:21:17Z",
+      "head": "12be5271cf9a1d45e322736ab2af8009a1b62ac9",
+      "base": "49868a7ef9ad79e6fed475c0ae808cbd5b2f98e0",
+      "draft": true
+    },
+    {
+      "number": 4749,
+      "updated_at": "2026-11-04T00:19:45Z",
+      "head": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "base": "a39a0871d9601ffccb5e0d95d8f39d54b3a63360",
+      "draft": true
+    },
+    {
+      "number": 4747,
+      "updated_at": "2026-11-03T22:47:12Z",
+      "head": "49868a7ef9ad79e6fed475c0ae808cbd5b2f98e0",
+      "base": "cd74b38edffaefc055a65fdbbabd3e912e29eea2",
+      "draft": true
+    },
+    {
+      "number": 4746,
+      "updated_at": "2026-11-03T22:35:28Z",
+      "head": "cd74b38edffaefc055a65fdbbabd3e912e29eea2",
+      "base": "a74f25071d3f2eac7fb9853bb06f173851a89c45",
+      "draft": true
+    },
+    {
+      "number": 4741,
+      "updated_at": "2026-11-03T22:08:53Z",
+      "head": "9b3521c42d4a81dd814a364d02e77d89be2e0a7d",
+      "base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "draft": true
+    },
+    {
+      "number": 4744,
+      "updated_at": "2026-11-03T22:00:33Z",
+      "head": "00963996f16c067fbd04517d22d3d7e53d1d09a6",
+      "base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "draft": true
+    },
+    {
+      "number": 4740,
+      "updated_at": "2026-11-03T21:36:03Z",
+      "head": "a74f25071d3f2eac7fb9853bb06f173851a89c45",
+      "base": "5ceb3d8afad9c03fbf8e3c87b1bed66fd40031e6",
+      "draft": true
+    },
+    {
+      "number": 4739,
+      "updated_at": "2026-11-03T21:20:36Z",
+      "head": "f970a24acfa8db1d0bb820e4637a2537e636f9aa",
+      "base": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "draft": true
+    },
+    {
+      "number": 4735,
+      "updated_at": "2026-11-03T21:17:08Z",
+      "head": "aaf74551dccf99f2d0d1525d02337cf804233817",
+      "base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "draft": true
+    },
+    {
+      "number": 4733,
+      "updated_at": "2026-11-03T20:38:51Z",
+      "head": "083116160fe81198ae0c441aad22224c0c8d2940",
+      "base": "80de936f9b738179b87aee0a4d7066e6ca501c8e",
+      "draft": true
+    },
+    {
+      "number": 4738,
+      "updated_at": "2026-11-03T20:37:31Z",
+      "head": "e5891fffb795531f0a8887a786eeaa55995a3065",
+      "base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "draft": true
+    },
+    {
+      "number": 4728,
+      "updated_at": "2026-11-03T20:31:04Z",
+      "head": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "base": "1ef3216ffb86271d87e6aea049ce7ca7f2b76809",
+      "draft": true
+    },
+    {
+      "number": 4736,
+      "updated_at": "2026-11-03T20:30:07Z",
+      "head": "5ceb3d8afad9c03fbf8e3c87b1bed66fd40031e6",
+      "base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "draft": true
+    },
+    {
+      "number": 4724,
+      "updated_at": "2026-11-03T20:11:23Z",
+      "head": "80de936f9b738179b87aee0a4d7066e6ca501c8e",
+      "base": "1ef3216ffb86271d87e6aea049ce7ca7f2b76809",
+      "draft": true
+    },
+    {
+      "number": 3060,
+      "updated_at": "2026-11-03T19:45:04Z",
+      "head": "e5feecc4537b4f97eebba0fa733d9f1ebb02a62a",
+      "base": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+      "draft": true
+    },
+    {
+      "number": 4732,
+      "updated_at": "2026-11-03T19:45:01Z",
+      "head": "867b838ffa3a956a45048337dd5cc31cb2650464",
+      "base": "1ef3216ffb86271d87e6aea049ce7ca7f2b76809",
+      "draft": true
+    },
+    {
+      "number": 4734,
+      "updated_at": "2026-11-03T19:40:10Z",
+      "head": "9cf33449107981ee2ca4de486be8ffaaa37dfc61",
+      "base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+      "draft": true
+    },
+    {
+      "number": 4717,
+      "updated_at": "2026-11-03T19:10:07Z",
+      "head": "9cfcb03e2205ae63032f5862962c6881d376bfd2",
+      "base": "2aea30d1e07288f059c9294f29a842c40b6c9416",
+      "draft": true
+    },
+    {
+      "number": 4706,
+      "updated_at": "2026-11-03T18:45:39Z",
+      "head": "1ef3216ffb86271d87e6aea049ce7ca7f2b76809",
+      "base": "adaeb1854c9b2abe3f8c65a4407344d07e1c7589",
+      "draft": true
+    },
+    {
+      "number": 4720,
+      "updated_at": "2026-11-03T18:39:30Z",
+      "head": "158b844db94a99c7fcf7386efe6a207fdeb24db7",
+      "base": "8393775ed68714144d9e27449789ce42c254dc47",
+      "draft": true
+    },
+    {
+      "number": 4716,
+      "updated_at": "2026-11-03T18:37:27Z",
+      "head": "d548852a3f7af29a9853d8acb0e6d457f8bb1a79",
+      "base": "030670f74300e65777abc768c049b5140f9acd29",
+      "draft": true
+    },
+    {
+      "number": 4725,
+      "updated_at": "2026-11-03T18:37:25Z",
+      "head": "b049d994619da7fe59896bce0dfd7eb850024c01",
+      "base": "1ef3216ffb86271d87e6aea049ce7ca7f2b76809",
+      "draft": true
+    },
+    {
+      "number": 4730,
+      "updated_at": "2026-11-03T18:36:54Z",
+      "head": "a86fa4da737fed5db36ede1760c351f1fab891d7",
+      "base": "9b20aa5a6b4f3559411b286b157cec8cf1771c4a",
+      "draft": true
+    },
+    {
+      "number": 4727,
+      "updated_at": "2026-11-03T18:17:26Z",
+      "head": "112c05026a36a3555b01886c5bad9bb9f9c1d2e8",
+      "base": "5c4851d50b578e0a5cc1883a98c6802cf934e066",
+      "draft": true
+    },
+    {
+      "number": 4719,
+      "updated_at": "2026-11-03T18:13:54Z",
+      "head": "9b20aa5a6b4f3559411b286b157cec8cf1771c4a",
+      "base": "5c4851d50b578e0a5cc1883a98c6802cf934e066",
+      "draft": true
+    },
+    {
+      "number": 4711,
+      "updated_at": "2026-11-03T18:10:01Z",
+      "head": "2aea30d1e07288f059c9294f29a842c40b6c9416",
+      "base": "4b1a326ec50c28e8803d390e81d2f03457cc7499",
+      "draft": true
+    },
+    {
+      "number": 4721,
+      "updated_at": "2026-11-03T17:52:58Z",
+      "head": "2c38a2615a3f1114c1744b4bb33e7fa3a50cc0be",
+      "base": "1ef3216ffb86271d87e6aea049ce7ca7f2b76809",
+      "draft": true
+    },
+    {
+      "number": 4702,
+      "updated_at": "2026-11-03T17:39:05Z",
+      "head": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "base": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "draft": true
+    },
+    {
+      "number": 4699,
+      "updated_at": "2026-11-03T17:38:59Z",
+      "head": "321c620066b1650dccfe5bac562b867150426ab6",
+      "base": "adaeb1854c9b2abe3f8c65a4407344d07e1c7589",
+      "draft": true
+    },
+    {
+      "number": 4718,
+      "updated_at": "2026-11-03T17:34:21Z",
+      "head": "68efa4101917d40ab551610e44bf7f26663bd963",
+      "base": "5c4851d50b578e0a5cc1883a98c6802cf934e066",
+      "draft": true
+    }
+  ],
+  "main": {
+    "commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "tree": "75dc1c1f65375c97da259d947c465a04f030461d"
+  },
+  "candidate": {
+    "number": 4797,
+    "draft": true,
+    "state": "open",
+    "head": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "target_branch": "integration/ui-objective-20261103-product",
+    "branch": "fix/r3-original-product-contracts-20261104"
+  },
+  "limits": [
+    "This is not a new full PR/branch census.",
+    "No inferred current total replaces the complete 16:58 inventory.",
+    "PR body build/runtime claims remain author-reported until exact original evidence is checked."
+  ]
+}

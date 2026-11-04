@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Exercise the shell and Python wrappers together with a recording Bazel process."""
 
+import hashlib
 import json
 import os
 import shlex
@@ -50,6 +51,8 @@ elif os.environ.get('BAZEL_PROBE_FAIL') == '1':
     print('          rust-lld: error: undefined symbol: __stack_chk_fail')
     print('          >>> referenced by native-archive.o')
     print('FAIL: //fake:target')
+    if os.environ.get('BAZEL_PROBE_EXTRA_FAILED_TARGET'):
+        print('FAIL: ' + os.environ['BAZEL_PROBE_EXTRA_FAILED_TARGET'])
     sys.exit(37)
 """
 
@@ -408,6 +411,179 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn("undefined symbol: __stack_chk_fail", summary)
         self.assertIn(">>> referenced by native-archive.o", summary)
         self.assertIn("actual failing test diagnostic", result.stdout)
+
+    def test_failure_archives_all_selected_shards_and_attempts_without_truncation(
+        self,
+    ) -> None:
+        output = self.root / "execution logs with spaces"
+        self.env.update(
+            BAZEL_PROBE_FAIL="1",
+            BAZEL_PROBE_EXTRA_FAILED_TARGET="//other:target",
+            CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=str(output),
+        )
+        payloads = {
+            "fake/target/test.log": b"actual failing test diagnostic\n",
+            "fake/target/shard_1_of_2/test.log": bytes(range(256)) * 4097,
+            "fake/target/shard_1_of_2/test.xml": b'<testsuite failures="1"/>\n',
+            "fake/target/shard_1_of_2/test_attempts/attempt_1.log": b"first attempt\x00\xff\n",
+            "fake/target/shard_1_of_2/test_attempts/attempt_1.xml": b'<testsuite errors="1"/>\n',
+            "fake/target/shard_2_of_2/test.log": b"second shard\n",
+            "fake/target/shard_2_of_2/test.xml": b'<testsuite failures="0"/>\n',
+            "other/target/test.log": b"other selected target\n",
+        }
+        for relative, data in {
+            **payloads,
+            "fake/target/test.outputs/test.log": b"unrelated test output",
+            "unselected/target/test.log": b"not a selected failed target",
+        }.items():
+            path = self.testlogs / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        result, calls = self.run_wrapper(
+            "--print-failed-test-logs",
+            "--",
+            "test",
+            "--",
+            "//fake:target",
+            "//other:target",
+        )
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2, calls)
+        self.assertIn("actual failing test diagnostic", result.stdout)
+        self.assertNotIn("collection was incomplete", result.stderr)
+        manifests = list(output.glob("failed-test-logs/invocation-*/manifest.json"))
+        self.assertEqual(len(manifests), 1)
+        manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
+        self.assertEqual(
+            manifest["selected_targets"], ["//fake:target", "//other:target"]
+        )
+        self.assertEqual(manifest["errors"], [])
+        self.assertTrue(manifest["complete_for_selected_targets"])
+        commit, tree = subprocess.check_output(
+            ["git", "rev-parse", "HEAD", "HEAD^{tree}"], text=True
+        ).splitlines()
+        self.assertEqual(
+            (manifest["source"]["commit"], manifest["source"]["tree"]), (commit, tree)
+        )
+        actual = {}
+        for record in manifest["files"]:
+            copied = manifests[0].parent / record["archive_relative_path"]
+            data = copied.read_bytes()
+            self.assertEqual(record["bytes"], len(data))
+            self.assertEqual(record["sha256"], hashlib.sha256(data).hexdigest())
+            expected_target = (
+                "//other:target"
+                if record["testlogs_relative_path"].startswith("other/")
+                else "//fake:target"
+            )
+            self.assertEqual(record["target"], expected_target)
+            actual[record["testlogs_relative_path"]] = data
+        self.assertEqual(actual, payloads)
+        self.assertGreater(
+            len(actual["fake/target/shard_1_of_2/test.log"]), 1024 * 1024
+        )
+
+    def test_collector_accepts_root_link_but_refuses_traversal_and_external_links(
+        self,
+    ) -> None:
+        outside = self.root / "outside testlogs"
+        (outside / "target").mkdir(parents=True)
+        (outside / "test.log").write_bytes(b"must not archive external data")
+        (outside / "target" / "test.log").write_bytes(
+            b"must not archive external target"
+        )
+        alias = self.root / "testlogs alias"
+        for link, destination in (
+            (alias, self.testlogs),
+            (self.testlogs / "fake" / "target" / "escaped", outside),
+            (self.testlogs / "escape", outside),
+        ):
+            try:
+                link.symlink_to(destination, target_is_directory=True)
+            except OSError:
+                if os.name != "nt":
+                    raise
+                subprocess.run(
+                    ["cmd", "/d", "/c", "mklink", "/J", str(link), str(destination)],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+        output = self.root / "collected logs"
+        targets = [
+            "//fake:target",
+            "//fake:../../outside",
+            "//escape:target",
+            "//missing:target",
+        ]
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPTS / "collect_bazel_failed_test_logs.py"),
+                "--testlogs-dir",
+                str(alias),
+                "--output-dir",
+                str(output),
+            ],
+            input="\n".join(targets) + "\n",
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=30,
+        )
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        manifests = list(output.glob("failed-test-logs/invocation-*/manifest.json"))
+        self.assertEqual(len(manifests), 1)
+        manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
+        self.assertFalse(manifest["complete_for_selected_targets"])
+        self.assertEqual(manifest["selected_targets"], targets)
+        self.assertEqual(
+            [record["testlogs_relative_path"] for record in manifest["files"]],
+            ["fake/target/test.log"],
+        )
+        self.assertEqual(
+            {record["target"] for record in manifest["errors"]}, set(targets)
+        )
+        self.assertTrue(
+            any(
+                "escapes the testlogs root" in record["error"]
+                for record in manifest["errors"]
+            )
+        )
+        archived = [
+            path.read_bytes()
+            for path in manifests[0].parent.rglob("*")
+            if path.is_file() and path.name != "manifest.json"
+        ]
+        self.assertEqual(archived, [b"actual failing test diagnostic\n"])
+
+    def test_collector_failure_keeps_original_bazel_status_and_tail(self) -> None:
+        output = self.root / "not a directory"
+        output.write_text("force archive creation to fail", encoding="utf-8")
+        self.env.update(
+            BAZEL_PROBE_FAIL="1",
+            CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=str(output),
+        )
+        result, calls = self.run_wrapper(
+            "--print-failed-test-logs", "--", "test", "--", "//fake:target"
+        )
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2, calls)
+        self.assertIn("actual failing test diagnostic", result.stdout)
+        self.assertIn(
+            "collection was incomplete; preserving Bazel exit status", result.stderr
+        )
+
+    def test_success_does_not_collect_failed_test_logs(self) -> None:
+        output = self.root / "successful execution logs"
+        self.env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(output)
+        result, calls = self.run_wrapper(
+            "--print-failed-test-logs", "--", "test", "--", "//fake:target"
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1, calls)
+        self.assertFalse((output / "failed-test-logs").exists())
 
 
 if __name__ == "__main__":

@@ -1,110 +1,57 @@
 {
   "schema_version": 1,
-  "status": "generated_candidate_only",
-  "steps": [
-    {
-      "name": "original-lock-update",
-      "command": [
-        "just",
-        "bazel-lock-update"
-      ],
-      "exit_code": 0,
-      "elapsed_seconds": 26.806667441000002
-    },
-    {
-      "name": "original-lock-check",
-      "command": [
-        "just",
-        "bazel-lock-check"
-      ],
-      "exit_code": 0,
-      "elapsed_seconds": 19.534197090999996
-    }
-  ],
-  "product_qualification": false,
-  "verify_inputs_only": false,
-  "workflow": {
-    "GITHUB_REPOSITORY": "TrillionniumFoundation/hepta-private-ci",
-    "GITHUB_REF": "refs/heads/audit/windows-helper-lock-20261104",
-    "GITHUB_SHA": "3dd8aa36c60802312584743e6dcfa73e1e5a29a5",
-    "GITHUB_RUN_ID": "41865994466",
-    "GITHUB_RUN_ATTEMPT": "1"
+  "artifact_kind": "historical_evidence_index_v1",
+  "scope": "Index to immutable previously published evidence. The linked JSON is the retained complete record; this current file is not the raw generator receipt or raw source-input manifest.",
+  "historical_record": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "record_commit": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+    "path": "qualification/r3-audit-repair-20261104/windows-helper-combined-generator-receipt.json",
+    "git_blob": "dfb54f463bd951095d91b90c9d0442bf01637df4",
+    "bytes": 3766,
+    "sha256": "bc5ec4f8dfc4a7b9937789be2771176ff6732cbd8a070d9321076610f1f52834",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/qualification/r3-audit-repair-20261104/windows-helper-combined-generator-receipt.json",
+    "unchanged_original_bytes_available": true
   },
-  "commit": "3dd8aa36c60802312584743e6dcfa73e1e5a29a5",
-  "parent": "ea84b04d25fbb40662414239d4836c0c161900aa",
-  "source_base": "e729e6c2becb528e3a6b49c9e5bbea57bd26637a",
-  "changed_paths": [
-    ".github/workflows/hepta-product-fixture-lock.yml",
-    "codex-rs/Cargo.lock",
-    "codex-rs/cli/BUILD.bazel",
-    "codex-rs/cli/tests/sandbox_cloud_config.rs",
-    "codex-rs/exec-server/BUILD.bazel",
-    "codex-rs/exec-server/Cargo.toml",
-    "codex-rs/exec-server/tests/common/exec_server.rs",
-    "qualification/product-fixture-lock-20261104/generate_lock.py",
-    "qualification/product-fixture-lock-20261104/helper-source-manifest.json"
+  "execution_source": {
+    "commit": "3dd8aa36c60802312584743e6dcfa73e1e5a29a5",
+    "source_base": "e729e6c2becb528e3a6b49c9e5bbea57bd26637a",
+    "run_id": 41865994466,
+    "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41865994466",
+    "artifact_id": 13340789889,
+    "source_inputs": 806,
+    "helper_scope": "Combined four Exec Server and two CLI helper postimages"
+  },
+  "summary": {
+    "original_record_status": "generated_candidate_only",
+    "update_and_check": [
+      {
+        "name": "original-lock-update",
+        "command": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 26.806667441000002
+      },
+      {
+        "name": "original-lock-check",
+        "command": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 19.534197090999996
+      }
+    ],
+    "source_inputs_unchanged": true,
+    "generated_lock_matches_committed_lock": true,
+    "module_lock_sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
+    "module_lock_git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7"
+  },
+  "interpretation": [
+    "record_commit identifies where the complete retained evidence bytes are published; execution_source.commit identifies the different original source that actually ran.",
+    "Historical generator paths and vendored nested workflow paths remain verbatim in the linked immutable record. They are not current-checkout workflow links.",
+    "The original update/check result and unchanged lock do not qualify the current full product or Windows execution."
   ],
-  "committed_lock_sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
-  "generated_lock_sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
-  "generated_lock_bytes": 1738619,
-  "committed_lock_matches": true,
-  "source_inputs_unchanged": true,
-  "outputs": {
-    "MODULE.bazel.lock": {
-      "bytes": 1738619,
-      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
-    },
-    "MODULE.bazel.lock.patch": {
-      "bytes": 1,
-      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
-    },
-    "helper-source-inputs.json": {
-      "bytes": 643,
-      "sha256": "0e5682995f6096ff3b1d81d0738bd73ced581a26d24a93fb27db5cc1ae2a301f"
-    },
-    "helper-source-manifest.json": {
-      "bytes": 2914,
-      "sha256": "1cdc2a9ea80ba68f24f8374296642dd6d7efd2cdaddc621e3d9802dccd50efec"
-    },
-    "original-lock-check.stderr": {
-      "bytes": 1304,
-      "sha256": "397aed2062e3697ed6903bc893e73d3409fa97690a494c3775a5810c7bc842fb"
-    },
-    "original-lock-check.stdout": {
-      "bytes": 18,
-      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
-    },
-    "original-lock-update.stderr": {
-      "bytes": 3139,
-      "sha256": "aa315427e8ba81c2c20db13ca8c8bbf37b72bdb063f5abaa96906ef7e5803e46"
-    },
-    "original-lock-update.stdout": {
-      "bytes": 18,
-      "sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3"
-    },
-    "source-changed-paths.json": {
-      "bytes": 432,
-      "sha256": "ccce17518e645f233559f71f6e9fbf4b65e6090f0f7e71151c09bc09653cf82d"
-    },
-    "source-commit.txt": {
-      "bytes": 41,
-      "sha256": "f71a0acc82f61bdb4e0c106cec1d73d3dfb78d4d305b93d2cb75dc0ca1e38078"
-    },
-    "source-inputs-after.json": {
-      "bytes": 102308,
-      "sha256": "9c273c7a218113d54e06e7bbc0e8f18e4373690787e3f7841be5f475d0afc5f5"
-    },
-    "source-inputs.json": {
-      "bytes": 102308,
-      "sha256": "9c273c7a218113d54e06e7bbc0e8f18e4373690787e3f7841be5f475d0afc5f5"
-    },
-    "source-parent.txt": {
-      "bytes": 41,
-      "sha256": "bbef120553dea17ad0b8f4fe6a09308ad01afeaacd12a3bc016921c42ffd8180"
-    },
-    "source.patch": {
-      "bytes": 25684,
-      "sha256": "e3b4215f80609ee6c926381b1814176d6c38ec47c33f1f615a6dd0fbacea1bf1"
-    }
-  }
+  "product_qualification": false
 }

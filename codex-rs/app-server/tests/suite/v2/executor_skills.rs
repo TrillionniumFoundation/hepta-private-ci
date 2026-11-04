@@ -383,9 +383,14 @@ stream_max_retries = 0
 
     timeout(READ_TIMEOUT, app_server.initialize()).await??;
 
+    // Use the canonical target cwd for the thread as well as its skill root.
+    let mut environment_params = app_server.auto_env_params()?;
+    environment_params.cwd = workspace.into();
+
     let request_id = app_server
-        .send_thread_start_request_with_auto_env(ThreadStartParams {
+        .send_thread_start_request(ThreadStartParams {
             model: Some("mock-model".to_string()),
+            environments: Some(vec![environment_params]),
             selected_capability_roots: Some(vec![SelectedCapabilityRoot {
                 id: "demo-plugin@1".to_string(),
                 location: CapabilityRootLocation::Environment {

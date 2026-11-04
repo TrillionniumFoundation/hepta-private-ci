@@ -460,6 +460,15 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     const CORRECTION_MEMORY: &str = "verified kumquat orchard final-use marker";
     const CORRECTED_MEMORY: &str = "corrected kumquat orchard final-use marker";
 
+    let diagnostic_started = std::time::Instant::now();
+    let report_stage = |stage: &'static str| {
+        eprintln!(
+            "INFER_TEST_STAGE stage={stage} elapsed_ms={}",
+            diagnostic_started.elapsed().as_millis()
+        );
+    };
+    report_stage("mock_setup");
+
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
@@ -488,6 +497,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let codex_linux_sandbox_exe = Some(cargo_bin("codex-linux-sandbox")?);
     #[cfg(not(target_os = "linux"))]
     let codex_linux_sandbox_exe = None;
+    report_stage("host_start");
     let host = CognitiveTestHost::start(
         root,
         agent_id,
@@ -500,10 +510,12 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         },
     )
     .await?;
+    report_stage("seed_accepted_memory");
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
 
+    report_stage("issuer_start");
     let authority_directory = tempfile::tempdir()?;
     let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
         authority_directory.path(),
@@ -521,6 +533,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let journal = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}.journal"));
     let mut durable = DurableInferenceControl::open(&journal, 8)?;
 
+    report_stage("accepted_run");
     let accepted = driver
         .run(
             &mut durable,
@@ -541,6 +554,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         accepted.output.contains("fresh context accepted"),
         "{accepted:?}"
     );
+    report_stage("accepted_run_assertions");
     let accepted_record = durable
         .native_record(ACCEPT_REQUEST_ID)
         .cloned()
@@ -565,9 +579,11 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         "physical model request must contain the exact verified cognitive context"
     );
 
+    report_stage("seed_tombstone_memory");
     let race_memory = host
         .seed_verified_memory("worker-final-use-race", RACE_MEMORY)
         .await?;
+    report_stage("tombstone_race");
     let hook = Arc::new(FinalRevalidationTestHook {
         reached: tokio::sync::Notify::new(),
         release: tokio::sync::Notify::new(),
@@ -585,10 +601,13 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         &cancellation,
     );
     let mutation = async {
+        report_stage("tombstone_hook_wait");
         hook.reached.notified().await;
+        report_stage("tombstone_mutation");
         let result = host
             .tombstone(&race_memory, "revoked during final-use race")
             .await;
+        report_stage("tombstone_hook_release");
         hook.release.notify_one();
         result
     };
@@ -621,9 +640,11 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
             .is_some_and(|reason| reason.contains("cognitive final-use revalidation failed"))
     );
 
+    report_stage("seed_correction_memory");
     let correction_memory = host
         .seed_verified_memory("worker-final-use-correction-race", CORRECTION_MEMORY)
         .await?;
+    report_stage("correction_race");
     let correction_hook = Arc::new(FinalRevalidationTestHook {
         reached: tokio::sync::Notify::new(),
         release: tokio::sync::Notify::new(),
@@ -641,8 +662,11 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         &correction_cancellation,
     );
     let correction = async {
+        report_stage("correction_hook_wait");
         correction_hook.reached.notified().await;
+        report_stage("correction_mutation");
         let result = host.correct(&correction_memory, CORRECTED_MEMORY).await;
+        report_stage("correction_hook_release");
         correction_hook.release.notify_one();
         result
     };
@@ -686,6 +710,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         "tombstone/correction races must not add a physical Responses API request",
     );
 
+    report_stage("durable_reopen");
     drop(durable);
     let reopened = DurableInferenceControl::open(&journal, 8)?;
     assert_eq!(
@@ -699,10 +724,13 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     );
     drop(reopened);
     let _ = std::fs::remove_file(&journal);
+    report_stage("issuer_join");
     issuer.await??;
+    report_stage("host_shutdown");
     host.shutdown().await;
     #[cfg(target_os = "macos")]
     drop(short_root);
+    report_stage("complete");
     Ok(())
 }
 

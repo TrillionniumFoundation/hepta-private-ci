@@ -238,7 +238,8 @@ async fn websocket_turn_state_is_stable_within_turn() -> Result<()> {
     // Phase 1: the initial request starts empty and receives the first metadata value.
     // Phase 2: the first tool follow-up replays it and ignores a later value.
     // Phase 3: the second follow-up sends the original value on the same connection.
-    test.submit_turn("run two echo commands").await?;
+    test.submit_turn_with_thread_settings("run two echo commands", Default::default())
+        .await?;
 
     assert_eq!(server.handshakes().len(), 1);
     let requests = server.single_connection();

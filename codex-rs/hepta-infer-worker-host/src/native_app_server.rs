@@ -458,7 +458,11 @@ impl AppServerModelDriver {
         let ingress = owner.session_ingress().await?;
         let ingress_socket_path = ingress.socket_path;
         let socket_path = AbsolutePathBuf::from_absolute_path(ingress_socket_path.clone())?;
-        let mut client = timeout(
+        #[cfg(test)]
+        let test_connect_started = std::time::Instant::now();
+        #[cfg(test)]
+        eprintln!("INFER_TEST_RPC stage=connect event=start");
+        let connection_result = timeout(
             RPC_TIMEOUT,
             RemoteAppServerClient::connect_with_bounded_events(
                 RemoteAppServerConnectArgs {
@@ -473,7 +477,18 @@ impl AppServerModelDriver {
                 /*event_channel_capacity*/ 256,
             ),
         )
-        .await??;
+        .await;
+        #[cfg(test)]
+        eprintln!(
+            "INFER_TEST_RPC stage=connect event=finish elapsed_ms={} outcome={}",
+            test_connect_started.elapsed().as_millis(),
+            match &connection_result {
+                Err(_) => "outer_timeout",
+                Ok(Err(_)) => "inner_error",
+                Ok(Ok(_)) => "ok",
+            }
+        );
+        let mut client = connection_result??;
         let codex_home = client
             .codex_home()
             .ok_or("App Server initialize response omitted codex home")?
@@ -488,7 +503,11 @@ impl AppServerModelDriver {
             .server_version()
             .ok_or("App Server initialize response omitted server version")?
             .to_string();
-        let started: ThreadStartResponse = timeout(
+        #[cfg(test)]
+        let test_thread_start_started = std::time::Instant::now();
+        #[cfg(test)]
+        eprintln!("INFER_TEST_RPC stage=thread_start event=start");
+        let thread_start_result = timeout(
             RPC_TIMEOUT,
             client.request_typed(ClientRequest::ThreadStart {
                 request_id: RequestId::Integer(1),
@@ -503,7 +522,18 @@ impl AppServerModelDriver {
                 },
             }),
         )
-        .await??;
+        .await;
+        #[cfg(test)]
+        eprintln!(
+            "INFER_TEST_RPC stage=thread_start event=finish elapsed_ms={} outcome={}",
+            test_thread_start_started.elapsed().as_millis(),
+            match &thread_start_result {
+                Err(_) => "outer_timeout",
+                Ok(Err(_)) => "inner_error",
+                Ok(Ok(_)) => "ok",
+            }
+        );
+        let started: ThreadStartResponse = thread_start_result??;
         if started.model != self.config.model {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("provider substituted the requested model".into());

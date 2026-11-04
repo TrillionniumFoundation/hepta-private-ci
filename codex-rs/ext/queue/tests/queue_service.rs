@@ -70,6 +70,7 @@ use core_test_support::wait_for_event_match;
 use core_test_support::wait_for_event_with_timeout;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
+use tokio::sync::Notify;
 use tokio::sync::oneshot;
 
 const TINY_PNG_BYTES: &[u8] = &[
@@ -82,6 +83,51 @@ const TINY_PNG_DATA_URL: &str = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
 #[derive(Default)]
 struct RecordingEventSink {
     events: Mutex<Vec<Event>>,
+    changed: Notify,
+    nonempty_observed: Notify,
+}
+
+impl RecordingEventSink {
+    fn cursor(&self) -> usize {
+        self.events
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .len()
+    }
+
+    async fn wait_for_queue_empty(
+        &self,
+        queue: &QueuedItemService,
+        thread_id: ThreadId,
+        after: usize,
+    ) -> anyhow::Result<()> {
+        loop {
+            let changed = self.changed.notified();
+            tokio::pin!(changed);
+            changed.as_mut().enable();
+            let matching_change = self
+                .events
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .iter()
+                .skip(after)
+                .any(|event| {
+                    matches!(
+                        &event.msg,
+                        EventMsg::ThreadQueueChanged(event) if event.thread_id == thread_id
+                    )
+                });
+            if matching_change {
+                // Watchers and enqueues also emit changes; only the actual
+                // queue state establishes that the owned DB ack has finished.
+                if queue.list(thread_id).await?.is_empty() {
+                    return Ok(());
+                }
+                self.nonempty_observed.notify_waiters();
+            }
+            changed.await;
+        }
+    }
 }
 
 impl ExtensionEventSink for RecordingEventSink {
@@ -90,6 +136,7 @@ impl ExtensionEventSink for RecordingEventSink {
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner)
             .push(event);
+        self.changed.notify_waiters();
     }
 
     fn emit_warning(&self, _warning: ExtensionWarning) {}
@@ -2214,6 +2261,108 @@ async fn registered_queue_lifecycle_starts_messages_in_fifo_order() -> anyhow::R
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn queue_empty_observer_waits_for_owned_database_ack_after_turn_complete()
+-> anyhow::Result<()> {
+    let server = start_mock_server().await;
+    let response =
+        responses::mount_sse_once(&server, responses::sse_completed("turn-before-queue-ack")).await;
+    let test = test_codex()
+        .with_config(|config| config.include_environment_context = false)
+        .build_with_auto_env(&server)
+        .await?;
+    let thread_id = test.session_configured.thread_id;
+    let runtime = test.codex.state_db().context("state runtime unavailable")?;
+    let store = Arc::new(FailDeleteOnceQueueStore {
+        fail_next_delete: AtomicBool::new(false),
+        block_complete_after_panic: AtomicBool::new(true),
+        allow_blocked_complete: AtomicBool::new(false),
+        ..FailDeleteOnceQueueStore::new(LocalQueueStore::new(runtime))
+    });
+    let events = Arc::new(RecordingEventSink::default());
+    let staging = QueuedItemService::new(store.clone(), Weak::new(), events.clone());
+    let service = Arc::new(QueuedItemService::new(
+        store.clone(),
+        Arc::downgrade(&test.thread_manager),
+        events.clone(),
+    ));
+    let input = structured_user_input("wait for the actual queue ack");
+    let TurnInput::UserInput { content, .. } = &input else {
+        unreachable!("test input is user input");
+    };
+    let digest = user_input_payload_sha256(content)?;
+    let cursor = events.cursor();
+    let admitted = staging
+        .reconcile(
+            thread_id,
+            test.codex.rollout_path(),
+            input,
+            digest,
+            QueueReconcileMode::AllowIfAbsent,
+        )
+        .await?;
+    let QueueReconcileOutcome::Queued { item: queued, .. } = admitted.outcome else {
+        anyhow::bail!("the exact input was not queued");
+    };
+    assert!(
+        events.cursor() > cursor,
+        "reconciliation emits a change before DB ack"
+    );
+
+    tokio::time::timeout(Duration::from_secs(25), async {
+        let dispatch_service = Arc::clone(&service);
+        let dispatch_thread = Arc::clone(&test.codex);
+        let queued_id = queued.id.clone();
+        let dispatch = tokio::spawn(async move {
+            dispatch_service
+                .start(dispatch_thread.as_ref(), Some(queued_id), None)
+                .await
+        });
+        wait_for_event_with_timeout(
+            test.codex.as_ref(),
+            |event| matches!(event, EventMsg::TurnComplete(_)),
+            Duration::from_secs(25),
+        )
+        .await;
+        while store.complete_attempts.load(Ordering::SeqCst) == 0 {
+            tokio::task::yield_now().await;
+        }
+        assert_eq!(1, response.requests().len());
+        assert_eq!(vec![queued], service.list(thread_id).await?);
+        assert!(
+            !dispatch.is_finished(),
+            "the owned DB completion is still gated"
+        );
+
+        let nonempty = events.nonempty_observed.notified();
+        tokio::pin!(nonempty);
+        nonempty.as_mut().enable();
+        let waiting_events = Arc::clone(&events);
+        let waiting_service = Arc::clone(&service);
+        let waiting = tokio::spawn(async move {
+            waiting_events
+                .wait_for_queue_empty(waiting_service.as_ref(), thread_id, cursor)
+                .await
+        });
+        nonempty.await;
+        assert!(
+            !waiting.is_finished(),
+            "a reconciliation change and TurnComplete cannot stand in for the DB ack"
+        );
+        store.allow_blocked_complete.store(true, Ordering::SeqCst);
+        waiting.await??;
+        assert!(matches!(
+            dispatch.await??,
+            StartIfIdleSubmission::Started { .. }
+        ));
+        assert!(service.list(thread_id).await?.is_empty());
+        assert_eq!(1, response.requests().len());
+        Ok::<(), anyhow::Error>(())
+    })
+    .await??;
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn externally_changed_queues_dispatch_independently_and_retry_failed_wakes()
 -> anyhow::Result<()> {
     let server = start_mock_server().await;
@@ -2236,7 +2385,13 @@ async fn externally_changed_queues_dispatch_independently_and_retry_failed_wakes
         .build_with_auto_env(&server)
         .await?;
     let thread_id = test.session_configured.thread_id;
-    let queue = install_registered_queue(&test, installed.as_ref())?;
+    let queue_events = Arc::new(RecordingEventSink::default());
+    let queue = Arc::new(QueuedItemService::new(
+        loaded_thread_queue(&test)?,
+        Arc::downgrade(&test.thread_manager),
+        queue_events.clone(),
+    ));
+    assert!(installed.service.set(Arc::clone(&queue)).is_ok());
     let independent_thread = test
         .thread_manager
         .start_thread(StartThreadOptions::new(test.config.clone()))
@@ -2309,6 +2464,7 @@ async fn externally_changed_queues_dispatch_independently_and_retry_failed_wakes
         .enqueue(thread_id, user_input("queued before ordinary resume"))
         .await?;
     tokio::time::sleep(Duration::from_secs(/*secs*/ 11)).await;
+    let queue_event_cursor = queue_events.cursor();
     let resumed = test
         .thread_manager
         .resume_thread_from_rollout(
@@ -2319,12 +2475,20 @@ async fn externally_changed_queues_dispatch_independently_and_retry_failed_wakes
             Default::default(),
         )
         .await?;
-    wait_for_event_with_timeout(
-        resumed.thread.as_ref(),
-        |event| matches!(event, EventMsg::TurnComplete(_)),
-        Duration::from_secs(/*secs*/ 25),
-    )
-    .await;
+    let deadline = tokio::time::Instant::now() + Duration::from_secs(/*secs*/ 25);
+    tokio::time::timeout_at(deadline, async {
+        wait_for_event_with_timeout(
+            resumed.thread.as_ref(),
+            |event| matches!(event, EventMsg::TurnComplete(_)),
+            Duration::from_secs(/*secs*/ 25),
+        )
+        .await;
+        queue_events
+            .wait_for_queue_empty(queue.as_ref(), thread_id, queue_event_cursor)
+            .await
+    })
+    .await
+    .context("resumed turn and owned queue acknowledgement exceeded the shared 25s deadline")??;
     assert!(queue.list(thread_id).await?.is_empty());
 
     let prompts = model_responses
