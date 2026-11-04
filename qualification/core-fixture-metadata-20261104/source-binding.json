@@ -22,9 +22,9 @@
     },
     {
       "path": "codex-rs/core/src/client.rs",
-      "blob": "7fd02dd6d129ca59a14af3f8757d4292ba308f32",
-      "bytes": 163343,
-      "sha256": "aa8cc9dcd303ecd043a6ca4f0e02b84910f4b527c5d122612403f17b2bf93ff0",
+      "blob": "a0edfcf911a28ce734c6a275729f5c8bffb1bb4e",
+      "sha256": "1e1f5f638ad6665145956bdc070a7182029f8c3f0137739804762a1a366f2e65",
+      "bytes": 163379,
       "base_blob": "247de45a878b5e4514990e99b2289fc3dc087a47"
     },
     {
@@ -57,23 +57,23 @@
     },
     {
       "path": "codex-rs/core/src/fixture_metadata_tests.rs",
-      "blob": "325154cf2d380fa386c872298f3911e8c3dd927a",
-      "bytes": 6032,
-      "sha256": "5bead2bd14b172b6339869b0a69850cebe8a7f71acc419738185ad05492f8524",
+      "blob": "d1922a2d741ef2dd213c93dcac77830d3011525d",
+      "sha256": "17dd52c2b1614142685a447a5315715fb1261a4b8e2bad88b2db1e48c2092317",
+      "bytes": 6272,
       "base_blob": null
     },
     {
       "path": "codex-rs/core/src/client_tests.rs",
-      "blob": "57013e1834afca7e97a4db3fe71637e683d2dae3",
-      "bytes": 57808,
-      "sha256": "f6f8b2b6611838d2b6df775d5e73db3205894a9e1b17cd12a24b35167ee1785a",
+      "blob": "e30eb70a977632fa349af9406aaf737caf51b0bc",
+      "sha256": "285542b801d1e0fd26fa50324df9696c5cab29ab0105818f6f4d9d4d4d090da8",
+      "bytes": 57950,
       "base_blob": "3a7fe78f26c3450ec3a2f6c307ba3622a3bbe7d8"
     },
     {
       "path": "codex-rs/core/tests/suite/fixture_metadata.rs",
-      "blob": "cb5a2b78ec083e326eccd1b4b986d9ad2b832bf7",
-      "bytes": 6462,
-      "sha256": "40a8883695da1e74e21cd42d49fb04c1cb7c899f6a6c0163ef756087e2580fb2",
+      "blob": "51d9e1c4bab57e3b65fe86d09023674065d441dc",
+      "sha256": "df632384451562596c65ab538239d44379ae39b2b3c398acadf0d6439d57021f",
+      "bytes": 6705,
       "base_blob": null
     },
     {
@@ -113,9 +113,9 @@
     },
     {
       "path": "codex-rs/codex-mcp/src/binding_tests.rs",
-      "blob": "71d2b12b62a875a63fe4ab7da141475c5312b3ff",
-      "bytes": 14916,
-      "sha256": "77b654c58f924f97801853e9b901f4a237c8d894f58c96ba58e52c2cb47b282b",
+      "blob": "336ead79607bfa83b54a9195a130c3ec84dd2b06",
+      "sha256": "39d6ae1b8a11e0a9e74c47fffd56f4088191dcf61bc422274f0f81c92d8e476d",
+      "bytes": 14956,
       "base_blob": "6e200299fb4a9259c5c396ba9b04980caeecb061"
     },
     {
@@ -206,5 +206,18 @@
     "new_blob": "06c53414c3274a6b7c5dfccffb381505c694af76",
     "owner": "root",
     "reason": "Original Mac Clippy rejected stderr macro; same existing diagnostic and 5s budget now use tracing."
+  },
+  "original_format_adoption": {
+    "source": "3568210b52377f97d1d15403c5b5f97894dfa3a1",
+    "run": 41786098496,
+    "job": 126428469217,
+    "paths": [
+      "codex-rs/codex-mcp/src/binding_tests.rs",
+      "codex-rs/core/src/client.rs",
+      "codex-rs/core/src/client_tests.rs",
+      "codex-rs/core/src/fixture_metadata_tests.rs",
+      "codex-rs/core/tests/suite/fixture_metadata.rs"
+    ],
+    "source_changed_gate_failed_before_native": true
   }
 }

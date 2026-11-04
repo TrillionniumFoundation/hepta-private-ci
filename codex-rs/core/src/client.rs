@@ -693,9 +693,11 @@ impl ModelClient {
 
     fn accepts_internal_chat_message_metadata(&self, endpoint: &str) -> bool {
         provider_accepts_internal_chat_message_metadata(endpoint)
-            || self.state.fixture_metadata.as_ref().is_some_and(|lease| {
-                lease.accepts_request(self.state.provider.info(), endpoint)
-            })
+            || self
+                .state
+                .fixture_metadata
+                .as_ref()
+                .is_some_and(|lease| lease.accepts_request(self.state.provider.info(), endpoint))
     }
 
     pub(crate) fn with_prompt_cache_key_override(

@@ -35,7 +35,9 @@ fn fixture_endpoint_requires_an_exact_literal_loopback_origin() {
         let provider = fixture(endpoint);
         assert!(
             OpenAiFixtureMetadataLease::for_owned_test_provider(
-                &provider, OPENAI_PROVIDER_ID, &provider,
+                &provider,
+                OPENAI_PROVIDER_ID,
+                &provider,
             )
             .is_none(),
             "{endpoint}",
@@ -50,7 +52,9 @@ fn replacement_provider_does_not_inherit_a_fixture_capability() {
     replacement.name = "Test Responses".to_string();
     assert!(
         OpenAiFixtureMetadataLease::for_owned_test_provider(
-            &provider, OPENAI_PROVIDER_ID, &replacement,
+            &provider,
+            OPENAI_PROVIDER_ID,
+            &replacement,
         )
         .is_none()
     );
@@ -61,7 +65,9 @@ fn replacement_provider_does_not_inherit_a_fixture_capability() {
     // Supplying the replacement as the alleged origin cannot mint a lease.
     assert!(
         OpenAiFixtureMetadataLease::for_owned_test_provider(
-            &replacement, OPENAI_PROVIDER_ID, &replacement,
+            &replacement,
+            OPENAI_PROVIDER_ID,
+            &replacement,
         )
         .is_none()
     );
@@ -69,7 +75,9 @@ fn replacement_provider_does_not_inherit_a_fixture_capability() {
     changed.requires_openai_auth = false;
     assert!(
         OpenAiFixtureMetadataLease::for_owned_test_provider(
-            &provider, OPENAI_PROVIDER_ID, &changed,
+            &provider,
+            OPENAI_PROVIDER_ID,
+            &changed,
         )
         .is_none()
     );
@@ -77,7 +85,9 @@ fn replacement_provider_does_not_inherit_a_fixture_capability() {
     changed.env_key = Some("THIRD_PARTY_KEY".to_string());
     assert!(
         OpenAiFixtureMetadataLease::for_owned_test_provider(
-            &provider, OPENAI_PROVIDER_ID, &changed,
+            &provider,
+            OPENAI_PROVIDER_ID,
+            &changed,
         )
         .is_none()
     );
@@ -85,7 +95,9 @@ fn replacement_provider_does_not_inherit_a_fixture_capability() {
     changed.http_headers = None;
     assert!(
         OpenAiFixtureMetadataLease::for_owned_test_provider(
-            &provider, OPENAI_PROVIDER_ID, &changed,
+            &provider,
+            OPENAI_PROVIDER_ID,
+            &changed,
         )
         .is_none()
     );
@@ -93,7 +105,9 @@ fn replacement_provider_does_not_inherit_a_fixture_capability() {
     changed.base_url = Some("http://127.0.0.1:47814/v1".to_string());
     assert!(
         OpenAiFixtureMetadataLease::for_owned_test_provider(
-            &provider, OPENAI_PROVIDER_ID, &changed,
+            &provider,
+            OPENAI_PROVIDER_ID,
+            &changed,
         )
         .is_none()
     );
@@ -109,7 +123,9 @@ fn transport_tuning_is_bound_into_the_final_snapshot() {
     configured.websocket_connect_timeout_ms = Some(200);
     configured.supports_websockets = true;
     let lease = OpenAiFixtureMetadataLease::for_owned_test_provider(
-        &provider, OPENAI_PROVIDER_ID, &configured,
+        &provider,
+        OPENAI_PROVIDER_ID,
+        &configured,
     )
     .expect("transport-only tuning keeps the explicit fixture");
     assert!(lease.matches_config(OPENAI_PROVIDER_ID, &configured));
@@ -123,7 +139,9 @@ fn transport_tuning_is_bound_into_the_final_snapshot() {
 fn fixture_request_uses_exact_endpoint_and_provider_snapshot() {
     let provider = fixture("http://127.0.0.1:47813/v1");
     let lease = OpenAiFixtureMetadataLease::for_owned_test_provider(
-        &provider, OPENAI_PROVIDER_ID, &provider,
+        &provider,
+        OPENAI_PROVIDER_ID,
+        &provider,
     )
     .expect("owned fixture");
     assert!(lease.accepts_request(&provider, "http://127.0.0.1:47813/v1"));
@@ -145,7 +163,9 @@ fn fixture_request_uses_exact_endpoint_and_provider_snapshot() {
 fn fixture_lease_lifetime_is_owned_by_explicit_clones() {
     let provider = fixture("http://127.0.0.1:47813/v1");
     let lease = OpenAiFixtureMetadataLease::for_owned_test_provider(
-        &provider, OPENAI_PROVIDER_ID, &provider,
+        &provider,
+        OPENAI_PROVIDER_ID,
+        &provider,
     )
     .expect("owned fixture");
     let weak = Arc::downgrade(&lease);
@@ -162,7 +182,9 @@ fn fixture_lease_lifetime_is_owned_by_explicit_clones() {
 fn fixture_debug_does_not_disclose_provider_values() {
     let provider = fixture("http://127.0.0.1:47813/v1");
     let lease = OpenAiFixtureMetadataLease::for_owned_test_provider(
-        &provider, OPENAI_PROVIDER_ID, &provider,
+        &provider,
+        OPENAI_PROVIDER_ID,
+        &provider,
     )
     .expect("owned fixture");
     let debug = format!("{lease:?}");

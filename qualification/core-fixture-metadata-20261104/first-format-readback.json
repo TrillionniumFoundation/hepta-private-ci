@@ -1,0 +1,158 @@
+{
+  "schema": 1,
+  "status": "ORIGINAL_FORMATTER_EXIT_ZERO_SOURCE_CHANGED_NATIVE_NOT_RUN",
+  "source": "3568210b52377f97d1d15403c5b5f97894dfa3a1",
+  "tree": "d78b774db086f65cdee0685545424b999a384674",
+  "run": 41786098496,
+  "job": 126428469217,
+  "reader_controls": {
+    "passed": 13,
+    "skipped": 0,
+    "optimized_python_rejected": true,
+    "source": "Original completed job steps and full job log"
+  },
+  "original_result": {
+    "schema": 1,
+    "status": "failed",
+    "run_id": "41786098496",
+    "run_attempt": "1",
+    "host": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "commands": [
+      {
+        "name": "source-commit",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "seconds": 0.001900324000018827
+      },
+      {
+        "name": "source-tree",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "rev-parse",
+          "HEAD^{tree}"
+        ],
+        "exit_code": 0,
+        "seconds": 0.0021113369999739007
+      },
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 0,
+        "seconds": 0.5126945890000343
+      },
+      {
+        "name": "rustc-version",
+        "argv": [
+          "rustc",
+          "-Vv"
+        ],
+        "exit_code": 0,
+        "seconds": 0.012806052000030377
+      },
+      {
+        "name": "nextest-version",
+        "argv": [
+          "cargo",
+          "nextest",
+          "--version"
+        ],
+        "exit_code": 0,
+        "seconds": 1.405959724000013
+      },
+      {
+        "name": "original-formatter",
+        "argv": [
+          "just",
+          "fmt",
+          "--base",
+          "5d19a578ac28a6ce7fc67a348b10297dc370c19f"
+        ],
+        "exit_code": 0,
+        "seconds": 1.545179308999991
+      },
+      {
+        "name": "source-clean-after-formatter",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 1,
+        "seconds": 0.49421293099999275
+      }
+    ],
+    "scopes": {},
+    "problems": [],
+    "scope": "Exact original Core metadata and recovery cases, new fixture capability controls, and complete model-provider-info library. Not complete Core or product acceptance.",
+    "source_commit": "3568210b52377f97d1d15403c5b5f97894dfa3a1",
+    "source_tree": "d78b774db086f65cdee0685545424b999a384674",
+    "source_inputs_unchanged": false
+  },
+  "formatted_outputs": [
+    {
+      "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+      "blob": "336ead79607bfa83b54a9195a130c3ec84dd2b06",
+      "sha256": "39d6ae1b8a11e0a9e74c47fffd56f4088191dcf61bc422274f0f81c92d8e476d",
+      "bytes": 14956,
+      "frames": 2
+    },
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "blob": "a0edfcf911a28ce734c6a275729f5c8bffb1bb4e",
+      "sha256": "1e1f5f638ad6665145956bdc070a7182029f8c3f0137739804762a1a366f2e65",
+      "bytes": 163379,
+      "frames": 19
+    },
+    {
+      "path": "codex-rs/core/src/client_tests.rs",
+      "blob": "e30eb70a977632fa349af9406aaf737caf51b0bc",
+      "sha256": "285542b801d1e0fd26fa50324df9696c5cab29ab0105818f6f4d9d4d4d090da8",
+      "bytes": 57950,
+      "frames": 7
+    },
+    {
+      "path": "codex-rs/core/src/fixture_metadata_tests.rs",
+      "blob": "d1922a2d741ef2dd213c93dcac77830d3011525d",
+      "sha256": "17dd52c2b1614142685a447a5315715fb1261a4b8e2bad88b2db1e48c2092317",
+      "bytes": 6272,
+      "frames": 1
+    },
+    {
+      "path": "codex-rs/core/tests/suite/fixture_metadata.rs",
+      "blob": "51d9e1c4bab57e3b65fe86d09023674065d441dc",
+      "sha256": "df632384451562596c65ab538239d44379ae39b2b3c398acadf0d6439d57021f",
+      "bytes": 6705,
+      "frames": 1
+    }
+  ],
+  "transport": "Thirty exact base64 transport frames from the original job log were decoded in order and independently matched declared byte length, SHA-256 and Git blob. Only original rustfmt changes are adopted.",
+  "original_job_log": {
+    "bytes": 1830814,
+    "sha256": "759488f2d20dc07cdd038a013cd8eca5953f418bf2ffbc54ee4e706d8d493726"
+  },
+  "artifact": {
+    "id": 13301416523,
+    "bytes": 1835427,
+    "sha256": "63ce14b86b4d7b8884e254209eb1b4e3fb781e6d3462e83717af3849b2fa5c90",
+    "run": 41786098496,
+    "job": 126428469217
+  },
+  "native_executions": 0
+}

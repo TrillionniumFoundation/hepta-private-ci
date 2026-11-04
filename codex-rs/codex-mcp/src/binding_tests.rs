@@ -433,7 +433,11 @@ async fn configured_hook_cannot_bind_absent_or_filtered_tool() {
             .is_some()
     );
     assert!(binding.tool_info(SERVER_NAME, TOOL_NAME).is_none());
-    assert!(binding.prepare_call_for_hook(SERVER_NAME, TOOL_NAME).is_none());
+    assert!(
+        binding
+            .prepare_call_for_hook(SERVER_NAME, TOOL_NAME)
+            .is_none()
+    );
 }
 
 #[tokio::test]

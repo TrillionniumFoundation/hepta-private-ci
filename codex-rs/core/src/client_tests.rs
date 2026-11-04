@@ -1507,8 +1507,9 @@ mod fixture_metadata_isolation {
     use codex_model_provider_info::OPENAI_PROVIDER_ID;
 
     fn fixture_provider() -> ModelProviderInfo {
-        let mut provider =
-            ModelProviderInfo::create_openai_provider(Some("http://127.0.0.1:47813/v1".to_string()));
+        let mut provider = ModelProviderInfo::create_openai_provider(Some(
+            "http://127.0.0.1:47813/v1".to_string(),
+        ));
         provider.supports_websockets = false;
         provider
     }
@@ -1559,20 +1560,29 @@ mod fixture_metadata_isolation {
         let provider = fixture_provider();
         let ordinary = client(provider.clone());
         let lease = OpenAiFixtureMetadataLease::for_owned_test_provider(
-            &provider, OPENAI_PROVIDER_ID, &provider,
+            &provider,
+            OPENAI_PROVIDER_ID,
+            &provider,
         )
         .expect("owned fixture");
         let privileged = client(provider.clone()).with_fixture_metadata(Some(Arc::clone(&lease)));
         let endpoint = provider.base_url.as_deref().expect("fixture endpoint");
-        assert!(wire_item(&ordinary, endpoint)["internal_chat_message_metadata_passthrough"].is_null());
         assert!(
-            wire_item(&privileged, endpoint)["internal_chat_message_metadata_passthrough"].is_object()
+            wire_item(&ordinary, endpoint)["internal_chat_message_metadata_passthrough"].is_null()
+        );
+        assert!(
+            wire_item(&privileged, endpoint)["internal_chat_message_metadata_passthrough"]
+                .is_object()
         );
         let clone = privileged.clone();
         drop(privileged);
         drop(lease);
-        assert!(wire_item(&clone, endpoint)["internal_chat_message_metadata_passthrough"].is_object());
-        assert!(wire_item(&ordinary, endpoint)["internal_chat_message_metadata_passthrough"].is_null());
+        assert!(
+            wire_item(&clone, endpoint)["internal_chat_message_metadata_passthrough"].is_object()
+        );
+        assert!(
+            wire_item(&ordinary, endpoint)["internal_chat_message_metadata_passthrough"].is_null()
+        );
         assert!(
             wire_item(&clone, "http://127.0.0.1:47814/v1")
                 ["internal_chat_message_metadata_passthrough"]
@@ -1588,7 +1598,9 @@ mod fixture_metadata_isolation {
     fn fixture_client_rejects_provider_replacement_even_at_the_same_url() {
         let provider = fixture_provider();
         let lease = OpenAiFixtureMetadataLease::for_owned_test_provider(
-            &provider, OPENAI_PROVIDER_ID, &provider,
+            &provider,
+            OPENAI_PROVIDER_ID,
+            &provider,
         )
         .expect("owned fixture");
         let mut replacement = provider.clone();

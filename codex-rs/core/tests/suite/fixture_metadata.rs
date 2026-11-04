@@ -51,14 +51,19 @@ async fn metadata_lease_survives_dropping_the_test_container() -> Result<()> {
     let server = MockServer::start().await;
     let response = mount_sse_once(
         &server,
-        sse(vec![ev_response_created("extracted"), ev_completed("extracted")]),
+        sse(vec![
+            ev_response_created("extracted"),
+            ev_completed("extracted"),
+        ]),
     )
     .await;
     let codex = test_codex().build(&server).await?.codex;
     submit(&codex, "extracted client").await?;
     let body = response.single_request().body_json();
-    assert!(user_metadata(&body, "extracted client")
-        .is_some_and(|metadata| metadata["turn_id"].as_str().is_some()));
+    assert!(
+        user_metadata(&body, "extracted client")
+            .is_some_and(|metadata| metadata["turn_id"].as_str().is_some())
+    );
     codex.shutdown_and_wait().await?;
     Ok(())
 }
@@ -89,12 +94,20 @@ async fn metadata_lease_follows_child_and_resumed_sessions_in_the_same_manager()
     submit(&child.thread, "child request").await?;
     child.thread.shutdown_and_wait().await?;
     test.codex.shutdown_and_wait().await?;
-    assert!(test.thread_manager.remove_thread(&parent_id).await.is_some());
+    assert!(
+        test.thread_manager
+            .remove_thread(&parent_id)
+            .await
+            .is_some()
+    );
     let resumed = test
         .thread_manager
         .resume_thread_from_rollout(
             test.config.clone(),
-            test.session_configured.rollout_path.clone().context("rollout path")?,
+            test.session_configured
+                .rollout_path
+                .clone()
+                .context("rollout path")?,
             test.thread_manager.auth_manager(),
             /*parent_trace*/ None,
             ClientMcpExtensions::default(),
@@ -105,9 +118,10 @@ async fn metadata_lease_follows_child_and_resumed_sessions_in_the_same_manager()
     submit(&resumed.thread, "resumed request").await?;
     let requests = response.requests();
     assert_eq!(requests.len(), 3);
-    for (request, text) in requests
-        .iter()
-        .zip(["parent request", "child request", "resumed request"])
+    for (request, text) in
+        requests
+            .iter()
+            .zip(["parent request", "child request", "resumed request"])
     {
         assert!(
             user_metadata(&request.body_json(), text)
@@ -124,7 +138,10 @@ async fn replacing_provider_in_the_same_manager_does_not_inherit_metadata() -> R
     let server = MockServer::start().await;
     let response = mount_sse_once(
         &server,
-        sse(vec![ev_response_created("replacement"), ev_completed("replacement")]),
+        sse(vec![
+            ev_response_created("replacement"),
+            ev_completed("replacement"),
+        ]),
     )
     .await;
     let test = test_codex().build(&server).await?;
@@ -149,7 +166,10 @@ async fn changing_fixture_url_in_the_same_manager_does_not_inherit_metadata() ->
     let redirected = MockServer::start().await;
     let response = mount_sse_once(
         &redirected,
-        sse(vec![ev_response_created("other-url"), ev_completed("other-url")]),
+        sse(vec![
+            ev_response_created("other-url"),
+            ev_completed("other-url"),
+        ]),
     )
     .await;
     let test = test_codex().build(&original).await?;
