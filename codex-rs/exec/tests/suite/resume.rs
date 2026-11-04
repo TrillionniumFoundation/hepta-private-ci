@@ -1,5 +1,6 @@
 #![allow(clippy::unwrap_used)]
 use anyhow::Context;
+use codex_core::config::Config;
 use codex_core::config::ConfigBuilder;
 use codex_core::init_state_db;
 use codex_protocol::ThreadId;
@@ -244,6 +245,21 @@ async fn exec_resume_last_appends_to_existing_file() -> anyhow::Result<()> {
     Ok(())
 }
 
+// Simulate loss of the SQLite index row while retaining the rollout and its
+// live queue identity. The product delete_thread API permanently seals a thread;
+// using it here tests hard deletion instead of index repair.
+async fn remove_thread_index_row(config: &Config, thread_id: ThreadId) -> anyhow::Result<()> {
+    let sqlite = config.sqlite_config();
+    let pool = sqlite.open_read_write_pool(&sqlite.state_db_path()).await?;
+    let result = sqlx::query("DELETE FROM threads WHERE id = ?")
+        .bind(thread_id.to_string())
+        .execute(&pool)
+        .await?;
+    assert_eq!(result.rows_affected(), 1);
+    pool.close().await;
+    Ok(())
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Result<()> {
     skip_if_no_network!(Ok(()));
@@ -273,7 +289,14 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(thread_id).await?, 1);
+    remove_thread_index_row(&config, thread_id).await?;
+    assert!(state_db.get_thread(thread_id).await?.is_none());
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(thread_id)
+            .await?
+    );
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;
@@ -336,7 +359,14 @@ async fn exec_resume_last_trusts_usable_state_db_candidate() -> anyhow::Result<(
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(newer_thread_id).await?, 1);
+    remove_thread_index_row(&config, newer_thread_id).await?;
+    assert!(state_db.get_thread(newer_thread_id).await?.is_none());
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(newer_thread_id)
+            .await?
+    );
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;
@@ -497,6 +527,8 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
 
     let marker_a = format!("resume-cwd-a-{}", Uuid::new_v4());
     let prompt_a = format!("echo {marker_a}");
+    let phase_started = std::time::Instant::now();
+    eprintln!("resume_cwd_filter phase=create_a start");
     test.cmd_with_server(&server)
         .arg("--skip-git-repo-check")
         .arg("-C")
@@ -504,9 +536,15 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
         .arg(&prompt_a)
         .assert()
         .success();
+    eprintln!(
+        "resume_cwd_filter phase=create_a elapsed_ms={}",
+        phase_started.elapsed().as_millis()
+    );
 
     let marker_b = format!("resume-cwd-b-{}", Uuid::new_v4());
     let prompt_b = format!("echo {marker_b}");
+    let phase_started = std::time::Instant::now();
+    eprintln!("resume_cwd_filter phase=create_b start");
     test.cmd_with_server(&server)
         .arg("--skip-git-repo-check")
         .arg("-C")
@@ -514,6 +552,10 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
         .arg(&prompt_b)
         .assert()
         .success();
+    eprintln!(
+        "resume_cwd_filter phase=create_b elapsed_ms={}",
+        phase_started.elapsed().as_millis()
+    );
 
     let sessions_dir = test.home_path().join("sessions");
     find_session_file_containing_marker(&sessions_dir, &marker_a)
@@ -529,6 +571,8 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
     let session_id_b = extract_conversation_id(&path_b);
     let marker_b_touch = format!("resume-cwd-b-touch-{}", Uuid::new_v4());
     let prompt_b_touch = format!("echo {marker_b_touch}");
+    let phase_started = std::time::Instant::now();
+    eprintln!("resume_cwd_filter phase=touch_b start");
     test.cmd_with_server(&server)
         .arg("--skip-git-repo-check")
         .arg("-C")
@@ -538,6 +582,10 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
         .arg(&prompt_b_touch)
         .assert()
         .success();
+    eprintln!(
+        "resume_cwd_filter phase=touch_b elapsed_ms={}",
+        phase_started.elapsed().as_millis()
+    );
 
     // `resume --last` sorts by `updated_at`, which is second-granularity. Sleep so
     // the upcoming `resume --last --all` write lands in a later second and becomes
@@ -546,6 +594,8 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
 
     let marker_b2 = format!("resume-cwd-b-2-{}", Uuid::new_v4());
     let prompt_b2 = format!("echo {marker_b2}");
+    let phase_started = std::time::Instant::now();
+    eprintln!("resume_cwd_filter phase=resume_all start");
     test.cmd_with_server(&server)
         .arg("--skip-git-repo-check")
         .arg("-C")
@@ -556,6 +606,10 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
         .arg(&prompt_b2)
         .assert()
         .success();
+    eprintln!(
+        "resume_cwd_filter phase=resume_all elapsed_ms={}",
+        phase_started.elapsed().as_millis()
+    );
 
     let resumed_path_all = find_session_file_containing_marker(&sessions_dir, &marker_b2)
         .expect("no resumed session file containing marker_b2");
@@ -566,6 +620,8 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
 
     let marker_a2 = format!("resume-cwd-a-2-{}", Uuid::new_v4());
     let prompt_a2 = format!("echo {marker_a2}");
+    let phase_started = std::time::Instant::now();
+    eprintln!("resume_cwd_filter phase=resume_cwd start");
     test.cmd_with_server(&server)
         .arg("--skip-git-repo-check")
         .arg("-C")
@@ -575,6 +631,10 @@ async fn exec_resume_last_respects_cwd_filter_and_all_flag() -> anyhow::Result<(
         .arg(&prompt_a2)
         .assert()
         .success();
+    eprintln!(
+        "resume_cwd_filter phase=resume_cwd elapsed_ms={}",
+        phase_started.elapsed().as_millis()
+    );
 
     let resumed_path_cwd = find_session_file_containing_marker(&sessions_dir, &marker_a2)
         .expect("no resumed session file containing marker_a2");

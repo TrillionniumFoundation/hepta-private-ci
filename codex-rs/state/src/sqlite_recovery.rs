@@ -18,11 +18,17 @@ use std::sync::Arc;
 #[path = "sqlite_recovery_image.rs"]
 mod image;
 
+#[cfg(windows)]
+#[path = "sqlite_recovery_windows.rs"]
+mod windows;
+#[cfg(windows)]
+use windows::RetainedObject;
+
 #[cfg(unix)]
 use std::ffi::CString;
 #[cfg(unix)]
 use std::ffi::OsStr;
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 use std::fs::File;
 #[cfg(unix)]
 use std::fs::Metadata;
@@ -80,24 +86,29 @@ pub struct ExistingSqliteRecoveryGuard {
 #[derive(Debug)]
 struct RecoveryGuardInner {
     database_path: PathBuf,
-    #[cfg(unix)]
+    #[cfg(any(unix, windows))]
     parent: RetainedObject,
-    #[cfg(unix)]
+    #[cfg(any(unix, windows))]
     database: RetainedObject,
-    #[cfg(unix)]
+    #[cfg(any(unix, windows))]
     sidecars: [RetainedOptionalObject; 3],
 }
 
 impl SqliteConfig {
     /// Retain the parent, database, WAL, SHM, and rollback-journal identities.
     ///
-    /// Opening descriptors is read-only and uses `O_NOFOLLOW`; this operation
+    /// Opening descriptors is read-only and refuses redirected paths. Windows
+    /// requires private local NTFS objects and refuses live write/delete handles;
+    /// Unix uses `O_NOFOLLOW`. This operation
     /// never creates, truncates, renames, chmods, checkpoints, or opens SQLite.
     pub fn bind_existing_recovery_database(
         &self,
         path: &Path,
     ) -> Result<ExistingSqliteRecoveryGuard, SqliteRecoveryError> {
-        if path.parent() != Some(self.home()) {
+        if !path
+            .parent()
+            .is_some_and(|parent| same_recovery_path(parent, self.home()))
+        {
             return Err(SqliteRecoveryError::Indeterminate);
         }
         ExistingSqliteRecoveryGuard::bind(path)
@@ -127,14 +138,17 @@ impl SqliteConfig {
 }
 
 impl ExistingSqliteRecoveryGuard {
-    #[cfg(unix)]
+    #[cfg(any(unix, windows))]
     fn bind(database_path: &Path) -> Result<Self, SqliteRecoveryError> {
         let parent_path = database_path
             .parent()
             .ok_or(SqliteRecoveryError::Indeterminate)?;
-        let canonical_parent = parent_path.canonicalize().map_err(indeterminate)?;
-        if canonical_parent != parent_path {
-            return Err(SqliteRecoveryError::Indeterminate);
+        #[cfg(unix)]
+        {
+            let canonical_parent = parent_path.canonicalize().map_err(indeterminate)?;
+            if canonical_parent != parent_path {
+                return Err(SqliteRecoveryError::Indeterminate);
+            }
         }
 
         let parent = RetainedObject::bind_parent(parent_path)?;
@@ -168,7 +182,7 @@ impl ExistingSqliteRecoveryGuard {
         Ok(guard)
     }
 
-    #[cfg(not(unix))]
+    #[cfg(not(any(unix, windows)))]
     fn bind(database_path: &Path) -> Result<Self, SqliteRecoveryError> {
         let _ = database_path;
         Err(SqliteRecoveryError::Indeterminate)
@@ -182,13 +196,18 @@ impl ExistingSqliteRecoveryGuard {
     }
 
     fn revalidate_for(&self, config: &SqliteConfig) -> Result<(), SqliteRecoveryError> {
-        if self.inner.database_path.parent() != Some(config.home()) {
+        if !self
+            .inner
+            .database_path
+            .parent()
+            .is_some_and(|parent| same_recovery_path(parent, config.home()))
+        {
             return Err(SqliteRecoveryError::Indeterminate);
         }
         self.revalidate()
     }
 
-    #[cfg(unix)]
+    #[cfg(any(unix, windows))]
     fn revalidate(&self) -> Result<(), SqliteRecoveryError> {
         self.inner.parent.revalidate()?;
         self.inner.database.revalidate()?;
@@ -198,13 +217,36 @@ impl ExistingSqliteRecoveryGuard {
         Ok(())
     }
 
-    #[cfg(not(unix))]
+    #[cfg(not(any(unix, windows)))]
     fn revalidate(&self) -> Result<(), SqliteRecoveryError> {
         Err(SqliteRecoveryError::Indeterminate)
     }
 }
 
-#[cfg(unix)]
+/// Compare only namespace spellings of the same path. AbsolutePathBuf strips
+/// Windows drive/UNC device prefixes, while retained OS paths may keep them.
+/// This does not case-fold, resolve a reparse point, or replace handle identity
+/// validation; every admitted existing object still passes the retained guard.
+fn same_recovery_path(left: &Path, right: &Path) -> bool {
+    if left == right {
+        return true;
+    }
+    #[cfg(windows)]
+    {
+        let (Some(left), Some(right)) = (left.to_str(), right.to_str()) else {
+            return false;
+        };
+        let normalized_left = codex_utils_absolute_path::normalize_windows_device_path(left);
+        let normalized_right = codex_utils_absolute_path::normalize_windows_device_path(right);
+        normalized_left.as_deref().unwrap_or(left) == normalized_right.as_deref().unwrap_or(right)
+    }
+    #[cfg(not(windows))]
+    {
+        false
+    }
+}
+
+#[cfg(any(unix, windows))]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum ObjectKind {
     PrivateDirectory,
@@ -284,14 +326,14 @@ impl RetainedObject {
     }
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 #[derive(Debug)]
 enum RetainedOptionalObject {
     Absent(PathBuf),
     Present(RetainedObject),
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 impl RetainedOptionalObject {
     fn bind(parent: &File, path: PathBuf) -> Result<Self, SqliteRecoveryError> {
         match std::fs::symlink_metadata(&path) {
@@ -390,14 +432,14 @@ fn openat_read_only(parent: &File, file_name: &OsStr) -> Result<File, SqliteReco
     Ok(unsafe { File::from_raw_fd(descriptor) })
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 fn sqlite_sidecar_path(database_path: &Path, suffix: &str) -> PathBuf {
     let mut path = database_path.as_os_str().to_os_string();
     path.push(suffix);
     PathBuf::from(path)
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 fn indeterminate(_: std::io::Error) -> SqliteRecoveryError {
     SqliteRecoveryError::Indeterminate
 }
@@ -405,3 +447,7 @@ fn indeterminate(_: std::io::Error) -> SqliteRecoveryError {
 #[cfg(all(test, unix))]
 #[path = "sqlite_recovery_tests.rs"]
 mod tests;
+
+#[cfg(all(test, windows))]
+#[path = "sqlite_recovery_windows_tests.rs"]
+mod windows_tests;

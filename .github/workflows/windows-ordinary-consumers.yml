@@ -1,0 +1,226 @@
+name: Native Windows ordinary business consumers
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-codex-adapter/**"
+      - ".github/workflows/windows-ordinary-consumers.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-ordinary-consumers-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  original-libraries:
+    name: Original Windows business libraries (${{ matrix.revision }})
+    strategy:
+      fail-fast: false
+      matrix:
+        revision: [source-head, base-merge]
+    runs-on: windows-2025
+    timeout-minutes: 120
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      EXPECTED_SOURCE_SHA: ${{ matrix.revision == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+      PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      CHECKOUT_KIND: ${{ matrix.revision }}
+      PYTHONIOENCODING: "utf-8"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout exact source or expected merge
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.EXPECTED_SOURCE_SHA }}
+          persist-credentials: false
+
+      - name: Bind exact source and original library scopes
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          output = Path(os.environ["RUNNER_TEMP"]) / "ordinary-consumers"
+          output.mkdir()
+          head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          commit = subprocess.check_output(["git", "cat-file", "-p", "HEAD"], text=True)
+          parents = [line.removeprefix("parent ") for line in commit.split("\n\n", 1)[0].splitlines()
+                     if line.startswith("parent ")]
+          if head != os.environ["EXPECTED_SOURCE_SHA"]:
+              raise RuntimeError("source identity mismatch")
+          if os.environ["CHECKOUT_KIND"] == "base-merge":
+              expected = [os.environ["PR_BASE_SHA"], os.environ["PR_HEAD_SHA"]]
+              if parents != expected:
+                  raise RuntimeError(f"unexpected merge parents: {parents} != {expected}")
+          inputs = [
+              ".bazelrc", "MODULE.bazel.lock", "codex-rs/Cargo.lock",
+              "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+              "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+              "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs",
+              "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+              "codex-rs/utils/path-utils/src/private_state_windows.rs",
+              ".github/workflows/windows-ordinary-consumers.yml",
+          ]
+          source = {
+              "head": head,
+              "tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "parents": parents,
+              "checkout_kind": os.environ["CHECKOUT_KIND"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "inputs": {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in inputs},
+          }
+          (output / "source.json").write_text(json.dumps(source, indent=2) + "\n")
+          subprocess.run(["git", "diff", "--exit-code"], check=True)
+          PY
+
+      - name: Prepare the original native Windows Bazel policy
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+
+      - name: Run all original library targets without filters or retries
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          export HEPTA_CI_BASH="$(cygpath -w "$BASH")"
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import shutil
+          import subprocess
+          import sys
+          import time
+          import xml.etree.ElementTree as ET
+
+          output = Path(os.environ["RUNNER_TEMP"]) / "ordinary-consumers"
+          scopes = {
+              "hepta-intelligence": {
+                  "durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+                  "invalid_authentication_artifact_or_dataset_never_calls_any_port",
+                  "ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+                  "old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch",
+              },
+              "hepta-bao-adapter": {
+                  "issue_unknown_reconciles_without_duplicate_issue",
+                  "reused_operation_id_with_changed_semantics_conflicts",
+                  "issue_rejects_non_active_provider_observations_without_durable_mutation",
+                  "renew_unknown_blocks_fabricated_success_until_reconciled",
+                  "revoke_unknown_stays_nonterminal_until_provider_observation",
+                  "provider_not_applied_restores_active_lease_after_unknown",
+                  "expiry_is_durable_and_terminal_for_renewal",
+                  "unavailable_storage_never_publishes_a_prepared_operation",
+              },
+              "hepta-codex-adapter": {
+                  "thread_read_recovery_keeps_in_progress_indeterminate",
+                  "thread_read_recovery_rejects_session_drift_and_duplicate_turns",
+                  "thread_read_recovery_requires_exact_stable_message_and_input",
+              },
+          }
+          targets = [f"//codex-rs/{name}:{name}-unit-tests" for name in scopes]
+          bash = Path(os.environ["HEPTA_CI_BASH"])
+          bash_sha256 = hashlib.sha256(bash.read_bytes()).hexdigest()
+          command = [
+              str(bash), ".github/scripts/run-bazel-ci.sh",
+              "--print-failed-action-summary", "--print-failed-test-logs",
+              "--windows-msvc-host-platform", "--",
+              "test", "--platforms=//:windows_x86_64_msvc",
+              "--nocache_test_results", "--flaky_test_attempts=1", "--test_output=all",
+              "--build_metadata=COMMIT_SHA=" + os.environ["EXPECTED_SOURCE_SHA"],
+              "--", *targets,
+          ]
+          started = time.time()
+          log = output / "original-libraries.log"
+          with log.open("wb") as stream:
+              result = subprocess.run(command, stdout=stream, stderr=subprocess.STDOUT)
+          receipt = {
+              "command": command, "started_at": started, "wall_seconds": time.time() - started,
+              "exit_code": result.returncode, "log_sha256": hashlib.sha256(log.read_bytes()).hexdigest(),
+              "original_targets": targets, "targets": {},
+              "launcher": {"path": str(bash), "sha256": bash_sha256},
+          }
+          if hashlib.sha256(bash.read_bytes()).hexdigest() != bash_sha256:
+              raise RuntimeError("native Git Bash launcher changed during execution")
+          (output / "result.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          info = subprocess.run([
+              sys.executable, ".github/scripts/run_bazel_with_buildbuddy.py",
+              "info", "--config=ci-windows", "--host_platform=//:local_windows_msvc",
+              "--platforms=//:windows_x86_64_msvc", "bazel-testlogs",
+          ], capture_output=True, text=True)
+          if info.returncode:
+              raise RuntimeError("cannot locate original Bazel test logs: " + info.stderr[-4000:])
+          root = Path(info.stdout.strip().splitlines()[-1])
+          all_required_passed = True
+          for name, required in scopes.items():
+              folder = root / "codex-rs" / name / (name + "-unit-tests")
+              seen = set()
+              retained = []
+              for path in sorted(folder.rglob("*")):
+                  if not path.is_file() or path.name not in {"test.log", "test.xml"}:
+                      continue
+                  destination = output / "native-test-logs" / path.relative_to(root)
+                  destination.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copyfile(path, destination)
+                  data = destination.read_bytes()
+                  record = {
+                      "path": path.relative_to(root).as_posix(), "bytes": len(data),
+                      "sha256": hashlib.sha256(data).hexdigest(), "mtime": path.stat().st_mtime,
+                  }
+                  if path.name == "test.log":
+                      text = re.sub(r"\x1b\[[0-9;]*m", "", data.decode(errors="replace"))
+                      seen.update(n.rsplit("::", 1)[-1] for n in re.findall(r"(?m)^test (\S+) \.\.\. ok\r?$", text))
+                      record["summaries"] = re.findall(r"test result: [^\r\n]+", text)
+                  else:
+                      tree = ET.fromstring(data)
+                      record["xml_testcases"] = len(tree.findall(".//testcase"))
+                      record["xml_failures"] = len(tree.findall(".//failure")) + len(tree.findall(".//error"))
+                  retained.append(record)
+              missing = sorted(required - seen)
+              receipt["targets"][name] = {
+                  "required_original_controls": sorted(required), "missing": missing,
+                  "observed_passed_names": sorted(seen), "retained": retained,
+              }
+              all_required_passed = all_required_passed and bool(retained) and not missing
+          source = json.loads((output / "source.json").read_text())
+          receipt["unchanged_inputs"] = all(
+              hashlib.sha256(Path(p).read_bytes()).hexdigest() == sha
+              for p, sha in source["inputs"].items()
+          )
+          (output / "result.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          print(json.dumps(receipt, indent=2))
+          print(log.read_text(errors="replace")[-12000:])
+          subprocess.run(["git", "diff", "--exit-code"], check=True)
+          if not receipt["unchanged_inputs"]:
+              raise RuntimeError("source or execution inputs changed")
+          if result.returncode:
+              raise SystemExit(result.returncode)
+          if not all_required_passed:
+              raise RuntimeError("an original control or the unavailable-storage negative control did not execute and pass")
+          PY
+
+      - name: Preserve original native evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-ordinary-consumers-${{ matrix.revision }}-${{ env.EXPECTED_SOURCE_SHA }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/ordinary-consumers/
+            ${{ runner.temp }}/bazel-execution-logs/
+          if-no-files-found: error
+          retention-days: 14
