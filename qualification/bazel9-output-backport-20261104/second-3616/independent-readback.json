@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "3616f6fcb1a2fdf77398a3a04bb906301af7b153",
+  "original_run": 41760763714,
+  "artifact_id": 13289229371,
+  "zip_bytes": 34668,
+  "zip_sha256": "09e35e87906ddc00df06f14153e348bcb023efc5a789557a7b051e6689674747",
+  "all_member_crc": true,
+  "original_qualification_status": "failed",
+  "helper_inputs": {
+    "count": 6,
+    "all_exact_git_bytes": true,
+    "map_sha256": "2bb4db9d76a9db49555e0b79b90fc0f586e749dec5d240e13b457c9e25c4f964"
+  },
+  "outputs": 32,
+  "actual_version_command": {
+    "name": "builder-version",
+    "command": [
+      "C:\\hostedtoolcache\\windows\\bazelisk\\1.28.1\\x64\\bazel.EXE",
+      "--nosystem_rc",
+      "--nohome_rc",
+      "--output_base=D:\\a\\_temp\\bazel9-output-backport\\b",
+      "--output_user_root=D:\\a\\_temp\\bazel9-output-backport\\u",
+      "version",
+      "--gnu_format"
+    ],
+    "cwd": "D:\\a\\_temp\\bazel9-output-backport\\source",
+    "exit": 0,
+    "elapsed_seconds": 5.625
+  },
+  "exact_files": {
+    "bazel9-output-backport/evidence/builder-version.stdout": {
+      "bytes": 29,
+      "sha256": "eb1089f38212a45ad1220ff5ddcda5d71b02f63b9a9dbcfdafe66a22ba130d34"
+    },
+    "bazel9-output-backport/evidence/builder-version.stderr": {
+      "bytes": 204,
+      "sha256": "1d761a2a5e0f8d6ded01eae6b30554b38df97d9e5879a24fe931966b81240633"
+    },
+    "bazel9-output-backport/evidence/receipt.json": {
+      "bytes": 11131,
+      "sha256": "67bb33662dc4bc7786776aa5d1c95cef5f207ae331f8795c452b03dc55220771"
+    }
+  },
+  "original_cpp_executions": 0,
+  "original_gtest_executions": 0,
+  "original_robrix_executions": 0,
+  "evidence_verification": "passed",
+  "scope": "Read-only original pre-build failure diagnosis, not product qualification.",
+  "readback_run": 41761775689,
+  "readback_job": 126350865589,
+  "readback_source": "64fe6245e9c1f9474803935230480c86dfe81ef6"
+}

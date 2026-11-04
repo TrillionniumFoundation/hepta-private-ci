@@ -29,3 +29,7 @@ Posture: **Draft / HOLD_NO_GO / DENY_ALL**. No main merge, deployment, activatio
 ## First hosted construction failure
 
 Source `58290bcdf0ae2ee7eb12bcd6a8af2627873cd959` fetched and verified the exact upstream source and applied the exact patch, then failed at the builder-version probe before C++ compilation or any test. Bazel8.4.2 rejected the `--version` shortcut placed after startup options. The complete decoded job log and original artifact identity are retained under `first-58290/`. The successor uses the official `version --gnu_format` command after the same startup options, retaining strict version equality. No source patch, build target, test case, assertion, retry count or time budget is changed.
+
+## Second hosted version-reader failure
+
+Source `3616f6fcb1a2fdf77398a3a04bb906301af7b153` reached the actual version command with exit0 but its single-line reader rejected the two correct pinned lines. Independent read-only ZIP verification reconstructed all 29 original stdout bytes: `Bazelisk v1.28.1\nbazel 8.4.2\n`. Pinned Bazelisk's source explicitly prints its own GNU-format version before the underlying Bazel version. The successor requires both exact pinned lines and records the observed versions; it does not discard arbitrary lines or accept other versions. Full negative job output, original stdout/stderr/receipt bytes and the independently executed verification report are retained under `second-3616/`. No C++, GTest or Robrix case had executed on that failed source.

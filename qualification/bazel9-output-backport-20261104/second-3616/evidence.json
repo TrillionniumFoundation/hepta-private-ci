@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "source": "3616f6fcb1a2fdf77398a3a04bb906301af7b153",
+  "source_tree": "c7ca9b43daaebc7cdf4781a4caacb1f47822d4be",
+  "run_id": 41760763714,
+  "job_id": 126347653644,
+  "conclusion": "FAILED_BEFORE_CPP_BUILD_AND_GTEST",
+  "actual_probe_exit": 0,
+  "actual_stdout": "Bazelisk v1.28.1\nbazel 8.4.2\n",
+  "actual_stdout_bytes": 29,
+  "actual_stdout_sha256": "eb1089f38212a45ad1220ff5ddcda5d71b02f63b9a9dbcfdafe66a22ba130d34",
+  "mechanism": "Pinned Bazelisk intentionally prints its own GNU-format version before the selected Bazel version. The one-line reader rejected this complete correct two-line output.",
+  "official_bazelisk_source": "https://github.com/bazelbuild/bazelisk/blob/v1.28.1/core/core.go",
+  "successor": "Require both exact pinned lines: Bazelisk v1.28.1 and bazel 8.4.2. Record both and print observed text on mismatch. No generic line skipping or version relaxation.",
+  "original_cpp_executions": 0,
+  "original_gtest_executions": 0,
+  "original_robrix_executions": 0,
+  "full_decoded_log_bytes": 151153,
+  "full_decoded_log_sha256": "9a8e5f83987506db375d4e74db74cb4fda678347f35e3459d5377998a3879023",
+  "full_gzip_bytes": 151186,
+  "full_gzip_sha256": "11765456b0ceb221e1d159ef2fb2e7e3321117581932bbfdb82d142dc02fb2ac",
+  "posture": "Draft / HOLD_NO_GO / DENY_ALL"
+}
