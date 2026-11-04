@@ -319,6 +319,100 @@ def emit_raw(name, raw):
     print("RAW_ORIGINAL_LOG_END " + name, flush=True)
 
 
+
+def inspect_wrapper(spec, receipt, members, git):
+    require(receipt["status"] == "passed", "original wrapper qualification failed")
+    windows = spec["host"] == "windows"
+    config = "ci-windows" if windows else "ci-linux"
+    require(receipt["config"] == config, "wrong native configuration")
+    require(("Windows" if windows else "Linux") in receipt["platform"], "wrong native platform")
+    binding = json.loads(git.read("qualification/windows-archive-inputs-20261104/source-binding.json"))
+    require(binding["original_case_count"] == len(binding["original_cases"]) == 18 and
+            len(set(binding["original_cases"])) == 18, "invalid original test inventory")
+    required = set(binding["original_cases"])
+    if windows:
+        require(binding["native_windows_case_count"] == 19, "wrong Windows total")
+        required.add(binding["native_windows_case"].rsplit("::", 1)[-1])
+    text = members["wrapper.log"].decode().replace("\r\n", "\n")
+    summaries = re.findall(r"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out", text)
+    require(summaries == [("ok", str(len(required)), "0", "0", "0", "0")], "incomplete original wrapper suite")
+    names = re.findall(r"^test (\S+) \.\.\. ok$", text, re.M)
+    require(len(names) == len(set(names)) == len(required) and
+            {name.rsplit("::", 1)[-1] for name in names} == required, "wrapper case identities differ")
+    require("skipping test:" not in text.lower() and receipt["original_cases"] == names and
+            receipt["test_counts"] == [len(required), 0, 0, 0, 0], "wrapper test receipt differs")
+    root = ET.fromstring(members["wrapper.xml"])
+    suites, cases = list(root.iter("testsuite")), list(root.iter("testcase"))
+    require(suites and cases and sum(int(node.get("tests", "-1")) for node in suites) == len(cases),
+            "wrapper XML empty or inconsistent")
+    require(all(int(node.get(key, "0")) == 0 for node in suites for key in ("failures", "errors", "skipped")),
+            "wrapper XML unsuccessful")
+    require(not any(node.tag in {"failure", "error", "skipped", "rerunFailure", "rerunError",
+                                 "flakyFailure", "flakyError"} for node in root.iter()), "wrapper retry/failure/skip")
+    rows = receipt["steps"]
+    steps = {row["name"]: row for row in rows}
+    expected_names = ["committed-inputs-clean-before"]
+    if not windows:
+        expected_names.append("committed-lock-check")
+    expected_names += ["original-process-wrapper-tests", "original-testlog-location",
+                      "materialized-wrapper-location", "native-regression-format", "committed-inputs-clean-after"]
+    require([row["name"] for row in rows] == expected_names and len(steps) == len(rows) and
+            all(row["exit"] == 0 for row in rows), "original wrapper command sequence changed")
+    for row in rows:
+        require(all(row["name"] + "." + suffix in members for suffix in ("stdout", "stderr")),
+                "original command stream missing")
+    bash = receipt["bash_executable"]
+    targets = ["--platforms=//:windows_x86_64_msvc"] if windows else []
+    hosts = ["--host_platform=//:local_windows_msvc"] if windows else []
+    options = (["--windows-msvc-host-platform"] if windows else []) + ["--remote-download-toplevel"]
+    wrapper = [bash, "./.github/scripts/run-bazel-ci.sh", "--print-failed-test-logs",
+               "--print-failed-action-summary", *options, "--"]
+    require(steps["original-process-wrapper-tests"]["command"] == [
+        *wrapper, "test", *targets, "--keep_going", "--nocache_test_results", "--test_output=all", "--",
+        "@rules_rust//util/process_wrapper:process_wrapper_test"], "original target command changed")
+    original = members["original-process-wrapper-tests.stdout"] + members["original-process-wrapper-tests.stderr"]
+    require(re.search(rb"Executed 1 out of 1 tests?: 1 tests? pass", original), "original target was not executed")
+    for name in ("committed-inputs-clean-before", "committed-inputs-clean-after"):
+        require(steps[name]["command"] == ["git", "diff", "--exit-code", "HEAD", "--"], "checkout check changed")
+    if not windows:
+        require(steps["committed-lock-check"]["command"] == [bash, "./scripts/check-module-bazel-lock.sh"],
+                "committed lock check changed")
+    startup = None
+    for name, info in (("original-testlog-location", "bazel-testlogs"),
+                       ("materialized-wrapper-location", "output_base")):
+        command = steps[name]["command"]
+        require(command[:2] == ["python3", "./.github/scripts/run_bazel_with_buildbuddy.py"], "info wrapper changed")
+        tail = command[2:]
+        current = []
+        if tail and tail[0].startswith("--output_user_root="):
+            require(len(tail[0]) > len("--output_user_root="), "empty output root")
+            current, tail = tail[:1], tail[1:]
+        if startup is None:
+            startup = current
+        require(startup == current and tail == ["--noexperimental_remote_repo_contents_cache", "info",
+                "--config=" + config, *targets, *hosts, info], "info configuration changed")
+    output_base = members["materialized-wrapper-location.stdout"].decode().strip()
+    require(output_base and "\n" not in output_base and "\r" not in output_base, "invalid original output base")
+    join = __import__("ntpath" if windows else "posixpath").join
+    expected_test = join(output_base, "external/rules_rs++rules_rust+rules_rust/util/process_wrapper",
+                         "windows_archive_tests.rs")
+    require(steps["native-regression-format"]["command"] == [
+        "rustfmt", "+1.96.0", "--check", expected_test], "real source formatter command changed")
+    require(sha(git.read("patches/rules_rust_windows_process_wrapper_skip_temp_outputs.patch")) ==
+            binding["candidate_patch_sha256"], "Git patch differs from source binding")
+    materialized = {}
+    for name, key in (("main.rs", "candidate_main_sha256"), ("windows_archive_tests.rs", "candidate_test_sha256")):
+        raw = members["materialized-" + name]
+        value = {"bytes": len(raw), "sha256": sha(raw)}
+        require(value == receipt["materialized_sources"][name] and value["sha256"] == binding[key],
+                "actual external source differs: " + name)
+        materialized[name] = value
+    return {"native_config": config, "executed": len(names), "failed": 0, "ignored": 0,
+            "measured": 0, "filtered": 0, "exact_case_names": names, "materialized_sources": materialized,
+            "original_commands": rows,
+            "boundary": "Complete original process-wrapper target and actual patched external source; not the full Windows Clippy build."}
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--manifest", type=Path, required=True)
@@ -359,7 +453,7 @@ def main():
                 raw = members[name]
                 result["failed_command_logs"][name] = {"bytes": len(raw), "sha256": sha(raw)}
                 emit_raw(name, raw)
-        elif spec["kind"] == "robrix-lock":
+        elif spec["kind"] in {"robrix-lock", "wrapper-lock"}:
             require(receipt["status"] == "passed" and receipt["committed_lock_required"] is True,
                     "Robrix original committed lock did not pass")
             commands = [(row["name"], row["command"], row["exit"]) for row in receipt["steps"]]
@@ -380,6 +474,9 @@ def main():
             ], "Robrix checkout checks differ")
             result = {"commands": commands, "lock_sha256": sha(lock), "lock_bytes": len(lock),
                       "checkout_checks": receipt["checkout_checks"]}
+
+        elif spec["kind"] == "wrapper":
+            result = inspect_wrapper(spec, receipt, members, git)
 
         else:
             result = {"original_tests": receipt.get("tests"), "original_steps": receipt.get("steps"),

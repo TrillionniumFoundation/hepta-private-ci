@@ -337,5 +337,47 @@
     "reader": "qualification/windows-memory-recovery-current/generate.py",
     "repository": "TrillionniumFoundation/hepta-private-ci",
     "expected_original_status": "failed"
+  },
+  {
+    "key": "wrapper-9fd-linux",
+    "kind": "wrapper",
+    "host": "linux",
+    "artifact_id": 13290775614,
+    "bytes": 22238,
+    "sha256": "dd4af5e89760deedf310828c51695ea0b031542ed6aab00eb83758887614d393",
+    "reader": "qualification/windows-archive-inputs-20261104/run.py",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+    "workflow_head": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+    "run_id": 41758337703,
+    "expected_original_status": "passed"
+  },
+  {
+    "key": "wrapper-9fd-windows",
+    "kind": "wrapper",
+    "host": "windows",
+    "artifact_id": 13289701641,
+    "bytes": 21209,
+    "sha256": "c6d3c37e1302cb037d11c04c987175eacdcd82708fc96071372a407668abf9d7",
+    "reader": "qualification/windows-archive-inputs-20261104/run.py",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+    "workflow_head": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+    "run_id": 41758337703,
+    "expected_original_status": "passed"
+  },
+  {
+    "key": "wrapper-9fd-lock",
+    "kind": "wrapper-lock",
+    "host": "linux",
+    "artifact_id": 13289134109,
+    "bytes": 611471,
+    "sha256": "ca748288130f39e99dcef5d959b975a32970016f69b710c1288ad5653b625de6",
+    "reader": "qualification/windows-archive-inputs-20261104/run_lock.py",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+    "workflow_head": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+    "run_id": 41758337703,
+    "expected_original_status": "passed"
   }
 ]

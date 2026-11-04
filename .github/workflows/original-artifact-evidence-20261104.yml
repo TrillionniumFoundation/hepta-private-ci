@@ -19,21 +19,15 @@ jobs:
       max-parallel: 3
       matrix:
         include:
-          - key: memory-b12-windows-failed
-            source: b12f9b216d91bb760582a9df0d569f7e051a1016
-            script: verify_memory_current.py
-          - key: memory-b12-bazel-failed
-            source: b12f9b216d91bb760582a9df0d569f7e051a1016
-            script: verify_memory_current.py
-          - key: env-306-source-failed
-            source: 306da9948bfebf86f425d76f089921244a4a64d9
+          - key: wrapper-9fd-linux
+            source: 9fd4fd6bf76449c75b6ead3ff78816b1077f3f11
             script: verify.py
-          - key: env-306-merge-failed
-            source: f8d21a60d76215d7bc36c1eb5c9f55322d97ac87
+          - key: wrapper-9fd-windows
+            source: 9fd4fd6bf76449c75b6ead3ff78816b1077f3f11
             script: verify.py
-          - key: memory-b12-macos-failed
-            source: b12f9b216d91bb760582a9df0d569f7e051a1016
-            script: verify_memory_current.py
+          - key: wrapper-9fd-lock
+            source: 9fd4fd6bf76449c75b6ead3ff78816b1077f3f11
+            script: verify.py
     env:
       GIT_CONFIG_COUNT: 1
       GIT_CONFIG_KEY_0: core.autocrlf
@@ -81,6 +75,7 @@ jobs:
             /qualification/memory-migration-20261103/
             /qualification/dylint-20261103/
             /qualification/robrix-runfiles-20261104/
+            /qualification/windows-archive-inputs-20261104/
             /qualification/keyring-sync-provider/build_pinned_client.py
       - name: Check verifier syntax
         run: python3 -m py_compile harness/qualification/original-artifact-evidence-20261104/verify.py harness/qualification/original-artifact-evidence-20261104/verify_memory_current.py
