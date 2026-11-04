@@ -1,0 +1,206 @@
+{
+  "schema": 1,
+  "key": "legacy-env-source",
+  "source": "112c05026a36a3555b01886c5bad9bb9f9c1d2e8",
+  "source_tree": "06231d3b8806471223a609b14b066d7e4e4b7774",
+  "original_run": 41692381139,
+  "original_job": 126113986503,
+  "artifact_id": 13262201923,
+  "zip_bytes": 4523101,
+  "zip_sha256": "b8c55a51c11da7c72091fc4e5971433b1774103b737d96936dc0c198066b2cec",
+  "crc_all_members": true,
+  "git_inputs_verified": 11,
+  "source_before": {
+    ".bazelrc": "e4650891bfe06ff6364560986ab212e57d01948ea375e65ff75f71d6ca0fa162",
+    "defs.bzl": "22097e30ec9bcd5b9c8cdd6e0218764da870dd37b02bf384348a481e2977ed12",
+    "workspace_root_test_launcher.bat.tpl": "18b3945fd54e6a6e8e3413ec465289ad53ea252caff9fa9f9bb0b9cdc30962e5",
+    "MODULE.bazel.lock": "3499e8251674d1a4d63abef4f223a3df703ecb3189163db152b45808df95d397",
+    "codex-rs/Cargo.lock": "0700fb6b027bb87f2df0988d81d02b51de55bfe4d4b0e1582e5a4bb7e856b02c",
+    "codex-rs/git-utils/BUILD.bazel": "29d7aeb0cbd9f282eecca996fd40a75428bb75936964b58d73a4f7967f50f688",
+    "codex-rs/git-utils/src/git_process.rs": "da7c71b4a257113ab2a63ff3d84648640732934357d04f70e50cda344b4dbead",
+    "codex-rs/git-utils/src/git_process_tests.rs": "e4d0b04ec4a4f40fbbf80de9ac73d43bf7c71136981cd3e1b1ed7762b0a6948a",
+    "codex-rs/ext/queue/BUILD.bazel": "918ee78665bd24d8c6fef4d3aa68e9d4d15356b65120c96833be828656592d02",
+    "codex-rs/ext/queue/tests/queue_service.rs": "6d0ef6b9d1c9334c125c1f2d8e6e5c8f5024d8b6cc630d52b4eda3e6edca7b9f",
+    "codex-rs/utils/pty/src/win/job.rs": "112293607f90d6614ffab4c5499a0bbeff743e3b1e4885739ccff41c47d48d43"
+  },
+  "input_byte_verification": {
+    ".bazelrc": {
+      "git_blob": "5c728a21858257fd70740b0f61b5669ea3cf35ed",
+      "git_sha256": "e94558bfc7392435fb67cc36ff57f421d3bcc10a07357622d7e684e86ec2f817",
+      "recorded_sha256": "e4650891bfe06ff6364560986ab212e57d01948ea375e65ff75f71d6ca0fa162",
+      "checkout_bytes": "exact LF-to-CRLF transform"
+    },
+    "defs.bzl": {
+      "git_blob": "35911b57dd46f44ade3fcc5ad45d56c56c394a38",
+      "git_sha256": "b2f233ff0d656b4863426a1e167001818f77d7d2d645fc92c982dfea47bc623a",
+      "recorded_sha256": "22097e30ec9bcd5b9c8cdd6e0218764da870dd37b02bf384348a481e2977ed12",
+      "checkout_bytes": "exact LF-to-CRLF transform"
+    },
+    "workspace_root_test_launcher.bat.tpl": {
+      "git_blob": "fa18c301dd22ca9023ba2f59801a8119dfbf8a69",
+      "git_sha256": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae",
+      "recorded_sha256": "18b3945fd54e6a6e8e3413ec465289ad53ea252caff9fa9f9bb0b9cdc30962e5",
+      "checkout_bytes": "exact LF-to-CRLF transform"
+    },
+    "MODULE.bazel.lock": {
+      "git_blob": "83ab81c6952d06fd35046068901210b3cc3d9807",
+      "git_sha256": "2af31c1631bfb41fda53d3e322858dd00dfd50a6b88baffc95c6567ac7a678fc",
+      "recorded_sha256": "3499e8251674d1a4d63abef4f223a3df703ecb3189163db152b45808df95d397",
+      "checkout_bytes": "exact LF-to-CRLF transform"
+    },
+    "codex-rs/Cargo.lock": {
+      "git_blob": "66b26967e177030264768983aa1a78ae8c8e9fc4",
+      "git_sha256": "35cfe06df466df0401878f0bec8a50241734ffcade6349c80fded1ba97693637",
+      "recorded_sha256": "0700fb6b027bb87f2df0988d81d02b51de55bfe4d4b0e1582e5a4bb7e856b02c",
+      "checkout_bytes": "exact LF-to-CRLF transform"
+    },
+    "codex-rs/git-utils/BUILD.bazel": {
+      "git_blob": "346fd3f8f4c6885b7fa1b688bd192531945f39d0",
+      "git_sha256": "b53e9acc1db161a40e5cc88dabcee638929885d726a8b1f366dfbfe7c3771951",
+      "recorded_sha256": "29d7aeb0cbd9f282eecca996fd40a75428bb75936964b58d73a4f7967f50f688",
+      "checkout_bytes": "exact LF-to-CRLF transform"
+    },
+    "codex-rs/git-utils/src/git_process.rs": {
+      "git_blob": "3ce0431434d0c0e4bbde65eb68bce27cc572d9c6",
+      "git_sha256": "8961e2748659fca01ea0a4b51baff983b76207e3ca3222f6a637a91360288d06",
+      "recorded_sha256": "da7c71b4a257113ab2a63ff3d84648640732934357d04f70e50cda344b4dbead",
+      "checkout_bytes": "exact LF-to-CRLF transform"
+    },
+    "codex-rs/git-utils/src/git_process_tests.rs": {
+      "git_blob": "fafd04517317251dd14b94991c7311b72b781e7d",
+      "git_sha256": "b1e1c269c2f35b013a3f7806aa214ffc24fd126ee821b91c9574b1105aff6b74",
+      "recorded_sha256": "e4d0b04ec4a4f40fbbf80de9ac73d43bf7c71136981cd3e1b1ed7762b0a6948a",
+      "checkout_bytes": "exact LF-to-CRLF transform"
+    },
+    "codex-rs/ext/queue/BUILD.bazel": {
+      "git_blob": "ece6922f7b389aa7b23336c34567955cf2755a89",
+      "git_sha256": "b7610f80115d2c8dae38c28e8ed66c7bdcb9f21969a4a0c79fe572204d620c47",
+      "recorded_sha256": "918ee78665bd24d8c6fef4d3aa68e9d4d15356b65120c96833be828656592d02",
+      "checkout_bytes": "exact LF-to-CRLF transform"
+    },
+    "codex-rs/ext/queue/tests/queue_service.rs": {
+      "git_blob": "fedaf7eda73d79403a2287d7ce8e7966a2c242f8",
+      "git_sha256": "c4bede7a3ec5e44e30b769aa1d3d0ef23891902bd7a6c230c98ef3673262d992",
+      "recorded_sha256": "6d0ef6b9d1c9334c125c1f2d8e6e5c8f5024d8b6cc630d52b4eda3e6edca7b9f",
+      "checkout_bytes": "exact LF-to-CRLF transform"
+    },
+    "codex-rs/utils/pty/src/win/job.rs": {
+      "git_blob": "b06035f72d227b4069da677e8104617ae5616283",
+      "git_sha256": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476",
+      "recorded_sha256": "112293607f90d6614ffab4c5499a0bbeff743e3b1e4885739ccff41c47d48d43",
+      "checkout_bytes": "exact LF-to-CRLF transform"
+    }
+  },
+  "original_checker_reports_unchanged": true,
+  "source_after_map_not_retained_by_original_reader": true,
+  "qualifier_workflow_sha256": "d2462faa47da5839a99ebb812354ad69bfbc7c41ef03f427f5f23ec6a885d9f2",
+  "pre_test_powershell_probe": false,
+  "original_qualification_status": "passed",
+  "evidence_verification": "passed",
+  "result": {
+    "git-utils-unit-tests": {
+      "outer_passed": 33,
+      "outer_failed": 0,
+      "outer_ignored": 0,
+      "outer_filtered": 0,
+      "names": [
+        "apply::tests::apply_add_success",
+        "apply::tests::apply_modify_conflict",
+        "apply::tests::apply_modify_skipped_missing_index",
+        "apply::tests::apply_then_revert_success",
+        "apply::tests::extract_paths_handles_quoted_headers",
+        "apply::tests::extract_paths_ignores_dev_null_header",
+        "apply::tests::extract_paths_unescapes_c_style_in_quoted_headers",
+        "apply::tests::parse_output_unescapes_quoted_paths",
+        "apply::tests::preflight_blocks_partial_changes",
+        "apply::tests::revert_preflight_does_not_stage_index",
+        "baseline::tests::diff_reports_added_modified_and_deleted_files",
+        "baseline::tests::ensure_recovers_from_unborn_repository",
+        "baseline::tests::reset_creates_fresh_baseline",
+        "baseline::tests::reset_drops_previous_history",
+        "baseline::tests::status_scan_does_not_write_added_file_blobs",
+        "branch::tests::merge_base_prefers_upstream_when_remote_ahead",
+        "branch::tests::merge_base_returns_none_when_branch_missing",
+        "branch::tests::merge_base_returns_shared_commit",
+        "fsmonitor::tests::detects_supported_builtin_fsmonitor_values",
+        "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+        "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running",
+        "info::tests::canonicalize_git_remote_url_handles_ghe_without_lowercasing_path",
+        "info::tests::canonicalize_git_remote_url_normalizes_github_variants",
+        "info::tests::canonicalize_git_remote_url_rejects_non_repository_values",
+        "info::tests::git_metadata_commands_do_not_inherit_stdin",
+        "info::tests::local_git_branches_excludes_detached_head_entry",
+        "status::tests::canceling_one_consumer_preserves_the_shared_status_scan",
+        "status::tests::canceling_the_last_consumer_allows_a_fresh_status_scan",
+        "status::tests::completed_status_requests_are_not_reused_while_a_consumer_retains_them",
+        "status::tests::completed_status_requests_start_fresh_scans_and_prune_expired_entries",
+        "status::tests::concurrent_status_requests_share_one_repository_scan",
+        "status::tests::status_requests_do_not_share_different_repositories",
+        "status::tests::status_requests_from_sibling_directories_use_the_known_worktree_root"
+      ],
+      "nested_summaries": [
+        [
+          1,
+          0,
+          0,
+          0,
+          32
+        ]
+      ],
+      "log_sha256": "dac038fe2a994f45f5c3d3a6b6df9172b809a1633f4ea1b66e72f31f6a3b6090",
+      "xml_sha256": "2979104e626501dc4ab96e15835402b1fa1625addcb4188244667c3fc20067f6"
+    },
+    "queue-queue_service-test": {
+      "outer_passed": 35,
+      "outer_failed": 0,
+      "outer_ignored": 0,
+      "outer_filtered": 0,
+      "names": [
+        "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "capacity_rejection_preserves_the_admitted_client_identity",
+        "completion_panic_retains_exact_authority_in_settlement_guardian",
+        "conflicting_queued_client_ids_fail_closed_before_core_submission",
+        "core_error_after_started_never_releases_ambiguous_dispatch",
+        "corrupt_rollout_blocks_queue_replay_and_preserves_the_item",
+        "duplicate_queued_client_ids_dispatch_to_core_once",
+        "editing_reordering_and_deleting_preserve_queue_identity",
+        "exact_and_legacy_bindings_for_the_same_turn_join_once",
+        "exact_reconcile_conflicting_payload_fails_before_second_admission",
+        "exact_reconcile_is_one_idempotent_queue_admission",
+        "exact_reconcile_rejects_expected_digest_drift_without_a_row",
+        "explicitly_started_rejected_queue_messages_remain_durable",
+        "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+        "interrupted_turns_pause_queued_messages_but_failed_turns_drain_them",
+        "invalid_head_is_skipped_and_a_live_user_turn_is_accepted",
+        "invalid_local_attachments_do_not_mutate_queue",
+        "legacy_client_id_without_payload_digest_is_readable_but_cannot_join",
+        "local_attachments_are_snapshotted_before_enqueue_and_update",
+        "non_user_input_cannot_enter_the_user_message_queue",
+        "persisted_admission_reconciles_compressed_rollout",
+        "persisted_client_id_with_conflicting_payload_fails_closed_from_compressed_rollout",
+        "queued_input_and_unique_event_ids_round_trip",
+        "queued_text_limit_counts_characters_and_ignores_non_text_items",
+        "queued_text_limit_is_enforced_across_all_input_items",
+        "raw_queue_store_enqueue_cannot_bypass_reconcile_reservation",
+        "registered_queue_lifecycle_starts_messages_in_fifo_order",
+        "rejected_queue_messages_remain_durable_and_block_followups",
+        "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+        "resumed_idle_dispatches_input_without_a_loaded_manager",
+        "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+        "same_client_id_bound_to_two_turns_is_ambiguous_and_fails_closed",
+        "starting_a_selected_item_preserves_the_remaining_queue",
+        "starting_a_selected_item_while_active_leaves_it_queued",
+        "two_queue_services_across_state_runtimes_submit_one_exact_binding"
+      ],
+      "nested_summaries": [],
+      "log_sha256": "3b5e3f721138fdaba98c50f76a80a015a701297dcdf7d39cb1faa55a4da7433e",
+      "xml_sha256": "e68cdd427a8e0d6e7efef82e6a74b2d7ea79741e4185513c2e05a5ca5235dd33"
+    }
+  },
+  "scope": "Historical exact source only; no current dependency-union qualification.",
+  "verifier": {
+    "commit": "76388954a74fede042b0753287a2050dcd6bc1f7",
+    "run": 41755181237,
+    "job": 126329496862
+  }
+}

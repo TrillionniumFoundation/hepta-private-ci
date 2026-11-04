@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "parent": "00963996f16c067fbd04517d22d3d7e53d1d09a6",
+  "historical_source": "112c05026a36a3555b01886c5bad9bb9f9c1d2e8",
+  "historical_blobs": {
+    "git_fixture": "fafd04517317251dd14b94991c7311b72b781e7d",
+    "git_manifest": "4e6545c1f1400f6b4dc45ca0881652d7f63ee268",
+    "queue_fixture": "fedaf7eda73d79403a2287d7ce8e7966a2c242f8"
+  },
+  "queue_port": "historical queue bytes minus the sole unrelated pending_turn_terminalization wait",
+  "same_queue_assertion_lines": 131,
+  "current_product_status": "not yet qualified",
+  "files": [
+    {
+      "path": "codex-rs/git-utils/src/git_process_tests.rs",
+      "bytes": 8206,
+      "sha256": "b1e1c269c2f35b013a3f7806aa214ffc24fd126ee821b91c9574b1105aff6b74"
+    },
+    {
+      "path": "codex-rs/git-utils/Cargo.toml",
+      "bytes": 1123,
+      "sha256": "a6fa2b48595f7c4fbd4119a4a3204da5ba8ae1074c9f3aa0f43d12fcfbe7b73c"
+    },
+    {
+      "path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "bytes": 97057,
+      "sha256": "1c7fa852df5a796a5b8384363dd0d8b907bd8efcd1f767025d5ee5d963de339f"
+    },
+    {
+      "path": ".github/workflows/hepta-windows-process-env-qualification.yml",
+      "bytes": 5195,
+      "sha256": "3f8dec0b2ec78c8e9bb7a67e2599e7df71119446a8dd0f1ad73ff0abab655c9b"
+    },
+    {
+      "path": "qualification/windows-process-env-current/run_qualification.py",
+      "bytes": 10629,
+      "sha256": "feb57ff8f6ba2c1baa1bf86484bf23a03464573346da2421120bd36da116eb7a"
+    },
+    {
+      "path": "qualification/windows-process-fixtures-current/generate.py",
+      "bytes": 9509,
+      "sha256": "55e839179f2be016e5997828756d88e4769193d6d277dcf9fe5e32a79ac2165c"
+    },
+    {
+      "path": "qualification/windows-process-fixtures-current/scope.json",
+      "bytes": 1132,
+      "sha256": "b159f1c56eaa5146942682fd1fe9bc232d1662a23d94e0d3d67733ab59d23bb2"
+    },
+    {
+      "path": "qualification/windows-process-fixtures-current/historical-legacy-env-source.json",
+      "bytes": 11601,
+      "sha256": "51f587db700e389eb038d48942ec6b0841be24d1cca2d5a2041da8e793e68c5d"
+    },
+    {
+      "path": "qualification/windows-process-fixtures-current/historical-legacy-env-merge.json",
+      "bytes": 11600,
+      "sha256": "463111339a0b000b697592b88d24a366566bbf5f4bb0977cf57b843a1115e5d9"
+    },
+    {
+      "path": "qualification/windows-process-fixtures-current/README.md",
+      "bytes": 3318,
+      "sha256": "f6f25747e9ba97d26c5ebde2cd6fcef87c66cae2ef31f0df7ed4b622de4c88a2"
+    }
+  ]
+}

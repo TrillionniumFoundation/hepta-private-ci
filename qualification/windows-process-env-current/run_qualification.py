@@ -18,6 +18,7 @@ INPUTS = [
     "defs.bzl", "bazel", "patches", "third_party", "scripts", "justfile",
     "workspace_root_test_launcher.bat.tpl", "workspace_root_test_launcher.sh.tpl",
     ".github/actions", ".github/scripts", "qualification/windows-process-env-current",
+    "qualification/windows-process-fixtures-current",
     ".github/workflows/hepta-windows-process-env-qualification.yml",
 ]
 TARGETS = {

@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "base_commit": "00963996f16c067fbd04517d22d3d7e53d1d09a6",
+  "base_cargo_blob": "d6c49a2eed9bddda69d9a46726014c5262c7b310",
+  "historical_qualified_source": "112c05026a36a3555b01886c5bad9bb9f9c1d2e8",
+  "product_state": "DRAFT_HOLD",
+  "allowed_generated_source_paths": [
+    "codex-rs/git-utils/Cargo.toml",
+    "codex-rs/git-utils/src/git_process_tests.rs",
+    "codex-rs/ext/queue/tests/queue_service.rs",
+    "qualification/windows-process-fixtures-current/generate.py"
+  ],
+  "package_count": 1517,
+  "expected_added_dependencies": {
+    "codex-git-utils": [
+      "base64 0.22.1"
+    ]
+  },
+  "excluded_upstream_scope": [
+    "duplicate_queued_client_ids_dispatch_to_core_once pending_turn_terminalization wait",
+    "production Git or JobObject changes",
+    "queue production logic",
+    "larger timeouts or PowerShell prewarming"
+  ],
+  "original_budgets": {
+    "child_readiness_seconds": 30,
+    "production_timeout_ms": 100,
+    "survivor_observation_seconds": 3,
+    "wrapper_exit_seconds": 10
+  },
+  "original_outer_cases": {
+    "git-utils-unit-tests": 33,
+    "queue-queue_service-test": 35
+  }
+}
