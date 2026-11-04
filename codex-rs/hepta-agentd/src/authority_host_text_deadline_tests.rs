@@ -15,8 +15,11 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
 
-fn channel(timeout: Duration, root_remaining: Duration) -> (HostAuthorityPeerChannel, UnixStream) {
-    let (server, client) = UnixStream::pair().expect("actual socket pair");
+fn channel(
+    timeout: Duration,
+    root_remaining: Duration,
+) -> anyhow::Result<(HostAuthorityPeerChannel, UnixStream)> {
+    let (server, client) = UnixStream::pair()?;
     let pid = std::process::id();
     // SAFETY: getuid reads the current process identity and takes no pointers.
     let uid = unsafe { libc::getuid() };
@@ -27,11 +30,9 @@ fn channel(timeout: Duration, root_remaining: Duration) -> (HostAuthorityPeerCha
     let owner = unsafe { OwnedFd::from_raw_fd(raw as i32) };
     let policy = text_peer_policy(HostIssuerPeer { uid, pid }, timeout, root_remaining);
     let server = HostAuthorityPeerChannel::from_stream(server, policy, owner)
-        .expect("actual same-process peer and held lifetime");
-    client
-        .set_read_timeout(Some(Duration::from_secs(2)))
-        .expect("bound test response observation");
-    (server, client)
+        .map_err(|error| anyhow::anyhow!("actual peer fixture rejected: {error:?}"))?;
+    client.set_read_timeout(Some(Duration::from_secs(2)))?;
+    Ok((server, client))
 }
 
 #[test]
@@ -40,7 +41,8 @@ fn idle_text_connection_respects_exchange_and_remaining_root_budgets() {
         (Duration::from_millis(50), Duration::from_secs(3)),
         (Duration::from_secs(3), Duration::from_millis(50)),
     ] {
-        let (mut server, mut client) = channel(timeout, remaining);
+        let (mut server, mut client) =
+            channel(timeout, remaining).expect("actual peer-channel fixture");
         let handled = AtomicBool::new(false);
         let started = Instant::now();
         let result = server.exchange(|_| {
@@ -62,7 +64,8 @@ fn idle_text_connection_respects_exchange_and_remaining_root_budgets() {
 
 #[test]
 fn first_text_byte_does_not_refresh_the_connection_budget() {
-    let (mut server, mut client) = channel(Duration::from_millis(400), Duration::from_secs(3));
+    let (mut server, mut client) = channel(Duration::from_millis(400), Duration::from_secs(3))
+        .expect("actual peer-channel fixture");
     let sender = std::thread::spawn(move || {
         std::thread::sleep(Duration::from_millis(200));
         let first = client.write_all(&[0]).is_ok();
@@ -85,7 +88,8 @@ fn first_text_byte_does_not_refresh_the_connection_budget() {
 
 #[test]
 fn timely_text_frame_still_uses_the_original_peer_channel() {
-    let (mut server, mut client) = channel(Duration::from_secs(1), Duration::from_secs(3));
+    let (mut server, mut client) = channel(Duration::from_secs(1), Duration::from_secs(3))
+        .expect("actual peer-channel fixture");
     client
         .write_all(&4_u32.to_be_bytes())
         .expect("request length");

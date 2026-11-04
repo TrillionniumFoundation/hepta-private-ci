@@ -24,11 +24,14 @@ struct ConstructionPeer {
     calls: AtomicUsize,
 }
 
-impl CognitiveCheckpointTransport for ConstructionPeer {
-    async fn exchange(&self, bytes: &[u8]) -> Result<Vec<u8>, ObjectiveSenderCheckpointError> {
+impl ConstructionPeer {
+    fn exchange_fixture(&self, bytes: &[u8]) -> anyhow::Result<Vec<u8>> {
         self.calls.fetch_add(1, Ordering::SeqCst);
-        let request: CognitiveCheckpointRequest = serde_json::from_slice(bytes).unwrap();
-        let mut current = self.receipt.lock().unwrap();
+        let request: CognitiveCheckpointRequest = serde_json::from_slice(bytes)?;
+        let mut current = self
+            .receipt
+            .lock()
+            .unwrap_or_else(|_| panic!("construction fixture receipt mutex poisoned"));
         match request.command {
             CognitiveCheckpointCommand::ReadHead => {}
             CognitiveCheckpointCommand::BeginWrites => {
@@ -38,7 +41,7 @@ impl CognitiveCheckpointTransport for ConstructionPeer {
                 current.head.phase = CognitiveCheckpointPhase::Dirty;
                 current.head.counter += 1;
                 current.head.last_mutation_sequence =
-                    u64::from_str_radix(&request.request_id[16..], 16).unwrap();
+                    u64::from_str_radix(&request.request_id[16..], 16)?;
                 current.head.last_request = Some(CognitiveCheckpointRetainedRequest {
                     request_id: request.request_id.clone(),
                     request_sha256: Sha256Digest::for_bytes(bytes),
@@ -47,7 +50,7 @@ impl CognitiveCheckpointTransport for ConstructionPeer {
                 });
                 current.token.counter = current.head.counter;
                 current.token.head_sha256 =
-                    Sha256Digest::for_bytes(&serde_json::to_vec(&current.head).unwrap());
+                    Sha256Digest::for_bytes(&serde_json::to_vec(&current.head)?);
             }
             CognitiveCheckpointCommand::PreparePublication
             | CognitiveCheckpointCommand::CommitPublication => {
@@ -55,7 +58,9 @@ impl CognitiveCheckpointTransport for ConstructionPeer {
                 let predecessor_token = current.token.clone();
                 if request.command == CognitiveCheckpointCommand::PreparePublication {
                     assert_eq!(current.head.phase, CognitiveCheckpointPhase::Dirty);
-                    let proposal = request.proposal.unwrap();
+                    let proposal = request
+                        .proposal
+                        .ok_or_else(|| anyhow::anyhow!("fixture publication proposal missing"))?;
                     current.head.phase = CognitiveCheckpointPhase::Publishing;
                     current.head.proposal = Some(CognitiveCheckpointRetainedProposal {
                         request_id: request.request_id.clone(),
@@ -64,12 +69,17 @@ impl CognitiveCheckpointTransport for ConstructionPeer {
                     });
                 } else {
                     assert_eq!(current.head.phase, CognitiveCheckpointPhase::Publishing);
-                    current.head.last_current = current.head.proposal.take().unwrap().cut;
+                    current.head.last_current = current
+                        .head
+                        .proposal
+                        .take()
+                        .ok_or_else(|| anyhow::anyhow!("fixture retained proposal missing"))?
+                        .cut;
                     current.head.phase = CognitiveCheckpointPhase::Current;
                 }
                 current.head.counter += 1;
                 current.head.last_mutation_sequence =
-                    u64::from_str_radix(&request.request_id[16..], 16).unwrap();
+                    u64::from_str_radix(&request.request_id[16..], 16)?;
                 current.head.last_request = Some(CognitiveCheckpointRetainedRequest {
                     request_id: request.request_id.clone(),
                     request_sha256: Sha256Digest::for_bytes(bytes),
@@ -78,10 +88,10 @@ impl CognitiveCheckpointTransport for ConstructionPeer {
                 });
                 current.token.counter = current.head.counter;
                 current.token.head_sha256 =
-                    Sha256Digest::for_bytes(&serde_json::to_vec(&current.head).unwrap());
+                    Sha256Digest::for_bytes(&serde_json::to_vec(&current.head)?);
             }
             CognitiveCheckpointCommand::FencePublisher => {
-                return Err(ObjectiveSenderCheckpointError::Refused);
+                return Err(ObjectiveSenderCheckpointError::Refused.into());
             }
         }
         Ok(serde_json::to_vec(&CognitiveCheckpointResponse {
@@ -91,8 +101,20 @@ impl CognitiveCheckpointTransport for ConstructionPeer {
             reason: None,
             token: Some(current.token.clone()),
             head: Some(current.head.clone()),
+        })?)
+    }
+}
+
+impl CognitiveCheckpointTransport for ConstructionPeer {
+    async fn exchange(&self, bytes: &[u8]) -> Result<Vec<u8>, ObjectiveSenderCheckpointError> {
+        self.exchange_fixture(bytes).map_err(|error| {
+            match error.downcast::<ObjectiveSenderCheckpointError>() {
+                Ok(error) => error,
+                // A malformed fixture must fail the test, never masquerade as
+                // an expected owner refusal in a negative product assertion.
+                Err(error) => panic!("invalid construction checkpoint fixture: {error}"),
+            }
         })
-        .unwrap())
     }
 }
 

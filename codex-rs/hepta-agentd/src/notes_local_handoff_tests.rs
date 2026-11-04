@@ -20,13 +20,14 @@ fn at_phase<T>(
     phase: &str,
     expiry: u64,
 ) -> Result<T, Box<dyn Error>> {
-    result.map_err(|error| {
-        format!(
+    match result {
+        Ok(value) => Ok(value),
+        Err(error) => Err(format!(
             "{phase}: {error}; wall_clock={}, original_fixture_expiry={expiry}",
-            now()
+            now()?
         )
-        .into()
-    })
+        .into()),
+    }
 }
 
 struct ProcessVerifier {
@@ -55,14 +56,15 @@ impl ProductionAuthorityVerifier for ProcessVerifier {
         Ok(())
     }
 }
-fn now() -> u64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_secs()
+fn now() -> Result<u64, std::time::SystemTimeError> {
+    Ok(SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs())
 }
-fn authority(owner: &AgentId, local: u64, expiry: u64) -> ProductionAuthorityLease {
-    ProductionAuthorityLease::from_verified_parts(
+fn authority(
+    owner: &AgentId,
+    local: u64,
+    expiry: u64,
+) -> Result<ProductionAuthorityLease, Box<dyn Error>> {
+    Ok(ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
         Sha256Digest::for_bytes(format!("handoff-grant-{local}").as_bytes()),
         13,
@@ -70,16 +72,14 @@ fn authority(owner: &AgentId, local: u64, expiry: u64) -> ProductionAuthorityLea
         expiry,
         ProductionAuthorityToken::from_verified_bytes(
             format!("handoff-token-{local}").into_bytes(),
-        )
-        .unwrap(),
-    )
-    .unwrap()
+        )?,
+    )?)
 }
 fn checkpoint(
     cut: CognitiveRecoveryAnchor,
     authority: &ProductionAuthorityLease,
     local: u64,
-) -> Arc<ConstructionPeer> {
+) -> Result<Arc<ConstructionPeer>, Box<dyn Error>> {
     let head = CognitiveCheckpointHead {
         schema_version: 1,
         owner_agent_id: authority.agent_id.clone(),
@@ -92,7 +92,7 @@ fn checkpoint(
             authority_epoch: authority.authority_epoch,
             owner_epoch: authority.owner_epoch,
             authority_grant_digest: authority.grant_digest.clone(),
-            fencing_token_digest: authority.fencing_token_digest().unwrap(),
+            fencing_token_digest: authority.fencing_token_digest()?,
             expires_at_unix_seconds: authority.lease_expires_at_unix_seconds,
         },
         peer_lifetime: CognitiveCheckpointPeerLifetime {
@@ -109,21 +109,25 @@ fn checkpoint(
     let token = CognitiveCheckpointToken {
         publisher_epoch: head.publisher_epoch,
         counter: head.counter,
-        head_sha256: Sha256Digest::for_bytes(&serde_json::to_vec(&head).unwrap()),
+        head_sha256: Sha256Digest::for_bytes(&serde_json::to_vec(&head)?),
     };
-    Arc::new(ConstructionPeer {
+    Ok(Arc::new(ConstructionPeer {
         receipt: Mutex::new(CognitiveCheckpointReceipt { head, token }),
         calls: AtomicUsize::new(0),
-    })
+    }))
 }
 fn inputs(peer: &Arc<ConstructionPeer>) -> AgentdProtectedCheckpointInputs<ConstructionPeer> {
     AgentdProtectedCheckpointInputs {
         transport: peer.clone(),
-        current_receipt: peer.receipt.lock().unwrap().clone(),
+        current_receipt: peer
+            .receipt
+            .lock()
+            .unwrap_or_else(|_| panic!("handoff fixture receipt mutex poisoned"))
+            .clone(),
         deadline: Duration::from_secs(2),
     }
 }
-fn request(owner: &AgentId, spawn: u64) -> ObjectiveSenderRequest {
+fn request(owner: &AgentId, spawn: u64) -> Result<ObjectiveSenderRequest, Box<dyn Error>> {
     let original = serde_json::to_string(&serde_json::json!({
         "issuer_id":"handoff-fixture", "key_epoch":1, "message_id":format!("message-{spawn}"),
         "sequence":spawn, "expires_at_ms":4_000_000_000_000_u64, "signature_hex":"ab".repeat(64),
@@ -131,8 +135,8 @@ fn request(owner: &AgentId, spawn: u64) -> ObjectiveSenderRequest {
         "source_envelope_json":"{}", "runtime_body_digest":"11".repeat(32),
         "preference_state_digest":"22".repeat(32),"model_tuple_digest":"33".repeat(32),
         "prompt_registry_digest":"44".repeat(32),"artifact_set_digest":"55".repeat(32),"authority_epoch":13}
-    })).unwrap();
-    ObjectiveSenderRequest::from_original(
+    }))?;
+    Ok(ObjectiveSenderRequest::from_original(
         original,
         ObjectiveSenderOrigin {
             agent_id: owner.clone(),
@@ -144,8 +148,7 @@ fn request(owner: &AgentId, spawn: u64) -> ObjectiveSenderRequest {
             original_notes_thread: None,
             original_desktop_thread: None,
         },
-    )
-    .unwrap()
+    )?)
 }
 struct ColdFixture {
     _directory: tempfile::TempDir,
@@ -184,9 +187,9 @@ impl ColdFixture {
         let store = CognitiveStore::open(&record.layout).await?;
         let cut = store.recovery_anchor().await?;
         store.close().await;
-        let expiry = now() + lifetime;
-        let grant = authority(&owner, 1, expiry);
-        let peer = checkpoint(cut, &grant, 1);
+        let expiry = now()? + lifetime;
+        let grant = authority(&owner, 1, expiry)?;
+        let peer = checkpoint(cut, &grant, 1)?;
         let (host, protected) = AgentdProductionWriterHost::open_with_protected_recovery(
             &config,
             grant,
@@ -221,12 +224,16 @@ impl ColdFixture {
                 .is_empty()
         );
         let _lost_ticket = at_phase(
-            sender.retain_before_send(request(&owner, 1)).await,
+            sender.retain_before_send(request(&owner, 1)?).await,
             "initial retained request checkpoint",
             expiry,
         )?;
         assert_eq!(
-            peer.receipt.lock().unwrap().head.phase,
+            peer.receipt
+                .lock()
+                .unwrap_or_else(|_| panic!("handoff fixture receipt mutex poisoned"))
+                .head
+                .phase,
             CognitiveCheckpointPhase::Current
         );
         Ok(Self {
@@ -258,12 +265,18 @@ impl ColdFixture {
             expiry,
         } = self;
         let identity = config.identity().clone();
-        let cut = peer.receipt.lock().unwrap().head.last_current.clone();
+        let cut = peer
+            .receipt
+            .lock()
+            .unwrap_or_else(|_| panic!("handoff fixture receipt mutex poisoned"))
+            .head
+            .last_current
+            .clone();
         assert_eq!(host.writer().recovery_anchor().await?, cut);
         let runtime = host.cognitive_runtime();
         runtime
             .available_store()
-            .unwrap()
+            .ok_or("fixture cognitive store missing")?
             .as_ref()
             .clone()
             .close()
@@ -307,7 +320,7 @@ async fn notes_local_handoff_real_clock_preserves_unknown_with_distinct_spawn_an
     let (directory, config, cut, expiry) = ColdFixture::new(10).await?.stop().await?;
     let _directory = directory;
     let deadline = tokio::time::Instant::now() + Duration::from_secs(12);
-    while now() < expiry {
+    while now()? < expiry {
         assert!(
             tokio::time::Instant::now() < deadline,
             "real clock did not reach lease expiry"
@@ -315,8 +328,8 @@ async fn notes_local_handoff_real_clock_preserves_unknown_with_distinct_spawn_an
         tokio::time::sleep(Duration::from_millis(20)).await;
     }
     let owner = config.identity().agent_id.clone();
-    let grant = authority(&owner, 2, now() + 300);
-    let peer = checkpoint(cut.clone(), &grant, 2);
+    let grant = authority(&owner, 2, now()? + 300)?;
+    let peer = checkpoint(cut.clone(), &grant, 2)?;
     let (host, protected) = AgentdProductionWriterHost::open_with_protected_recovery(
         &config,
         grant,
@@ -378,18 +391,18 @@ async fn notes_local_handoff_real_clock_preserves_unknown_with_distinct_spawn_an
         expiry,
     )?;
     assert_eq!(*peer.receipt.lock().unwrap(), current); // independent ReadHead, no mutation
-    let recovered = sender.recover_pending(request(&owner, 1)).await?;
+    let recovered = sender.recover_pending(request(&owner, 1)?).await?;
     assert!(sender.mark_send_started(&recovered).await.is_err());
     assert!(matches!(
-        sender.retain_before_send(request(&owner, 1)).await,
+        sender.retain_before_send(request(&owner, 1)?).await,
         Err(ObjectiveSenderError::IdentityMismatch)
     ));
     let ticket = at_phase(
-        sender.retain_before_send(request(&owner, 3)).await,
+        sender.retain_before_send(request(&owner, 3)?).await,
         "new generation retained request checkpoint",
         expiry,
     )?;
-    let same_generation_recovered = sender.recover_pending(request(&owner, 3)).await?;
+    let same_generation_recovered = sender.recover_pending(request(&owner, 3)?).await?;
     assert!(matches!(
         sender.mark_send_started(&same_generation_recovered).await,
         Err(ObjectiveSenderError::SendPermissionUnavailable)
@@ -436,9 +449,9 @@ async fn notes_local_handoff_before_expiry_refuses_and_consumes_current_into_dir
 -> Result<(), Box<dyn Error>> {
     let (directory, config, cut, expiry) = ColdFixture::new(300).await?.stop().await?;
     let _directory = directory;
-    assert!(now() < expiry);
-    let grant = authority(&config.identity().agent_id, 2, now() + 600);
-    let peer = checkpoint(cut, &grant, 2);
+    assert!(now()? < expiry);
+    let grant = authority(&config.identity().agent_id, 2, now()? + 600)?;
+    let peer = checkpoint(cut, &grant, 2)?;
     let rejected = AgentdProductionWriterHost::open_with_protected_recovery(
         &config,
         grant.clone(),

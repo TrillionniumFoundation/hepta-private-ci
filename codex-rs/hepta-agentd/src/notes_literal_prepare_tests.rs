@@ -16,15 +16,15 @@ fn input<'a>(
     observed: &'a NotesDocumentState,
     subject: &'a str,
     text: &'a str,
-) -> LiteralOperationInput<'a> {
-    LiteralOperationInput {
+) -> Result<LiteralOperationInput<'a>, Box<dyn Error>> {
+    Ok(LiteralOperationInput {
         target,
         observed,
         run_id: "notes.literal.test-original",
         text,
         subject,
-        policy_generation: Generation::new(1).unwrap(),
-    }
+        policy_generation: Generation::new(1)?,
+    })
 }
 
 #[tokio::test]
@@ -61,7 +61,7 @@ async fn notes_literal_preparation_retains_exact_owner_payload_without_grant_or_
                 &observed,
                 config.identity().agent_id.as_str(),
                 "新文档"
-            )
+            )?
         )
         .await
         .is_err()
@@ -77,7 +77,7 @@ async fn notes_literal_preparation_retains_exact_owner_payload_without_grant_or_
                 &observed,
                 config.identity().agent_id.as_str(),
                 &"\u{0001}".repeat(4096)
-            )
+            )?
         )
         .await
         .is_err()
@@ -92,7 +92,7 @@ async fn notes_literal_preparation_retains_exact_owner_payload_without_grant_or_
             &observed,
             config.identity().agent_id.as_str(),
             text,
-        ),
+        )?,
     )
     .await?;
     let retained = writer
@@ -121,7 +121,7 @@ async fn notes_literal_preparation_retains_exact_owner_payload_without_grant_or_
                 &observed,
                 config.identity().agent_id.as_str(),
                 text
-            )
+            )?
         )
         .await?,
         digest
@@ -136,7 +136,7 @@ async fn notes_literal_preparation_retains_exact_owner_payload_without_grant_or_
                 &observed,
                 config.identity().agent_id.as_str(),
                 "different text"
-            )
+            )?
         )
         .await
         .is_err()
@@ -150,7 +150,7 @@ async fn notes_literal_preparation_retains_exact_owner_payload_without_grant_or_
                 &observed,
                 config.identity().agent_id.as_str(),
                 text
-            )
+            )?
         )
         .await
         .is_err()
