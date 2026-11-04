@@ -1,0 +1,192 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+  "source_tree": "49a9567143edd2b1aed5cc929afb04bdb6e39469",
+  "run_id": 41758337703,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41758337703",
+  "status": "NATIVE_WRAPPER_QUALIFICATION_PASSED_FULL_CLIPPY_PENDING",
+  "logs": [
+    {
+      "name": "windows",
+      "job_id": 126339688403,
+      "path": "qualification/windows-archive-inputs-20261104/hosted-9fd/windows.job.log.gz",
+      "decoded_bytes": 163150,
+      "decoded_sha256": "96e2c8524987288f160cddb4e6aa944650b2c8ce48eed2750cec47ddb4a7cf9a",
+      "gzip_bytes": 163183,
+      "gzip_sha256": "3ef4eb002536b31d82283ac7b533b5e9e0b9ff1264960189cf48ea516ac7e7b7",
+      "cases": [
+        "flags::test::test_extra_args",
+        "flags::test::test_repeated_flags",
+        "flags::test::test_flag_help",
+        "flags::test::test_flag_single_repeated",
+        "options::response_file_tests::ordinary_wrapper_and_child_arguments_do_not_read_response_files",
+        "options::response_file_tests::unreadable_wrapper_response_file_fails_before_running_the_child",
+        "options::response_file_tests::multiline_values_remain_literal_through_the_normal_flag_parser",
+        "options::test::test_enforce_allow_features_flag_user_didnt_say",
+        "options::response_file_tests::wrapper_response_files_cannot_change_the_child_boundary_or_recurse",
+        "options::test::test_enforce_allow_features_flag_user_requested_something",
+        "options::test::test_enforce_allow_features_flag_user_requested_something_in_param_file",
+        "output::test::test_json_parsing_error",
+        "test::test_process_line_diagnostic_rendered",
+        "test::test_process_line_diagnostic_json",
+        "util::test::test_read_to_array",
+        "util::test::test_stamp_status_to_array",
+        "test::test_process_line_noise",
+        "options::response_file_tests::large_wrapper_prefix_preserves_all_arguments_and_child_response_files",
+        "windows_archive_tests::preserve_final_archives_and_exclude_llvm_temp_files"
+      ]
+    },
+    {
+      "name": "linux",
+      "job_id": 126339688803,
+      "path": "qualification/windows-archive-inputs-20261104/hosted-9fd/linux.job.log.gz",
+      "decoded_bytes": 97618,
+      "decoded_sha256": "782aa0c21484c4970058a87d3062c33e6dc0fab7a0649375aa941d7c43c943e6",
+      "gzip_bytes": 97646,
+      "gzip_sha256": "ed2f2ae210000e8b404c66df4feb7f1e459db47e18d12b8e95f52ab4192458c5",
+      "cases": [
+        "flags::test::test_extra_args",
+        "flags::test::test_flag_help",
+        "flags::test::test_flag_single_repeated",
+        "flags::test::test_repeated_flags",
+        "options::response_file_tests::multiline_values_remain_literal_through_the_normal_flag_parser",
+        "options::response_file_tests::ordinary_wrapper_and_child_arguments_do_not_read_response_files",
+        "options::response_file_tests::unreadable_wrapper_response_file_fails_before_running_the_child",
+        "options::response_file_tests::wrapper_response_files_cannot_change_the_child_boundary_or_recurse",
+        "options::test::test_enforce_allow_features_flag_user_didnt_say",
+        "options::test::test_enforce_allow_features_flag_user_requested_something",
+        "options::test::test_enforce_allow_features_flag_user_requested_something_in_param_file",
+        "output::test::test_json_parsing_error",
+        "test::test_process_line_diagnostic_json",
+        "test::test_process_line_diagnostic_rendered",
+        "test::test_process_line_noise",
+        "util::test::test_read_to_array",
+        "util::test::test_stamp_status_to_array",
+        "options::response_file_tests::large_wrapper_prefix_preserves_all_arguments_and_child_response_files"
+      ]
+    },
+    {
+      "name": "lock",
+      "job_id": 126339688717,
+      "path": "qualification/windows-archive-inputs-20261104/hosted-9fd/lock.job.log.gz",
+      "decoded_bytes": 71933,
+      "decoded_sha256": "6488a9aa717554c0a55958bbe7b2e30844b1701e69f2573041a0c7eae603f1c8",
+      "gzip_bytes": 71961,
+      "gzip_sha256": "c62271933bfbd95c9ddba1fbaf50336ee329e154a783b0478d31d61a3574c59a",
+      "cases": []
+    },
+    {
+      "name": "format",
+      "job_id": 126339688732,
+      "path": "qualification/windows-archive-inputs-20261104/hosted-9fd/format.job.log.gz",
+      "decoded_bytes": 79186,
+      "decoded_sha256": "dc2e6d6002ba7431a143258c770e43fa5a9e36897c705deb4d9b6e9981c43d3f",
+      "gzip_bytes": 79214,
+      "gzip_sha256": "efce4aac0840269a07022de1b98703615b380bcb42fbec0d375c0ff458596e5f",
+      "cases": []
+    }
+  ],
+  "windows_counts": [
+    19,
+    0,
+    0,
+    0,
+    0
+  ],
+  "linux_counts": [
+    18,
+    0,
+    0,
+    0,
+    0
+  ],
+  "original_cases_preserved": 18,
+  "new_windows_regressions": 1,
+  "actual_original_lock_commands": [
+    {
+      "command": "./scripts/check-module-bazel-lock.sh",
+      "exit": 0
+    },
+    {
+      "command": "just bazel-lock-update",
+      "exit": 0
+    },
+    {
+      "command": "./scripts/check-module-bazel-lock.sh",
+      "exit": 0
+    }
+  ],
+  "committed_lock_and_source_unchanged": true,
+  "native_materialized_main_sha256": "d7fe64c575b51c742fe7b0b2461175572aa4341878980e3dd9c960bc7a35c7a8",
+  "native_materialized_test_sha256": "68f749daf6c3677bb4fdb0c77908985c29215157fa54fdfbcebb95d1d3566748",
+  "native_regression_format": "Rust1.96.0 rustfmt --check of actual materialized test file passed on both hosts",
+  "repository_format_scope": "just fmt --base 3cc71d6ec7e5e084dcecceb2757bc940459f0ada reported no changed repository Rust files; this does not claim the separate repo-wide Python formatter passed",
+  "immutable_publication": [
+    {
+      "commit": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11",
+      "tree": "49a9567143edd2b1aed5cc929afb04bdb6e39469",
+      "author": "273673612+Tomasrgbsf@users.noreply.github.com",
+      "committer": "273673612+Tomasrgbsf@users.noreply.github.com"
+    },
+    {
+      "path": "patches/rules_rust_windows_process_wrapper_skip_temp_outputs.patch",
+      "bytes": 3954,
+      "blob": "d6dccc1cce56c8e028d98efa69b6d2e01eab7d8c",
+      "sha256": "23699b698cc8ef483efcc23804c1fc9b306e926b91cbd40a62cd8fb3f0a8d9e8"
+    },
+    {
+      "path": "qualification/windows-archive-inputs-20261104/source-binding.json",
+      "bytes": 1516,
+      "blob": "ac98a8b524462a6fdb4269bccd719499cb0d5aae",
+      "sha256": "7bbbf065b7f0720624eb3307010ceab2860254961fa8e42d857b56ea19a54c76"
+    },
+    {
+      "path": "qualification/windows-archive-inputs-20261104/native-ced3/windows.job.log.gz",
+      "bytes": 165988,
+      "blob": "56214e48ef920118d4bac9e5ba020d4f5b1d4408",
+      "sha256": "602fbab7f77c8a12c1a466fd2f3bcb4995b9e0ebd3482e8f5adcff4b2a1fdc5a"
+    },
+    {
+      "path": "qualification/windows-archive-inputs-20261104/native-ced3/linux.job.log.gz",
+      "bytes": 97945,
+      "blob": "92852e2de428369b5ee40fffa8a85ce9d77ed0f8",
+      "sha256": "076a619335e2b9e89d6afe8bbee814316a1ed68f4f18a74563d86d161b996c06"
+    },
+    {
+      "path": "qualification/windows-archive-inputs-20261104/native-ced3/lock.job.log.gz",
+      "bytes": 82351,
+      "blob": "678efb0828b7b272b2d954bb4e413dea9d1ec829",
+      "sha256": "f819435fa4873a4c1115f46ce26b78ad7cf0054c01eeb7991918bd4da41c0b7d"
+    },
+    {
+      "path": "qualification/windows-archive-inputs-20261104/native-ced3/artifacts.json",
+      "bytes": 3025,
+      "blob": "0a1b9e5458ec1e325459a907396cf39c86349679",
+      "sha256": "bfe099ec6a140617180c5717baa9632bb80a7edac2bba7184c909a518728015f"
+    },
+    {
+      "path": "qualification/windows-archive-inputs-20261104/native-ced3/evidence.json",
+      "bytes": 3399,
+      "blob": "9e45bc85f09b0e3531ba8c3cfe294e72b48ce5d8",
+      "sha256": "57af7953811d1ca59f78aabbf7697cde4d26b61ef3fd86a2d230f7f58bbf511e"
+    },
+    {
+      "path": "qualification/windows-archive-inputs-20261104/README.md",
+      "bytes": 3658,
+      "blob": "9b0044ba27d84f45c77f60cf9424389dfbf355f0",
+      "sha256": "3c708f788200e57bcb5b2937450c1207bb02753c81651771128a55c73974a22e"
+    }
+  ],
+  "artifact_zip_independent_replay": "pending in a separate read-only verification run",
+  "original_full_windows_clippy": {
+    "run_id": 41758337794,
+    "job_id": 126348728195,
+    "status": "queued_at_checkpoint",
+    "required_native_target_count": 1282,
+    "closure": false
+  },
+  "posture": "Draft / HOLD_NO_GO / DENY_ALL",
+  "overall_private_ci_closed": false,
+  "library_cleared": false
+}
