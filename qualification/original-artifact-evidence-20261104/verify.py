@@ -274,7 +274,8 @@ def inspect_state(spec, receipt, members, git):
         require(b"skipping test:" not in members[package + ".log"].lower(), "early-return skip reported")
         counts[package] = len(cases)
     require(members["rustc-version.log"].startswith(b"rustc 1.96.0 "), "wrong Rust compiler")
-    raw_metadata = gzip.decompress(members["metadata.json.gz"])
+    with gzip.GzipFile(fileobj=io.BytesIO(members["metadata.json.gz"])) as compressed:
+        raw_metadata = compressed.read(LIMIT + 1)
     require(len(raw_metadata) <= LIMIT and sha(raw_metadata) == receipt["metadata"]["sha256"], "metadata differs")
     require(receipt["metadata"]["exit_code"] == 0 and
             len(json.loads(raw_metadata)["packages"]) == receipt["metadata"]["package_count"], "metadata package count differs")
