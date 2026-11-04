@@ -3,6 +3,7 @@
 
 import os
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -100,6 +101,57 @@ class V8EnvironmentTests(unittest.TestCase):
             hepta_ci_v8.configure_v8(ROOT, self.output)
         self.resolve.assert_not_called()
         self.assertEqual(self.output.read_text(), "EXISTING=preserved\n")
+
+    def test_local_run_preserves_command_profile_flags_and_exit_code(self) -> None:
+        command = [
+            "cargo",
+            "build",
+            "--locked",
+            "--offline",
+            "-p",
+            "codex-code-mode-host",
+        ]
+        with mock.patch.dict(os.environ, {"CARGO_BUILD_JOBS": "2"}):
+            expected_environment = dict(os.environ)
+            expected_environment.update(self.resolve.return_value)
+            with mock.patch.object(
+                hepta_ci_v8.subprocess, "call", return_value=17
+            ) as run:
+                self.assertEqual(hepta_ci_v8.run_with_v8(ROOT, command), 17)
+        run.assert_called_once_with(
+            command, cwd=ROOT / "codex-rs", env=expected_environment
+        )
+        self.assertEqual(self.output.read_text(), "EXISTING=preserved\n")
+
+    def test_local_resolution_failure_does_not_launch_command(self) -> None:
+        self.resolve.side_effect = RuntimeError("checksum mismatch")
+        with mock.patch.object(hepta_ci_v8.subprocess, "call") as run:
+            with self.assertRaisesRegex(RuntimeError, "checksum mismatch"):
+                hepta_ci_v8.run_with_v8(
+                    ROOT, ["just", "test", "-p", "codex-app-server"]
+                )
+        run.assert_not_called()
+
+    def test_explicit_local_mode_needs_no_github_environment_file(self) -> None:
+        with mock.patch.object(
+            sys, "argv", ["hepta_ci_v8.py", "--run", "cargo", "build"]
+        ):
+            with mock.patch.dict(
+                os.environ, {"CODEX_REPO_ROOT": str(ROOT)}, clear=True
+            ):
+                with mock.patch.object(
+                    hepta_ci_v8, "run_with_v8", return_value=23
+                ) as run:
+                    self.assertEqual(hepta_ci_v8.main(), 23)
+        run.assert_called_once_with(ROOT, ["cargo", "build"])
+
+    def test_empty_or_unknown_local_mode_does_not_resolve_or_launch(self) -> None:
+        for arguments in (["--run"], ["--unknown"], ["cargo", "build"]):
+            with self.subTest(arguments=arguments):
+                with mock.patch.object(sys, "argv", ["hepta_ci_v8.py", *arguments]):
+                    with self.assertRaisesRegex(RuntimeError, "Usage"):
+                        hepta_ci_v8.main()
+        self.resolve.assert_not_called()
 
 
 if __name__ == "__main__":
