@@ -2,6 +2,7 @@
 //! fixed process-bound channel; no host plan installs a signer, lease or cut.
 
 use super::boot::Boot;
+use super::command_runtime::block_on_original;
 use super::ipc;
 use super::supervisor;
 use codex_hepta_agentd::AgentdConfig;
@@ -139,34 +140,6 @@ pub(super) fn run(
         serde_json::to_vec(&value).map_err(|_| HostIssuerTransportError::Unavailable)
     })? {}
     Ok(())
-}
-
-fn block_on_original<F: std::future::Future>(
-    runtime: &tokio::runtime::Runtime,
-    future: F,
-) -> F::Output {
-    // Match locked Tokio 1.53.3: retain its original large-future boxing path.
-    const BOX_FUTURE_THRESHOLD: usize = if cfg!(debug_assertions) { 2048 } else { 16384 };
-    if std::mem::size_of::<F>() > BOX_FUTURE_THRESHOLD {
-        return runtime.block_on(future);
-    }
-    let mut future = std::pin::pin!(future);
-    runtime.block_on(pinned_original(future.as_mut()))
-}
-
-fn pinned_original<F: std::future::Future>(
-    mut future: std::pin::Pin<&mut F>,
-) -> impl std::future::Future<Output = F::Output> + '_ {
-    std::future::poll_fn(move |context| poll_original(future.as_mut(), context))
-}
-
-// Keep the concrete command poll outside scheduler inlining.
-#[inline(never)]
-fn poll_original<F: std::future::Future>(
-    future: std::pin::Pin<&mut F>,
-    context: &mut std::task::Context<'_>,
-) -> std::task::Poll<F::Output> {
-    future.poll(context)
 }
 
 async fn execute(

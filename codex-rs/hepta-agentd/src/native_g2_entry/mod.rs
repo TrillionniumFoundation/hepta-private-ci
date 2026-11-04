@@ -2,6 +2,7 @@
 mod activation;
 mod boot;
 mod boundary;
+mod command_runtime;
 mod cycle;
 mod evidence;
 mod ipc;
