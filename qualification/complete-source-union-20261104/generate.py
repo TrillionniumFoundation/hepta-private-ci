@@ -192,9 +192,23 @@ def main():
                 "formatter changed a path outside the reviewed source scope")
         write_json(output / "source-after-format.json", after_format)
         receipt["formatter_changes"] = formatter_changes
+        for name in formatter_changes:
+            raw = (ROOT / name).read_bytes()
+            destination = output / "formatted" / name
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(raw)
+            emit_file("ORIGINAL_FORMATTED_FILE", name, raw)
         run("actual-cargo-metadata", ["cargo", "metadata", "--all-features", "--format-version", "1"],
             WORKSPACE)
         generated_cargo = (WORKSPACE / "Cargo.lock").read_bytes()
+        # Retain the actual resolver proposal even when the strict adoption
+        # boundary rejects it. Exporting bytes does not qualify or adopt them.
+        (output / "resolved-Cargo.lock").write_bytes(generated_cargo)
+        emit_file("PROPOSED_CARGO_LOCK", "codex-rs/Cargo.lock", generated_cargo)
+        write_json(output / "resolved-cargo-records.json", {
+            "baseline": list(records(baseline)[1].values()),
+            "resolved": list(records(generated_cargo)[1].values()),
+        })
         receipt["cargo_delta"] = compare_cargo(baseline, generated_cargo, config)
         run("actual-locked-metadata",
             ["cargo", "metadata", "--locked", "--all-features", "--format-version", "1"], WORKSPACE)
