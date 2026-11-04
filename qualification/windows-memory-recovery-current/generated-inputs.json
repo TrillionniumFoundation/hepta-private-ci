@@ -1,0 +1,164 @@
+{
+  "schema": 1,
+  "source_commit": "8dfdf8c2fb146e8d47a943e7270851224eafa532",
+  "run_id": 41752190839,
+  "job_id": 126319693196,
+  "artifact": {
+    "id": 13286481863,
+    "bytes": 4386685,
+    "sha256": "2f88cc470b34626371095596687928441f59de6593a189fea99f28d121908715"
+  },
+  "actual_result": {
+    "source_commit": "8dfdf8c2fb146e8d47a943e7270851224eafa532",
+    "base_commit": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+    "status": "generated-needs-adoption",
+    "commands": [
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 0,
+        "seconds": 0.160583509999924,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "committed-lock-first",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 28.161210715999914,
+        "log_sha256": "2c644a616b0ff85c25affd175cd8ae8cdca62dba3fe26bc4e67aa1ac54fcbbf0"
+      },
+      {
+        "name": "original-formatter",
+        "argv": [
+          "just",
+          "fmt",
+          "--base",
+          "230d2d69a8c68ae6f8c502118fd9a8ee33027c37"
+        ],
+        "exit_code": 0,
+        "seconds": 0.6193141270000524,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "original-formatter-check",
+        "argv": [
+          "just",
+          "fmt",
+          "--check",
+          "--base",
+          "230d2d69a8c68ae6f8c502118fd9a8ee33027c37"
+        ],
+        "exit_code": 0,
+        "seconds": 0.6181872230000636,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "actual-cargo-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "seconds": 14.985703573000023,
+        "log_sha256": "e544ae870849fa159660057ff010d1ed45132f319ce954266c37a95dda55695b"
+      },
+      {
+        "name": "actual-locked-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--locked",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "seconds": 0.8653385600000547,
+        "log_sha256": "4c170f487c59c5ec88c0101ad37d621f3bb71e0d245d0b4bc985c3d4060ccaa1"
+      },
+      {
+        "name": "original-lock-update",
+        "argv": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "seconds": 19.98366063499998,
+        "log_sha256": "8ef3cf6c5408d9bacf9ca79c1e2e3a89f1e6dbda54d0dc32e1791e71ddf2817e"
+      },
+      {
+        "name": "original-lock-check",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 4.5014591450000125,
+        "log_sha256": "66f393e0f779b6f93eb1d64d3df897e5e444c08216e28cbfcde91e0358cb0c6d"
+      }
+    ],
+    "scope": "Real lock generation and formatting; native product qualification is separate.",
+    "cargo_delta": {
+      "packages": 1517,
+      "added_dependencies": {
+        "codex-hepta-memory": [
+          "codex-utils-path"
+        ],
+        "codex-state": [
+          "codex-utils-path"
+        ],
+        "codex-utils-path": [
+          "winapi-util",
+          "windows-sys 0.52.0"
+        ]
+      },
+      "versions_sources_checksums_unchanged": true
+    },
+    "changed_paths": [
+      "codex-rs/Cargo.lock",
+      "codex-rs/hepta-memory/src/cognitive_store_recovery_windows_tests.rs",
+      "codex-rs/state/src/sqlite_recovery_windows_tests.rs"
+    ],
+    "committed_cargo_equals_generated": false,
+    "committed_bazel_equals_generated": true,
+    "source_unchanged": false
+  },
+  "adopted": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "bytes": 416774,
+      "sha256": "3799ac5debde96c287c8b7c4454a9ef9308495c96936fc0d3c345c7e06136d92",
+      "chunks": 9,
+      "complete": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_windows_tests.rs",
+      "bytes": 1771,
+      "sha256": "02413312ecefa91e275f6a36b96e43e6e64025a32ec621afb3a5e0b616569730",
+      "chunks": 1,
+      "complete": true
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+      "bytes": 10290,
+      "sha256": "930f06f1e22ff36f00637fd3ca2bb0ade6f67bbc729526a5046fe9abc8d8e272",
+      "chunks": 1,
+      "complete": true
+    }
+  ],
+  "generation_readback": "Exported base64 bytes decoded and SHA-256 independently recomputed before adoption.",
+  "qualification": "Native product results remain pending for the adopting source."
+}

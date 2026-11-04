@@ -1,0 +1,200 @@
+#!/usr/bin/env python3
+"""Run the complete original path, state and Memory libraries on the native host."""
+import argparse
+import json
+import os
+from pathlib import Path
+import platform
+import re
+import shutil
+import subprocess
+import time
+import xml.etree.ElementTree as ET
+
+from generate import ROOT, WORKSPACE, HERE, digest, require, snapshot
+
+PACKAGES = ("codex-utils-path", "codex-state", "codex-hepta-memory")
+WINDOWS_REQUIRED = {
+    "codex-utils-path": {
+        "existing_only_directory_does_not_create_or_repair_a_missing_source",
+        "frozen_private_child_retains_bytes_and_refuses_write_and_delete_handles",
+        "frozen_child_rejects_missing_alias_and_hard_link_without_creation",
+        "fresh_materialization_never_opens_an_occupied_name",
+    },
+    "codex-state": {
+        "windows_guard_never_creates_missing_sources_and_rejects_live_writers",
+        "windows_sidecar_appearance_refuses_before_any_candidate_is_created",
+        "windows_retains_each_sidecar_and_rejects_hard_links_for_every_role",
+        "windows_cold_image_is_read_only_and_reconnects_from_the_retained_copy",
+        "windows_materializes_only_fresh_private_bytes_and_never_copies_shm",
+        "windows_native_and_verbatim_homes_bind_without_admitting_another_directory",
+        "windows_home_spelling_reconciliation_rejects_other_roots_and_namespaces",
+    },
+    "codex-hepta-memory": {
+        "bootstrap_creates_private_source_and_preserves_existing_bytes",
+        "bootstrap_refuses_existing_hard_link_without_adopting_or_changing_it",
+        "pointer_stage_collision_preserves_the_original_private_file",
+        "exact_current_cut_recovers_both_native_and_verbatim_root_spellings",
+        "exact_current_cut_recovers_writable_generation_and_persists_activation",
+        "post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+        "predecessor_witness_is_rejected_and_current_witness_recovers",
+        "revoked_owner_profile_and_witness_checks_precede_recovery_admission",
+        "writable_recovery_requires_exclusive_store_fence",
+    },
+}
+
+
+def unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        require(key not in result, "duplicate JSON key: " + key)
+        result[key] = value
+    return result
+
+
+def inventory(raw, package, allowed_ignored):
+    data = json.loads(raw, object_pairs_hook=unique_object)
+    suites = data["rust-suites"]
+    require(len(suites) == 1, "expected exactly the selected library binary")
+    suite_id, suite = next(iter(suites.items()))
+    require(suite["package-name"] == package and suite["kind"] == "lib"
+            and suite["status"] == "listed", "wrong or unlisted library")
+    cases = suite["testcases"]
+    require(cases and data["test-count"] == len(cases), "empty or inconsistent inventory")
+    ignored = {name for name, case in cases.items() if case["ignored"] is True}
+    require(ignored == set(allowed_ignored), "original ignored set changed")
+    expected = set(cases) - ignored
+    require(expected, "no executable library cases")
+    for name, case in cases.items():
+        require(type(case["ignored"]) is bool and case.get("kind") in (None, "test"),
+                "unexpected test kind or ignored marker")
+        wanted = {"status": "mismatch", "reason": "ignored"} if name in ignored else {"status": "matches"}
+        require(case["filter-match"] == wanted, "unexpected library case filter: " + name)
+    return {"suite": suite_id, "binary": suite["binary-path"],
+            "all_cases": sorted(cases), "expected": sorted(expected),
+            "original_ignored": sorted(ignored)}
+
+
+def validate_junit(raw, listed):
+    root = ET.fromstring(raw)
+    suites = list(root.iter("testsuite"))
+    require(suites, "missing JUnit suite")
+    bad = {"failure", "error", "skipped", "rerunFailure", "rerunError", "flakyFailure", "flakyError"}
+    require(not any(element.tag in bad for element in root.iter()), "failed, skipped or retried case")
+    cases = list(root.iter("testcase"))
+    names = [case.get("name") for case in cases]
+    require(len(names) == len(set(names)) and set(names) == set(listed["expected"]),
+            "JUnit does not cover every nonignored library case exactly once")
+    require(sum(int(s.get("tests", "-1")) for s in suites) == len(names),
+            "JUnit test counters do not match executed cases")
+    for suite in suites:
+        require(all(int(suite.get(key, "0")) == 0 for key in ("failures", "errors", "skipped")),
+                "nonzero JUnit failure or skip counter")
+    return {"passed": len(names), "failed": 0, "errors": 0, "skipped": 0, "retried": 0,
+            "executed": names, "original_ignored": listed["original_ignored"]}
+
+
+def main():
+    require(__debug__, "optimized Python is not accepted")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    output = args.output.resolve()
+    output.mkdir(parents=True, exist_ok=False)
+    config = json.loads((HERE / "scope.json").read_bytes())
+    before = snapshot()
+    head = subprocess.check_output(["git", "--no-replace-objects", "rev-parse", "HEAD"],
+                                   cwd=ROOT, text=True).strip()
+    receipt = {"source_commit": head, "status": "failed", "run_id": os.environ["GITHUB_RUN_ID"],
+               "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "host": platform.platform(),
+               "machine": platform.machine(), "commands": [], "libraries": {}, "problems": [],
+               "scope": "Complete original native library tests and scoped original Clippy; no production admission."}
+    (output / "source-before.json").write_text(json.dumps(before, indent=2) + "\n")
+    report = WORKSPACE / "target/nextest/local/junit.xml"
+
+    def run(name, argv, cwd=ROOT):
+        started = time.monotonic()
+        stdout, stderr = output / (name + ".stdout"), output / (name + ".stderr")
+        with stdout.open("wb") as out, stderr.open("wb") as err:
+            process = subprocess.run(argv, cwd=cwd, stdout=out, stderr=err)
+        row = {"name": name, "argv": argv, "cwd": str(cwd), "exit_code": process.returncode,
+               "seconds": time.monotonic() - started}
+        receipt["commands"].append(row)
+        print(json.dumps(row), flush=True)
+        if process.returncode:
+            print(stdout.read_text(encoding="utf-8", errors="replace")[-15000:], flush=True)
+            print(stderr.read_text(encoding="utf-8", errors="replace")[-15000:], flush=True)
+        return process.returncode
+
+    try:
+        require(head == os.environ["HEPTA_EXPECTED_COMMIT"], "unexpected source head")
+        require(run("initial-clean-source", ["git", "--no-replace-objects", "diff", "--exit-code", "HEAD", "--"]) == 0,
+                "dirty initial source")
+        require(run("rustc-version", ["rustc", "-Vv"]) == 0, "rustc version failed")
+        require((output / "rustc-version.stdout").read_text().startswith("rustc 1.96.0 "),
+                "not the committed Rust 1.96 toolchain")
+        require(run("nextest-version", ["cargo", "nextest", "--version"], WORKSPACE) == 0,
+                "nextest version failed")
+        require((output / "nextest-version.stdout").read_text().startswith("cargo-nextest 0.9.151 "),
+                "unexpected nextest version")
+        for package in PACKAGES:
+            item = {"status": "failed"}
+            receipt["libraries"][package] = item
+            try:
+                require(run(package + "-inventory", ["cargo", "nextest", "list", "--locked",
+                        "-p", package, "--lib", "--message-format=json"], WORKSPACE) == 0,
+                        "library inventory failed")
+                ignored = config["original_ignored_memory_cases"] if package == "codex-hepta-memory" else []
+                listed = inventory((output / (package + "-inventory.stdout")).read_bytes(), package, ignored)
+                item["inventory"] = listed
+                if os.name == "nt":
+                    suffixes = {name.rsplit("::", 1)[-1] for name in listed["expected"]}
+                    require(WINDOWS_REQUIRED[package] <= suffixes, "required Windows controls not compiled")
+                binary = Path(listed["binary"])
+                item["binary_sha256_before"] = digest(binary.read_bytes())
+                if report.exists():
+                    report.unlink()
+                require(not report.exists(), "stale JUnit report")
+                code = run(package + "-original-tests", ["just", "test", "--locked", "-p", package,
+                           "--lib", "--no-tests=fail", "--retries", "0", "--success-output=final"])
+                if report.is_file():
+                    shutil.copyfile(report, output / (package + "-junit.xml"))
+                require(code == 0, "original library tests failed")
+                require(report.is_file(), "successful process produced no fresh JUnit")
+                log = b"".join((output / (package + "-original-tests." + suffix)).read_bytes()
+                               for suffix in ("stdout", "stderr"))
+                require(b"skipping test:" not in log.lower(), "test reported an early-return skip")
+                item["result"] = validate_junit(report.read_bytes(), listed)
+                item["binary_sha256_after"] = digest(binary.read_bytes())
+                require(item["binary_sha256_before"] == item["binary_sha256_after"],
+                        "test binary changed during execution")
+                item["status"] = "passed"
+            except Exception as error:
+                item["error"] = str(error)
+                receipt["problems"].append(package + ": " + str(error))
+        fix = ["just", "fix", "--locked"]
+        for package in PACKAGES:
+            fix.extend(["-p", package])
+        fix.append("--no-deps")
+        if run("original-scoped-clippy", fix):
+            receipt["problems"].append("original scoped Clippy failed")
+        if run("final-clean-source", ["git", "--no-replace-objects", "diff", "--exit-code", "HEAD", "--"]):
+            receipt["problems"].append("qualification changed tracked source")
+        if snapshot() != before:
+            receipt["problems"].append("source input hashes changed")
+        require(not receipt["problems"], "; ".join(receipt["problems"]))
+        receipt["status"] = "passed"
+    finally:
+        after = snapshot()
+        receipt["source_after"] = after
+        receipt["source_inputs_unchanged"] = after == before
+        receipt["outputs"] = {p.name: {"bytes": p.stat().st_size, "sha256": digest(p.read_bytes())}
+                              for p in sorted(output.iterdir()) if p.is_file() and p.name != "receipt.json"}
+        (output / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+        print("NATIVE_QUALIFICATION_RESULT=" + json.dumps({
+            key: value for key, value in receipt.items() if key not in {"source_after", "outputs"}
+        }), flush=True)
+
+
+if __name__ == "__main__":
+    main()

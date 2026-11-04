@@ -3871,6 +3871,7 @@ dependencies = [
  "codex-hepta-types",
  "codex-state",
  "codex-utils-absolute-path",
+ "codex-utils-path",
  "ed25519-dalek 2.2.0",
  "futures",
  "libc",
@@ -5101,6 +5102,7 @@ dependencies = [
  "codex-history",
  "codex-protocol",
  "codex-utils-absolute-path",
+ "codex-utils-path",
  "libc",
  "libsqlite3-sys",
  "log",
@@ -5474,6 +5476,8 @@ dependencies = [
  "dunce",
  "pretty_assertions",
  "tempfile",
+ "winapi-util",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]

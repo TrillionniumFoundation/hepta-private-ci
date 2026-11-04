@@ -48,6 +48,9 @@ jobs:
         with:
           toolchain: 1.96.0
           components: rustfmt,clippy
+      - name: Check the evidence readers before running original commands
+        run: |
+          python3 -m unittest discover -s qualification/windows-memory-recovery-current -p test_readers.py -v
       - name: Produce actual locks and formatter bytes without running product code
         id: lock
         env:
@@ -62,5 +65,105 @@ jobs:
         with:
           name: windows-memory-generated-${{ github.sha }}
           path: ${{ runner.temp }}/windows-memory-generated
+          if-no-files-found: error
+          retention-days: 14
+
+  native:
+    if: github.ref_name == 'fix/private-ci-windows-memory-recovery-20261104' && needs.generate.outputs.qualified == 'true'
+    needs: generate
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-2025, ubuntu-24.04, macos-15]
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      RUSTUP_TOOLCHAIN: 1.96.0
+      RUST_MIN_STACK: '8388608'
+      NEXTEST_PROFILE: local
+      PYTHONIOENCODING: utf-8
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          toolchain: 1.96.0
+          components: clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.151
+      - name: Set an isolated native build directory
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as stream:
+              stream.write("CARGO_TARGET_DIR=" + str(Path(os.environ["RUNNER_TEMP"]) / "memory-native-target") + "\n")
+          PY
+      - name: Run all original library cases and original scoped Clippy
+        env:
+          HEPTA_EXPECTED_COMMIT: ${{ github.sha }}
+        run: |
+          python qualification/windows-memory-recovery-current/run_native.py --output "$RUNNER_TEMP/memory-native-evidence"
+      - name: Retain exact native source and every original result
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: memory-native-${{ matrix.runner }}-${{ github.sha }}
+          path: ${{ runner.temp }}/memory-native-evidence
+          if-no-files-found: error
+          retention-days: 14
+
+  original-bazel:
+    if: github.ref_name == 'fix/private-ci-windows-memory-recovery-20261104' && needs.generate.outputs.qualified == 'true'
+    needs: generate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          filter: blob:none
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: windows-memory-original
+      - name: Run the three original library targets and scoped Clippy
+        shell: bash
+        env:
+          HEPTA_EXPECTED_COMMIT: ${{ github.sha }}
+        run: |
+          export MEMORY_QUALIFICATION_BASH="$BASH"
+          python3 qualification/windows-memory-recovery-current/run_bazel.py --output "$RUNNER_TEMP/memory-bazel-evidence"
+      - name: Retain original Bazel results and exact source
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: memory-original-bazel-${{ github.sha }}
+          path: ${{ runner.temp }}/memory-bazel-evidence
           if-no-files-found: error
           retention-days: 14

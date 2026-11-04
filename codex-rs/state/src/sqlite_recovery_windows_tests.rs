@@ -247,7 +247,10 @@ async fn windows_native_and_verbatim_homes_bind_without_admitting_another_direct
         let database = home.join("cold.sqlite3");
         let guard = fixture.config.bind_existing_recovery_database(&database)?;
         guard.verify_inspection_unchanged()?;
-        let image = fixture.config.open_cold_image_read_only_pool(&guard).await?;
+        let image = fixture
+            .config
+            .open_cold_image_read_only_pool(&guard)
+            .await?;
         let fact: String = sqlx::query_scalar("SELECT value FROM fact")
             .fetch_one(&image)
             .await?;
@@ -259,18 +262,26 @@ async fn windows_native_and_verbatim_homes_bind_without_admitting_another_direct
     let other = Fixture::new()?;
     assert!(!same_recovery_home(&other.home, &native));
     assert!(matches!(
-        fixture.config.bind_existing_recovery_database(&other.database),
+        fixture
+            .config
+            .bind_existing_recovery_database(&other.database),
         Err(SqliteRecoveryError::Indeterminate)
     ));
-    let guard = fixture.config.bind_existing_recovery_database(&fixture.database)?;
+    let guard = fixture
+        .config
+        .bind_existing_recovery_database(&fixture.database)?;
     let outside = other.home.join("outside.sqlite3");
     assert!(matches!(
-        fixture.config.materialize_identity_bound_recovery_copy(&guard, &outside),
+        fixture
+            .config
+            .materialize_identity_bound_recovery_copy(&guard, &outside),
         Err(SqliteRecoveryError::Indeterminate)
     ));
     assert!(!outside.exists());
     let target = verbatim.join("candidate.sqlite3");
-    fixture.config.materialize_identity_bound_recovery_copy(&guard, &target)?;
+    fixture
+        .config
+        .materialize_identity_bound_recovery_copy(&guard, &target)?;
     assert_eq!(std::fs::read(&target)?, original);
     assert_eq!(std::fs::read(&fixture.database)?, original);
     guard.verify_inspection_unchanged()?;
@@ -293,6 +304,9 @@ fn windows_home_spelling_reconciliation_rejects_other_roots_and_namespaces() {
         r"\\.\C:\private\owner",
         r"private\owner",
     ] {
-        assert!(!same_recovery_home(Path::new(other), Path::new(r"C:\private\owner")));
+        assert!(!same_recovery_home(
+            Path::new(other),
+            Path::new(r"C:\private\owner")
+        ));
     }
 }

@@ -8,7 +8,10 @@ async fn exact_current_cut_recovers_both_native_and_verbatim_root_spellings() {
         let temp = TempDir::new().expect("temp dir");
         let owner = agent_id(232);
         let (store, _, _) = seeded(&temp, &owner).await;
-        let anchor = store.recovery_anchor().await.expect("trusted current witness");
+        let anchor = store
+            .recovery_anchor()
+            .await
+            .expect("trusted current witness");
         store.pool.close().await;
         drop(store);
 
@@ -37,7 +40,10 @@ async fn exact_current_cut_recovers_both_native_and_verbatim_root_spellings() {
         .await
         .expect("original retained recovery admission");
         assert_eq!(
-            recovered.recovery_anchor().await.expect("recovered current witness"),
+            recovered
+                .recovery_anchor()
+                .await
+                .expect("recovered current witness"),
             anchor
         );
         recovered.pool.close().await;
