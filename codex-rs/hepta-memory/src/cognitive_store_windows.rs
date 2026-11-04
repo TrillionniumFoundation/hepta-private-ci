@@ -35,6 +35,18 @@ pub(super) fn create_private_directories(root: &Path) -> Result<(), CognitiveSto
             Err(error) => return Err(unavailable(error)),
         }
     }
+    // Preserve the public invalid-path contract before native creation can
+    // report a reparse refusal as an availability error. This observation grants
+    // no handle: each native create/open below still enforces its own policy.
+    if super::canonical_path_without_redirection(current)
+        .map_err(unavailable)?
+        .is_none()
+    {
+        return Err(CognitiveStoreError::Invalid(
+            "per-agent cognitive root must be canonical and must not traverse a symlink"
+                .to_string(),
+        ));
+    }
     for path in missing.into_iter().rev() {
         drop(open_private_state_directory(&path).map_err(unavailable)?);
     }
