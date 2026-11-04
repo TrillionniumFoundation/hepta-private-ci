@@ -18,8 +18,14 @@ use zeroize::Zeroizing;
 #[path = "final_use_pq_capacity_tests.rs"]
 mod capacity_tests;
 
+#[path = "final_use_pq_frontier_tests.rs"]
+mod frontier_tests;
+
 #[path = "final_use_pq_recovery_tests.rs"]
 mod recovery_tests;
+
+#[path = "final_use_pq_entry_tests.rs"]
+mod entry_tests;
 
 type PqTestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
