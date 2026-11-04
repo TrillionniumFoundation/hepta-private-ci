@@ -1,0 +1,107 @@
+{
+  "accepted_direction_and_required_gates": [
+    {
+      "id": "D1",
+      "requirement": "Fix request-control context confusion at public publish/await_cancel and consistently at receipt replay. The retained original A object and exact A record can otherwise be used by a sequential legitimate B writer without private runtime mutation. Do not describe this as lock bypass or proof that A deadline can be extended; RunSession still enforces A output deadline/budget.",
+      "topic": "Actual new causal gap"
+    },
+    {
+      "id": "D2",
+      "requirement": "Before any clock sample/validate, terminal or record read, pipe readiness/read, work mutation, attempt mutation or write, validate the real Attempt/identity shape and full identity spec against session spec. Bind raw request digest, both artifact values, namespace, actual root instance, current source freeze and exact request deadline to the pinned current manifest. Verify manifest hash equals clock pin. The gate itself must not call budget or clock-observing helpers. Internal _boundary gets the same defense. Existing complete stored-snapshot checks remain.",
+      "topic": "Non-observing full-context gate"
+    },
+    {
+      "id": "D3",
+      "requirement": "Freeze explicit producer/supervisor ordering: supervisor independently verifies ack2 and completely sends exactly one valid B frame; an atomic completion event or equivalent barrier must be visible before producer snapshots and invokes the three rejected calls. A frame that arrives only after rejection would not prove a queued frame was unconsumed. Preserve identical Clock.last and full FrameReader buffered/fault state across each refusal, then explicitly read and compare that original frame before reopening A. No rejected call may drain or validate it.",
+      "topic": "Real queued B-frame proof"
+    },
+    {
+      "id": "D4",
+      "requirement": "Close each writer before reacquiring the unchanged root lease. Reopen with the identical original A manifest/epoch, retained original live Attempt and original record, no restore-to-live conversion or new model call. Empty the B frame only in the explicit proof step. Verify new publication precisely adds one 8192-byte piece, giving cursor3/prefix16419, and does not recompute generated output. Do not add object ownership tokens or claim universal epoch replay protection.",
+      "topic": "Legitimate same-context handoff"
+    },
+    {
+      "id": "D5",
+      "requirement": "Wrong deadline/source/root variants must each differ in only the named manifest field and its recomputed pin. Their Clock schemas and interval must remain otherwise valid; the deadline variant must not fail merely because expired. Root mismatch uses metadata, not actual root/lock replacement. These cases verify those branches independently of B request/namespace mismatch. Artifact/identity checks remain source-reviewed but are not claimed separately isolated runtime negatives in this seven-case plan.",
+      "topic": "Independent context variants"
+    },
+    {
+      "id": "D6",
+      "requirement": "The adapted independent verifier must pin the exact ack3 slot/cursor, original wire/route, text35/image16384 prefix, unchanged two tickets, complete state and absent piece-03 intent. Do not weaken old ack2-specific checks into generic acceptance. Supervisor verifies ack3 before sending A cancellation. Verify all four ACK references and full intent/final transition at this new frontier. Readonly awaits remain denied, while original cancelled live A supports unchanged receipt-only duplicate.",
+      "topic": "Ack3 verifier and cancellation ordering"
+    },
+    {
+      "id": "D7",
+      "requirement": "Each refusal records complete root inventory, full fixed-observation Attempt snapshot, backend/work counters, Clock.last and full reader state before/after. Capture helpers must not themselves sample the tested Clock. Persist the exact error, not merely exception occurrence. Same rules apply to the successful duplicate except existing allowed clock observation. Preserve unknown/fault and receipt-only boundaries; no new fault adoption or disk recovery is implied.",
+      "topic": "Complete saved immutability"
+    },
+    {
+      "id": "D8",
+      "requirement": "Exactly outer/supervisor/producer with unchanged owned_process helper and inherited CPU2/AS256MiB/FSIZE2MiB; same existing benchmark lock and no substitution. Fixed 24 checks/7 refusals, one actual serve/two model restores/zero mock, training, new models or reference calls. Full subtree and outer-prefix accounting, unknown tail, terminal file/byte bounds and all failure costs remain explicit. Final source/inputs/process graph/capacity must be frozen and independently reviewed before a separately admitted one-time run.",
+      "topic": "Frozen resource and source review"
+    }
+  ],
+  "blocking_findings": [],
+  "capacity_arithmetic": {
+    "current_chain_bound_bytes": 5158758,
+    "current_chain_files": 51,
+    "current_success_bound_bytes": 5355366,
+    "current_success_files": 56,
+    "original_chain_bound_bytes": 5060454,
+    "original_chain_files": 51,
+    "original_success_bound_bytes": 5257062,
+    "original_success_files": 56,
+    "proposed_chain_bound_bytes": 5158758,
+    "proposed_per_changed_file_bytes": 131072,
+    "proposed_success_bound_bytes": 5355366,
+    "terminal_bytes_unchanged": 8388608,
+    "terminal_files_unchanged": 100
+  },
+  "capacity_sha256": "2c79917e964bb3fa61ad34e2678809fb42f0a12156affd34686b9e2413221726",
+  "coverage_boundary": {
+    "excluded": "No hostile Python/filesystem isolation, global/different-root deduplication, production owner authentication, arbitrary crash/ACK-loss recovery, all epoch replay prevention, model-quality result, hidden retry or inherited-runtime aggregate PASS.",
+    "historical": "Old live-control metadata negatives compare a command with its own Clock; the replay-receipt negative matrix checks only receipt lookup. Neither qualifies retained A across a sequential B-clock writer. Prior saved PASS remains valid only for its fixed admitted cases.",
+    "new": "Same original A control context is positively supported across a cooperative writer handoff. A different B request context and isolated deadline/source/root mismatches are negatively checked before consuming a genuinely queued frame."
+  },
+  "delta_review": {
+    "ack3_verifier": "Two fixed frontier profiles only: exact ack3 slot/cursor3/generated/unchanged tickets/text35+image16384/original wire/no piece03 intent; four-reference ACK bound to that precise prior record and complete cancellation transition. A command is sent only after independent ack3 verification.",
+    "capacity": "Exactly the three identified post-ack3 file caps changed. Conditional successful capacity corrected without raising terminal8MiB/100file or process caps.",
+    "causal_B_frame": "Revised DESIGN requires complete send followed by atomic B_SEND_EVENT with exact command, digest, returned begin/complete times and complete framed byte length/hash including four-byte big-endian length prefix. Producer validates that event before first refusal capture. Original A must remain live by OS monotonic time without sampling B Clock. Only the explicit post-refusal proof consumes the frame. The claim is complete-send-before-calls, not complete-send-before-initial-kernel-readability.",
+    "full_cost": "Six writer constructions and two start/post-generation backend checkpoint checks are explicitly counted, plus equality checks, parsing, full-state capture, hashes, no-model restores/verifiers and cleanup. One inference/two model allocations does not hide extra work. Caps unchanged; failures do not authorize retry.",
+    "isolated_negatives": "Deadline+1 stays schema-valid/unexpired, wrongsource is a different valid digest, wrongroot changes only inode metadata. Each recomputes its pin and leaves the actual root/lease unchanged. Full-state capture uses saved observation time and does not sample the tested clock.",
+    "review_level": "Documentation-only acceptance. Required D1-D8 obligations still need source-level verification; no implementation, candidate import, protocol/model run or old-bug execution performed."
+  },
+  "design_sha256": "bd8013a6b7eff84f0208cfe7d0bb377a9fd9d05c522cce325e13720e6c26d099",
+  "execution_authorized": false,
+  "method": "Read-only design/source/history inspection and stdlib hash/capacity arithmetic. No candidate implementation, imports, tests, model, protocol, old-bug reproduction, restricted owner/V3-subtree reads or remote operations. Only exact prior-design copies and this review are written.",
+  "next_step": "Author may implement only this accepted design scope when parent authorizes. Final exact source/inputs/process graph/capacity require independent SOURCE review and separate once-run admission. This design file itself does not admit execution or publication.",
+  "preserved_priors": {
+    "PRIOR_CAPACITY_60690861.json": {
+      "bytes": 2502,
+      "sha256": "6069086121fdfcf3fffa1e2d59f2a676597c983f00282ad886c4d49e97d12a36"
+    },
+    "PRIOR_DESIGN_236e4798.md": {
+      "bytes": 9925,
+      "sha256": "236e47988323df6011ae1826be32cd36d8f625a7a7d54fb52265e1283e0c8a00"
+    },
+    "PRIOR_INDEPENDENT_DESIGN_REVIEW_598f6c71.json": {
+      "bytes": 8699,
+      "sha256": "598f6c7141f41ba832a285288fd29e9ca16f14b068c92696034a63cdbb6e13d2"
+    }
+  },
+  "qualification_admitted": false,
+  "resolved_findings": [
+    {
+      "evidence": "joint-policy-replay-receipt-candidate-v1/RUN_ONCE/chain/delivery/b625f5a522188fc59302e7fc21afa0ab8353556cb9f691b68b20256e79620db4/piece-01-ack.json, 88721 bytes. Independent static JSON/hex-size arithmetic only; no constructed Attempt or protocol run.",
+      "finding": "The third acknowledged piece raises published prefix from 8227 to 16419 bytes. Journal prefix hex expands by 16384 bytes. The directly measured predecessor ack2 journal is 88721 bytes; the analogous ack3 payload is about 105105 bytes before minor identity-length differences. All three post-ack3 records therefore exceed the current 98304-byte caps.",
+      "id": "B1",
+      "outcome": "RESOLVED_BY_DOCUMENT_DELTA. Exactly three allowances corrected to131072, chain5158758 and total5355366 independently summed; original finding and documents retained unchanged.",
+      "required_revision": "Raise exactly these three per-file successful allowances to 131072; recalculate chain bound to 5158758 and success total to 5355366 bytes. Preserve 51 chain/56 total files and existing terminal 8388608-byte/100-file cap. No resource-budget increase is required.",
+      "target": "CAPACITY.json chain_entries piece-02-ack.json, cancel-intent.json and cancelled.json"
+    }
+  ],
+  "reviewed_at_utc": "2026-11-04T01:54:03.788053+00:00",
+  "schema": "independent-scoped-design-review-v1",
+  "source_freeze_sha256": null,
+  "status": "DESIGN_ACCEPTED_PENDING_FROZEN_SOURCE_REVIEW"
+}
