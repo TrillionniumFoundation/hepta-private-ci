@@ -99,3 +99,11 @@ jobs:
           .github/scripts/run_bazel_with_buildbuddy.py test //bazel/rules:crate_aliases_tests
           git diff --exit-code HEAD --
           just bazel-lock-check
+
+  original-private-storage-owners:
+    if: github.ref_name == 'integration/private-ci-complete-source-20261104-gpt6' && needs.generate.outputs.qualified == 'true'
+    needs: generate
+    uses: ./.github/workflows/fleet-private-registration-qualification.yml
+    with:
+      source_sha: ${{ github.sha }}
+    secrets: inherit
