@@ -1,0 +1,17 @@
+{
+  "command_tail": "python -I -B strict-history-equality-candidate-v1/run_once.py",
+  "command_verbatim": "python - <<'PY'\nimport os,fcntl\nf=os.open('/workspace/shared/rgb-class-preservation-20261030/benchmark.lock',os.O_RDONLY)\nfcntl.flock(f,fcntl.LOCK_EX|fcntl.LOCK_NB)\nprint('SHARED_LOCK_AVAILABLE')\nos.close(f)\nPY\npython -I -B strict-history-equality-candidate-v1/run_once.py",
+  "functions_exec_status": "Script completed",
+  "kind": "POSTHOC_TOOL_TRANSCRIPT_EXCERPT_NOT_PROSPECTIVE_RECEIPT",
+  "response_fields": {
+    "chunk_id": "b50f5d",
+    "exit_code": 0,
+    "original_token_count": 203,
+    "wall_time_seconds": 0.266068978
+  },
+  "scope": "wrapper shell completion evidence; authoritative worker CPU remains original WAIT4_RECEIPT; transport wall value is not method CPU or synchronized worker wall",
+  "session_id_returned": false,
+  "source": "exec_command tool response delivered in this task at 2026-11-04 01:11:53 UTC; selected fields quoted, not a second process wait",
+  "stdout_first_line": "SHARED_LOCK_AVAILABLE",
+  "stdout_verbatim": "SHARED_LOCK_AVAILABLE\n{\"complete_wait\": true, \"exit_code\": 0, \"raw_wait_status\": 0, \"whole_child_CPU_seconds\": 0.285247, \"user_CPU_seconds\": 0.220105, \"system_CPU_seconds\": 0.06514199999999999, \"wall_seconds\": 0.28664290299639106, \"max_rss_kib\": 14400, \"source_freeze_sha256\": \"5a1a726f3db9e892b72aea9941413a8544a37244d276b5f827c3891825ceb8ab\", \"result_sha256\": \"a36315f00ee8b453afd2711c5d29adaff725074f46e09b015c62ffda710a1806\", \"automatic_retry\": false, \"outer_CPU_prefix_seconds\": 0.041751895, \"outer_final_tail\": \"unknown_nonzero\", \"preparation_review_and_history\": \"additional_nonzero\", \"scope\": \"stdlib saved128 history only; NOT strict256 admission\", \"limits\": {\"child_CPU_seconds\": 4, \"outer_CPU_seconds\": 6, \"AS_MiB\": 256, \"file_MiB\": 2, \"child_wall_alarm_seconds\": 45, \"outer_wall_alarm_seconds\": 60}}\n"
+}
