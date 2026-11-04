@@ -47,6 +47,16 @@ struct Fixture {
 async fn fixture() -> Fixture {
     let temp = tempfile::tempdir().expect("temporary root");
     let root = temp.path().canonicalize().expect("canonical root");
+    #[cfg(windows)]
+    let root = {
+        // Keep this positive owner fixture independent of the runner's inherited ACL.
+        let private = root.join("private-fixture");
+        drop(
+            codex_utils_path::open_private_state_directory(&private)
+                .expect("new private fixture root"),
+        );
+        private
+    };
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
     let registry = FleetRegistry::initialize(fleet_root.clone()).expect("registry");
     let workspace = root.join("workspace");
