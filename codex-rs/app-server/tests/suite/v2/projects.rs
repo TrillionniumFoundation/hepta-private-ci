@@ -839,7 +839,12 @@ async fn read_next_message_ignoring_global_skills_changes(
         let message = server.read_next_message().await?;
         if !matches!(
             &message,
-            JSONRPCMessage::Notification(notification) if notification.method == "skills/changed"
+            JSONRPCMessage::Notification(notification)
+                if notification.method == "skills/changed"
+                    && matches!(
+                        notification.params.as_ref(),
+                        Some(serde_json::Value::Object(params)) if params.is_empty()
+                    )
         ) {
             return Ok(message);
         }
