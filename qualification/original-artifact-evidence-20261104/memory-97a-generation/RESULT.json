@@ -1,0 +1,145 @@
+{
+  "schema": 1,
+  "source": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+  "run": 41767471183,
+  "job": 126369150492,
+  "controls": {
+    "executed": 24,
+    "passed": 24,
+    "failed": 0
+  },
+  "result": {
+    "source_commit": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+    "base_commit": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37",
+    "status": "committed-lock-qualified",
+    "commands": [
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit_code": 0,
+        "seconds": 0.2472698889999947,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "committed-lock-first",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 19.57774929499999,
+        "log_sha256": "2cb4f8f35b364f8845502e0d7368e19db5a0e87a40a3dd37f4de076383fcb05e"
+      },
+      {
+        "name": "original-formatter",
+        "argv": [
+          "just",
+          "fmt",
+          "--base",
+          "230d2d69a8c68ae6f8c502118fd9a8ee33027c37"
+        ],
+        "exit_code": 0,
+        "seconds": 0.7253629420000038,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "original-formatter-check",
+        "argv": [
+          "just",
+          "fmt",
+          "--check",
+          "--base",
+          "230d2d69a8c68ae6f8c502118fd9a8ee33027c37"
+        ],
+        "exit_code": 0,
+        "seconds": 0.6741156280000098,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "actual-cargo-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "seconds": 17.009988987000014,
+        "log_sha256": "4d7692dec0a685aa77bad0f99a4e30ef0adcadf4daebd17aa5c78e4deb881daa"
+      },
+      {
+        "name": "actual-locked-metadata",
+        "argv": [
+          "cargo",
+          "metadata",
+          "--locked",
+          "--all-features",
+          "--format-version",
+          "1"
+        ],
+        "exit_code": 0,
+        "seconds": 0.7957141729999933,
+        "log_sha256": "4c170f487c59c5ec88c0101ad37d621f3bb71e0d245d0b4bc985c3d4060ccaa1"
+      },
+      {
+        "name": "original-lock-update",
+        "argv": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "exit_code": 0,
+        "seconds": 23.735563659999997,
+        "log_sha256": "fb9d01a4942733752a7bd9ffe40ab5c620b3b13448ad824c2857b614ffd1749d"
+      },
+      {
+        "name": "original-lock-check",
+        "argv": [
+          "just",
+          "bazel-lock-check"
+        ],
+        "exit_code": 0,
+        "seconds": 3.5771224290000134,
+        "log_sha256": "52504468511e4f70e76e1893a7c017e00deec1e90ace07c12249492444383991"
+      }
+    ],
+    "scope": "Real lock generation and formatting; native product qualification is separate.",
+    "cargo_delta": {
+      "packages": 1517,
+      "added_dependencies": {
+        "codex-hepta-memory": [
+          "codex-utils-path"
+        ],
+        "codex-state": [
+          "codex-utils-path"
+        ],
+        "codex-utils-path": [
+          "winapi-util",
+          "windows-sys 0.52.0"
+        ]
+      },
+      "versions_sources_checksums_unchanged": true
+    },
+    "changed_paths": [],
+    "committed_cargo_equals_generated": true,
+    "committed_bazel_equals_generated": true,
+    "source_unchanged": true
+  },
+  "artifact": {
+    "id": 13293605824,
+    "bytes": 4294922,
+    "sha256": "821f5a12236bebefad327a2e90c5218af3e520f66764e3115cece8cfa0ca0604"
+  },
+  "log": {
+    "utf8_bytes": 135015,
+    "sha256": "ac77c5ab298e931ec6822eaf4c948b07d9b31c0be64293681e1f74d3d67b3f5b"
+  },
+  "scope": "Actual original generation log readback. Source/ZIP bytes will also be independently verified when the original native/Bazel artifacts complete. No native qualification is claimed by this record."
+}

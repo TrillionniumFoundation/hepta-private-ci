@@ -1,0 +1,233 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+  "original_run": 41765728268,
+  "artifact_id": 13291934273,
+  "zip_bytes": 388277,
+  "zip_sha256": "7482fa6c51490f20660dec141aeebc8442c7d9aed2c707c2106fa00ed5947c57",
+  "all_member_crc": true,
+  "original_qualification_status": "passed",
+  "evidence_verification": "passed",
+  "helper_inputs": {
+    "count": 6,
+    "all_exact_git_bytes": true,
+    "map_sha256": "140e7565f10a3a5e9d68ae3e70c4c296a49c4df10762fd576eec738bcd63ab5b"
+  },
+  "helper_outputs": 50,
+  "gtest": {
+    "count": 20,
+    "original": 18,
+    "additional_upstream": 2,
+    "failures": 0,
+    "skipped": 0,
+    "cases": [
+      "TestWrapperWindowsTest.TestGetFileListRelativeTo",
+      "TestWrapperWindowsTest.TestToZipEntryPaths",
+      "TestWrapperWindowsTest.TestToZipEntryPathsLongPathRoot",
+      "TestWrapperWindowsTest.TestCreateZip",
+      "TestWrapperWindowsTest.TestGetMimeType",
+      "TestWrapperWindowsTest.TestUndeclaredOutputsManifest",
+      "TestWrapperWindowsTest.TestCreateUndeclaredOutputsAnnotations",
+      "TestWrapperWindowsTest.TestTee",
+      "TestWrapperWindowsTest.TestTeeStreamsRemainingDataOnDestruction",
+      "TestWrapperWindowsTest.TestTeeStopsReadingOnDestructionAfterTimeout",
+      "TestWrapperWindowsTest.TestCdataEscapeNullTerminator",
+      "TestWrapperWindowsTest.TestCdataEscapeCdataEndings",
+      "TestWrapperWindowsTest.TestCdataEscapeSingleOctets",
+      "TestWrapperWindowsTest.TestCdataEscapeDoubleOctets",
+      "TestWrapperWindowsTest.TestCdataEscapeAndAppend",
+      "TestWrapperWindowsTest.TestIFStreamNoData",
+      "TestWrapperWindowsTest.TestIFStreamLessDataThanPageSize",
+      "TestWrapperWindowsTest.TestIFStreamExactlySinglePageSize",
+      "TestWrapperWindowsTest.TestIFStreamLessDataThanDoublePageSize",
+      "TestWrapperWindowsTest.TestIFStreamLessDataThanTriplePageSize"
+    ],
+    "xml": {
+      "bytes": 4658,
+      "sha256": "117d23bdc60b582028cb09f6dbe89ae891a722a9a2410dd2808c0613abf3e643"
+    }
+  },
+  "native_wrapper": {
+    "bytes": 788992,
+    "sha256": "64d19eb1f5d1d57d4f22f15ba03287bc3cd8d2f21d1fe605a47698f9718df934"
+  },
+  "embedded_entries": 591,
+  "embedded_kind_counts": {
+    "file": 471,
+    "directory": 120,
+    "symlink": 0
+  },
+  "only_changed_embedded_entry": [
+    "tools/test/tw.exe"
+  ],
+  "robrix": {
+    "source": {
+      "count": 108,
+      "before_sha256": "da1c36c9860053417f7b7a45e979e223b48a97e0ca38d9cf60b136258c87b569",
+      "after_sha256": "da1c36c9860053417f7b7a45e979e223b48a97e0ca38d9cf60b136258c87b569",
+      "all_match_exact_git_bytes": true,
+      "snapshot_scope": [
+        "codex-rs/hepta-supervisor",
+        "codex-rs/utils/cargo-bin",
+        "codex-rs/hepta-agent-protocol",
+        "codex-rs/Cargo.toml",
+        "codex-rs/Cargo.lock",
+        "codex-rs/rust-toolchain.toml",
+        "MODULE.bazel",
+        "MODULE.bazel.lock",
+        "BUILD.bazel",
+        "defs.bzl",
+        ".bazelrc",
+        ".bazelversion",
+        "workspace_root_test_launcher.*",
+        ".github/actions/prepare-bazel-ci",
+        ".github/actions/setup-ci",
+        ".github/actions/setup-bazel-ci",
+        ".github/scripts/run_bazel_with_buildbuddy.py",
+        ".github/scripts/run-bazel-ci.sh",
+        ".github/scripts/run-bazel-query-ci.sh",
+        "scripts/check-module-bazel-lock.sh",
+        "scripts/list-bazel-clippy-targets.sh",
+        "qualification/robrix-runfiles-20261104",
+        ".github/workflows/hepta-robrix-runfiles-qualification.yml"
+      ],
+      "symlink_resolution": []
+    },
+    "outputs": 15,
+    "executed": 2,
+    "failed": 0,
+    "ignored": 0,
+    "filtered": 0,
+    "cases": [
+      "writer_reproduces_the_tracked_artifact_set_byte_for_byte",
+      "robrix_control_v2_generated_projection_and_cross_parser_corpus"
+    ],
+    "original_commands": [
+      {
+        "name": "committed-inputs-clean-before",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.3120000000000118
+      },
+      {
+        "name": "original-robrix-corpus-tests",
+        "command": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--platforms=//:windows_x86_64_msvc",
+          "--keep_going",
+          "--nocache_test_results",
+          "--test_output=all",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 176.188
+      },
+      {
+        "name": "original-testlog-location",
+        "command": [
+          "python3",
+          "./.github/scripts/run_bazel_with_buildbuddy.py",
+          "--output_user_root=D:/b",
+          "--noexperimental_remote_repo_contents_cache",
+          "info",
+          "--config=ci-windows",
+          "--platforms=//:windows_x86_64_msvc",
+          "--host_platform=//:local_windows_msvc",
+          "bazel-testlogs"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 3.937000000000012
+      },
+      {
+        "name": "original-clippy-selector",
+        "command": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "./scripts/list-bazel-clippy-targets.sh"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 5.360000000000014
+      },
+      {
+        "name": "original-clippy",
+        "command": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-test-logs",
+          "--print-failed-action-summary",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "build",
+          "--platforms=//:windows_x86_64_msvc",
+          "--config=clippy",
+          "--",
+          "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 20.687000000000012
+      },
+      {
+        "name": "committed-inputs-clean-after",
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.031000000000006
+      }
+    ]
+  },
+  "exact_files": {
+    "bazel9-output-backport/evidence/receipt.json": {
+      "bytes": 19058,
+      "sha256": "cf3c8b75def8586836b36b2913a42db4a32adf9aa7037ff600ae570c5f295a13"
+    },
+    "bazel9-output-backport/evidence/tw-gtest.xml": {
+      "bytes": 4658,
+      "sha256": "117d23bdc60b582028cb09f6dbe89ae891a722a9a2410dd2808c0613abf3e643"
+    },
+    "bazel9-output-backport/evidence/installed-tools-before.json": {
+      "bytes": 89343,
+      "sha256": "3df7300c2d41789b0cf08d4176e36b2c0eaf5a21b13b3a737e95b6997069a07d"
+    },
+    "bazel9-output-backport/evidence/override-tools.json": {
+      "bytes": 89343,
+      "sha256": "e4e53fd45866f59a74741357c1f3d059c91a0e182ed64f8e1c06a2c1cda66cd3"
+    },
+    "robrix-runfiles/receipt.json": {
+      "bytes": 18842,
+      "sha256": "3169f894fc6a3a6374c879f73e4bc7f6cff683f8b4c129a7742549bdf8f9716c"
+    },
+    "robrix-runfiles/robrix.log": {
+      "bytes": 432,
+      "sha256": "bc1452a39accce0cfd68921701f8f55553d57d43dd5d32f2c406084098cefb27"
+    },
+    "robrix-runfiles/robrix.xml": {
+      "bytes": 822,
+      "sha256": "2282b189b06e3e01d79f988dee6252b096de9d1d20a725cbbcc0e1299c673c8a"
+    }
+  },
+  "boundaries": [
+    "Read-only inspection; no archived executable or source was executed.",
+    "Installed/override final stability is the original source-bound finalizer observation; separate post-finalizer inventories are not retained.",
+    "This one prepared Windows job does not prove every other CI consumer installs the override."
+  ]
+}

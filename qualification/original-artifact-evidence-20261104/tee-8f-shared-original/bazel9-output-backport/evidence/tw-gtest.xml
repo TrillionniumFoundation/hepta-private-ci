@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="20" failures="0" disabled="0" errors="0" time="5.013" timestamp="2026-11-04T03:19:53.384" name="AllTests">
+  <testsuite name="TestWrapperWindowsTest" tests="20" failures="0" disabled="0" skipped="0" errors="0" time="5.013" timestamp="2026-11-04T03:19:53.384">
+    <testcase name="TestGetFileListRelativeTo" file="tools/test/windows/tw_test.cc" line="157" status="run" result="completed" time="0.002" timestamp="2026-11-04T03:19:53.384" classname="TestWrapperWindowsTest" />
+    <testcase name="TestToZipEntryPaths" file="tools/test/windows/tw_test.cc" line="220" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:53.387" classname="TestWrapperWindowsTest" />
+    <testcase name="TestToZipEntryPathsLongPathRoot" file="tools/test/windows/tw_test.cc" line="251" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:53.387" classname="TestWrapperWindowsTest" />
+    <testcase name="TestCreateZip" file="tools/test/windows/tw_test.cc" line="314" status="run" result="completed" time="0.002" timestamp="2026-11-04T03:19:53.387" classname="TestWrapperWindowsTest" />
+    <testcase name="TestGetMimeType" file="tools/test/windows/tw_test.cc" line="381" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:53.390" classname="TestWrapperWindowsTest" />
+    <testcase name="TestUndeclaredOutputsManifest" file="tools/test/windows/tw_test.cc" line="394" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:53.390" classname="TestWrapperWindowsTest" />
+    <testcase name="TestCreateUndeclaredOutputsAnnotations" file="tools/test/windows/tw_test.cc" line="411" status="run" result="completed" time="0.001" timestamp="2026-11-04T03:19:53.390" classname="TestWrapperWindowsTest" />
+    <testcase name="TestTee" file="tools/test/windows/tw_test.cc" line="440" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:53.392" classname="TestWrapperWindowsTest" />
+    <testcase name="TestTeeStreamsRemainingDataOnDestruction" file="tools/test/windows/tw_test.cc" line="478" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:53.393" classname="TestWrapperWindowsTest" />
+    <testcase name="TestTeeStopsReadingOnDestructionAfterTimeout" file="tools/test/windows/tw_test.cc" line="506" status="run" result="completed" time="5.001" timestamp="2026-11-04T03:19:53.393" classname="TestWrapperWindowsTest" />
+    <testcase name="TestCdataEscapeNullTerminator" file="tools/test/windows/tw_test.cc" line="542" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:58.395" classname="TestWrapperWindowsTest" />
+    <testcase name="TestCdataEscapeCdataEndings" file="tools/test/windows/tw_test.cc" line="546" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:58.395" classname="TestWrapperWindowsTest" />
+    <testcase name="TestCdataEscapeSingleOctets" file="tools/test/windows/tw_test.cc" line="563" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:58.395" classname="TestWrapperWindowsTest" />
+    <testcase name="TestCdataEscapeDoubleOctets" file="tools/test/windows/tw_test.cc" line="580" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:58.396" classname="TestWrapperWindowsTest" />
+    <testcase name="TestCdataEscapeAndAppend" file="tools/test/windows/tw_test.cc" line="616" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:58.396" classname="TestWrapperWindowsTest" />
+    <testcase name="TestIFStreamNoData" file="tools/test/windows/tw_test.cc" line="650" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:58.396" classname="TestWrapperWindowsTest" />
+    <testcase name="TestIFStreamLessDataThanPageSize" file="tools/test/windows/tw_test.cc" line="662" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:58.397" classname="TestWrapperWindowsTest" />
+    <testcase name="TestIFStreamExactlySinglePageSize" file="tools/test/windows/tw_test.cc" line="695" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:58.397" classname="TestWrapperWindowsTest" />
+    <testcase name="TestIFStreamLessDataThanDoublePageSize" file="tools/test/windows/tw_test.cc" line="725" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:58.397" classname="TestWrapperWindowsTest" />
+    <testcase name="TestIFStreamLessDataThanTriplePageSize" file="tools/test/windows/tw_test.cc" line="753" status="run" result="completed" time="0." timestamp="2026-11-04T03:19:58.398" classname="TestWrapperWindowsTest" />
+  </testsuite>
+</testsuites>

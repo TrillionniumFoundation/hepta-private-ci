@@ -1,0 +1,283 @@
+{
+  "commit": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+  "status": "passed",
+  "platform": "Windows-2025Server-10.0.26100-SP0",
+  "machine": "AMD64",
+  "config": "ci-windows",
+  "steps": [
+    {
+      "name": "committed-inputs-clean-before",
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.3120000000000118
+    },
+    {
+      "name": "original-robrix-corpus-tests",
+      "command": [
+        "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+        "./.github/scripts/run-bazel-ci.sh",
+        "--print-failed-test-logs",
+        "--print-failed-action-summary",
+        "--windows-msvc-host-platform",
+        "--remote-download-toplevel",
+        "--",
+        "test",
+        "--platforms=//:windows_x86_64_msvc",
+        "--keep_going",
+        "--nocache_test_results",
+        "--test_output=all",
+        "--",
+        "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 176.188
+    },
+    {
+      "name": "original-testlog-location",
+      "command": [
+        "python3",
+        "./.github/scripts/run_bazel_with_buildbuddy.py",
+        "--output_user_root=D:/b",
+        "--noexperimental_remote_repo_contents_cache",
+        "info",
+        "--config=ci-windows",
+        "--platforms=//:windows_x86_64_msvc",
+        "--host_platform=//:local_windows_msvc",
+        "bazel-testlogs"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 3.937000000000012
+    },
+    {
+      "name": "original-clippy-selector",
+      "command": [
+        "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+        "./scripts/list-bazel-clippy-targets.sh"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 5.360000000000014
+    },
+    {
+      "name": "original-clippy",
+      "command": [
+        "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+        "./.github/scripts/run-bazel-ci.sh",
+        "--print-failed-test-logs",
+        "--print-failed-action-summary",
+        "--windows-msvc-host-platform",
+        "--remote-download-toplevel",
+        "--",
+        "build",
+        "--platforms=//:windows_x86_64_msvc",
+        "--config=clippy",
+        "--",
+        "//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 20.687000000000012
+    },
+    {
+      "name": "committed-inputs-clean-after",
+      "command": [
+        "git",
+        "diff",
+        "--exit-code",
+        "HEAD",
+        "--"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 1.031000000000006
+    }
+  ],
+  "bash_executable": "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+  "test_counts": [
+    2,
+    0,
+    0,
+    0,
+    0
+  ],
+  "original_cases": [
+    "writer_reproduces_the_tracked_artifact_set_byte_for_byte",
+    "robrix_control_v2_generated_projection_and_cross_parser_corpus"
+  ],
+  "source_after": {
+    ".bazelrc": "8e5380d7831effcdf7f7c2f73b83b45fcc663a06e91ef57a40e4f8023328ff50",
+    ".bazelversion": "cdecb300baad839a6f62791229f551a4fa33f3cbdca08e378dc976466354e778",
+    ".github/actions/prepare-bazel-ci/action.yml": "a5286f6896c99a71ee247afbad1dc0aa00d967352f33bb24d8cb97e4df5d978b",
+    ".github/actions/setup-bazel-ci/action.yml": "b045593dac26daf34b66034fdfd645043a7de33d419867275f3091bbb1228a05",
+    ".github/actions/setup-ci/action.yml": "6d29a131641a739983b3aea22c0febbf20d1d0ee21b356570f3763ddafced9ba",
+    ".github/scripts/run-bazel-ci.sh": "4b3da7ac8e9eb940e128a0aa59c3cb2388e804d3dd46c50b6a0ef04a1f27e5f2",
+    ".github/scripts/run-bazel-query-ci.sh": "d65c12f6eeb9daaac6db34e7f023918b577c1338a2e3e78648bba848b2c8f2b5",
+    ".github/scripts/run_bazel_with_buildbuddy.py": "656fa9f508bb339da949a359a457f02fa3979449ae1761b0084494cf38e83a0e",
+    ".github/workflows/hepta-robrix-runfiles-qualification.yml": "700e4dd4462865784c244ad7ac72afcb0b80fb4a57bcb46d976c6967d7a93396",
+    "BUILD.bazel": "9f52120fc9ae4e2ac2a4df1c9e5e2dd698b50298b4ba31b774bd44467fe44e7c",
+    "MODULE.bazel": "747dc4daa717d05e3c71a10adbb23a71c95d6f7f0d2ee7871231180b54504039",
+    "MODULE.bazel.lock": "1a58f7d1fcbfe850d18a01c19faf15c941dfd229cb8caeb406dbe8ce8c99522e",
+    "codex-rs/Cargo.lock": "11d045e6e94e53dbcbe289bd1004ae559a4be48522eca2baa7f637cd3fb7e0a0",
+    "codex-rs/Cargo.toml": "5dbcd973be2fec3241e7ee2530491c31c3325d4e9def202e3475ebf1dc9b36bd",
+    "codex-rs/hepta-agent-protocol/BUILD.bazel": "f5c9f1bd76e5cbf0446eb8f00ab78c18583e7cc4d99577e384efe789d7b59e74",
+    "codex-rs/hepta-agent-protocol/Cargo.toml": "145110b17fd655a247a6c6a309c8fc1d23c36703edfadf0928a069f120167461",
+    "codex-rs/hepta-agent-protocol/src/authbus.rs": "5e3b3de7deee49156ab1621027396a3a5f88f9a8131a59e9170a741fca5d7748",
+    "codex-rs/hepta-agent-protocol/src/capabilities.rs": "4ea99c9f8100f7c61a29fe86667449ba1faf8e8b0fb2d71326a485bb73b72e19",
+    "codex-rs/hepta-agent-protocol/src/evidence.rs": "a2d43be217b51cd149491c1620f749c65c933a34f719e66e671bb5a8f17f02c3",
+    "codex-rs/hepta-agent-protocol/src/lib.rs": "1cd1d1dffd74098d7f34d01b53b7d042d3c6d246c478ae580c2a0d6a602ce11d",
+    "codex-rs/hepta-agent-protocol/src/objective_tests.rs": "902a1868437251bc60c3259ba240792e61aa3dc49a102765801fb6c29a53c431",
+    "codex-rs/hepta-supervisor/BUILD.bazel": "4b3f4fc83bd81e7aba44f942941dc485a76bd1d2900d55d6e539b5f4f5f92fe2",
+    "codex-rs/hepta-supervisor/Cargo.toml": "16c8f5bb4a0f8681198c35a14970f918a716f48d89d305d0dade7d0496df0a5c",
+    "codex-rs/hepta-supervisor/EXTERNAL_AUTHORITY_SIGNER.md": "cf2cfb080d60dce7ce1631c0d171ad953167b10a4a48f35832ebc2926da93540",
+    "codex-rs/hepta-supervisor/examples/write_robrix_control_projection.rs": "08b85b47d6c573ea926db30864bd41898f24fb176fa3683cb01596ba5be3f387",
+    "codex-rs/hepta-supervisor/fixtures/robrix-control-v2/cross-parser-corpus-v2.json": "8227b8a80e21a2f7202b6127950c0e2c44b84b1b890c54748493f0d809b439e3",
+    "codex-rs/hepta-supervisor/fixtures/robrix-control-v2/manifest.json": "9ca541d6fe8e5de1b6023d503ff858051b1756ba5b07e21ef7ec9ceeb7fff992",
+    "codex-rs/hepta-supervisor/fixtures/robrix-control-v2/matrixd-control-v2.schema.json": "16d3f43c4fd94dac8d55b2371a093ee8e6e4a5128cabdeff18b64528d09cc1e4",
+    "codex-rs/hepta-supervisor/fixtures/robrix-control-v2/robrix_control_projection.rs": "aeac02f987444d875bbfde01c931c21e8eebccb0513a583279c0eebed237764d",
+    "codex-rs/hepta-supervisor/fixtures/robrix-control-v2/supervisord-readonly-v2.schema.json": "09e09128d9681f154155dc609f606bdc2904abcef36ce7b62e989d648b08d962",
+    "codex-rs/hepta-supervisor/src/authority_signer.rs": "5f68e4c1498149fe58f12ce19c7505557d1733f77a8b5f120ce603b58b8df452",
+    "codex-rs/hepta-supervisor/src/bin/hepta-authority-signer.rs": "f9c9db09693f76b20f5f058cc6d0bc8afb0dc9394d64bf85b16db87c2e39ee2c",
+    "codex-rs/hepta-supervisor/src/bin/hepta-final-use-approver.rs": "e7f81e6d3f1d3ea7fd569c1a7b2754f7ce55be9a9ca6c0bf2340a48e0cb5beb8",
+    "codex-rs/hepta-supervisor/src/bin/hepta-final-use-revocation-signer.rs": "f10db5d67945c71e572d2b585ae06c619600ad140f4ebed22541119669509c9c",
+    "codex-rs/hepta-supervisor/src/bin/hepta-final-use-signer.rs": "8532f757ca1ee8b72f3b2bb3b5831e8834b99dfab9302705f9add63b4fb9a15a",
+    "codex-rs/hepta-supervisor/src/bin/hepta-supervisor-intent-recovery.rs": "c78b50498837419f2ee153850a07dd2a9feba6bf775510dae0e1a3c007a3d003",
+    "codex-rs/hepta-supervisor/src/control.rs": "77614635783d80778f597439f68400d594b0a1667bfe0f451b232fb8e66a4cef",
+    "codex-rs/hepta-supervisor/src/daemon.rs": "aaf780f945bf45b9a0e6442c22fdee06f2c953efcc968d61141efe61b25bce16",
+    "codex-rs/hepta-supervisor/src/daemon_client.rs": "640387a61e5d50148f85d5131536edfd25ec532237763402fc399cfa015ad4a2",
+    "codex-rs/hepta-supervisor/src/daemon_platform_tests.rs": "51c6435258e28a761ca647ec64cde553a0915deb45023abee1c64379a5e25fb6",
+    "codex-rs/hepta-supervisor/src/daemon_protocol.rs": "b47eeca075bccad50013519a9e1f79b8ed6e726767326495db82c4f4466ce213",
+    "codex-rs/hepta-supervisor/src/driver.rs": "aa6349e8b868ed07e0271f6c4045a2e98099dd6a81880eb06c79f4290d18a32b",
+    "codex-rs/hepta-supervisor/src/durable_publish.rs": "5367d206cf932bef22b4d84c078c73d36248680dec4b1bc792884bfc1af28a41",
+    "codex-rs/hepta-supervisor/src/error.rs": "e44528db48e01f6dac6b4ca74065d5a77858cebc29ea0d717ebc2f5eb482f07a",
+    "codex-rs/hepta-supervisor/src/lease.rs": "9db35b32f915b66042104e927785b03ace01ed211551063ef8d564064c2f8a75",
+    "codex-rs/hepta-supervisor/src/lib.rs": "dbcb6eb231b58a3c6c88a64e7d22f19ba68360c3a8f1ea9ec1d01748e30e15ff",
+    "codex-rs/hepta-supervisor/src/main.rs": "a2c62f0a54d8d236a15d76568e85a0b5fad7b126a3f46fdc77d275da1313f70e",
+    "codex-rs/hepta-supervisor/src/matrix.rs": "021fd2d4cef0a765e651676a7efd06a58dc77f7932d184001d1ade8cf09b3bed",
+    "codex-rs/hepta-supervisor/src/model.rs": "15b844e772c435798fbcd95213156bef04cba6c5d1121a223aea4dd432d666a9",
+    "codex-rs/hepta-supervisor/src/module_runtime.rs": "ab30f00706db3756e01bad8bd63f9ff629e31c4b41bf2456218286444d7a18bd",
+    "codex-rs/hepta-supervisor/src/module_runtime_safety_tests.rs": "dd888e13ca8152cb25a1dd41ae34855a82185a35eba4ba71839ac2ef1cf200f2",
+    "codex-rs/hepta-supervisor/src/process_deadline.rs": "fa2da7fc30dc2f16b124d53e542c0268e44bdcc27f07d47b3d2154c172e46af9",
+    "codex-rs/hepta-supervisor/src/recovery.rs": "c5e93d67fbe8aa1e7d5276721247a46354fc8b6f159534e314d210ce8d888e50",
+    "codex-rs/hepta-supervisor/src/release.rs": "124fbc08bd5baf4f084c8391b50f477a24fcd74b456287bed936661252716566",
+    "codex-rs/hepta-supervisor/src/release_transaction.rs": "e9cae3d26ef763493f210513cd08a255d903f58a509ed251ade85eedf0143d6c",
+    "codex-rs/hepta-supervisor/src/restart_budget.rs": "51f36c3f3fd7f57755d6b6c0b9df3a5e2233dfb4f630bf18d9115341c474b93c",
+    "codex-rs/hepta-supervisor/src/restart_journal.rs": "da99147a71f63066bb131d3f67d126f28e174db022ce18a78a0e79bf8d8a2a3f",
+    "codex-rs/hepta-supervisor/src/restart_policy.rs": "619df56294f894590fefe924350ceffd71dc1e41f7251cbb6e3d6cb040579af4",
+    "codex-rs/hepta-supervisor/src/restart_state.rs": "48c02b212a57bc63bc87ece59b7a0e08d38c767267356a7805cbb8555a93898f",
+    "codex-rs/hepta-supervisor/src/result_fence.rs": "f9f159400617c3419c5109b90059b3e86af41ac05286ce64b0e094dcebb7c8be",
+    "codex-rs/hepta-supervisor/src/robrix_projection.rs": "f65d192c8ad1c024104b5ab8ce94f80a601e3317d653987d44afd9053bb2ffb4",
+    "codex-rs/hepta-supervisor/src/robrix_protocol.rs": "2611b3137f07d73fbf8b9d65f0fbca89c787a68d8853ec77c7e8b45730be1789",
+    "codex-rs/hepta-supervisor/src/runtime.rs": "a901b5802d9c9fad0c0b50406c2489e23a1cca75a2fd86c7106de62cde8da926",
+    "codex-rs/hepta-supervisor/src/signed_authority.rs": "60ef5ef631161a245f04a44a3153344b6d159ab29e6ee835219a3f98fe7a30bc",
+    "codex-rs/hepta-supervisor/src/signed_intent.rs": "32266fdff012ac2ab6659d5aa95c6de46097fdd80c75926cab6bec78d976135c",
+    "codex-rs/hepta-supervisor/src/signed_intent_publish.rs": "f1eb801480ff85d8da2b61355d868ec499580d3806e41c14ee03d3eb58952cce",
+    "codex-rs/hepta-supervisor/src/signed_intent_publish_tests.rs": "17090ffb56ad42c8a74fac9253e2cba7abb9ef60b77a5cda847be6b308793d20",
+    "codex-rs/hepta-supervisor/src/supervisor.rs": "98ce7286ce2b9680bfb2838ec14e969c2333d7818c7ed14711263a08003e0b48",
+    "codex-rs/hepta-supervisor/src/supervisor_qualification.rs": "1c798327cf2f3d37dfd6dcaf82a3719050e4d4aff7e1d9fb6f95914ceefbc725",
+    "codex-rs/hepta-supervisor/src/supervisor_tests.rs": "22bd8c068f7be5622244b34a9c8057f0066a6eee05c025a14e6743f2d6bac066",
+    "codex-rs/hepta-supervisor/src/tick.rs": "41a6deb682fa12fd2c8220dd69df00ae08e3c1cf4823d1bcd673bb0bf4864975",
+    "codex-rs/hepta-supervisor/src/unix.rs": "6d25f074cf050bc94b39a60634ac42a7c2a73fd096aab931ce3846a5577fba99",
+    "codex-rs/hepta-supervisor/src/unix_drain_tests.rs": "471d891bcae0a2ae1b6c8c5c2f423a8af9f6af16b7264b25d4fc2fd19ce05a51",
+    "codex-rs/hepta-supervisor/src/unix_tests.rs": "d9f4468eb3cc26fd6045e0a61300e00f86cf05cf8841db57116f75706299598d",
+    "codex-rs/hepta-supervisor/src/writer_handoff.rs": "6fb07612cee51b6cbd3b18bdd5e2ade1fdb24a1304f6fe90deaf1b653f9b3347",
+    "codex-rs/hepta-supervisor/src/writer_handoff_recovery_tests.rs": "25ef55c7c7db82c9efed688a7ad525b04976170b0c933d9a8bc65704154df1b1",
+    "codex-rs/hepta-supervisor/tests/daemon_product.rs": "9b7da0504d87c05463c01d61d92e69b1941e33ff35fb19a604d1172d890972b2",
+    "codex-rs/hepta-supervisor/tests/isolated_execution_handoff_unix.rs": "10c0dbd18cfecc4b3bf6d0ece227ec634b5fd2d380089ac2bc010320a52ca5c8",
+    "codex-rs/hepta-supervisor/tests/paired_process_product.rs": "2ea6a3d90b18c21094130de7ef31b4ec3e53ac845009210177c2761fc4a04d82",
+    "codex-rs/hepta-supervisor/tests/process_deadline_unix.rs": "b8b3fc976ae4c6bb0e76ed9b580f9227a2b84be24ec808da1296955e3837199a",
+    "codex-rs/hepta-supervisor/tests/restart_budget.rs": "79a1801d82edc8179022347e0c52340dff09912e6fabb22f17e0978b5978a288",
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs": "7f98a1d45e5d0dabf53dd58f65e05f412f7702c42a3348c4134da65d4f41676a",
+    "codex-rs/hepta-supervisor/tests/robrix_control_projection.rs": "35939d5ef63a0e36e7d12e6c9d310314274e860b86aa4459cdf62ff049f81b4f",
+    "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs": "50f637adc44c5cbb4a39d61379a4ce0e6a96adbfd1b5457cabff555fed0d9a38",
+    "codex-rs/hepta-supervisor/tests/writer_handoff_production.rs": "65ed2546e631fe842e7d402aee0c9c0901ec03f414d493816954cfa52c85fdd9",
+    "codex-rs/rust-toolchain.toml": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+    "codex-rs/utils/cargo-bin/BUILD.bazel": "9a06b3ef2eaec07c5baded16a7ab5ec96cf443d1e471530f0f76d895aea0f872",
+    "codex-rs/utils/cargo-bin/Cargo.toml": "eecb409357a98472df8a81d9fd1a25902b967433f4df3403cf213f07e68f8786",
+    "codex-rs/utils/cargo-bin/README.md": "19bb1468c2c7c2609758bbc9b1e8ced93b95311933c2bdcd662b979b2f546ec1",
+    "codex-rs/utils/cargo-bin/repo_root.marker": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "codex-rs/utils/cargo-bin/src/lib.rs": "54c4d9cdc972f7b6e2401178bd294c7329798acf01fd3226c9da5e575a907460",
+    "defs.bzl": "048824095490c1c8938f00065ae47e0910265dbd01944da5fc8ebf9dd4f99d1f",
+    "qualification/robrix-runfiles-20261104/README.md": "fa836baf65c0d4fdd622c1b41519092b53fd077bcae920915e7b1b613e6f368e",
+    "qualification/robrix-runfiles-20261104/evidence.json": "01e29d3a51a4f9f5a5599a34d918c77776fa519d4fb82e42f53c20b9dce6a714",
+    "qualification/robrix-runfiles-20261104/native-a488/artifact-metadata.json": "3a818bbafe12075aa90c1484ee393347feef700c8dacf480b0b84f68498cafd1",
+    "qualification/robrix-runfiles-20261104/native-a488/evidence.json": "57675ac4a40bf0c854b5e11061c29fceb3f5402ab869a367a9afef1fd3849f08",
+    "qualification/robrix-runfiles-20261104/native-a488/format-original-job.log.gz": "ba106af79044eefac9cdb46e8997a56c786e810fa66b70763bd90a7b7b828ee1",
+    "qualification/robrix-runfiles-20261104/native-a488/linux-original-job.log.gz": "b7e7bd3f9489b47a4b7c8912cea44e623740b461a0395c643f88c4f1b282c166",
+    "qualification/robrix-runfiles-20261104/native-a488/lock-original-job.log.gz": "5d3a812214ec41935f32fba14be8aa463cc0e1b96cf7fcc88feae75c73bd758c",
+    "qualification/robrix-runfiles-20261104/native-a488/mac-original-job.log.gz": "0c6f44eb5088792385487c603d326cecc892935646f34db8e35d057c20541ba1",
+    "qualification/robrix-runfiles-20261104/native-a488/windows-original-job.log.gz": "b73961e67d617dd0fa095d7c379e32822a9ffee5acb4d704196a924196ee918b",
+    "qualification/robrix-runfiles-20261104/original-negative-target.log.gz": "c98832d7eec05f4d325b9f3ee7adaf82107c4b2d21512c698fe0f55614b71774",
+    "qualification/robrix-runfiles-20261104/run.py": "9d2d538747e0248531020bcdfecbbb1fe7b681c8e9f29e93abff9403ebfb6807",
+    "qualification/robrix-runfiles-20261104/run_lock.py": "6f1fb7887155be84fa1d5e02ed55fe94e77711b6648704adfa31464a2fe146bb",
+    "scripts/check-module-bazel-lock.sh": "a6c3842bb9c884ebd31dd79b99949e7c66b0f82a594dda87797013db572dc180",
+    "scripts/list-bazel-clippy-targets.sh": "5bd6aec5515e41920fbd9f0dcf7f58d136055bbcb4bf9444e64ac4935c4eef5d",
+    "workspace_root_test_launcher.bat.tpl": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae",
+    "workspace_root_test_launcher.sh.tpl": "e292867c613d853887a64ca09bca231e66cc65d48806985c1f16c1c69c1169e5"
+  },
+  "source_inputs_unchanged": true,
+  "outputs": {
+    "committed-inputs-clean-after.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "committed-inputs-clean-after.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "committed-inputs-clean-before.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "committed-inputs-clean-before.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "original-clippy-selector.stderr": {
+      "bytes": 519,
+      "sha256": "66c086e0cf0f7ab91fbb3ee70e713337f9f955def8cad1234d94ca54fe5dfd23"
+    },
+    "original-clippy-selector.stdout": {
+      "bytes": 26367,
+      "sha256": "47ea393bdbb538521faa184ac52cce21e13999837286513a06e5133295d8f217"
+    },
+    "original-clippy.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "original-clippy.stdout": {
+      "bytes": 2793,
+      "sha256": "0795b4944e6874d9e56621bf014f58a224b84fa3d9205c662bfb2052405399e2"
+    },
+    "original-robrix-corpus-tests.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "original-robrix-corpus-tests.stdout": {
+      "bytes": 88601,
+      "sha256": "c9bbe3894fce6c67dd32adffb0454f4cdb301052ef26bec90791027c36e44741"
+    },
+    "original-testlog-location.stderr": {
+      "bytes": 399,
+      "sha256": "b2cef98f9fc75754af9cca1bb7817ce43aa8188df2bd1c96f095c7d39f9b6c74"
+    },
+    "original-testlog-location.stdout": {
+      "bytes": 69,
+      "sha256": "ca1ba1d775f66516a0b28a8458988e847319ce61cc103aede057887a87bfc571"
+    },
+    "robrix.log": {
+      "bytes": 432,
+      "sha256": "bc1452a39accce0cfd68921701f8f55553d57d43dd5d32f2c406084098cefb27"
+    },
+    "robrix.xml": {
+      "bytes": 822,
+      "sha256": "2282b189b06e3e01d79f988dee6252b096de9d1d20a725cbbcc0e1299c673c8a"
+    },
+    "source-inputs.json": {
+      "bytes": 13249,
+      "sha256": "2983027571b281cc7ec95894bf98b1e566c2ea8025a29610c2f5b3c54c7dfad8"
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "source": "8f7a9cde3bc30b133fc7fa2446fe5d38c163d3c9",
+  "original_run": 41765728268,
+  "original_job": 126363529064,
+  "artifact_id": 13291934273,
+  "zip_bytes": 388277,
+  "zip_sha256": "7482fa6c51490f20660dec141aeebc8442c7d9aed2c707c2106fa00ed5947c57",
+  "verifier_source": "c9e207527a737afd204e824e153c45fe9b0d2220",
+  "verifier_blob": "ac3a2c2d1bdae9b705387d7518d47ed00f99c1e4",
+  "bridge_run": 41767325983,
+  "bridge_job": 126368668787,
+  "bridge_log": {
+    "utf8_bytes": 748672,
+    "sha256": "8edf3313898960ec8861b9fa7a72c9e928b5e68dfab0f2c78103bc4f4ec99d8c"
+  },
+  "original_files": [
+    {
+      "path": "qualification/original-artifact-evidence-20261104/tee-8f-shared-original/bazel9-output-backport/evidence/receipt.json",
+      "original_path": "bazel9-output-backport/evidence/receipt.json",
+      "bytes": 19058,
+      "sha256": "cf3c8b75def8586836b36b2913a42db4a32adf9aa7037ff600ae570c5f295a13",
+      "blob": "3df7f8ac4bfe03cfae93fe587fc0d9ce17cde7b2"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/tee-8f-shared-original/bazel9-output-backport/evidence/tw-gtest.xml",
+      "original_path": "bazel9-output-backport/evidence/tw-gtest.xml",
+      "bytes": 4658,
+      "sha256": "117d23bdc60b582028cb09f6dbe89ae891a722a9a2410dd2808c0613abf3e643",
+      "blob": "d997f79f264b7d7f161ff197179a18c26c0fe64e"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/tee-8f-shared-original/bazel9-output-backport/evidence/installed-tools-before.json",
+      "original_path": "bazel9-output-backport/evidence/installed-tools-before.json",
+      "bytes": 89343,
+      "sha256": "3df7300c2d41789b0cf08d4176e36b2c0eaf5a21b13b3a737e95b6997069a07d",
+      "blob": "6d929cea34d2c841605683f0e6bc14f45d8ce8a2"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/tee-8f-shared-original/bazel9-output-backport/evidence/override-tools.json",
+      "original_path": "bazel9-output-backport/evidence/override-tools.json",
+      "bytes": 89343,
+      "sha256": "e4e53fd45866f59a74741357c1f3d059c91a0e182ed64f8e1c06a2c1cda66cd3",
+      "blob": "77b5cb5ef8c9be667df2ecbd1c043114465f88d0"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/tee-8f-shared-original/robrix-runfiles/receipt.json",
+      "original_path": "robrix-runfiles/receipt.json",
+      "bytes": 18842,
+      "sha256": "3169f894fc6a3a6374c879f73e4bc7f6cff683f8b4c129a7742549bdf8f9716c",
+      "blob": "cec4856699dfb34de6f33f78d224fd1a5771f49b"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/tee-8f-shared-original/robrix-runfiles/robrix.log",
+      "original_path": "robrix-runfiles/robrix.log",
+      "bytes": 432,
+      "sha256": "bc1452a39accce0cfd68921701f8f55553d57d43dd5d32f2c406084098cefb27",
+      "blob": "ac8e209e71fefaad0c18efeab8e61367edfee975"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/tee-8f-shared-original/robrix-runfiles/robrix.xml",
+      "original_path": "robrix-runfiles/robrix.xml",
+      "bytes": 822,
+      "sha256": "2282b189b06e3e01d79f988dee6252b096de9d1d20a725cbbcc0e1299c673c8a",
+      "blob": "b0221b70f688f0e9e227b65f9ffb649b0423cc2b"
+    }
+  ],
+  "boundary": "One actual shared prepare-bazel-ci Windows entry executed the original 20 GTests and two Robrix tests plus original scoped Clippy. This independent check executes no archived code and does not transfer the result to every other consumer."
+}
