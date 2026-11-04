@@ -1,0 +1,384 @@
+{
+  "decision": "DOES_NOT_QUALIFY",
+  "interpretation": "This candidate failed the preregistered engineering screen on this fixture and one host. No task-utility claim or deployment recommendation follows.",
+  "model": {
+    "id": "cross-encoder/ms-marco-MiniLM-L6-v2",
+    "revision": "233902d25c440f23af6f7d6e94d2946bac0bee0a",
+    "safetensors_sha256": "821d1aa69520101d6e0737f78a042ae25b19e5cb9160701909d10434f4aeb0ae",
+    "license": "Apache-2.0"
+  },
+  "runtime_versions": {
+    "torch": "2.5.1+cpu",
+    "transformers": "4.57.1",
+    "safetensors": "0.6.2"
+  },
+  "execution": {
+    "device": "CPU",
+    "threads": 1,
+    "quantized_engine": "fbgemm",
+    "attention": "eager",
+    "fresh_sessions": 12,
+    "paired_sessions": 6,
+    "independent_inference_unit_note": "Requests/cycles are dependent repeated measurements, not independent samples; no statistical population claim.",
+    "primary_attempts": 1,
+    "outer_elapsed_seconds": 246.0,
+    "outer_elapsed_plus_rounding_allowance_seconds": 246.01,
+    "outer_limit_seconds": 600,
+    "internal_primary_elapsed_seconds": 245.92544056399993,
+    "worker_limit_seconds": 45,
+    "combined_peak_rss_bytes": 663191552,
+    "combined_rss_limit_bytes": 2147483648,
+    "host_identifiers_omitted": true,
+    "page_cache": "Uncontrolled; asset hash reads warm the page cache. Process-cold, not disk-cold."
+  },
+  "design": {
+    "fictional_queries": 12,
+    "passages_per_query": 4,
+    "total_unique_query_passage_slots": 48,
+    "passage_word_strata": [
+      48,
+      112,
+      224
+    ],
+    "queries_per_stratum": 4,
+    "relevance_labels": null,
+    "candidate_count": 1,
+    "search": false,
+    "warmup_cycles_per_session": 2,
+    "timed_cycles_per_session": 5,
+    "raw_logit_scores": true,
+    "confidence_intervals": null
+  },
+  "gates": {
+    "raw_logit_max_difference": false,
+    "raw_logit_mean_difference": false,
+    "top_set_overlap": true,
+    "identical_top_sets": true,
+    "margin_ranking": true,
+    "repeat_consistency": true,
+    "state_bytes": true,
+    "warm_throughput": true,
+    "p95": true,
+    "500_query_projected_cost": true
+  },
+  "agreement_identical_across_all_six_pairs": {
+    "max_abs_raw_logit_difference": 1.7708193212747574,
+    "mean_abs_raw_logit_difference": 0.2562462839608391,
+    "top_set_overlap_queries": 12,
+    "identical_top_set_queries": 12,
+    "reference_top_tie_queries": 2,
+    "candidate_top_tie_queries": 2,
+    "strict_comparable_passage_pairs": 70,
+    "discordant_strict_passage_pairs": 1,
+    "passage_pair_tie_mismatches": 0,
+    "margin_comparable_pairs": 69,
+    "margin_concordant_pairs": 68,
+    "margin_concordance": 0.9855072463768116
+  },
+  "agreement_by_word_stratum": {
+    "short": {
+      "max_abs_raw_logit_difference": 1.7708193212747574,
+      "mean_abs_raw_logit_difference": 0.4116210723295808,
+      "top_set_overlap_queries": 4,
+      "identical_top_set_queries": 4,
+      "reference_top_tie_queries": 1,
+      "candidate_top_tie_queries": 1,
+      "strict_comparable_passage_pairs": 23,
+      "discordant_strict_passage_pairs": 0,
+      "passage_pair_tie_mismatches": 0,
+      "margin_comparable_pairs": 23,
+      "margin_concordant_pairs": 23,
+      "margin_concordance": 1.0
+    },
+    "medium": {
+      "max_abs_raw_logit_difference": 0.26519060134887695,
+      "mean_abs_raw_logit_difference": 0.14062973856925964,
+      "top_set_overlap_queries": 4,
+      "identical_top_set_queries": 4,
+      "reference_top_tie_queries": 1,
+      "candidate_top_tie_queries": 1,
+      "strict_comparable_passage_pairs": 23,
+      "discordant_strict_passage_pairs": 1,
+      "passage_pair_tie_mismatches": 0,
+      "margin_comparable_pairs": 23,
+      "margin_concordant_pairs": 22,
+      "margin_concordance": 0.9565217391304348
+    },
+    "long": {
+      "max_abs_raw_logit_difference": 0.45317888259887695,
+      "mean_abs_raw_logit_difference": 0.2164880409836769,
+      "top_set_overlap_queries": 4,
+      "identical_top_set_queries": 4,
+      "reference_top_tie_queries": 0,
+      "candidate_top_tie_queries": 0,
+      "strict_comparable_passage_pairs": 24,
+      "discordant_strict_passage_pairs": 0,
+      "passage_pair_tie_mismatches": 0,
+      "margin_comparable_pairs": 23,
+      "margin_concordant_pairs": 23,
+      "margin_concordance": 1.0
+    }
+  },
+  "repeat_max_abs_logit_difference": {
+    "fp32": 0.0,
+    "int8": 0.0
+  },
+  "paired_costs": [
+    {
+      "warm_throughput_ratio": 1.9284272928475878,
+      "p95_latency_ratio": 0.5938003364086804,
+      "state_serialized_bytes_ratio": 0.6450388404715425,
+      "first_query_from_launch_ratio": 1.0357939501297775,
+      "ready_from_launch_ratio": 0.7155281753506417,
+      "full_session_from_launch_ratio": 0.6001400264177814,
+      "projected_500_query_cost_ratio": 0.5316395516228618,
+      "break_even_queries": 0,
+      "break_even_note": "Linear projection; not observed service traffic",
+      "startup_inference_peak_rss_bytes_ratio": 1.0304296566030415,
+      "experiment_peak_rss_including_serialization_ratio": 0.982420693923721
+    },
+    {
+      "warm_throughput_ratio": 1.9065088269220696,
+      "p95_latency_ratio": 0.6046328996714684,
+      "state_serialized_bytes_ratio": 0.6450388404715425,
+      "first_query_from_launch_ratio": 1.0379820753281066,
+      "ready_from_launch_ratio": 0.6644252405400978,
+      "full_session_from_launch_ratio": 0.5852569232445258,
+      "projected_500_query_cost_ratio": 0.5347459114856197,
+      "break_even_queries": 0,
+      "break_even_note": "Linear projection; not observed service traffic",
+      "startup_inference_peak_rss_bytes_ratio": 1.0307423685054882,
+      "experiment_peak_rss_including_serialization_ratio": 0.9827198611328486
+    },
+    {
+      "warm_throughput_ratio": 1.8447737227106615,
+      "p95_latency_ratio": 0.6531237117040335,
+      "state_serialized_bytes_ratio": 0.6450388404715425,
+      "first_query_from_launch_ratio": 1.0714043128861053,
+      "ready_from_launch_ratio": 0.6987692322413549,
+      "full_session_from_launch_ratio": 0.6067025609408938,
+      "projected_500_query_cost_ratio": 0.5529019652890494,
+      "break_even_queries": 0,
+      "break_even_note": "Linear projection; not observed service traffic",
+      "startup_inference_peak_rss_bytes_ratio": 1.0295432328161962,
+      "experiment_peak_rss_including_serialization_ratio": 0.9815731807962662
+    },
+    {
+      "warm_throughput_ratio": 1.8646139009689533,
+      "p95_latency_ratio": 0.6130425929659086,
+      "state_serialized_bytes_ratio": 0.6450388404715425,
+      "first_query_from_launch_ratio": 1.0810828932464092,
+      "ready_from_launch_ratio": 0.7356759679306459,
+      "full_session_from_launch_ratio": 0.6141407285824492,
+      "projected_500_query_cost_ratio": 0.5500155379916554,
+      "break_even_queries": 0,
+      "break_even_note": "Linear projection; not observed service traffic",
+      "startup_inference_peak_rss_bytes_ratio": 1.027118847000015,
+      "experiment_peak_rss_including_serialization_ratio": 0.9791344171547192
+    },
+    {
+      "warm_throughput_ratio": 1.9387563127705911,
+      "p95_latency_ratio": 0.5847708582317059,
+      "state_serialized_bytes_ratio": 0.6450388404715425,
+      "first_query_from_launch_ratio": 1.082285557335042,
+      "ready_from_launch_ratio": 0.7286011747000732,
+      "full_session_from_launch_ratio": 0.6037387412152503,
+      "projected_500_query_cost_ratio": 0.5301033073831924,
+      "break_even_queries": 0,
+      "break_even_note": "Linear projection; not observed service traffic",
+      "startup_inference_peak_rss_bytes_ratio": 1.0506587743941829,
+      "experiment_peak_rss_including_serialization_ratio": 0.94562344080642
+    },
+    {
+      "warm_throughput_ratio": 1.9355477915669597,
+      "p95_latency_ratio": 0.5786483251325903,
+      "state_serialized_bytes_ratio": 0.6450388404715425,
+      "first_query_from_launch_ratio": 1.0735210158538722,
+      "ready_from_launch_ratio": 0.7295114954041086,
+      "full_session_from_launch_ratio": 0.59861487608566,
+      "projected_500_query_cost_ratio": 0.5307841674561241,
+      "break_even_queries": 0,
+      "break_even_note": "Linear projection; not observed service traffic",
+      "startup_inference_peak_rss_bytes_ratio": 1.037522719420786,
+      "experiment_peak_rss_including_serialization_ratio": 0.9337893833185748
+    }
+  ],
+  "arm_summary": {
+    "fp32": {
+      "sessions": 6,
+      "timed_requests_per_session": 60,
+      "timed_pairs_per_session": 240,
+      "first_query_from_launch_ms": {
+        "minimum": 2651.6133579998495,
+        "maximum": 2889.164060999974
+      },
+      "ready_after_warmup_from_launch_ms": {
+        "minimum": 8039.247031999821,
+        "maximum": 8775.957756000025
+      },
+      "full_session_from_launch_ms": {
+        "minimum": 24804.927230999965,
+        "maximum": 25587.866639999902
+      },
+      "mean_query_ms": {
+        "minimum": 220.1655188666488,
+        "maximum": 228.8686898666962
+      },
+      "p95_query_ms": {
+        "minimum": 407.60240400004477,
+        "maximum": 438.44752499990136
+      },
+      "pairs_per_second": {
+        "minimum": 17.477270492218864,
+        "maximum": 18.168149220599545
+      },
+      "startup_inference_peak_rss_bytes": {
+        "minimum": 545284096,
+        "maximum": 548933632
+      },
+      "experiment_peak_rss_including_serialization_bytes": {
+        "minimum": 574189568,
+        "maximum": 605949952
+      },
+      "state_serialized_bytes": 90894880,
+      "quantized_linear_count_each": 0,
+      "truncated_input_pairs_each": 0,
+      "all_loading_diagnostics_empty": true,
+      "by_stratum": {
+        "short": {
+          "mean_query_ms": {
+            "minimum": 84.59233560004122,
+            "maximum": 89.12083494999479
+          },
+          "p95_query_ms": {
+            "minimum": 90.25518099997498,
+            "maximum": 103.31679099999747
+          }
+        },
+        "medium": {
+          "mean_query_ms": {
+            "minimum": 176.46157344997846,
+            "maximum": 185.5695335000064
+          },
+          "p95_query_ms": {
+            "minimum": 186.16967999969347,
+            "maximum": 220.2650000003814
+          }
+        },
+        "long": {
+          "mean_query_ms": {
+            "minimum": 398.3480600499661,
+            "maximum": 413.9525557999832
+          },
+          "p95_query_ms": {
+            "minimum": 416.3346380000803,
+            "maximum": 457.88284199988993
+          }
+        }
+      }
+    },
+    "int8": {
+      "sessions": 6,
+      "timed_requests_per_session": 60,
+      "timed_pairs_per_session": 240,
+      "first_query_from_launch_ms": {
+        "minimum": 2822.1034620000864,
+        "maximum": 3024.0389549999236
+      },
+      "ready_after_warmup_from_launch_ms": {
+        "minimum": 5722.961773999941,
+        "maximum": 5980.959862999953
+      },
+      "full_session_from_launch_ms": {
+        "minimum": 14947.47089700013,
+        "maximum": 15317.277617999935
+      },
+      "mean_query_ms": {
+        "minimum": 116.73730264999449,
+        "maximum": 119.59163416664371
+      },
+      "p95_query_ms": {
+        "minimum": 246.6819750002287,
+        "maximum": 266.21479499999623
+      },
+      "pairs_per_second": {
+        "minimum": 33.447155629851515,
+        "maximum": 34.26496851647265
+      },
+      "startup_inference_peak_rss_bytes": {
+        "minimum": 562208768,
+        "maximum": 572907520
+      },
+      "experiment_peak_rss_including_serialization_bytes": {
+        "minimum": 562208768,
+        "maximum": 572907520
+      },
+      "state_serialized_bytes": 58630728,
+      "quantized_linear_count_each": 38,
+      "truncated_input_pairs_each": 0,
+      "all_loading_diagnostics_empty": true,
+      "by_stratum": {
+        "short": {
+          "mean_query_ms": {
+            "minimum": 35.6108484999595,
+            "maximum": 37.50696400002198
+          },
+          "p95_query_ms": {
+            "minimum": 38.635533999695326,
+            "maximum": 46.15565899985086
+          }
+        },
+        "medium": {
+          "mean_query_ms": {
+            "minimum": 80.32866205001028,
+            "maximum": 83.1529218500691
+          },
+          "p95_query_ms": {
+            "minimum": 87.41026400002738,
+            "maximum": 107.73519999975179
+          }
+        },
+        "long": {
+          "mean_query_ms": {
+            "minimum": 231.58139959998607,
+            "maximum": 241.92238435005038
+          },
+          "p95_query_ms": {
+            "minimum": 255.22019800018825,
+            "maximum": 276.2179480000668
+          }
+        }
+      }
+    }
+  },
+  "source_bytes": {
+    "same_fp32_weight_file_each_arm": 90870598,
+    "same_source_asset_bundle_each_arm": 91815758,
+    "serialized_state_size_is_not_a_deployment_artifact": true,
+    "saved_int8_reload_tested": false
+  },
+  "setup": {
+    "cumulative_elapsed_seconds": 263.2569818284619,
+    "downloaded_artifact_bytes": 316636127,
+    "wheel_bytes": 224810912,
+    "hf_body_bytes": 91825215,
+    "wire_overhead_bytes": null,
+    "wire_overhead_note": "Index/metadata, TLS and HTTP overhead not metered.",
+    "clock_note": "Cumulative start reconstructed from the initial failure receipt time and monotonic duration, including repair pause; not an exact external setup command clock.",
+    "sources": [
+      "Official PyTorch CPU index",
+      "Official PyPI",
+      "Official immutable Hugging Face revision"
+    ]
+  },
+  "pre_execution_events": [
+    "An acquisition-only metadata parser initially counted nested vendor metadata. It was corrected to top-level records and resumed from already downloaded official wheels; no model had been invoked.",
+    "The specified external timing executable was absent, and the initial command exited before the supervisor started. A documented pre-execution substitution used the shell builtin timer with separate command stderr and unchanged real+0.01<=600 ceiling."
+  ],
+  "limits": [
+    "Fictional fixed inputs have no task labels. Baseline agreement is not relevance or task utility.",
+    "Performance is specific to one host and the fixed length distribution.",
+    "No thresholds, candidate implementation, fixture, or sealed primary code changed after results. No model reruns.",
+    "Serialization-buffer RSS is instrumentation-inclusive; use startup/inference RSS for memory tradeoffs."
+  ]
+}
