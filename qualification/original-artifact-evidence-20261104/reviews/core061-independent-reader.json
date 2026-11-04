@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.original-core-supervisor-reader.static-review.v1",
+  "reviewer": "hepta_blockers",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reader": {
+    "git_blob_sha": "21c9a1bff59c8d593c4384561d3dbf2e7f402c8a",
+    "sha256": "f87b6d4967f9192eb972288feb310fa9bec291e8849e259b66f84a8d6ad572ee",
+    "bytes": 12248
+  },
+  "controls": {
+    "git_blob_sha": "a7dc1c84344b6160b57e81faa087cc96ba21a620",
+    "sha256": "a30bf71a89f51635521ec6e743dc3c175b718f31aa3dd0a42ff544cecdd8635f",
+    "bytes": 4257
+  },
+  "scope": [
+    "source_identity",
+    "outputs_and_commands",
+    "compiled_inventory",
+    "checked_junit",
+    "inspect command and count binding",
+    "new ten control source cases"
+  ],
+  "observations": [
+    "Full source snapshot key set equals Git tree, all regular/executable/symlink payloads are hashed as original Git bytes; no link dereference claim.",
+    "Exactly thirteen original commands and their order are required, including actual compiled inventories, original locked target selections, zero retries and exact formatter base.",
+    "Only the two fixed Core cases count as executed; all other compiled Core cases are separately filtered or originally ignored.",
+    "Complete Supervisor target must have exactly the one original restart case, with no ignored cases.",
+    "Fresh original producer is source-bound; this new reader independently compares actual inventory/JUnit case sets, duplicate and bad-node rejection, counts and all retained output hashes.",
+    "Binary digest equality remains explicitly an original recorded claim; retained binaries are not independently rehashed here."
+  ],
+  "conclusion": "No confirmed new false-pass path in the inspected narrow case/inventory/command binding.",
+  "limits": {
+    "static_only": true,
+    "local_execution": false,
+    "controls_executed": false,
+    "native_executed": false,
+    "original_artifact_downloaded": false,
+    "unchanged_fetch_and_Git_helpers_not_rereviewed_here": true,
+    "full_Core_qualification": false,
+    "whole_CI_qualification": false
+  }
+}

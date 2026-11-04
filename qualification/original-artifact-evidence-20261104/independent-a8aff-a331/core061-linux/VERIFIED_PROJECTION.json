@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "key": "core061-linux",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "061ec434abcbe673013f1e16b6b5a1b3d9c1d3bb",
+  "original_run": 41770058343,
+  "artifact_id": 13295049061,
+  "zip_bytes": 1849090,
+  "zip_sha256": "f47e9de3657097291c29b639fc5ee69ec8d59ea8bd0fc870ba8d937c924728f7",
+  "all_member_crc": true,
+  "original_qualification_status": "passed",
+  "source_verification": {
+    "count": 10318,
+    "source_tree": "61270b09edf7394cdda68b70aa5ff61428db08f6",
+    "all_match_exact_git_bytes": true,
+    "before_sha256": "065922ace3cbacd35ea5477ab297d9bd0e11a3cead6c382acf317af593e6dbfc",
+    "after_sha256": "065922ace3cbacd35ea5477ab297d9bd0e11a3cead6c382acf317af593e6dbfc",
+    "snapshot_values_equal": true,
+    "symlinks": "raw Git link payload; not dereferenced"
+  },
+  "result": {
+    "mode": "original-focused-native",
+    "executed": 3,
+    "scopes": {
+      "core-original-two": {
+        "executed": 2,
+        "executed_cases": [
+          "tools::handlers::multi_agents::tests::multi_agent_v2_wait_agent_uses_configured_default_timeout",
+          "environment_selection::tests::blocking_snapshot_waits_for_starting_environment"
+        ],
+        "compiled_inventory_count": 2422,
+        "original_ignored": [
+          "tools::handlers::multi_agents::tests::spawn_agent_reapplies_runtime_sandbox_after_role_config"
+        ],
+        "qualification_filtered_count": 2419,
+        "complete_target": false,
+        "junit_sha256": "d33447df3dd1abba14464219b3a408a3b3af97239a905bddd9f86d76a0c3dfd2",
+        "recorded_binary_sha256_before_and_after": "ccbac5da85fa36066254be2813f0e4913913fc889cfe167da3dac6a6a407f084"
+      },
+      "supervisor-restart-original": {
+        "executed": 1,
+        "executed_cases": [
+          "restart_budget_survives_repeated_supervisord_recovery"
+        ],
+        "compiled_inventory_count": 1,
+        "original_ignored": [],
+        "qualification_filtered_count": 0,
+        "complete_target": true,
+        "junit_sha256": "be166ab3fa447c054dd5b5d4a3e73854d6354e53a74e038af528d9db96c3ac53",
+        "recorded_binary_sha256_before_and_after": "6b3326267ab71fe1ded85544fe5683594da765b1f404cb5c15b6c540f7bbf1e5"
+      }
+    },
+    "command_exits": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "boundary": "Two selected original Core cases and one complete Supervisor restart target. Unselected Core cases did not execute. Binary equality is recorded by the original job; binaries are not retained here."
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only original evidence verification; no new native run or full Core/whole-CI acceptance.",
+  "output_count": 30,
+  "verified_report_sha256": "9fa0b006470cf841f62829a6d992ba44501e2de156fdf25bcde8dd051444b1a2"
+}

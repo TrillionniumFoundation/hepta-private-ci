@@ -1,0 +1,385 @@
+{
+  "schema_version": 1,
+  "kind": "actual hosted read-only artifact replays",
+  "executed_product_code": false,
+  "products_requalified": false,
+  "evidence": [
+    {
+      "key": "core061-windows",
+      "bridge_job": 126392376213,
+      "bridge_run": 41774746521,
+      "bridge_source": "a8aff68dc3c00210d2279a645f3db81f808df692",
+      "original_source": "061ec434abcbe673013f1e16b6b5a1b3d9c1d3bb",
+      "original_status": "passed",
+      "independent_verification": "passed",
+      "bridge_artifact": {
+        "id": 13296252400,
+        "bytes": 1925059,
+        "sha256": "f686abda987b5856233b7ae67ead4c7f9615f42db046745e8d6616c2251029bd"
+      },
+      "original_log": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/core061-windows/original-bridge-job.log",
+        "bytes": 52356,
+        "sha256": "5055cd36e32bfda63bb4c3fe9b90748124bdc4699460b58b06df1a35c51cd845",
+        "git_blob": "0078823a0be37f9999e931270fecccecd3f54d4f"
+      },
+      "projection": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/core061-windows/VERIFIED_PROJECTION.json",
+        "full_verified_report_sha256": "27bf4c6ed09bfc3fbfff0657432964404d927d7a3de7c173658937b12ee6cf74",
+        "scope": "Exact emitted projection; full output hash dictionary remains in the verified original bridge artifact."
+      }
+    },
+    {
+      "key": "core061-linux",
+      "bridge_job": 126392376346,
+      "bridge_run": 41774746521,
+      "bridge_source": "a8aff68dc3c00210d2279a645f3db81f808df692",
+      "original_source": "061ec434abcbe673013f1e16b6b5a1b3d9c1d3bb",
+      "original_status": "passed",
+      "independent_verification": "passed",
+      "bridge_artifact": {
+        "id": 13296890246,
+        "bytes": 1931517,
+        "sha256": "1b6f006a36d8537788dd24fa0b1548417fb916996fbec528700e4ac02d4dbf93"
+      },
+      "original_log": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/core061-linux/original-bridge-job.log",
+        "bytes": 52249,
+        "sha256": "c4e094fb3dff3d97beb1445b2760fcc0bbe1731bf5c875e3e05ea301db721095",
+        "git_blob": "7f751c74f093cf85f6591c8f502d11b4146410aa"
+      },
+      "projection": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/core061-linux/VERIFIED_PROJECTION.json",
+        "full_verified_report_sha256": "9fa0b006470cf841f62829a6d992ba44501e2de156fdf25bcde8dd051444b1a2",
+        "scope": "Exact emitted projection; full output hash dictionary remains in the verified original bridge artifact."
+      }
+    },
+    {
+      "key": "memory8fac-windows",
+      "bridge_job": 126392376321,
+      "bridge_run": 41774746521,
+      "bridge_source": "a8aff68dc3c00210d2279a645f3db81f808df692",
+      "original_source": "8facd08bcb51222fe3c88c3b9b03bdea09db4553",
+      "original_status": "failed",
+      "independent_verification": "passed",
+      "bridge_artifact": {
+        "id": 13295854821,
+        "bytes": 1442064,
+        "sha256": "d012a58aa2e4031da21b8b6de8fb299239be83f6b06a9af016c43ad241bee44d"
+      },
+      "original_log": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-windows/original-bridge-job.log",
+        "bytes": 353532,
+        "sha256": "11a45618cc01a2ad580e2ac9a3edb0d1984684b81d5dfe38eae194e463a94733",
+        "git_blob": "49a66d46895b26c4f822520c43f514ceb2ee39d3"
+      },
+      "projection": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-windows/VERIFIED_PROJECTION.json",
+        "full_verified_report_sha256": "1c8f7d50d5327e3bf0a32be4a2e9271a16c6c4b9360b5793cfa26a07f72e7af3",
+        "scope": "Exact emitted projection; full output hash dictionary remains in the verified original bridge artifact."
+      }
+    },
+    {
+      "key": "memory8fac-bazel",
+      "bridge_job": 126392376406,
+      "bridge_run": 41774746521,
+      "bridge_source": "a8aff68dc3c00210d2279a645f3db81f808df692",
+      "original_source": "8facd08bcb51222fe3c88c3b9b03bdea09db4553",
+      "original_status": "passed",
+      "independent_verification": "passed",
+      "bridge_artifact": {
+        "id": 13296935209,
+        "bytes": 1428735,
+        "sha256": "7535af1383981933e1b6931ea92ea4fc4abf25d2816f1196a3e58c26c72be3ff"
+      },
+      "original_log": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-bazel/original-bridge-job.log",
+        "bytes": 139785,
+        "sha256": "f29b9b169cdfd253510e08ca1fb773573f19baf060509bf2fa6e89c9e5cb07fe",
+        "git_blob": "bd75e61b6d567e559709a992b02299f50950ad2c"
+      },
+      "projection": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-bazel/VERIFIED_PROJECTION.json",
+        "full_verified_report_sha256": "889812351b4400f0eb2e811a1ba3a718dfa23080ccee6fa2b4077c5b4a842374",
+        "scope": "Exact emitted projection; full output hash dictionary remains in the verified original bridge artifact."
+      }
+    },
+    {
+      "key": "memory8fac-generation",
+      "bridge_job": 126392376329,
+      "bridge_run": 41774746521,
+      "bridge_source": "a8aff68dc3c00210d2279a645f3db81f808df692",
+      "original_source": "8facd08bcb51222fe3c88c3b9b03bdea09db4553",
+      "original_status": "committed-lock-qualified",
+      "independent_verification": "passed",
+      "bridge_artifact": {
+        "id": 13297045064,
+        "bytes": 5164059,
+        "sha256": "dda396158a2e1832d6d0d3e38f97b27f05419784cc6fbddfbcb6beaeace89862"
+      },
+      "original_log": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-generation/original-bridge-job.log",
+        "bytes": 63931,
+        "sha256": "aa5ea9ae30f302a6824eb22383d9098ec8cc0ea29aa5b9334e6e950f14dc9099",
+        "git_blob": "d1b178cc01ed02edf92998b15c36acd260730df1"
+      },
+      "projection": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-generation/VERIFIED_PROJECTION.json",
+        "full_verified_report_sha256": "6914471a4eb5753f1ddfaa128466f56a0058c9015fa3768fe2f3c63c553a7e7e",
+        "scope": "Exact emitted projection; full output hash dictionary remains in the verified original bridge artifact."
+      }
+    },
+    {
+      "key": "memory8fac-macos",
+      "bridge_job": 126392376008,
+      "bridge_run": 41774746521,
+      "bridge_source": "a8aff68dc3c00210d2279a645f3db81f808df692",
+      "original_source": "8facd08bcb51222fe3c88c3b9b03bdea09db4553",
+      "original_status": "passed",
+      "independent_verification": "passed",
+      "bridge_artifact": {
+        "id": 13296138804,
+        "bytes": 1426313,
+        "sha256": "f91e1a1c2a01af77da6e496438453d9e62b9ca5745ccd3c012668b64888f6965"
+      },
+      "original_log": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-macos/original-bridge-job.log",
+        "bytes": 53684,
+        "sha256": "c052f491167ec68d369b7614b1568859a029dce97588267ee398e8c99d50eea3",
+        "git_blob": "bba959f49907f75e32479374c2b53fee4c205976"
+      },
+      "projection": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-macos/VERIFIED_PROJECTION.json",
+        "full_verified_report_sha256": "65aa2b104a25c28ba1dead63d0b7f025e1d40c81ccddb11ff28632c9560ac8fb",
+        "scope": "Exact emitted projection; full output hash dictionary remains in the verified original bridge artifact."
+      }
+    },
+    {
+      "key": "memory8fac-linux",
+      "bridge_job": 126392376374,
+      "bridge_run": 41774746521,
+      "bridge_source": "a8aff68dc3c00210d2279a645f3db81f808df692",
+      "original_source": "8facd08bcb51222fe3c88c3b9b03bdea09db4553",
+      "original_status": "passed",
+      "independent_verification": "passed",
+      "bridge_artifact": {
+        "id": 13296338197,
+        "bytes": 1427111,
+        "sha256": "b3a9b243f4f84b3dc4a447366c4bc08dfe020ee498229874bebade9e110f1158"
+      },
+      "original_log": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-linux/original-bridge-job.log",
+        "bytes": 53691,
+        "sha256": "8971a27ebe76884fa829145a937d47c5f6e8da496331e982aaad7f1d9e23847b",
+        "git_blob": "c96788edb9ae0f55e2546777408fcecdf962ce63"
+      },
+      "projection": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-linux/VERIFIED_PROJECTION.json",
+        "full_verified_report_sha256": "055a291367bb3c01e842b5b69bb2113cf8a0758948f98d9e12e38557fe81e530",
+        "scope": "Exact emitted projection; full output hash dictionary remains in the verified original bridge artifact."
+      }
+    },
+    {
+      "key": "memory97-generation",
+      "bridge_job": 126382822860,
+      "bridge_run": 41771756201,
+      "bridge_source": "a331c3aca3abfac07bee7eb04a24ab50ec2f59a0",
+      "original_source": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+      "original_status": "committed-lock-qualified",
+      "independent_verification": "passed",
+      "bridge_artifact": {
+        "id": 13296311430,
+        "bytes": 5163660,
+        "sha256": "d720cae4771e27437bafc2dad6496ad2a77e956b40f8b9f305dcc0e7caff227f"
+      },
+      "original_log": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory97-generation/original-bridge-job.log",
+        "bytes": 62495,
+        "sha256": "f26eb36e95d137838b8ea7d75ac5595dc1290dcef4a5af4738008ba50add6757",
+        "git_blob": "ed19fc6c663fd1ccf527524e3e8fa9553a012226"
+      },
+      "projection": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory97-generation/VERIFIED_PROJECTION.json",
+        "full_verified_report_sha256": "1886b225cd54ee1ea58b55f5f4e46bd85dda5479ea598ded97f91c781f45c186",
+        "scope": "Exact emitted projection; full output hash dictionary remains in the verified original bridge artifact."
+      }
+    },
+    {
+      "key": "env3cd-source-failed",
+      "bridge_job": 126382822375,
+      "bridge_run": 41771756201,
+      "bridge_source": "a331c3aca3abfac07bee7eb04a24ab50ec2f59a0",
+      "original_source": "3cd052f1b89ceffb20c5ad5a3902bc4634b286ce",
+      "original_status": "failed",
+      "independent_verification": "passed",
+      "bridge_artifact": {
+        "id": 13295333989,
+        "bytes": 5356993,
+        "sha256": "bf3c29a2387de31cead9bda9857a9d62a98cb4f32b5e8ffc0a7a6a2b94ac71b3"
+      },
+      "original_log": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/env3cd-source-failed/original-bridge-job.log",
+        "bytes": 220639,
+        "sha256": "8b3d1321e67d6d99364fe65c9b321c27933beef5b7d601ecd8a9be941019770f",
+        "git_blob": "e510f02718edac2caefb094def56d9ca07f5bec6"
+      },
+      "projection": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/env3cd-source-failed/VERIFIED_PROJECTION.json",
+        "full_verified_report_sha256": "5cc1c712d4de8284dabb599b93ba568771a03a36ce1204d7c11f1a7174ec76e6",
+        "scope": "Exact emitted projection; full output hash dictionary remains in the verified original bridge artifact."
+      }
+    },
+    {
+      "key": "env3cd-merge-failed",
+      "bridge_job": 126382822682,
+      "bridge_run": 41771756201,
+      "bridge_source": "a331c3aca3abfac07bee7eb04a24ab50ec2f59a0",
+      "original_source": "d500f40b21bc5c26e7950ab22af783b9c82d6066",
+      "original_status": "failed",
+      "independent_verification": "passed",
+      "bridge_artifact": {
+        "id": 13295563262,
+        "bytes": 5303284,
+        "sha256": "c5d2e59b5bc2c761c4bd2125678e4328906db078e04bf50c079f465022ed53ec"
+      },
+      "original_log": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/env3cd-merge-failed/original-bridge-job.log",
+        "bytes": 230805,
+        "sha256": "2b8827045bec5358ab2801d68ec3038ccb62d92bbc2eb9c7f2d866eeac418537",
+        "git_blob": "822cede51eb24e5affbb18031b41367fdbcc28c0"
+      },
+      "projection": {
+        "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/env3cd-merge-failed/VERIFIED_PROJECTION.json",
+        "full_verified_report_sha256": "4ae6502aeea21c30bb5d788fc00297233151ca66dcf508947c41aaf1752c4af8",
+        "scope": "Exact emitted projection; full output hash dictionary remains in the verified original bridge artifact."
+      }
+    }
+  ],
+  "controls": {
+    "a8aff": "Twelve prior reader controls plus ten focused-native reader controls and optimized-Python refusal passed on each actual job.",
+    "a331": "Twelve reader controls and optimized-Python refusal passed on each actual job."
+  },
+  "scope": "All listed original ZIPs passed exact archive digest/CRC/source input bytes/output binding checks. Original negative Windows Memory and Env verdicts remain FAILED. Core/Supervisor qualifies only2selected+1complete cases per host; no fullCore or jointCI closure.",
+  "files": [
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/core061-windows/original-bridge-job.log",
+      "bytes": 52356,
+      "sha256": "5055cd36e32bfda63bb4c3fe9b90748124bdc4699460b58b06df1a35c51cd845",
+      "git_blob": "0078823a0be37f9999e931270fecccecd3f54d4f"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/core061-windows/VERIFIED_PROJECTION.json",
+      "bytes": 3036,
+      "sha256": "9af8c39763f434b03f94a4382547dc0fd7d04fb1ae074e61c01cb85078e4fc6f",
+      "git_blob": "b5244394ca500a258ea803ed040417ede9b5242c"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/core061-linux/original-bridge-job.log",
+      "bytes": 52249,
+      "sha256": "c4e094fb3dff3d97beb1445b2760fcc0bbe1731bf5c875e3e05ea301db721095",
+      "git_blob": "7f751c74f093cf85f6591c8f502d11b4146410aa"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/core061-linux/VERIFIED_PROJECTION.json",
+      "bytes": 2857,
+      "sha256": "737a7b9218ad211f0b3b7629dae7e1a0378bbc7794669c3856ab825049f49876",
+      "git_blob": "3e1ab2684c354fc83ce3249266aa19f318053b93"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-windows/original-bridge-job.log",
+      "bytes": 353532,
+      "sha256": "11a45618cc01a2ad580e2ac9a3edb0d1984684b81d5dfe38eae194e463a94733",
+      "git_blob": "49a66d46895b26c4f822520c43f514ceb2ee39d3"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-windows/VERIFIED_PROJECTION.json",
+      "bytes": 11168,
+      "sha256": "22fffc12d6130f781155e04c75baf7cc489161b52588f1aa8d28c8134046b90c",
+      "git_blob": "d6f1ae32c866a018bed60eec56f40e263ded5689"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-bazel/original-bridge-job.log",
+      "bytes": 139785,
+      "sha256": "f29b9b169cdfd253510e08ca1fb773573f19baf060509bf2fa6e89c9e5cb07fe",
+      "git_blob": "bd75e61b6d567e559709a992b02299f50950ad2c"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-bazel/VERIFIED_PROJECTION.json",
+      "bytes": 102529,
+      "sha256": "fc0e1c5f70a5d80d023d8edd49d8b42af4a907e110af600aefc613b4f96adf5d",
+      "git_blob": "233691eb0716f8934eab4f52652a3cf0f9166036"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-generation/original-bridge-job.log",
+      "bytes": 63931,
+      "sha256": "aa5ea9ae30f302a6824eb22383d9098ec8cc0ea29aa5b9334e6e950f14dc9099",
+      "git_blob": "d1b178cc01ed02edf92998b15c36acd260730df1"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-generation/VERIFIED_PROJECTION.json",
+      "bytes": 13865,
+      "sha256": "789d236fb2b7bca43eaac4b8f3a253c61e729666965afd98c9ad111a92c33969",
+      "git_blob": "ba53846abb09266740f3cef9c3d8711eafe412f6"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-macos/original-bridge-job.log",
+      "bytes": 53684,
+      "sha256": "c052f491167ec68d369b7614b1568859a029dce97588267ee398e8c99d50eea3",
+      "git_blob": "bba959f49907f75e32479374c2b53fee4c205976"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-macos/VERIFIED_PROJECTION.json",
+      "bytes": 3634,
+      "sha256": "674a1585050c775ade7256e5753dc17c1c9a8881eb85ff2c5a644655a4d1544f",
+      "git_blob": "c9f627f5e68d3ca334a4244d418a755b6264f9d0"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-linux/original-bridge-job.log",
+      "bytes": 53691,
+      "sha256": "8971a27ebe76884fa829145a937d47c5f6e8da496331e982aaad7f1d9e23847b",
+      "git_blob": "c96788edb9ae0f55e2546777408fcecdf962ce63"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory8fac-linux/VERIFIED_PROJECTION.json",
+      "bytes": 3634,
+      "sha256": "535dd2f8e53bcb471cb341c253f65c7b4b82ec14c03746e34f66eedfe7bb490e",
+      "git_blob": "5ce8d686a54fcb58feda680f3e709b773cdfdc99"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory97-generation/original-bridge-job.log",
+      "bytes": 62495,
+      "sha256": "f26eb36e95d137838b8ea7d75ac5595dc1290dcef4a5af4738008ba50add6757",
+      "git_blob": "ed19fc6c663fd1ccf527524e3e8fa9553a012226"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/memory97-generation/VERIFIED_PROJECTION.json",
+      "bytes": 13847,
+      "sha256": "4a546711f2287b6e0f80c96117d187608135b212c3c5a65d01ad5813ddd3e32f",
+      "git_blob": "f1c179a4e9613773d909f2d4164a9e1bce0df789"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/env3cd-source-failed/original-bridge-job.log",
+      "bytes": 220639,
+      "sha256": "8b3d1321e67d6d99364fe65c9b321c27933beef5b7d601ecd8a9be941019770f",
+      "git_blob": "e510f02718edac2caefb094def56d9ca07f5bec6"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/env3cd-source-failed/VERIFIED_PROJECTION.json",
+      "bytes": 7411,
+      "sha256": "bdc5b13c3333e2d732083e14837a5056647d793a4714131cf1d4368cd16acc13",
+      "git_blob": "ca417e43b7504b8750f64f361c4623e0b9f9c86f"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/env3cd-merge-failed/original-bridge-job.log",
+      "bytes": 230805,
+      "sha256": "2b8827045bec5358ab2801d68ec3038ccb62d92bbc2eb9c7f2d866eeac418537",
+      "git_blob": "822cede51eb24e5affbb18031b41367fdbcc28c0"
+    },
+    {
+      "path": "qualification/original-artifact-evidence-20261104/independent-a8aff-a331/env3cd-merge-failed/VERIFIED_PROJECTION.json",
+      "bytes": 7400,
+      "sha256": "3fc6c757f9755d0228babdb9c528b9d380f33aa6549368e3d1ee7bbc6b6ea1aa",
+      "git_blob": "af287b118e91b6266ad55d8f50f05626f30f7e45"
+    }
+  ]
+}

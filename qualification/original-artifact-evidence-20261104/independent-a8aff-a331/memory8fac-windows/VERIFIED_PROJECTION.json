@@ -1,0 +1,337 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "8facd08bcb51222fe3c88c3b9b03bdea09db4553",
+  "original_run": 41770514444,
+  "artifact_id": 13295599285,
+  "original_qualification_status": "failed",
+  "key": "memory8fac-windows",
+  "zip_bytes": 980513,
+  "zip_sha256": "4d016ac79f96c54fd0da5e13a69061a6105be5f089f00d419728371b321f140f",
+  "all_member_crc": true,
+  "source_verification": {
+    "count": 9214,
+    "before_sha256": "a708cb709ef5806ce8d58c9741f64584884a47a31f44f564de5572a5a0b1679a",
+    "after_sha256": "a708cb709ef5806ce8d58c9741f64584884a47a31f44f564de5572a5a0b1679a",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs",
+      ".github",
+      "scripts",
+      "bazel",
+      "patches",
+      "third_party",
+      "cargo_bazel_template",
+      "justfile",
+      "defs.bzl",
+      "BUILD.bazel",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      "qualification/windows-memory-recovery-current",
+      "qualification/keyring-sync-provider/build_pinned_client.py"
+    ],
+    "symlink_resolution": []
+  },
+  "result": {
+    "mode": "negative-evidence",
+    "original_commands": [
+      {
+        "name": "initial-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 0.07799999999997453
+      },
+      {
+        "name": "rustc-version",
+        "argv": [
+          "rustc",
+          "-Vv"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 0.047000000000025466
+      },
+      {
+        "name": "nextest-version",
+        "argv": [
+          "cargo",
+          "nextest",
+          "--version"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+        "exit_code": 0,
+        "seconds": 0.875
+      },
+      {
+        "name": "codex-utils-path-inventory",
+        "argv": [
+          "cargo",
+          "nextest",
+          "list",
+          "--locked",
+          "-p",
+          "codex-utils-path",
+          "--lib",
+          "--message-format=json"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+        "exit_code": 0,
+        "seconds": 201.26599999999996
+      },
+      {
+        "name": "codex-utils-path-original-tests",
+        "argv": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-utils-path",
+          "--lib",
+          "--no-tests=fail",
+          "--retries",
+          "0",
+          "--success-output=final"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 1.9850000000000136
+      },
+      {
+        "name": "codex-state-inventory",
+        "argv": [
+          "cargo",
+          "nextest",
+          "list",
+          "--locked",
+          "-p",
+          "codex-state",
+          "--lib",
+          "--message-format=json"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+        "exit_code": 0,
+        "seconds": 382.7339999999999
+      },
+      {
+        "name": "codex-state-original-tests",
+        "argv": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-state",
+          "--lib",
+          "--no-tests=fail",
+          "--retries",
+          "0",
+          "--success-output=final"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 89.82799999999997
+      },
+      {
+        "name": "codex-hepta-memory-inventory",
+        "argv": [
+          "cargo",
+          "nextest",
+          "list",
+          "--locked",
+          "-p",
+          "codex-hepta-memory",
+          "--lib",
+          "--message-format=json"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs",
+        "exit_code": 0,
+        "seconds": 158.0469999999998
+      },
+      {
+        "name": "codex-hepta-memory-original-tests",
+        "argv": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-memory",
+          "--lib",
+          "--no-tests=fail",
+          "--retries",
+          "0",
+          "--success-output=final"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 1,
+        "seconds": 83.39099999999985
+      },
+      {
+        "name": "original-scoped-clippy",
+        "argv": [
+          "just",
+          "fix",
+          "--locked",
+          "-p",
+          "codex-utils-path",
+          "-p",
+          "codex-state",
+          "-p",
+          "codex-hepta-memory",
+          "--no-deps"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 159.15600000000018
+      },
+      {
+        "name": "final-clean-source",
+        "argv": [
+          "git",
+          "--no-replace-objects",
+          "diff",
+          "--exit-code",
+          "HEAD",
+          "--"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "exit_code": 0,
+        "seconds": 0.04699999999979809
+      }
+    ],
+    "original_libraries": {
+      "codex-utils-path": {
+        "status": "passed",
+        "inventory_count": 21,
+        "expected_count": 21,
+        "result_passed": 21
+      },
+      "codex-state": {
+        "status": "passed",
+        "inventory_count": 210,
+        "expected_count": 210,
+        "result_passed": 210
+      },
+      "codex-hepta-memory": {
+        "status": "failed",
+        "inventory_count": 271,
+        "expected_count": 264,
+        "result_passed": null
+      }
+    },
+    "original_targets": null,
+    "original_problems": [
+      "codex-hepta-memory: original library tests failed"
+    ],
+    "failed_streams": {
+      "codex-hepta-memory-original-tests.stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "codex-hepta-memory-original-tests.stderr": {
+        "bytes": 206791,
+        "sha256": "29fb05fcc197bb1dddd7e03c5b2e002b4c1f57941ca6833bb79257451d86b455"
+      }
+    },
+    "observed_junit": {
+      "codex-utils-path": {
+        "cases": 21,
+        "sha256": "e8c8f32d996d435e9924c391b6220a73646dd92a6b63edee86429087249cd7b1",
+        "failures": []
+      },
+      "codex-state": {
+        "cases": 210,
+        "sha256": "85242e4afd18aacf3159fd20fdfab371427047a9101c4fc47505c871df50435f",
+        "failures": []
+      },
+      "codex-hepta-memory": {
+        "cases": 264,
+        "sha256": "6674ad75175e57b3ef92639a42492650ff06821f98d2d7ca7e97a464a95bb7c4",
+        "failures": [
+          {
+            "name": "cognitive_store::windows::tests::bootstrap_creates_private_source_and_preserves_existing_bytes",
+            "details": [
+              {
+                "tag": "failure",
+                "attributes": {
+                  "message": "Error: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+                  "type": "test failure with exit code 101"
+                },
+                "text": "Error: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")"
+              },
+              {
+                "tag": "system-out",
+                "attributes": {},
+                "text": "\nrunning 1 test\ntest cognitive_store::windows::tests::bootstrap_creates_private_source_and_preserves_existing_bytes ... FAILED\n\nfailures:\n\nfailures:\n    cognitive_store::windows::tests::bootstrap_creates_private_source_and_preserves_existing_bytes\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 270 filtered out; finished in 0.00s\n\n"
+              },
+              {
+                "tag": "system-err",
+                "attributes": {},
+                "text": "Error: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\n"
+              }
+            ]
+          },
+          {
+            "name": "cognitive_store::windows::tests::bootstrap_refuses_existing_hard_link_without_adopting_or_changing_it",
+            "details": [
+              {
+                "tag": "failure",
+                "attributes": {
+                  "message": "Error: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+                  "type": "test failure with exit code 101"
+                },
+                "text": "Error: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")"
+              },
+              {
+                "tag": "system-out",
+                "attributes": {},
+                "text": "\nrunning 1 test\ntest cognitive_store::windows::tests::bootstrap_refuses_existing_hard_link_without_adopting_or_changing_it ... FAILED\n\nfailures:\n\nfailures:\n    cognitive_store::windows::tests::bootstrap_refuses_existing_hard_link_without_adopting_or_changing_it\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 270 filtered out; finished in 0.00s\n\n"
+              },
+              {
+                "tag": "system-err",
+                "attributes": {},
+                "text": "Error: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\n"
+              }
+            ]
+          },
+          {
+            "name": "cognitive_store::windows::tests::pointer_stage_collision_preserves_the_original_private_file",
+            "details": [
+              {
+                "tag": "failure",
+                "attributes": {
+                  "message": "Error: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")",
+                  "type": "test failure with exit code 101"
+                },
+                "text": "Error: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")"
+              },
+              {
+                "tag": "system-out",
+                "attributes": {},
+                "text": "\nrunning 1 test\ntest cognitive_store::windows::tests::pointer_stage_collision_preserves_the_original_private_file ... FAILED\n\nfailures:\n\nfailures:\n    cognitive_store::windows::tests::pointer_stage_collision_preserves_the_original_private_file\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 270 filtered out; finished in 0.00s\n\n"
+              },
+              {
+                "tag": "system-err",
+                "attributes": {},
+                "text": "Error: Invalid(\"per-agent cognitive root must be canonical and must not traverse a symlink\")\n"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only verification of original retained evidence; no new product execution or whole-CI admission.",
+  "output_count": 26,
+  "verified_report_sha256": "1c8f7d50d5327e3bf0a32be4a2e9271a16c6c4b9360b5793cfa26a07f72e7af3"
+}

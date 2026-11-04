@@ -1,0 +1,1805 @@
+{
+  "schema_version": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_owner": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+  "source_component": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+  "root_reference": "a3bf4c98b619244f0c81ab900aa086495b31d62e",
+  "common_ancestor": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "component_delta_base": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+  "status": "REVIEWABLE_SOURCE_COMPOSITION_ONLY_HOLD",
+  "counts": {
+    "paths": 28,
+    "owner": 15,
+    "component": 8,
+    "merged": 5,
+    "overlay_paths": 13
+  },
+  "scope": "Apply only the thirteen overlay entries to the retained owner tree after root's other reviewed composition. Do not reset other owner paths or take the maintenance tree wholesale. No combined execution or compatibility result is claimed.",
+  "controls": {
+    "four_way_inputs_read": true,
+    "base_files": "For all paths present in both ancestor refs, f8 and0b9 blobs are equal.",
+    "exact_owner_assertions_preserved": [
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+        "owner_assertion_or_expect_lines": 21,
+        "preserved_in_order": true
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_windows_tests.rs",
+        "owner_assertion_or_expect_lines": 8,
+        "preserved_in_order": true
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+        "owner_assertion_or_expect_lines": 47,
+        "preserved_in_order": true
+      },
+      {
+        "path": "codex-rs/state/src/sqlite_recovery_image_tests.rs",
+        "owner_assertion_or_expect_lines": 20,
+        "preserved_in_order": true
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+        "owner_assertion_or_expect_lines": 46,
+        "preserved_in_order": true
+      },
+      {
+        "path": "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+        "owner_assertion_or_expect_lines": 32,
+        "preserved_in_order": true
+      }
+    ],
+    "new_merged_blobs_read_back": true,
+    "production_tests_run": 0
+  },
+  "preserved_owner_dependencies": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_path.rs",
+      "blob": "69d54466960c9fb106692d6b3096df8e2134002d",
+      "note": "Atomic no-reparse object-derived canonical spelling requires retained owner path-utils public API."
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "blob": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+      "note": "Keep owner production_writer module and exported lifecycle APIs."
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0016_operation_pre_boundary_rejections.sql",
+      "blob": "02a520702c523ef8e4fe39c2212027dbfb9a79f5",
+      "bytes": 2209,
+      "sha256": "4a814face1584b7f067e0708a9ef6396800d7e54e153637afcf60c885ab4b3ae",
+      "note": "Retain exact owner bytes; not included in overlay."
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0017_objective_sender.sql",
+      "blob": "84cbee78827a6338c534d79508c50d46bc919005",
+      "bytes": 5243,
+      "sha256": "471fc24a446b79c46866ac28093115765a12e4ff5c734ef48c02a36744e7e79b",
+      "note": "Retain exact owner bytes; not included in overlay."
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "blob": "cdb788a9967e2306081cccd2a5e1b6addee2fad3",
+      "bytes": 161900,
+      "sha256": "9ba58aba682e9a9c0b896c7a7e04feabaeb8adace582d317a49e217f7536c3e2",
+      "note": "Retain exact owner bytes; not included in overlay."
+    }
+  ],
+  "findings": [
+    "cognitive_store owner retains schema16/17 required objects and oracle55a697..., ordered migration ledger1–17, production_writer verification and public capture/graceful-close APIs.",
+    "Owner private_state_windows.rs contains two byte-identical recovery module/re-export blocks. The proposed merged blob removes only the second copy. This is a static duplicate-definition finding; no Windows compiler diagnostic was executed.",
+    "State home admission uses the maintenance same_recovery_home rule: only same Disk/VerbatimDisk and exact remaining components; retained private handles still enforce owner/DACL/no-reparse/local-NTFS/identity. Owner same_recovery_path remains specifically to reject native/verbatim aliases of the original source as a recovery target.",
+    "All owner recovery tests remain, including graceful shutdown/fence and same-source alias refusal; maintenance adds two-direction home/sidecar tests. No existing assertion, ignore or timer is removed.",
+    "Positive owned-directory canonicalization is copied into fixtures only; owner atomic canonical path implementation is retained.",
+    "Retained seek_read implementation is unchanged; its comment accurately states explicit offsets rather than asserting the shared cursor does not change."
+  ],
+  "required_gates": [
+    "Real formatter and locked Cargo metadata on the complete composed graph",
+    "Original real Bazel lock update/check and committed-lock-first successor",
+    "Complete current Windows/Linux/macOS path/state/Memory inventories, including owner added schema/API and tests",
+    "Original owner identity, reparse, hard-link, exclusive fence, source preservation and real sync failure tests",
+    "Original scoped Clippy and full combined CI; maintenance historical results cannot cover owner product changes"
+  ],
+  "overlay_entries": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1bcd82a012961d73e84349c7003d1975ad12b17c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_windows_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a1282e0385017e36ed5b5f0fe0888ac0c36bb8da"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_windows_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "09e221db26dbce713a0d4336b8559c0ea12eb026"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "020cf7370c0a5bf64a067e770c6f99e8d077f089"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1f080c913fab362a68b7a988c7b871b57f24fe31"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_turn_binding.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "090ca350ac2089e0a610b39914400abeb1d593fe"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_image_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "18c47f067a11450f038e1cefd2ae44f2b331ef95"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_windows.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "679ccdd69aaa2ddfd043025390f56e5e37c9386a"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "08b4919dcdb3aa20f4abdbcfd916429b79698ee1"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "08632553d519ebcfd46450ad378da8cf76f288e8"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_image.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4ee013d881635a786d1cad5c2e313b89f3dd9b6f"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "63b917bec1ba748bc21a1c2420b45fc232005417"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1e7881b34be647ed30c09a7c29ad44f80460c7bc"
+    }
+  ],
+  "paths": [
+    {
+      "path": "codex-rs/hepta-memory/Cargo.toml",
+      "choice": "owner",
+      "reason": "Same dependency records; retain owner section order. Windows codex-utils-path dependency is already present.",
+      "blob": "048e31020125843c2265a8bc0db256fa504d92af",
+      "bytes": 1477,
+      "sha256": "beb9e85b2326099cc2f3542e9fc012a5cf5bf9436caef903c718c98a1fdea373",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/hepta-memory/Cargo.toml",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "048e31020125843c2265a8bc0db256fa504d92af",
+          "bytes": 1477,
+          "sha256": "beb9e85b2326099cc2f3542e9fc012a5cf5bf9436caef903c718c98a1fdea373"
+        },
+        "component": {
+          "path": "codex-rs/hepta-memory/Cargo.toml",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "cb4bfd2bcee54570ca60535432620178a6f4c17d",
+          "bytes": 1477,
+          "sha256": "68447808be2ddac5ff50bc7f8baceac73738fe6c43ed68e3621945e14703e5e8"
+        },
+        "component_base": {
+          "path": "codex-rs/hepta-memory/Cargo.toml",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "6ba04f39f78e7d6295c9922d279e37e0492180f2",
+          "bytes": 1399,
+          "sha256": "5ec9e7bd2a5757cc6241351e65d93cb35812d960ba4516343b4cd66dbbeb016c"
+        },
+        "common_base": {
+          "path": "codex-rs/hepta-memory/Cargo.toml",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "6ba04f39f78e7d6295c9922d279e37e0492180f2",
+          "bytes": 1399,
+          "sha256": "5ec9e7bd2a5757cc6241351e65d93cb35812d960ba4516343b4cd66dbbeb016c"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+      "choice": "component",
+      "reason": "Owner equals common base; port only owned fleet root canonicalization for the original crash child, preserving exit73/negative WAL semantics.",
+      "blob": "1bcd82a012961d73e84349c7003d1975ad12b17c",
+      "bytes": 8389,
+      "sha256": "beb9e87922f6874d8535539d042096c27a6e5f8ff1b48902fe4952b18975294f",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "b6f2d1b35b708cadae9db5978efd4dfea71a0ded",
+          "bytes": 8257,
+          "sha256": "054e7fd3d075bbff50dacf36cad3393666b9ff6e8e989bf21944e05c4b7f42b8"
+        },
+        "component": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "1bcd82a012961d73e84349c7003d1975ad12b17c",
+          "bytes": 8389,
+          "sha256": "beb9e87922f6874d8535539d042096c27a6e5f8ff1b48902fe4952b18975294f"
+        },
+        "component_base": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "b6f2d1b35b708cadae9db5978efd4dfea71a0ded",
+          "bytes": 8257,
+          "sha256": "054e7fd3d075bbff50dacf36cad3393666b9ff6e8e989bf21944e05c4b7f42b8"
+        },
+        "common_base": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "b6f2d1b35b708cadae9db5978efd4dfea71a0ded",
+          "bytes": 8257,
+          "sha256": "054e7fd3d075bbff50dacf36cad3393666b9ff6e8e989bf21944e05c4b7f42b8"
+        }
+      },
+      "owner_delta": [
+        {
+          "old_start": 201,
+          "new_start": 201,
+          "removed": [
+            "        .env(CHILD_ROOT, temp.path().join(\"fleet\"))"
+          ],
+          "added": [
+            "        .env(",
+            "            CHILD_ROOT,",
+            "            temp.path()",
+            "                .join(\"fleet\")",
+            "                .canonicalize()",
+            "                .expect(\"canonical fleet root\"),",
+            "        )"
+          ],
+          "before": [
+            "            \"cognitive_store::recovery::tests::cold_read_only::crash_reopen_refuses_pending_wal\",",
+            "            \"--nocapture\",",
+            "        ])"
+          ],
+          "after": [
+            "        .status()",
+            "        .expect(\"child process\");",
+            "    assert_eq!(status.code(), Some(73));"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "choice": "merged",
+      "reason": "Retain owner graceful-close regression and Unix-only helper guards; append maintained Windows spelling regression module.",
+      "blob": "08b4919dcdb3aa20f4abdbcfd916429b79698ee1",
+      "bytes": 21695,
+      "sha256": "3e0f28c94aa853ac6a93725906280afe8daa62bd23ba8dbe212e44459300ae66",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "20e743f2921ad15399aa6318e6809486daf05f41",
+          "bytes": 21602,
+          "sha256": "a9b9aa9bb6cabea8ef38998ad5392c7275e9a362a44cf14343511161e06e4c7a"
+        },
+        "component": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "abfbea9b2001599d45d3d7ee35da33092f056f38",
+          "bytes": 19797,
+          "sha256": "9fdc637fbb4af703f5c8c6b608633fdc680ad5338bf89874a851b78e905ea453"
+        },
+        "component_base": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "72eaa499826321a2564614706a38d91dff149b72",
+          "bytes": 19704,
+          "sha256": "6e03aef724eb7a557c43d7ac6162b56e6e6b51c3208c0888d95d894c2042c72e"
+        },
+        "common_base": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "72eaa499826321a2564614706a38d91dff149b72",
+          "bytes": 19704,
+          "sha256": "6e03aef724eb7a557c43d7ac6162b56e6e6b51c3208c0888d95d894c2042c72e"
+        }
+      },
+      "owner_delta": [
+        {
+          "old_start": 665,
+          "new_start": 665,
+          "removed": [],
+          "added": [
+            "#[cfg(windows)]",
+            "#[path = \"cognitive_store_recovery_windows_tests.rs\"]",
+            "mod windows_spelling;",
+            ""
+          ],
+          "before": [
+            "    }",
+            "}",
+            ""
+          ],
+          "after": []
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_windows_tests.rs",
+      "choice": "component",
+      "reason": "Add maintained Windows native/verbatim real recovery regression. Parent test module retains owner graceful-close tests.",
+      "blob": "a1282e0385017e36ed5b5f0fe0888ac0c36bb8da",
+      "bytes": 1805,
+      "sha256": "2dd835191731820d29ee8882c402158d2b4a077bb607b1c08b7b97aa1d81bb97",
+      "inputs": {
+        "component": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_windows_tests.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "a1282e0385017e36ed5b5f0fe0888ac0c36bb8da",
+          "bytes": 1805,
+          "sha256": "2dd835191731820d29ee8882c402158d2b4a077bb607b1c08b7b97aa1d81bb97"
+        }
+      },
+      "owner_delta": [
+        {
+          "added": [
+            "use super::*;",
+            "use codex_hepta_paths::HeptaFleetRoot;",
+            "use codex_utils_absolute_path::AbsolutePathBuf;",
+            "use pretty_assertions::assert_eq;",
+            "",
+            "#[tokio::test]",
+            "async fn exact_current_cut_recovers_both_native_and_verbatim_root_spellings() {",
+            "    for use_verbatim in [false, true] {",
+            "        let temp = TempDir::new().expect(\"temp dir\");",
+            "        let owner = agent_id(232);",
+            "        let (store, _, _) = seeded(&temp, &owner).await;",
+            "        let anchor = store",
+            "            .recovery_anchor()",
+            "            .await",
+            "            .expect(\"trusted current witness\");",
+            "        store.pool.close().await;",
+            "        drop(store);",
+            "",
+            "        let native = AbsolutePathBuf::from_absolute_path(temp.path())",
+            "            .expect(\"absolute owned temporary root\")",
+            "            .canonicalize()",
+            "            .expect(\"native temporary root\")",
+            "            .join(\"fleet\");",
+            "        let verbatim = native.as_path().canonicalize().expect(\"verbatim fleet\");",
+            "        assert_ne!(native.as_path().as_os_str(), verbatim.as_os_str());",
+            "        let root = if use_verbatim {",
+            "            verbatim",
+            "        } else {",
+            "            native.as_path().to_path_buf()",
+            "        };",
+            "        let layout = HeptaFleetRoot::parse(root)",
+            "            .expect(\"owned fleet spelling\")",
+            "            .layout()",
+            "            .agent(&owner);",
+            "        let recovered = CognitiveStore::open_with_recovery(",
+            "            &layout,",
+            "            CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),",
+            "            &recovery_authority(&owner),",
+            "            &RecoveryVerifier,",
+            "        )",
+            "        .await",
+            "        .expect(\"original retained recovery admission\");",
+            "        assert_eq!(",
+            "            recovered",
+            "                .recovery_anchor()",
+            "                .await",
+            "                .expect(\"recovered current witness\"),",
+            "            anchor",
+            "        );",
+            "        recovered.pool.close().await;",
+            "        drop(recovered);",
+            "    }",
+            "}",
+            ""
+          ],
+          "removed": []
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "choice": "owner",
+      "reason": "Retain public(crate) capture required by owner production_writer. Other delta from component is only descriptive wording; retained root admission is present.",
+      "blob": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+      "bytes": 27116,
+      "sha256": "020b47b89cbef1202848825e0115f85ce51bc3d875815d0e721c7fb3068dce68",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "5639d61d6d0f97d12058a3e5eed90332864983f4",
+          "bytes": 27116,
+          "sha256": "020b47b89cbef1202848825e0115f85ce51bc3d875815d0e721c7fb3068dce68"
+        },
+        "component": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "79927d04f53c5075a774227f67d58d97a139b7f7",
+          "bytes": 27111,
+          "sha256": "10ddf58087626a1b45d9d257f2896de7c48d75f1eb3df9d3a9d10b8d780ece49"
+        },
+        "component_base": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "b04217a0de797501c61262b20b8c52d2bd1b1822",
+          "bytes": 26664,
+          "sha256": "0ce1dd6a1f73bd7c82c778fd85fc70e8f237d2c1309f1c5aa13cb8aa1fe83deb"
+        },
+        "common_base": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "b04217a0de797501c61262b20b8c52d2bd1b1822",
+          "bytes": 26664,
+          "sha256": "0ce1dd6a1f73bd7c82c778fd85fc70e8f237d2c1309f1c5aa13cb8aa1fe83deb"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_sync.rs",
+      "choice": "owner",
+      "reason": "Owner and maintained component are byte-identical.",
+      "blob": "1f6326de18cbfaf6c4f06a8aa153282927510eda",
+      "bytes": 961,
+      "sha256": "d34401b8e8718914126aa513ccd257e1a76fe2838d4fcc71400fda246ed9a7ef",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_sync.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "1f6326de18cbfaf6c4f06a8aa153282927510eda",
+          "bytes": 961,
+          "sha256": "d34401b8e8718914126aa513ccd257e1a76fe2838d4fcc71400fda246ed9a7ef"
+        },
+        "component": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_sync.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "1f6326de18cbfaf6c4f06a8aa153282927510eda",
+          "bytes": 961,
+          "sha256": "d34401b8e8718914126aa513ccd257e1a76fe2838d4fcc71400fda246ed9a7ef"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "choice": "owner",
+      "reason": "Retain owner's ordered subquery and migration ledger1–17 to match its actual migrations; never overwrite with component's schema1–15 expectation.",
+      "blob": "26df0d8c72b9cc275cfafd8403c9c1b72be95ddf",
+      "bytes": 40739,
+      "sha256": "0ec0d4d36cb42dbebe24a96f44a8b27d08ed100f729988c4844dfc857a9e6fde",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "26df0d8c72b9cc275cfafd8403c9c1b72be95ddf",
+          "bytes": 40739,
+          "sha256": "0ec0d4d36cb42dbebe24a96f44a8b27d08ed100f729988c4844dfc857a9e6fde"
+        },
+        "component": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "4373abad74b9ee121d01b4cc606c1d390997fcc1",
+          "bytes": 40711,
+          "sha256": "abb813f058c24c4b36beefc60f60c507d8896368e22553787de3eed6be48315e"
+        },
+        "component_base": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "b5462745d335c2115144ddc161d242b3205fdc06",
+          "bytes": 40708,
+          "sha256": "a4199940540f6deca0d1765e87596a23c302f78894e6402f854753b8af40a4d9"
+        },
+        "common_base": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "b5462745d335c2115144ddc161d242b3205fdc06",
+          "bytes": 40708,
+          "sha256": "a4199940540f6deca0d1765e87596a23c302f78894e6402f854753b8af40a4d9"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_windows_tests.rs",
+      "choice": "component",
+      "reason": "Port three owned TempDir physical roots using exact original formatter bytes; all three cases and eight assertions unchanged.",
+      "blob": "09e221db26dbce713a0d4336b8559c0ea12eb026",
+      "bytes": 2192,
+      "sha256": "cb7fa9226eecfacffe13864cdb9042ca8bc062c18a6a189a02cdf305dad40506",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_windows_tests.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "1c375f6981d72b5426a6820473ffac4714ed1c5d",
+          "bytes": 2108,
+          "sha256": "7bc1f79d37a3e664ec2354296d8ca82d54ff9cfe92b7bc562d3c40e1d918afa5"
+        },
+        "component": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_windows_tests.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "09e221db26dbce713a0d4336b8559c0ea12eb026",
+          "bytes": 2192,
+          "sha256": "cb7fa9226eecfacffe13864cdb9042ca8bc062c18a6a189a02cdf305dad40506"
+        }
+      },
+      "owner_delta": [
+        {
+          "old_start": 8,
+          "new_start": 8,
+          "removed": [
+            "    let root = temporary.path().join(\"agent\").join(\"cognitive\");"
+          ],
+          "added": [
+            "    let root = temporary",
+            "        .path()",
+            "        .canonicalize()?",
+            "        .join(\"agent\")",
+            "        .join(\"cognitive\");"
+          ],
+          "before": [
+            "fn bootstrap_creates_private_source_and_preserves_existing_bytes()",
+            "-> Result<(), Box<dyn std::error::Error>> {",
+            "    let temporary = tempfile::tempdir()?;"
+          ],
+          "after": [
+            "    create_private_directories(&root)?;",
+            "    let path = root.join(\"database.sqlite3\");",
+            "    prepare_database(&root, &path)?;"
+          ]
+        },
+        {
+          "old_start": 27,
+          "new_start": 31,
+          "removed": [
+            "    let root = temporary.path().join(\"private\");"
+          ],
+          "added": [
+            "    let root = temporary.path().canonicalize()?.join(\"private\");"
+          ],
+          "before": [
+            "fn bootstrap_refuses_existing_hard_link_without_adopting_or_changing_it()",
+            "-> Result<(), Box<dyn std::error::Error>> {",
+            "    let temporary = tempfile::tempdir()?;"
+          ],
+          "after": [
+            "    create_private_directories(&root)?;",
+            "    let path = root.join(\"database.sqlite3\");",
+            "    prepare_database(&root, &path)?;"
+          ]
+        },
+        {
+          "old_start": 44,
+          "new_start": 48,
+          "removed": [
+            "    let root = temporary.path().join(\"private\");"
+          ],
+          "added": [
+            "    let root = temporary.path().canonicalize()?.join(\"private\");"
+          ],
+          "before": [
+            "fn pointer_stage_collision_preserves_the_original_private_file()",
+            "-> Result<(), Box<dyn std::error::Error>> {",
+            "    let temporary = tempfile::tempdir()?;"
+          ],
+          "after": [
+            "    create_private_directories(&root)?;",
+            "    let path = root.join(\".cognitive-active-v1.tmp-test\");",
+            "    let mut stage = create_pointer_stage(&root, &path)?;"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_windows.rs",
+      "choice": "owner",
+      "reason": "Owner already has equivalent early no-redirection refusal and native private acquisition; preserve owner diagnostic and qualified helper call.",
+      "blob": "83225e8fd04a575ac816544aceedda82c7701d1f",
+      "bytes": 4266,
+      "sha256": "76072e34610533bccc36e0212d939a6b6600b8d79fdaed64475af03cc06fa124",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_windows.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "83225e8fd04a575ac816544aceedda82c7701d1f",
+          "bytes": 4266,
+          "sha256": "76072e34610533bccc36e0212d939a6b6600b8d79fdaed64475af03cc06fa124"
+        },
+        "component": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_windows.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "9aae0a0e5ec329cf1985d828833ab9302f2db7be",
+          "bytes": 4522,
+          "sha256": "2dfe7377781535a5abc105f38820856e7cedd18ed5b2b91b266b89a5129c1eae"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "choice": "owner",
+      "reason": "Retain owner schema16/17 objects/oracle, production_writer verification, capture export and graceful-close API; maintained recovery/root/flush implementation is already present.",
+      "blob": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+      "bytes": 73322,
+      "sha256": "2087a257a866f72e0143e6b23b61ec1314d0509de56dc7b01ff0d0ecc1903cb8",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "03f469dcdc0b44754e92a855fcbabf7c21059899",
+          "bytes": 73322,
+          "sha256": "2087a257a866f72e0143e6b23b61ec1314d0509de56dc7b01ff0d0ecc1903cb8"
+        },
+        "component": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "26eb19879cc8f55e13307679b694cffd8920fd3b",
+          "bytes": 71886,
+          "sha256": "7d5b18424c1301518ae0154f8c29561e7701839f1f79f88322c22708379df71a"
+        },
+        "component_base": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "b52e3a1aa275c178a075677f5df9faa832173b41",
+          "bytes": 70164,
+          "sha256": "2047486202e04082cc44fd807e5a6d25f1dfa614f523ae0929c75f2c22014e68"
+        },
+        "common_base": {
+          "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "b52e3a1aa275c178a075677f5df9faa832173b41",
+          "bytes": 70164,
+          "sha256": "2047486202e04082cc44fd807e5a6d25f1dfa614f523ae0929c75f2c22014e68"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+      "choice": "component",
+      "reason": "Owner equals common base; canonicalize only already-created positive fixture fleet directory.",
+      "blob": "020cf7370c0a5bf64a067e770c6f99e8d077f089",
+      "bytes": 1856,
+      "sha256": "04290d72494bd6c657b8831992fed7afe4fe51ec5833cb4ad69c0c7af6bd3253",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "dbd71ef718ae11c5d4a3568a3f9ed4f381236473",
+          "bytes": 1641,
+          "sha256": "8547bec659250c636a9997cdf537dd3e155aeadf76dcfd4ed0ab4161b0c1a708"
+        },
+        "component": {
+          "path": "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "020cf7370c0a5bf64a067e770c6f99e8d077f089",
+          "bytes": 1856,
+          "sha256": "04290d72494bd6c657b8831992fed7afe4fe51ec5833cb4ad69c0c7af6bd3253"
+        },
+        "component_base": {
+          "path": "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "dbd71ef718ae11c5d4a3568a3f9ed4f381236473",
+          "bytes": 1641,
+          "sha256": "8547bec659250c636a9997cdf537dd3e155aeadf76dcfd4ed0ab4161b0c1a708"
+        },
+        "common_base": {
+          "path": "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "dbd71ef718ae11c5d4a3568a3f9ed4f381236473",
+          "bytes": 1641,
+          "sha256": "8547bec659250c636a9997cdf537dd3e155aeadf76dcfd4ed0ab4161b0c1a708"
+        }
+      },
+      "owner_delta": [
+        {
+          "old_start": 23,
+          "new_start": 23,
+          "removed": [],
+          "added": [
+            "    // Positive fixtures own this directory; use its physical path on hosts",
+            "    // whose temporary directory is reached through a system symlink.",
+            "    let fleet = fleet.canonicalize().expect(\"canonical fleet root\");"
+          ],
+          "before": [
+            "pub(crate) fn layout(temp: &TempDir, agent_id: &AgentId) -> codex_hepta_paths::HeptaAgentLayout {",
+            "    let fleet = temp.path().join(\"fleet\");",
+            "    std::fs::create_dir_all(&fleet).expect(\"create fleet root\");"
+          ],
+          "after": [
+            "    HeptaFleetRoot::parse(fleet)",
+            "        .expect(\"fleet root\")",
+            "        .layout()"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+      "choice": "component",
+      "reason": "Owner equals common base; physical owned-root spelling for create/reopen only, preserving all original timers/assertions.",
+      "blob": "1f080c913fab362a68b7a988c7b871b57f24fe31",
+      "bytes": 26215,
+      "sha256": "f81c26a9e7ed3b9c5a251118003afdf37f4fded329441af3470dd44898f5d57e",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "14b629d44b36d9c93acff4c90300ee356af4d130",
+          "bytes": 25875,
+          "sha256": "41ad8e5e69901c4ef057bc55dd694fa923c72142ea01741fad6c47ac3fc6e5da"
+        },
+        "component": {
+          "path": "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "1f080c913fab362a68b7a988c7b871b57f24fe31",
+          "bytes": 26215,
+          "sha256": "f81c26a9e7ed3b9c5a251118003afdf37f4fded329441af3470dd44898f5d57e"
+        },
+        "component_base": {
+          "path": "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "14b629d44b36d9c93acff4c90300ee356af4d130",
+          "bytes": 25875,
+          "sha256": "41ad8e5e69901c4ef057bc55dd694fa923c72142ea01741fad6c47ac3fc6e5da"
+        },
+        "common_base": {
+          "path": "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "14b629d44b36d9c93acff4c90300ee356af4d130",
+          "bytes": 25875,
+          "sha256": "41ad8e5e69901c4ef057bc55dd694fa923c72142ea01741fad6c47ac3fc6e5da"
+        }
+      },
+      "owner_delta": [
+        {
+          "old_start": 68,
+          "new_start": 68,
+          "removed": [],
+          "added": [
+            "    let root = root.canonicalize().expect(\"canonical fleet root\");"
+          ],
+          "before": [
+            "    let temp = TempDir::new().expect(\"temp\");",
+            "    let root = temp.path().join(\"fleet\");",
+            "    fs::create_dir_all(&root).expect(\"fleet root\");"
+          ],
+          "after": [
+            "    let fleet = HeptaFleetRoot::parse(root).expect(\"fleet\");",
+            "    let owner = AgentId::parse(\"00000000-0000-4000-8000-000000000971\").expect(\"owner\");",
+            "    let store = CognitiveStore::open(&fleet.layout().agent(&owner))"
+          ]
+        },
+        {
+          "old_start": 111,
+          "new_start": 112,
+          "removed": [],
+          "added": [
+            "    let root = root.canonicalize().expect(\"canonical fleet root\");"
+          ],
+          "before": [
+            "    let temp = TempDir::new().expect(\"temp\");",
+            "    let root = temp.path().join(\"fleet\");",
+            "    fs::create_dir_all(&root).expect(\"fleet root\");"
+          ],
+          "after": [
+            "    let fleet = HeptaFleetRoot::parse(root).expect(\"fleet\");",
+            "    let owner = AgentId::parse(\"00000000-0000-4000-8000-000000000972\").expect(\"owner\");",
+            "    let store = CognitiveStore::open(&fleet.layout().agent(&owner))"
+          ]
+        },
+        {
+          "old_start": 344,
+          "new_start": 346,
+          "removed": [
+            "    let fleet = HeptaFleetRoot::parse(temp.path().join(\"fleet\")).expect(\"fleet reopen\");"
+          ],
+          "added": [
+            "    let root = temp",
+            "        .path()",
+            "        .join(\"fleet\")",
+            "        .canonicalize()",
+            "        .expect(\"canonical fleet root\");",
+            "    let fleet = HeptaFleetRoot::parse(root).expect(\"fleet reopen\");"
+          ],
+          "before": [
+            "    drop(lease);",
+            "    drop(store);",
+            "    let owner = AgentId::parse(\"00000000-0000-4000-8000-000000000971\").expect(\"owner\");"
+          ],
+          "after": [
+            "    let reopened = CognitiveStore::open(&fleet.layout().agent(&owner))",
+            "        .await",
+            "        .expect(\"reopen store\");"
+          ]
+        },
+        {
+          "old_start": 502,
+          "new_start": 509,
+          "removed": [
+            "    let fleet = HeptaFleetRoot::parse(temp.path().join(\"fleet\")).expect(\"reopen fleet\");"
+          ],
+          "added": [
+            "    let root = temp",
+            "        .path()",
+            "        .join(\"fleet\")",
+            "        .canonicalize()",
+            "        .expect(\"canonical fleet root\");",
+            "    let fleet = HeptaFleetRoot::parse(root).expect(\"reopen fleet\");"
+          ],
+          "before": [
+            "    tokio::time::sleep(Duration::from_secs(6)).await;",
+            "",
+            "    let owner = AgentId::parse(\"00000000-0000-4000-8000-000000000972\").expect(\"owner\");"
+          ],
+          "after": [
+            "    let reopened = CognitiveStore::open(&fleet.layout().agent(&owner))",
+            "        .await",
+            "        .expect(\"reopen store\");"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_turn_binding.rs",
+      "choice": "component",
+      "reason": "Owner equals common base; only cfg(test) owned fleet root canonicalization; production bytes remain unchanged.",
+      "blob": "090ca350ac2089e0a610b39914400abeb1d593fe",
+      "bytes": 18235,
+      "sha256": "0794bf1a554508c56795b5b70184a8e1b0c2543a7c94e00dccca32827c9e7a95",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/hepta-memory/src/local_turn_binding.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "e9adb5979c37aa47eeeded998597f6703013bf70",
+          "bytes": 18152,
+          "sha256": "2e234df00adaa1f55c1e74cb2426eb5fba4d47f5549ca1f40ccf24a10aa5756a"
+        },
+        "component": {
+          "path": "codex-rs/hepta-memory/src/local_turn_binding.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "090ca350ac2089e0a610b39914400abeb1d593fe",
+          "bytes": 18235,
+          "sha256": "0794bf1a554508c56795b5b70184a8e1b0c2543a7c94e00dccca32827c9e7a95"
+        },
+        "component_base": {
+          "path": "codex-rs/hepta-memory/src/local_turn_binding.rs",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "e9adb5979c37aa47eeeded998597f6703013bf70",
+          "bytes": 18152,
+          "sha256": "2e234df00adaa1f55c1e74cb2426eb5fba4d47f5549ca1f40ccf24a10aa5756a"
+        },
+        "common_base": {
+          "path": "codex-rs/hepta-memory/src/local_turn_binding.rs",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "e9adb5979c37aa47eeeded998597f6703013bf70",
+          "bytes": 18152,
+          "sha256": "2e234df00adaa1f55c1e74cb2426eb5fba4d47f5549ca1f40ccf24a10aa5756a"
+        }
+      },
+      "owner_delta": [
+        {
+          "old_start": 325,
+          "new_start": 325,
+          "removed": [],
+          "added": [
+            "        let fleet_root = fleet_root.canonicalize().expect(\"canonical fleet root\");"
+          ],
+          "before": [
+            "    async fn prepared(temp: &TempDir, bound: bool) -> (LocalLeaseOutbox, LocalCompactExecutor) {",
+            "        let fleet_root = temp.path().join(\"fleet\");",
+            "        fs::create_dir_all(&fleet_root).expect(\"fleet root\");"
+          ],
+          "after": [
+            "        let fleet = HeptaFleetRoot::parse(fleet_root).expect(\"fleet root\");",
+            "        let owner = AgentId::parse(\"00000000-0000-4000-8000-000000000931\").expect(\"owner\");",
+            "        let store = CognitiveStore::open(&fleet.layout().agent(&owner))"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/state/Cargo.toml",
+      "choice": "owner",
+      "reason": "Owner and maintained component are byte-identical.",
+      "blob": "02cb82d778fc02859a42c0658597799ad00f5559",
+      "bytes": 1080,
+      "sha256": "4f23f906aa42996fd57abb8c5e725b369ae01432ef90fcdd5cd370117699ac20",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/state/Cargo.toml",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "02cb82d778fc02859a42c0658597799ad00f5559",
+          "bytes": 1080,
+          "sha256": "4f23f906aa42996fd57abb8c5e725b369ae01432ef90fcdd5cd370117699ac20"
+        },
+        "component": {
+          "path": "codex-rs/state/Cargo.toml",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "02cb82d778fc02859a42c0658597799ad00f5559",
+          "bytes": 1080,
+          "sha256": "4f23f906aa42996fd57abb8c5e725b369ae01432ef90fcdd5cd370117699ac20"
+        },
+        "component_base": {
+          "path": "codex-rs/state/Cargo.toml",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "334f8c7a98199777a025abfa91aa18f0b7bbb008",
+          "bytes": 1002,
+          "sha256": "2da10f840265545592862302111b14b4e6ae83d3e0ed567e8fb1a1c4ecd12b3d"
+        },
+        "common_base": {
+          "path": "codex-rs/state/Cargo.toml",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "334f8c7a98199777a025abfa91aa18f0b7bbb008",
+          "bytes": 1002,
+          "sha256": "2da10f840265545592862302111b14b4e6ae83d3e0ed567e8fb1a1c4ecd12b3d"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_image_tests.rs",
+      "choice": "component",
+      "reason": "Only two owned Unix fixture roots are canonicalized; source identity, permissions and original assertions preserved.",
+      "blob": "18c47f067a11450f038e1cefd2ae44f2b331ef95",
+      "bytes": 13195,
+      "sha256": "ce4669d751044b269784587de46f8f20fe2ba945c6c571da188970b16bb67c84",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/state/src/sqlite_recovery_image_tests.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "c86a0049b6aacf63fd58d885f0e4e48298e4f864",
+          "bytes": 13121,
+          "sha256": "722e5e8445374469bbbd597eb95434dac9bb60a1d276c87c22d19453f55403e3"
+        },
+        "component": {
+          "path": "codex-rs/state/src/sqlite_recovery_image_tests.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "18c47f067a11450f038e1cefd2ae44f2b331ef95",
+          "bytes": 13195,
+          "sha256": "ce4669d751044b269784587de46f8f20fe2ba945c6c571da188970b16bb67c84"
+        },
+        "component_base": {
+          "path": "codex-rs/state/src/sqlite_recovery_image_tests.rs",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "22ebb0275279f95ef2e3ad7e0696915cd5d54053",
+          "bytes": 3935,
+          "sha256": "f49a09c34458a01f8287df4312c0d1268f1a6efdc481ec2afffbaf36ba6c529e"
+        },
+        "common_base": {
+          "path": "codex-rs/state/src/sqlite_recovery_image_tests.rs",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "22ebb0275279f95ef2e3ad7e0696915cd5d54053",
+          "bytes": 3935,
+          "sha256": "f49a09c34458a01f8287df4312c0d1268f1a6efdc481ec2afffbaf36ba6c529e"
+        }
+      },
+      "owner_delta": [
+        {
+          "old_start": 11,
+          "new_start": 11,
+          "removed": [],
+          "added": [
+            "    let home = home.canonicalize()?;"
+          ],
+          "before": [
+            "    let home = unique_temp_dir();",
+            "    std::fs::create_dir(&home)?;",
+            "    std::fs::set_permissions(&home, std::fs::Permissions::from_mode(0o700))?;"
+          ],
+          "after": [
+            "    let config = SqliteConfig::new_for_testing(home.as_path().abs());",
+            "    let path = home.join(\"cold.sqlite3\");",
+            "    let source = config.open_durable_evidence_pool(&path).await?;"
+          ]
+        },
+        {
+          "old_start": 50,
+          "new_start": 51,
+          "removed": [],
+          "added": [
+            "    let home = home.canonicalize()?;"
+          ],
+          "before": [
+            "    let home = unique_temp_dir();",
+            "    std::fs::create_dir(&home)?;",
+            "    std::fs::set_permissions(&home, std::fs::Permissions::from_mode(0o700))?;"
+          ],
+          "after": [
+            "    let config = SqliteConfig::new_for_testing(home.as_path().abs());",
+            "    let path = home.join(\"cold.sqlite3\");",
+            "    let source = config.open_durable_evidence_pool(&path).await?;"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_image.rs",
+      "choice": "merged",
+      "reason": "Use strict maintained home admission while keeping owner's same_recovery_path(target, source) rejection, preventing native/verbatim alias from targeting its own source.",
+      "blob": "4ee013d881635a786d1cad5c2e313b89f3dd9b6f",
+      "bytes": 14261,
+      "sha256": "f2c05de61ec14d73796fe644e7f595a92124cd1046399eebb4695b12cf747ade",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/state/src/sqlite_recovery_image.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "f36733a73a0660843307b05386b0ac77fb6cd0ca",
+          "bytes": 14254,
+          "sha256": "56e28025dbf49974edf58bebef5c3a699dce48a3f0e1cbddce42b6d1b344ef18"
+        },
+        "component": {
+          "path": "codex-rs/state/src/sqlite_recovery_image.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "d697a393a58830a310cc6d659d23bc9949d6172b",
+          "bytes": 14211,
+          "sha256": "cc149cf6e60db172970498756325cd00af3ac00f9ad298831bbe907c702b7cac"
+        },
+        "component_base": {
+          "path": "codex-rs/state/src/sqlite_recovery_image.rs",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "af8dea5f59165477866903325c94c3f1742f502e",
+          "bytes": 12358,
+          "sha256": "60610912a99967c9055b2275a5d1c0e7b96cd4d769279b630b0d44cbe46d5dac"
+        },
+        "common_base": {
+          "path": "codex-rs/state/src/sqlite_recovery_image.rs",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "af8dea5f59165477866903325c94c3f1742f502e",
+          "bytes": 12358,
+          "sha256": "60610912a99967c9055b2275a5d1c0e7b96cd4d769279b630b0d44cbe46d5dac"
+        }
+      },
+      "owner_delta": [
+        {
+          "old_start": 53,
+          "new_start": 53,
+          "removed": [
+            "                .is_some_and(|parent| same_recovery_path(parent, self.home()))"
+          ],
+          "added": [
+            "                .is_some_and(|parent| super::same_recovery_home(parent, self.home()))"
+          ],
+          "before": [
+            "",
+            "            if !target",
+            "                .parent()"
+          ],
+          "after": [
+            "                || same_recovery_path(target, &guard.inner.database_path)",
+            "                || target.file_name().is_none()",
+            "            {"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+      "choice": "merged",
+      "reason": "Keep owner's existing namespace-alias/same-source rejection test and all original assertions; add maintained both-direction retained-home regression, exact SQLite/WAL/SHM/journal preservation and lexical namespace negative test; canonicalize only owned fixture root.",
+      "blob": "63b917bec1ba748bc21a1c2420b45fc232005417",
+      "bytes": 13385,
+      "sha256": "7672091973656321a217611fdb632a4a902fdc580758953ee0c79c2e9385739a",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "d2c6198f443e8c7eba31bd845a86b7bc7259852b",
+          "bytes": 9692,
+          "sha256": "edaa0d8fe9270edeb14107bb0cd9593ac616e0eba80ef756c35bc63ac346927f"
+        },
+        "component": {
+          "path": "codex-rs/state/src/sqlite_recovery_windows_tests.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "2fe7f4c3dde1089373aa8f45a362d0b3357ff401",
+          "bytes": 11298,
+          "sha256": "afbabdb771b27eb40c04a68585400942b140091798bb1850f1b7b23429e6e327"
+        }
+      },
+      "owner_delta": [
+        {
+          "old_start": 20,
+          "new_start": 20,
+          "removed": [],
+          "added": [
+            "        let home = home.as_path().abs().canonicalize()?.into_path_buf();"
+          ],
+          "before": [
+            "    fn new() -> anyhow::Result<Self> {",
+            "        let home = unique_temp_dir();",
+            "        let directory = open_private_state_directory(&home)?;"
+          ],
+          "after": [
+            "        drop(create_new_private_state_child(&directory, \"cold.sqlite3\")?);",
+            "        let database = home.join(\"cold.sqlite3\");",
+            "        let config = SqliteConfig::new_for_testing(home.as_path().abs());"
+          ]
+        },
+        {
+          "old_start": 285,
+          "new_start": 286,
+          "removed": [],
+          "added": [
+            "}",
+            "",
+            "#[tokio::test]",
+            "async fn windows_native_and_verbatim_homes_bind_without_admitting_another_directory()",
+            "-> anyhow::Result<()> {",
+            "    let fixture = Fixture::new()?;",
+            "    fixture.initialize().await?;",
+            "    let original = std::fs::read(&fixture.database)?;",
+            "    let read_source_sidecars = || -> std::io::Result<Vec<Option<Vec<u8>>>> {",
+            "        [\"-wal\", \"-shm\", \"-journal\"]",
+            "            .into_iter()",
+            "            .map(",
+            "                |suffix| match std::fs::read(sqlite_sidecar_path(&fixture.database, suffix)) {",
+            "                    Ok(bytes) => Ok(Some(bytes)),",
+            "                    Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),",
+            "                    Err(error) => Err(error),",
+            "                },",
+            "            )",
+            "            .collect()",
+            "    };",
+            "    let original_sidecars = read_source_sidecars()?;",
+            "    let native = fixture.config.home().to_path_buf();",
+            "    let verbatim = native.canonicalize()?;",
+            "    assert_ne!(native.as_os_str(), verbatim.as_os_str());",
+            "    assert!(same_recovery_home(&native, &verbatim));",
+            "    assert!(same_recovery_home(&verbatim, &native));",
+            "",
+            "    for home in [&native, &verbatim] {",
+            "        let database = home.join(\"cold.sqlite3\");",
+            "        let guard = fixture.config.bind_existing_recovery_database(&database)?;",
+            "        guard.verify_inspection_unchanged()?;",
+            "        let image = fixture",
+            "            .config",
+            "            .open_cold_image_read_only_pool(&guard)",
+            "            .await?;",
+            "        let fact: String = sqlx::query_scalar(\"SELECT value FROM fact\")",
+            "            .fetch_one(&image)",
+            "            .await?;",
+            "        assert_eq!(fact, \"original\");",
+            "        image.close().await;",
+            "        guard.verify_inspection_unchanged()?;",
+            "    }",
+            "",
+            "    let other = Fixture::new()?;",
+            "    assert!(!same_recovery_home(&other.home, &native));",
+            "    assert!(matches!(",
+            "        fixture",
+            "            .config",
+            "            .bind_existing_recovery_database(&other.database),",
+            "        Err(SqliteRecoveryError::Indeterminate)",
+            "    ));",
+            "    let guard = fixture",
+            "        .config",
+            "        .bind_existing_recovery_database(&fixture.database)?;",
+            "    let outside = other.home.join(\"outside.sqlite3\");",
+            "    assert!(matches!(",
+            "        fixture",
+            "            .config",
+            "            .materialize_identity_bound_recovery_copy(&guard, &outside),",
+            "        Err(SqliteRecoveryError::Indeterminate)",
+            "    ));",
+            "    assert!(!outside.exists());",
+            "    guard.verify_inspection_unchanged()?;",
+            "    let target = verbatim.join(\"candidate.sqlite3\");",
+            "    fixture",
+            "        .config",
+            "        .materialize_identity_bound_recovery_copy(&guard, &target)?;",
+            "    assert_eq!(std::fs::read(&target)?, original);",
+            "    assert_eq!(std::fs::read(&fixture.database)?, original);",
+            "    assert_eq!(read_source_sidecars()?, original_sidecars);",
+            "    // Candidate creation changes directory metadata. Preserve the source-byte",
+            "    // assertions above, then validate a new retained snapshot of that source.",
+            "    drop(guard);",
+            "    let guard = fixture",
+            "        .config",
+            "        .bind_existing_recovery_database(&fixture.database)?;",
+            "    guard.verify_inspection_unchanged()?;",
+            "    Ok(())",
+            "}",
+            "",
+            "#[test]",
+            "fn windows_home_spelling_reconciliation_rejects_other_roots_and_namespaces() {",
+            "    assert!(same_recovery_home(",
+            "        Path::new(r\"C:\\private\\owner\"),",
+            "        Path::new(r\"\\\\?\\C:\\private\\owner\")",
+            "    ));",
+            "    for other in [",
+            "        r\"D:\\private\\owner\",",
+            "        r\"\\\\?\\D:\\private\\owner\",",
+            "        r\"C:\\private\\another\",",
+            "        r\"C:\\Private\\owner\",",
+            "        r\"\\\\server\\share\\private\\owner\",",
+            "        r\"\\\\?\\UNC\\server\\share\\private\\owner\",",
+            "        r\"\\\\.\\C:\\private\\owner\",",
+            "        r\"private\\owner\",",
+            "    ] {",
+            "        assert!(!same_recovery_home(",
+            "            Path::new(other),",
+            "            Path::new(r\"C:\\private\\owner\")",
+            "        ));",
+            "    }"
+          ],
+          "before": [
+            "    );",
+            "    assert_eq!(std::fs::read(&target)?, before);",
+            "    Ok(())"
+          ],
+          "after": [
+            "}",
+            ""
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_windows.rs",
+      "choice": "component",
+      "reason": "Implementation identical to owner; retain precise explicit-offset comment without falsely claiming Windows seek_read leaves cursor unchanged.",
+      "blob": "679ccdd69aaa2ddfd043025390f56e5e37c9386a",
+      "bytes": 4265,
+      "sha256": "eef6c27b90678bdad87aca99b80c6948e2f34dc1041b0fe78aedec99fb287dfd",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/state/src/sqlite_recovery_windows.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "a4ed8decc6496f048a02e76f99b1c103157417c8",
+          "bytes": 4259,
+          "sha256": "710b0cfbb392a683c25e0923ba9e25f87e383df5a75fe14c17f4fbe49fbdeb70"
+        },
+        "component": {
+          "path": "codex-rs/state/src/sqlite_recovery_windows.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "679ccdd69aaa2ddfd043025390f56e5e37c9386a",
+          "bytes": 4265,
+          "sha256": "eef6c27b90678bdad87aca99b80c6948e2f34dc1041b0fe78aedec99fb287dfd"
+        }
+      },
+      "owner_delta": [
+        {
+          "old_start": 97,
+          "new_start": 97,
+          "removed": [
+            "/// Read at an explicit offset: cloned guards may be inspected concurrently, so",
+            "/// mutating a shared File cursor would not preserve each bounded image."
+          ],
+          "added": [
+            "/// Read every chunk at an explicit offset rather than using seek-then-read.",
+            "/// Windows seek_read may change the shared cursor; this loop never relies on it."
+          ],
+          "before": [
+            "    }",
+            "}",
+            ""
+          ],
+          "after": [
+            "pub(super) fn read_exact_at(file: &File, mut bytes: &mut [u8], mut offset: u64) -> io::Result<()> {",
+            "    while !bytes.is_empty() {",
+            "        match file.seek_read(bytes, offset) {"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery.rs",
+      "choice": "merged",
+      "reason": "Retain owner same_recovery_path for defensive same-source alias rejection; add maintained Disk/VerbatimDisk-only home admission and use it at the two retained-home checks. All retained identity operations remain unchanged.",
+      "blob": "08632553d519ebcfd46450ad378da8cf76f288e8",
+      "bytes": 16408,
+      "sha256": "9a658db5fd9d5e3969ecb11d4caeff12f0e6adc13586673ec05cd8acb6c04b5c",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/state/src/sqlite_recovery.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "386c24205afaa7b5ce10b0acdb282aaf62774d5d",
+          "bytes": 15312,
+          "sha256": "43d372c8bbe807d2131b8a76e77464a5c404d5d6d62318cbd2135bcea163b6f2"
+        },
+        "component": {
+          "path": "codex-rs/state/src/sqlite_recovery.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "d792fcb37c6056def7ae61efd32c2d028f49b44e",
+          "bytes": 15491,
+          "sha256": "c98d571050a739df2dd61fa52d41f479e64f465cddc912bc9b76bf1712482d69"
+        },
+        "component_base": {
+          "path": "codex-rs/state/src/sqlite_recovery.rs",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "7093f94b445e0cf468f1528ceb8a827beaf2d4af",
+          "bytes": 13642,
+          "sha256": "5c387d97f161a4e688505de9d95763049aef569def307962653598cc33170a02"
+        },
+        "common_base": {
+          "path": "codex-rs/state/src/sqlite_recovery.rs",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "7093f94b445e0cf468f1528ceb8a827beaf2d4af",
+          "bytes": 13642,
+          "sha256": "5c387d97f161a4e688505de9d95763049aef569def307962653598cc33170a02"
+        }
+      },
+      "owner_delta": [
+        {
+          "old_start": 96,
+          "new_start": 96,
+          "removed": [],
+          "added": [
+            "// AbsolutePathBuf can use the native drive spelling while a retained Windows",
+            "// path uses the verbatim drive spelling. This comparison only reconciles those",
+            "// two spellings; every retained handle still performs its original identity,",
+            "// reparse, filesystem, owner and ACL checks.",
+            "#[cfg(windows)]",
+            "fn same_recovery_home(candidate: &Path, configured: &Path) -> bool {",
+            "    use std::path::Component;",
+            "    use std::path::Prefix;",
+            "",
+            "    let mut candidate = candidate.components();",
+            "    let mut configured = configured.components();",
+            "    let (Some(Component::Prefix(left)), Some(Component::Prefix(right))) =",
+            "        (candidate.next(), configured.next())",
+            "    else {",
+            "        return false;",
+            "    };",
+            "    let same_drive = match (left.kind(), right.kind()) {",
+            "        (",
+            "            Prefix::Disk(left) | Prefix::VerbatimDisk(left),",
+            "            Prefix::Disk(right) | Prefix::VerbatimDisk(right),",
+            "        ) => left == right,",
+            "        _ => false,",
+            "    };",
+            "    same_drive && candidate.eq(configured)",
+            "}",
+            "",
+            "#[cfg(not(windows))]",
+            "fn same_recovery_home(candidate: &Path, configured: &Path) -> bool {",
+            "    candidate == configured",
+            "}",
+            ""
+          ],
+          "before": [
+            "    sidecars: [RetainedOptionalObject; 3],",
+            "}",
+            ""
+          ],
+          "after": [
+            "impl SqliteConfig {",
+            "    /// Retain the parent, database, WAL, SHM, and rollback-journal identities.",
+            "    ///"
+          ]
+        },
+        {
+          "old_start": 109,
+          "new_start": 140,
+          "removed": [
+            "            .is_some_and(|parent| same_recovery_path(parent, self.home()))"
+          ],
+          "added": [
+            "            .is_some_and(|parent| same_recovery_home(parent, self.home()))"
+          ],
+          "before": [
+            "    ) -> Result<ExistingSqliteRecoveryGuard, SqliteRecoveryError> {",
+            "        if !path",
+            "            .parent()"
+          ],
+          "after": [
+            "        {",
+            "            return Err(SqliteRecoveryError::Indeterminate);",
+            "        }"
+          ]
+        },
+        {
+          "old_start": 202,
+          "new_start": 233,
+          "removed": [
+            "            .is_some_and(|parent| same_recovery_path(parent, config.home()))"
+          ],
+          "added": [
+            "            .is_some_and(|parent| same_recovery_home(parent, config.home()))"
+          ],
+          "before": [
+            "            .inner",
+            "            .database_path",
+            "            .parent()"
+          ],
+          "after": [
+            "        {",
+            "            return Err(SqliteRecoveryError::Indeterminate);",
+            "        }"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/utils/path-utils/Cargo.toml",
+      "choice": "owner",
+      "reason": "Owner and maintained component are byte-identical.",
+      "blob": "4714f58d7f1b829b3e074e65040c2de789d6bf4d",
+      "bytes": 697,
+      "sha256": "5e23cfabdee9302d9d89057cc77b3ee8b7baacb1f5591639d227d9384ac19d05",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/utils/path-utils/Cargo.toml",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "4714f58d7f1b829b3e074e65040c2de789d6bf4d",
+          "bytes": 697,
+          "sha256": "5e23cfabdee9302d9d89057cc77b3ee8b7baacb1f5591639d227d9384ac19d05"
+        },
+        "component": {
+          "path": "codex-rs/utils/path-utils/Cargo.toml",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "4714f58d7f1b829b3e074e65040c2de789d6bf4d",
+          "bytes": 697,
+          "sha256": "5e23cfabdee9302d9d89057cc77b3ee8b7baacb1f5591639d227d9384ac19d05"
+        },
+        "component_base": {
+          "path": "codex-rs/utils/path-utils/Cargo.toml",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "d1503fd060c960845b2f514cbe69f824291eff07",
+          "bytes": 379,
+          "sha256": "884536586b88583e7f330b2d32c6815cfd8ee1e3493fd676ce1b62c97a409ba4"
+        },
+        "common_base": {
+          "path": "codex-rs/utils/path-utils/Cargo.toml",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "d1503fd060c960845b2f514cbe69f824291eff07",
+          "bytes": 379,
+          "sha256": "884536586b88583e7f330b2d32c6815cfd8ee1e3493fd676ce1b62c97a409ba4"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/lib.rs",
+      "choice": "owner",
+      "reason": "Retain owner's public canonical_existing_path_without_reparse export, required by owner cognitive_path.",
+      "blob": "ad58f0b856d31ab4ea6a2d7fdb140f62925dd8f1",
+      "bytes": 7768,
+      "sha256": "c939ca70bbf43158c3178aeeb97bf9c15d46033514e6d772334c4019cd14c21c",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/utils/path-utils/src/lib.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "ad58f0b856d31ab4ea6a2d7fdb140f62925dd8f1",
+          "bytes": 7768,
+          "sha256": "c939ca70bbf43158c3178aeeb97bf9c15d46033514e6d772334c4019cd14c21c"
+        },
+        "component": {
+          "path": "codex-rs/utils/path-utils/src/lib.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "fc94d1f8b9f7c6ed8546ab357cdccdd59627ac61",
+          "bytes": 7680,
+          "sha256": "7087bbf2dd61ad06a7cb9094db7f44aca6aa6caffe8f85ae94db11f0cb843a98"
+        },
+        "component_base": {
+          "path": "codex-rs/utils/path-utils/src/lib.rs",
+          "kind": "component_base",
+          "source": "0b9da54535a7795b2433947a479e6d9e71525e0a",
+          "blob": "e09042ba01233b924b862ee08121d3473faa0b91",
+          "bytes": 6703,
+          "sha256": "56aefb3545776cb416b4dd5a8ebddaa635944e2f582e814a902b371f7d0cedc1"
+        },
+        "common_base": {
+          "path": "codex-rs/utils/path-utils/src/lib.rs",
+          "kind": "common_base",
+          "source": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+          "blob": "e09042ba01233b924b862ee08121d3473faa0b91",
+          "bytes": 6703,
+          "sha256": "56aefb3545776cb416b4dd5a8ebddaa635944e2f582e814a902b371f7d0cedc1"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory_tests.rs",
+      "choice": "owner",
+      "reason": "Owner and maintained component are byte-identical.",
+      "blob": "1e0f78fdf05b7aa3e315127ef640e6af343ae431",
+      "bytes": 4909,
+      "sha256": "62dcf6a66223b657412eb20479fdad8cd29d8e7af04f89961c8bad2d60f76dbb",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_directory_tests.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "1e0f78fdf05b7aa3e315127ef640e6af343ae431",
+          "bytes": 4909,
+          "sha256": "62dcf6a66223b657412eb20479fdad8cd29d8e7af04f89961c8bad2d60f76dbb"
+        },
+        "component": {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_directory_tests.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "1e0f78fdf05b7aa3e315127ef640e6af343ae431",
+          "bytes": 4909,
+          "sha256": "62dcf6a66223b657412eb20479fdad8cd29d8e7af04f89961c8bad2d60f76dbb"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+      "choice": "owner",
+      "reason": "Retain owner's additional ExistingPathIdentity/no-reparse canonical observation while preserving native private directory modes; component overwrite would remove a real owner consumer API.",
+      "blob": "1ca4611e7b928a382ae9761f094416db42780371",
+      "bytes": 7968,
+      "sha256": "4a75cdecfdd496038f9e6b8449bf8be3798557fc854c0d6b897e2f974dd7dd45",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "1ca4611e7b928a382ae9761f094416db42780371",
+          "bytes": 7968,
+          "sha256": "4a75cdecfdd496038f9e6b8449bf8be3798557fc854c0d6b897e2f974dd7dd45"
+        },
+        "component": {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "ba645e90dc5a95d74d50370c7b2da90280c71229",
+          "bytes": 6404,
+          "sha256": "55edcbb06d3ac763a18a3628a58e76ff2c625d4cff39d368ee8a4ce89796ce0d"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_recovery_tests.rs",
+      "choice": "owner",
+      "reason": "Owner and maintained component are byte-identical.",
+      "blob": "53377cc04df88ae701ef1cf3eb2ad7c7f6245419",
+      "bytes": 3254,
+      "sha256": "2aafbcfc0c2400cc0381fd54cb19b687ae2b10c46f277dcf0ce3f40643317d54",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_recovery_tests.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "53377cc04df88ae701ef1cf3eb2ad7c7f6245419",
+          "bytes": 3254,
+          "sha256": "2aafbcfc0c2400cc0381fd54cb19b687ae2b10c46f277dcf0ce3f40643317d54"
+        },
+        "component": {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_recovery_tests.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "53377cc04df88ae701ef1cf3eb2ad7c7f6245419",
+          "bytes": 3254,
+          "sha256": "2aafbcfc0c2400cc0381fd54cb19b687ae2b10c46f277dcf0ce3f40643317d54"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_recovery.rs",
+      "choice": "owner",
+      "reason": "Owner and maintained component are byte-identical.",
+      "blob": "870a3df78436d675007caed69e52ebf7a0ebbf57",
+      "bytes": 11188,
+      "sha256": "dafb9ca55bdeb30aac54c03dc6f5dbf81b0b3939106ff51399018cb231b9a0e9",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_recovery.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "870a3df78436d675007caed69e52ebf7a0ebbf57",
+          "bytes": 11188,
+          "sha256": "dafb9ca55bdeb30aac54c03dc6f5dbf81b0b3939106ff51399018cb231b9a0e9"
+        },
+        "component": {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_recovery.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "870a3df78436d675007caed69e52ebf7a0ebbf57",
+          "bytes": 11188,
+          "sha256": "dafb9ca55bdeb30aac54c03dc6f5dbf81b0b3939106ff51399018cb231b9a0e9"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+      "choice": "owner",
+      "reason": "Owner and maintained component are byte-identical.",
+      "blob": "5ee4110ac4bd633cc07bbca3ebc4f4e0b6ff67ff",
+      "bytes": 10150,
+      "sha256": "bc31c4d507fd0172a02fb628bc5cc911063bab31ef4d6de71ca699d9269c45cc",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "5ee4110ac4bd633cc07bbca3ebc4f4e0b6ff67ff",
+          "bytes": 10150,
+          "sha256": "bc31c4d507fd0172a02fb628bc5cc911063bab31ef4d6de71ca699d9269c45cc"
+        },
+        "component": {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_security_tests.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "5ee4110ac4bd633cc07bbca3ebc4f4e0b6ff67ff",
+          "bytes": 10150,
+          "sha256": "bc31c4d507fd0172a02fb628bc5cc911063bab31ef4d6de71ca699d9269c45cc"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows_security.rs",
+      "choice": "owner",
+      "reason": "Owner and maintained component are byte-identical.",
+      "blob": "6289e7a878ef0494743b99734a60d368357c8562",
+      "bytes": 3333,
+      "sha256": "bfa9700c839f6ddafcc833dc47f70fec0cc7706584d43f21d96a223d341281d0",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_security.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "6289e7a878ef0494743b99734a60d368357c8562",
+          "bytes": 3333,
+          "sha256": "bfa9700c839f6ddafcc833dc47f70fec0cc7706584d43f21d96a223d341281d0"
+        },
+        "component": {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_security.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "6289e7a878ef0494743b99734a60d368357c8562",
+          "bytes": 3333,
+          "sha256": "bfa9700c839f6ddafcc833dc47f70fec0cc7706584d43f21d96a223d341281d0"
+        }
+      },
+      "owner_delta": []
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+      "choice": "merged",
+      "reason": "Deduplicate the owner's identical recovery module/re-export block once, retaining its required canonical_existing_path API and all existing Windows retained operations. The source duplicate is an unexecuted Windows compilation risk, not an observed compiler diagnostic.",
+      "blob": "1e7881b34be647ed30c09a7c29ad44f80460c7bc",
+      "bytes": 26685,
+      "sha256": "1ac3479990c3ccfedd620785a1f82d4ada528dc70cae97ea1d0412e6dcea8b3f",
+      "inputs": {
+        "owner": {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+          "kind": "owner",
+          "source": "cd4963763c08ec7c941cb0d2a6fa321f348bebb1",
+          "blob": "ab13f85f13f663c3d04ac11d09b9a34090d915ed",
+          "bytes": 27109,
+          "sha256": "235b61d2f65983a8ac08e6daa7589740672374027027b046bfb1a140d0805d83"
+        },
+        "component": {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+          "kind": "component",
+          "source": "296e88630b132f05b623f4391c1bbbdeaf79449c",
+          "blob": "2186bad1fda6aec90239299b9628968a425baf16",
+          "bytes": 26625,
+          "sha256": "2ac1f2c3eaa346cad787515777031ed1c82b1b2720cf00c35c7f0c8219c04080"
+        }
+      },
+      "owner_delta": [
+        {
+          "old_start": 97,
+          "new_start": 97,
+          "removed": [
+            "#[path = \"private_state_windows_recovery.rs\"]",
+            "mod recovery;",
+            "pub use recovery::PrivateStateSnapshot;",
+            "pub use recovery::create_new_private_state_child;",
+            "pub use recovery::open_existing_private_state_directory;",
+            "pub use recovery::open_existing_private_state_directory_for_sync;",
+            "pub use recovery::open_frozen_private_state_child;",
+            "pub use recovery::private_state_directory_snapshot;",
+            "pub use recovery::private_state_file_snapshot;",
+            ""
+          ],
+          "added": [],
+          "before": [
+            "pub use recovery::private_state_directory_snapshot;",
+            "pub use recovery::private_state_file_snapshot;",
+            ""
+          ],
+          "after": [
+            "const ACCESS_ALLOWED_ACE_TYPE: u8 = 0;",
+            "const ACCESS_DENIED_ACE_TYPE: u8 = 1;",
+            "const INHERIT_ONLY_ACE: u8 = 0x08;"
+          ]
+        }
+      ]
+    }
+  ]
+}

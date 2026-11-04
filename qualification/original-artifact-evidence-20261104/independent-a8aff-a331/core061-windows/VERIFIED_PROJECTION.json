@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "key": "core061-windows",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "061ec434abcbe673013f1e16b6b5a1b3d9c1d3bb",
+  "original_run": 41770058343,
+  "artifact_id": 13294634691,
+  "zip_bytes": 1845159,
+  "zip_sha256": "f87d21c354810bb100e950067779881631529ac62f8049e78bd4996029d10883",
+  "all_member_crc": true,
+  "original_qualification_status": "passed",
+  "source_verification": {
+    "count": 10318,
+    "source_tree": "61270b09edf7394cdda68b70aa5ff61428db08f6",
+    "all_match_exact_git_bytes": true,
+    "before_sha256": "3be079a95b32a289f41e750f800ebb65048758c0b4f031e9d1053437ebbbd59e",
+    "after_sha256": "3be079a95b32a289f41e750f800ebb65048758c0b4f031e9d1053437ebbbd59e",
+    "snapshot_values_equal": true,
+    "symlinks": "raw Git link payload; not dereferenced"
+  },
+  "result": {
+    "mode": "original-focused-native",
+    "executed": 3,
+    "scopes": {
+      "core-original-two": {
+        "executed": 2,
+        "executed_cases": [
+          "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+          "tools::handlers::multi_agents::tests::multi_agent_v2_wait_agent_uses_configured_default_timeout"
+        ],
+        "compiled_inventory_count": 2331,
+        "original_ignored": [
+          "agent::role::tests::apply_role_skills_config_disables_skill_for_spawned_agent",
+          "session::tests::configuration_tests::new_default_turn_uses_config_aware_skills_for_role_overrides",
+          "shell_snapshot::tests::windows_powershell_snapshot_includes_sections"
+        ],
+        "qualification_filtered_count": 2326,
+        "complete_target": false,
+        "junit_sha256": "a481a78fceef5ba8fecc553e81e74db1985e548389dbc1c658f6af9616ecc6c8",
+        "recorded_binary_sha256_before_and_after": "a0dba99a9d63a2726be0fe17d05df3c46ddc27f787f86bea9fc79384d81b5e1f"
+      },
+      "supervisor-restart-original": {
+        "executed": 1,
+        "executed_cases": [
+          "restart_budget_survives_repeated_supervisord_recovery"
+        ],
+        "compiled_inventory_count": 1,
+        "original_ignored": [],
+        "qualification_filtered_count": 0,
+        "complete_target": true,
+        "junit_sha256": "d4e1f14be0d758b316d69b2a09dd072e84fbdefa35eaaa4f0215aadf9fe7b322",
+        "recorded_binary_sha256_before_and_after": "89c4647907db8d442cf912ad384e2b75798af7cc00f1437ac552c3493f7760d2"
+      }
+    },
+    "command_exits": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "boundary": "Two selected original Core cases and one complete Supervisor restart target. Unselected Core cases did not execute. Binary equality is recorded by the original job; binaries are not retained here."
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only original evidence verification; no new native run or full Core/whole-CI acceptance.",
+  "output_count": 30,
+  "verified_report_sha256": "27bf4c6ed09bfc3fbfff0657432964404d927d7a3de7c173658937b12ee6cf74"
+}

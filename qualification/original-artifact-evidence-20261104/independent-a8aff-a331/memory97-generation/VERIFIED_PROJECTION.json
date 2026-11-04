@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "97a49196f1c1dea6be1522b503a62aa7ae5031f6",
+  "original_run": 41767471183,
+  "artifact_id": 13293605824,
+  "original_qualification_status": "committed-lock-qualified",
+  "key": "memory97-generation",
+  "zip_bytes": 4294922,
+  "zip_sha256": "821f5a12236bebefad327a2e90c5218af3e520f66764e3115cece8cfa0ca0604",
+  "all_member_crc": true,
+  "source_verification": {
+    "count": 9212,
+    "before_sha256": "b941184aba1a50997cfb74b9fa19fc24229913fee9812940464ca3952a9905c5",
+    "after_sha256": "b941184aba1a50997cfb74b9fa19fc24229913fee9812940464ca3952a9905c5",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs",
+      ".github",
+      "scripts",
+      "bazel",
+      "patches",
+      "third_party",
+      "cargo_bazel_template",
+      "justfile",
+      "defs.bzl",
+      "BUILD.bazel",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      "qualification/windows-memory-recovery-current",
+      "qualification/keyring-sync-provider/build_pinned_client.py"
+    ],
+    "symlink_resolution": []
+  },
+  "result": {
+    "mode": "generation",
+    "commands": [
+      "initial-clean-source",
+      "committed-lock-first",
+      "original-formatter",
+      "original-formatter-check",
+      "actual-cargo-metadata",
+      "actual-locked-metadata",
+      "original-lock-update",
+      "original-lock-check"
+    ],
+    "command_exits": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "cargo_delta": {
+      "packages": 1517,
+      "added_dependencies": {
+        "codex-hepta-memory": [
+          "codex-utils-path"
+        ],
+        "codex-state": [
+          "codex-utils-path"
+        ],
+        "codex-utils-path": [
+          "winapi-util",
+          "windows-sys 0.52.0"
+        ]
+      },
+      "versions_sources_checksums_unchanged": true
+    },
+    "cargo_sha256": "3799ac5debde96c287c8b7c4454a9ef9308495c96936fc0d3c345c7e06136d92",
+    "bazel_sha256": "1a58f7d1fcbfe850d18a01c19faf15c941dfd229cb8caeb406dbe8ce8c99522e",
+    "baseline_cargo_blob": "d6c49a2eed9bddda69d9a46726014c5262c7b310",
+    "committed_and_generated_match_exact_git": true,
+    "metadata_diagnostics": {
+      "actual-cargo-metadata": {
+        "bytes": 60993,
+        "sha256": "a257e648d5d36722d10277ac3ab878337494e29ac70dbc7c0949cf8dbae5e6d0",
+        "preview_utf8": "\u001b[1m\u001b[92m    Updating\u001b[0m git repository `https://github.com/openai-oss-forks/crossterm`\nFrom https://github.com/openai-oss-forks/crossterm\n * [new ref]         45fecb9508105988f42fe6ff0441783ed3717f92 -> refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92\n\u001b[1m\u001b[92m    Updating\u001b[0m git repository `https://github.com/openai-oss-forks/tokio-tungstenite`\nFrom https://github.com/openai-oss-forks/tokio-tungstenite\n * [new ref]         0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186 -> refs/commit/0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186\n\u001b[1m\u001b[92m    Updating\u001b[0m git repository `https://github.com/openai-oss-forks/tungstenite-rs`\nFrom https://github.com/openai-oss-forks/tungstenite-rs\n * [new ref]         4fffad30fe373adbdcffab9545e9e9bf4f2fc19f -> refs/commit/4fffad30fe373adbdcffab9545e9e9bf4f2fc19f\n\u001b[1m\u001b[92m    Updating\u001b[0m crates.io index\n\u001b[1m\u001b[92m    Updating\u001b[0m git repository `https://github.com/dzbarsky/rules_rust`\nFrom https://github.com/dzbarsky/rules_rust\n * [new ref]             b56cbaa8465e74127f1ea216f813cd377295ad81 -> refs/commit/b56cbaa8465e74127f1ea216f813cd377295ad81\n\u001b[1m\u001b[92m    Updating\u001b[0m git repository `https://github.com/helix-editor/nucleo.git`\nFrom https://github.com/helix-editor/nucleo\n * [new ref]         4253de9faabb4e5c6d81d946a5e35a90f87347ee -> refs/commit/4253de9faabb4e5c6d81d946a5e35a90f87347ee\n\u001b[1m\u001b[92m Downloading\u001b[0m crates ...\n\u001b[1m\u001b[92m  Downloaded\u001b[0m Inflector v0.11.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m actix-router v0.5.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m actix-codec v0.5.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m accessory v2.1.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m actix-http v3.11.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m aead v0.5.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m bit-vec v0.6.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m allocator-api2 v0.2.21\n\u001b[1m\u001b[92m  Downloaded\u001b[0m beef v0.5.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m aws-sigv4 v1.3.7\n\u001b[1m\u001b[92m  Downloaded\u001b[0m crc v3.4.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m bitflags v2.13.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m bitflags v1.3.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m age-core v0.11.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m aes-gcm v0.10.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m cobs v0.3.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m critical-section v1.2.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m const-hex v1.17.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m bzip2 v0.6.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m bytemuck v1.25.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m bs58 v0.5.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m const_format v0.2.35\n\u001b[1m\u001b[92m  Downloaded\u001b[0m cpufeatures v0.2.17\n\u001b[1m\u001b[92m  Downloaded\u001b[0m cached v0.56.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m core_maths v0.1.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m curve25519-dalek-derive v0.1.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m crossbeam-utils v0.8.21\n\u001b[1m\u001b[92m  Downloaded\u001b[0m decancer v3.3.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m deunicode v1.6.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ctor-proc-macro v0.0.7\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ctor v1.0.6\n\u001b[1m\u001b[92m  Downloaded\u001b[0m darling_macro v0.23.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m deadpool v0.12.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m finl_unicode v1.4.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m foreign-types-shared v0.1.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m deltae v0.3.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-glob v0.24.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-pathspec v0.16.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-hashtable v0.13.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-revwalk v0.29.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-trace v0.1.18\n\u001b[1m\u001b[92m  Downloaded\u001b[0m dirs-sys-next v0.1.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m displaydoc v0.2.5\n\u001b[1m\u001b[92m  Downloaded\u001b[0m darling_macro v0.20.11\n\u001b[1m\u001b[92m  Downloaded\u001b[0m derive_more v1.0.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m dupe_derive v0.9.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m dotenvy v0.15.7\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-chunk v0.7.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m diplomat-runtime v0.15.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m group v0.14.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m fallible-iterator v0.3.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m futures-intrusive v0.5.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m headers v0.4.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-odb v0.78.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m flate2 v1.1.8\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-blame v0.11.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-tempfile v21.0.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m event-listener-strategy v0.5.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m error-code v3.3.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m hmac v0.12.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m getrandom v0.4.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m http-auth v0.1.10\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-status v0.28.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-dir v0.23.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m iana-time-zone-haiku v0.1.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-worktree-state v0.28.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m env_home v0.1.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ed25519-dalek v2.2.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m indenter v0.3.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gloo-utils v0.3.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix v0.81.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m itertools v0.14.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ixdtf v0.6.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m hex v0.4.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m lru-slab v0.1.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m hashbrown v0.12.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m mac_address v1.1.8\n\u001b[1m\u001b[92m  Downloaded\u001b[0m http-body v0.4.6\n\u001b[1m\u001b[92m  Downloaded\u001b[0m hyper-tls v0.6.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m hashbrown v0.17.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m matrix-pickle-derive v0.2.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m itoa v1.0.17\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ignore v0.4.25\n\u001b[1m\u001b[92m  Downloaded\u001b[0m jni-macros v0.22.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m http-body-util v0.1.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ndk-context v0.1.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m kqueue v1.1.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m numtoa v0.2.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m linktime-proc-macro v0.1.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m icu_locale_data v2.2.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m macroific_attr_parse v3.0.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m objc2 v0.6.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m opentelemetry-appender-tracing v0.31.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m p256 v0.14.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m num-conv v0.2.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m pest_derive v2.8.7\n\u001b[1m\u001b[92m  Downloaded\u001b[0m objc2-core-location v0.3.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m pem-rfc7468 v1.0.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m num-bigint v0.4.6\n\u001b[1m\u001b[92m  Downloaded\u001b[0m proc-macro-crate v3.4.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m paste v1.0.15\n\u001b[1m\u001b[92m  Downloaded\u001b[0m quote v1.0.45\n\u001b[1m\u001b[92m  Downloaded\u001b[0m oid-registry v0.8.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m parking_lot_core v0.9.12\n\u001b[1m\u001b[92m  Downloaded\u001b[0m phf_generator v0.13.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m pathdiff v0.2.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m objc2-core-foundation v0.3.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m redox_syscall v0.7.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m primefield v0.14.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m primeorder v0.14.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m opentelemetry-proto v0.31.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m postcard v1.1.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m rustc-demangle v0.1.27\n\u001b[1m\u001b[92m  Downloaded\u001b[0m rustix v0.38.44\n\u001b[1m\u001b[92m  Downloaded\u001b[0m sealed v0.6.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m sentry-contexts v0.46.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m psl-types v2.0.11\n\u001b[1m\u001b[92m  Downloaded\u001b[0m libsqlite3-sys v0.38.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m serde_spanned v1.1.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m redox_syscall v0.5.18\n\u001b[1m\u001b[92m  Downloaded\u001b[0m sentry-actix v0.46.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m schemafy_lib v0.5.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m redox_users v0.4.6\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ratatui v0.30.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m regex-automata v0.4.18\n\u001b[1m\u001b[92m  Downloaded\u001b[0m signature v2.2.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m string_cache_codegen v0.6.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ruma-identifiers-validation v0.14.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m smol_str v0.3.5\n\u001b[1m\u001b[92m  Downloaded\u001b[0m sqlx-postgres v0.9.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m sorted_vector_map v0.2.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m sequence_trie v0.3.6\n\u001b[1m\u001b[92m  Downloaded\u001b[0m symphonia-bundle-mp3 v0.6.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m synstructure v0.13.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m safe_arch v0.7.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m serde_json v1.0.154\n\u001b[1m\u001b[92m  Downloaded\u001b[0m test-case-macros v3.3.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m temporal_capi v0.2.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m tokio-util v0.7.20\n\u001b[1m\u001b[92m  Downloaded\u001b[0m sealed v0.7.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m tracing-test v0.2.5\n\u001b[1m\u001b[92m  Downloaded\u001b[0m serde_ignored v0.1.14\n\u001b[1m\u001b[92m  Downloaded\u001b[0m tendril v0.5.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m tracing-appender v0.2.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m stop-words v0.9.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ruma-signatures v0.22.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m triomphe v0.1.15\n\u001b[1m\u001b[92m  Downloaded\u001b[0m tower-layer v0.3.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m strum v0.27.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m shlex v1.3.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ",
+        "preview_is_complete": false
+      },
+      "actual-locked-metadata": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "preview_utf8": "",
+        "preview_is_complete": true
+      }
+    },
+    "boundary": "Actual original formatting/metadata/lock generation; no native result inferred."
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only verification of original retained evidence; no new product execution or whole-CI admission.",
+  "output_count": 15,
+  "verified_report_sha256": "1886b225cd54ee1ea58b55f5f4e46bd85dda5479ea598ded97f91c781f45c186"
+}

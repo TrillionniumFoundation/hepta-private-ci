@@ -1,0 +1,100 @@
+{
+  "schema": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": "8facd08bcb51222fe3c88c3b9b03bdea09db4553",
+  "original_run": 41770514444,
+  "artifact_id": 13295615052,
+  "original_qualification_status": "committed-lock-qualified",
+  "key": "memory8fac-generation",
+  "zip_bytes": 4295193,
+  "zip_sha256": "c732a50bda5ae45fd63cca0be8f9a317ddbda23649710d1a8a1db0ce01e69b0e",
+  "all_member_crc": true,
+  "source_verification": {
+    "count": 9214,
+    "before_sha256": "a708cb709ef5806ce8d58c9741f64584884a47a31f44f564de5572a5a0b1679a",
+    "after_sha256": "a708cb709ef5806ce8d58c9741f64584884a47a31f44f564de5572a5a0b1679a",
+    "all_match_exact_git_bytes": true,
+    "snapshot_scope": [
+      "codex-rs",
+      ".github",
+      "scripts",
+      "bazel",
+      "patches",
+      "third_party",
+      "cargo_bazel_template",
+      "justfile",
+      "defs.bzl",
+      "BUILD.bazel",
+      "MODULE.bazel",
+      "MODULE.bazel.lock",
+      ".bazelrc",
+      ".bazelversion",
+      "workspace_root_test_launcher.*",
+      "qualification/windows-memory-recovery-current",
+      "qualification/keyring-sync-provider/build_pinned_client.py"
+    ],
+    "symlink_resolution": []
+  },
+  "result": {
+    "mode": "generation",
+    "commands": [
+      "initial-clean-source",
+      "committed-lock-first",
+      "original-formatter",
+      "original-formatter-check",
+      "actual-cargo-metadata",
+      "actual-locked-metadata",
+      "original-lock-update",
+      "original-lock-check"
+    ],
+    "command_exits": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "cargo_delta": {
+      "packages": 1517,
+      "added_dependencies": {
+        "codex-hepta-memory": [
+          "codex-utils-path"
+        ],
+        "codex-state": [
+          "codex-utils-path"
+        ],
+        "codex-utils-path": [
+          "winapi-util",
+          "windows-sys 0.52.0"
+        ]
+      },
+      "versions_sources_checksums_unchanged": true
+    },
+    "cargo_sha256": "3799ac5debde96c287c8b7c4454a9ef9308495c96936fc0d3c345c7e06136d92",
+    "bazel_sha256": "1a58f7d1fcbfe850d18a01c19faf15c941dfd229cb8caeb406dbe8ce8c99522e",
+    "baseline_cargo_blob": "d6c49a2eed9bddda69d9a46726014c5262c7b310",
+    "committed_and_generated_match_exact_git": true,
+    "metadata_diagnostics": {
+      "actual-cargo-metadata": {
+        "bytes": 60993,
+        "sha256": "94742d16889490c04cea81f617c0d896babb786b2d7de4529185393832ff68f4",
+        "preview_utf8": "\u001b[1m\u001b[92m    Updating\u001b[0m git repository `https://github.com/openai-oss-forks/tungstenite-rs`\nFrom https://github.com/openai-oss-forks/tungstenite-rs\n * [new ref]         4fffad30fe373adbdcffab9545e9e9bf4f2fc19f -> refs/commit/4fffad30fe373adbdcffab9545e9e9bf4f2fc19f\n\u001b[1m\u001b[92m    Updating\u001b[0m git repository `https://github.com/openai-oss-forks/crossterm`\nFrom https://github.com/openai-oss-forks/crossterm\n * [new ref]         45fecb9508105988f42fe6ff0441783ed3717f92 -> refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92\n\u001b[1m\u001b[92m    Updating\u001b[0m git repository `https://github.com/openai-oss-forks/tokio-tungstenite`\nFrom https://github.com/openai-oss-forks/tokio-tungstenite\n * [new ref]         0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186 -> refs/commit/0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186\n\u001b[1m\u001b[92m    Updating\u001b[0m crates.io index\n\u001b[1m\u001b[92m    Updating\u001b[0m git repository `https://github.com/dzbarsky/rules_rust`\nFrom https://github.com/dzbarsky/rules_rust\n * [new ref]             b56cbaa8465e74127f1ea216f813cd377295ad81 -> refs/commit/b56cbaa8465e74127f1ea216f813cd377295ad81\n\u001b[1m\u001b[92m    Updating\u001b[0m git repository `https://github.com/helix-editor/nucleo.git`\nFrom https://github.com/helix-editor/nucleo\n * [new ref]         4253de9faabb4e5c6d81d946a5e35a90f87347ee -> refs/commit/4253de9faabb4e5c6d81d946a5e35a90f87347ee\n\u001b[1m\u001b[92m Downloading\u001b[0m crates ...\n\u001b[1m\u001b[92m  Downloaded\u001b[0m accessory v2.1.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m assert-json-diff v2.0.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m bit-set v0.8.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m aws-smithy-xml v0.60.13\n\u001b[1m\u001b[92m  Downloaded\u001b[0m actix-router v0.5.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m aws-smithy-async v1.2.14\n\u001b[1m\u001b[92m  Downloaded\u001b[0m async-trait v0.1.92\n\u001b[1m\u001b[92m  Downloaded\u001b[0m asn1-rs v0.7.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m base16ct v1.0.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m actix-http v3.11.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m arrayvec v0.7.8\n\u001b[1m\u001b[92m  Downloaded\u001b[0m allocator-api2 v0.2.21\n\u001b[1m\u001b[92m  Downloaded\u001b[0m base64ct v1.8.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ctor v1.0.6\n\u001b[1m\u001b[92m  Downloaded\u001b[0m atoi v2.0.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m aws-smithy-query v0.60.9\n\u001b[1m\u001b[92m  Downloaded\u001b[0m crossbeam-epoch v0.9.20\n\u001b[1m\u001b[92m  Downloaded\u001b[0m beef v0.5.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m asn1-rs-derive v0.6.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m archery v1.2.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ctutils v0.4.8\n\u001b[1m\u001b[92m  Downloaded\u001b[0m const_format v0.2.35\n\u001b[1m\u001b[92m  Downloaded\u001b[0m crypto-bigint v0.7.10\n\u001b[1m\u001b[92m  Downloaded\u001b[0m der-parser v10.0.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m asynk-strim v0.1.5\n\u001b[1m\u001b[92m  Downloaded\u001b[0m cpufeatures v0.2.17\n\u001b[1m\u001b[92m  Downloaded\u001b[0m console v0.15.11\n\u001b[1m\u001b[92m  Downloaded\u001b[0m debugid v0.8.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m crc-catalog v2.4.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m difflib v0.4.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m decancer v3.3.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m derive_more-impl v2.1.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m darling v0.21.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ecdsa v0.17.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m aws-sdk-signin v1.2.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m der v0.8.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m convert_case v0.10.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m aws-types v1.3.11\n\u001b[1m\u001b[92m  Downloaded\u001b[0m async-stream v0.3.6\n\u001b[1m\u001b[92m  Downloaded\u001b[0m anstyle v1.0.13\n\u001b[1m\u001b[92m  Downloaded\u001b[0m arraydeque v0.5.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m deadpool-runtime v0.1.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m crossterm_winapi v0.9.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m darling_core v0.21.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m diplomat v0.15.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ctor-proc-macro v0.0.7\n\u001b[1m\u001b[92m  Downloaded\u001b[0m async-io v2.6.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m aws-smithy-observability v0.1.5\n\u001b[1m\u001b[92m  Downloaded\u001b[0m aws-sdk-sso v1.91.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m elliptic-curve v0.14.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m errno v0.3.14\n\u001b[1m\u001b[92m  Downloaded\u001b[0m dirs v6.0.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m actix-utils v3.0.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m darling_macro v0.21.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m fancy_constructor v2.1.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m eyeball-im v0.9.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ed25519-dalek v3.0.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m enumflags2 v0.7.12\n\u001b[1m\u001b[92m  Downloaded\u001b[0m eyeball v0.8.8\n\u001b[1m\u001b[92m  Downloaded\u001b[0m env_logger v0.11.9\n\u001b[1m\u001b[92m  Downloaded\u001b[0m darling_core v0.20.11\n\u001b[1m\u001b[92m  Downloaded\u001b[0m fast-srgb8 v1.0.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m bitflags v1.3.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m euclid v0.22.14\n\u001b[1m\u001b[92m  Downloaded\u001b[0m fd-lock v4.0.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ghash v0.5.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m fs_extra v1.3.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-archive v0.30.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m android_system_properties v0.1.5\n\u001b[1m\u001b[92m  Downloaded\u001b[0m fluent-langneg v0.13.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-command v0.8.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-index v0.49.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-pathspec v0.16.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-ref v0.61.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-odb v0.78.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m float-cmp v0.10.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m find-msvc-tools v0.1.9\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-merge v0.14.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m hex v0.4.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m hashbrown v0.17.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m getrandom v0.4.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m httpdate v1.0.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m fraction v0.15.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gloo-timers v0.4.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m hashbrown v0.16.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m icu_plurals v2.2.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m icu_decimal_data v2.2.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m cmp_any v0.8.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m bumpalo v3.19.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m borrow-or-share v0.2.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m bit-vec v0.6.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m hpke v0.14.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m indenter v0.3.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-path v0.11.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m cbc v0.2.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m der v0.7.10\n\u001b[1m\u001b[92m  Downloaded\u001b[0m image v0.25.9\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gloo-utils v0.3.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m find-crate v0.6.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m enumflags2_derive v0.7.12\n\u001b[1m\u001b[92m  Downloaded\u001b[0m getrandom v0.3.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m imara-diff v0.2.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m lazy_static v1.5.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m heapless v0.8.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m itertools v0.14.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m macroific_core v2.0.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m macroific v3.0.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m macroific_macro v3.0.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m logos-codegen v0.15.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m matrix-pickle v0.2.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m indexmap v1.9.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m matrix-sdk-indexeddb v0.19.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m native-tls v0.2.14\n\u001b[1m\u001b[92m  Downloaded\u001b[0m image-webp v0.2.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m md5 v0.8.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m http v0.2.12\n\u001b[1m\u001b[92m  Downloaded\u001b[0m headers v0.4.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m num_threads v0.1.7\n\u001b[1m\u001b[92m  Downloaded\u001b[0m matrix_indexed_db_futures_macros_internal v1.0.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m fnv v1.0.7\n\u001b[1m\u001b[92m  Downloaded\u001b[0m matrix-pickle-derive v0.2.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m macroific_core v3.0.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m include_dir v0.7.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m i18n-embed v0.15.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ml-kem v0.2.3\n\u001b[1m\u001b[92m  Downloaded\u001b[0m either v1.15.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m objc2-io-surface v0.3.2\n\u001b[1m\u001b[92m  Downloaded\u001b[0m option-ext v0.2.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m onig v6.5.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m openssl-probe v0.2.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m once_cell v1.21.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m kasuari v0.4.12\n\u001b[1m\u001b[92m  Downloaded\u001b[0m local-waker v0.1.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m hyper-rustls v0.27.7\n\u001b[1m\u001b[92m  Downloaded\u001b[0m opentelemetry_sdk v0.31.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m pem-rfc7468 v0.7.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m opaque-debug v0.3.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m potential_utf v0.1.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m plist v1.9.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m portable-pty v0.9.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m polling v3.11.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m prost-derive v0.14.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m icu_locale v2.2.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m opentelemetry-appender-tracing v0.31.1\n\u001b[1m\u001b[92m  Downloaded\u001b[0m psl-types v2.0.11\n\u001b[1m\u001b[92m  Downloaded\u001b[0m quinn-udp v0.5.14\n\u001b[1m\u001b[92m  Downloaded\u001b[0m gix-worktree-stream v0.30.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m proptest v1.9.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m r-efi v6.0.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m aws-lc-sys v0.45.0\n\u001b[1m\u001b[92m  Downloaded\u001b[0m rama-utils v0.3.0-alpha.4\n\u001b[1m\u001b[92m  Downloaded\u001b[0m ratatui",
+        "preview_is_complete": false
+      },
+      "actual-locked-metadata": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "preview_utf8": "",
+        "preview_is_complete": true
+      }
+    },
+    "boundary": "Actual original formatting/metadata/lock generation; no native result inferred."
+  },
+  "evidence_verification": "passed",
+  "scope": "Read-only verification of original retained evidence; no new product execution or whole-CI admission.",
+  "output_count": 15,
+  "verified_report_sha256": "6914471a4eb5753f1ddfaa128466f56a0058c9015fa3768fe2f3c63c553a7e7e"
+}
