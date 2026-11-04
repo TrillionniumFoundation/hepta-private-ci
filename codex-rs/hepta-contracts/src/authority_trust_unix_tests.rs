@@ -267,3 +267,140 @@ fn actual_external_cas_is_exact_durable_and_never_replaced_by_local_state() -> T
     assert_eq!(client.load("issuer"), Err(AuthorityTrustError::Unavailable));
     Ok(())
 }
+
+#[test]
+fn actual_external_cas_epoch_rollover_cannot_reset_global_revocation_revision() -> TestResult<()> {
+    let root = tempfile::tempdir()?;
+    let initial = FinalUseFrontier {
+        authority_epoch: 5,
+        revocation_revision: 9,
+        state_sha256: [1; 32],
+    };
+    let service = frontier_service(root.path(), initial)?;
+    let client = UnixPqFinalUseFrontier::new(service.config.clone())?;
+    for invalid in [
+        FinalUseFrontier {
+            authority_epoch: 6,
+            revocation_revision: 1,
+            state_sha256: [2; 32],
+        },
+        FinalUseFrontier {
+            authority_epoch: 6,
+            revocation_revision: 9,
+            state_sha256: [2; 32],
+        },
+        FinalUseFrontier {
+            authority_epoch: 4,
+            revocation_revision: 10,
+            state_sha256: [2; 32],
+        },
+        FinalUseFrontier {
+            authority_epoch: 5,
+            revocation_revision: 8,
+            state_sha256: [2; 32],
+        },
+    ] {
+        assert_eq!(
+            client.compare_and_set("issuer", &initial, &invalid),
+            Err(AuthorityTrustError::Invalid)
+        );
+    }
+    assert_eq!(
+        service.requests.load(Ordering::Relaxed),
+        0,
+        "an invalid transition must be rejected before contacting the durable owner"
+    );
+    let stored: FinalUseFrontier =
+        serde_json::from_slice(&fs::read(root.path().join("external-frontier.json"))?)?;
+    assert_eq!(stored, initial);
+
+    // Consuming a nonce changes the complete state digest at the same head.
+    // It must remain a legal CAS, followed by a genuinely newer epoch/head.
+    let claimed = FinalUseFrontier {
+        state_sha256: [3; 32],
+        ..initial
+    };
+    assert_eq!(client.compare_and_set("issuer", &initial, &claimed), Ok(()));
+    assert_eq!(client.load("issuer"), Ok(claimed));
+    let advanced = FinalUseFrontier {
+        authority_epoch: 6,
+        revocation_revision: 10,
+        state_sha256: [4; 32],
+    };
+    assert_eq!(
+        client.compare_and_set("issuer", &claimed, &advanced),
+        Ok(())
+    );
+    assert_eq!(client.load("issuer"), Ok(advanced));
+    let stored: FinalUseFrontier =
+        serde_json::from_slice(&fs::read(root.path().join("external-frontier.json"))?)?;
+    assert_eq!(stored, advanced);
+    assert_eq!(service.requests.load(Ordering::Relaxed), 4);
+    Ok(())
+}
+
+#[test]
+fn invalid_frontier_rollover_is_refused_before_unavailable_transport() -> TestResult<()> {
+    let root = tempfile::tempdir()?;
+    let (_, pin) = key(/*seed*/ 82)?;
+    let client = UnixPqFinalUseFrontier::new(UnixPqTrustEndpointConfig {
+        socket_path: root.path().join("absent-frontier.sock"),
+        peer_uid: rustix::process::geteuid().as_raw(),
+        service_id: "frontier.sock".into(),
+        key_generation: 1,
+        public_key_id: pin.public_key_id,
+        public_key_spki: pin.public_key_spki,
+        timeout_ms: 2_000,
+    })?;
+    let initial = FinalUseFrontier {
+        authority_epoch: 5,
+        revocation_revision: 9,
+        state_sha256: [1; 32],
+    };
+    for invalid in [
+        FinalUseFrontier {
+            authority_epoch: 6,
+            revocation_revision: 1,
+            state_sha256: [2; 32],
+        },
+        FinalUseFrontier {
+            authority_epoch: 6,
+            revocation_revision: 9,
+            state_sha256: [2; 32],
+        },
+        FinalUseFrontier {
+            authority_epoch: 4,
+            revocation_revision: 10,
+            state_sha256: [2; 32],
+        },
+        FinalUseFrontier {
+            authority_epoch: 5,
+            revocation_revision: 8,
+            state_sha256: [2; 32],
+        },
+    ] {
+        assert_eq!(
+            client.compare_and_set("issuer", &initial, &invalid),
+            Err(AuthorityTrustError::Invalid),
+            "reject the transition before the unavailable endpoint is consulted"
+        );
+    }
+    for admissible in [
+        FinalUseFrontier {
+            state_sha256: [3; 32],
+            ..initial
+        },
+        FinalUseFrontier {
+            authority_epoch: 6,
+            revocation_revision: 10,
+            state_sha256: [4; 32],
+        },
+    ] {
+        assert_eq!(
+            client.compare_and_set("issuer", &initial, &admissible),
+            Err(AuthorityTrustError::Unavailable),
+            "an admissible transition must still obtain a durable external CAS"
+        );
+    }
+    Ok(())
+}

@@ -823,6 +823,17 @@ pub(crate) async fn verify_provider_effect_rows(pool: &SqlitePool) -> Result<(),
                 ));
             }
             if let Some(previous) = previous_ack.as_ref() {
+                // A status lookup establishes the authoritative recovery
+                // path. Reopening must reject the same late dispatch response
+                // that the live append boundary refuses, even when there was
+                // never a separate uncertainty marker.
+                if previous.source == ProviderEffectAckSource::StatusLookup
+                    && ack.source == ProviderEffectAckSource::DispatchResponse
+                {
+                    return Err(EvidenceError::Corrupt(
+                        "provider effect dispatch ACK follows status lookup".to_string(),
+                    ));
+                }
                 let uncertainty_between = uncertainty_rows.iter().any(|uncertainty_row| {
                     let recorded_at_ms = uncertainty_row.get::<i64, _>("recorded_at_ms");
                     recorded_at_ms > previous.recorded_at_ms && recorded_at_ms < ack.recorded_at_ms

@@ -151,6 +151,54 @@ The compatibility `open_state_dir` path uses the process system clock and no
 external rollback oracle. It remains useful for qualification/backward source
 compatibility but is not a production anti-rollback or attested-time claim.
 
+An `AuthorityFrontierStore::load` must observe the one authoritative frontier
+during that call; a cached, stale replica response cannot supply freshness. Its
+CAS compares the complete expected checkpoint and preserves the global
+revocation revision across epoch transitions. A larger epoch with a smaller or
+unchanged revision is refused before transport. A successful load is an
+observation, not a lease that excludes another writer, and neither a load nor a
+CAS receipt proves that a provider effect completed.
+
+### Ledger recovery and provider effects have separate owners
+
+A chain reorganization may replay ledger state. It must not refund a consumed
+FinalUse nonce, retire less key history, or forget an effect that may already
+have occurred. The contracts for an external effect remain four distinct steps:
+
+| Step | Required durable fact and boundary |
+| --- | --- |
+| Prepare | Persist the logical operation identity, authorization binding, exact payload digest and the owning runtime's budget reservation before entering the provider. Intent alone is not execution. |
+| Claim | Compare the complete independently fresh predecessor and atomically consume the execution permission while checking the current revocation head. An uncertain result retains the same identity. |
+| Execute | Give the provider the stable `ProviderEffectKey`; physical attempts and per-send nonces must not create a new logical effect. |
+| Confirm or reconcile | Store a key/payload/operation-bound acknowledgement, or retain the pending/indeterminate state and query that same identity. `Accepted` does not mean `Completed`. |
+
+`provider_effect.rs` supplies the separate effect contract. The
+`hepta-evidence` qualification facade persists intent and a dispatch-boundary
+quarantine before adapter entry; imported Pending intents and unknown outcomes
+cannot authorize another dispatch. Its SQLite restart verifier also preserves
+acknowledgement provenance: once a durably recorded StatusLookup acknowledgement exists, a
+later DispatchResponse acknowledgement cannot establish completion. The live
+append rule and cold recovery rule must agree even when all record digests and
+operation identities are individually valid. Identical acknowledgements may
+reuse an existing row, so replaying an identical ACK does not itself establish
+fresh lookup provenance or a complete history of every observation.
+
+That facade is not a registered production caller and does not compose the
+FinalUse frontier, a budget owner and the effect journal into one externally
+durable transaction. The evidence recovery snapshot does not cover its provider
+effect tables. Chain's three-table `PqWitnessV4` cannot supply that missing
+coverage. A production composition still needs an append-consistent effect
+checkpoint, expected-old advancement and atomic durable witness state before
+co-signing. A signed counter by itself is insufficient.
+
+If a provider lacks durable idempotency and authoritative status lookup, keep
+the effect unresolved; local logs cannot promise arbitrary external exactly-once
+execution. If every replica, witness and backup can return to the same old
+snapshot, their old contents cannot establish the missing later history. At
+least one independently fresh failure domain is therefore required. Its outage
+may stop new related effects. That availability cost is an acceptance condition,
+and the witness gains neither PoN fork-choice authority nor grant-issuing power.
+
 ### Windows work within the existing PN0 storage item
 
 Windows remains unsupported by this owner. The C2a read-only descriptor utility

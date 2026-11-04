@@ -120,6 +120,10 @@ mod provider_claim_tests;
 mod provider_effect_tests;
 
 #[cfg(test)]
+#[path = "provider_effect_recovery_provenance_tests.rs"]
+mod provider_effect_recovery_provenance_tests;
+
+#[cfg(test)]
 #[path = "summary_tests.rs"]
 mod summary_tests;
 

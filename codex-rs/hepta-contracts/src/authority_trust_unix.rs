@@ -345,9 +345,13 @@ fn validate_operation(operation: &PqTrustOperationV2) -> Result<(), AuthorityTru
         } if identifier(owner_id)
             && valid_frontier(expected)
             && valid_frontier(next)
-            && (next.authority_epoch > expected.authority_epoch
-                || (next.authority_epoch == expected.authority_epoch
-                    && next.revocation_revision >= expected.revocation_revision)) =>
+            && next.authority_epoch >= expected.authority_epoch
+            && next.revocation_revision >= expected.revocation_revision
+            // The revocation revision is one owner-global sequence. Epoch
+            // rollover cannot reset it; only same-epoch nonce consumption may
+            // change the state digest without advancing the revocation head.
+            && (next.authority_epoch == expected.authority_epoch
+                || next.revocation_revision > expected.revocation_revision) =>
         {
             Ok(())
         }

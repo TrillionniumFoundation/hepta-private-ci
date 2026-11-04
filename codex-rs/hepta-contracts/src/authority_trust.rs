@@ -54,9 +54,26 @@ impl AuthorityClock for SystemAuthorityClock {
 /// the corresponding local state. If the local commit then fails, the owner
 /// fences itself; reopening observes an external frontier ahead of local state
 /// and fails closed until operator recovery.
+///
+/// All clients for an owner must share the same linearizable state. `load`
+/// returns a fresh observation ordered between its invocation and completion;
+/// a cached checkpoint or a lagging replica must not be reported as current.
+/// The observation does not lease the frontier against later changes or prove
+/// that an already-entered external effect has completed.
+///
+/// The full value, including any state digest, participates in the comparison.
+/// A revision counter alone cannot preserve consumed rights or revocations.
+/// An uncertain write may have committed: callers must keep the operation's
+/// existing identity and fail closed until reconciliation, rather than treat
+/// an error as proof of no effect. Implementations must bound unavailability
+/// and return an error when freshness or durable completion is unknown.
 pub trait AuthorityFrontierStore<F>: Send + Sync {
+    /// Observe this owner's current durable frontier with the consistency
+    /// contract above; never substitute a local or cached recovery checkpoint.
     fn load(&self, owner_id: &str) -> Result<F, AuthorityTrustError>;
 
+    /// Atomically compare the complete expected value and durably install the
+    /// complete next value. `Ok(())` means the write has durably committed.
     fn compare_and_set(
         &self,
         owner_id: &str,
