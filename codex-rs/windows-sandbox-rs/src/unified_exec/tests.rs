@@ -685,6 +685,29 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
     runtime.block_on(async move {
         // Keep writable roots out of USERPROFILE exclusions such as AppData.
         let test_root = TempDir::new_in(sandbox_cwd()).expect("create legacy delete test root");
+        // A CI checkout can grant modification only through Administrators, which
+        // the normal sandbox token filters out. Give this owned fixture's logon
+        // identity modify access before its children inherit their permissions.
+        // Capability checks must still refuse the outside and protected paths.
+        {
+            // SAFETY: the successful token handle is immediately owned below.
+            let base = unsafe { crate::token::get_current_token_for_restriction() }
+                .expect("open legacy fixture identity token");
+            // SAFETY: the token factory returned a new handle owned by this scope.
+            let base = unsafe { OwnedHandle::from_raw_handle(base as _) };
+            // SAFETY: base stays open while the copied logon SID is obtained.
+            let mut logon_sid =
+                unsafe { crate::token::get_logon_sid_bytes(base.as_raw_handle() as _) }
+                    .expect("read legacy fixture logon identity");
+            // SAFETY: the SID bytes and owned fixture remain live through the call.
+            unsafe {
+                crate::acl::ensure_allow_write_aces(
+                    test_root.path(),
+                    &[logon_sid.as_mut_ptr().cast()],
+                )
+            }
+            .expect("grant normal identity modify access to the owned legacy fixture");
+        }
         let codex_home = sandbox_home("legacy-delete-writable-roots");
         let workspace = test_root.path().join("workspace");
         let temp_root = test_root.path().join("temp");
