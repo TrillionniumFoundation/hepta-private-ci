@@ -52,6 +52,66 @@ pub struct RootAuthorityDirectory {
 type DurabilityHook = Arc<dyn Fn() -> std::io::Result<()> + Send + Sync>;
 
 impl RootAuthorityDirectory {
+    /// Identity of this retained, checked directory descriptor. Paths alone
+    /// cannot establish isolation between independently protected frontiers.
+    /// These public observations confer no directory or writer capability.
+    pub fn descriptor_identity(&self) -> Result<(u64, u64), AuthorityTrustError> {
+        check_directory(&self.directory, self.owner_uid, DirectoryAccess::Private)?;
+        let metadata = self.directory.metadata().map_err(unavailable)?;
+        Ok((metadata.dev(), metadata.ino()))
+    }
+
+    /// Open one existing child relative to the retained Root descriptor.
+    /// Missing state is an error. This path never initializes or repairs it.
+    pub fn open_existing_child(&self, name: &str) -> Result<Arc<Self>, AuthorityTrustError> {
+        check_child_name(name)?;
+        if rustix::process::geteuid().as_raw() != self.owner_uid {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        self.descriptor_identity()?;
+        let directory = open_directory(Some(&self.directory), Path::new(name))?;
+        check_directory(&directory, self.owner_uid, DirectoryAccess::Private)?;
+        Ok(Arc::new(Self {
+            directory,
+            owner_uid: self.owner_uid,
+            #[cfg(test)]
+            before_directory_sync: std::sync::Mutex::new(None),
+        }))
+    }
+
+    /// Explicit fresh provisioning of one absent child. Existing directories,
+    /// including interrupted provisioning, are conflicts. On any later error
+    /// the partial directory remains for independent administrative recovery;
+    /// runtime open must never turn that state back into a fresh genesis.
+    pub fn create_child_fresh(&self, name: &str) -> Result<Arc<Self>, AuthorityTrustError> {
+        check_child_name(name)?;
+        if rustix::process::geteuid().as_raw() != self.owner_uid {
+            return Err(AuthorityTrustError::Invalid);
+        }
+        self.descriptor_identity()?;
+        rustix::fs::mkdirat(&self.directory, name, Mode::RWXU).map_err(|error| {
+            if error == rustix::io::Errno::EXIST {
+                AuthorityTrustError::Conflict
+            } else {
+                AuthorityTrustError::Unavailable
+            }
+        })?;
+        let directory = open_directory(Some(&self.directory), Path::new(name))?;
+        // A newly created directory can inherit setgid. Only this just-created
+        // descriptor is changed; existing or partial entries never reach here.
+        rustix::fs::fchmod(&directory, Mode::RWXU)
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        check_directory(&directory, self.owner_uid, DirectoryAccess::Private)?;
+        directory.sync_all().map_err(unavailable)?;
+        self.sync_directory()?;
+        Ok(Arc::new(Self {
+            directory,
+            owner_uid: self.owner_uid,
+            #[cfg(test)]
+            before_directory_sync: std::sync::Mutex::new(None),
+        }))
+    }
+
     /// Open an existing mode-0700 root-owned authority directory. The caller
     /// must be the root broker; initialization/deployment creates it first.
     pub fn open(path: &Path) -> Result<Arc<Self>, AuthorityTrustError> {
@@ -153,6 +213,16 @@ impl RootAuthorityDirectory {
         }
         self.directory.sync_all().map_err(unavailable)
     }
+}
+
+fn check_child_name(name: &str) -> Result<(), AuthorityTrustError> {
+    if name.is_empty()
+        || name.len() > 128
+        || !name.bytes().all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_'))
+    {
+        return Err(AuthorityTrustError::Invalid);
+    }
+    Ok(())
 }
 
 fn open_directory(parent: Option<&File>, path: &Path) -> Result<File, AuthorityTrustError> {

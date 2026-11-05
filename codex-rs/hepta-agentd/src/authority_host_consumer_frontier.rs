@@ -21,7 +21,9 @@ struct SessionState {
     closed: bool,
 }
 
-/// One of the two existing consumer stores, not a third consumer or nonce log.
+/// One fixed consumer store, never a local nonce journal or an issuer. The
+/// original Device/Notes callers retain their own registrations; dedicated
+/// Worker provisioning must establish a separate actual Root directory.
 /// The service must pin the actual peer/pidfd and execute this adapter inside
 /// the original live writer-lease dispatch fence. `observed_head` must come
 /// from the same protected issuer within that fence, never from peer JSON.
