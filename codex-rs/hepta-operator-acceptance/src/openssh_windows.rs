@@ -32,6 +32,9 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FileDispositionInfo;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
 use windows_sys::Win32::System::SystemInformation::GetSystemDirectoryW;
+use windows_sys::Win32::UI::Shell::CSIDL_COMMON_APPDATA;
+use windows_sys::Win32::UI::Shell::SHGFP_TYPE_CURRENT;
+use windows_sys::Win32::UI::Shell::SHGetFolderPathW;
 
 use crate::AcceptanceError;
 
@@ -302,6 +305,35 @@ impl TrustedOpenSsh {
     }
 }
 
+fn system_program_data() -> Result<PathBuf, AcceptanceError> {
+    // This read-only OS query resolves ProgramData without trusting the caller's
+    // environment. No CSIDL_FLAG_CREATE is supplied. The API requires MAX_PATH
+    // UTF-16 units, including the terminator, in the caller-owned buffer.
+    let mut buffer = [0_u16; 260];
+    // SAFETY: the buffer has the documented capacity; null HWND/token select
+    // the current process, and both constants are valid read-only query values.
+    let status = unsafe {
+        SHGetFolderPathW(
+            0,
+            CSIDL_COMMON_APPDATA as i32,
+            0,
+            SHGFP_TYPE_CURRENT as u32,
+            buffer.as_mut_ptr(),
+        )
+    };
+    if status != 0 {
+        return Err(invalid("Windows ProgramData directory is unavailable"));
+    }
+    let Some(length) = buffer.iter().position(|unit| *unit == 0) else {
+        return Err(invalid("Windows ProgramData directory exceeds its bound"));
+    };
+    let path = PathBuf::from(OsString::from_wide(&buffer[..length]));
+    if length == 0 || !path.is_absolute() {
+        return Err(invalid("Windows ProgramData directory is not absolute"));
+    }
+    Ok(path)
+}
+
 // Verification is serialized for this process. At most one child whose
 // termination is unknown can retain its input/executable pins.
 static PENDING_VERIFIER: Mutex<Option<ActiveVerifier>> = Mutex::new(None);
@@ -350,6 +382,7 @@ pub(crate) fn verify(
     reconcile_pending(&mut pending)?;
     let inputs = Inputs::new(allowed_signers, signature)?;
     let verifier = TrustedOpenSsh::open()?;
+    let program_data = system_program_data()?;
     inputs.verify()?;
     let system_root = verifier
         .system_directory
@@ -366,6 +399,8 @@ pub(crate) fn verify(
         // Windows side-by-side loading needs SystemRoot. Derive it from the
         // trusted OS API, never the caller's environment.
         .env("SystemRoot", system_root)
+        // OpenSSH initializes this mandatory path before its argument parser.
+        .env("ProgramData", program_data)
         .env("LANG", "C")
         .env("LC_ALL", "C")
         .current_dir(&verifier.system_directory)
