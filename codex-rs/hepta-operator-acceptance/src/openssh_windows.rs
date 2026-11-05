@@ -369,7 +369,16 @@ pub(crate) fn verify(
         .current_dir(&verifier.system_directory)
         .stdin(Stdio::piped())
         .stdout(Stdio::null())
-        .stderr(Stdio::null())
+        .stderr({
+            #[cfg(test)]
+            {
+                Stdio::inherit()
+            }
+            #[cfg(not(test))]
+            {
+                Stdio::null()
+            }
+        })
         .spawn()
         .map_err(|error| {
             invalid(format!(
@@ -397,10 +406,16 @@ pub(crate) fn verify(
     };
     write_result?;
     inputs.verify()?;
-    if identity(&verifier.file, Kind::File)? != verifier.id || !status.success() {
+    if identity(&verifier.file, Kind::File)? != verifier.id {
         return Err(invalid(
-            "trusted Windows OpenSSH SSHSIG verification failed",
+            "trusted Windows OpenSSH identity changed during verification",
         ));
+    }
+    if !status.success() {
+        let exit_code = status.code();
+        return Err(invalid(format!(
+            "trusted Windows OpenSSH SSHSIG verification failed (exit code: {exit_code:?})"
+        )));
     }
     Ok(())
 }
