@@ -1,4 +1,3 @@
-use std::fs::File;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
@@ -7,7 +6,6 @@ use std::time::Duration;
 
 use self::http_client::StartupSyncHttpClient;
 use self::http_client::StartupSyncRequestBuilder;
-use codex_http_client::HttpClientFactory;
 use codex_login::default_client::default_headers;
 use codex_otel::CURATED_PLUGINS_STARTUP_SYNC_FINAL_METRIC;
 use codex_otel::CURATED_PLUGINS_STARTUP_SYNC_METRIC;
@@ -19,11 +17,18 @@ use zip::ZipArchive;
 
 mod http_client;
 
+#[path = "startup_sync_execution.rs"]
+mod execution;
+pub use execution::sync_openai_plugins_repo;
+#[cfg(test)]
+use execution::sync_openai_plugins_repo_via_http;
+#[cfg(test)]
+use execution::sync_openai_plugins_repo_with_transport_overrides;
+
 #[path = "startup_sync_git.rs"]
 mod git;
+#[cfg(test)]
 use git::sync_openai_plugins_repo_via_git;
-#[cfg(target_os = "macos")]
-use git::apple_developer_tools_available;
 
 const GITHUB_API_BASE_URL: &str = "https://api.github.com";
 const GITHUB_API_ACCEPT_HEADER: &str = "application/vnd.github+json";
@@ -77,173 +82,6 @@ pub fn read_curated_plugins_sha(codex_home: &Path) -> Option<String> {
 
 fn curated_plugins_sha_path(codex_home: &Path) -> PathBuf {
     codex_home.join(CURATED_PLUGINS_SHA_FILE)
-}
-
-pub fn sync_openai_plugins_repo(
-    codex_home: &Path,
-    http_client_factory: HttpClientFactory,
-) -> Result<String, String> {
-    #[cfg(target_os = "macos")]
-    let git_binary = match which::which("git") {
-        Ok(git_path) => macos_git_binary_from_path(git_path, apple_developer_tools_available()),
-        Err(_) => None,
-    };
-    #[cfg(not(target_os = "macos"))]
-    let git_binary = Some(PathBuf::from("git"));
-
-    sync_openai_plugins_repo_with_transport_overrides(
-        codex_home,
-        git_binary.as_deref(),
-        GITHUB_API_BASE_URL,
-        CURATED_PLUGINS_BACKUP_ARCHIVE_API_URL,
-        &http_client_factory,
-    )
-}
-
-fn sync_openai_plugins_repo_with_transport_overrides(
-    codex_home: &Path,
-    git_binary: Option<&Path>,
-    api_base_url: &str,
-    backup_archive_api_url: &str,
-    http_client_factory: &HttpClientFactory,
-) -> Result<String, String> {
-    let _file_guard = lock_curated_plugins_startup_sync(codex_home)?;
-
-    let git_sync_result = match git_binary {
-        Some(git_binary) => sync_openai_plugins_repo_via_git(codex_home, git_binary),
-        None => Err("git executable is unavailable".to_string()),
-    };
-
-    match git_sync_result {
-        Ok(remote_sha) => {
-            emit_curated_plugins_startup_sync_metric("git", "success");
-            emit_curated_plugins_startup_sync_final_metric("git", "success");
-            Ok(remote_sha)
-        }
-        Err(err) => {
-            emit_curated_plugins_startup_sync_metric("git", "failure");
-            warn!(
-                error = %err,
-                "git sync failed for curated plugin sync; falling back to GitHub HTTP"
-            );
-            match sync_openai_plugins_repo_via_http(codex_home, api_base_url, http_client_factory) {
-                Ok(remote_sha) => {
-                    emit_curated_plugins_startup_sync_metric("http", "success");
-                    emit_curated_plugins_startup_sync_final_metric("http", "success");
-                    Ok(remote_sha)
-                }
-                Err(http_err) => {
-                    emit_curated_plugins_startup_sync_metric("http", "failure");
-                    if has_local_curated_plugins_snapshot(codex_home) {
-                        emit_curated_plugins_startup_sync_final_metric("http", "failure");
-                        warn!(
-                            error = %http_err,
-                            "GitHub HTTP sync failed for curated plugin sync; skipping export archive fallback because a local curated plugins snapshot already exists"
-                        );
-                        Err(format!(
-                            "git sync failed for curated plugin sync: {err}; GitHub HTTP sync failed for curated plugin sync: {http_err}; export archive fallback skipped because a local curated plugins snapshot already exists"
-                        ))
-                    } else {
-                        // The export archive is a lagging backup path. Only use it to bootstrap a
-                        // missing local curated snapshot, never to refresh an existing one.
-                        warn!(
-                            error = %http_err,
-                            backup_archive_api_url,
-                            "GitHub HTTP sync failed for curated plugin sync; falling back to export archive"
-                        );
-                        let result = sync_openai_plugins_repo_via_backup_archive(
-                            codex_home,
-                            backup_archive_api_url,
-                            http_client_factory,
-                        );
-                        let status = if result.is_ok() { "success" } else { "failure" };
-                        emit_curated_plugins_startup_sync_metric("export_archive", status);
-                        emit_curated_plugins_startup_sync_final_metric("export_archive", status);
-                        result.map_err(|export_err| {
-                            format!(
-                                "git sync failed for curated plugin sync: {err}; GitHub HTTP sync failed for curated plugin sync: {http_err}; export archive sync failed for curated plugin sync: {export_err}"
-                            )
-                        })
-                    }
-                }
-            }
-        }
-    }
-}
-
-fn lock_curated_plugins_startup_sync(codex_home: &Path) -> Result<File, String> {
-    let lock_path = codex_home.join(CURATED_PLUGINS_SYNC_LOCK_FILE);
-    std::fs::create_dir_all(codex_home.join(".tmp"))
-        .map_err(|err| format!("failed to create curated plugins sync directory: {err}"))?;
-    let lock_file = File::options()
-        .write(true)
-        .create(true)
-        .truncate(false)
-        .open(&lock_path)
-        .map_err(|err| format!("failed to open curated plugins sync lock: {err}"))?;
-    lock_file
-        .lock()
-        .map_err(|err| format!("failed to lock curated plugins sync: {err}"))?;
-    Ok(lock_file)
-}
-
-fn sync_openai_plugins_repo_via_http(
-    codex_home: &Path,
-    api_base_url: &str,
-    http_client_factory: &HttpClientFactory,
-) -> Result<String, String> {
-    let repo_path = curated_plugins_repo_path(codex_home);
-    let sha_path = codex_home.join(CURATED_PLUGINS_SHA_FILE);
-    let runtime = tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()
-        .map_err(|err| format!("failed to create curated plugins sync runtime: {err}"))?;
-    let http_clients = StartupSyncHttpClient::new(http_client_factory);
-    let remote_sha =
-        runtime.block_on(fetch_curated_repo_remote_sha(&http_clients, api_base_url))?;
-    let local_sha = read_sha_file(&sha_path);
-
-    if local_sha.as_deref() == Some(remote_sha.as_str()) && repo_path.is_dir() {
-        return Ok(remote_sha);
-    }
-
-    let staged_repo_dir = prepare_curated_repo_parent_and_temp_dir(&repo_path)?;
-    let zipball_bytes = runtime.block_on(fetch_curated_repo_zipball(
-        &http_clients,
-        api_base_url,
-        &remote_sha,
-    ))?;
-    extract_zipball_to_dir(&zipball_bytes, staged_repo_dir.path())?;
-    ensure_marketplace_manifest_exists(staged_repo_dir.path())?;
-    activate_curated_repo(&repo_path, staged_repo_dir)?;
-    write_curated_plugins_sha(&sha_path, &remote_sha)?;
-    Ok(remote_sha)
-}
-
-fn sync_openai_plugins_repo_via_backup_archive(
-    codex_home: &Path,
-    backup_archive_api_url: &str,
-    http_client_factory: &HttpClientFactory,
-) -> Result<String, String> {
-    let repo_path = curated_plugins_repo_path(codex_home);
-    let sha_path = curated_plugins_sha_path(codex_home);
-    let runtime = tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()
-        .map_err(|err| format!("failed to create curated plugins sync runtime: {err}"))?;
-    let staged_repo_dir = prepare_curated_repo_parent_and_temp_dir(&repo_path)?;
-    let http_clients = StartupSyncHttpClient::new(http_client_factory);
-    let zipball_bytes = runtime.block_on(fetch_curated_repo_backup_archive_zip(
-        &http_clients,
-        backup_archive_api_url,
-    ))?;
-    extract_zipball_to_dir(&zipball_bytes, staged_repo_dir.path())?;
-    ensure_marketplace_manifest_exists(staged_repo_dir.path())?;
-    let export_version = read_extracted_backup_archive_git_sha(staged_repo_dir.path())?
-        .unwrap_or_else(|| CURATED_PLUGINS_BACKUP_ARCHIVE_FALLBACK_VERSION.to_string());
-    activate_curated_repo(&repo_path, staged_repo_dir)?;
-    write_curated_plugins_sha(&sha_path, &export_version)?;
-    Ok(export_version)
 }
 
 pub fn has_local_curated_plugins_snapshot(codex_home: &Path) -> bool {
