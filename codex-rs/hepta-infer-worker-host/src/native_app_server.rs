@@ -699,16 +699,15 @@ impl AppServerModelDriver {
             let cancel_recorded = control.cancel_native(request_id);
             #[cfg(all(test, unix))]
             failure_tests::pause_after_observation_journal(request_id).await;
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel_bound(
                         binding.expected_run_binding(revision),
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Attempt physical cleanup even if either journal append failed.
             // The retained error still fences settlement and later admission.
