@@ -50,9 +50,7 @@ Every unknown result keeps its original operation and target identity.
 Use Rust 1.96 and the original entry point:
 
 ```text
-just test -p codex-hepta-agentd --lib deployment_desktop --locked --offline --test-threads 1
-just test -p codex-hepta-agentd --lib deployment_notes --locked --offline --test-threads 1
-just test -p codex-hepta-agentd --lib deployment_writer_rotate --locked --offline --test-threads 1
+just test -p codex-hepta-agentd --lib --locked --offline --test-threads 1 -E 'test(desktop_policy_) | test(deployment_issuer::notes::tests) | test(deployment_issuer::writer)'
 just fix -p codex-hepta-agentd
 just fmt
 ```
