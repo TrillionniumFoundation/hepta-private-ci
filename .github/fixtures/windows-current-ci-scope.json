@@ -332,7 +332,7 @@
     {
       "id": "core-explicit-termination-deadline",
       "package": "codex-core",
-      "expectedTestCount": 10,
+      "expectedTestCount": 13,
       "requiredTests": [
         "unified_exec::process::observation_tests::deadline_tests::explicit_deadline_waits_for_original_result_before_removing_entry",
         "unified_exec::process::observation_tests::deadline_tests::expired_deadline_never_requests_termination_or_releases_entry",
@@ -343,9 +343,12 @@
         "unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_bounds_unacknowledged_remote_request",
         "unified_exec::process::remote_observation_tests::deadline_tests::cancelled_remote_deadline_observation_never_turns_ack_into_exit",
         "unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_preserves_native_exit_without_numeric_code",
-        "unified_exec::process::observation_tests::deadline_tests::post_exit_store_lock_timeout_retains_entry_and_original_result"
+        "unified_exec::process::observation_tests::deadline_tests::post_exit_store_lock_timeout_retains_entry_and_original_result",
+        "unified_exec::process::observation_tests::deadline_tests::active_initial_owner_prevents_cleanup_confirmation",
+        "unified_exec::process::observation_tests::deadline_tests::removed_entry_does_not_prove_original_cleanup_complete",
+        "unified_exec::process::observation_tests::deadline_tests::replaced_entry_is_retained_without_confirming_original_cleanup"
       ],
-      "filter": "test(=unified_exec::process::observation_tests::deadline_tests::explicit_deadline_waits_for_original_result_before_removing_entry) | test(=unified_exec::process::observation_tests::deadline_tests::expired_deadline_never_requests_termination_or_releases_entry) | test(=unified_exec::process::observation_tests::deadline_tests::deadline_waiter_loss_retains_original_entry_without_fake_exit) | test(=unified_exec::process::observation_tests::deadline_tests::explicit_deadline_also_bounds_store_lock_before_effect) | test(=unified_exec::process::observation_tests::deadline_tests::cancelled_deadline_observation_keeps_owner_and_late_native_fact) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_waits_for_original_remote_exit_after_ack) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_bounds_unacknowledged_remote_request) | test(=unified_exec::process::remote_observation_tests::deadline_tests::cancelled_remote_deadline_observation_never_turns_ack_into_exit) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_preserves_native_exit_without_numeric_code) | test(=unified_exec::process::observation_tests::deadline_tests::post_exit_store_lock_timeout_retains_entry_and_original_result)"
+      "filter": "test(=unified_exec::process::observation_tests::deadline_tests::explicit_deadline_waits_for_original_result_before_removing_entry) | test(=unified_exec::process::observation_tests::deadline_tests::expired_deadline_never_requests_termination_or_releases_entry) | test(=unified_exec::process::observation_tests::deadline_tests::deadline_waiter_loss_retains_original_entry_without_fake_exit) | test(=unified_exec::process::observation_tests::deadline_tests::explicit_deadline_also_bounds_store_lock_before_effect) | test(=unified_exec::process::observation_tests::deadline_tests::cancelled_deadline_observation_keeps_owner_and_late_native_fact) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_waits_for_original_remote_exit_after_ack) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_bounds_unacknowledged_remote_request) | test(=unified_exec::process::remote_observation_tests::deadline_tests::cancelled_remote_deadline_observation_never_turns_ack_into_exit) | test(=unified_exec::process::remote_observation_tests::deadline_tests::explicit_deadline_preserves_native_exit_without_numeric_code) | test(=unified_exec::process::observation_tests::deadline_tests::post_exit_store_lock_timeout_retains_entry_and_original_result) | test(=unified_exec::process::observation_tests::deadline_tests::active_initial_owner_prevents_cleanup_confirmation) | test(=unified_exec::process::observation_tests::deadline_tests::removed_entry_does_not_prove_original_cleanup_complete) | test(=unified_exec::process::observation_tests::deadline_tests::replaced_entry_is_retained_without_confirming_original_cleanup)"
     }
   ]
 }

@@ -234,3 +234,113 @@ async fn post_exit_store_lock_timeout_retains_entry_and_original_result() -> Res
     assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);
     Ok(())
 }
+
+#[tokio::test]
+async fn active_initial_owner_prevents_cleanup_confirmation() -> Result<()> {
+    let mut fixture = RegisteredFixture::new().await?;
+    let active = {
+        let store = fixture.manager.process_store.lock().await;
+        Arc::clone(
+            &store
+                .processes
+                .get(&PROCESS_ID)
+                .context("original entry")?
+                .initial_exec_command_active,
+        )
+    };
+    active.store(true, Ordering::Release);
+    let manager = Arc::clone(&fixture.manager);
+    let deadline = Instant::now() + Duration::from_secs(2);
+    let mut operation = Box::pin(manager.terminate_process_until(PROCESS_ID, deadline));
+    assert!(futures::poll!(operation.as_mut()).is_pending());
+    fixture.native_exit(97)?;
+    let first_result = operation.await;
+    assert!(!first_result);
+    assert!(fixture.process.has_exited());
+    assert_eq!(fixture.process.exit_code(), Some(97));
+    assert!(fixture.original_entry_is_retained().await);
+    assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);
+
+    // Only the original initial owner releases this flag. A separate explicit
+    // observation may clean up within the same end; it cannot rewrite the first result.
+    active.store(false, Ordering::Release);
+    assert!(manager.terminate_process_until(PROCESS_ID, deadline).await);
+    assert!(!fixture.original_entry_is_retained().await);
+    assert!(!first_result);
+    assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);
+    Ok(())
+}
+
+#[tokio::test]
+async fn removed_entry_does_not_prove_original_cleanup_complete() -> Result<()> {
+    let mut fixture = RegisteredFixture::new().await?;
+    let manager = Arc::clone(&fixture.manager);
+    let deadline = Instant::now() + Duration::from_secs(2);
+    let mut operation = Box::pin(manager.terminate_process_until(PROCESS_ID, deadline));
+    assert!(futures::poll!(operation.as_mut()).is_pending());
+    // Other manager paths remove before awaiting approval unregistration.
+    // Absence alone must not serve as that asynchronous cleanup receipt.
+    let removed = manager
+        .process_store
+        .lock()
+        .await
+        .remove(PROCESS_ID)
+        .context("original entry")?;
+    assert!(Arc::ptr_eq(&removed.process, &fixture.process));
+    fixture.native_exit(101)?;
+    assert!(!operation.await);
+    assert!(fixture.process.has_exited());
+    assert_eq!(fixture.process.exit_code(), Some(101));
+    assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);
+    assert!(!fixture.original_entry_is_retained().await);
+    Ok(())
+}
+
+#[tokio::test]
+async fn replaced_entry_is_retained_without_confirming_original_cleanup() -> Result<()> {
+    let mut fixture = RegisteredFixture::new().await?;
+    let mut replacement = RegisteredFixture::new().await?;
+    let manager = Arc::clone(&fixture.manager);
+    let deadline = Instant::now() + Duration::from_secs(2);
+    let mut operation = Box::pin(manager.terminate_process_until(PROCESS_ID, deadline));
+    assert!(futures::poll!(operation.as_mut()).is_pending());
+    let next_entry = replacement
+        .manager
+        .process_store
+        .lock()
+        .await
+        .remove(PROCESS_ID)
+        .context("replacement entry")?;
+    let old_entry = manager
+        .process_store
+        .lock()
+        .await
+        .processes
+        .insert(PROCESS_ID, next_entry)
+        .context("original entry")?;
+    assert!(Arc::ptr_eq(&old_entry.process, &fixture.process));
+    fixture.native_exit(103)?;
+    let first_result = operation.await;
+    assert!(!first_result);
+    {
+        let store = manager.process_store.lock().await;
+        assert!(store.reserved_process_ids.contains(&PROCESS_ID));
+        assert!(Arc::ptr_eq(
+            &store
+                .processes
+                .get(&PROCESS_ID)
+                .context("retained replacement")?
+                .process,
+            &replacement.process,
+        ));
+    }
+    assert!(!replacement.process.has_exited());
+    assert_eq!(replacement.terminations.load(Ordering::SeqCst), 0);
+    replacement.native_exit(107)?;
+    replacement.wait_for_exit().await?;
+    assert!(manager.terminate_process_until(PROCESS_ID, deadline).await);
+    assert!(!first_result);
+    assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);
+    assert_eq!(replacement.terminations.load(Ordering::SeqCst), 0);
+    Ok(())
+}

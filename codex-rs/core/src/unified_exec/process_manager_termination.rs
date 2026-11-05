@@ -35,12 +35,14 @@ impl UnifiedExecProcessManager {
                 return false;
             }
             let Some(entry) = store.processes.get(&process_id) else {
-                return true;
+                // Other paths remove before asynchronous approval cleanup.
+                // Absence alone does not confirm that cleanup has completed.
+                return false;
             };
             if !Arc::ptr_eq(&entry.process, &process)
                 || entry.initial_exec_command_active.load(Ordering::Acquire)
             {
-                return true;
+                return false;
             }
             (entry.session.upgrade(), entry.network_approval.clone())
         };
@@ -71,12 +73,12 @@ impl UnifiedExecProcessManager {
             return false;
         }
         let Some(entry) = store.processes.get(&process_id) else {
-            return true;
+            return false;
         };
         if !Arc::ptr_eq(&entry.process, &process)
             || entry.initial_exec_command_active.load(Ordering::Acquire)
         {
-            return true;
+            return false;
         }
         store.remove(process_id).is_some()
     }

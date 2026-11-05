@@ -938,6 +938,8 @@ impl CodexThread {
     /// an expired or cancelled observation keeps unresolved ownership intact.
     /// This method supplies no default duration and does not extend a command's
     /// own deadline or convert a previous failure into success.
+    /// Confirmation also requires this operation to complete manager cleanup;
+    /// an active initial owner, absent entry, or replacement is not confirmation.
     pub async fn terminate_background_terminal_until(
         &self,
         process_id: i32,
