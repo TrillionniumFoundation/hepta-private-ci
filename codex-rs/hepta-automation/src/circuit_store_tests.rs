@@ -187,3 +187,45 @@ async fn bounded_circuit_migration_coexists_with_existing_v1_definition() {
     assert_eq!(store.taskflow_definition("circuit:legacy-dag", /*version*/ 1).await.expect("unchanged V1"), before);
     store.close().await;
 }
+
+#[tokio::test]
+async fn frozen_join_reference_bytes_survive_canonical_replay_and_reopen() {
+    let (directory, store) = store().await;
+    let definition = crate::circuit_runtime_tests::join_definition(CircuitJoinV2::All);
+    let created = store.create_bounded_circuit_run(&definition, &start(), &fence(/*generation*/ 1))
+        .await.expect("create");
+    let fork = store.apply_bounded_circuit_command(&command(&created.run, "fork", CircuitEventV2::Advance { quantum: 1 }))
+        .await.expect("fork dispatch");
+    let mut fork_receipt = completion(&fork.dispatches[0], &["fork-left", "fork-right"], "fork-output");
+    fork_receipt.actual_work = 1;
+    let completed = store.apply_bounded_circuit_command(&command(&fork.run, "fork-complete",
+        CircuitEventV2::Complete { completion: fork_receipt })).await.expect("fork completion");
+    let branches = store.apply_bounded_circuit_command(&command(&completed.run, "branches", CircuitEventV2::Advance { quantum: 2 }))
+        .await.expect("two branches");
+    let right = store.apply_bounded_circuit_command(&command(&branches.run, "right",
+        CircuitEventV2::Complete { completion: completion(&branches.dispatches[1], &["right-join"], "right") }))
+        .await.expect("first arrival");
+    let waiting_id = right.run.activations().values().find(|a| a.node_id == "join").expect("join").activation_id;
+    assert!(store.bounded_circuit_join_output("run-1", waiting_id).await.is_err());
+    let left = store.apply_bounded_circuit_command(&command(&right.run, "left",
+        CircuitEventV2::Complete { completion: completion(&branches.dispatches[0], &["left-join"], "left") }))
+        .await.expect("second arrival");
+    let joined = store.apply_bounded_circuit_command(&command(&left.run, "join", CircuitEventV2::Advance { quantum: 1 }))
+        .await.expect("materialize join");
+    assert!(joined.dispatches.is_empty(), "a join performs no model call");
+    let bytes = store.bounded_circuit_join_output("run-1", waiting_id).await.expect("verified owner materialization");
+    let envelope: CircuitJoinEnvelopeV2 = serde_json::from_slice(&bytes).expect("public envelope");
+    assert_eq!(envelope.causal_parents, vec![branches.dispatches[1].activation_id, branches.dispatches[0].activation_id]);
+    assert_eq!(envelope.arrival_input_digests, vec![digest("right"), digest("left")]);
+    assert_eq!(joined.run.activations().values().find(|a| a.node_id == "success").expect("successor").input_digest,
+        codex_hepta_contracts::Sha256Digest::for_bytes(&bytes));
+    let root = store.path().parent().expect("root").to_path_buf();
+    let owner = store.owner_agent_id().clone();
+    store.close().await;
+    drop(store);
+    let reopened = AutomationStore::open_root(root, owner).await.expect("new process/pool");
+    assert_eq!(reopened.bounded_circuit_join_output("run-1", waiting_id).await.expect("frozen readback"), bytes);
+    assert_eq!(reopened.bounded_circuit_run("run-1").await.expect("verified replay"), Some(joined.run));
+    reopened.close().await;
+    drop(directory);
+}

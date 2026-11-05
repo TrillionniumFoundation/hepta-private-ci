@@ -316,3 +316,157 @@ async fn two_cells_share_one_model_facility_but_keep_separate_state_and_causal_o
     assert_ne!(first_state.checkpoint.expect("first").digest(), second_state.checkpoint.expect("second").digest());
     store.close().await;
 }
+
+#[tokio::test]
+async fn either_late_phase_clock_regression_preserves_pending_for_readback() {
+    for regress_at in [3, 4] {
+        let (definition, bindings) = configuration();
+        let (_directory, store, dispatch) = create_run(&definition).await;
+        let request = request(&dispatch);
+        let admission = claim(&store, &dispatch, &bindings[0].cell, &request, 13).await;
+        let model = Model::new(20, false);
+        let calls = model.calls.clone();
+        let reads = model.reads.clone();
+        let owner = native_owner(&bindings);
+        let mut runtime = AgentdCircuitCellOwnerV1::new(
+            checked(CircuitCellRegistryV1::new(definition, bindings)), owner, model, Encoder,
+        );
+        let mut stage = 0;
+        let rejected = runtime.execute(admission, request.clone(), || {
+            let time = CircuitCellTimeV1 {
+                circuit_millis: if stage == regress_at { 19 } else { 20 + stage },
+                cell_micros: 20 + stage,
+            };
+            stage += 1;
+            time
+        });
+        assert_eq!(rejected, Err(CircuitCellErrorV1::ReconciliationRequired));
+        assert!(checked(runtime.state_owner().pending_inference(&scope("run-1"))).is_some());
+        let recovery = checked(store.recover_circuit_computation("run-1", dispatch.activation_id, &fence(), 25).await);
+        let result = checked(runtime.execute(recovery, request,
+            || CircuitCellTimeV1 { circuit_millis: 30, cell_micros: 30 }));
+        assert_eq!((calls.load(Ordering::SeqCst), reads.load(Ordering::SeqCst)), (1, 1));
+        assert_eq!(result.completion.actual_work, 20);
+        store.close().await;
+    }
+}
+
+#[tokio::test]
+async fn final_dispatch_gate_rechecks_time_after_durable_cell_admission() {
+    for boundary in ["lease", "run", "cell"] {
+        let (mut definition, bindings) = configuration();
+        if boundary == "run" { definition.limits.max_elapsed_ms = 400; }
+        let (_directory, store, dispatch) = create_run(&definition).await;
+        let request = request(&dispatch);
+        let admission = claim(&store, &dispatch, &bindings[0].cell, &request, 13).await;
+        let model = Model::new(20, false);
+        let calls = model.calls.clone();
+        let owner = native_owner(&bindings);
+        let mut runtime = AgentdCircuitCellOwnerV1::new(
+            checked(CircuitCellRegistryV1::new(definition, bindings)), owner, model, Encoder,
+        );
+        let mut reads = 0;
+        let result = runtime.execute(admission, request, || {
+            let expired = reads == 2;
+            reads += 1;
+            match (expired, boundary) {
+                (true, "lease") => CircuitCellTimeV1 { circuit_millis: 600, cell_micros: 21 },
+                (true, "run") => CircuitCellTimeV1 { circuit_millis: 450, cell_micros: 21 },
+                (true, "cell") => CircuitCellTimeV1 { circuit_millis: 21, cell_micros: 100 },
+                _ => time(),
+            }
+        });
+        assert!(result.is_err());
+        assert_eq!(calls.load(Ordering::SeqCst), 0, "no model contact after durable admission crossed its deadline");
+        assert!(checked(runtime.state_owner().pending_inference(&scope("run-1"))).is_some(),
+            "guard refusal does not mint a second admission");
+        store.close().await;
+    }
+}
+
+#[tokio::test]
+async fn all_join_materializes_frozen_reference_bytes_for_the_next_native_cell() {
+    let (mut definition, mut bindings) = configuration();
+    definition.limits.work_budget = 8_000;
+    definition.programs[0].entry_node = "fork".to_string();
+    definition.programs[0].nodes[0].input_schema = circuit_join_output_schema_v2();
+    for (node, targets) in [
+        ("fork", vec![("fork-left", "left"), ("fork-right", "right")]),
+        ("left", vec![("left-join", "join")]),
+        ("right", vec![("right-join", "join")]),
+    ] {
+        let mut binding = bindings[0].clone();
+        binding.node_id = node.to_string();
+        binding.cell.cell_id = id(&format!("cell-{node}"));
+        for route in &mut binding.routes {
+            if route.outcome == CircuitExitV2::Succeeded {
+                route.selected_edges = targets.iter().map(|(edge, _)| (*edge).to_string()).collect();
+            }
+        }
+        bindings.push(binding);
+        definition.programs[0].nodes.push(CircuitNodeV2 {
+            node_id: node.to_string(),
+            input_schema: if node == "fork" { Sha256Digest::for_bytes(b"raw") } else { circuit_cell_output_schema_v1() },
+            output_schema: circuit_cell_output_schema_v1(), kind: CircuitNodeKindV2::Compute { max_work: 2_000 },
+        });
+        for (edge, to) in targets {
+            definition.programs[0].edges.push(CircuitEdgeV2 {
+                edge_id: edge.to_string(), from: node.to_string(), to: to.to_string(), feedback_delay_ms: None,
+            });
+        }
+    }
+    definition.programs[0].nodes.push(CircuitNodeV2 {
+        node_id: "join".to_string(), input_schema: circuit_cell_output_schema_v1(),
+        output_schema: circuit_join_output_schema_v2(), kind: CircuitNodeKindV2::Join { mode: CircuitJoinV2::All, timeout_ms: 200 },
+    });
+    definition.programs[0].edges.push(CircuitEdgeV2 {
+        edge_id: "joined".to_string(), from: "join".to_string(), to: "decide".to_string(), feedback_delay_ms: None,
+    });
+    definition.route_policy_digest = checked(circuit_cell_route_policy_digest_v1(&bindings));
+    let (_directory, store, dispatch) = create_run(&definition).await;
+    let mut fork_request = request(&dispatch);
+    fork_request.scope.cell_id = id("cell-fork");
+    let admission = claim(&store, &dispatch, &bindings[1].cell, &fork_request, 13).await;
+    let owner = native_owner(&bindings);
+    let model = Model::new(20, false);
+    let calls = model.calls.clone();
+    let mut runtime = AgentdCircuitCellOwnerV1::new(
+        checked(CircuitCellRegistryV1::new(definition, bindings.clone())), owner, model, Encoder,
+    );
+    let fork = checked(runtime.execute(admission, fork_request, time));
+    apply(&store, "fork-complete", 22, CircuitEventV2::Complete { completion: fork.completion }).await;
+    let branches = apply(&store, "branches", 23, CircuitEventV2::Advance { quantum: 2 }).await;
+    assert_eq!(branches.dispatches.len(), 2);
+    for (index, branch) in branches.dispatches.iter().enumerate() {
+        let binding = bindings.iter().find(|binding| binding.node_id == branch.node_id).expect("branch binding");
+        let mut branch_request = request(branch);
+        branch_request.scope.cell_id = binding.cell.cell_id.clone();
+        branch_request.observation = fork.output.clone();
+        branch_request.monotonic_micros = 30;
+        let offset = index as u64 * 3;
+        let admission = claim(&store, branch, &binding.cell, &branch_request, 24 + offset).await;
+        let result = checked(runtime.execute(admission, branch_request,
+            || CircuitCellTimeV1 { circuit_millis: 25 + offset, cell_micros: 40 + offset }));
+        apply(&store, &format!("complete-{}", branch.node_id), 26 + offset,
+            CircuitEventV2::Complete { completion: result.completion }).await;
+    }
+    let joined = apply(&store, "join-and-next", 30, CircuitEventV2::Advance { quantum: 2 }).await;
+    assert_eq!(joined.dispatches.len(), 1);
+    let join = joined.run.activations().values().find(|activation| activation.node_id == "join").expect("completed join");
+    let bytes = checked(store.bounded_circuit_join_output("run-1", join.activation_id).await);
+    let envelope: CircuitJoinEnvelopeV2 = checked(serde_json::from_slice(&bytes));
+    assert_eq!((envelope.causal_parents.len(), envelope.arrival_input_digests.len()), (2, 2));
+    let next = &joined.dispatches[0];
+    assert_eq!(Sha256Digest::for_bytes(&bytes), next.input_digest);
+    let mut next_request = request(next);
+    next_request.observation = bytes;
+    next_request.monotonic_micros = 60;
+    let admission = claim(&store, next, &bindings[0].cell, &next_request, 31).await;
+    let result = checked(runtime.execute(admission, next_request,
+        || CircuitCellTimeV1 { circuit_millis: 32, cell_micros: 61 }));
+    let complete = apply(&store, "joined-cell-complete", 33, CircuitEventV2::Complete { completion: result.completion }).await;
+    assert_eq!((calls.load(Ordering::SeqCst), complete.run.budget().spent()), (4, 80));
+    let exited = apply(&store, "joined-exit", 34, CircuitEventV2::Advance { quantum: 1 }).await;
+    assert_eq!(exited.run.outcome(), Some(CircuitExitV2::Succeeded));
+    store.close().await;
+}

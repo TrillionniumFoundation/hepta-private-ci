@@ -61,8 +61,7 @@ impl CircuitRunV2 {
             budget: CircuitBudgetV2::new(definition.limits.work_budget),
             exit: None,
             returned: false,
-            last_output: None,
-            no_progress: 0,
+            progress: BTreeMap::new(),
         });
         let entry = &definition.program(&definition.entry_program)?.entry_node;
         run.enqueue(definition, /*instance_id*/ 0, entry, /*round*/ 0, Vec::new(),

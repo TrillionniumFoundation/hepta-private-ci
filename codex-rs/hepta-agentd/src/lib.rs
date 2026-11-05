@@ -298,6 +298,7 @@ mod intuition_policy;
 mod lane_b_runtime;
 mod circuit_cell;
 mod circuit_cell_binding;
+mod circuit_cell_dispatch;
 mod circuit_cell_output;
 mod neuron_runtime;
 #[cfg(target_os = "linux")]

@@ -27,6 +27,7 @@ use codex_hepta_types::AuthorityPosture;
 
 use crate::CircuitCellBindingV1;
 use crate::CircuitCellRegistryV1;
+use crate::circuit_cell_dispatch::GuardedCellDispatchV1;
 use crate::circuit_cell_output::encode_output;
 use crate::circuit_cell_output::encode_receipt;
 
@@ -121,6 +122,7 @@ where
             Err(CellExecutionError::InferencePending) => None,
             Err(error) => return Err(error.into()),
         };
+        let mut last_time = time;
         let decision = if let Some(receipt) = committed {
             receipt
         } else {
@@ -143,13 +145,31 @@ where
                         {
                             return Err(CircuitCellErrorV1::ReconciliationRequired);
                         }
-                        infer_cell(prepared, &mut self.state_owner, &mut self.inference_control, before_infer.cell_micros)?
+                        let mut guarded = GuardedCellDispatchV1::new(
+                            &mut self.inference_control, &mut clock, before_infer,
+                            admission_deadline, input.deadline_micros,
+                        );
+                        let inferred = infer_cell(prepared, &mut self.state_owner, &mut guarded, before_infer.cell_micros)?;
+                        last_time = guarded.observed_at().ok_or(CircuitCellErrorV1::ReconciliationRequired)?;
+                        inferred
                     }
                     CellStepEntryV1::Replayed(receipt) => return finish(binding, dispatch, &input, receipt),
                 }
             };
-            let proposal = decide_cell(inferred, clock().cell_micros)?;
-            commit_cell_step(&mut self.state_owner, proposal, clock().cell_micros)?
+            let decided_at = clock();
+            if decided_at.circuit_millis < last_time.circuit_millis
+                || decided_at.cell_micros < last_time.cell_micros
+            {
+                return Err(CircuitCellErrorV1::ReconciliationRequired);
+            }
+            let proposal = decide_cell(inferred, decided_at.cell_micros)?;
+            let committed_at = clock();
+            if committed_at.circuit_millis < decided_at.circuit_millis
+                || committed_at.cell_micros < decided_at.cell_micros
+            {
+                return Err(CircuitCellErrorV1::ReconciliationRequired);
+            }
+            commit_cell_step(&mut self.state_owner, proposal, committed_at.cell_micros)?
         };
         finish(binding, dispatch, &input, decision)
     }

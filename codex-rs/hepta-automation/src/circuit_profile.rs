@@ -8,6 +8,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::TaskFlowError;
+use crate::circuit_join::circuit_join_output_schema_v2;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -244,11 +245,17 @@ impl CircuitProgramV2 {
                     }
                 }
                 CircuitNodeKindV2::Join { timeout_ms, .. } => {
-                    if *timeout_ms == 0 || *timeout_ms > limits.max_elapsed_ms {
-                        return Err(invalid("invalid join timeout"));
+                    if *timeout_ms == 0 || *timeout_ms > limits.max_elapsed_ms
+                        || node.output_schema != circuit_join_output_schema_v2()
+                    {
+                        return Err(invalid("invalid join timeout or output envelope schema"));
                     }
                 }
-                CircuitNodeKindV2::Exit { .. } => {}
+                CircuitNodeKindV2::Exit { .. } => {
+                    if node.input_schema != node.output_schema {
+                        return Err(invalid("exit cannot perform an implicit schema conversion"));
+                    }
+                }
             }
         }
         if matches!(self.node(&self.entry_node)?.kind, CircuitNodeKindV2::Join { .. })

@@ -15,6 +15,9 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+pub use codex_hepta_infer_core::NeuronFeatureReceiptV1;
+pub use codex_hepta_infer_core::NeuronFeatureRequestV1;
+
 mod cell;
 mod cell_batch;
 mod cell_binding;
