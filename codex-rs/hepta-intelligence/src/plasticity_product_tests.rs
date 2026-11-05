@@ -8,8 +8,8 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
-use tempfile::tempfile;
 use pretty_assertions::assert_eq;
+use tempfile::tempfile;
 
 #[path = "plasticity_qualification_test_support.rs"]
 mod qualification_support;
@@ -42,7 +42,10 @@ impl Fixture {
     }
 
     fn new_with_evaluator_controller(evaluator_controller_collision_with: Option<usize>) -> Self {
-        Self::with_publication(evaluator_controller_collision_with, digest("plasticity-publication"))
+        Self::with_publication(
+            evaluator_controller_collision_with,
+            digest("plasticity-publication"),
+        )
     }
 
     fn with_publication(
@@ -91,7 +94,8 @@ impl Fixture {
         let qualification_verifier = LearningEvidenceVerifierV1::new(trust_definition.clone())
             .expect("qualification trust verifier");
         if let Some(other) = evaluator_controller_collision_with {
-            trust_definition.signers[2].controller_id = id(&format!("plasticity-controller-{other}"));
+            trust_definition.signers[2].controller_id =
+                id(&format!("plasticity-controller-{other}"));
         }
         let verifier = LearningEvidenceVerifierV1::new(trust_definition).expect("trust verifier");
 
@@ -209,7 +213,9 @@ impl Fixture {
             retention_receipt_digests: Vec::new(),
             unlearning_receipt_digest: Digest32::ZERO,
         };
-        let bundle = runner.qualification_bundle(&temporal, &context).expect("canonical bundle");
+        let bundle = runner
+            .qualification_bundle(&temporal, &context)
+            .expect("canonical bundle");
         // Qualify under independent fixture trust, then exercise any requested
         // current-use trust collision through the unchanged admission checks.
         let sign_qualification = |signer: usize, role: LearningEvidenceRoleV1, payload: &[u8]| {
@@ -232,21 +238,31 @@ impl Fixture {
         };
         let evidence = SignedEvaluationEvidenceV1 {
             generator_plan: sign_qualification(
-                /*signer*/ 0, LearningEvidenceRoleV1::Generator,
+                /*signer*/ 0,
+                LearningEvidenceRoleV1::Generator,
                 bundle.frozen_plan.plan_digest.as_array(),
             ),
             evaluator_bundle: sign_qualification(
-                /*signer*/ 2, LearningEvidenceRoleV1::Evaluator,
+                /*signer*/ 2,
+                LearningEvidenceRoleV1::Evaluator,
                 &evaluation_signing_payload_v2(&bundle, &roles).expect("evaluation payload"),
             ),
         };
-        let qualification = runner.qualify_and_persist(
-            &temporal, &context, &evidence, ProductTimingEvidenceV1::Qualification,
-            &qualification_verifier, /*now*/ 50,
-            &mut qualification_support::Sink(publication_namespace),
-        ).expect("sealed qualification");
-        assert_eq!(qualification.decision.decision.disposition,
-            IndependentEvaluationDispositionV1::EligibleForIndependentSelection);
+        let qualification = runner
+            .qualify_and_persist(
+                &temporal,
+                &context,
+                &evidence,
+                ProductTimingEvidenceV1::Qualification,
+                &qualification_verifier,
+                /*now*/ 50,
+                &mut qualification_support::Sink(publication_namespace),
+            )
+            .expect("sealed qualification");
+        assert_eq!(
+            qualification.decision.decision.disposition,
+            IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+        );
         Self {
             keys,
             principals,
@@ -629,19 +645,25 @@ fn signed_generic_metrics_cannot_replace_the_product_qualification_before_append
     let fixture = Fixture::new(/*evaluator_controller_collision*/ false);
     let mut request = fixture.request();
     let evaluation = &mut request.evaluations[0];
-    evaluation.bundle.metrics[0].candidate.upper = FixedQ32::from_raw(
-        evaluation.bundle.metrics[0].candidate.upper.raw() + 1,
-    );
+    evaluation.bundle.metrics[0].candidate.upper =
+        FixedQ32::from_raw(evaluation.bundle.metrics[0].candidate.upper.raw() + 1);
     evaluation.evidence.evaluator_bundle = fixture.sign(
         /*signer*/ 2,
         LearningEvidenceRoleV1::Evaluator,
         &evaluation_signing_payload_v2(&evaluation.bundle, &evaluation.metric_roles).unwrap(),
     );
     let mut writer = writer();
-    let mut anchor_committer = AnchorCommitter { accept: true, ..AnchorCommitter::default() };
+    let mut anchor_committer = AnchorCommitter {
+        accept: true,
+        ..AnchorCommitter::default()
+    };
     let before = anchor_committer.clone();
     let result = propose_authenticated_parameter_plasticity_v1(
-        request, &fixture.verifier, &mut writer, &mut anchor_committer, /*now*/ 50,
+        request,
+        &fixture.verifier,
+        &mut writer,
+        &mut anchor_committer,
+        /*now*/ 50,
     );
     assert!(matches!(
         result,
@@ -661,28 +683,54 @@ fn durable_proposal_identity_commits_the_exact_qualification_publication() {
         digest("second-publication"),
     );
     assert_eq!(first.qualification.decision, second.qualification.decision);
-    assert_ne!(first.qualification.publication_digest, second.qualification.publication_digest);
+    assert_ne!(
+        first.qualification.publication_digest,
+        second.qualification.publication_digest
+    );
     let mut first_writer = writer();
     let mut second_writer = writer();
-    let mut first_anchor = AnchorCommitter { accept: true, ..AnchorCommitter::default() };
+    let mut first_anchor = AnchorCommitter {
+        accept: true,
+        ..AnchorCommitter::default()
+    };
     let mut second_anchor = first_anchor.clone();
     let original = propose_authenticated_parameter_plasticity_v1(
-        first.request(), &first.verifier, &mut first_writer, &mut first_anchor, /*now*/ 50,
-    ).expect("first proposal");
+        first.request(),
+        &first.verifier,
+        &mut first_writer,
+        &mut first_anchor,
+        /*now*/ 50,
+    )
+    .expect("first proposal");
     let other = propose_authenticated_parameter_plasticity_v1(
-        second.request(), &second.verifier, &mut second_writer, &mut second_anchor, /*now*/ 50,
-    ).expect("separately qualified publication");
+        second.request(),
+        &second.verifier,
+        &mut second_writer,
+        &mut second_anchor,
+        /*now*/ 50,
+    )
+    .expect("separately qualified publication");
     assert_ne!(original.evaluation_digest, other.evaluation_digest);
-    assert_ne!(original.proposal.proposal_digest, other.proposal.proposal_digest);
+    assert_ne!(
+        original.proposal.proposal_digest,
+        other.proposal.proposal_digest
+    );
     assert_eq!(original.qualifications, vec![first.qualification]);
     assert_eq!(other.qualifications, vec![second.qualification.clone()]);
 
     // A different publication cannot be replayed as the already committed
     // proposal identity, even though its raw decision and candidate are equal.
     let anchor_before = first_anchor.clone();
-    assert!(propose_authenticated_parameter_plasticity_v1(
-        second.request(), &second.verifier, &mut first_writer, &mut first_anchor, /*now*/ 50,
-    ).is_err());
+    assert!(
+        propose_authenticated_parameter_plasticity_v1(
+            second.request(),
+            &second.verifier,
+            &mut first_writer,
+            &mut first_anchor,
+            /*now*/ 50,
+        )
+        .is_err()
+    );
     assert_eq!(first_writer.record_count().expect("count"), 1);
     assert_eq!(first_anchor, anchor_before);
 }
