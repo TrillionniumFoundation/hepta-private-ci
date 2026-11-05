@@ -215,8 +215,11 @@ impl AgentdConfig {
         let profile_digest = selected
             .digest()
             .map_err(|error| invalid(&error.to_string()))?;
-        let sender =
-            self.original_objective_sender(Arc::clone(&attachment.checkpoint), deadline)?;
+        // Keep the adapter's outer budget; each original sender checkpoint
+        // has its own five-second maximum and cannot enlarge a shorter caller.
+        let checkpoint_deadline = deadline.min(Duration::from_secs(5));
+        let sender = self
+            .original_objective_sender(Arc::clone(&attachment.checkpoint), checkpoint_deadline)?;
         let identity = self.identity().clone();
         let configured = if profile == NotesAdapterProfile::OriginalDesktop {
             self

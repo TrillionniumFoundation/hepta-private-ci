@@ -288,6 +288,42 @@ authentication is preserved. Managed OAuth refresh, opaque dynamic auth and
 unsupported transports are refused for this one-shot effect capability; they
 are not replaced with unauthenticated requests or newly resolved credentials.
 
+## Notes adapter and sender checkpoint deadlines
+
+The literal Notes UI, original Notes thread and joint Desktop thread all enter
+the same `AgentdConfig::with_root_notes_adapter` composition. Their production
+launcher passes the existing ten-second adapter duration. The shared adapter
+validates a nonzero duration of at most ten seconds and retains that exact
+value for its original preparation, human verification, control-query and
+retained-view checks.
+
+The original Objective sender has a separate checkpoint limit of five seconds.
+The adapter supplies `min(adapter_duration, five_seconds)` only to
+`original_objective_sender`; the adapter's own duration remains unchanged.
+A shorter caller duration stays shorter. The original sender still rejects a
+zero checkpoint duration, a duration above five seconds, an invalid process
+generation or rejected live authority. No Memory limit, retained-request quota,
+Root lifetime, source expiry, IPC exchange limit or enclosing deadline changes.
+Cancellation and late acknowledgement keep their existing unknown/fencing
+semantics; this selection does not restart a call or permit another send.
+
+The installed Desktop `6533247104f3cdbf9c9ef68ac5369eb097467244` /
+Hepta `14e2d89b3367232ec5dbe6187f09feed0f2b68d3` diagnostic exposed the
+old composition passing all ten seconds into that five-second constructor.
+The original Agentd exited with code 1 before Supervisor cleanup and reported
+`Objective sender input exceeds its retention profile`. The private original
+diagnostic SHA256 is
+`f1ba41c2bdced7cf3073d17fc19434d686101c0f024c03d133e11fc9fba82b0d`.
+This failure concerns the constructor's duration bound, not a full request
+ledger; increasing request retention or the sender's limit is not a repair.
+
+Owning package tests and lint remain required. The production regression gate
+is the same installed Root-to-launcher-to-adapter path with its original
+ten-second adapter duration, followed by actual Notes and joint application
+acceptance on one new, source-bound product pair. Formatting, source review or
+a test checkpoint provider cannot stand in for that result. The historical
+installed failure remains retained until the new run produces its own evidence.
+
 ## Notes and completion evidence
 
 The application handoff alone supplies a Notes target and read-only observer.
