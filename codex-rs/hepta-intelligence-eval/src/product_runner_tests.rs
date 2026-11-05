@@ -540,7 +540,9 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
             };
         },
         |receipt| receipt.decision.decision.failed_metrics = vec![id("substituted-failed-metric")],
-        |receipt| receipt.decision.decision.evidence_digest = digest("substituted-decision-evidence"),
+        |receipt| {
+            receipt.decision.decision.evidence_digest = digest("substituted-decision-evidence")
+        },
         |receipt| receipt.decision.trust_digest = digest("substituted-trust"),
         |receipt| receipt.decision.authentication_digest = digest("substituted-authentication"),
     ];
