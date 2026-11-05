@@ -186,12 +186,9 @@ async fn native_exit_gate() -> Result<NativeExitGate> {
             }
         }
     });
-    let process = UnifiedExecProcess::from_spawned(
-        spawned,
-        SandboxType::None,
-        Box::new(NoopSpawnLifecycle),
-    )
-    .await?;
+    let process =
+        UnifiedExecProcess::from_spawned(spawned, SandboxType::None, Box::new(NoopSpawnLifecycle))
+            .await?;
     let output = process.output_handles();
     tokio::time::timeout(Duration::from_secs(/*secs*/ 2), async {
         loop {
@@ -221,7 +218,8 @@ async fn local_termination_waits_for_native_exit_after_io_closed() -> Result<()>
     let gate = native_exit_gate().await?;
     let mut termination = Box::pin(gate.process.terminate_confirmed());
     assert!(futures::poll!(termination.as_mut()).is_pending());
-    let actual_code = tokio::time::timeout(Duration::from_secs(/*secs*/ 2), gate.observed_exit).await??;
+    let actual_code =
+        tokio::time::timeout(Duration::from_secs(/*secs*/ 2), gate.observed_exit).await??;
     assert_eq!(actual_code, 128 + libc::SIGKILL);
     assert!(futures::poll!(termination.as_mut()).is_pending());
     assert!(!gate.process.state_rx.borrow().has_exited);
@@ -247,7 +245,8 @@ async fn cancelling_local_termination_keeps_original_native_observer() -> Result
     assert!(!gate.process.state_rx.borrow().has_exited);
     assert_eq!(gate.process.failure_message(), None);
 
-    let actual_code = tokio::time::timeout(Duration::from_secs(/*secs*/ 2), gate.observed_exit).await??;
+    let actual_code =
+        tokio::time::timeout(Duration::from_secs(/*secs*/ 2), gate.observed_exit).await??;
     assert_eq!(actual_code, 128 + libc::SIGKILL);
     let mut state_rx = gate.process.state_rx.clone();
     gate.release_exit

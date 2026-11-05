@@ -227,11 +227,11 @@ rust_test(
 
 workspace_root_test(
     name = "hepta-agentd-cognitive-readonly-product-test",
+    timeout = "long",
     args = [
         "--exact",
         "unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools",
     ],
-    timeout = "long",
     runfile_env = {
         ":hepta-agentd-cognitive-readonly-product-bin": "CARGO_BIN_EXE_codex-hepta-agentd",
     },

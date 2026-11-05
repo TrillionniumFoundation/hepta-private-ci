@@ -183,7 +183,9 @@ fn writer_handoff_failed_recovery_releases_lock_while_file_alias_survives() {
     let length = journal.durable_length;
     drop(journal);
     let oversized = file(&root);
-    oversized.set_len(MAX_JOURNAL_BYTES * 128).expect("sparse file");
+    oversized
+        .set_len(MAX_JOURNAL_BYTES * 128)
+        .expect("sparse file");
     let retained = oversized.try_clone().expect("retain file description");
     assert!(matches!(
         DurableWriterHandoffJournalV1::recover(oversized),
