@@ -120,7 +120,7 @@
     {
       "id": "runner-native-abort",
       "package": "codex-windows-sandbox",
-      "expectedTestCount": 9,
+      "expectedTestCount": 12,
       "requiredTests": [
         "elevated::runner_client::process::owner::tests::owned_cancel_aborts_only_retained_child_with_same_deadline",
         "elevated::runner_client::process::owner::tests::owned_expired_abort_does_not_claim_terminal_or_restart_budget",
@@ -130,9 +130,12 @@
         "elevated::runner_client::process::pipe_read::tests::pipe_reader_decodes_frame_larger_than_native_pipe_buffer",
         "elevated::runner_client::process::pipe_read::tests::pipe_reader_preserves_original_partial_eof_and_size_limit",
         "elevated::runner_client::process::pipe_read::tests::pipe_reader_partial_frame_uses_original_absolute_deadline",
-        "elevated::runner_client::process::pipe_read::tests::pipe_reader_cancelled_live_pipe_returns_error_without_retry"
+        "elevated::runner_client::process::pipe_read::tests::pipe_reader_cancelled_live_pipe_returns_error_without_retry",
+        "elevated::runner_client::process::owner::tests::owned_partial_frame_cancellation_aborts_without_control_writer",
+        "elevated::runner_client::process::owner::job_tests::owned_broker_abort_terminates_original_private_job_descendant",
+        "elevated::runner_client::process::owner::job_tests::owned_broker_normal_exit_preserves_original_job_descendant"
       ],
-      "filter": "test(=elevated::runner_client::process::owner::tests::owned_cancel_aborts_only_retained_child_with_same_deadline) | test(=elevated::runner_client::process::owner::tests::owned_expired_abort_does_not_claim_terminal_or_restart_budget) | test(=elevated::runner_client::process::owner::tests::owned_abort_failure_preserves_live_child_and_unknown_state) | test(=elevated::runner_client::process::owner::tests::owned_pipe_disconnect_aborts_real_child_without_exit_message) | test(=elevated::runner_client::process::owner::tests::owned_early_drop_aborts_exact_child) | test(=elevated::runner_client::process::pipe_read::tests::pipe_reader_decodes_frame_larger_than_native_pipe_buffer) | test(=elevated::runner_client::process::pipe_read::tests::pipe_reader_preserves_original_partial_eof_and_size_limit) | test(=elevated::runner_client::process::pipe_read::tests::pipe_reader_partial_frame_uses_original_absolute_deadline) | test(=elevated::runner_client::process::pipe_read::tests::pipe_reader_cancelled_live_pipe_returns_error_without_retry)"
+      "filter": "test(=elevated::runner_client::process::owner::tests::owned_cancel_aborts_only_retained_child_with_same_deadline) | test(=elevated::runner_client::process::owner::tests::owned_expired_abort_does_not_claim_terminal_or_restart_budget) | test(=elevated::runner_client::process::owner::tests::owned_abort_failure_preserves_live_child_and_unknown_state) | test(=elevated::runner_client::process::owner::tests::owned_pipe_disconnect_aborts_real_child_without_exit_message) | test(=elevated::runner_client::process::owner::tests::owned_early_drop_aborts_exact_child) | test(=elevated::runner_client::process::pipe_read::tests::pipe_reader_decodes_frame_larger_than_native_pipe_buffer) | test(=elevated::runner_client::process::pipe_read::tests::pipe_reader_preserves_original_partial_eof_and_size_limit) | test(=elevated::runner_client::process::pipe_read::tests::pipe_reader_partial_frame_uses_original_absolute_deadline) | test(=elevated::runner_client::process::pipe_read::tests::pipe_reader_cancelled_live_pipe_returns_error_without_retry) | test(=elevated::runner_client::process::owner::tests::owned_partial_frame_cancellation_aborts_without_control_writer) | test(=elevated::runner_client::process::owner::job_tests::owned_broker_abort_terminates_original_private_job_descendant) | test(=elevated::runner_client::process::owner::job_tests::owned_broker_normal_exit_preserves_original_job_descendant)"
     },
     {
       "id": "driver-exit-unknown",

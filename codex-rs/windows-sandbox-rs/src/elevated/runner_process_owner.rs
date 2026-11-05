@@ -97,3 +97,7 @@ impl Drop for RunnerProcessOwner {
 #[cfg(test)]
 #[path = "runner_process_owner_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "runner_owned_job_tests.rs"]
+mod job_tests;

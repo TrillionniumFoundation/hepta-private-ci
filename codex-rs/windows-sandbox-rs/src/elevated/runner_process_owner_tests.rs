@@ -3,10 +3,16 @@ use super::super::tests::blocked_fixture;
 use super::RunnerProcessOwner;
 use anyhow::Result;
 use pretty_assertions::assert_eq;
+use std::io::Write;
 use std::os::windows::io::AsHandle;
 use std::os::windows::io::AsRawHandle;
 use std::os::windows::io::FromRawHandle;
 use std::os::windows::io::OwnedHandle;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
+use std::sync::mpsc;
+use std::time::Duration;
 use std::time::Instant;
 use windows_sys::Win32::Foundation::DuplicateHandle;
 use windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED;
@@ -131,6 +137,62 @@ fn owned_early_drop_aborts_exact_child() -> Result<()> {
         unsafe { WaitForSingleObject(child.0.as_raw_handle() as HANDLE, 0) },
         WAIT_OBJECT_0
     );
+    assert_eq!(child.0.wait()?.code(), Some(1));
+    Ok(())
+}
+
+#[test]
+fn owned_partial_frame_cancellation_aborts_without_control_writer() -> Result<()> {
+    let mut child = blocked_fixture()?;
+    let mut owner = RunnerProcessOwner::new(child.0.as_handle().try_clone_to_owned()?);
+    owner.arm_timeout(Some(5_000))?;
+    let armed_deadline = owner.process.deadline;
+    let (mut reader, mut writer) = pipe_pair()?;
+    writer.write_all(&32_u32.to_le_bytes())?;
+    writer.write_all(b"{")?;
+    let cancelled = Arc::new(AtomicBool::new(false));
+    let observer_cancelled = Arc::clone(&cancelled);
+    let (entered_tx, entered_rx) = mpsc::channel();
+    let (done_tx, done_rx) = mpsc::channel();
+    let observer = std::thread::spawn(move || {
+        let result = (|| -> Result<()> {
+            let announced = AtomicBool::new(false);
+            let result = owner.read_frame(&mut reader, || {
+                let observed = observer_cancelled.load(Ordering::SeqCst);
+                if !announced.swap(true, Ordering::SeqCst) {
+                    let _ = entered_tx.send(observed);
+                }
+                observed
+            });
+            let error = match result {
+                Err(error) => error,
+                Ok(_) => anyhow::bail!("the live frame is incomplete and cancelled"),
+            };
+            assert_eq!(
+                error
+                    .downcast_ref::<std::io::Error>()
+                    .map(std::io::Error::kind),
+                Some(std::io::ErrorKind::Other)
+            );
+            let error = owner.reconcile_failure(error);
+            assert!(format!("{error:#}").contains("observation cancelled"));
+            assert_eq!(owner.process.deadline, armed_deadline);
+            assert_eq!(owner.process.native_exit_code, Some(1));
+            Ok(())
+        })();
+        let _ = done_tx.send(result);
+    });
+    let entered = entered_rx.recv_timeout(Duration::from_secs(5));
+    cancelled.store(true, Ordering::SeqCst);
+    let result = done_rx.recv_timeout(Duration::from_secs(5));
+    // An old blocking decoder must also be released for failed-test cleanup.
+    // Receiving a later EOF can never satisfy the cancellation assertion above.
+    drop(writer);
+    observer
+        .join()
+        .map_err(|_| anyhow::anyhow!("owned reader panicked"))?;
+    assert!(!entered?);
+    result??;
     assert_eq!(child.0.wait()?.code(), Some(1));
     Ok(())
 }
