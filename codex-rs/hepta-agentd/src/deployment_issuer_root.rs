@@ -29,6 +29,56 @@ impl ProtectedLease {
         })
     }
 
+    /// Hold the pinned issuer and registered writer in one original owner lock.
+    /// The callback must not reenter the registry and must check time after I/O.
+    pub(super) fn with_registered_writer<T>(
+        &self,
+        registration: &HostAuthorityWriterRegistration,
+        dispatch: impl FnOnce(&AuthorityLease) -> io::Result<T>,
+    ) -> io::Result<T> {
+        registration.validate()?;
+        let issuer = self
+            .verifier
+            .read_lease(&self.id)
+            .map_err(lease_error)?
+            .ok_or_else(|| {
+                io::Error::new(io::ErrorKind::PermissionDenied, "original lease missing")
+            })?
+            .lease;
+        if issuer.revision != self.revision {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "original lease revision mismatch",
+            ));
+        }
+        let writer = &registration.authority_lease;
+        let issuer_token = self
+            .verifier
+            .verify_use(&self.id, self.revision, &issuer.binding)
+            .map_err(lease_error)?;
+        let writer_token = self
+            .verifier
+            .verify_use(&writer.lease_id, writer.revision, &writer.binding)
+            .map_err(lease_error)?;
+        self.verifier
+            .with_joint_dispatch_boundary(
+                issuer_token,
+                &issuer.binding,
+                writer_token,
+                &writer.binding,
+                |actual_issuer, actual_writer, _| {
+                    if actual_issuer != &issuer || actual_writer != writer {
+                        return Err(io::Error::new(
+                            io::ErrorKind::PermissionDenied,
+                            "original issuer or registered writer changed",
+                        ));
+                    }
+                    dispatch(actual_issuer)
+                },
+            )
+            .map_err(lease_error)?
+    }
+
     pub(super) fn with_binding<T>(
         &self,
         binding: &FinalUseBinding,
