@@ -32,6 +32,7 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FileDispositionInfo;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
 use windows_sys::Win32::System::SystemInformation::GetSystemDirectoryW;
+use windows_sys::Win32::UI::Shell::GetAllUsersProfileDirectoryW;
 
 use crate::AcceptanceError;
 
@@ -405,6 +406,35 @@ pub(crate) fn verify(
         .system_directory
         .parent()
         .ok_or_else(|| invalid("Windows system directory has no root"))?;
+    // Win32 OpenSSH requires ProgramData in init_prog_paths before it even
+    // initializes its stdio table. Obtain this fixed system location from the
+    // OS, never from the caller's environment or an assumed drive spelling.
+    let mut program_data_buffer = vec![0_u16; 32_768];
+    let mut program_data_capacity = program_data_buffer.len() as u32;
+    // SAFETY: the buffer has the stated UTF-16 capacity and the size pointer
+    // remains valid for this synchronous OS query. This API does not create it.
+    if unsafe {
+        GetAllUsersProfileDirectoryW(
+            program_data_buffer.as_mut_ptr(),
+            &mut program_data_capacity,
+        )
+    } == 0
+    {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    let program_data_length = program_data_buffer
+        .iter()
+        .position(|character| *character == 0)
+        .filter(|length| *length > 0)
+        .ok_or_else(|| invalid("Windows ProgramData path is empty or exceeds its bound"))?;
+    let program_data = PathBuf::from(OsString::from_wide(
+        &program_data_buffer[..program_data_length],
+    ));
+    if !program_data.is_absolute() {
+        return Err(invalid("Windows ProgramData path is not absolute"));
+    }
+    #[cfg(test)]
+    eprintln!("HEPTA_OPENSSH_DIAGNOSTIC os_program_data={program_data:?}");
     #[cfg(test)]
     report_inherited_verifier_context(&verifier);
     let mut child = Command::new(&verifier.path)
@@ -418,6 +448,7 @@ pub(crate) fn verify(
         // Windows side-by-side loading needs SystemRoot. Derive it from the
         // trusted OS API, never the caller's environment.
         .env("SystemRoot", system_root)
+        .env("ProgramData", &program_data)
         .env("LANG", "C")
         .env("LC_ALL", "C")
         .current_dir(&verifier.system_directory)
