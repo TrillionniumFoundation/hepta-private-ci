@@ -118,7 +118,10 @@ async fn real_chain_ordinary_pq_loader_dispatches_once_and_reads_original_receip
                 NOW + 5,
             )
             .await?;
-        assert_eq!(receipt.observation, Some(TaskFlowStepObservation::Succeeded));
+        assert_eq!(
+            receipt.observation,
+            Some(TaskFlowStepObservation::Succeeded)
+        );
         let durable = fixture
             .store
             .authorized_taskflow_effect_attempt(&intent.run_id, &intent.step_id, intent.attempt)
@@ -157,7 +160,10 @@ async fn real_chain_ordinary_pq_loader_dispatches_once_and_reads_original_receip
             ),
             ProviderEffectAckSource::DispatchResponse,
         );
-        assert_eq!(receipt.receipt_digest.as_ref(), Some(&expected.receipt_digest));
+        assert_eq!(
+            receipt.receipt_digest.as_ref(),
+            Some(&expected.receipt_digest)
+        );
         let consumed = host.authority.frontier()?;
         assert_eq!(host.authority.capacity()?.used_nonces, 1);
         assert_eq!(
