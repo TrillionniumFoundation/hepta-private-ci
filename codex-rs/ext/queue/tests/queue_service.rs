@@ -2908,7 +2908,16 @@ async fn registered_queue_waits_for_terminal_cleanup_without_admitting_other_cal
     let queue = install_registered_queue(&test, installed.as_ref())?;
 
     tokio::time::timeout(Duration::from_secs(10), async {
-        test.submit_text_turn("A").await?;
+        // This fixture intentionally holds the finish owner at its idle gate.
+        // Submit through the same typed entry point, then observe completion
+        // separately; the normal helper also waits for that held owner.
+        let initial_submission = test
+            .codex
+            .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
+                text: "A".to_string(),
+                text_elements: Vec::new(),
+            }]))
+            .await?;
         entered.notified().await;
 
         // Queue's callback must already have returned for the next contributor
@@ -2964,15 +2973,31 @@ async fn registered_queue_waits_for_terminal_cleanup_without_admitting_other_cal
             }
         })
         .await;
+        assert_eq!(
+            initial_submission,
+            TurnInputSubmission::Started {
+                turn_id: initial_turn_id.clone(),
+            }
+        );
+        let initial_finish = test
+            .codex
+            .pending_normal_turn_finish_completion(&initial_turn_id)
+            .context("the held initial idle gate must retain its finish owner")?;
         release.notify_one();
-        wait_for_event_match(test.codex.as_ref(), |event| {
-            matches!(
-                event,
-                EventMsg::TurnComplete(completed) if completed.turn_id != initial_turn_id
-            )
-            .then_some(())
+        initial_finish.await;
+        let queued_turn_id = wait_for_event_match(test.codex.as_ref(), |event| match event {
+            EventMsg::TurnComplete(completed) if completed.turn_id != initial_turn_id => {
+                Some(completed.turn_id.clone())
+            }
+            _ => None,
         })
         .await;
+        if let Some(completion) = test
+            .codex
+            .pending_normal_turn_finish_completion(&queued_turn_id)
+        {
+            completion.await;
+        }
         anyhow::Ok(())
     })
     .await??;
@@ -3058,9 +3083,32 @@ async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence
 
     let mut phase = "submitting the initial turn";
     let outcome = tokio::time::timeout(Duration::from_secs(/*secs*/ 10), async {
-        test.submit_text_turn("initial user A").await?;
+        // Keep submission independent from the owner deliberately held below.
+        let initial_submission = test
+            .codex
+            .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
+                text: "initial user A".to_string(),
+                text_elements: Vec::new(),
+            }]))
+            .await?;
         phase = "waiting for the initial idle contributor";
         entered.notified().await;
+        phase = "observing the initial completion while its idle gate is held";
+        let initial_turn_id = wait_for_event_match(test.codex.as_ref(), |event| match event {
+            EventMsg::TurnComplete(completed) => Some(completed.turn_id.clone()),
+            _ => None,
+        })
+        .await;
+        assert_eq!(
+            initial_submission,
+            TurnInputSubmission::Started {
+                turn_id: initial_turn_id.clone(),
+            }
+        );
+        let initial_finish = test
+            .codex
+            .pending_normal_turn_finish_completion(&initial_turn_id)
+            .context("the held initial idle gate must retain its finish owner")?;
         let completion = test
             .codex
             .pending_admission_fence_completion()
@@ -3085,6 +3133,8 @@ async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence
             },
         )?;
         release.notify_one();
+        phase = "waiting for the initial finish owner after releasing its idle gate";
+        initial_finish.await;
         phase = "waiting for deferred automatic admission after queued input";
 
         assert_eq!(
@@ -3097,15 +3147,29 @@ async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence
         assert!(queue.list(thread_id).await?.is_empty());
         phase = "waiting for the second actual model request";
         server.wait_for_request_count(/*count*/ 2).await;
+        assert_eq!(server.requests().await.len(), 2);
+        release_response
+            .send(())
+            .expect("queued response remains live");
+        phase = "waiting for the queued turn completion and its finish owner";
+        let queued_turn_id = wait_for_event_match(test.codex.as_ref(), |event| match event {
+            EventMsg::TurnComplete(completed) if completed.turn_id != initial_turn_id => {
+                Some(completed.turn_id.clone())
+            }
+            _ => None,
+        })
+        .await;
+        if let Some(completion) = test
+            .codex
+            .pending_normal_turn_finish_completion(&queued_turn_id)
+        {
+            completion.await;
+        }
         anyhow::Ok(())
     })
     .await;
     outcome
         .with_context(|| format!("original ten-second queue budget expired while {phase}"))??;
-    assert_eq!(server.requests().await.len(), 2);
-    release_response
-        .send(())
-        .expect("queued response remains live");
     test.codex.shutdown_and_wait().await?;
     server.shutdown().await;
     Ok(())
