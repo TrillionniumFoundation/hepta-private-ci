@@ -195,6 +195,14 @@ pub use worker_root_registration::WorkerRootLaneReceipt;
 #[cfg(target_os = "linux")]
 pub use worker_root_registration::WorkerRootObservationV1;
 #[cfg(target_os = "linux")]
+pub use worker_root_registration::WorkerJournalDirectoryPinV1;
+#[cfg(target_os = "linux")]
+pub use worker_root_registration::WorkerRootJournalBootstrapV1;
+#[cfg(target_os = "linux")]
+pub use worker_root_registration::WorkerRootJournal;
+#[cfg(target_os = "linux")]
+pub use worker_root_registration::WorkerRootJournalObservationV1;
+#[cfg(target_os = "linux")]
 pub use worker_root_registration::receive_worker_root_registration;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::HeldWorkerRootRegistration;

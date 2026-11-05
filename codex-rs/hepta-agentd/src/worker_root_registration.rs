@@ -37,6 +37,8 @@ pub(crate) mod journal_path;
 #[path = "worker_root_lanes_client.rs"]
 mod lanes_client;
 pub use lanes_client::WorkerRootLaneReceipt;
+pub use lanes_client::journal::WorkerRootJournal;
+pub use lanes_client::journal::WorkerRootJournalObservationV1;
 
 pub const WORKER_ROOT_REGISTRATION_V1: &str = "runtime.infer_worker.root_registration.v1";
 
