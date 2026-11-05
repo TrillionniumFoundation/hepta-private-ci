@@ -389,3 +389,6 @@ fn desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences
     );
     assert_eq!(serde_json::to_value(f.state()).unwrap(), preserved);
 }
+
+#[path = "deployment_desktop_issuer_lifetime_tests.rs"]
+mod issuer_lifetime;
