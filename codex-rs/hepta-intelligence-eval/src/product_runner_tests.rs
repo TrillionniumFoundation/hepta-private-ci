@@ -530,16 +530,22 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
         )
     };
     assert_eq!(
-        revalidate(&qualified, &bundle, &fixture.roles, &evidence, /*now*/ 50).unwrap(),
+        revalidate(
+            &qualified,
+            &bundle,
+            &fixture.roles,
+            &evidence,
+            /*now*/ 50
+        )
+        .unwrap(),
         qualified.decision
     );
 
     // A second, valid evaluator signature with the same disposition is still
     // not the estimator evidence that this terminal publication qualified.
     let mut changed_bundle = bundle.clone();
-    changed_bundle.metrics[0].candidate.upper = FixedQ32::from_raw(
-        changed_bundle.metrics[0].candidate.upper.raw() + 1,
-    );
+    changed_bundle.metrics[0].candidate.upper =
+        FixedQ32::from_raw(changed_bundle.metrics[0].candidate.upper.raw() + 1);
     let (_, changed_evidence, _) = signed_context(&changed_bundle, &fixture.roles);
     let independently_signed = crate::decide_with_signed_evidence_v2(
         changed_bundle.clone(),
@@ -554,8 +560,16 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
         qualified.decision.decision.disposition
     );
     assert!(matches!(
-        revalidate(&qualified, &changed_bundle, &fixture.roles, &changed_evidence, /*now*/ 50),
-        Err(ProductEvaluationError::Binding("qualification use evidence"))
+        revalidate(
+            &qualified,
+            &changed_bundle,
+            &fixture.roles,
+            &changed_evidence,
+            /*now*/ 50
+        ),
+        Err(ProductEvaluationError::Binding(
+            "qualification use evidence"
+        ))
     ));
 
     // Reissuing the exact same metric payload changes authenticated evidence
@@ -575,8 +589,16 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
     .unwrap();
     assert_eq!(reissued_decision.decision, qualified.decision.decision);
     assert!(matches!(
-        revalidate(&qualified, &bundle, &fixture.roles, &reissued, /*now*/ 50),
-        Err(ProductEvaluationError::Binding("qualification use evidence"))
+        revalidate(
+            &qualified,
+            &bundle,
+            &fixture.roles,
+            &reissued,
+            /*now*/ 50
+        ),
+        Err(ProductEvaluationError::Binding(
+            "qualification use evidence"
+        ))
     ));
 
     let mut changed_roles = fixture.roles.clone();
@@ -584,23 +606,38 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
         minimum_improvement: FixedQ32::from_raw(1),
     };
     let (_, changed_role_evidence, _) = signed_context(&bundle, &changed_roles);
-    assert!(revalidate(
-        &qualified,
-        &bundle,
-        &changed_roles,
-        &changed_role_evidence,
-        /*now*/ 50,
-    ).is_err());
-    assert!(revalidate(&qualified, &bundle, &fixture.roles, &evidence, /*now*/ 91).is_err());
+    assert!(
+        revalidate(
+            &qualified,
+            &bundle,
+            &changed_roles,
+            &changed_role_evidence,
+            /*now*/ 50,
+        )
+        .is_err()
+    );
+    assert!(
+        revalidate(
+            &qualified,
+            &bundle,
+            &fixture.roles,
+            &evidence,
+            /*now*/ 91
+        )
+        .is_err()
+    );
     let mut changed_publication = qualified.clone();
     changed_publication.publication_digest = digest("different-publication");
-    assert!(revalidate(
-        &changed_publication,
-        &bundle,
-        &fixture.roles,
-        &evidence,
-        /*now*/ 50,
-    ).is_err());
+    assert!(
+        revalidate(
+            &changed_publication,
+            &bundle,
+            &fixture.roles,
+            &evidence,
+            /*now*/ 50,
+        )
+        .is_err()
+    );
     assert_eq!(sink.persisted, vec![qualified.publication_digest]);
     assert_eq!(fixture.provider.release_count, 1);
 
