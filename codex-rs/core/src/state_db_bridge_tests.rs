@@ -77,6 +77,7 @@ async fn initial_alias_binding_keeps_sqlite_listing_on_the_retained_owner() -> a
     )
     .build(&config.model_provider_id);
     metadata.title = "bound title".to_string();
+    metadata.preview = Some("retained owner preview".to_string());
     runtime.upsert_thread(&metadata).await?;
     let retained = runtime.get_thread(thread_id).await?;
     assert!(retained.is_some());
