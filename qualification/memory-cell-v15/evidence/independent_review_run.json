@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.memory.v15.independent-review",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "review_tests",
+    "integration_tests",
+    "-v"
+  ],
+  "elapsed_seconds": 1.2007696628570557,
+  "exit_code": 0,
+  "test_count": 20,
+  "independent_test_count": 19,
+  "integration_fixture_count": 1,
+  "source_sha256": {
+    "admission.py": "7e3cf0ae3d6cb12d904d5d2d5e104f93bb8d2677124cfc232fd19818975a9cf0",
+    "authority.py": "7ae36675c0d69b18ab49d402b21fda1f7316f8eecd27623bbe428914a9335245",
+    "review_tests.py": "920ecd2a18803e6a5f98a5b9699ed7ec76cdba5afd612a0b2151f14e5d9e1123",
+    "integration_tests.py": "87c6d5716c509e583419d8a9480aef0af7deafc60ef1085c404fd8676b5c10ef"
+  },
+  "scope": "Adversarial protocol tests and serialized finite-selector integration fixtures on one host; no learned-model or full-cost benefit claim."
+}
