@@ -47,7 +47,7 @@ async fn running_canonical_admission_preserves_the_recovered_run_start() {
         authority_epoch: original.snapshot.authority_epoch,
         generation: original.snapshot.generation,
         fence_digest: original.snapshot.fence_digest.to_string(),
-        deadline_ms: (original.admission.deadline_unix_micros + 999) / 1_000,
+        deadline_ms: original.admission.deadline_unix_micros.div_ceil(1_000),
     };
     assert_eq!(prepared.run_snapshot(), expected);
     assert_eq!(prepared.snapshot.body_generation().get(), 1);
