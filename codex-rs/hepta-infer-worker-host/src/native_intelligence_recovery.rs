@@ -36,6 +36,9 @@ impl AppServerModelDriver {
             return Err("invalid intelligence terminal binding".into());
         }
 
+        #[cfg(test)]
+        tests::pause_before_terminal_publication().await;
+
         let owner = AgentdClient::new(
             self.config.agentd_socket.clone(),
             self.config.agent_id.clone(),
@@ -130,3 +133,7 @@ fn terminal_phase(output: &NativeRunOutput) -> Result<Option<AgentRunPhase>> {
     };
     Ok(Some(phase))
 }
+
+#[cfg(test)]
+#[path = "native_intelligence_recovery_tests.rs"]
+mod tests;

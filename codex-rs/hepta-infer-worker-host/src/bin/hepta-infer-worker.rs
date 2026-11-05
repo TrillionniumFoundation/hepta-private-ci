@@ -163,3 +163,7 @@ fn parse_intelligence_snapshot(
     // the original immutable admission, which the driver checks against Agentd.
     Ok(serde_json::from_str(value)?)
 }
+
+#[cfg(test)]
+#[path = "../native_worker_cli_tests.rs"]
+mod tests;
