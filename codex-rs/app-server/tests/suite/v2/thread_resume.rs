@@ -466,7 +466,7 @@ async fn assert_resume_materializes_the_same_live_thread(
                 resumed
                     .path
                     .as_ref()
-                    .map(codex_utils_path::normalize_for_native_workdir),
+                    .map(codex_core::path_utils::normalize_for_native_workdir),
                 &resumed.turns
             ),
             (
@@ -475,7 +475,7 @@ async fn assert_resume_materializes_the_same_live_thread(
                 thread
                     .path
                     .as_ref()
-                    .map(codex_utils_path::normalize_for_native_workdir),
+                    .map(codex_core::path_utils::normalize_for_native_workdir),
                 &thread.turns
             ),
         );
