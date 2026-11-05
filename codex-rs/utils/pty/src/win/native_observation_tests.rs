@@ -119,6 +119,8 @@ impl Drop for NativeChild {
 
 #[test]
 fn wait_without_synchronize_is_an_error_not_an_exit() -> anyhow::Result<()> {
+    // Keep the portable child trait local: NativeChild must use the native AsRawHandle.
+    use portable_pty::Child as _;
     let mut original = NativeChild::spawn(73)?;
     let handle = original.duplicate(PROCESS_QUERY_LIMITED_INFORMATION, 0)?;
     let mut child = WinChild::new(handle, Arc::new(JobObject::create()?));
@@ -134,6 +136,8 @@ fn wait_without_synchronize_is_an_error_not_an_exit() -> anyhow::Result<()> {
 
 #[test]
 fn query_failure_after_native_signal_is_not_pending() -> anyhow::Result<()> {
+    // Keep the portable child trait local: NativeChild must use the native AsRawHandle.
+    use portable_pty::Child as _;
     let mut original = NativeChild::spawn(74)?;
     let handle = original.duplicate(SYNCHRONIZE, 0)?;
     let mut child = WinChild::new(handle, Arc::new(JobObject::create()?));
@@ -149,6 +153,8 @@ fn query_failure_after_native_signal_is_not_pending() -> anyhow::Result<()> {
 
 #[test]
 fn signaled_process_can_have_exit_code_259() -> anyhow::Result<()> {
+    // Keep the portable child trait local: NativeChild must use the native AsRawHandle.
+    use portable_pty::Child as _;
     let mut original = NativeChild::spawn(259)?;
     let handle = original.duplicate(0, DUPLICATE_SAME_ACCESS)?;
     let mut child = WinChild::new(handle, Arc::new(JobObject::create()?));
