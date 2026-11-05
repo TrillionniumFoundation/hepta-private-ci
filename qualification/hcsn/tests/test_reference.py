@@ -65,7 +65,7 @@ class FirstPassageTests(unittest.TestCase):
         self.assertEqual(hx_debt(0,0,p),p.recovery*b/p.maturity)
         self.assertEqual(hx_debt(0.1,0,p),p.p)
         result=evaluate(b,p,0)
-        self.assertEqual((result['E'],result['F'],result['G'],result['f'],result['first_passage_atom']),
+        self.assertEqual((result['E_HX'],result['F'],result['G'],result['f'],result['first_passage_atom']),
                          (0,1,1,0,1))
 
     def test_survival_and_deep_tails(self):
@@ -203,7 +203,7 @@ class HXReferenceTests(unittest.TestCase):
                                 coupon=p.coupon/scale,sigma=p.sigma/math.sqrt(scale),
                                 maturity=p.maturity*scale)
             actual=evaluate(value,transformed,0.7*scale)
-            for key in ('b','E','F','G'):
+            for key in ('b','E_HX','F','G'):
                 self.assertAlmostEqual(actual[key]/original[key],1,places=11)
             self.assertAlmostEqual(actual['f']*scale/original['f'],1,places=11)
             self.assertAlmostEqual(hx_debt(0.2,0.7*scale,transformed)*scale/original_debt,1,places=11)

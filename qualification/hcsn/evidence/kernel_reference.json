@@ -2,11 +2,11 @@
   "schema": "hcsn-hx-kernel-reference-v1",
   "status": "passed",
   "scope": "FP64 formal stationary ODE kernels and independent integration, with separate economic feasibility screens; no tensor/training/performance claims",
-  "generated_at_utc": "2026-11-05T12:53:25.537807+00:00",
+  "generated_at_utc": "2026-11-05T13:07:53.301797+00:00",
   "source_files_sha256": {
-    "reference.py": "3e60dbc483e22ee29935c21bb6ef2f520d31c08488008863800e1d7e62987ff2",
-    "validate.py": "25627eedc448192669d3d604aebd251039353a63dab25805627b6f6fef2f8464",
-    "tests/test_reference.py": "6b2e6e69ed0ba1ef73e4176a5151014b72742ffed92684dd34e646950e779602",
+    "reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045",
+    "tests/test_reference.py": "d95e4eefbd46f8f9fd37813b63f20549ad1fbae43ae436a0f1ca0fdae4c0eb8d",
     "MATH.md": "240abe1e5ba2c2db9f1bbc56be8f14f9f70663ad8ef7d68f6276384e8d352da8"
   },
   "runtime": {
@@ -171,7 +171,7 @@
       "passed": true,
       "result": {
         "b": 121.48629220149449,
-        "E": 0.0,
+        "E_HX": 0.0,
         "F": 1.0,
         "G": 1.0,
         "f": 0.0,
@@ -3962,7 +3962,7 @@
       "time_scale": 0.01,
       "relative_errors": {
         "b": 0.0,
-        "E": 6.661338147750939e-16,
+        "E_HX": 6.661338147750939e-16,
         "F": 5.551115123125783e-16,
         "G": 0.0,
         "f_inverse_time": 5.551115123125783e-16,
@@ -3973,7 +3973,7 @@
       "time_scale": 0.1,
       "relative_errors": {
         "b": 2.220446049250313e-16,
-        "E": 1.887379141862766e-15,
+        "E_HX": 1.887379141862766e-15,
         "F": 1.7763568394002505e-15,
         "G": 2.4424906541753444e-15,
         "f_inverse_time": 6.661338147750939e-16,
@@ -3984,7 +3984,7 @@
       "time_scale": 10.0,
       "relative_errors": {
         "b": 2.220446049250313e-16,
-        "E": 5.551115123125783e-16,
+        "E_HX": 5.551115123125783e-16,
         "F": 1.3322676295501878e-15,
         "G": 1.1102230246251565e-15,
         "f_inverse_time": 2.220446049250313e-16,
@@ -3995,7 +3995,7 @@
       "time_scale": 100.0,
       "relative_errors": {
         "b": 2.220446049250313e-16,
-        "E": 1.887379141862766e-15,
+        "E_HX": 1.887379141862766e-15,
         "F": 2.220446049250313e-15,
         "G": 2.4424906541753444e-15,
         "f_inverse_time": 1.4432899320127035e-15,
@@ -4003,5 +4003,5 @@
       }
     }
   ],
-  "elapsed_seconds": 8.975671280999904
+  "elapsed_seconds": 10.065845499999341
 }

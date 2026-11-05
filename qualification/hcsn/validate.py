@@ -172,7 +172,7 @@ def validate():
         params = replace(baseline,coupon=baseline.coupon*scale,principal=baseline.principal*scale)
         result = hx.evaluate(boundary*scale*math.exp(0.2),params,0.5)
         values = [abs(result["b"]/(scale*original["b"])-1),
-                  abs(result["E"]/(scale*original["E"])-1),
+                  abs(result["E_HX"]/(scale*original["E_HX"])-1),
                   abs(hx.hx_debt(0.2,0.5,params)/(scale*hx.hx_debt(0.2,0.5,baseline))-1)]
         values.extend(abs(result[key]-original[key]) for key in ("F","G","f"))
         homogeneity.extend(values)
@@ -186,7 +186,7 @@ def validate():
                        ell=baseline.ell/scale,coupon=baseline.coupon/scale,
                        sigma=baseline.sigma/math.sqrt(scale),maturity=baseline.maturity*scale)
         actual=hx.evaluate(boundary*math.exp(0.2),params,0.7*scale)
-        errors={key:abs(actual[key]/original[key]-1) for key in ("b","E","F","G")}
+        errors={key:abs(actual[key]/original[key]-1) for key in ("b","E_HX","F","G")}
         errors["f_inverse_time"]=abs(actual["f"]*scale/original["f"]-1)
         errors["debt_per_maturity_unit_inverse_time"]=abs(hx.hx_debt(0.2,0.7*scale,params)*scale/original_debt-1)
         time_covariance.append({"time_scale":scale,"relative_errors":errors})
@@ -214,7 +214,7 @@ def validate():
 
     origin = hx.evaluate(hx.hx_boundary(baseline),baseline,0)
     checks["time_zero_boundary_atom"] = {
-        "passed":origin["E"] == 0 and origin["F"] == 1 and origin["G"] == 1
+        "passed":origin["E_HX"] == 0 and origin["F"] == 1 and origin["G"] == 1
         and origin["f"] == 0 and origin["first_passage_atom"] == 1,
         "result":origin,
         "meaning":"F/G include the zero-time atom; f is only the regular density."}

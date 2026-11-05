@@ -364,7 +364,7 @@ def simple_equity_ratio(x, gamma):
 
 
 def evaluate(V, params, T):
-    """Map (V,theta,T) to b,E,F,G,f; requires surviving V>=b.
+    """Map (V,theta,T) to b,E_HX,F,G,f; requires surviving V>=b.
 
     E is a monetary value, F/G dimensionless, and f an inverse-time density.
     The extra first_passage_atom reports the omitted x=0 delta atom explicitly.
@@ -374,7 +374,7 @@ def evaluate(V, params, T):
     if np.any(values < boundary):
         raise ValueError("V must be at or above the stationary boundary")
     x = np.log1p((values-boundary)/boundary)
-    return {"b":boundary,"E":hx_equity(x,params),
+    return {"b":boundary,"E_HX":hx_equity(x,params),
             "F":first_passage_cdf(x,T,params.mu,params.sigma),
             "G":discounted_first_passage(x,T,params.mu,params.sigma,params.q),
             "f":first_passage_density(T,x,params.mu,params.sigma),
