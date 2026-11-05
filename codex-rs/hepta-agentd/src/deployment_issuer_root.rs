@@ -120,6 +120,48 @@ impl DeploymentFinalUseIssuer {
             .map_err(lease_error)?
     }
 
+    /// Hold the pinned issuer and the exact registered writer under their
+    /// single owner fence for a bounded local policy mutation.
+    pub(super) fn with_live_writer<T>(
+        &self,
+        registration: &HostAuthorityWriterRegistration,
+        mutate: impl FnOnce(&AuthorityLease) -> io::Result<T>,
+    ) -> io::Result<T> {
+        let pinned = self
+            .lease
+            .as_ref()
+            .ok_or_else(|| io::Error::other("no protected lease"))?;
+        let lease = pinned
+            .verifier
+            .read_lease(&pinned.id)
+            .map_err(lease_error)?
+            .ok_or_else(|| {
+                io::Error::new(io::ErrorKind::PermissionDenied, "original lease missing")
+            })?
+            .lease;
+        if lease.revision != pinned.revision {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "original lease revision mismatch",
+            ));
+        }
+        let issuer_token = pinned
+            .verifier
+            .verify_use(&pinned.id, pinned.revision, &lease.binding)
+            .map_err(lease_error)?;
+        let writer_token = registration.verify_live_token(&pinned.verifier)?;
+        pinned
+            .verifier
+            .with_joint_dispatch_boundary(
+                issuer_token,
+                &lease.binding,
+                writer_token,
+                &registration.authority_lease.binding,
+                |issuer_lease, _, _| mutate(issuer_lease),
+            )
+            .map_err(lease_error)?
+    }
+
     /// Explicitly create one new root-owned issuer. Existing/partial paths are
     /// never reset. The supplied clock and lease verifier are original trusted
     /// owners, not constructed from peer request fields.

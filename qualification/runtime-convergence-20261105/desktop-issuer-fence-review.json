@@ -1,0 +1,105 @@
+{
+  "schema": "hepta.desktop-canonical-issuer-fence-review.v1",
+  "reviewed_at_utc": "2026-11-05T08:36:21Z",
+  "status": "accepted-source-only; repaired native regression and package gates remain pending",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "native_failure": {
+    "job_id": "1a1aacd9e45-fc05-477f",
+    "implementation_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+    "source_identity_note": "The native receipt records its base commit and the nine formatted candidate file blobs. The affected desktop source and unchanged test were separately exported from that actual checkout and matched the exact baseline Git blobs below.",
+    "command": "just test --locked -p codex-hepta-agentd -p codex-hepta-runtime -p codex-hepta-intelligence-eval -p codex-hepta-intelligence",
+    "command_exit_code": 100,
+    "elapsed_seconds": 94.95142340660095,
+    "nextest_summary": "813 tests run: 812 passed (1 slow), 1 failed, 66 skipped",
+    "failing_test": "deployment_issuer::desktop::tests::desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair",
+    "panic_path": "codex-rs/hepta-agentd/src/deployment_desktop_tests.rs",
+    "panic_line": 385,
+    "attempts": 2,
+    "failure": "After revocation of desktop-issuer-authority, replace_desktop_policy using the still-live next_writer returned Ok, violating the original is_err assertion.",
+    "classification": "production final-use authorization defect; compilation succeeded and the original assertion executed twice",
+    "log_local_path": "lifecycle/env-prep/ai395-green-attempt1-just-green.stderr",
+    "log_sha256": "12c6f807607f5716935b70ba01b71a2d887c69733d406045afa8f0964c0b78dd",
+    "receipt_local_path": "lifecycle/env-prep/ai395-green-attempt1-receipt.json"
+  },
+  "donor": {
+    "commit": "65f0ad816ffa4724626db3f1c36a20eb7faab61f",
+    "parent": "d3dff302d9372a7f3c64deb09b767b5140ac5a3b",
+    "tree": "5fca485c659c91d89f30b20d68a5b3c9df7485d7",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/65f0ad816ffa4724626db3f1c36a20eb7faab61f",
+    "adoption": "Adopt only the exact three changed source blobs onto the current first-wave branch; do not import the donor parent history.",
+    "scope": {
+      "production_files": 3,
+      "insertions": 70,
+      "deletions": 12,
+      "changed_tests": 0,
+      "changed_workflows": 0,
+      "changed_configuration": 0
+    }
+  },
+  "baseline_comparison": {
+    "refs": [
+      "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "d3dff302d9372a7f3c64deb09b767b5140ac5a3b",
+      "ebdf792c076c1d516ae9f96eec079921ccd1588f"
+    ],
+    "result": "All three complete source files and the regression test have the same exact Git blobs at these refs; current ebdf source and test were independently fetched during this review.",
+    "original_test_blob": "a8c7698a8bf6a58f35d6bcec57470df0efee6f55",
+    "original_test_bytes_retained": true
+  },
+  "owner_review": {
+    "current_contract_path": "codex-rs/hepta-contracts/src/authority_lease_pair_boundary.rs",
+    "current_contract_blob": "ba58d84fc6a40a83009143ba9878c22c081de8b2",
+    "existing_api": "AuthorityLeaseVerifier::with_joint_dispatch_boundary",
+    "guarantees": [
+      "Both opaque use tokens must belong to the exact same original verifier Arc, and must reference distinct original leases.",
+      "Current lease records, epoch, revocation, binding and time are revalidated under one registry mutex before the callback.",
+      "The canonical issuer uses its pinned original ID and revision; the registered writer is checked against its complete retained authority lease.",
+      "The callback retains existing issuer request_lock, retained signed writer proof, durable state read and complete policy-pair compare-and-swap.",
+      "The callback checks issuer and writer epoch/time immediately before the CAS and after its I/O."
+    ],
+    "lock_order": "The registry boundary continues to precede issuer request_lock, as in the previous writer-only boundary.",
+    "reentry_review": "retained_writer_authorization, validate_writer_proof, issuer store reads/CAS and time validation do not reenter the authority lease registry.",
+    "unchanged_authorities": "No new writer, execution spine, grant, key, epoch fallback or authority source is introduced.",
+    "io_error_semantics": "As the existing replacement API documents, an error after I/O can follow durable publication. Reconcile only the same complete policy pair; do not infer that every error means no state change."
+  },
+  "local_verification": {
+    "patch_path": "product/desktop-issuer-fence/desktop-issuer-joint-fence.patch",
+    "patch_sha256": "435e854c9604e43b72a767c4304e2bfbb1c1ce291b76c99601cd6b86bb77a895",
+    "independent_checks": [
+      "git apply --check on all three exact base files",
+      "actual application followed by full byte comparison against each donor changed blob",
+      "git diff --check",
+      "original test bytes equal the actual native exported test",
+      "actual failing stderr SHA256 checked"
+    ],
+    "native_execution": "No repaired-source native execution was performed by this reviewer."
+  },
+  "required_followup": [
+    "Run the unchanged named desktop revocation regression against the frozen repaired source identity.",
+    "Run the original full four-package just test gate without changing assertions, features, test profile, timeout or retry budget.",
+    "Keep the original native failure evidence and record repaired source/test hashes beside the new execution receipts.",
+    "Apply scoped fix only in the approved final phase; do not attribute earlier test results to subsequently changed bytes.",
+    "Merge the first-wave source repair into the stacked second-wave branch with genuine ancestry and retain its distinct stage regressions.",
+    "Original Windows acquisition-attack CI and broader merge/release gates remain separate and are not waived by this repair."
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_desktop.rs",
+      "base_blob": "7fd59781e1953b7686e59ddea3bfb59705952afb",
+      "changed_blob": "4e6319f8d235b6cdb541b3c3edd77251bafc9a7f",
+      "purpose": "Require the joint live issuer/writer owner boundary and recheck both leases around policy CAS."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "base_blob": "a73f99071f284cc34264e39b85c5b372dfac1abf",
+      "changed_blob": "13c813efd1d8b0b8c45b4ac093dcb0ef0dab2521",
+      "purpose": "Use the pinned canonical issuer lease and exact registered writer tokens within the existing joint owner boundary."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "base_blob": "07f81c22b2694fc998660cafe2343812898a067d",
+      "changed_blob": "6abc0d537236398477102339fa0744dc72ec43a4",
+      "purpose": "Reuse complete writer lease validation/token creation in the old writer boundary and new joint boundary."
+    }
+  ]
+}

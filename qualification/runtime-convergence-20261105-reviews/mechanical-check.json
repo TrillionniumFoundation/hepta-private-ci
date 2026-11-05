@@ -1,0 +1,232 @@
+{
+  "payload_sha256": "e5221053bf8da53543226aee8e539f8bfbda24a9a79b2c75b23e6d342ad43d0a",
+  "payload_files": [
+    "README.md",
+    "a-fallible-transition-review.md",
+    "b2-decision-seal-source-review.md",
+    "b2-negative-control-compilation-review.json",
+    "desktop-issuer-fence-independent-review.json",
+    "desktop-issuer-fence-review.json",
+    "desktop-issuer-joint-fence.patch",
+    "desktop-issuer-source-verification.json",
+    "first-scoped-fix-source-review.json",
+    "formatted-source-manifest.json",
+    "native/ai395-c-just-test.stderr",
+    "native/ai395-c-receipt.json",
+    "native/ai395-desktop-regression-attempt1-just-desktop-regression.stderr",
+    "native/ai395-desktop-regression-attempt1-just-desktop-regression.stdout",
+    "native/ai395-desktop-regression-attempt1-receipt.json",
+    "native/ai395-desktop-source-attempt1-receipt.json",
+    "native/ai395-desktop-source-attempt2-receipt.json",
+    "native/ai395-first-scoped-fix-receipt.json",
+    "native/ai395-first-scoped-fix.patch",
+    "native/ai395-fix-attempt1-just-fix.stderr",
+    "native/ai395-fix-attempt1-just-fix.stdout",
+    "native/ai395-green-attempt1-just-green.stderr",
+    "native/ai395-green-attempt1-just-green.stdout",
+    "native/ai395-green-attempt1-receipt.json",
+    "native/ai395-green-attempt2-just-green.stderr",
+    "native/ai395-green-attempt2-just-green.stdout",
+    "native/ai395-green-attempt2-receipt.json",
+    "native/ai395-red-a-attempt1-receipt.json",
+    "native/ai395-red-a-attempt1-stderr-tail.txt",
+    "native/ai395-red-a-attempt2-observation.json",
+    "native/ai395-red-a-attempt3-receipt.json",
+    "native/ai395-red-a-attempt3.stderr",
+    "native/ai395-red-b1-attempt1-just-test.stderr",
+    "native/ai395-red-b1-attempt1-receipt.json",
+    "native/ai395-red-b2-attempt1-just-test.stderr",
+    "native/ai395-red-b2-attempt1-receipt.json",
+    "native/ai395-red-b2-attempt2-just-test.stderr",
+    "native/ai395-red-b2-attempt2-negative.patch",
+    "native/ai395-red-b2-attempt2-receipt.json",
+    "native/ai395-reviewed-postfix-alignment-receipt.json",
+    "native/first-green-control-positive-observations.json",
+    "native/negative-decision-seal-keep-test-import.patch",
+    "native/run_ai395_first_fixed_pipeline.py",
+    "native/run_ai395_native_validation.py",
+    "native/run_ai395_native_validation_b2_v2.py",
+    "native/validation-before-native.json",
+    "native-artifact-manifest.json",
+    "native-clang-environment-repair.json",
+    "native-format.json",
+    "native-format.patch",
+    "native-openssl-environment-repair.json",
+    "native-preparation.json",
+    "native-source-manifest.json",
+    "native-validation.md",
+    "original-ci-observation.json",
+    "post-fix-full-tree-changed-paths-proof.json",
+    "post-fix-source-adoption.json",
+    "post-fix-source-identity-review.json",
+    "product-recovery-review.md",
+    "product-recovery-source-manifest.json",
+    "source-manifest.json",
+    "validation.json",
+    "windows-compile-diagnosis.md",
+    "windows-job-127097094121.log",
+    "windows-original-qualification.json",
+    "windows-pty-clone-error.patch",
+    "windows-pty-source-manifest.json",
+    "windows-runner-queue-review.json"
+  ],
+  "payload_matches_current": true,
+  "markdown_links": [
+    {
+      "document": "native-validation.md",
+      "target": "native-source-manifest.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-desktop-source-attempt2-receipt.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native-clang-environment-repair.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native-openssl-environment-repair.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-red-a-attempt3-receipt.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-red-a-attempt3.stderr",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-red-b1-attempt1-receipt.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-red-b1-attempt1-just-test.stderr",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-red-b2-attempt2-receipt.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-red-b2-attempt2-just-test.stderr",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/negative-decision-seal-keep-test-import.patch",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-c-receipt.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-c-just-test.stderr",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/first-green-control-positive-observations.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-green-attempt1-receipt.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-green-attempt1-just-green.stderr",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "desktop-issuer-fence-review.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "desktop-issuer-fence-independent-review.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "desktop-issuer-joint-fence.patch",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-desktop-regression-attempt1-receipt.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-green-attempt2-receipt.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-first-scoped-fix-receipt.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-first-scoped-fix.patch",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "first-scoped-fix-source-review.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "post-fix-source-adoption.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "native/ai395-reviewed-postfix-alignment-receipt.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "windows-original-qualification.json",
+      "exists": true
+    },
+    {
+      "document": "native-validation.md",
+      "target": "windows-runner-queue-review.json",
+      "exists": true
+    },
+    {
+      "document": "README.md",
+      "target": "native-validation.md",
+      "exists": true
+    },
+    {
+      "document": "README.md",
+      "target": "native-source-manifest.json",
+      "exists": true
+    },
+    {
+      "document": "README.md",
+      "target": "validation.json",
+      "exists": true
+    }
+  ],
+  "issues": []
+}

@@ -1,0 +1,129 @@
+{
+  "schema": "hepta.native-environment-repair.v1",
+  "host": "ai395",
+  "package": "libclang-common-21-dev",
+  "version": "1:21.1.8-6ubuntu1",
+  "source": "existing configured Ubuntu APT mirror: https://mirrors.ustc.edu.cn/ubuntu",
+  "source_is_official_direct_domain": false,
+  "installed_libclang_version": "1:21.1.8-6ubuntu1",
+  "global_system_modified": false,
+  "repository_source_modified": false,
+  "test_features_or_backend_modified": false,
+  "steps": [
+    {
+      "name": "installed-libclang-version",
+      "args": [
+        "dpkg-query",
+        "-W",
+        "-f",
+        "${Version}",
+        "libclang1-21"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.022480249404907227,
+      "stdout_sha256": "99c8b0b4286f6f3b3e7c65b85e0173d671677cfe369634b6e05b8fcfde8beccd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "exact-package-metadata",
+      "args": [
+        "apt-cache",
+        "show",
+        "libclang-common-21-dev=1:21.1.8-6ubuntu1"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.06650209426879883,
+      "stdout_sha256": "a0ae2d6ba41777a8dc7647333915554327f27554a9849f47df946ca5f4478d04",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "download-exact-package",
+      "args": [
+        "apt-get",
+        "download",
+        "libclang-common-21-dev=1:21.1.8-6ubuntu1"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 8.21024775505066,
+      "stdout_sha256": "8d63d68458f1ca5e92fbba74f5d2d0667248c2695a69f0dc7afdfa93ce87c9cb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "downloaded-package-version",
+      "args": [
+        "dpkg-deb",
+        "-f",
+        "/home/qq/work/hepta-convergence-20261105-0c901b/native-debs/clang-headers-attempt-1/libclang-common-21-dev_1%3a21.1.8-6ubuntu1_amd64.deb",
+        "Version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.012312889099121094,
+      "stdout_sha256": "ccdfaced1087a1f97fe04c028a0e56b25cb8fe7c4f1108a9e576d34bfef204a6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "downloaded-package-name",
+      "args": [
+        "dpkg-deb",
+        "-f",
+        "/home/qq/work/hepta-convergence-20261105-0c901b/native-debs/clang-headers-attempt-1/libclang-common-21-dev_1%3a21.1.8-6ubuntu1_amd64.deb",
+        "Package"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.004663944244384766,
+      "stdout_sha256": "c3c6c8f7b4c0c54b773bcbd44aa026892b1941e5b14a61a12b09830c92ba668f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "unpack-task-local-headers",
+      "args": [
+        "dpkg-deb",
+        "-x",
+        "/home/qq/work/hepta-convergence-20261105-0c901b/native-debs/clang-headers-attempt-1/libclang-common-21-dev_1%3a21.1.8-6ubuntu1_amd64.deb",
+        "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/clang21-21.1.8-6ubuntu1"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.026756763458251953,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "state": "ready-task-local-clang-resource-headers",
+  "apt_expected_sha256": "c7188f593d77017a4ebb6fea76bb4b5180a3e5a1e7b9f0e3dbd5f5abf7e7183e",
+  "apt_package_metadata": [
+    {
+      "Package": "libclang-common-21-dev",
+      "Source": "llvm-toolchain-21",
+      "Priority": "optional",
+      "Section": "universe/libdevel",
+      "Installed-Size": "14666",
+      "Maintainer": "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
+      "Architecture": "amd64",
+      "Version": "1:21.1.8-6ubuntu1",
+      "Recommends": "libclang-rt-21-dev",
+      "Filename": "pool/universe/l/llvm-toolchain-21/libclang-common-21-dev_21.1.8-6ubuntu1_amd64.deb",
+      "Size": "769884",
+      "MD5sum": "6729c54fd9481c3dec9d9f9f150350e5",
+      "SHA1": "27d78a7a44fc5b654ce60e11e57d11827a003836",
+      "SHA256": "c7188f593d77017a4ebb6fea76bb4b5180a3e5a1e7b9f0e3dbd5f5abf7e7183e",
+      "SHA512": "4e0ce4865a4ee3f8d8a762fe276e797a11bafa46bb67a735a30da0af0ef9d3090a11266f6aaec4529219dfd91b48be25ec34acfb6a9b2ab711316afd98aa73db",
+      "Homepage": "https://www.llvm.org/",
+      "Description-en": "Clang library - Common development package",
+      "Description-md5": "c70051d53e23270c29353f55183e81aa",
+      "Original-Maintainer": "LLVM Packaging Team <pkg-llvm-team@lists.alioth.debian.org>",
+      "Multi-Arch": "same",
+      "Origin": "Ubuntu",
+      "Bugs": "https://bugs.launchpad.net/ubuntu/+filebug"
+    }
+  ],
+  "downloaded_package": "/home/qq/work/hepta-convergence-20261105-0c901b/native-debs/clang-headers-attempt-1/libclang-common-21-dev_1%3a21.1.8-6ubuntu1_amd64.deb",
+  "downloaded_sha256": "c7188f593d77017a4ebb6fea76bb4b5180a3e5a1e7b9f0e3dbd5f5abf7e7183e",
+  "extraction_directory": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/clang21-21.1.8-6ubuntu1",
+  "resource_directory": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/clang21-21.1.8-6ubuntu1/usr/lib/llvm-21/lib/clang/21",
+  "stddef_header": "/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/clang21-21.1.8-6ubuntu1/usr/lib/llvm-21/lib/clang/21/include/stddef.h",
+  "stddef_header_sha256": "b3e62a046ddf28d09eedebe6eb9461cb7060e47cad2c69964b222c4eea10347e",
+  "environment": {
+    "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/home/qq/work/hepta-convergence-20261105-0c901b/native-headers/clang21-21.1.8-6ubuntu1/usr/lib/llvm-21/lib/clang/21"
+  },
+  "exit_code": 0
+}

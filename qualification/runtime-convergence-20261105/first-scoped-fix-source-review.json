@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.first-scoped-fix-source-review.v1",
+  "decision": "ACCEPT_EXACT_TWO_FILE_LINT_DIFF_FOR_SEPARATE_SOURCE_ADOPTION",
+  "review_kind": "independent source and execution-artifact review; not a rewritten native success receipt",
+  "tested_head": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "test_results_remain_bound_to_tested_head": true,
+  "native_fix": {
+    "receipt_local_path": "lifecycle/env-prep/ai395-fix-attempt1-receipt.json",
+    "receipt_sha256": "ae54b470fd20e079d33602f60abffc3f130816586974b297cebe2f6ea3704d3b",
+    "raw_state": "fix-blocked",
+    "wrapper_exit_code": 1,
+    "just_fix_exit_code": 0,
+    "patch_local_path": "lifecycle/env-prep/ai395-first-fix.patch",
+    "patch_sha256": "8226534cf866dd0be0ed94099bef18ca7a1cd64d701ae4d48df0427f63248d07",
+    "changed_paths_stdout_sha256": "d2791edc02a9dc3aad3602a5e55fc8a40e2909aa14048b067ce98c202738bda8",
+    "source_changed_by_fix_field": false,
+    "source_changed_field_limit": "The field compares only the thirteen controlled source files. It is false while two other test files changed; it does not mean the whole tree was unchanged."
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs",
+      "before_blob": "9f1f043b9f55ecac764fa9ff6ab50ceb2cfada45",
+      "after_blob": "3f865200105061a2d47cd778293ea5680e9e0df5",
+      "before_sha256": "12efc9975b17c10f05ac31e7cf89699509aca7af21501954c4afc8160dab46d3",
+      "after_sha256": "60bf227d6b4630a26078b18c7a7d294cbfe331c3b2afe2409c3b893dc9e51875"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs",
+      "before_blob": "bf0aeee0d3d1c6e89ca4f73214807ff43d7986aa",
+      "after_blob": "071273b873f95471e984cfe5bd3e975b068a86a7",
+      "before_sha256": "17f6d5b14c720b87afb46d28d97767feb138fa513ff04e0b3ef64eca25cfd617",
+      "after_sha256": "1bb3ffd780266128f4afa82f97ec7e6f4bcbba8e3399bcfc914f392a29559ccd"
+    }
+  ],
+  "semantic_findings": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs",
+      "changes": "Two last-use original.clone() assignments become moves of original.",
+      "reason": "The original value is never read afterward in either test. AuthorityLease and AuthorityLeaseBinding have derived Clone and only owned String, integer and fixed-byte-array fields; no custom Clone/Drop behavior is present. The registry had already retained its own value. All subsequent mutations, calls, expected Revoked error and frontier assertions are unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs",
+      "changes": "A match with an Ok(profile) assertion and empty Err branch becomes if let Ok(profile) with the same assertion.",
+      "reason": "serde_json::from_value is still evaluated once; successful decoding runs the same profile validation and assertion text; failed decoding still does nothing. Input mutations, loop and remaining assertions are unchanged."
+    }
+  ],
+  "scope_checks": [
+    "Both complete facba base files were independently fetched through GitHub and equal the actual native reverse-patch base bytes.",
+    "The exact native patch applies cleanly to both exact bases and yields byte-identical actual native after files.",
+    "git diff --check passes.",
+    "The recorded complete git diff --name-only -z stdout digest equals precisely these two paths plus NUL terminators.",
+    "All thirteen controlled source hashes before and after fix are identical. The reviewed diff contains no production-source, test-expectation, feature, signature, timeout or workflow change."
+  ],
+  "authority_lease_source": {
+    "ref": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+    "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+    "blob": "924e4552472038934f665f6acf7a95438294893f",
+    "relationship": "Unchanged by the three-file desktop repair; declarations independently inspected."
+  },
+  "published_source_adoption": {
+    "first_commit": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+    "first_tree": "d93136bb5e318ea4131bfb5cb0b9ac9310f27d1d",
+    "first_parent": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+    "second_merge": "eed6541df0add428add8e2d9ab2cbd54a961abeb",
+    "second_tree": "b8ce8b96a759f522cb7db60027d4844f1b3ad974",
+    "second_ordered_parents": [
+      "e0b522cd437af1362f8be23f601886b46ec1b063",
+      "432421d0d9ca9d82c5e3401fe3425af29131505a"
+    ]
+  },
+  "acceptance_limits": [
+    "Preserve the original fix-blocked receipt and wrapper exit 1 alongside actual just fix exit 0.",
+    "Adopted post-fix commits are distinct identities; earlier facba test results do not become execution of those new bytes.",
+    "No first-wave test was rerun by this review. The separately required second-wave package run validates its own final composed source.",
+    "This source review does not launch second-wave native work or close current-head Windows, merge or release gates."
+  ],
+  "checks_executed_by_reviewer": [
+    "git apply --check",
+    "git apply and complete file byte comparison",
+    "git diff --check",
+    "SHA256/full-tree path-output and controlled-source before/after comparison"
+  ],
+  "new_native_test_execution": false
+}

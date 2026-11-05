@@ -1,0 +1,185 @@
+{
+  "schema": "hepta.runtime-convergence-evidence.v2",
+  "recorded_at_utc": "2026-11-05T09:14:32.383050+00:00",
+  "implementation_commit": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+  "implementation_tree": "d93136bb5e318ea4131bfb5cb0b9ac9310f27d1d",
+  "historical_validation": "native/validation-before-native.json",
+  "source_manifest": "native-source-manifest.json",
+  "narrative": "native-validation.md",
+  "required_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-runtime",
+    "codex-hepta-intelligence-eval",
+    "codex-hepta-intelligence"
+  ],
+  "checks": {
+    "source_blob_tree_parent_readback": "PASS",
+    "native_format": "PASS_EXACT_FACBA_AND_POSTFIX_F_FULL_R3_DELTA",
+    "native_negative_controls": "FOUR_FAMILIES_BEHAVIORALLY_CONFIRMED_ON_INITIAL_SOURCE_PLUS_RECORDED_FORMAT",
+    "original_desktop_regression": "PASS_EXACT_FACBA_1_OF_1",
+    "native_changed_package_tests": "PASS_EXACT_FACBA_813_OF_813_66_SKIPPED",
+    "scoped_clippy": "COMMAND_EXIT_ZERO; WRAPPER_SCOPE_BLOCKED; EXACT_TWO_FILE_TEST_DIFF_INDEPENDENTLY_REVIEWED_AND_COMMITTED",
+    "original_platform_ci": "OPEN_LATEST_WINDOWS_QUEUED_NO_RUNNER_NO_EXECUTED_STEPS",
+    "real_product_acceptance": "NOT_ESTABLISHED"
+  },
+  "initial_control_source": {
+    "commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+    "format_receipt_sha256": "30bea20ec319e66aa1fd21fbd4d3553eb0c3f01c56e80aa221a72935b3a3ece9",
+    "later_windows_and_desktop_repairs_not_in_that_initial_run": true
+  },
+  "negative_controls": {
+    "A": {
+      "receipt": "native/ai395-red-a-attempt3-receipt.json",
+      "sha256": "bf1d61d0017b750d7d6083e1e3608da070c95186db8c586b4c8dc00409a483c6",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "state": "named-test-failure-observed-review-required",
+      "actual_command_exit": 100,
+      "restored_candidate": true,
+      "positive_observation": null
+    },
+    "B1": {
+      "receipt": "native/ai395-red-b1-attempt1-receipt.json",
+      "sha256": "7c5c147c074a69dbec69962e9945b80d160e874e45515098fdf98a505b2b1836",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "state": "named-test-failure-observed-review-required",
+      "actual_command_exit": 100,
+      "restored_candidate": true,
+      "positive_observation": null
+    },
+    "B2": {
+      "receipt": "native/ai395-red-b2-attempt2-receipt.json",
+      "sha256": "f6ac8519682f94107355ee67df6e6d049f47a19ca620bada516d2755bbb94921",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "state": "named-test-failure-observed-review-required",
+      "actual_command_exit": 100,
+      "restored_candidate": true,
+      "positive_observation": null
+    },
+    "C": {
+      "receipt": "native/ai395-c-receipt.json",
+      "sha256": "5f6d671010f59226bb5d7e1387cc98a2ccb03182312be31b6643d222eedf523a",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "state": "named-test-failure-observed-review-required",
+      "actual_command_exit": 100,
+      "restored_candidate": true,
+      "positive_observation": null
+    }
+  },
+  "positive_runs": {
+    "initial_full_failure": {
+      "receipt": "native/ai395-green-attempt1-receipt.json",
+      "sha256": "673492e39adbcea904de621805280f0aa06b1d6d38d6b7c86b34d6729765e2cc",
+      "source_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+      "state": "green-failed",
+      "actual_command_exit": 100,
+      "restored_candidate": null,
+      "positive_observation": null,
+      "observed_summary": {
+        "run": 813,
+        "passed": 812,
+        "failed": 1,
+        "skipped": 66,
+        "target_tests_passed": 13
+      }
+    },
+    "repaired_desktop": {
+      "receipt": "native/ai395-desktop-regression-attempt1-receipt.json",
+      "sha256": "4b133f93c90f5e27910a8d729b9b89ffdffb01d0bb659e491406bde484f06c19",
+      "source_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+      "state": "desktop-regression-complete",
+      "actual_command_exit": 0,
+      "restored_candidate": null,
+      "positive_observation": {
+        "summary": "Summary [   0.065s] 1 test run: 1 passed, 661 skipped",
+        "run_count": 1,
+        "required_tests": [
+          "desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair"
+        ],
+        "observed_passes": [
+          "desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair"
+        ]
+      }
+    },
+    "repaired_full": {
+      "receipt": "native/ai395-green-attempt2-receipt.json",
+      "sha256": "f47d72c3930e2575b567fb8acaeb999f6696fab34bdcdd81ccd56b542fd81588",
+      "source_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+      "state": "green-complete",
+      "actual_command_exit": 0,
+      "restored_candidate": null,
+      "positive_observation": {
+        "summary": "Summary [  36.320s] 813 tests run: 813 passed (1 slow), 66 skipped",
+        "run_count": 813,
+        "required_tests": [
+          "rejected_terminal_observation_preserves_recovered_uncertainty",
+          "last_available_revision_accepts_terminal_observation_once",
+          "cancellation_deadline_overflow_preserves_dispatched_run",
+          "last_representable_cancel_deadline_remains_reconcilable",
+          "revision_overflow_preserves_pre_dispatch_state",
+          "revision_overflow_preserves_dispatched_and_cancelling_state",
+          "bulk_deadline_error_retains_completed_prefix_and_failed_record",
+          "bulk_unknown_error_retains_completed_prefix_and_failed_record",
+          "product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout",
+          "product_runner_binds_estimator_receipts_and_persists_signed_decision",
+          "ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision",
+          "public_governed_topology_denies_before_grant_consumption_or_callbacks",
+          "public_topology_recovery_denies_before_grant_consumption_or_callbacks",
+          "desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair"
+        ],
+        "observed_passes": [
+          "rejected_terminal_observation_preserves_recovered_uncertainty",
+          "last_available_revision_accepts_terminal_observation_once",
+          "cancellation_deadline_overflow_preserves_dispatched_run",
+          "last_representable_cancel_deadline_remains_reconcilable",
+          "revision_overflow_preserves_pre_dispatch_state",
+          "revision_overflow_preserves_dispatched_and_cancelling_state",
+          "bulk_deadline_error_retains_completed_prefix_and_failed_record",
+          "bulk_unknown_error_retains_completed_prefix_and_failed_record",
+          "product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout",
+          "product_runner_binds_estimator_receipts_and_persists_signed_decision",
+          "ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision",
+          "public_governed_topology_denies_before_grant_consumption_or_callbacks",
+          "public_topology_recovery_denies_before_grant_consumption_or_callbacks",
+          "desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair"
+        ]
+      }
+    }
+  },
+  "product_release": "HOLD",
+  "adaptive_promotion": "NO_NEW_EFFICACY_ADMISSION",
+  "public_topology_execution": "DENY_ALL",
+  "sealed_consumer_migration_pr": 4856,
+  "known_unclosed": [
+    "real provider goal-to-effect-to-terminal-to-restart task chain",
+    "default canonical seven-owner handoff and authenticated Decision/Outcome composition through existing App Server and LedgerWriter",
+    "process-loss recovery of original signed append requests and exact execution identities",
+    "same-information complete-cost independent efficacy qualification",
+    "single durable Control lifecycle owner and physical recovery",
+    "original Windows isolation and remaining original platform failures",
+    "independent acceptance and release",
+    "second-wave sealed-consumer native qualification and production complete-receipt persistence/readback"
+  ],
+  "original_windows_current_source_run": 41999779676,
+  "original_windows_prior_failure_run": 41982971524,
+  "scoped_fix_is_last": true,
+  "source_changes_after_fix_need_separate_identity": true,
+  "tested_implementation_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "post_fix_source_adoption": "post-fix-source-adoption.json",
+  "current_exact_source_alignment": {
+    "receipt": "native/ai395-reviewed-postfix-alignment-receipt.json",
+    "sha256": "64be8b15396564e49ac3b6f4dd6ecd7b9c623a40c113e45d4f1b742779f6a42e",
+    "state": "reviewed-postfix-heads-aligned-and-byte-verified",
+    "rust_files_verified": 5309,
+    "rust_bytes_verified": 80597087
+  },
+  "current_code_source_ci_snapshot": {
+    "path": "current-source-ci-observation.json",
+    "sha256": "2ffdce01ae272e64e78fd847beffb9935322224c237022d09a2edea0bfe218ea",
+    "observed_utc_window": [
+      "2026-11-05T09:39:17Z",
+      "2026-11-05T09:39:18Z"
+    ],
+    "atomic": false,
+    "result": "WINDOWS_JOB_QUEUED_NO_RUNNER_NO_STEPS; ARCHITECTURE_AND_BLOCKING_PENDING_NO_JOBS"
+  }
+}

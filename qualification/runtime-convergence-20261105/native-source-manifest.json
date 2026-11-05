@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.runtime-convergence-native-source.v1",
+  "implementation_commit": "432421d0d9ca9d82c5e3401fe3425af29131505a",
+  "implementation_tree": "d93136bb5e318ea4131bfb5cb0b9ac9310f27d1d",
+  "comparison_base": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+  "all_tracked_rust_blobs_verified": 5309,
+  "changed_rust_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_desktop.rs",
+      "sha256": "7a1744f1668a966ba39ad76bd5541ae8075d85eb22a9927d802370e840569eca",
+      "git_blob": "4e6319f8d235b6cdb541b3c3edd77251bafc9a7f",
+      "bytes": 7325
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "sha256": "b1147e693f884afd9e0f0d0c0d172d9f690c71e3ae18bb678997bc353d4d6941",
+      "git_blob": "13c813efd1d8b0b8c45b4ac093dcb0ef0dab2521",
+      "bytes": 8180
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "sha256": "3925a3abbecfd2561640bb171bbbbcfa52cdd5648d5eadc2142550fae72f5b38",
+      "git_blob": "6abc0d537236398477102339fa0744dc72ec43a4",
+      "bytes": 11945
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sha256": "18a606b9760f76971bf9e574b34998d54214dc28e44c295f5c3acd8d873813c7",
+      "git_blob": "cc04f811846522073a4918b6c918fe862206ce23",
+      "bytes": 26548
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "sha256": "298eaf033ce9acc064c783afa1b2a598edc74eeca2e6a166d16e02ea1eaa5727",
+      "git_blob": "5c2601957ba753230b149b9291bd14b463a48957",
+      "bytes": 31378
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "sha256": "b00f4f3d0e73ed1f206a5387268a60c05372299eec238925ff2b54537be65f25",
+      "git_blob": "0c374acd8c5e25626c213c1ed9f6ba36d3fcbe42",
+      "bytes": 37054
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
+      "sha256": "5d725c7f941bef353945a6707b03424e0818913f36b36f3d3ca1312b6280911d",
+      "git_blob": "bbead9a4627526ceb1a034732ecfb54051856352",
+      "bytes": 24812
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_test_support.rs",
+      "sha256": "d2b94d7cb163c0ee83549efc54d1ced0ab00b2823d919c2d3e6d17c956caf3ae",
+      "git_blob": "af57c7bbd3bd2e2641c7ffad06c856b7303290de",
+      "bytes": 23101
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+      "sha256": "716ee503b6de4d81d9c89446cb502256890bf4d670dbf8a8a3ea83e54ccfc4f1",
+      "git_blob": "fa8259d9cfd1c1e244ba7522ea3379417cbb06ee",
+      "bytes": 20979
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/lib.rs",
+      "sha256": "2f9d7865417dc8db620dcd149c99e624310dd33a743d6545e94fa79c8b48bbd5",
+      "git_blob": "a58dfaa26fb8544530603f0c14ca0339514b17bf",
+      "bytes": 44919
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/organs_tests.rs",
+      "sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733",
+      "git_blob": "06a42540a0d857b26d85e9fa4bbac83cba04f4c8",
+      "bytes": 34903
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/topology_execution.rs",
+      "sha256": "f1baa6c08cc72dabec84715a6a627cc0a8ca5dcc18f8f11081dd55f0ce7484db",
+      "git_blob": "768b0dd2a5c29a2eb0ac640228ccab5a6d5d8a35",
+      "bytes": 14599
+    },
+    {
+      "path": "codex-rs/utils/pty/src/win/mod.rs",
+      "sha256": "d9b5bb6c6eb485369c8810f7b30731cad53b2e221f0a841ef0d19f7c786c04ba",
+      "git_blob": "d244e22befecda19782f1fc2a696af1a534069b0",
+      "bytes": 6422
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs",
+      "git_blob": "3f865200105061a2d47cd778293ea5680e9e0df5",
+      "sha256": "60bf227d6b4630a26078b18c7a7d294cbfe331c3b2afe2409c3b893dc9e51875",
+      "bytes": 4652
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs",
+      "git_blob": "071273b873f95471e984cfe5bd3e975b068a86a7",
+      "sha256": "1bb3ffd780266128f4afa82f97ec7e6f4bcbba8e3399bcfc914f392a29559ccd",
+      "bytes": 6736
+    }
+  ],
+  "original_desktop_regression_blob": "a8c7698a8bf6a58f35d6bcec57470df0efee6f55",
+  "source_receipt": "native/ai395-desktop-source-attempt2-receipt.json",
+  "source_receipt_sha256": "4a447cf48bfb064ea46bb1068e85d926bd876ca0669b75daf88512a17a8d7c49",
+  "format_changed_paths": [],
+  "initial_mutation_control_source": {
+    "checkout_head": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+    "format_overlay_receipt_sha256": "30bea20ec319e66aa1fd21fbd4d3553eb0c3f01c56e80aa221a72935b3a3ece9",
+    "note": "The original mutation controls ran before the later PTY/desktop source composition; per-attempt receipts bind all touched positive bytes and each negative variant."
+  },
+  "tested_implementation_commit": "facba0d32c1cd0e8163a6186d7ba91fa311f2e2e",
+  "tested_implementation_tree": "38f3e6e9f2e3fa3605e720a4a287bbd75d25695b",
+  "post_fix_source_adoption": "post-fix-source-adoption.json",
+  "native_source_receipt_scope": "Original tested facba source. Later exact F alignment is recorded separately.",
+  "current_exact_source_alignment_receipt": "native/ai395-reviewed-postfix-alignment-receipt.json",
+  "current_exact_source_alignment_sha256": "64be8b15396564e49ac3b6f4dd6ecd7b9c623a40c113e45d4f1b742779f6a42e",
+  "current_all_tracked_rust_blobs_verified": 5309,
+  "current_all_tracked_rust_bytes_verified": 80597087,
+  "current_source_clean": true,
+  "full_r3_format_check": "PASS"
+}

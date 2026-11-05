@@ -11,6 +11,7 @@ use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_learning_ledger::LedgerWitnessStore;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::ProductionLedgerError;
+use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use pretty_assertions::assert_eq;
 use std::fs;
@@ -509,3 +510,50 @@ fn abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome() {
 
 #[path = "evaluated_shadow_segment_tests.rs"]
 mod segmented;
+
+#[test]
+fn ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision() {
+    let mut fixture = Fixture::with_minimum_improvement(FixedQ32::ONE);
+    assert_eq!(
+        fixture.qualification.decision.decision.disposition,
+        IndependentEvaluationDispositionV1::Ineligible
+    );
+    assert_eq!(
+        fixture.qualification.decision.decision.failed_metrics,
+        vec![id("qualification-metric")]
+    );
+    fixture.qualification.validate_integrity().unwrap();
+
+    let temp = tempfile::tempdir().unwrap();
+    let path = temp.path().join("ledger");
+    let ledger = ledger_at(&path, &fixture);
+    let (mut ledger, before) = closed_bytes_and_reopen(ledger, &path, &fixture);
+    let mut ports = Ports::new(&fixture);
+    assert!(matches!(
+        run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50),
+        Err(EvaluatedShadowError::Ineligible(
+            IndependentEvaluationDispositionV1::Ineligible
+        ))
+    ));
+    assert!(ports.calls.is_empty());
+    assert!(ledger.records().unwrap().is_empty());
+
+    // Preserve every signature, metric failure and evidence digest. Only the
+    // public decision label changes; this must not authorize candidate use.
+    fixture.qualification.decision.decision.disposition =
+        IndependentEvaluationDispositionV1::EligibleForIndependentSelection;
+    let result =
+        run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50);
+    assert!(
+        ports.calls.is_empty(),
+        "relabelled qualification reached ports: {:?}; result: {result:?}",
+        ports.calls
+    );
+    assert!(ledger.records().unwrap().is_empty());
+    assert!(matches!(
+        result,
+        Err(EvaluatedShadowError::Qualification(_))
+    ));
+    drop(ledger);
+    assert_eq!(fs::read(path).unwrap(), before);
+}

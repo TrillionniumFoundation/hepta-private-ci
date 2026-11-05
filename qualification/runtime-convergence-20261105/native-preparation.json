@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.native-preparation-observation.v1",
+  "implementation_commit": "1d87082c0d5afd2b474a2c453ea98005fd540dea",
+  "host": "mac",
+  "rust_install_job": "1a1aa663584-fc05-4275",
+  "rust_install_state": "FAILED",
+  "exit_code": 1,
+  "terminal_at_utc": "2026-11-05T06:50:26.742Z",
+  "elapsed_seconds": 1238.8686051368713,
+  "required_toolchain": "1.96.0-aarch64-apple-darwin",
+  "required_components": [
+    "cargo",
+    "clippy",
+    "rustfmt",
+    "rust-src"
+  ],
+  "failure": "Cargo component download could not rename the cached .partial file to its complete name: No such file or directory (os error 2).",
+  "cause_not_established": "The observed error is missing cached file at rename. A competing cache user, download failure, filesystem event or other origin is not established by this log.",
+  "original_component_url": "https://static.rust-lang.org/dist/2026-05-28/cargo-1.96.0-aarch64-apple-darwin.tar.xz",
+  "stderr_sha256": "e3b660965cd45e5cbb5d7c23b7844f89d32ff74f84fdedd0be39a60c6fefec0b",
+  "stdout_log_bytes": 1147,
+  "log_redaction": "Only the operator's home path is replaced by <operator-home> in the text artifact.",
+  "native_format": "NOT_RUN",
+  "native_negative_controls": "NOT_RUN",
+  "native_changed_package_tests": "NOT_RUN",
+  "scoped_clippy": "NOT_RUN",
+  "next_action": "Verify installed exact toolchain and task checkout status before any retry. If still absent, use a task-owned isolated RUSTUP_HOME for one explicit retry with the same official pin/components.",
+  "observed_stdout_redacted": "{\"stage\": \"toolchain-start\", \"free_bytes\": 370230673408}\n{\"name\": \"rustup-install-fixed-1.96\", \"args\": [\"/opt/homebrew/opt/rustup/bin/rustup\", \"toolchain\", \"install\", \"1.96.0\", \"--profile\", \"minimal\", \"--component\", \"clippy\", \"--component\", \"rustfmt\", \"--component\", \"rust-src\"], \"exit\": 1, \"elapsed_seconds\": 1238.8686051368713, \"stdout_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\", \"stderr_sha256\": \"e3b660965cd45e5cbb5d7c23b7844f89d32ff74f84fdedd0be39a60c6fefec0b\"}\ninfo: syncing channel updates for '1.96.0-aarch64-apple-darwin'\ninfo: latest update on 2026-05-28, rust version 1.96.0 (ac68faa20 2026-05-25)\ninfo: downloading component 'cargo'\ninfo: retrying download for 'https://static.rust-lang.org/dist/2026-05-28/cargo-1.96.0-aarch64-apple-darwin.tar.xz'\nerror: component download failed for cargo-aarch64-apple-darwin: could not rename downloaded file from '<operator-home>/.rustup/downloads/c042858192b7b6d66fe59b3bbbbd0f6e3cac6e8a478dc4cc091cde9eddea3c8b.partial' to '<operator-home>/.rustup/downloads/c042858192b7b6d66fe59b3bbbbd0f6e3cac6e8a478dc4cc091cde9eddea3c8b': No such file or directory (os error 2)\n\n",
+  "recorded_at_utc": "2026-11-05 07:00:46 UTC"
+}

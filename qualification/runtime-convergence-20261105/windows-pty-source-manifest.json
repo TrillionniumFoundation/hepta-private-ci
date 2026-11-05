@@ -1,0 +1,37 @@
+{
+  "base_commit": "a20a8191ec37375876a99b7c18bae053f9bc185d",
+  "donor_pr": 4854,
+  "donor_source_commit": "345dd470a64783b54f45c522ac8675435d204738",
+  "donor_tree": "a7e310a8704c6434ddebf4c538418572e24d995e",
+  "not_included_donor_workflow_commit": "0856b142808f102c75e1182cd4dfb5e798938d84",
+  "source": [
+    {
+      "path": "codex-rs/utils/pty/src/win/mod.rs",
+      "base_blob": "41eef9a7053ff2ac2f4aa23abd4fe9d5f25676bf",
+      "changed_blob": "d244e22befecda19782f1fc2a696af1a534069b0",
+      "base_sha256": "3585a1ffb8d2f3a6b252f510a7d5653eb05178c7e0df3bf8af34cd04ca37af8a",
+      "changed_sha256": "d9b5bb6c6eb485369c8810f7b30731cad53b2e221f0a841ef0d19f7c786c04ba"
+    }
+  ],
+  "patch_sha256": "000259092fbbe3f6fa75b4c98b0aa931807f0e73fec06f8ec23767c670ea7895",
+  "original_log": {
+    "path": "integration/native-ci/windows-job-127097094121.log",
+    "bytes": 153709,
+    "sha256": "d067c57935f90cee93924d5658ca809e5a426c4b6036f48c7f75654390c072c9",
+    "run": 41982971524,
+    "job": 127097094121,
+    "head": "a20a8191ec37375876a99b7c18bae053f9bc185d",
+    "failure": "E0277 in utils/pty/src/win/mod.rs:79; Agentd test --no-run exit 101; no selected PromptRuntime tests executed"
+  },
+  "checked": [
+    "Original log bytes and digest",
+    "Exact a20 source and filedescriptor 0.8.3 Cargo.toml / native log version",
+    "Same production blob already present at R3 base 4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+    "Donor parent and one-file change from GitHub commit readback",
+    "Patch application and final bytes equal donor source",
+    "git diff --check against staged exact base in isolated apply-check directory"
+  ],
+  "native_validation": "Not run by this reviewer; original required Windows workflow and unchanged native PTY tests remain required",
+  "tests_changed": false,
+  "ci_changed": false
+}
