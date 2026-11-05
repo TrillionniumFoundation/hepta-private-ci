@@ -1731,9 +1731,37 @@ pub(crate) fn publish_active_database(
     result
 }
 
+#[cfg(windows)]
+fn reject_existing_directory_redirection(path: &Path) -> Result<(), CognitiveStoreError> {
+    // This classifies an existing redirect before creating missing descendants.
+    // It grants no authority: the original private-directory acquisition and
+    // post-acquisition canonical check below remain the binding checks.
+    for ancestor in path.ancestors() {
+        match fs::symlink_metadata(ancestor) {
+            Ok(_) => {
+                return canonical_path_without_redirection(ancestor)
+                    .map_err(unavailable)?
+                    .ok_or_else(|| {
+                        CognitiveStoreError::Invalid(
+                            "per-agent cognitive root must be canonical and must not traverse a symlink"
+                                .to_string(),
+                        )
+                    })
+                    .map(|_| ());
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(unavailable(error)),
+        }
+    }
+    Err(CognitiveStoreError::Invalid(
+        "cognitive root has no existing filesystem ancestor".to_string(),
+    ))
+}
+
 fn create_private_directory(path: &Path) -> Result<PathBuf, CognitiveStoreError> {
     #[cfg(windows)]
     let _private_directory = {
+        reject_existing_directory_redirection(path)?;
         let parent = path.parent().ok_or_else(|| {
             CognitiveStoreError::Invalid("cognitive directory has no parent".to_string())
         })?;
