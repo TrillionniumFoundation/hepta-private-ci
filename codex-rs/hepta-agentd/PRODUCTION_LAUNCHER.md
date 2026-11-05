@@ -322,7 +322,8 @@ is the same installed Root-to-launcher-to-adapter path with its original
 ten-second adapter duration, followed by actual Notes and joint application
 acceptance on one new, source-bound product pair. Formatting, source review or
 a test checkpoint provider cannot stand in for that result. The historical
-installed failure remains retained until the new run produces its own evidence.
+installed failure remains preserved; the new run must produce its own independent
+evidence.
 
 ## Notes and completion evidence
 
