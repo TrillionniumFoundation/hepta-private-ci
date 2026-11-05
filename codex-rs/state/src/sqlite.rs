@@ -482,3 +482,7 @@ impl SqliteConfig {
             .await
     }
 }
+
+#[cfg(test)]
+#[path = "sqlite_pool_tests.rs"]
+mod pool_tests;
