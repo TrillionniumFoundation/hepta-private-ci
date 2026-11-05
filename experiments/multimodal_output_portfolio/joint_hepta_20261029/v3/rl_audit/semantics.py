@@ -289,6 +289,8 @@ def path_value_gradient(model, theta, eta=0.0, rate=0.0, max_paths=100000):
 
     For nonzero eta this is the static CE of the discounted total return. It equals
     recursive CE at rate=0, but is intentionally a different objective at rate>0.
+    Path probabilities and scores must be formed in Decimal too: converting a
+    binary64 population afterward leaves O(epsilon/eta) mass/score bias.
     """
     _parameters(model, theta, eta, rate)
     coords = model.coordinates()
@@ -296,37 +298,43 @@ def path_value_gradient(model, theta, eta=0.0, rate=0.0, max_paths=100000):
     if type(max_paths) is not int or not 1 <= max_paths <= 1000000:
         raise ValueError("Invalid path cap")
     records = []
-
-    def expand(s, mass, total, discount, score):
-        acts = model.states[s]
-        probs = _softmax([theta[index[s, a]] for a in acts])
-        for j, (a, action) in enumerate(acts.items()):
-            next_score = list(score)
-            for k, b in enumerate(acts):
-                next_score[index[s, b]] += float(j == k) - probs[k]
-            for o in action.outcomes:
-                p = mass * probs[j] * o.probability
-                new_total = total - discount * action.cost
-                d = discount * math.exp(-rate * o.duration)
-                if o.next_state is None:
-                    records.append((p, new_total + d * o.payoff, tuple(next_score)))
-                    if len(records) > max_paths:
-                        raise ValueError("Complete path enumeration cap exhausted")
-                else:
-                    expand(o.next_state, p, new_total, d, next_score)
-
-    expand(model.root, 1.0, 0.0, 1.0, (0.0,) * len(coords))
+    risk, decay = Decimal(str(eta)), Decimal(str(rate))
     with localcontext() as ctx:
-        ctx.prec = 60
-        rows = [(Decimal(str(p)), Decimal(str(v)), [Decimal(str(x)) for x in g]) for p, v, g in records]
-        risk = Decimal(str(eta))
+        # Keep sixty guard digits after division by eta, including tiny eta.
+        ctx.prec = 60 + (max(0, -risk.adjusted()) if risk else 0)
+        zero, one = Decimal(0), Decimal(1)
+        policies = {}
+        for s, acts in model.states.items():
+            exps = [Decimal(str(theta[index[s, a]])).exp() for a in acts]
+            norm = sum(exps, zero)
+            policies[s] = tuple(x / norm for x in exps)
+
+        def expand(s, mass, total, discount, score):
+            acts = model.states[s]
+            probs = policies[s]
+            for j, (a, action) in enumerate(acts.items()):
+                next_score = list(score)
+                for k, b in enumerate(acts):
+                    next_score[index[s, b]] += Decimal(j == k) - probs[k]
+                for o in action.outcomes:
+                    p = mass * probs[j] * Decimal(str(o.probability))
+                    new_total = total - discount * Decimal(str(action.cost))
+                    d = discount * (-decay * Decimal(str(o.duration))).exp()
+                    if o.next_state is None:
+                        records.append((p, new_total + d * Decimal(str(o.payoff)), tuple(next_score)))
+                        if len(records) > max_paths:
+                            raise ValueError("Complete path enumeration cap exhausted")
+                    else:
+                        expand(o.next_state, p, new_total, d, next_score)
+
+        expand(model.root, one, zero, one, (zero,) * len(coords))
         if risk == 0:
-            value = sum(p * v for p, v, _ in rows)
-            grad = [sum(p * v * g[k] for p, v, g in rows) for k in range(len(coords))]
+            value = sum(p * v for p, v, _ in records)
+            grad = [sum(p * v * g[k] for p, v, g in records) for k in range(len(coords))]
         else:
-            z = sum(p * (-risk * v).exp() for p, v, _ in rows)
+            z = sum(p * (-risk * v).exp() for p, v, _ in records)
             value = -z.ln() / risk
-            grad = [-sum(p * (-risk * v).exp() * g[k] for p, v, g in rows) / (risk * z) for k in range(len(coords))]
+            grad = [-sum(p * (-risk * v).exp() * g[k] for p, v, g in records) / (risk * z) for k in range(len(coords))]
     return {"value": float(value), "gradient": tuple(float(x) for x in grad), "paths": len(records)}
 
 
@@ -508,10 +516,21 @@ def audit():
         }
         for eta in (1e-1, 1e-3, 1e-6, 1e-9)
     ]
+    path_limits = []
+    for eta in (1e-6, 1e-9, 1e-12, 1e-30):
+        path, recursive = path_value_gradient(model, theta, eta), evaluate(model, theta, eta)
+        path_limits.append(
+            {
+                "eta": eta,
+                "value_error": abs(path["value"] - recursive["value"]),
+                "gradient_error": max(abs(a - b) for a, b in zip(path["gradient"], recursive["gradient"])),
+            }
+        )
     return {
         "scope": "bounded semantic audit; no learned-policy benefit or new-algorithm claim",
         "panels": panels,
         "risk_neutral_limit": limits,
+        "independent_path_risk_limit": path_limits,
         "counterexamples": counterexamples(),
         "inherited_oracle": inherited_crosscheck(model, theta),
         "cpu_seconds": time.process_time() - cpu,
