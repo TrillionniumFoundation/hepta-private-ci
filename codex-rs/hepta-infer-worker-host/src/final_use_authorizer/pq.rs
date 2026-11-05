@@ -110,6 +110,7 @@ impl UnixFinalUseAuthorizer {
             canonical_config_path(&config.external_frontier.socket_path, Presence::Existing)?;
         if clock_path == issuer
             || frontier_path == issuer
+            || clock_path == frontier_path
             || clock_path.starts_with(&owner)
             || frontier_path.starts_with(&owner)
         {

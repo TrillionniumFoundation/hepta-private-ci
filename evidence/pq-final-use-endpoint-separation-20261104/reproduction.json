@@ -1,0 +1,35 @@
+{
+  "schema": "hepta-pq-final-use-endpoint-separation-observation-v1",
+  "status": "HOLD",
+  "base_sha": "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52",
+  "base_tree": "d57ebeb1f1a47a1b01519d9ebf8563330cc10206",
+  "chain_review_input": "44ebe1ae95bd27cfc9eee3a9be27f0e06a084771",
+  "files": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs",
+      "bytes": 11473,
+      "git_blob": "5f7c4e58418af1deb57ebb12a62ef1742f4c75c8",
+      "sha256": "8248dce487954198981a1359d1f4848be140b5230952e0231068dc27c0a87195"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs",
+      "bytes": 7776,
+      "git_blob": "c58526d1071d1b6cc30981c101abbca0e8ec775d",
+      "sha256": "5dea0536135f7eb8c88b5ca44630f561392461302042d2a573015c0c8ab264e6"
+    }
+  ],
+  "verification": {
+    "source_identity": "PASS",
+    "repository_just_fmt": "PASS",
+    "diff_check": "PASS",
+    "host_native_tests": "NOT_RUN",
+    "earlier_harness_build": "UNKNOWN_INCOMPLETE",
+    "unix_ipc_probe": "EPERM"
+  },
+  "claims": {
+    "whole_runtime_accepted": false,
+    "independent_accepted": false,
+    "physical_rollback_resistant": false,
+    "production_activation": false
+  }
+}
