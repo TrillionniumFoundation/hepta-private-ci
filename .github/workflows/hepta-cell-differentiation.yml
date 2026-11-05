@@ -21,13 +21,55 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-cell-differentiation-${{ github.ref }}
+  group: hepta-cell-differentiation-${{ github.event.pull_request.head.sha || github.sha }}
   cancel-in-progress: false
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
+  reference:
+    name: Isolated CPU study and adversarial controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Bind source and prepare the fixed CPU reference runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/cell-study-evidence"
+          git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/cell-study-evidence/source.txt"
+          python3 -m venv "$RUNNER_TEMP/cell-study-venv"
+          "$RUNNER_TEMP/cell-study-venv/bin/python" -m pip install numpy==2.3.5 \
+            2>&1 | tee "$RUNNER_TEMP/cell-study-evidence/runtime.log"
+      - name: Run study regressions and all preregistered arms
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/cell-study-venv/bin/python" -m unittest discover \
+            -s qualification/cell-differentiation -p 'test_*.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/cell-study-evidence/tests.log"
+          "$RUNNER_TEMP/cell-study-venv/bin/python" \
+            qualification/cell-differentiation/run_study.py \
+            --source-commit "$SOURCE_SHA" \
+            --output "$RUNNER_TEMP/cell-study-evidence/study.json"
+          "$RUNNER_TEMP/cell-study-venv/bin/python" --version \
+            > "$RUNNER_TEMP/cell-study-evidence/python.txt"
+          git diff --exit-code
+      - name: Retain the complete study and original failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-differentiation-study-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/cell-study-evidence/
+          if-no-files-found: error
+          retention-days: 14
+
   native:
     name: Native Cell contracts and plasticity proposal owners
     runs-on: ubuntu-24.04
