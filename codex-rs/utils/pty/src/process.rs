@@ -208,7 +208,9 @@ impl ProcessHandle {
             finished(&self.reader_handle),
             finished(&self.writer_handle),
             finished(&self.wait_handle),
-            self.pty_io_diagnostics.as_ref().map(|value| value.snapshot()),
+            self.pty_io_diagnostics
+                .as_ref()
+                .map(|value| value.snapshot()),
         )
     }
 
