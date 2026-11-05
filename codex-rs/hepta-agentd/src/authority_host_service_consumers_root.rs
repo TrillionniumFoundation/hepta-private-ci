@@ -50,6 +50,14 @@ pub(super) fn create_local(runtime: &Path) {
     let path = std::ffi::CString::new(local.as_os_str().as_encoded_bytes()).unwrap();
     // SAFETY: root-created, NUL-free fixture directory; no caller pointer remains.
     assert_eq!(unsafe { libc::chown(path.as_ptr(), 60001, 60001) }, 0);
+    // The required setgid runtime parent also sets this bit on new directories.
+    // chown preserves it on directories; establish the exact original journal
+    // mode before the production sealed-capture check reads this parent.
+    std::fs::set_permissions(&local, std::fs::Permissions::from_mode(0o700)).unwrap();
+    let metadata = std::fs::symlink_metadata(&local).unwrap();
+    assert_eq!(metadata.uid(), 60001);
+    assert_eq!(metadata.gid(), 60001);
+    assert_eq!(metadata.mode() & 0o7777, 0o700);
 }
 
 #[cfg(test)]
