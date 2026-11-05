@@ -84,7 +84,7 @@ fn websocket_connection_reuse_keeps_dynamic_metadata_in_wire_and_recovery_identi
     };
     let initial_wire = wire_payload(&metadata);
     let initial_wire_digest = canonical_sha256(&initial_wire).expect("initial wire digest");
-    let registry = transport_selection_registry(None);
+    let registry = transport_selection_registry(/*active*/ None);
     let stores = (
         ExtensionData::new("session-1"),
         ExtensionData::new("thread-1"),

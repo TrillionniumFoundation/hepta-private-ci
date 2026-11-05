@@ -363,7 +363,7 @@ async fn websocket_turn_state_survives_permission_change_by_reconnecting() -> Re
     // Observe the actual read-only prewarm before changing the session's permissions.
     let prewarm = tokio::time::timeout(
         std::time::Duration::from_secs(10),
-        server.wait_for_request(0, 0),
+        server.wait_for_request(/*connection_index*/ 0, /*request_index*/ 0),
     )
     .await?
     .body_json();

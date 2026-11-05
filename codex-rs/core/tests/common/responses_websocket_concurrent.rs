@@ -153,7 +153,7 @@ pub async fn start_concurrent_websocket_server(
                         }
                     }
                     if connection.close_after_requests && scripted_requests.len() == 0 {
-                        let _ = ws_stream.close(None).await;
+                        let _ = ws_stream.close(/*msg*/ None).await;
                         return;
                     }
                 }
