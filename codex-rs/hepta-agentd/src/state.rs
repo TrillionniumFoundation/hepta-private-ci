@@ -637,8 +637,12 @@ impl AgentdState {
             return Ok(None);
         };
 
+        // Recovered records keep their original signed identity. Check the
+        // actual owner before asking any canonical provider to do work.
+        self.require_current_run_start(record)?;
+        let current_generation = self.current_generation()?;
         let invocation = provider.build(&self.identity, record)?;
-        invocation.validate(&self.identity, record)?;
+        invocation.validate(&self.identity, record, current_generation)?;
 
         // Freeze only the small immutable composition while holding the run
         // lock. Owner execution is allowed to block without monopolizing run
@@ -650,7 +654,7 @@ impl AgentdState {
             .composition()
             .clone();
         let outcome = runner
-            .prepare_for_composition(&composition, invocation.request, invocation.inputs)
+            .prepare_for_run_start(&composition, record, invocation.request, invocation.inputs)
             .await
             .map_err(|error| {
                 AgentdError::Protocol(format!(
@@ -666,24 +670,17 @@ impl AgentdState {
                 let first_now = self.require_current_run_start(record)?;
                 let second_now = self.require_current_run_start(record)?;
                 let now_ms = first_now.max(second_now);
-                let snapshot = prepared.run_snapshot();
+                prepared
+                    .require_original_run_start(record)
+                    .map_err(|error| {
+                        AgentdError::Protocol(format!(
+                            "canonical RunStart binding changed: {error}"
+                        ))
+                    })?;
                 let attachment = prepared.context_attachment();
                 let mut runs = self.runs.lock().map_err(poisoned_state)?;
                 let admitted = runs
-                    .start_run(
-                        now_ms,
-                        crate::RunSnapshot {
-                            run_id: snapshot.run_id,
-                            request_digest: snapshot.request_digest,
-                            objective_digest: snapshot.objective_digest,
-                            body_digest: snapshot.body_digest,
-                            artifact_set_digest: snapshot.artifact_set_digest,
-                            authority_epoch: snapshot.authority_epoch,
-                            generation: snapshot.generation,
-                            fence_digest: snapshot.fence_digest,
-                            deadline_ms: snapshot.deadline_ms,
-                        },
-                    )
+                    .start_revalidated_run_start(now_ms, record)
                     .map_err(run_error)?;
                 let run_receipt = runs
                     .attach_context(

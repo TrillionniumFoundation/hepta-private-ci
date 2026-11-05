@@ -1,15 +1,15 @@
 //! Synthetic observation fixtures for source admission tests only.
 //! Memory CAS and publication sink are test doubles, never production owners.
 
-use std::sync::Arc;
-use std::sync::Mutex;
+use super::digest;
+use super::id;
 use crate::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
-use super::digest;
-use super::id;
+use std::sync::Arc;
+use std::sync::Mutex;
 
 #[derive(Clone, Default)]
 pub(super) struct MemoryCas(Arc<Mutex<Option<FinalHoldoutCasRecordV1>>>);
@@ -86,28 +86,34 @@ impl ProductQualificationEvidenceSinkV1 for Sink {
     }
 }
 
-
 pub(super) fn evaluate(
     plan: CrossFoldPlanV1,
     roles: Vec<MetricRoleContractV2>,
     snapshot_ids: Vec<StableId>,
     future_window_ids: Vec<StableId>,
-) -> (ProductEvaluationRunnerV1<MemoryCas>, ProductTemporalEvaluationReceiptV1) {
+) -> (
+    ProductEvaluationRunnerV1<MemoryCas>,
+    ProductTemporalEvaluationReceiptV1,
+) {
     let candidate_plan = temporal_plan("candidate", plan.objective_digest);
     let baseline_plan = temporal_plan("baseline", plan.objective_digest);
-    let sources = plan.metric_contracts.iter().map(|metric| ProductMetricSourceContractV1 {
-        metric_id: metric.metric_id.clone(),
-        source: ProductMetricSourceV1::DoublyRobust,
-    }).collect();
+    let sources = plan
+        .metric_contracts
+        .iter()
+        .map(|metric| ProductMetricSourceContractV1 {
+            metric_id: metric.metric_id.clone(),
+            source: ProductMetricSourceV1::DoublyRobust,
+        })
+        .collect();
     let mut provider = provider_inputs(
         snapshot_ids,
         future_window_ids,
         plan.final_holdout_digest,
         plan.final_holdout_window_id.clone(),
     );
-    let frozen = freeze_product_evaluation_plan_v1(
-        plan, roles, sources, &candidate_plan, &baseline_plan,
-    ).unwrap();
+    let frozen =
+        freeze_product_evaluation_plan_v1(plan, roles, sources, &candidate_plan, &baseline_plan)
+            .unwrap();
     let owner = FencedFinalHoldoutOwnerV1::initialize(
         MemoryCas::default(),
         digest("test-only-holdout-binding"),
@@ -116,11 +122,12 @@ pub(super) fn evaluate(
             generation: 1,
             lease_digest: digest("test-only-evaluation-lease"),
         },
-    ).unwrap();
+    )
+    .unwrap();
     let mut runner = ProductEvaluationRunnerV1::new(owner);
-    let temporal = runner.evaluate_temporal_comparison(
-        &frozen, &candidate_plan, &baseline_plan, &mut provider,
-    ).unwrap();
+    let temporal = runner
+        .evaluate_temporal_comparison(&frozen, &candidate_plan, &baseline_plan, &mut provider)
+        .unwrap();
     (runner, temporal)
 }
 fn temporal_plan(name: &str, objective_digest: Digest32) -> TemporalEvaluationPlan {

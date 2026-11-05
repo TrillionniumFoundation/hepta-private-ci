@@ -7,6 +7,56 @@ use tokio::sync::broadcast;
 use tokio::sync::oneshot;
 use tokio::time::timeout;
 
+// Hold the real publication lock on a blocking worker. The async test receives
+// the original entry only after the lock is held; dropping its release sender
+// also unlocks the worker if an assertion unwinds the test.
+struct HeldProcessMap {
+    custody: Arc<ProcessCustody>,
+    accepted_stdin_write_ids: Arc<Mutex<AcceptedStdinWriteIds>>,
+    release_tx: std::sync::mpsc::Sender<()>,
+    task: tokio::task::JoinHandle<()>,
+}
+
+impl HeldProcessMap {
+    async fn acquire(backend: &LocalProcess, process_id: &ProcessId) -> Self {
+        let inner = Arc::clone(&backend.inner);
+        let process_id = process_id.clone();
+        let (ready_tx, ready_rx) = oneshot::channel();
+        let (release_tx, release_rx) = std::sync::mpsc::channel();
+        let task = tokio::task::spawn_blocking(move || {
+            let processes = inner.processes.blocking_lock();
+            let Some(ProcessEntry::Running(running)) = processes.get(&process_id) else {
+                panic!("fixture process must be running");
+            };
+            if ready_tx
+                .send((
+                    Arc::clone(&running.custody),
+                    Arc::clone(&running.accepted_stdin_write_ids),
+                ))
+                .is_err()
+            {
+                return;
+            }
+            let _ = release_rx.recv();
+            drop(processes);
+        });
+        let (custody, accepted_stdin_write_ids) = ready_rx
+            .await
+            .expect("blocking fixture holds the original process-map lock");
+        Self {
+            custody,
+            accepted_stdin_write_ids,
+            release_tx,
+            task,
+        }
+    }
+
+    async fn release(self) {
+        drop(self.release_tx);
+        self.task.await.expect("original process-map lock released");
+    }
+}
+
 #[tokio::test]
 async fn blocked_stdin_reservation_wakes_for_retained_outcome() {
     for native_exit in [Some(47), None] {
@@ -53,11 +103,8 @@ async fn blocked_stdin_reservation_wakes_for_retained_outcome() {
             first_poll.is_pending(),
             "the original full input channel must block reserve"
         );
-        let processes = backend.inner.processes.lock().await;
-        let Some(ProcessEntry::Running(running)) = processes.get(&process.process_id) else {
-            panic!("fixture process must be running");
-        };
-        let custody = Arc::clone(&running.custody);
+        let held_map = HeldProcessMap::acquire(&backend, &process.process_id).await;
+        let custody = Arc::clone(&held_map.custody);
         if let Some(code) = native_exit {
             process.exit(code);
         } else {
@@ -97,13 +144,13 @@ async fn blocked_stdin_reservation_wakes_for_retained_outcome() {
             Err(mpsc::error::TryRecvError::Empty)
         ));
         assert!(
-            !running
+            !held_map
                 .accepted_stdin_write_ids
                 .lock()
                 .await
                 .contains("blocked-write")
         );
-        drop(processes);
+        held_map.release().await;
         backend.shutdown().await;
     }
 }
@@ -112,17 +159,20 @@ async fn blocked_stdin_reservation_wakes_for_retained_outcome() {
 async fn actual_exit_fact_survives_cancelled_map_publication() {
     let backend = LocalProcess::default();
     let mut process = spawn_test_process(&backend, "cancelled-exit-publication").await;
-    let mut processes = backend.inner.processes.lock().await;
-    let Some(ProcessEntry::Running(running)) = processes.get_mut(&process.process_id) else {
-        panic!("fixture process must be running");
+    let accepted_stdin_write_ids = {
+        let mut processes = backend.inner.processes.lock().await;
+        let Some(ProcessEntry::Running(running)) = processes.get_mut(&process.process_id) else {
+            panic!("fixture process must be running");
+        };
+        running.pipe_stdin = true;
+        Arc::clone(&running.accepted_stdin_write_ids)
     };
-    running.pipe_stdin = true;
-    running
-        .accepted_stdin_write_ids
+    accepted_stdin_write_ids
         .lock()
         .await
         .remember("already-accepted".to_string());
-    let custody = Arc::clone(&running.custody);
+    let held_map = HeldProcessMap::acquire(&backend, &process.process_id).await;
+    let custody = Arc::clone(&held_map.custody);
     process.exit(47);
     timeout(Duration::from_secs(1), async {
         while custody.observed_exit_code().is_none() {
@@ -141,7 +191,7 @@ async fn actual_exit_fact_survives_cancelled_map_publication() {
     .await
     .expect("original exit publication observation budget");
     assert_eq!(custody.observed_exit_code(), Some(47));
-    drop(processes);
+    held_map.release().await;
     let read = backend
         .exec_read(ReadParams {
             process_id: process.process_id.clone(),

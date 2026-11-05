@@ -40,7 +40,8 @@
       "operation": "open_thread",
       "nativeSymbol": "pub(crate) async fn thread_start(",
       "sourcePath": "codex-rs/app-server/src/request_processors/thread_processor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "aa0e5cbda87f6a71e9e6cd2e824a6c188ddbe0c1"
     },
     {
       "designOperation": "submit_turn",
@@ -63,7 +64,8 @@
       "operation": "submit_turn",
       "nativeSymbol": "pub(crate) async fn turn_start(",
       "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
     },
     {
       "designOperation": "dispatch_tool",
@@ -94,7 +96,8 @@
       "operation": "dispatch_tool",
       "nativeSymbol": "pub(crate) async fn turn_start(",
       "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
     },
     {
       "designOperation": "observe_delivery",
@@ -125,7 +128,8 @@
       "operation": "observe_delivery",
       "nativeSymbol": "pub(crate) async fn turn_start(",
       "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
     }
   ],
   "repositoryControlledGaps": [
@@ -309,11 +313,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/app-server",
-      "object": "1569d419b5b87880033399e19b1acfbafd54a073"
+      "object": "f6013347854470ca3988c6bf1b99ab15c840be3d"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
-      "object": "472679dd4f4a507141879f0c27feb570b764f2cf"
+      "object": "aa0e5cbda87f6a71e9e6cd2e824a6c188ddbe0c1"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
@@ -333,7 +337,7 @@
     },
     {
       "path": "codex-rs/core/src/codex_thread.rs",
-      "object": "41a7645a0303a5225d526208de462a9e07a4a108"
+      "object": "589f0b9305aeb8cf257cdb3d7a83c22335f17252"
     },
     {
       "path": "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
@@ -345,7 +349,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
-      "object": "4cc2637eb2450958d33c585478671979d6a946a6"
+      "object": "a634d8844ecbcf87774286d3333bc7d560092d6d"
     },
     {
       "path": "codex-rs/hepta-codex-adapter",
@@ -361,5 +365,16 @@
     "record": "runtime.codex",
     "previousMapBlob": "a78fc528a83438da44f3dcb77d7c89082efde107",
     "scope": "source_navigation_only_no_execution_evidence_transferred"
-  }
+  },
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "38bd86afdec6ee0558af47ae58bb2813e2ad788e",
+    "tree": "62f767b394adbda686f21499f4af5cb4584673dc"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/app-server",
+    "codex-rs/hepta-codex-adapter"
+  ]
 }

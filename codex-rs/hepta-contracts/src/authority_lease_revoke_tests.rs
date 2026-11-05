@@ -179,7 +179,7 @@ fn exact_original_revoke_checks_every_retained_lease_field_and_same_reason_retry
         registry.revoke_exact_before(&original, [8; 32], end),
         Err(AuthorityLeaseError::Revoked)
     );
-    let mut changed = original.clone();
+    let mut changed = original;
     changed.binding.destination_id.push('x');
     assert!(
         registry

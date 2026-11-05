@@ -72,7 +72,9 @@ pub fn revalidate_product_qualification_v1(
     // the exact signing bytes and signatures (including roles and V3 timing)
     // under the current verifier. Equal dispositions alone are insufficient.
     if decision != qualification.decision {
-        return Err(ProductEvaluationError::Binding("qualification use evidence"));
+        return Err(ProductEvaluationError::Binding(
+            "qualification use evidence",
+        ));
     }
     Ok(decision)
 }

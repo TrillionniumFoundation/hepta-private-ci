@@ -6,7 +6,15 @@ fn signed_fixture() -> (
     Fixture,
     codex_hepta_learning_ledger::ActivatedLearningTrustV1,
 ) {
-    let mut value = fixture();
+    sign_fixture(fixture())
+}
+
+fn sign_fixture(
+    mut value: Fixture,
+) -> (
+    Fixture,
+    codex_hepta_learning_ledger::ActivatedLearningTrustV1,
+) {
     let key = SigningKey::from_bytes(&[47; 32]);
     for owner in &mut value.owners {
         if owner.owner_id.as_str() == "learning.eval" {
@@ -38,6 +46,10 @@ fn signed_fixture() -> (
     value.inputs.signed_evaluation = Some(signed);
     (value, trust)
 }
+
+#[cfg(unix)]
+#[path = "intelligence_canonical_runtime_tests.rs"]
+mod canonical_runtime;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn signed_evaluation_completes_existing_owner_preparation_and_run_admission() {
