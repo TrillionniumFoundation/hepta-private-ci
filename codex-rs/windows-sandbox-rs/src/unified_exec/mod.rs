@@ -61,11 +61,12 @@ enum WindowsSandboxBackend {
 /// declared writable roots. Explicit filesystem overrides have the same
 /// problem because their effective parent ACLs are not part of the token.
 ///
-/// Therefore the direct token backend is intentionally limited to an
-/// unrestricted-read, no-write, no-override profile. Every write-capable or
-/// path-restricted request is delegated to the elevated broker, which owns the
-/// authoritative filesystem mediation boundary. If that broker is unavailable,
-/// launch fails closed rather than falling back to the weaker backend.
+/// Write-capable and path-restricted requests use the elevated broker's separate
+/// provisioning path. That selection is not evidence that its deletion boundary
+/// has passed the original native regressions. Requests selected for the direct
+/// backend still pass its mandatory admission check: ambient parent rights also
+/// prevent the same-user read-only token from being a qualified deletion boundary.
+/// There is no fallback from a failed backend to unrestricted execution.
 fn select_windows_sandbox_backend(
     request: &WindowsSandboxSessionRequest<'_>,
 ) -> Result<WindowsSandboxBackend> {

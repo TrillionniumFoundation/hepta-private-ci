@@ -1,3 +1,4 @@
+use crate::legacy_admission::require_legacy_filesystem_isolation;
 use crate::winutil::to_wide;
 use anyhow::Result;
 use anyhow::anyhow;
@@ -352,6 +353,7 @@ unsafe fn enable_single_privilege(h_token: HANDLE, name: &str) -> Result<()> {
 pub unsafe fn create_readonly_token_with_cap(
     psid_capability: *mut c_void,
 ) -> Result<(HANDLE, *mut c_void)> {
+    require_legacy_filesystem_isolation()?;
     let base = get_current_token_for_restriction()?;
     let res = create_readonly_token_with_cap_from(base, psid_capability);
     CloseHandle(base);
@@ -366,6 +368,7 @@ pub unsafe fn create_readonly_token_with_cap_from(
     base_token: HANDLE,
     psid_capability: *mut c_void,
 ) -> Result<(HANDLE, *mut c_void)> {
+    require_legacy_filesystem_isolation()?;
     let new_token = create_token_with_caps_from(
         base_token,
         &[psid_capability],
@@ -383,6 +386,7 @@ pub unsafe fn create_workspace_write_token_with_caps_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
 ) -> Result<HANDLE> {
+    require_legacy_filesystem_isolation()?;
     create_token_with_caps_from(
         base_token,
         psid_capabilities,
@@ -419,6 +423,7 @@ pub unsafe fn create_readonly_token_with_caps_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
 ) -> Result<HANDLE> {
+    require_legacy_filesystem_isolation()?;
     create_token_with_caps_from(
         base_token,
         psid_capabilities,

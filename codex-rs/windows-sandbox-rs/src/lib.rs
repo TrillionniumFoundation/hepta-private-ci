@@ -78,6 +78,11 @@ mod hide_users;
 #[cfg(target_os = "windows")]
 mod identity;
 #[cfg(target_os = "windows")]
+mod legacy_admission;
+#[cfg(all(target_os = "windows", test))]
+#[path = "legacy_admission_tests.rs"]
+mod legacy_admission_tests;
+#[cfg(target_os = "windows")]
 mod logging;
 #[cfg(target_os = "windows")]
 mod path_normalization;
@@ -238,6 +243,8 @@ pub use ipc_framed::encode_bytes;
 pub use ipc_framed::read_frame;
 #[cfg(target_os = "windows")]
 pub use ipc_framed::write_frame;
+#[cfg(target_os = "windows")]
+pub use legacy_admission::LegacyWindowsSandboxIsolationUnavailable;
 #[cfg(target_os = "windows")]
 pub use logging::current_log_file_path;
 #[cfg(target_os = "windows")]
@@ -751,12 +758,15 @@ mod windows_impl {
         cwd: &Path,
         env_map: &HashMap<String, String>,
     ) -> Result<()> {
-        let Ok(permissions) = super::resolved_permissions::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+        match permission_profile {
+            PermissionProfile::Disabled | PermissionProfile::External { .. } => return Ok(()),
+            PermissionProfile::Managed { .. } => {}
+        }
+        super::legacy_admission::require_legacy_filesystem_isolation()?;
+        let permissions = super::resolved_permissions::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
             permission_profile,
             workspace_roots,
-        ) else {
-            return Ok(());
-        };
+        )?;
         if !permissions.uses_write_capabilities_for_cwd(cwd, env_map) {
             return Ok(());
         }
