@@ -22,14 +22,19 @@ impl AgentdIntelligenceInvocationV1 {
         &self,
         identity: &AgentdIdentity,
         record: &RunStartRecordV1,
+        current_generation: u64,
     ) -> Result<(), AgentdError> {
         let snapshot = &record.snapshot;
         if self.request.run_id != snapshot.run_id
             || self.request.snapshot.objective_digest() != snapshot.objective_digest
             || self.request.snapshot.authority_epoch() != snapshot.authority_epoch
-            || self.request.snapshot.body_generation().get() != snapshot.generation
+            // The canonical body belongs to this spawn. The run separately
+            // freezes the current lifecycle generation from durable admission.
+            || self.request.snapshot.body_generation().get() != identity.spawn_generation
             || self.request.legal_candidates.state_digest != snapshot.objective_digest
-            || snapshot.generation != identity.spawn_generation
+            || snapshot.generation != current_generation
+            || snapshot.fence_digest.to_string()
+                != crate::state::objective_run_fence(identity, current_generation)
         {
             return Err(AgentdError::Invalid(
                 "canonical intelligence invocation does not match the durable RunStart identity"
