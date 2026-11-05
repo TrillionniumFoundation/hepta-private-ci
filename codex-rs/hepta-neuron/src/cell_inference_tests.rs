@@ -121,3 +121,23 @@ fn receipt_capacity_is_checked_before_spending_compute() {
     assert!(matches!(infer_cell(prepared, &mut owner, &mut control, /*now_micros*/15), Err(CellExecutionError::CapacityExceeded)));
     assert_eq!(control.executions, 0);
 }
+
+#[test]
+fn native_stage_clocks_cannot_move_before_admission_or_decision() {
+    let mut owner = owner(&["run1"]);
+    let prepared = checked(prepare_cell_step(&definition(), &owner, &Encoder, input("run1"), /*now_micros*/10));
+    let mut control = RecordedControl::new();
+    let inferred = checked(infer_cell(prepared, &mut owner, &mut control, /*now_micros*/20));
+    assert!(matches!(decide_cell(inferred, /*now_micros*/19), Err(CellExecutionError::DeadlineExceeded)));
+    assert!(matches!(recover_cell_inference(&definition(), &owner, &Encoder, input("run1"), &mut control, /*now_micros*/19), Err(CellExecutionError::DeadlineExceeded)));
+    assert_eq!(control.reads, 0);
+    let recovered = checked(recover_cell_inference(&definition(), &owner, &Encoder, input("run1"), &mut control, /*now_micros*/21));
+    let proposal = checked(decide_cell(recovered, /*now_micros*/22));
+    assert_eq!(commit_cell_step(&mut owner, proposal, /*now_micros*/21), Err(CellExecutionError::DeadlineExceeded));
+    assert!(checked(owner.pending_inference(&scope("run1"))).is_some());
+    let recovered = checked(recover_cell_inference(&definition(), &owner, &Encoder, input("run1"), &mut control, /*now_micros*/23));
+    let proposal = checked(decide_cell(recovered, /*now_micros*/24));
+    checked(commit_cell_step(&mut owner, proposal, /*now_micros*/25));
+    assert_eq!((control.executions, control.reads), (1, 2));
+    assert_eq!(checked(owner.pending_inference(&scope("run1"))), None);
+}

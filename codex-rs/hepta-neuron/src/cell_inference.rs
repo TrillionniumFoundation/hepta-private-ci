@@ -56,7 +56,7 @@ pub fn infer_cell(
         .map_err(CellExecutionError::Backend)?;
     validate_model_output(&prepared.definition.runtime, &output)
         .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
-    Ok(InferredCellStepV1 { prepared, output })
+    Ok(InferredCellStepV1 { prepared, output, not_before_micros: now_micros })
 }
 
 /// Recover only the admitted request. The original raw input must still be
@@ -73,6 +73,9 @@ pub fn recover_cell_inference(
 ) -> Result<InferredCellStepV1, CellExecutionError> {
     let pending = owner.pending_inference(&input.scope)?
         .ok_or(CellExecutionError::InferenceNotAdmitted)?;
+    if now_micros < pending.admitted_at_micros {
+        return Err(CellExecutionError::DeadlineExceeded);
+    }
     let digest = semantic_request_digest(definition.semantic_digest()?, &input);
     if pending.operation_id != input.operation_id || pending.semantic_request_digest != digest {
         return Err(CellExecutionError::OperationConflict);
@@ -97,7 +100,7 @@ pub fn recover_cell_inference(
         .map_err(CellExecutionError::Backend)?;
     validate_model_output(&prepared.definition.runtime, &output)
         .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
-    Ok(InferredCellStepV1 { prepared, output })
+    Ok(InferredCellStepV1 { prepared, output, not_before_micros: now_micros })
 }
 
 pub(crate) struct ReceiptPort(pub(crate) NeuronFeatureReceiptV1);

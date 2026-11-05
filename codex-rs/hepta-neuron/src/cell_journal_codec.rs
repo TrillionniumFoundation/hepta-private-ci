@@ -15,12 +15,14 @@ use crate::sparse_tick;
 
 pub(crate) const MAX_FRAME_BYTES: usize = 131_072;
 
-pub(crate) fn encode_commit(index: usize, proposal: &CellStateProposalV1) -> Vec<u8> {
+pub(crate) fn encode_commit(index: usize, proposal: &CellStateProposalV1, committed_at_micros: u64) -> Vec<u8> {
     let mut bytes = vec![0];
     put_u64(&mut bytes, index as u64);
     put_u64(&mut bytes, proposal.snapshot.revision);
     put_u64(&mut bytes, proposal.snapshot.writer_epoch);
     put_u64(&mut bytes, proposal.deadline_micros);
+    put_u64(&mut bytes, proposal.decided_at_micros);
+    put_u64(&mut bytes, committed_at_micros);
     let tick = &proposal.tick;
     for digest in [
         tick.scope_digest, tick.objective_digest, tick.ndu_digest,
@@ -162,6 +164,8 @@ pub(crate) fn apply_record(
         return Err(CellExecutionError::JournalCorrupt);
     }
     let deadline_micros = read.u64()?;
+    let decided_at_micros = read.u64()?;
+    let committed_at_micros = read.u64()?;
     let tick = SparseTick {
         scope_digest: read.digest()?,
         objective_digest: read.digest()?,
@@ -207,6 +211,8 @@ pub(crate) fn apply_record(
     let (checkpoint, _) = sparse_tick(&spec.definition.native, &tick, snapshot.checkpoint.as_ref())
         .map_err(|_| CellExecutionError::JournalCorrupt)?;
     if deadline_micros <= tick.monotonic_micros
+        || decided_at_micros < tick.monotonic_micros || committed_at_micros < decided_at_micros
+        || deadline_exceeded != (committed_at_micros >= deadline_micros)
         || tick.monotonic_micros == 0
         || tick.scope_digest != spec.scope.digest()
         || tick.body_digest != spec.definition.bundle_digest
@@ -258,8 +264,8 @@ pub(crate) fn apply_record(
         authority: AuthorityPosture::DENY_ALL,
     };
     owner.commit(
-        CellStateProposalV1 { snapshot, checkpoint, receipt, deadline_micros, tick, abstain_candidate },
-        deadline_micros - 1,
+        CellStateProposalV1 { snapshot, checkpoint, receipt, deadline_micros, tick, abstain_candidate, decided_at_micros, settled_at_micros: committed_at_micros },
+        committed_at_micros,
     )?;
     Ok(())
 }

@@ -163,7 +163,7 @@ impl CellBatchQueueV1 {
                                 output.queue_age_micros = output.queue_age_micros.saturating_add(queue_age);
                                 validate_model_output(&prepared.definition.runtime, &output)
                                     .map_err(|_| CellExecutionError::ModelBindingMismatch)
-                                    .map(|()| InferredCellStepV1 { prepared, output })
+                                    .map(|()| InferredCellStepV1 { prepared, output, not_before_micros: now_micros })
                             }
                         }
                     } else {

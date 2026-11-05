@@ -131,13 +131,18 @@ impl CellPartitionOwnerV1 {
                 Err(CellExecutionError::OperationConflict)
             };
         }
-        if now_micros < proposal.tick.monotonic_micros {
+        if now_micros < proposal.tick.monotonic_micros
+            || now_micros < proposal.decided_at_micros || now_micros < proposal.settled_at_micros
+        {
             return Err(CellExecutionError::DeadlineExceeded);
         }
         if partition.snapshot != proposal.snapshot {
             return Err(CellExecutionError::CommitConflict);
         }
         let pending = partition.pending.as_ref().ok_or(CellExecutionError::InferenceNotAdmitted)?;
+        if now_micros < pending.admitted_at_micros || proposal.decided_at_micros < pending.admitted_at_micros {
+            return Err(CellExecutionError::DeadlineExceeded);
+        }
         if pending.operation_id != proposal.receipt.operation_id
             || pending.semantic_request_digest != proposal.receipt.semantic_request_digest
             || pending.snapshot != proposal.snapshot
