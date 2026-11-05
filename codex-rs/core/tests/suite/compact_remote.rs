@@ -4559,10 +4559,37 @@ async fn remote_mid_turn_compact_v2_sends_turn_state_over_websocket() -> Result<
             text_elements: Vec::new(),
         }]))
         .await?;
-    wait_for_turn_complete(&test.codex).await;
+    let mut first_error = None;
+    let mut completion_error = None;
+    wait_for_event_with_timeout(
+        &test.codex,
+        |event| match event {
+            EventMsg::Error(error) => {
+                if first_error.is_none() {
+                    first_error =
+                        Some(format!("{error:?}").chars().take(2_048).collect::<String>());
+                }
+                false
+            }
+            EventMsg::TurnComplete(completed) => {
+                completion_error = completed
+                    .error
+                    .as_ref()
+                    .map(|error| format!("{error:?}").chars().take(2_048).collect::<String>());
+                true
+            }
+            _ => false,
+        },
+        REMOTE_COMPACT_TURN_COMPLETE_TIMEOUT,
+    )
+    .await;
 
     let requests = server.single_connection();
-    assert_eq!(requests.len(), 5);
+    assert_eq!(
+        requests.len(),
+        5,
+        "same-turn error={first_error:?}; completion error={completion_error:?}"
+    );
     assert_eq!(requests[0].body_json()["generate"].as_bool(), Some(false));
     // Phase 2: the v2 compact request replays the state already established by sampling.
     assert!(
