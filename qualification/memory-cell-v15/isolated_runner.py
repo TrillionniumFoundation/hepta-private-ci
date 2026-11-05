@@ -23,6 +23,8 @@ import threading
 
 import cloudpickle
 
+from typed_json import equal_json
+
 
 ROOT = Path(__file__).resolve()
 MAX_INPUT = 64 * 1024 * 1024
@@ -45,7 +47,7 @@ def _worker(snapshot, cpu_seconds, address_space_bytes, output_limit, deadline):
         try:
             # A private decoded case and executor state are kept within this arm.
             choice = predictor(raw['query'])
-            correct = executor(choice, raw['payload']) == raw['expected']
+            correct = equal_json(executor(choice, raw['payload']), raw['expected'])
             error = None
         except Exception as exc:
             correct, error = False, type(exc).__name__
