@@ -58,7 +58,7 @@ impl TestFleet {
         let temp = tempfile::tempdir()?;
         let root = HeptaFleetRoot::parse(temp.path().join("fleet"))
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let registry = FleetRegistry::initialize(root.clone())?;
+        let registry = FleetRegistry::initialize_for_qualification(root.clone())?;
         let first = register_agent(&registry, &root, temp.path(), FIRST_AGENT_ID, "workspace-a")?;
         let second = register_agent(
             &registry,
@@ -2328,3 +2328,15 @@ mod signed_admission_owner_tests;
 
 #[path = "unknown_recovery_owner_tests.rs"]
 mod unknown_recovery_owner_tests;
+
+#[cfg(unix)]
+#[path = "release_authority_process_tests.rs"]
+mod release_authority_process_tests;
+
+#[cfg(unix)]
+#[path = "production_authority_pq_tests.rs"]
+mod production_authority_pq_tests;
+
+#[cfg(unix)]
+#[path = "production_authority_pq_daemon_tests.rs"]
+mod production_authority_pq_daemon_tests;
