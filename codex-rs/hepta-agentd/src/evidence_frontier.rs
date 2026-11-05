@@ -297,3 +297,7 @@ fn recovery_required(message: &str) -> AgentdError {
 fn invalid(message: &str) -> AgentdError {
     AgentdError::Invalid(format!("kernel.evidence recovery: {message}"))
 }
+
+#[cfg(all(test, unix))]
+#[path = "evidence_frontier_tests.rs"]
+mod tests;
