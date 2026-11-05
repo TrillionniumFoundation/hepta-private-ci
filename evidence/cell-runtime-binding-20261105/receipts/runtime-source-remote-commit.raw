@@ -1,0 +1,8 @@
+tree 3a4ef7e082bd64cdd8a73b857810992713909cef
+parent 7530e4bc7aa61a0c23a5933fef4a65d86a586cf8
+author Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com> 1793874193 -0500
+committer Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com> 1793874193 -0500
+
+fix(cell): bind ordinary runtime inputs and version host admission
+
+Require independent pinned Python runtime snapshots, verify pre-spawn source inventory and bootstrap aliases, and use explicit owner/worker/native-check v2 boundaries. Pin execution source V11 to Chain cfa57cd. Retain real source, Python, native-library and CLI observations including full-package linking failure and 20 existing library failures; no model Ready, device or FinalUse qualification.

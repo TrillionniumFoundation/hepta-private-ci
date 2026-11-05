@@ -1,0 +1,322 @@
+{
+  "commit": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+  "tree": "b79a4a4677b672a89cce53c9abe6f6c71810ee88",
+  "argv": [
+    "cargo",
+    "metadata",
+    "--no-deps",
+    "--locked",
+    "--offline",
+    "--format-version",
+    "1"
+  ],
+  "metadata_output_sha256": "ac81bb04a502681688925b64677028585500708337307b3c353a36332151f8f9",
+  "package_id": "path+file:///workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation#codex-hepta-automation@0.0.0",
+  "package_manifest": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/Cargo.toml",
+  "all_metadata_targets": [
+    {
+      "kind": [
+        "lib"
+      ],
+      "crate_types": [
+        "lib"
+      ],
+      "name": "codex_hepta_automation",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/src/lib.rs",
+      "edition": "2024",
+      "doc": true,
+      "doctest": false,
+      "test": true
+    },
+    {
+      "kind": [
+        "bin"
+      ],
+      "crate_types": [
+        "bin"
+      ],
+      "name": "hepta-taskflow-runtime",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+      "edition": "2024",
+      "doc": true,
+      "doctest": false,
+      "test": true
+    },
+    {
+      "kind": [
+        "test"
+      ],
+      "crate_types": [
+        "bin"
+      ],
+      "name": "authorized_effect",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "edition": "2024",
+      "doc": false,
+      "doctest": false,
+      "test": true
+    },
+    {
+      "kind": [
+        "test"
+      ],
+      "crate_types": [
+        "bin"
+      ],
+      "name": "automation",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/automation.rs",
+      "edition": "2024",
+      "doc": false,
+      "doctest": false,
+      "test": true
+    },
+    {
+      "kind": [
+        "test"
+      ],
+      "crate_types": [
+        "bin"
+      ],
+      "name": "durable_causal_chain",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+      "edition": "2024",
+      "doc": false,
+      "doctest": false,
+      "test": true
+    },
+    {
+      "kind": [
+        "test"
+      ],
+      "crate_types": [
+        "bin"
+      ],
+      "name": "kernel_operations_destination",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/kernel_operations_destination.rs",
+      "edition": "2024",
+      "doc": false,
+      "doctest": false,
+      "test": true
+    },
+    {
+      "kind": [
+        "test"
+      ],
+      "crate_types": [
+        "bin"
+      ],
+      "name": "operation_timer_fence",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/operation_timer_fence.rs",
+      "edition": "2024",
+      "doc": false,
+      "doctest": false,
+      "test": true
+    },
+    {
+      "kind": [
+        "test"
+      ],
+      "crate_types": [
+        "bin"
+      ],
+      "name": "retirement_recovery",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/retirement_recovery.rs",
+      "edition": "2024",
+      "doc": false,
+      "doctest": false,
+      "test": true
+    },
+    {
+      "kind": [
+        "test"
+      ],
+      "crate_types": [
+        "bin"
+      ],
+      "name": "taskflow",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/taskflow.rs",
+      "edition": "2024",
+      "doc": false,
+      "doctest": false,
+      "test": true
+    },
+    {
+      "kind": [
+        "test"
+      ],
+      "crate_types": [
+        "bin"
+      ],
+      "name": "taskflow_execution_boundary",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/taskflow_execution_boundary.rs",
+      "edition": "2024",
+      "doc": false,
+      "doctest": false,
+      "test": true
+    },
+    {
+      "kind": [
+        "test"
+      ],
+      "crate_types": [
+        "bin"
+      ],
+      "name": "taskflow_kernel",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/taskflow_kernel.rs",
+      "edition": "2024",
+      "doc": false,
+      "doctest": false,
+      "test": true
+    },
+    {
+      "kind": [
+        "test"
+      ],
+      "crate_types": [
+        "bin"
+      ],
+      "name": "taskflow_step",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/taskflow_step.rs",
+      "edition": "2024",
+      "doc": false,
+      "doctest": false,
+      "test": true
+    }
+  ],
+  "selected_default_test_targets": [
+    {
+      "name": "codex_hepta_automation",
+      "kind": "lib",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/src/lib.rs",
+      "test": true,
+      "required_features": [],
+      "selection_argv": [
+        "--lib"
+      ]
+    },
+    {
+      "name": "hepta-taskflow-runtime",
+      "kind": "bin",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/src/bin/hepta-taskflow-runtime.rs",
+      "test": true,
+      "required_features": [],
+      "selection_argv": [
+        "--bin",
+        "hepta-taskflow-runtime"
+      ]
+    },
+    {
+      "name": "authorized_effect",
+      "kind": "test",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "test": true,
+      "required_features": [],
+      "selection_argv": [
+        "--test",
+        "authorized_effect"
+      ]
+    },
+    {
+      "name": "automation",
+      "kind": "test",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/automation.rs",
+      "test": true,
+      "required_features": [],
+      "selection_argv": [
+        "--test",
+        "automation"
+      ]
+    },
+    {
+      "name": "durable_causal_chain",
+      "kind": "test",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+      "test": true,
+      "required_features": [],
+      "selection_argv": [
+        "--test",
+        "durable_causal_chain"
+      ]
+    },
+    {
+      "name": "kernel_operations_destination",
+      "kind": "test",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/kernel_operations_destination.rs",
+      "test": true,
+      "required_features": [],
+      "selection_argv": [
+        "--test",
+        "kernel_operations_destination"
+      ]
+    },
+    {
+      "name": "operation_timer_fence",
+      "kind": "test",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/operation_timer_fence.rs",
+      "test": true,
+      "required_features": [],
+      "selection_argv": [
+        "--test",
+        "operation_timer_fence"
+      ]
+    },
+    {
+      "name": "retirement_recovery",
+      "kind": "test",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/retirement_recovery.rs",
+      "test": true,
+      "required_features": [],
+      "selection_argv": [
+        "--test",
+        "retirement_recovery"
+      ]
+    },
+    {
+      "name": "taskflow",
+      "kind": "test",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/taskflow.rs",
+      "test": true,
+      "required_features": [],
+      "selection_argv": [
+        "--test",
+        "taskflow"
+      ]
+    },
+    {
+      "name": "taskflow_execution_boundary",
+      "kind": "test",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/taskflow_execution_boundary.rs",
+      "test": true,
+      "required_features": [],
+      "selection_argv": [
+        "--test",
+        "taskflow_execution_boundary"
+      ]
+    },
+    {
+      "name": "taskflow_kernel",
+      "kind": "test",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/taskflow_kernel.rs",
+      "test": true,
+      "required_features": [],
+      "selection_argv": [
+        "--test",
+        "taskflow_kernel"
+      ]
+    },
+    {
+      "name": "taskflow_step",
+      "kind": "test",
+      "src_path": "/workspace/scratch/48266f5bd43f/hepta-effects-green/codex-rs/hepta-automation/tests/taskflow_step.rs",
+      "test": true,
+      "required_features": [],
+      "selection_argv": [
+        "--test",
+        "taskflow_step"
+      ]
+    }
+  ],
+  "target_count": 12,
+  "no_test_targets_omitted": true,
+  "frozen_at_utc": "2026-11-05T05:29:33Z"
+}

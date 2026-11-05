@@ -1,0 +1,31 @@
+{
+  "kind": "CI_R2_EVIDENCE_HANDOFF",
+  "source_commit": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "source_tree": "ebd1437475d71252786788f67d2911f5a6e6108d",
+  "intended_destination": "evidence/pq-recovery-owner-20261105/",
+  "copy_rule": "Copy only these new ci-* files alongside retained history; no old receipt, validator or baseline is replaced.",
+  "native_tests_executed_by_this_audit": 0,
+  "audit_did_not_trigger_ci": true,
+  "files": [
+    {
+      "path": "ci-selection-audit-r2-70115620.json",
+      "bytes": 39196,
+      "sha256": "68cd2365c1e732a2142d356ca0ed236855957d24d27e86728cb234d3a93a091a"
+    },
+    {
+      "path": "ci-selection-audit-r2-70115620.log",
+      "bytes": 1036,
+      "sha256": "d5e0565ed7f9189acd54258cebebd86f9f7bd278d9670cdcbb578636b348bfa6"
+    },
+    {
+      "path": "ci-selection-audit-r2-70115620-provenance.json",
+      "bytes": 7541,
+      "sha256": "0f54566dfd11b6f05b0635b1c9a44cd84500052716808c8bce5e8fc2fffec92d"
+    },
+    {
+      "path": "ci-r2-scope.md",
+      "bytes": 2742,
+      "sha256": "b4aa3516484cd7167fc2822e77cd8e0e9866793793fabb78d64c54e6dfb2396a"
+    }
+  ]
+}

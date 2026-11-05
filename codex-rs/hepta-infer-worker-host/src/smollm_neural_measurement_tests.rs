@@ -23,7 +23,7 @@ fn ready() -> Value {
         "backbone":"c320c094769446c21d7e4a33795d7f9310b5e4c8ca5a6fecca40207b1f735b7c",
         "tokenizer":"a1883207efeacecee399f4dc699d2b547eb2d6ddb7500522933ed76c1521fb93",
         "source_pins":{"explicit-source-boundary-fixture":hash("source")},
-        "worker_source":hash("worker"),"actions":[],"observed_rss_bytes":1234,
+        "runtime_snapshot_sha256":hash("explicit-byte-contract-fixture"),"worker_source":hash("worker"),"actions":[],"observed_rss_bytes":1234,
         "authority":denied()})
 }
 fn admitted(id: &str) -> Admitted {

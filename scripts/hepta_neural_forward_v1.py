@@ -156,6 +156,7 @@ def exchange(directory_fd, value, deadline):
 
 
 def run(args):
+    execution_source.require_legacy_worker_profile(EXECUTION_SOURCE_PROFILE)
     source = Path(__file__).resolve()
     config_pin = {"path": str(Path(args.input).resolve()), "sha256": args.input_sha256}
     config = object_at(config_pin)

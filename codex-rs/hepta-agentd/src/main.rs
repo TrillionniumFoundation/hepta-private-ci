@@ -187,6 +187,11 @@ fn main() -> anyhow::Result<()> {
             ),
         }
 
+        // Bootstrap can recover mutable learning history before entering run.
+        // Authenticate and compare the shared evidence image first, without
+        // writing it. The runtime repeats admission before opening its owners.
+        codex_hepta_agentd::preflight_evidence_recovery(&config).await?;
+
         match (
             plasticity_bootstrap_descriptor,
             plasticity_bootstrap_descriptor_digest,

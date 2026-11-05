@@ -412,7 +412,7 @@ pub(super) fn qualify(
     .unwrap();
     let selector = roles.evidence(
         /*index*/ 3,
-        &eval::selection_signing_payload_v1(prepared.receipt()).unwrap(),
+        &eval::selection_signing_payload_v2(prepared.receipt()).unwrap(),
         /*offset*/ 60,
     );
     eval::admit_self_evolution_selection_v1(prepared, &selector, verifier, base + 100).unwrap();

@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/aea25ba345a8/hepta-effects-agent/validation/evidence-pq-recovery-owner-20261105/ci-validate-selection.py", line 289, in <module>
+    main()
+  File "/workspace/scratch/aea25ba345a8/hepta-effects-agent/validation/evidence-pq-recovery-owner-20261105/ci-validate-selection.py", line 249, in main
+    new_bytes = (repository / RELATIVE).read_bytes()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/.github/workflows/hepta-pq-policy-renewal.yml'

@@ -1,0 +1,1376 @@
+{
+  "source_commit": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+  "time_unix": 1793858039.2467937,
+  "scope": "Read literal include_str!/include_bytes! targets in all materialized codex-rs Rust sources; only exact existing tracked R blobs materialized. Dynamic OUT_DIR/concat and nontracked/generated inputs are not invented.",
+  "literal_refs": 194,
+  "materialized": {
+    "docs/modules/MODULES.json": {
+      "git_blob": "c1a2739f183742cd0ded297f4aa3fa7366d5e6ed",
+      "bytes": 60274,
+      "sha256": "fe5d5c27c072622af523555003ef99b3e14952c5f43c20800dd4252c46719e60"
+    }
+  },
+  "untracked_missing_refs": [],
+  "git_status_after": "",
+  "preceding_native_failure": "R-fc0c6f74-agentd-frontier-native.json",
+  "all_references": [
+    {
+      "source": "codex-rs/app-server-protocol/src/precomputed_exports.rs",
+      "line": 16,
+      "target": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-stable.json.zst",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/app-server-protocol/src/precomputed_exports.rs",
+      "line": 18,
+      "target": "codex-rs/app-server-protocol/schema/precomputed/app-server-exports-experimental.json.zst",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/backend-client/src/types.rs",
+      "line": 529,
+      "target": "codex-rs/backend-client/tests/fixtures/task_details_with_diff.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/backend-client/src/types.rs",
+      "line": 530,
+      "target": "codex-rs/backend-client/tests/fixtures/task_details_with_error.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/collaboration-mode-templates/src/lib.rs",
+      "line": 1,
+      "target": "codex-rs/collaboration-mode-templates/templates/plan.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/collaboration-mode-templates/src/lib.rs",
+      "line": 2,
+      "target": "codex-rs/collaboration-mode-templates/templates/default.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/config/src/loader/mod.rs",
+      "line": 173,
+      "target": "codex-rs/config/defaults.toml",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/core/src/agent/control/spawn.rs",
+      "line": 22,
+      "target": "codex-rs/core/src/agent/agent_names.txt",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/core/src/agent/role.rs",
+      "line": 420,
+      "target": "codex-rs/core/src/agent/builtins/explorer.toml",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/core/src/agent/role.rs",
+      "line": 421,
+      "target": "codex-rs/core/src/agent/builtins/awaiter.toml",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/core/src/context/guardian_node_repl_policy.rs",
+      "line": 25,
+      "target": "codex-rs/core/src/guardian/node_repl_policy.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/core/src/guardian/prompt.rs",
+      "line": 803,
+      "target": "codex-rs/core/src/guardian/policy.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/core/src/guardian/prompt.rs",
+      "line": 804,
+      "target": "codex-rs/core/src/guardian/policy_template.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/core/src/mcp_tool_approval_templates.rs",
+      "line": 73,
+      "target": "codex-rs/core/src/consequential_tool_message_templates.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/core/src/session/tests.rs",
+      "line": 2955,
+      "target": "codex-rs/core/prompt_with_apply_patch_instructions.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/core/src/tools/handlers/apply_patch_spec.rs",
+      "line": 5,
+      "target": "codex-rs/core/src/tools/handlers/apply_patch.lark",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/core/tests/suite/guardian_review.rs",
+      "line": 576,
+      "target": "codex-rs/core/src/guardian/node_repl_policy.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/exec/tests/suite/apply_patch.rs",
+      "line": 144,
+      "target": "codex-rs/exec/tests/fixtures/apply_patch_freeform_final.txt",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/ext/goal/src/steering.rs",
+      "line": 11,
+      "target": "codex-rs/ext/goal/templates/goals/continuation.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/ext/goal/src/steering.rs",
+      "line": 18,
+      "target": "codex-rs/ext/goal/templates/goals/budget_limit.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/ext/goal/src/steering.rs",
+      "line": 25,
+      "target": "codex-rs/ext/goal/templates/goals/objective_updated.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/ext/guardian-v2/src/async_scorer/config.rs",
+      "line": 24,
+      "target": "codex-rs/ext/guardian-v2/src/async_scorer/classifier_instructions.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/ext/image-generation/src/tool.rs",
+      "line": 63,
+      "target": "codex-rs/ext/image-generation/imagegen_description.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/ext/memories/src/prompts.rs",
+      "line": 11,
+      "target": "codex-rs/ext/memories/templates/memories/read_path.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/ext/web-search/src/tool.rs",
+      "line": 42,
+      "target": "codex-rs/ext/web-search/web_run_description.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-agentd/src/automation_effect_host_pon_native_tests.rs",
+      "line": 19,
+      "target": "codex-rs/hepta-agentd/tests/fixtures/pon_pipe.c",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-agentd/src/automation_effect_host_pon_native_tests.rs",
+      "line": 20,
+      "target": "codex-rs/hepta-agentd/tests/fixtures/pon_preload.c",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-agentd/src/cognitive_three_generation_publication.rs",
+      "line": 178,
+      "target": "codex-rs/hepta-agentd/src/cognitive_three_generation_support.rs",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-automation/src/effect_dispatch_provider_receipt.rs",
+      "line": 378,
+      "target": "codex-rs/hepta-automation/migrations/0022_effect_append_profile.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-contracts/src/authbus.rs",
+      "line": 1237,
+      "target": "codex-rs/hepta-contracts/fixtures/AUTHBUS_SOURCE_MANIFEST.v1.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-contracts/src/callers_manifest_tests.rs",
+      "line": 35,
+      "target": "codex-rs/hepta-contracts/CALLERS.toml",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-fleet/src/module_catalog.rs",
+      "line": 15,
+      "target": "docs/modules/MODULES.json",
+      "tracked": true,
+      "materialized": false
+    },
+    {
+      "source": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "line": 443,
+      "target": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-infer-worker-host/src/ordinary_cpu_owner_tests.rs",
+      "line": 38,
+      "target": "codex-rs/hepta-infer-worker-host/ordinary_cpu_owner.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-infer-worker-host/src/smollm_cell_dependency_tests.rs",
+      "line": 8,
+      "target": "codex-rs/hepta-infer-worker-host/fixtures/smollm-cell-tcd1-synthetic-v1.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-infer-worker-host/src/smollm_study_diverse_tests.rs",
+      "line": 12,
+      "target": "codex-rs/hepta-infer-worker-host/fixtures/smollm-diverse60-training-v3.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-infer-worker-host/src/smollm_study_diverse_tests.rs",
+      "line": 32,
+      "target": "codex-rs/hepta-infer-worker-host/fixtures/smollm-consumed-prompts-all-through-a593-v3.json.part-01",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-infer-worker-host/src/smollm_study_diverse_tests.rs",
+      "line": 33,
+      "target": "codex-rs/hepta-infer-worker-host/fixtures/smollm-consumed-prompts-all-through-a593-v3.json.part-02",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-infer-worker-host/src/smollm_study_plan_tests.rs",
+      "line": 10,
+      "target": "codex-rs/hepta-infer-worker-host/fixtures/smollm-consumed-prompts-067-v2.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-infer-worker-host/src/smollm_study_plan_tests.rs",
+      "line": 94,
+      "target": "codex-rs/hepta-infer-worker-host/fixtures/smollm-consumed-prompts-067-v2.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs",
+      "line": 40,
+      "target": "codex-rs/hepta-intelligence/tests/fixtures/intuition-policy/linear-scorer-v1.model",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs",
+      "line": 41,
+      "target": "codex-rs/hepta-intelligence/tests/fixtures/intuition-policy/frozen-calibration-v1.csv",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs",
+      "line": 42,
+      "target": "codex-rs/hepta-intelligence/tests/fixtures/intuition-policy/frozen-ood-v1.csv",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-learning-artifacts/src/initial_smollm_genesis.rs",
+      "line": 13,
+      "target": "codex-rs/hepta-learning-artifacts/profiles/smollm2-initial-positive-zero-v1.profile",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-learning-artifacts/src/initial_smollm_genesis.rs",
+      "line": 15,
+      "target": "codex-rs/hepta-learning-artifacts/profiles/smollm2-initial-positive-zero-v1.safetensors.header",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-learning-artifacts/src/selected_public_initial_smollm.rs",
+      "line": 8,
+      "target": "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.profile",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-matrix-sdk/tests/sdk_store_upgrade.rs",
+      "line": 12,
+      "target": "codex-rs/hepta-matrix-sdk/tests/support/sdk018_event_cache.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-matrixd/src/runner.rs",
+      "line": 1021,
+      "target": "codex-rs/hepta-matrixd/src/runner.rs",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-shadow-qualification/src/oracle.rs",
+      "line": 28,
+      "target": "codex-rs/hepta-shadow-qualification/fixtures/live_product_oracle_v2_2f704.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-shadow-qualification/src/oracle_tests.rs",
+      "line": 4,
+      "target": "codex-rs/hepta-shadow-qualification/fixtures/live_product_oracle_v2_2f704.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hepta-supervisor/tests/final_use_courier_cli.rs",
+      "line": 282,
+      "target": "codex-rs/hepta-infer-worker-host/ordinary_cpu_owner.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 35,
+      "target": "codex-rs/hooks/schema/generated/post-tool-use.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 39,
+      "target": "codex-rs/hooks/schema/generated/post-tool-use.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 43,
+      "target": "codex-rs/hooks/schema/generated/permission-request.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 47,
+      "target": "codex-rs/hooks/schema/generated/permission-request.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 51,
+      "target": "codex-rs/hooks/schema/generated/post-compact.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 55,
+      "target": "codex-rs/hooks/schema/generated/post-compact.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 59,
+      "target": "codex-rs/hooks/schema/generated/pre-tool-use.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 63,
+      "target": "codex-rs/hooks/schema/generated/pre-tool-use.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 67,
+      "target": "codex-rs/hooks/schema/generated/pre-compact.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 71,
+      "target": "codex-rs/hooks/schema/generated/pre-compact.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 75,
+      "target": "codex-rs/hooks/schema/generated/session-start.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 79,
+      "target": "codex-rs/hooks/schema/generated/session-start.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 83,
+      "target": "codex-rs/hooks/schema/generated/session-end.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 87,
+      "target": "codex-rs/hooks/schema/generated/subagent-start.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 91,
+      "target": "codex-rs/hooks/schema/generated/subagent-start.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 95,
+      "target": "codex-rs/hooks/schema/generated/subagent-stop.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 99,
+      "target": "codex-rs/hooks/schema/generated/subagent-stop.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 103,
+      "target": "codex-rs/hooks/schema/generated/user-prompt-submit.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 107,
+      "target": "codex-rs/hooks/schema/generated/user-prompt-submit.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 111,
+      "target": "codex-rs/hooks/schema/generated/stop.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/engine/schema_loader.rs",
+      "line": 115,
+      "target": "codex-rs/hooks/schema/generated/stop.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 899,
+      "target": "codex-rs/hooks/schema/generated/post-tool-use.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 902,
+      "target": "codex-rs/hooks/schema/generated/post-tool-use.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 905,
+      "target": "codex-rs/hooks/schema/generated/permission-request.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 908,
+      "target": "codex-rs/hooks/schema/generated/permission-request.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 911,
+      "target": "codex-rs/hooks/schema/generated/post-compact.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 914,
+      "target": "codex-rs/hooks/schema/generated/post-compact.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 917,
+      "target": "codex-rs/hooks/schema/generated/pre-compact.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 920,
+      "target": "codex-rs/hooks/schema/generated/pre-compact.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 923,
+      "target": "codex-rs/hooks/schema/generated/pre-tool-use.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 926,
+      "target": "codex-rs/hooks/schema/generated/pre-tool-use.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 929,
+      "target": "codex-rs/hooks/schema/generated/session-start.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 932,
+      "target": "codex-rs/hooks/schema/generated/session-start.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 935,
+      "target": "codex-rs/hooks/schema/generated/session-end.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 938,
+      "target": "codex-rs/hooks/schema/generated/user-prompt-submit.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 941,
+      "target": "codex-rs/hooks/schema/generated/user-prompt-submit.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 944,
+      "target": "codex-rs/hooks/schema/generated/subagent-start.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 947,
+      "target": "codex-rs/hooks/schema/generated/subagent-start.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 950,
+      "target": "codex-rs/hooks/schema/generated/subagent-stop.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 953,
+      "target": "codex-rs/hooks/schema/generated/subagent-stop.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 956,
+      "target": "codex-rs/hooks/schema/generated/stop.command.input.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/hooks/src/schema.rs",
+      "line": 959,
+      "target": "codex-rs/hooks/schema/generated/stop.command.output.schema.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/http-client/src/custom_ca.rs",
+      "line": 729,
+      "target": "codex-rs/http-client/tests/fixtures/test-ca.pem",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/http-client/tests/ca_env.rs",
+      "line": 57,
+      "target": "codex-rs/http-client/tests/fixtures/test-ca.pem",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/http-client/tests/ca_env.rs",
+      "line": 58,
+      "target": "codex-rs/http-client/tests/fixtures/test-intermediate.pem",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/http-client/tests/ca_env.rs",
+      "line": 59,
+      "target": "codex-rs/http-client/tests/fixtures/test-ca-trusted.pem",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/login/src/server.rs",
+      "line": 64,
+      "target": "codex-rs/login/src/assets/error.html",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/login/src/server.rs",
+      "line": 504,
+      "target": "codex-rs/login/src/assets/success.html",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/login/src/server.rs",
+      "line": 506,
+      "target": "codex-rs/login/src/assets/success_legacy.html",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/memories/write/src/extensions/ad_hoc.rs",
+      "line": 6,
+      "target": "codex-rs/memories/write/templates/extensions/ad_hoc/instructions.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/memories/write/src/lib.rs",
+      "line": 89,
+      "target": "codex-rs/memories/write/templates/memories/stage_one_system.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/memories/write/src/prompts.rs",
+      "line": 12,
+      "target": "codex-rs/memories/write/templates/memories/consolidation.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/memories/write/src/prompts.rs",
+      "line": 18,
+      "target": "codex-rs/memories/write/templates/memories/stage_one_input.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/models-manager/src/lib.rs",
+      "line": 15,
+      "target": "codex-rs/models-manager/models.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/models-manager/src/model_info.rs",
+      "line": 17,
+      "target": "codex-rs/models-manager/prompt.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/compact.rs",
+      "line": 1,
+      "target": "codex-rs/prompts/templates/compact/prompt.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/compact.rs",
+      "line": 2,
+      "target": "codex-rs/prompts/templates/compact/summary_prefix.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/goals.rs",
+      "line": 7,
+      "target": "codex-rs/prompts/templates/goals/continuation.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/goals.rs",
+      "line": 15,
+      "target": "codex-rs/prompts/templates/goals/budget_limit.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/goals.rs",
+      "line": 22,
+      "target": "codex-rs/prompts/templates/goals/objective_updated.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/permissions_instructions.rs",
+      "line": 21,
+      "target": "codex-rs/prompts/templates/permissions/approval_policy/never.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/permissions_instructions.rs",
+      "line": 23,
+      "target": "codex-rs/prompts/templates/permissions/approval_policy/unless_trusted.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/permissions_instructions.rs",
+      "line": 25,
+      "target": "codex-rs/prompts/templates/permissions/approval_policy/on_request.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/permissions_instructions.rs",
+      "line": 27,
+      "target": "codex-rs/prompts/templates/permissions/approval_policy/on_request_rule_request_permission.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/permissions_instructions.rs",
+      "line": 32,
+      "target": "codex-rs/prompts/templates/permissions/sandbox_mode/danger_full_access.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/permissions_instructions.rs",
+      "line": 34,
+      "target": "codex-rs/prompts/templates/permissions/sandbox_mode/workspace_write.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/permissions_instructions.rs",
+      "line": 36,
+      "target": "codex-rs/prompts/templates/permissions/sandbox_mode/read_only.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/realtime.rs",
+      "line": 1,
+      "target": "codex-rs/prompts/templates/realtime/backend_prompt.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/realtime.rs",
+      "line": 2,
+      "target": "codex-rs/prompts/templates/realtime/realtime_end.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/realtime.rs",
+      "line": 3,
+      "target": "codex-rs/prompts/templates/realtime/realtime_start.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/review_exit.rs",
+      "line": 6,
+      "target": "codex-rs/prompts/templates/review/exit_success.xml",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/review_exit.rs",
+      "line": 8,
+      "target": "codex-rs/prompts/templates/review/exit_interrupted.xml",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/prompts/src/review_request.rs",
+      "line": 9,
+      "target": "codex-rs/prompts/templates/review/rubric.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/protocol/src/models.rs",
+      "line": 1481,
+      "target": "codex-rs/protocol/src/prompts/base_instructions/default.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/sandboxing/src/seatbelt.rs",
+      "line": 21,
+      "target": "codex-rs/sandboxing/src/seatbelt_base_policy.sbpl",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/sandboxing/src/seatbelt.rs",
+      "line": 22,
+      "target": "codex-rs/sandboxing/src/seatbelt_network_policy.sbpl",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/sandboxing/src/seatbelt.rs",
+      "line": 23,
+      "target": "codex-rs/sandboxing/src/seatbelt_preferences_policy.sbpl",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/sandboxing/src/seatbelt.rs",
+      "line": 25,
+      "target": "codex-rs/sandboxing/src/restricted_read_only_platform_defaults.sbpl",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/shell-command/src/command_safety/powershell_parser.rs",
+      "line": 19,
+      "target": "codex-rs/shell-command/src/command_safety/powershell_parser.ps1",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/shell-command/src/command_safety/powershell_tree_sitter_tests.rs",
+      "line": 18,
+      "target": "codex-rs/shell-command/src/command_safety/fixtures/powershell_lowering.json",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/aws-config-1.8.12/src/default_provider/app_name.rs",
+      "line": 19,
+      "target": "codex-rs/third_party/aws-config-1.8.12/src/profile/location_of_profile_files.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/aws-config-1.8.12/src/profile/credentials.rs",
+      "line": 146,
+      "target": "codex-rs/third_party/aws-config-1.8.12/src/profile/location_of_profile_files.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/aws-config-1.8.12/src/profile/parser.rs",
+      "line": 27,
+      "target": "codex-rs/third_party/aws-config-1.8.12/src/profile/location_of_profile_files.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/aws-config-1.8.12/src/profile/region.rs",
+      "line": 21,
+      "target": "codex-rs/third_party/aws-config-1.8.12/src/profile/location_of_profile_files.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/imbl-6.1.0/src/ord/map.rs",
+      "line": 2653,
+      "target": "codex-rs/third_party/imbl-6.1.0/src/ord/test-fixtures/issue_124.txt",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-0.19.1/src/encryption/mod.rs",
+      "line": 16,
+      "target": "codex-rs/third_party/matrix-sdk-0.19.1/src/docs/encryption.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-0.19.1/src/encryption/secret_storage/secret_store.rs",
+      "line": 36,
+      "target": "codex-rs/third_party/matrix-sdk-0.19.1/.cargo/mermaid.html",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-0.19.1/src/lib.rs",
+      "line": 17,
+      "target": "codex-rs/third_party/matrix-sdk-0.19.1/README.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-0.19.1/src/sliding_sync/mod.rs",
+      "line": 16,
+      "target": "codex-rs/third_party/matrix-sdk-0.19.1/src/sliding_sync/README.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-0.19.1/src/widget/mod.rs",
+      "line": 16,
+      "target": "codex-rs/third_party/matrix-sdk-0.19.1/src/widget/README.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 282,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/001_init.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 313,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/002_reset_olm_hash.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 322,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/003_room_settings.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 331,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/004_drop_outbound_group_sessions.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 342,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/005_withheld_code.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 351,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/006_drop_outbound_group_sessions.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 362,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/007_lock_leases.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 371,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/008_secret_inbox.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 380,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/009_inbound_group_session_sender_key_sender_data_type.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 391,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/010_received_room_key_bundles.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 402,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/011_received_room_key_bundles_with_curve_key.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 413,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/012_withheld_code_by_room.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 424,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/013_lease_locks_with_generation.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 435,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/014_room_key_backups_fully_downloaded.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 446,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/015_rooms_pending_key_bundle.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 457,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/016_remove_old_generation_counter.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 472,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/017_add_new_secrets_inbox.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/crypto_store.rs",
+      "line": 495,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/crypto_store/017_drop_old_secrets_inbox.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/event_cache_store.rs",
+      "line": 434,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/event_cache_store/001_init.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/event_cache_store.rs",
+      "line": 443,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/event_cache_store/002_lease_locks.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/event_cache_store.rs",
+      "line": 452,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/event_cache_store/003_events.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/event_cache_store.rs",
+      "line": 461,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/event_cache_store/004_ignore_policy.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/event_cache_store.rs",
+      "line": 472,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/event_cache_store/005_events_index_on_event_id.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/event_cache_store.rs",
+      "line": 483,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/event_cache_store/006_events.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/event_cache_store.rs",
+      "line": 492,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/event_cache_store/007_event_chunks.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/event_cache_store.rs",
+      "line": 503,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/event_cache_store/008_linked_chunk_id.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/event_cache_store.rs",
+      "line": 514,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/event_cache_store/009_related_event_index.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/event_cache_store.rs",
+      "line": 525,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/event_cache_store/010_drop_media.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/event_cache_store.rs",
+      "line": 540,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/event_cache_store/011_empty_event_cache.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/event_cache_store.rs",
+      "line": 551,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/event_cache_store/012_store_event_type.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/event_cache_store.rs",
+      "line": 562,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/event_cache_store/013_lease_locks_with_generation.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/event_cache_store.rs",
+      "line": 573,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/event_cache_store/014_event_chunks_event_id_index.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/media_store.rs",
+      "line": 279,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/media_store/001_init.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/media_store.rs",
+      "line": 288,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/media_store/002_lease_locks_with_generation.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 190,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/002_a_create_new_room_info.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 213,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/002_b_replace_room_info.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 287,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/003_send_queue.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 301,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/004_send_queue_with_roomid_value.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 317,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/005_send_queue_dependent_events.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 333,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/006_drop_media.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 353,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/007_a_send_queue_wedge_reason.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 373,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/007_b_send_queue_clean.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 388,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/008_send_queue.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 402,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/009_send_queue_priority.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 418,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/010_send_queue_enqueue_time.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 447,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/011_thread_subscriptions.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 463,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/012_thread_subscriptions_bumpstamp.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 479,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/013_send_queue_new_parent_key_format.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/src/state_store.rs",
+      "line": 609,
+      "target": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/migrations/state_store/001_init.sql",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/tui/src/chatwidget/slash_dispatch.rs",
+      "line": 261,
+      "target": "codex-rs/tui/prompt_for_init_command.md",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/tui/src/inline_visualization/viewer.rs",
+      "line": 13,
+      "target": "codex-rs/tui/src/inline_visualization/assets/visualize.css",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/tui/src/inline_visualization/viewer.rs",
+      "line": 14,
+      "target": "codex-rs/tui/src/inline_visualization/assets/visualize.html",
+      "tracked": true,
+      "materialized": true
+    },
+    {
+      "source": "codex-rs/tui/src/tooltips.rs",
+      "line": 23,
+      "target": "codex-rs/tui/tooltips.txt",
+      "tracked": true,
+      "materialized": true
+    }
+  ]
+}

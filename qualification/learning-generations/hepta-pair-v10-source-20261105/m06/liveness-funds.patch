@@ -1,0 +1,109 @@
+--- a/trillionnium/crates/trnm-mvcc-fee/src/pon_executor.rs
++++ b/trillionnium/crates/trnm-mvcc-fee/src/pon_executor.rs
+@@ -2462,7 +2462,16 @@
+ 
+ fn funds(state: &State) -> Result<u64> {
+     let mut total = 0_u64;
+-    for (k, v) in state {
++    // These are every monetary row consumed by the original full-State sum,
++    // in the same global lexical order. Model/artifact and unrelated values
++    // contributed only zero; seeking past them preserves the first field or
++    // overflow error without weakening the complete supply relation.
++    let rows = prefix_rows(state, "account:").chain(
++        MONETARY_OBLIGATION_PREFIXES
++            .into_iter()
++            .flat_map(|prefix| prefix_rows(state, prefix)),
++    );
++    for (k, v) in rows {
+         let amount = if k.starts_with("account:") {
+             field(v, "balance")?
+         } else if k.starts_with("task:") || k.starts_with("quota:") || k.starts_with("release:") {
+--- a/trillionnium/crates/trnm-mvcc-fee/src/pon_executor/prefix_scan_tests.rs
++++ b/trillionnium/crates/trnm-mvcc-fee/src/pon_executor/prefix_scan_tests.rs
+@@ -6,6 +6,86 @@
+         .filter(|(key, _)| key.starts_with(prefix))
+         .map(|(key, value)| (key.clone(), value.clone()))
+         .collect()
++}
++
++fn original_full_state_funds(state: &State) -> Result<u64> {
++    let mut total = 0_u64;
++    for (key, value) in state {
++        let amount = if key.starts_with("account:") {
++            field(value, "balance")?
++        } else if key.starts_with("task:")
++            || key.starts_with("quota:")
++            || key.starts_with("release:")
++        {
++            field(value, "remaining")?
++        } else if key.starts_with("reward:") {
++            field(value, "amount")?
++        } else {
++            0
++        };
++        total = add(total, amount)?;
++    }
++    Ok(total)
++}
++
++#[test]
++fn funds_ranges_keep_complete_supply_and_malformed_namespace_boundaries() {
++    let mut state: State = (0..16_384)
++        .map(|index| (format!("model:{index:05}"), json!(null)))
++        .collect();
++    let cases = [
++        ("account", "balance"),
++        ("quota", "remaining"),
++        ("release", "remaining"),
++        ("reward", "amount"),
++        ("task", "remaining"),
++    ];
++    for (stem, field) in cases {
++        for suffix in ["", ":", ":\0", ":a", ":a:b", ":λ", ";", ";x"] {
++            state.insert(format!("{stem}{suffix}"), json!({field:7}));
++        }
++    }
++    assert_eq!(funds(&state), Ok(5 * 5 * 7));
++    assert_eq!(funds(&state), original_full_state_funds(&state));
++    for (stem, field) in cases {
++        for suffix in ["", ":", ":\0", ":a", ":a:b", ":λ", ";", ";x"] {
++            let key = format!("{stem}{suffix}");
++            let original = state[&key].clone();
++            for value in [
++                json!(null),
++                json!({}),
++                json!({field:-1}),
++                json!({field:1.0}),
++                json!({field:"1"}),
++                json!({field:u64::MAX}),
++            ] {
++                state.insert(key.clone(), value);
++                assert_eq!(funds(&state), original_full_state_funds(&state), "{key:?}");
++            }
++            state.insert(key, original);
++        }
++    }
++}
++
++#[test]
++fn funds_ranges_keep_global_first_error_before_later_overflow_or_bad_types() {
++    let mut state = State::from([
++        ("account:".into(), json!({"balance":u64::MAX})),
++        ("quota:a".into(), json!({"remaining":0})),
++        ("release:a".into(), json!({"remaining":1})),
++        ("reward:a".into(), json!({"amount":0})),
++        ("task:a".into(), json!({"remaining":0})),
++    ]);
++    let overflow = original_full_state_funds(&state).unwrap_err();
++    assert_eq!(funds(&state), Err(overflow));
++    state.insert("reward:a".into(), json!(null));
++    assert_eq!(funds(&state), Err(overflow));
++    state.insert("quota:a".into(), json!(null));
++    let first_field = original_full_state_funds(&state).unwrap_err();
++    assert_ne!(first_field, overflow);
++    assert_eq!(funds(&state), Err(first_field));
++    state.insert("account:".into(), json!({"balance":0}));
++    assert_eq!(funds(&state), original_full_state_funds(&state));
+ }
+ 
+ fn into_patch(view: View<'_>) -> Patch {

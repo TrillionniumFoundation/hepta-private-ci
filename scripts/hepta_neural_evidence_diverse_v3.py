@@ -53,9 +53,9 @@ def published_source(item):
 
 
 def integrated_sources(repositories):
-    """Bind every Chain role to V5; historical multi-source records stay separate."""
+    """Bind every Chain role to the selected commit-and-tree profile."""
     profile = study_driver.original.EXECUTION_SOURCE_PROFILE
-    if profile != execution_source.PROFILE_V5:
+    if profile not in execution_source.registered_trees():
         return None
     manifest = execution_source.checked_manifest(profile)
     for name in REPOSITORIES - {"hepta"}:
@@ -63,7 +63,8 @@ def integrated_sources(repositories):
         require(
             item["identity"]["commit"] == manifest["chain_commit"]
             and item["identity"]["tree"] == manifest["chain_tree"],
-            "all execution roles require the same V5 Chain commit and tree",
+            f"all execution roles require the same {profile.rsplit('-', 1)[-1].upper()} "
+            "Chain commit and tree",
         )
     return {
         "profile": profile,
@@ -463,9 +464,11 @@ def source(output):
             if (
                 name != "hepta"
                 and study_driver.original.EXECUTION_SOURCE_PROFILE
-                == execution_source.PROFILE_V5
+                in execution_source.registered_trees()
             ):
-                execution_source.verify(directory, execution_source.PROFILE_V5)
+                execution_source.verify(
+                    directory, study_driver.original.EXECUTION_SOURCE_PROFILE
+                )
             item = original.collect_source(directory, os.environ.get(variable))
             if name == "chain-diverse":
                 published_source(item)
@@ -526,7 +529,7 @@ def assess(root):
         if integrated is not None:
             require(
                 before.get("execution_source") == integrated,
-                "the actual V5 source record cannot inherit historical observations",
+                "the selected source record cannot inherit historical observations",
             )
         return {name: item["identity"] for name, item in before["repositories"].items()}
 

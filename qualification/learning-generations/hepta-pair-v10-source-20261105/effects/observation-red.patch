@@ -1,0 +1,153 @@
+diff --git a/codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs b/codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs
+index e5b4abbb14..e00c15e572 100644
+--- a/codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs
++++ b/codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs
+@@ -11,6 +11,7 @@ use tempfile::TempDir;
+ 
+ use crate::EvidenceError;
+ use crate::HeptaEvidenceStore;
++use crate::AppendDisposition;
+ 
+ fn sqlite_config(temp: &TempDir) -> SqliteConfig {
+     SqliteConfig::new_for_testing(
+@@ -139,3 +140,81 @@ async fn recovery_provenance_preserves_dispatch_then_authoritative_status() {
+         .expect("stored effect");
+     assert_eq!(after, before);
+ }
++
++#[tokio::test]
++async fn repeated_status_ack_persists_provenance_and_fences_late_dispatch_after_restart() {
++    let temp = TempDir::new().expect("temp dir");
++    let sqlite = sqlite_config(&temp);
++    let store = HeptaEvidenceStore::open(&sqlite).await.expect("open evidence");
++    let (intent, accepted, completed) = intent_and_acknowledgements();
++    store.append_provider_effect_intent(&intent).await.expect("intent");
++    store.append_provider_effect_ack(&accepted).await.expect("dispatch acceptance");
++    let before = store.recovery_snapshot().await.expect("dispatch snapshot");
++    assert_eq!(
++        store.append_provider_effect_ack_from_source(&accepted, ProviderEffectAckSource::StatusLookup)
++            .await.expect("authoritative re-observation"),
++        AppendDisposition::Inserted,
++        "identical ACK bytes from a new source are a new durable observation"
++    );
++    let after = store.recovery_snapshot().await.expect("status snapshot");
++    assert_ne!(after, before, "the recovery commitment must retain the provenance boundary");
++    assert_eq!(
++        store.append_provider_effect_ack_from_source(&accepted, ProviderEffectAckSource::StatusLookup)
++            .await.expect("identical latest observation replay"),
++        AppendDisposition::AlreadyPresent
++    );
++    assert!(matches!(store.append_provider_effect_ack(&completed).await,
++        Err(EvidenceError::IdempotencyConflict { .. })));
++    store.close().await;
++
++    let reopened = HeptaEvidenceStore::open(&sqlite).await.expect("reopen status history");
++    assert_eq!(reopened.recovery_snapshot().await.expect("reopened snapshot"), after);
++    assert!(matches!(reopened.append_provider_effect_ack(&completed).await,
++        Err(EvidenceError::IdempotencyConflict { .. })));
++    reopened.append_provider_effect_ack_from_source(&completed, ProviderEffectAckSource::StatusLookup)
++        .await.expect("provider-owned completion remains legal");
++    assert_eq!(reopened.get_provider_effect(&intent.key).await.expect("effect read")
++        .expect("stored effect").state(), ProviderEffectState::Completed);
++}
++
++#[tokio::test]
++async fn repeated_unknown_and_status_observations_survive_recovery_without_erasing_quarantine() {
++    let temp = TempDir::new().expect("temp dir");
++    let sqlite = sqlite_config(&temp);
++    let (intent, accepted, completed) = intent_and_acknowledgements();
++    let mut store = HeptaEvidenceStore::open(&sqlite).await.expect("open evidence");
++    store.append_provider_effect_intent(&intent).await.expect("intent");
++    store.append_provider_effect_ack_from_source(&accepted, ProviderEffectAckSource::StatusLookup)
++        .await.expect("first authoritative acceptance");
++    for _ in 0..3 {
++        let prior = store.recovery_snapshot().await.expect("prior snapshot");
++        assert_eq!(store.mark_provider_effect_indeterminate(&intent.key, "provider_lookup_unknown")
++            .await.expect("new unknown observation"), AppendDisposition::Inserted);
++        let quarantined = store.get_provider_effect(&intent.key).await.expect("read quarantine")
++            .expect("stored effect");
++        assert_eq!(quarantined.state(), ProviderEffectState::Indeterminate);
++        let unknown = store.recovery_snapshot().await.expect("unknown snapshot");
++        assert_ne!(unknown, prior);
++        assert_eq!(store.mark_provider_effect_indeterminate(&intent.key, "provider_lookup_unknown")
++            .await.expect("same latest unknown replay"), AppendDisposition::AlreadyPresent);
++        assert_eq!(store.recovery_snapshot().await.expect("replayed unknown snapshot"), unknown);
++        store.close().await;
++        store = HeptaEvidenceStore::open(&sqlite).await.expect("reopen quarantine");
++        assert_eq!(store.get_provider_effect(&intent.key).await.expect("read restored quarantine")
++            .expect("stored effect"), quarantined);
++        assert_eq!(store.append_provider_effect_ack_from_source(&accepted, ProviderEffectAckSource::StatusLookup)
++            .await.expect("fresh authoritative acceptance after unknown"), AppendDisposition::Inserted);
++        assert_eq!(store.get_provider_effect(&intent.key).await.expect("read acceptance")
++            .expect("stored effect").state(), ProviderEffectState::Accepted);
++    }
++    store.append_provider_effect_ack_from_source(&completed, ProviderEffectAckSource::StatusLookup)
++        .await.expect("terminal completion");
++    assert!(matches!(store.mark_provider_effect_indeterminate(&intent.key, "provider_lookup_unknown").await,
++        Err(EvidenceError::IdempotencyConflict { .. })));
++    store.close().await;
++    let reopened = HeptaEvidenceStore::open(&sqlite).await.expect("reopen complete history");
++    let effect = reopened.get_provider_effect(&intent.key).await.expect("read complete history")
++        .expect("stored effect");
++    assert_eq!(effect.state(), ProviderEffectState::Completed);
++    assert_eq!((effect.acknowledgements.len(), effect.uncertainties.len()), (5, 3));
++}
+diff --git a/codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs b/codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs
+index 369d06302d..1b03f6f797 100644
+--- a/codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs
++++ b/codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs
+@@ -242,20 +242,38 @@ async fn recovery_snapshot_refuses_changed_json_with_retained_record_digests() {
+         .await
+         .expect("receipt");
+     let before = store.recovery_snapshot().await.expect("valid snapshot");
+-    for table in [
+-        "provider_effect_intents",
+-        "provider_effect_acknowledgements",
+-        "provider_effect_uncertainties",
++    for (table, select_sql, drop_trigger_sql, corrupt_sql, restore_sql) in [
++        (
++            "provider_effect_intents",
++            "SELECT payload_json FROM provider_effect_intents",
++            "DROP TRIGGER provider_effect_intents_no_update",
++            "UPDATE provider_effect_intents SET payload_json = '{}'",
++            "UPDATE provider_effect_intents SET payload_json = ?",
++        ),
++        (
++            "provider_effect_acknowledgements",
++            "SELECT payload_json FROM provider_effect_acknowledgements",
++            "DROP TRIGGER provider_effect_acknowledgements_no_update",
++            "UPDATE provider_effect_acknowledgements SET payload_json = '{}'",
++            "UPDATE provider_effect_acknowledgements SET payload_json = ?",
++        ),
++        (
++            "provider_effect_uncertainties",
++            "SELECT payload_json FROM provider_effect_uncertainties",
++            "DROP TRIGGER provider_effect_uncertainties_no_update",
++            "UPDATE provider_effect_uncertainties SET payload_json = '{}'",
++            "UPDATE provider_effect_uncertainties SET payload_json = ?",
++        ),
+     ] {
+-        let original: String = sqlx::query_scalar(&format!("SELECT payload_json FROM {table}"))
++        let original: String = sqlx::query_scalar(select_sql)
+             .fetch_one(&store.pool)
+             .await
+             .expect("original payload");
+-        sqlx::query(&format!("DROP TRIGGER {table}_no_update"))
++        sqlx::query(drop_trigger_sql)
+             .execute(&store.pool)
+             .await
+             .expect("model post-open imported mutation");
+-        sqlx::query(&format!("UPDATE {table} SET payload_json = '{{}}'"))
++        sqlx::query(corrupt_sql)
+             .execute(&store.pool)
+             .await
+             .expect("retain digest but replace JSON");
+@@ -266,7 +284,7 @@ async fn recovery_snapshot_refuses_changed_json_with_retained_record_digests() {
+             ),
+             "snapshot trusted a retained {table} digest without checking its bytes"
+         );
+-        sqlx::query(&format!("UPDATE {table} SET payload_json = ?"))
++        sqlx::query(restore_sql)
+             .bind(original)
+             .execute(&store.pool)
+             .await

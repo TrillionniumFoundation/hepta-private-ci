@@ -52,6 +52,7 @@ struct WorkerFile {
     materials: PathBuf,
     run_directory: PathBuf,
     source_pins: BTreeMap<PathBuf, String>,
+    runtime_snapshot: PinnedFile,
     target_contract: PinnedFile,
     wrapped_adapter: PinnedFile,
     contract_digest: String,
@@ -138,7 +139,7 @@ pub fn load_smollm_cognitive_cell_host_inputs_v2(
 
 /// Decode the exact independently authorized host file. No journal is opened,
 /// grant issued, qualification accepted or model loaded during this operation.
-pub fn load_smollm_cognitive_host_inputs_v1(
+pub fn load_smollm_cognitive_host_inputs_v2(
     path: &Path,
     expected: Digest32,
 ) -> Result<SmolLmCognitiveHostInputsV1, String> {
@@ -148,7 +149,7 @@ pub fn load_smollm_cognitive_host_inputs_v1(
 }
 
 fn decode_host(file: HostFile) -> Result<SmolLmCognitiveHostInputsV1, String> {
-    if file.schema != "hepta-smollm-cognitive-host-v1" {
+    if file.schema != "hepta-smollm-cognitive-host-v2" {
         return Err("unsupported neural cognitive host schema".to_owned());
     }
     let raw = file.worker;
@@ -204,6 +205,14 @@ fn decode_host(file: HostFile) -> Result<SmolLmCognitiveHostInputsV1, String> {
             materials: raw.materials,
             run_directory: raw.run_directory,
             source_pins,
+            runtime_snapshot: read_pinned_file(
+                &raw.runtime_snapshot.path,
+                raw.runtime_snapshot
+                    .sha256
+                    .parse::<Digest32>()
+                    .map_err(|e| e.to_string())?,
+                /*limit*/ 16 * 1024 * 1024,
+            )?,
             target_contract,
             wrapped_adapter,
             contract_digest: raw

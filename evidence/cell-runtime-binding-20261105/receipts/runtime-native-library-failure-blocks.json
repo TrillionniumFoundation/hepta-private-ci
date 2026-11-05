@@ -1,0 +1,189 @@
+{
+  "log": "/workspace/scratch/42d46a663b73/verification/hepta-host-nextest-library-attempt1.log",
+  "log_sha256": "d3bb3a021e4760c46afdd7d81102c5e28860cedbe7419001dfb173fd46578748",
+  "summary": "     Summary [  36.841s] 181 tests run: 161 passed, 20 failed, 16 skipped",
+  "terminal_failures": [
+    {
+      "selector": "final_use_authorizer::pq::concurrency_tests::concurrent_real_pq_claim_cannot_inherit_an_older_heads_longer_feed",
+      "log_line": 356,
+      "raw_block": "  TRY 2 FAIL [   0.026s] (  1/181) codex-hepta-infer-worker-host final_use_authorizer::pq::concurrency_tests::concurrent_real_pq_claim_cannot_inherit_an_older_heads_longer_feed\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test final_use_authorizer::pq::concurrency_tests::concurrent_real_pq_claim_cannot_inherit_an_older_heads_longer_feed ... FAILED\n\n    failures:\n\n    failures:\n        final_use_authorizer::pq::concurrency_tests::concurrent_real_pq_claim_cannot_inherit_an_older_heads_longer_feed\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n",
+      "error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "final_use_authorizer::pq::path_tests::ancestor_aliases_are_rejected_before_external_requests_or_owner_open",
+      "log_line": 388,
+      "raw_block": "  TRY 2 FAIL [   0.026s] (  2/181) codex-hepta-infer-worker-host final_use_authorizer::pq::path_tests::ancestor_aliases_are_rejected_before_external_requests_or_owner_open\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test final_use_authorizer::pq::path_tests::ancestor_aliases_are_rejected_before_external_requests_or_owner_open ... FAILED\n\n    failures:\n\n    failures:\n        final_use_authorizer::pq::path_tests::ancestor_aliases_are_rejected_before_external_requests_or_owner_open\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n",
+      "error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "final_use_authorizer::pq::resource_tests::max_rotation_config_loads_only_as_pq_and_oversize_response_stops_at_prefix",
+      "log_line": 421,
+      "raw_block": "  TRY 2 FAIL [   0.036s] (  4/181) codex-hepta-infer-worker-host final_use_authorizer::pq::resource_tests::max_rotation_config_loads_only_as_pq_and_oversize_response_stops_at_prefix\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test final_use_authorizer::pq::resource_tests::max_rotation_config_loads_only_as_pq_and_oversize_response_stops_at_prefix ... FAILED\n\n    failures:\n\n    failures:\n        final_use_authorizer::pq::resource_tests::max_rotation_config_loads_only_as_pq_and_oversize_response_stops_at_prefix\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.01s\n\n  stderr \u2500\u2500\u2500\n    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n",
+      "error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "final_use_authorizer::pq::role_tests::configured_pq_roles_require_separate_canonical_keys_before_any_effect",
+      "log_line": 454,
+      "raw_block": "  TRY 2 FAIL [   0.030s] (  6/181) codex-hepta-infer-worker-host final_use_authorizer::pq::role_tests::configured_pq_roles_require_separate_canonical_keys_before_any_effect\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test final_use_authorizer::pq::role_tests::configured_pq_roles_require_separate_canonical_keys_before_any_effect ... FAILED\n\n    failures:\n\n    failures:\n        final_use_authorizer::pq::role_tests::configured_pq_roles_require_separate_canonical_keys_before_any_effect\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n",
+      "error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "final_use_authorizer::pq::tests::actual_pq_host_resumes_after_rejected_replies_and_reopens_with_spent_nonce_state",
+      "log_line": 486,
+      "raw_block": "  TRY 2 FAIL [   0.025s] (  7/181) codex-hepta-infer-worker-host final_use_authorizer::pq::tests::actual_pq_host_resumes_after_rejected_replies_and_reopens_with_spent_nonce_state\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test final_use_authorizer::pq::tests::actual_pq_host_resumes_after_rejected_replies_and_reopens_with_spent_nonce_state ... FAILED\n\n    failures:\n\n    failures:\n        final_use_authorizer::pq::tests::actual_pq_host_resumes_after_rejected_replies_and_reopens_with_spent_nonce_state\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n",
+      "error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "final_use_authorizer::pq_test_support::tests::ordinary_pq_config_reopens_original_spent_nonce_and_frontier",
+      "log_line": 518,
+      "raw_block": "  TRY 2 FAIL [   0.025s] (  8/181) codex-hepta-infer-worker-host final_use_authorizer::pq_test_support::tests::ordinary_pq_config_reopens_original_spent_nonce_and_frontier\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test final_use_authorizer::pq_test_support::tests::ordinary_pq_config_reopens_original_spent_nonce_and_frontier ... FAILED\n\n    failures:\n\n    failures:\n        final_use_authorizer::pq_test_support::tests::ordinary_pq_config_reopens_original_spent_nonce_and_frontier\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n",
+      "error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "final_use_authorizer::pq_test_support::tests::ordinary_pq_services_close_on_abort_and_drop",
+      "log_line": 550,
+      "raw_block": "  TRY 2 FAIL [   0.029s] (  9/181) codex-hepta-infer-worker-host final_use_authorizer::pq_test_support::tests::ordinary_pq_services_close_on_abort_and_drop\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test final_use_authorizer::pq_test_support::tests::ordinary_pq_services_close_on_abort_and_drop ... FAILED\n\n    failures:\n\n    failures:\n        final_use_authorizer::pq_test_support::tests::ordinary_pq_services_close_on_abort_and_drop\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n",
+      "error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back",
+      "log_line": 583,
+      "raw_block": "  TRY 2 FAIL [   0.035s] ( 11/181) codex-hepta-infer-worker-host final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back ... FAILED\n\n    failures:\n\n    failures:\n        final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n",
+      "error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token",
+      "log_line": 615,
+      "raw_block": "  TRY 2 FAIL [   0.027s] ( 12/181) codex-hepta-infer-worker-host final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token ... FAILED\n\n    failures:\n\n    failures:\n        final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n",
+      "error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "final_use_authorizer::tests::forged_grant_never_reaches_effect_entry",
+      "log_line": 647,
+      "raw_block": "  TRY 2 FAIL [   0.030s] ( 13/181) codex-hepta-infer-worker-host final_use_authorizer::tests::forged_grant_never_reaches_effect_entry\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test final_use_authorizer::tests::forged_grant_never_reaches_effect_entry ... FAILED\n\n    failures:\n\n    failures:\n        final_use_authorizer::tests::forged_grant_never_reaches_effect_entry\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n",
+      "error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant",
+      "log_line": 748,
+      "raw_block": "  TRY 2 FAIL [   0.050s] ( 61/181) codex-hepta-infer-worker-host native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant ... FAILED\n\n    failures:\n\n    failures:\n        native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.03s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant' (245) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:\n    isolated original test native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant did not pass exactly once (exit status: 101):\n    stdout:\n\n    running 1 test\n    test native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant ... FAILED\n\n    failures:\n\n    ---- native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant stdout ----\n    Error: NotFound { name: \"codex\", env_keys: [\"CARGO_BIN_EXE_codex\", \"NEXTEST_BIN_EXE_codex\"], fallback: \"assert_cmd fallback failed: Cause: Cargo command not found: /workspace/scratch/42d46a663b73/runtime-target/debug/codex\\n\\n\" }\n\n\n    failures:\n        native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.01s\n\n\n    stderr:\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "error_excerpt": [
+        "    thread 'native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant' (245) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test native_app_server::tests::pq_final_use::real_agentd_turn_start_consumes_explicit_pq_config_and_external_mldsa_grant did not pass exactly once (exit status: 101):",
+        "    Error: NotFound { name: \"codex\", env_keys: [\"CARGO_BIN_EXE_codex\", \"NEXTEST_BIN_EXE_codex\"], fallback: \"assert_cmd fallback failed: Cause: Cargo command not found: /workspace/scratch/42d46a663b73/runtime-target/debug/codex\\n\\n\" }"
+      ]
+    },
+    {
+      "selector": "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+      "log_line": 824,
+      "raw_block": "  TRY 2 FAIL [   0.055s] ( 62/181) codex-hepta-infer-worker-host native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone ... FAILED\n\n    failures:\n\n    failures:\n        native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.03s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone' (263) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:\n    isolated original test native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone did not pass exactly once (exit status: 101):\n    stdout:\n\n    running 1 test\n    test native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone ... FAILED\n\n    failures:\n\n    ---- native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone stdout ----\n    Error: NotFound { name: \"codex\", env_keys: [\"CARGO_BIN_EXE_codex\", \"NEXTEST_BIN_EXE_codex\"], fallback: \"assert_cmd fallback failed: Cause: Cargo command not found: /workspace/scratch/42d46a663b73/runtime-target/debug/codex\\n\\n\" }\n\n\n    failures:\n        native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.01s\n\n\n    stderr:\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "error_excerpt": [
+        "    thread 'native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone' (263) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone did not pass exactly once (exit status: 101):",
+        "    Error: NotFound { name: \"codex\", env_keys: [\"CARGO_BIN_EXE_codex\", \"NEXTEST_BIN_EXE_codex\"], fallback: \"assert_cmd fallback failed: Cause: Cargo command not found: /workspace/scratch/42d46a663b73/runtime-target/debug/codex\\n\\n\" }"
+      ]
+    },
+    {
+      "selector": "smollm_cognitive_host::initial::tests::neural_study::roles::pq_tests::ordinary_study_pq_roles_authenticate_and_reopen_the_original_training_ledger",
+      "log_line": 910,
+      "raw_block": "  TRY 2 FAIL [   0.482s] ( 95/181) codex-hepta-infer-worker-host smollm_cognitive_host::initial::tests::neural_study::roles::pq_tests::ordinary_study_pq_roles_authenticate_and_reopen_the_original_training_ledger\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test smollm_cognitive_host::initial::tests::neural_study::roles::pq_tests::ordinary_study_pq_roles_authenticate_and_reopen_the_original_training_ledger ... FAILED\n\n    failures:\n\n    failures:\n        smollm_cognitive_host::initial::tests::neural_study::roles::pq_tests::ordinary_study_pq_roles_authenticate_and_reopen_the_original_training_ledger\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.45s\n\n  stderr \u2500\u2500\u2500\n    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n",
+      "error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "smollm_cognitive_host::initial::time::tests::initial_consumers_retain_the_real_pq_clock_and_refuse_wall_time_after_failure",
+      "log_line": 944,
+      "raw_block": "  TRY 2 FAIL [   0.029s] ( 98/181) codex-hepta-infer-worker-host smollm_cognitive_host::initial::time::tests::initial_consumers_retain_the_real_pq_clock_and_refuse_wall_time_after_failure\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test smollm_cognitive_host::initial::time::tests::initial_consumers_retain_the_real_pq_clock_and_refuse_wall_time_after_failure ... FAILED\n\n    failures:\n\n    failures:\n        smollm_cognitive_host::initial::time::tests::initial_consumers_retain_the_real_pq_clock_and_refuse_wall_time_after_failure\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n",
+      "error_excerpt": [
+        "    Error: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error",
+      "log_line": 1028,
+      "raw_block": "  TRY 2 FAIL [   0.038s] (126/181) codex-hepta-infer-worker-host smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error ... FAILED\n\n    failures:\n\n    failures:\n        smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.02s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error' (691) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:\n    isolated original test smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error did not pass exactly once (exit status: 101):\n    stdout:\n\n    running 1 test\n    test smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error ... FAILED\n\n    failures:\n\n    ---- smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error stdout ----\n\n    thread 'smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error' (693) panicked at hepta-infer-worker-host/src/smollm_neural_failure_tests.rs:202:91:\n    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\n    failures:\n        smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n\n    stderr:\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "error_excerpt": [
+        "    thread 'smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error' (691) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error did not pass exactly once (exit status: 101):",
+        "    thread 'smollm_neural_read::driver::failure::tests::original_cancellation_sends_no_frame_and_is_recorded_without_io_error' (693) panicked at hepta-infer-worker-host/src/smollm_neural_failure_tests.rs:202:91:",
+        "    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes",
+      "log_line": 1110,
+      "raw_block": "  TRY 2 FAIL [   0.040s] (127/181) codex-hepta-infer-worker-host smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes ... FAILED\n\n    failures:\n\n    failures:\n        smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.02s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes' (701) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:\n    isolated original test smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes did not pass exactly once (exit status: 101):\n    stdout:\n\n    running 1 test\n    test smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes ... FAILED\n\n    failures:\n\n    ---- smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes stdout ----\n\n    thread 'smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes' (703) panicked at hepta-infer-worker-host/src/smollm_neural_failure_tests.rs:145:68:\n    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\n    failures:\n        smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n\n    stderr:\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "error_excerpt": [
+        "    thread 'smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes' (701) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes did not pass exactly once (exit status: 101):",
+        "    thread 'smollm_neural_read::driver::failure::tests::real_socket_success_eof_multiple_frames_and_json_decode_keep_distinct_causes' (703) panicked at hepta-infer-worker-host/src/smollm_neural_failure_tests.rs:145:68:",
+        "    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown",
+      "log_line": 1192,
+      "raw_block": "  TRY 2 FAIL [   0.036s] (128/181) codex-hepta-infer-worker-host smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown ... FAILED\n\n    failures:\n\n    failures:\n        smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.02s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown' (713) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:\n    isolated original test smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown did not pass exactly once (exit status: 101):\n    stdout:\n\n    running 1 test\n    test smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown ... FAILED\n\n    failures:\n\n    ---- smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown stdout ----\n\n    thread 'smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown' (715) panicked at hepta-infer-worker-host/src/smollm_neural_failure_tests.rs:51:64:\n    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\n    failures:\n        smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n\n    stderr:\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "error_excerpt": [
+        "    thread 'smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown' (713) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown did not pass exactly once (exit status: 101):",
+        "    thread 'smollm_neural_read::driver::failure::tests::real_socket_timeout_retains_original_errno_and_both_deadlines_before_shutdown' (715) panicked at hepta-infer-worker-host/src/smollm_neural_failure_tests.rs:51:64:",
+        "    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor",
+      "log_line": 1300,
+      "raw_block": "  TRY 2 FAIL [   0.039s] (155/181) codex-hepta-infer-worker-host smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor ... FAILED\n\n    failures:\n\n    failures:\n        smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.02s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor' (825) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:\n    isolated original test smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor did not pass exactly once (exit status: 101):\n    stdout:\n\n    running 1 test\n    test smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor ... FAILED\n\n    failures:\n\n    ---- smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor stdout ----\n\n    thread 'smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor' (827) panicked at hepta-infer-worker-host/src/smollm_neural_session_tests.rs:239:66:\n    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\n    failures:\n        smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n\n    stderr:\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "error_excerpt": [
+        "    thread 'smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor' (825) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor did not pass exactly once (exit status: 101):",
+        "    thread 'smollm_neural_read::driver::session::tests::cancelled_read_sends_no_frame_and_uncertain_exchange_blocks_successor' (827) panicked at hepta-infer-worker-host/src/smollm_neural_session_tests.rs:239:66:",
+        "    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper",
+      "log_line": 1382,
+      "raw_block": "  TRY 2 FAIL [   0.144s] (156/181) codex-hepta-infer-worker-host smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper ... FAILED\n\n    failures:\n\n    failures:\n        smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.12s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper' (837) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:\n    isolated original test smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper did not pass exactly once (exit status: 101):\n    stdout:\n\n    running 1 test\n    test smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper ... FAILED\n\n    failures:\n\n    ---- smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper stdout ----\n\n    thread 'smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper' (839) panicked at hepta-infer-worker-host/src/smollm_neural_session_tests.rs:130:66:\n    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\n    failures:\n        smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.10s\n\n\n    stderr:\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "error_excerpt": [
+        "    thread 'smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper' (837) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper did not pass exactly once (exit status: 101):",
+        "    thread 'smollm_neural_read::driver::session::tests::dropped_cold_session_retries_stop_when_socket_appears_and_retains_reaper' (839) panicked at hepta-infer-worker-host/src/smollm_neural_session_tests.rs:130:66:",
+        "    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    },
+    {
+      "selector": "smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window",
+      "log_line": 1464,
+      "raw_block": "  TRY 2 FAIL [   0.048s] (157/181) codex-hepta-infer-worker-host smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window ... FAILED\n\n    failures:\n\n    failures:\n        smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.02s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window' (849) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:\n    isolated original test smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window did not pass exactly once (exit status: 101):\n    stdout:\n\n    running 1 test\n    test smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window ... FAILED\n\n    failures:\n\n    ---- smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window stdout ----\n\n    thread 'smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window' (851) panicked at hepta-infer-worker-host/src/smollm_neural_session_tests.rs:200:66:\n    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\n    failures:\n        smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 196 filtered out; finished in 0.00s\n\n\n    stderr:\n\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n",
+      "error_excerpt": [
+        "    thread 'smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window' (849) panicked at hepta-infer-worker-host/src/test_process.rs:29:5:",
+        "    isolated original test smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window did not pass exactly once (exit status: 101):",
+        "    thread 'smollm_neural_read::driver::session::tests::dropped_session_does_not_extend_its_expired_stop_window' (851) panicked at hepta-infer-worker-host/src/smollm_neural_session_tests.rs:200:66:",
+        "    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }"
+      ]
+    }
+  ]
+}

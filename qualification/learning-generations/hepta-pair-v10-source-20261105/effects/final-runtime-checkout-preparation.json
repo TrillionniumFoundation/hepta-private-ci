@@ -1,0 +1,38 @@
+{
+  "initial_commit": "cec7a61b6c0aed19abd13bdbda0c6838aa398ef3",
+  "target_commit": "9e134ddafc12b5d54341841cc4c3f98b26af2ad2",
+  "expected_tree": "0b73080c1520f2d6b1c711662ea7df3d73b09b64",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "9e134ddafc12b5d54341841cc4c3f98b26af2ad2"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "HEAD is now at 9e134ddaf fix(evidence): merge ordinary source bindings with durable effect observations\n"
+    },
+    {
+      "argv": [
+        "git",
+        "sparse-checkout",
+        "disable"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "actual_commit": "9e134ddafc12b5d54341841cc4c3f98b26af2ad2",
+  "actual_tree": "0b73080c1520f2d6b1c711662ea7df3d73b09b64",
+  "git_status": "",
+  "tracked_files": 11364,
+  "skip_worktree": 0,
+  "assume_unchanged": 0,
+  "missing_tracked": [],
+  "evidence_and_lock_hashes_match_tested_cec7": true,
+  "native_file_hash_count": 65,
+  "finished_utc": "2026-11-05T04:59:33Z"
+}

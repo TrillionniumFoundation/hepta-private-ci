@@ -1,0 +1,116 @@
+{
+  "schema": "trnm-liveness-m06-subtask-20261105-v1",
+  "chain_sha": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+  "chain_tree": "d4f4a85c439982d8decec9265c1993408f3577cf",
+  "input_files": 1248,
+  "input_aggregate_sha256": "5217fea03fa45d96e697c6c53d9d0e34d90cd57ff64ad79c0348c9b34f7260d5",
+  "profile_overrides": false,
+  "checks": [
+    {
+      "kind": "unit",
+      "args": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-mvcc-fee",
+        "--all-features",
+        "--lib",
+        "--",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "counts": {
+        "passed": 133,
+        "failed": 0,
+        "ignored": 8
+      },
+      "head_before": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+      "head_after": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+      "inputs_unchanged": true,
+      "tracked_worktree_clean": true,
+      "receipt": "published-m06-native-receipt.json",
+      "receipt_sha256": "cc03cdf491982cf018b48bb437e917708264af5232d6293c722a51b798860b58",
+      "log": "published-m06-native.log",
+      "log_sha256": "7b52a36202cc3e84d7b7b7eaeab40556b2d33a2080ae23b5298ae0b3d6f8488c"
+    },
+    {
+      "kind": "strict-clippy",
+      "args": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-mvcc-fee",
+        "--all-features",
+        "--lib",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "counts": null,
+      "head_before": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+      "head_after": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+      "inputs_unchanged": true,
+      "tracked_worktree_clean": true,
+      "receipt": "published-m06-clippy-receipt.json",
+      "receipt_sha256": "7802cf96e7ec511a558e3020e10609066ac41fd1e8ebd6883fa5ae9829cab738",
+      "log": "published-m06-clippy.log",
+      "log_sha256": "6857b6c669c2bd30a0d86f1d0a6fa844117588ccac1da2d158e4be2004007f42"
+    },
+    {
+      "kind": "existing-integration",
+      "args": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-mvcc-fee",
+        "--all-features",
+        "--test",
+        "capacity_progress",
+        "--",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "counts": {
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0
+      },
+      "head_before": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+      "head_after": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+      "inputs_unchanged": true,
+      "tracked_worktree_clean": true,
+      "receipt": "published-m06-capacity-progress-receipt.json",
+      "receipt_sha256": "5516e771ac6d2c4a0f54c3c3a1483e22dbd96dddd2e294a3a875abf9e1382cd1",
+      "log": "published-m06-capacity-progress.log",
+      "log_sha256": "89989f5f871fffe5a0d713047c32c3369806d80d8db278233f57ccfa69204cec"
+    }
+  ],
+  "first_failed_observation": {
+    "receipt": "range-unit-receipt.json",
+    "exit_code": 101,
+    "passed": 4,
+    "failed": 1,
+    "ignored": 1,
+    "reason": "Test fixture chose unsupported quorum+linear model before the differential assertion; corrected to installed legal combinations and explicit refusal assertions. Production capacity logic was not changed to bypass the refusal."
+  },
+  "original_host_confirmation_qualified": false,
+  "original_host_reason": "Original trnmponpublic.slice/hardware not available. The observed container cpu.max is 800000 100000. No original four-second/six-depth/16-adversary confirmation run was performed here.",
+  "performance_qualification": false,
+  "note": "Capacity optimization affects ordinary continuity/Growth capacity paths; original legacy-task Host bypasses that relation. The funds optimization reaches the ordinary legacy completed-block supply check but no original Host speedup or confirmation acceptance is inferred. No optional timing benchmarks ran."
+}

@@ -1,0 +1,26 @@
+{
+  "source_contents_match_local_candidate": "7292152e0dd8a592d01110a8b42db4a0deafaf25",
+  "commands": [
+    {
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "3558ced0fd983603a3082a42359e8da63dfc8418",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "scope": "Executed immediately before the final two ordinary local commits; the four source changes and audited workflow were identical to the committed contents. This is formatting/whitespace validation, not native execution."
+}

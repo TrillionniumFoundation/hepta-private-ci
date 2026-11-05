@@ -1,0 +1,45 @@
+{
+  "source_commit": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "source_tree": "ebd1437475d71252786788f67d2911f5a6e6108d",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--locked",
+    "--lib",
+    "-E",
+    "test(evidence_frontier)"
+  ],
+  "actual_exit_code": 0,
+  "elapsed_seconds": 31.491846561431885,
+  "classification": "SCOPED_NATIVE_PASS",
+  "executed_tests": 9,
+  "passed_tests": 9,
+  "nextest_summary_skipped_tests": 239,
+  "selected_tests": [
+    "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+    "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+    "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+    "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+    "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+    "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+    "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+    "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+    "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key"
+  ],
+  "nextest_run_id": "54d22792-a42e-43b1-8324-67af72158366",
+  "log_sha256": "ee6e6876bbe4cccc5a6f6f661cec89e904350c687ac8cc2e156029f59780f44b",
+  "test_executable": {
+    "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/codex_hepta_agentd-b1f0709e78245ce8",
+    "bytes": 1281053752,
+    "sha256": "d900f680e6ad05ad098a45a37d1fe50ad04a8a6889afea145ae080500e025d9c",
+    "artifact_retained": false,
+    "cache_reclaimed": true,
+    "deployable_binary": false
+  },
+  "scope": "Nine selected frontier unit tests actually executed on exact R2. Other 239 lib cases were skipped by the nextest invocation. Finished unit-only executable reclaimed after hashing; no production binary, dependency or source removed.",
+  "test_executable_removal_time_unix": 1793859685.3770182,
+  "before_all_free_bytes": 2706960384,
+  "after_all_free_bytes": 3981545472
+}

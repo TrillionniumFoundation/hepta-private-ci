@@ -3,6 +3,24 @@ use pretty_assertions::assert_eq;
 use std::fs;
 
 #[test]
+fn explicit_loader_overrides_are_refused_before_spawn() {
+    for name in [
+        "LD_PRELOAD",
+        "LD_LIBRARY_PATH",
+        "LD_AUDIT",
+        "LD_UNRECOGNIZED",
+        "GLIBC_TUNABLES",
+    ] {
+        let mut command = Command::new("python3");
+        command.env(name, "unapproved");
+        assert_eq!(
+            configure_python_environment(&mut command),
+            Err("neural Python loader overrides are not allowed".to_owned())
+        );
+    }
+}
+
+#[test]
 fn ambient_python_injection_cannot_enter_supervisor_or_descendant() {
     let directory = tempfile::tempdir().unwrap();
     let marker = directory.path().join("ambient-imported");
@@ -25,7 +43,7 @@ fn ambient_python_injection_cannot_enter_supervisor_or_descendant() {
         .env("PYTHONPATH", directory.path())
         .env("PYTHONHOME", directory.path().join("missing-python-home"))
         .env("PYTHONUSERBASE", directory.path());
-    configure_python_environment(&mut command);
+    configure_python_environment(&mut command).unwrap();
     let output = command.arg(script).output().unwrap();
     assert!(output.status.success(), "{output:?}");
     assert_eq!(

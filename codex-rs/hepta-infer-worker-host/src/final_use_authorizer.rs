@@ -37,7 +37,8 @@ const AUTHORITY_PORT_SCHEMA_VERSION: u32 = 1;
 const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
 const MAX_CONFIG_BYTES: usize = 64 * 1024;
 // PQ carries up to eight issuer keys, eight feed keys and two independently
-// pinned service SPKIs. The classic profile keeps its original 64 KiB limit.
+// pinned service SPKIs. Legacy configuration bytes keep their original 64 KiB
+// limit even though the ordinary loader no longer activates that profile.
 const MAX_PQ_CONFIG_BYTES: usize = 256 * 1024;
 const MAX_REQUEST_BYTES: usize = 16 * 1024;
 const MAX_RESPONSE_BYTES: usize = 64 * 1024;
@@ -80,6 +81,9 @@ impl UnixFinalUseAuthorizer {
         self.authority.authentication_profile()
     }
 
+    /// Open the ordinary runtime authority port using an explicit PQ profile.
+    /// Historical classical configuration must never become a default runtime
+    /// authorization merely because its profile field is absent.
     pub fn open(config_path: &Path) -> Result<Self> {
         let bytes = read_private_config(config_path)?;
         let selector: serde_json::Value = serde_json::from_slice(&bytes)?;
@@ -92,11 +96,16 @@ impl UnixFinalUseAuthorizer {
                 if bytes.len() > MAX_CONFIG_BYTES {
                     return Err("classic final-use authority config exceeds 64 KiB".into());
                 }
-                Self::from_config(serde_json::from_slice(&bytes)?)
+                Err(
+                    "ordinary final-use requires explicit ml_dsa65_v2 authentication profile"
+                        .into(),
+                )
             }
         }
     }
 
+    /// Explicit classical compatibility constructor, including effect authorization.
+    /// Ordinary business entry points use the PQ-required `open`.
     pub fn from_config(config: FinalUseAuthorizerConfig) -> Result<Self> {
         if !config.issuer_socket.is_absolute() || !config.authority_state_dir.is_absolute() {
             return Err("final-use authority socket and state directory must be absolute".into());
@@ -311,5 +320,11 @@ pub(crate) mod tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "final_use_authorizer_pq_test_support.rs"]
 mod pq_test_support;
+#[cfg(all(test, target_os = "linux"))]
+pub(crate) use pq_test_support::IndependentPqIssuer;
+#[cfg(all(test, target_os = "linux"))]
+pub(crate) use pq_test_support::independent_ordinary_test_authorizer_v2;
+#[cfg(all(test, target_os = "linux"))]
+pub(crate) use pq_test_support::independent_ordinary_test_authorizer_v2_after_load;
 #[cfg(all(test, target_os = "linux"))]
 pub(crate) use pq_test_support::independent_test_authorizer_v2;

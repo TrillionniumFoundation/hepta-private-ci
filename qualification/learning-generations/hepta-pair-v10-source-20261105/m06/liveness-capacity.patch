@@ -1,0 +1,444 @@
+diff --git a/trillionnium/crates/trnm-mvcc-fee/src/continuity_v1.rs b/trillionnium/crates/trnm-mvcc-fee/src/continuity_v1.rs
+index a3b5271..4533c7d 100644
+--- a/trillionnium/crates/trnm-mvcc-fee/src/continuity_v1.rs
++++ b/trillionnium/crates/trnm-mvcc-fee/src/continuity_v1.rs
+@@ -1,7 +1,7 @@
+ //! Explicit revision12 continuity: reserve mandatory state liabilities and bind
+ //! an immutable, genesis-defined maintenance task. No work hardness, useful demand,
+ //! production authority or legacy/task substitution follows from availability.
+-use crate::pon_executor::{canonical, Config, Result, State};
++use crate::pon_executor::{canonical, prefix_rows, Config, Result, State};
+ use serde_json::{json, Value};
+ use std::collections::BTreeSet;
+ use trnm_crypto_primitives::pon_work;
+@@ -208,13 +208,35 @@ fn capacity_with_sources(
+     monetary: Option<&State>,
+ ) -> Result<Capacity> {
+     let mut progress = || Ok::<(), std::convert::Infallible>(());
+-    match scan_capacity_with_sources(state, height, cfg, account_access, monetary, &mut progress) {
++    match scan_capacity_rows(
++        state,
++        height,
++        cfg,
++        account_access,
++        monetary,
++        (
++            liability_rows(monetary.unwrap_or(state)),
++            prefix_rows(state, "contribution:").map(|(key, _)| key),
++        ),
++        &mut progress,
++    ) {
+         Ok(capacity) => Ok(capacity),
+         Err(CapacityScanError::State(error)) => Err(error),
+         Err(CapacityScanError::Cancelled(impossible)) => match impossible {},
+     }
+ }
+ 
++/// The capacity relation reads only these disjoint namespaces. Their lexical
++/// order matches the original complete-State walk, including malformed suffixes
++/// and the first failing liability. Every relevant row is still inspected;
++/// accounts are looked up only when a liability may create one. State length,
++/// imported rewards, account access gates and all reserve checks stay separate.
++fn liability_rows(state: &State) -> impl Iterator<Item = (&String, &Value)> {
++    ["contribution:", "quota:", "release:", "reward:", "task:"]
++        .into_iter()
++        .flat_map(move |prefix| prefix_rows(state, prefix))
++}
++
+ fn scan_capacity_with_sources<E>(
+     state: &State,
+     height: u64,
+@@ -222,6 +244,33 @@ fn scan_capacity_with_sources<E>(
+     account_access: Option<&crate::pon_executor::AccountPointAccess<'_>>,
+     monetary: Option<&State>,
+     progress: &mut dyn FnMut() -> std::result::Result<(), E>,
++) -> std::result::Result<Capacity, CapacityScanError<E>> {
++    // Public observations retain their original complete-row callback schedule.
++    // Skipping unrelated rows here could change cancellation/error precedence.
++    // Native validation above has no cancellable callback and can seek directly
++    // to the exact liability namespaces without changing its returned result.
++    scan_capacity_rows(
++        state,
++        height,
++        cfg,
++        account_access,
++        monetary,
++        (monetary.unwrap_or(state).iter(), state.keys()),
++        progress,
++    )
++}
++
++fn scan_capacity_rows<'a, E>(
++    state: &State,
++    height: u64,
++    cfg: &Config,
++    account_access: Option<&crate::pon_executor::AccountPointAccess<'_>>,
++    monetary: Option<&State>,
++    rows: (
++        impl Iterator<Item = (&'a String, &'a Value)>,
++        impl Iterator<Item = &'a String>,
++    ),
++    progress: &mut dyn FnMut() -> std::result::Result<(), E>,
+ ) -> std::result::Result<Capacity, CapacityScanError<E>> {
+     if !enabled(cfg) {
+         return Err("CONTINUITY_PROFILE".into());
+@@ -238,7 +287,7 @@ fn scan_capacity_with_sources<E>(
+     let mut recipients = BTreeSet::new();
+     let mut reward_heights = BTreeSet::new();
+     let mut archives = 0usize;
+-    for (index, (key, value)) in monetary.unwrap_or(state).iter().enumerate() {
++    for (index, (key, value)) in rows.0.enumerate() {
+         if index % CAPACITY_PROGRESS_INTERVAL == 0 {
+             progress().map_err(CapacityScanError::Cancelled)?;
+         }
+@@ -271,7 +320,7 @@ fn scan_capacity_with_sources<E>(
+     if monetary.is_some() && evaluation_enabled {
+         // Monetary certificates do not authenticate this separate cleanup /
+         // future-archive relation. Its complete State reference remains explicit.
+-        for (index, key) in state.keys().enumerate() {
++        for (index, key) in rows.1.enumerate() {
+             if index % CAPACITY_PROGRESS_INTERVAL == 0 {
+                 progress().map_err(CapacityScanError::Cancelled)?;
+             }
+@@ -370,3 +419,7 @@ pub(crate) fn check_state_with_account_access_and_monetary(
+     }
+     Ok(())
+ }
++
++#[cfg(test)]
++#[path = "continuity_v1/capacity_range_tests.rs"]
++mod capacity_range_tests;
+diff --git a/trillionnium/crates/trnm-mvcc-fee/src/continuity_v1/capacity_range_tests.rs b/trillionnium/crates/trnm-mvcc-fee/src/continuity_v1/capacity_range_tests.rs
+new file mode 100644
+index 0000000..6d109ee
+--- /dev/null
++++ b/trillionnium/crates/trnm-mvcc-fee/src/continuity_v1/capacity_range_tests.rs
+@@ -0,0 +1,328 @@
++use super::*;
++use std::{convert::Infallible, sync::Mutex};
++
++fn config(task: &str, evaluation: &str) -> Config {
++    Config::installed_with_profiles(evaluation, task).unwrap()
++}
++
++// The original complete-map traversal remains the public observation path.
++// It is a separate selection oracle for the new ordinary native traversal;
++// both must feed the unchanged capacity arithmetic in the same key order.
++fn full_capacity(
++    state: &State,
++    height: u64,
++    cfg: &Config,
++    access: Option<&crate::pon_executor::AccountPointAccess<'_>>,
++    monetary: Option<&State>,
++) -> Result<Capacity> {
++    match scan_capacity_with_sources(state, height, cfg, access, monetary, &mut || {
++        Ok::<(), Infallible>(())
++    }) {
++        Ok(value) => Ok(value),
++        Err(CapacityScanError::State(error)) => Err(error),
++        Err(CapacityScanError::Cancelled(impossible)) => match impossible {},
++    }
++}
++
++fn unrelated_accounts(count: usize) -> State {
++    (0..count)
++        .map(|index| {
++            (
++                format!("account:{index:064x}"),
++                json!({"balance":0,"nonce":index}),
++            )
++        })
++        .collect()
++}
++
++fn liabilities() -> State {
++    let present = hex::encode([1; 32]);
++    let absent = hex::encode([2; 32]);
++    State::from([
++        (
++            format!("account:{present}"),
++            json!({"balance":0,"nonce":71}),
++        ),
++        ("contribution:".into(), json!(null)),
++        ("contribution:unarchived\0λ".into(), json!({})),
++        ("contribution:archived".into(), json!({})),
++        ("evaluation-archive:archived".into(), json!({})),
++        ("quota:".into(), json!({"remaining":1,"owner":present})),
++        ("quota:zero".into(), json!({"remaining":0})),
++        (
++            "release:future".into(),
++            json!({"remaining":2,"owner":absent}),
++        ),
++        (
++            "reward:zero".into(),
++            json!({"maturity":21,"amount":0,"owner":absent}),
++        ),
++        (
++            "task:nested:key".into(),
++            json!({"remaining":3,"owner":absent}),
++        ),
++        ("task:zero".into(), json!({"remaining":0})),
++    ])
++}
++
++#[test]
++fn liability_ranges_keep_original_order_and_every_prefix_boundary() {
++    let mut state = State::new();
++    for stem in ["contribution", "quota", "release", "reward", "task"] {
++        for suffix in [
++            "",
++            "!",
++            ":",
++            ":\0",
++            ":a",
++            ":a:b",
++            ":λ",
++            ":\u{10ffff}",
++            ";",
++            ";x",
++        ] {
++            let key = format!("{stem}{suffix}");
++            state.insert(key.clone(), json!(key));
++        }
++    }
++    for key in [
++        "",
++        "\0",
++        "account:",
++        "account:bad",
++        "evaluation-archive:task:a",
++        "quota",
++        "模",
++        "\u{10ffff}",
++    ] {
++        state.insert(key.into(), json!(null));
++    }
++    let original: Vec<_> = state
++        .iter()
++        .filter(|(key, _)| {
++            key.starts_with("reward:")
++                || key.starts_with("task:")
++                || key.starts_with("quota:")
++                || key.starts_with("release:")
++                || key.starts_with("contribution:")
++        })
++        .collect();
++    let selected: Vec<_> = liability_rows(&state).collect();
++    assert_eq!(selected, original);
++    for (key, value) in selected {
++        let (actual_key, actual_value) = state.get_key_value(key).unwrap();
++        assert!(std::ptr::eq(key, actual_key));
++        assert!(std::ptr::eq(value, actual_value));
++    }
++    assert_eq!(liability_rows(&State::new()).count(), 0);
++}
++
++#[test]
++fn capacity_ranges_match_full_state_and_authenticated_monetary_sources() {
++    let mut state = unrelated_accounts(16_384);
++    state.extend(liabilities());
++    for key in [
++        "contribution;bad",
++        "quota;bad",
++        "release;bad",
++        "reward;bad",
++        "task;bad",
++        "zz:bad",
++    ] {
++        state.insert(key.into(), json!(null));
++    }
++    for task in [PROFILE, crate::growth_profile_v2::PROFILE] {
++        for evaluation in [
++            "legacy-first-two-v3",
++            crate::public_evaluation::PROFILE,
++            crate::public_evaluation::QUORUM_PROFILE,
++        ] {
++            let cfg = config(task, evaluation);
++            let monetary: State = state
++                .iter()
++                .filter(|(key, _)| crate::pon_executor::is_monetary_obligation(key))
++                .map(|(key, value)| (key.clone(), value.clone()))
++                .collect();
++            for source in [None, Some(&monetary)] {
++                let expected = full_capacity(&state, 1, &cfg, None, source).unwrap();
++                let actual = capacity_with_sources(&state, 1, &cfg, None, source).unwrap();
++                assert_eq!(actual, expected);
++                assert_eq!(actual.actual_keys, state.len());
++                assert_eq!(actual.credit_account_reserve, 1);
++                assert_eq!(actual.reward_queue_reserve, 19);
++                assert_eq!(
++                    actual.archive_reserve,
++                    if crate::public_evaluation::enabled(&cfg) {
++                        2
++                    } else {
++                        0
++                    }
++                );
++            }
++        }
++    }
++}
++
++fn observed(
++    state: &State,
++    cfg: &Config,
++    ranged: bool,
++    fail_after: Option<usize>,
++    monetary: Option<&State>,
++) -> (Result<Capacity>, Vec<String>) {
++    let seen = Mutex::new(Vec::new());
++    let access = |owner: &str| {
++        let mut seen = seen.lock().unwrap();
++        seen.push(owner.to_owned());
++        if fail_after == Some(seen.len()) {
++            Err("CAPACITY_TEST_ACCOUNT_ACCESS")
++        } else {
++            Ok(())
++        }
++    };
++    let result = if ranged {
++        capacity_with_sources(state, 1, cfg, Some(&access), monetary)
++    } else {
++        full_capacity(state, 1, cfg, Some(&access), monetary)
++    };
++    (result, seen.into_inner().unwrap())
++}
++
++#[test]
++fn capacity_ranges_preserve_first_error_and_exact_account_access_order() {
++    let cfg = config(PROFILE, crate::public_evaluation::PROFILE);
++    let base = liabilities();
++    for fail_after in [None, Some(1), Some(2), Some(3), Some(4), Some(5)] {
++        assert_eq!(
++            observed(&base, &cfg, true, fail_after, None),
++            observed(&base, &cfg, false, fail_after, None)
++        );
++    }
++    let mut cases = vec![base.clone()];
++    for key in ["quota:", "release:future", "reward:zero", "task:nested:key"] {
++        for bad in [
++            json!(null),
++            json!({}),
++            json!({"remaining":1,"owner":"BAD"}),
++            json!({"remaining":0}),
++            json!({"remaining":-1}),
++            json!({"remaining":1.0}),
++        ] {
++            let mut state = base.clone();
++            state.insert(key.into(), bad);
++            // A later error cannot hide an earlier malformed liability.
++            state.insert("task:zz-invalid".into(), json!(null));
++            cases.push(state);
++        }
++    }
++    for due in [0, 1, 20, 22, u64::MAX] {
++        let mut state = base.clone();
++        state.get_mut("reward:zero").unwrap()["maturity"] = json!(due);
++        cases.push(state);
++    }
++    let mut duplicate = base.clone();
++    duplicate.insert("reward:duplicate".into(), base["reward:zero"].clone());
++    cases.push(duplicate);
++    let mut missing = base;
++    missing.remove("reward:zero");
++    cases.push(missing);
++    for state in cases {
++        for fail_after in [None, Some(1), Some(3)] {
++            assert_eq!(
++                observed(&state, &cfg, true, fail_after, None),
++                observed(&state, &cfg, false, fail_after, None)
++            );
++            let monetary: State = state
++                .iter()
++                .filter(|(key, _)| crate::pon_executor::is_monetary_obligation(key))
++                .map(|(key, value)| (key.clone(), value.clone()))
++                .collect();
++            assert_eq!(
++                observed(&state, &cfg, true, fail_after, Some(&monetary)),
++                observed(&state, &cfg, false, fail_after, Some(&monetary))
++            );
++        }
++    }
++}
++
++#[test]
++fn ordinary_capacity_keeps_full_key_limit_and_profile_error_precedence() {
++    let mut cfg = config(PROFILE, crate::public_evaluation::PROFILE);
++    let mut state = bootstrap_state(&cfg).unwrap();
++    for index in 0..MAX_KEYS - 21 {
++        state.insert(format!("unused:{index:05}"), json!(null));
++    }
++    assert_eq!(state.len(), MAX_KEYS - 20);
++    assert_eq!(liability_rows(&state).count(), 0);
++    assert_eq!(capacity(&state, 0, &cfg).unwrap().required_keys, MAX_KEYS);
++    assert_eq!(check_state(&state, 0, &cfg), Ok(()));
++    state.insert("unused:overflow".into(), json!(null));
++    assert_eq!(
++        capacity(&state, 0, &cfg).unwrap().required_keys,
++        MAX_KEYS + 1
++    );
++    assert_eq!(check_state(&state, 0, &cfg), Err("STATE_CAPACITY"));
++    state.insert("quota:".into(), json!(null));
++    assert_eq!(check_state(&state, 0, &cfg), Err("CONTINUITY_STATE"));
++    cfg.params["reward_maturity_blocks"] = json!(null);
++    assert_eq!(capacity(&state, 0, &cfg), Err("CONFIG"));
++    let old = Config::installed().unwrap();
++    assert_eq!(capacity(&state, 0, &old), Err("CONTINUITY_PROFILE"));
++}
++
++#[test]
++fn ordinary_capacity_range_work_does_not_visit_unrelated_state_rows() {
++    for count in [0, 64, 1_024, 16_384, 65_536] {
++        let mut state = unrelated_accounts(count);
++        state.extend(liabilities());
++        let selected: Vec<_> = liability_rows(&state)
++            .map(|(key, _)| key.as_str())
++            .collect();
++        assert_eq!(selected.len(), 9);
++        assert!(selected.iter().all(|key| !key.starts_with("account:")));
++        let cfg = config(PROFILE, crate::public_evaluation::PROFILE);
++        assert_eq!(
++            capacity(&state, 1, &cfg),
++            full_capacity(&state, 1, &cfg, None, None)
++        );
++    }
++}
++
++#[test]
++#[ignore = "paired complete-capacity observation; not original Host or confirmation acceptance"]
++fn capacity_range_full_return_abba_observation() {
++    use std::{hint::black_box, time::Instant};
++    let cfg = config(PROFILE, crate::public_evaluation::PROFILE);
++    const CALLS: usize = 16;
++    // Fixed before execution: four state sizes, twelve ABBA blocks each, all
++    // returns (including destruction) timed. No warmup/sample selection/rerun
++    // or machine-specific timing threshold can confer service acceptance.
++    for count in [0, 64, 1_024, 16_384] {
++        let mut state = unrelated_accounts(count);
++        state.extend(liabilities());
++        let expected = full_capacity(&state, 1, &cfg, None, None).unwrap();
++        let mut samples = Vec::new();
++        for round in 0..12 {
++            for (slot, ranged) in [false, true, true, false].into_iter().enumerate() {
++                let start = Instant::now();
++                let mut complete = true;
++                for _ in 0..CALLS {
++                    let result = if ranged {
++                        capacity(black_box(&state), 1, black_box(&cfg))
++                    } else {
++                        full_capacity(black_box(&state), 1, black_box(&cfg), None, None)
++                    };
++                    complete &= result.as_ref() == Ok(&expected);
++                    drop(black_box(result));
++                }
++                let wall_ns = start.elapsed().as_nanos();
++                assert!(complete);
++                samples.push(json!({"round":round,"slot":slot,"range":ranged,"calls":CALLS,"wall_ns":wall_ns,"all_results_equal":complete}));
++            }
++        }
++        println!(
++            "{}",
++            json!({"schema":"trnm-capacity-range-abba-v1","state_keys":state.len(),"unrelated_accounts":count,"liability_rows":liability_rows(&state).count(),"samples":samples,"scope":"complete in-memory native capacity result including reserve sets and destruction; excludes maintenance material, state clones/roots, SQL, Host checks, W1 and independent confirmation","ordinary_legacy_task_profile_affected":false,"public_service_qualified":false})
++        );
++    }
++}

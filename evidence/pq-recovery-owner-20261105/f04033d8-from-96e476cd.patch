@@ -1,0 +1,510 @@
+diff --git a/codex-rs/Cargo.lock b/codex-rs/Cargo.lock
+index 10a474421ed4bb7a46c56a73739355b4efedfc72..181d14a3124d94fb1f2c880da93f1c09a1f5cf76 100644
+--- a/codex-rs/Cargo.lock
++++ b/codex-rs/Cargo.lock
+@@ -3773,6 +3773,7 @@ dependencies = [
+  "codex-hepta-bellman-operator",
+  "codex-hepta-codex-adapter",
+  "codex-hepta-contracts",
++ "codex-hepta-evidence",
+  "codex-hepta-fleet",
+  "codex-hepta-infer-core",
+  "codex-hepta-intelligence-eval",
+diff --git a/codex-rs/hepta-agentd/PQ_INSTALLATION.md b/codex-rs/hepta-agentd/PQ_INSTALLATION.md
+index cb7a7b148321e017a6172cc24c1d8d469beb035a..1ef7af1c014aeed2cfabc38b02067a2d7c0d8ec8 100644
+--- a/codex-rs/hepta-agentd/PQ_INSTALLATION.md
++++ b/codex-rs/hepta-agentd/PQ_INSTALLATION.md
+@@ -34,16 +34,20 @@ global startup boundary makes Windows Agentd refuse startup until an equivalent
+ native recovery-root path is implemented and qualified. Windows qualification
+ remains open; a classical or unchecked fallback is not an activation option.
+ 
+-Startup authenticates these files before opening owners. It then opens the
+-already staged evidence lineage read-only and compares its snapshot before any
+-writable open, migration or store-ID binding. A missing or partial database is
+-refused. Bootstrap and migration tooling must first stage an explicitly approved
+-image and have the recovery owner sign that exact image. The writable open is
+-checked again, before `AgentdState::new`, plasticity composition, AuthBus or the
+-App Server can run. Process tests stage their initial fixture once and retain the
+-same checkpoint over restart; they do not re-sign a restored image automatically.
+-
+-This is a startup admission boundary. Files outside Agent home do not establish
++The ordinary and qualified-neural executables call
++`preflight_evidence_recovery` before learning/cognitive bootstrap or neural model
++preparation. This authenticates the files and compares the already staged shared
++evidence image through a read-only connection; it does not migrate the image or
++bind its store ID. A missing or partial database is refused. Bootstrap and
++migration tooling must first stage an explicitly approved image and have the
++recovery owner sign that exact image. `run` independently repeats authentication
++and the read-only comparison, then rechecks the writable image before
++`AgentdState::new`, runtime plasticity composition, AuthBus or the App Server can
++run. Process tests stage their initial fixture once and retain the same checkpoint
++over restart; they do not re-sign a restored image automatically.
++
++This is an admission boundary for the shared evidence image, not a recovery
++protocol for every database opened by bootstrap or runtime owners. Files outside Agent home do not establish
+ independent custody or freshness after an entire host restore. Snapshot matching
+ and store-ID binding rely on the runtime's exclusive writer and are not an atomic
+ transaction with remote effects. The snapshot's provider-effect tables do not
+diff --git a/codex-rs/hepta-agentd/src/evidence_frontier.rs b/codex-rs/hepta-agentd/src/evidence_frontier.rs
+index 1c4f7641171e89c3ce408c26021c3c2a69551179..919cacc8ccd38099fad8df16fb81816893c64308 100644
+--- a/codex-rs/hepta-agentd/src/evidence_frontier.rs
++++ b/codex-rs/hepta-agentd/src/evidence_frontier.rs
+@@ -26,6 +26,7 @@ use codex_utils_absolute_path::AbsolutePathBuf;
+ use serde::Deserialize;
+ use serde::Serialize;
+ 
++use crate::AgentdConfig;
+ use crate::AgentdError;
+ use crate::AgentdIdentity;
+ use crate::authbus_trust::hex_bytes;
+@@ -148,6 +149,26 @@ pub fn evidence_recovery_frontier_signing_bytes(
+ 
+ pub(crate) struct VerifiedEvidenceRecoveryFrontier(EvidenceRecoveryFrontierV3);
+ 
++/// Check shared evidence recovery before entry-point bootstrap owners can run.
++/// This does not migrate the database, bind its store ID, or authorize effects.
++/// `run` repeats the check and owns the later writable admission boundary.
++pub async fn preflight_evidence_recovery(config: &AgentdConfig) -> Result<(), AgentdError> {
++    load_evidence_recovery_for_config(config)?
++        .check_existing_read_only(config.identity())
++        .await
++}
++
++pub(crate) fn load_evidence_recovery_for_config(
++    config: &AgentdConfig,
++) -> Result<VerifiedEvidenceRecoveryFrontier, AgentdError> {
++    let (frontier, trust) = config.evidence_recovery_frontier_files().ok_or_else(|| {
++        recovery_required(
++            "PQ recovery frontier and signer trust are required before Agentd startup",
++        )
++    })?;
++    load_evidence_recovery_frontier(config.identity(), frontier, trust)
++}
++
+ /// Authenticate external recovery authority before opening or migrating SQLite.
+ pub(crate) fn load_evidence_recovery_frontier(
+     identity: &AgentdIdentity,
+@@ -203,17 +224,10 @@ impl VerifiedEvidenceRecoveryFrontier {
+         self,
+         identity: &AgentdIdentity,
+     ) -> Result<HeptaEvidenceStore, AgentdError> {
+-        let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
+-        let sqlite = SqliteConfig::from_sqlite_home(home);
+-        // A missing/old/partial image is not permission to initialize or migrate.
+-        // Bootstrap and migration must stage the exact image that the external
+-        // PQ recovery owner approved before ordinary Agentd startup.
+-        let observed = HeptaEvidenceStore::open_existing_read_only(&sqlite)
+-            .await
+-            .map_err(evidence_error)?;
+-        let checked = self.check_snapshot(&observed).await;
+-        observed.close().await;
+-        checked?;
++        self.check_existing_read_only(identity).await?;
++        let sqlite = SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(
++            &identity.home_root,
++        )?);
+         let store = HeptaEvidenceStore::open(&sqlite)
+             .await
+             .map_err(evidence_error)?;
+@@ -224,6 +238,21 @@ impl VerifiedEvidenceRecoveryFrontier {
+         Ok(store)
+     }
+ 
++    async fn check_existing_read_only(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {
++        // A missing/old/partial image is not permission to initialize or migrate.
++        // Bootstrap and migration must stage the exact image that the external
++        // PQ recovery owner approved before ordinary Agentd startup.
++        let sqlite = SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(
++            &identity.home_root,
++        )?);
++        let observed = HeptaEvidenceStore::open_existing_read_only(&sqlite)
++            .await
++            .map_err(evidence_error)?;
++        let checked = self.check_snapshot(&observed).await;
++        observed.close().await;
++        checked
++    }
++
+     pub(crate) async fn admit(self, store: &HeptaEvidenceStore) -> Result<(), AgentdError> {
+         self.check_snapshot(store).await?;
+         store
+diff --git a/codex-rs/hepta-agentd/src/evidence_frontier_tests.rs b/codex-rs/hepta-agentd/src/evidence_frontier_tests.rs
+index fb54040ef974c19280770d3c43a6de9fe2ef85ab..e484e49d3e389fc12446099177a032ce0de9e4e0 100644
+--- a/codex-rs/hepta-agentd/src/evidence_frontier_tests.rs
++++ b/codex-rs/hepta-agentd/src/evidence_frontier_tests.rs
+@@ -230,6 +230,51 @@ async fn recovery_frontier_pq_survives_store_close_and_reopen() -> Result<()> {
+     Ok(())
+ }
+ 
++#[tokio::test]
++async fn recovery_frontier_read_only_preflight_never_binds_or_changes_the_image() -> Result<()> {
++    let fixture = Fixture::new().await?;
++    fixture.store.close().await;
++    let path = fixture.identity.home_root.join(EVIDENCE_DATABASE_LINEAGE);
++    let before = std::fs::read(&path)?;
++    load_evidence_recovery_frontier(
++        &fixture.identity,
++        &fixture.frontier_file,
++        &fixture.trust_file,
++    )?
++    .check_existing_read_only(&fixture.identity)
++    .await?;
++    let sqlite = SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(
++        &fixture.identity.home_root,
++    )?);
++    let observed = HeptaEvidenceStore::open_existing_read_only(&sqlite).await?;
++    ensure!(observed.recovery_store_id().await?.is_none());
++    observed.close().await;
++    ensure!(std::fs::read(&path)? == before);
++
++    // A valid PQ signature for a different image must also fail without writing.
++    let mut frontier = fixture.frontier.clone();
++    frontier.snapshot.provider_effect_rows += 1;
++    frontier.signature_hex = hex(&fixture
++        .key
++        .sign_exact_message(&evidence_recovery_frontier_signing_bytes(&frontier)?)?);
++    write_json(&fixture.frontier_file, &serde_json::to_value(&frontier)?)?;
++    let error = load_evidence_recovery_frontier(
++        &fixture.identity,
++        &fixture.frontier_file,
++        &fixture.trust_file,
++    )?
++    .check_existing_read_only(&fixture.identity)
++    .await
++    .expect_err("read-only preflight accepted another image");
++    ensure!(
++        error
++            .to_string()
++            .contains("does not match the signed checkpoint")
++    );
++    ensure!(std::fs::read(&path)? == before);
++    Ok(())
++}
++
+ #[tokio::test]
+ async fn recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry() -> Result<()> {
+     use codex_hepta_fleet::AgentLifecycle;
+@@ -266,6 +311,14 @@ async fn recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry()
+     )?;
+     // No evidence/API/AuthBus flags: the ordinary App Server would still enable
+     // governance and open the same evidence lineage without the global gate.
++    let error = preflight_evidence_recovery(&config)
++        .await
++        .expect_err("ordinary preflight omitted its PQ recovery authority");
++    ensure!(
++        error
++            .to_string()
++            .contains("PQ recovery frontier and signer trust are required")
++    );
+     let error = crate::run(config, codex_arg0::Arg0DispatchPaths::default())
+         .await
+         .expect_err("ordinary startup omitted its PQ recovery authority");
+diff --git a/codex-rs/hepta-agentd/src/lib.rs b/codex-rs/hepta-agentd/src/lib.rs
+index 1d845cfdab9142f2efdeebe6e8f964f425856f6d..0163c93fe252e2f73ed4c1870229204a1a9c6c3d 100644
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -184,6 +184,7 @@ pub use config::HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV;
+ pub use error::AgentdError;
+ pub use evidence_frontier::EvidenceRecoveryFrontierV3;
+ pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
++pub use evidence_frontier::preflight_evidence_recovery;
+ pub use evidence_host::kernel_evidence_claims;
+ pub use intelligence_ingress::AgentdIntelligenceInvocationProviderV1;
+ pub use intelligence_ingress::AgentdIntelligenceInvocationV1;
+diff --git a/codex-rs/hepta-agentd/src/main.rs b/codex-rs/hepta-agentd/src/main.rs
+index 5162cdb700ce0c37d130920c29d743c76bbc42b5..01387f0f2fcaa4641b6851961c4f9961913e7cb5 100644
+--- a/codex-rs/hepta-agentd/src/main.rs
++++ b/codex-rs/hepta-agentd/src/main.rs
+@@ -187,6 +187,11 @@ fn main() -> anyhow::Result<()> {
+             ),
+         }
+ 
++        // Bootstrap can recover mutable learning history before entering run.
++        // Authenticate and compare the shared evidence image first, without
++        // writing it. The runtime repeats admission before opening its owners.
++        codex_hepta_agentd::preflight_evidence_recovery(&config).await?;
++
+         match (
+             plasticity_bootstrap_descriptor,
+             plasticity_bootstrap_descriptor_digest,
+diff --git a/codex-rs/hepta-agentd/src/runtime.rs b/codex-rs/hepta-agentd/src/runtime.rs
+index 36236d5f5c8b2053a474642c014e6a6d7e39c6ef..2931472d8378984e8a7c17872dd4f8255bf041f4 100644
+--- a/codex-rs/hepta-agentd/src/runtime.rs
++++ b/codex-rs/hepta-agentd/src/runtime.rs
+@@ -50,17 +50,7 @@ pub async fn run(
+     // The ordinary App Server enables governance even without the evidence API
+     // or AuthBus flags. Every Agentd startup therefore requires this shared-store
+     // recovery gate, including a host that appears to be new or empty.
+-    let (frontier, trust) = config.evidence_recovery_frontier_files().ok_or_else(|| {
+-        AgentdError::Invalid(
+-            "kernel.evidence recovery_required: PQ recovery frontier and signer trust are required before Agentd startup"
+-                .to_string(),
+-        )
+-    })?;
+-    let evidence_recovery = crate::evidence_frontier::load_evidence_recovery_frontier(
+-        config.identity(),
+-        frontier,
+-        trust,
+-    )?;
++    let evidence_recovery = crate::evidence_frontier::load_evidence_recovery_for_config(&config)?;
+     let automation_effect_host_file = config
+         .automation_effect_host_file()
+         .map(std::path::Path::to_path_buf);
+diff --git a/codex-rs/hepta-infer-worker-host/Cargo.toml b/codex-rs/hepta-infer-worker-host/Cargo.toml
+index 1d731623f6c1c937ba3a8c843c1be38b6b56d9ce..7bc85caa06ff80587496acb36fc7d1499fcb7b1c 100644
+--- a/codex-rs/hepta-infer-worker-host/Cargo.toml
++++ b/codex-rs/hepta-infer-worker-host/Cargo.toml
+@@ -44,6 +44,7 @@ sqlx = { workspace = true }
+ 
+ [dev-dependencies]
+ codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
++codex-hepta-evidence = { workspace = true }
+ codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
+ codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
+ codex-hepta-fleet = { workspace = true }
+diff --git a/codex-rs/hepta-infer-worker-host/src/bin/hepta-neural-agentd.rs b/codex-rs/hepta-infer-worker-host/src/bin/hepta-neural-agentd.rs
+index b7d93351cf035bc45f6b8c300edd19f8a42953c2..5d6835b5a995604fc96f6f996c92f1d0102a3fd1 100644
+--- a/codex-rs/hepta-infer-worker-host/src/bin/hepta-neural-agentd.rs
++++ b/codex-rs/hepta-infer-worker-host/src/bin/hepta-neural-agentd.rs
+@@ -3,6 +3,7 @@
+ #[cfg(target_os = "linux")]
+ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+     use codex_hepta_agentd::AgentdConfig;
++    use codex_hepta_agentd::preflight_evidence_recovery;
+     use codex_hepta_infer_worker_host::smollm_cognitive_host::SmolLmCognitiveCellHostInputsV2;
+     use codex_hepta_infer_worker_host::smollm_cognitive_host::SmolLmCognitiveHostInputsV1;
+     use codex_hepta_infer_worker_host::smollm_cognitive_host::prepare_smollm_cell_neural_agentd_v2;
+@@ -45,10 +46,12 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+         let mut path = None;
+         let mut digest = None;
+         let mut host_format = None;
++        let mut recovery_frontier = None;
++        let mut recovery_frontier_trust = None;
+         let mut args = std::env::args_os().skip(1);
+         while let Some(flag) = args.next() {
+             if flag == "--help" {
+-                println!("hepta-neural-agentd --host-config ABSOLUTE_JSON --host-config-sha256 HEX [--host-format owner-v1|cell-v2]\nUses the normal HEPTA_AGENT_* identity and original Agentd runtime. owner-v1 (default) requires the original hepta-smollm-cognitive-host-v1 file. cell-v2 requires hepta-smollm-cognitive-cell-host-v2 with independently pinned complete TCD1 and sidecar bytes. Both retain real product-qualified neural bootstrap v3 and independently operated Unix FinalUse admission. No model fallback or qualification is manufactured.");
++                println!("hepta-neural-agentd --host-config ABSOLUTE_JSON --host-config-sha256 HEX --evidence-recovery-frontier-file ABSOLUTE_JSON --evidence-recovery-frontier-trust-file ABSOLUTE_JSON [--host-format owner-v1|cell-v2]\nUses the normal HEPTA_AGENT_* identity and original Agentd runtime. owner-v1 (default) requires the original hepta-smollm-cognitive-host-v1 file. cell-v2 requires hepta-smollm-cognitive-cell-host-v2 with independently pinned complete TCD1 and sidecar bytes. Both require the same PQ evidence recovery admission before model preparation and retain real product-qualified neural bootstrap v3 and independently operated Unix FinalUse admission. No model fallback or qualification is manufactured.");
+                 return Ok(());
+             }
+             let value = args.next().ok_or_else(|| io::Error::other("missing neural host argument value"))?;
+@@ -59,12 +62,18 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+                     .parse::<Digest32>().map_err(io::Error::other)?);
+             } else if flag == "--host-format" && host_format.is_none() {
+                 host_format = Some(value.into_string().map_err(|_| io::Error::other("host format must be UTF-8"))?);
++            } else if flag == "--evidence-recovery-frontier-file" && recovery_frontier.is_none() {
++                recovery_frontier = Some(PathBuf::from(value));
++            } else if flag == "--evidence-recovery-frontier-trust-file" && recovery_frontier_trust.is_none() {
++                recovery_frontier_trust = Some(PathBuf::from(value));
+             } else {
+                 return Err(io::Error::other(format!("unknown or duplicate neural host flag {flag:?}")).into());
+             }
+         }
+         let path = path.ok_or_else(|| io::Error::other("--host-config is required"))?;
+         let digest = digest.ok_or_else(|| io::Error::other("--host-config-sha256 is required"))?;
++        let recovery_frontier = recovery_frontier.ok_or_else(|| io::Error::other("--evidence-recovery-frontier-file is required"))?;
++        let recovery_frontier_trust = recovery_frontier_trust.ok_or_else(|| io::Error::other("--evidence-recovery-frontier-trust-file is required"))?;
+         let host_format = host_format.as_deref().unwrap_or("owner-v1");
+         // Only protected byte snapshots are decoded here. Qualification and
+         // selected parameter FDs still come from the original runtime owners.
+@@ -73,7 +82,11 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+             "cell-v2" => HostInputs::Cell(load_smollm_cognitive_cell_host_inputs_v2(&path, digest).map_err(io::Error::other)?),
+             _ => return Err(io::Error::other("unsupported neural host format").into()),
+         };
+-        let config = AgentdConfig::from_process_environment()?;
++        let config = AgentdConfig::from_process_environment()?
++            .with_evidence_recovery_frontier_files(recovery_frontier, recovery_frontier_trust);
++        // The original model preparation can open its inference journal and
++        // claim FinalUse. Admit the existing evidence image before those owners.
++        preflight_evidence_recovery(&config).await?;
+         let codex_home = AbsolutePathBuf::from_absolute_path(&config.identity().home_root)?;
+         codex_utils_home_dir::set_process_codex_home_override(codex_home)?;
+         let prepared = match inputs {
+diff --git a/codex-rs/hepta-infer-worker-host/src/smollm_agentd_recovery_tests.rs b/codex-rs/hepta-infer-worker-host/src/smollm_agentd_recovery_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..443232c4298c1608f9abcb455371d3a04ced7052
+--- /dev/null
++++ b/codex-rs/hepta-infer-worker-host/src/smollm_agentd_recovery_tests.rs
+@@ -0,0 +1,107 @@
++//! Test custody stages one initial image. Restart retains its original signed
++//! checkpoint and cannot bless a modified or restored evidence database.
++
++use super::TestResult;
++use super::issuer_error;
++use codex_hepta_agentd::AgentdConfig;
++use codex_hepta_agentd::AgentdIdentity;
++use codex_hepta_agentd::EvidenceRecoveryFrontierV3;
++use codex_hepta_agentd::evidence_recovery_frontier_signing_bytes;
++use codex_hepta_contracts::pq_auth::ML_DSA_65_SIGNATURE_BYTES;
++use codex_hepta_evidence::HeptaEvidenceStore;
++use codex_state::SqliteConfig;
++use codex_utils_absolute_path::AbsolutePathBuf;
++use serde_json::json;
++use std::fs::OpenOptions;
++use std::io::Write;
++use std::os::unix::fs::OpenOptionsExt;
++use std::path::PathBuf;
++use std::time::SystemTime;
++use std::time::UNIX_EPOCH;
++
++fn recovery_directory(identity: &AgentdIdentity) -> TestResult<PathBuf> {
++    Ok(identity
++        .fleet_root
++        .parent()
++        .ok_or("fixture fleet parent is missing")?
++        .join("evidence-recovery"))
++}
++
++pub(super) fn stage_initial(config: AgentdConfig) -> TestResult<AgentdConfig> {
++    let directory = recovery_directory(config.identity())?;
++    // create_dir fails on reuse, including a partial previous staging attempt.
++    std::fs::create_dir(&directory)?;
++    let directory = directory.canonicalize()?;
++    let home = AbsolutePathBuf::from_absolute_path(&config.identity().home_root)?;
++    let snapshot = std::thread::spawn(
++        move || -> Result<_, Box<dyn std::error::Error + Send + Sync>> {
++            tokio::runtime::Builder::new_current_thread()
++                .enable_all()
++                .build()?
++                .block_on(async {
++                    let store =
++                        HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home)).await?;
++                    let snapshot = store.recovery_snapshot().await?;
++                    store.close().await;
++                    Ok(snapshot)
++                })
++        },
++    )
++    .join()
++    .map_err(|_| "fixture evidence staging panicked")?
++    .map_err(issuer_error)?;
++    let (key, _) = crate::authority_trust_unix::tests::key(/*seed*/ 62).map_err(issuer_error)?;
++    let mut frontier = EvidenceRecoveryFrontierV3 {
++        schema_version: 3,
++        authentication_profile: "ml_dsa65_v2".into(),
++        store_id: format!("store:neural-fixture:{}", config.identity().agent_id),
++        frontier_generation: 1,
++        snapshot,
++        source_commit: "e".repeat(40),
++        source_tree: "f".repeat(40),
++        created_at_unix_ms: u64::try_from(
++            SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis(),
++        )?,
++        signer_principal_id: "issuer:neural-fixture-recovery".into(),
++        signer_key_epoch: 1,
++        signer_public_key_id_hex: hex(&key.public_key_id()),
++        signature_hex: "00".repeat(ML_DSA_65_SIGNATURE_BYTES),
++    };
++    frontier.signature_hex =
++        hex(&key.sign_exact_message(&evidence_recovery_frontier_signing_bytes(&frontier)?)?);
++    for (name, value) in [
++        ("frontier.json", serde_json::to_value(&frontier)?),
++        (
++            "trust.json",
++            json!({
++                "schemaVersion": 2, "authenticationProfile": "ml_dsa65_v2",
++                "storeId": frontier.store_id, "minimumFrontierGeneration": 1,
++                "signerPrincipalId": frontier.signer_principal_id, "signerKeyEpoch": 1,
++                "publicSpkiHex": hex(key.public_spki()), "publicKeyIdHex": hex(&key.public_key_id()),
++                "revoked": false
++            }),
++        ),
++    ] {
++        OpenOptions::new()
++            .write(true)
++            .create_new(true)
++            .mode(0o600)
++            .open(directory.join(name))?
++            .write_all(&serde_json::to_vec(&value)?)?;
++    }
++    retain_existing(config)
++}
++
++pub(super) fn retain_existing(config: AgentdConfig) -> TestResult<AgentdConfig> {
++    let directory = recovery_directory(config.identity())?.canonicalize()?;
++    // No database read or signer call is allowed on restart. The normal
++    // preflight/run path compares the retained checkpoint with current bytes.
++    Ok(config.with_evidence_recovery_frontier_files(
++        directory.join("frontier.json"),
++        directory.join("trust.json"),
++    ))
++}
++
++fn hex(bytes: &[u8]) -> String {
++    bytes.iter().map(|byte| format!("{byte:02x}")).collect()
++}
+diff --git a/codex-rs/hepta-infer-worker-host/src/smollm_initial_agentd_tests.rs b/codex-rs/hepta-infer-worker-host/src/smollm_initial_agentd_tests.rs
+index 2261c6ff4311634132014ffc63f19eb44b8a1b75..2b8d02fdc93a82f6e6b1c2c8acbef1357f1b4436 100644
+--- a/codex-rs/hepta-infer-worker-host/src/smollm_initial_agentd_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/smollm_initial_agentd_tests.rs
+@@ -178,7 +178,7 @@ pub(super) fn restart_stopped_config(
+         stopped.generation,
+         AgentLifecycle::Starting,
+     )?;
+-    Ok(AgentdConfig::load(
++    let config = AgentdConfig::load(
+         identity.fleet_root.clone(),
+         identity.agent_id.clone(),
+         starting.generation,
+@@ -186,7 +186,8 @@ pub(super) fn restart_stopped_config(
+         identity.run_root.clone(),
+         identity.home_root.clone(),
+         identity.workspace.clone(),
+-    )?)
++    )?;
++    super::evidence_recovery::retain_existing(config)
+ }
+ 
+ #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+@@ -252,6 +253,7 @@ async fn session(
+     if !(1..=6).contains(&reads) {
+         return Err("ordinary read count must fit original journal".into());
+     }
++    codex_hepta_agentd::preflight_evidence_recovery(&config).await?;
+     let codex_executable = codex_utils_cargo_bin::cargo_bin("codex")?.canonicalize()?;
+     let identity = config.identity().clone();
+     let parameter = material.manifest().content_digest;
+diff --git a/codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs b/codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs
+index b3afba4346e707da77d905754f901898ccc6c0fe..9cd45cabc7539a1810eb3c5afa0055633b67a7d8 100644
+--- a/codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs
+@@ -21,6 +21,8 @@ use std::os::unix::fs::PermissionsExt;
+ 
+ type TestResult<T> = Result<T, Box<dyn Error>>;
+ 
++#[path = "smollm_agentd_recovery_tests.rs"]
++mod evidence_recovery;
+ #[path = "smollm_initial_pq_inputs_tests.rs"]
+ mod pq_inputs;
+ use pq_inputs::archive_pq_authority as archive_authority;
+@@ -442,7 +444,7 @@ impl Fixture {
+         )?;
+         fs::create_dir_all(record.layout.home_root())?;
+         fs::create_dir_all(record.layout.run_root())?;
+-        Ok(AgentdConfig::load(
++        let config = AgentdConfig::load(
+             root.join("fleet"),
+             owner,
+             /*spawn_generation*/ 1,
+@@ -450,7 +452,8 @@ impl Fixture {
+             record.layout.run_root().to_path_buf(),
+             record.layout.home_root().to_path_buf(),
+             workspace,
+-        )?)
++        )?;
++        evidence_recovery::stage_initial(config)
+     }
+ 
+     fn withdraw(&mut self) -> TestResult<()> {
+diff --git a/codex-rs/hepta-infer-worker-host/src/smollm_study_ordinary_tests.rs b/codex-rs/hepta-infer-worker-host/src/smollm_study_ordinary_tests.rs
+index 055f2d53076e05be2924eeaddfb96635eacd0b79..8b724e5ba0e923e57fc69e7d718b41ba4b3ef5ae 100644
+--- a/codex-rs/hepta-infer-worker-host/src/smollm_study_ordinary_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/smollm_study_ordinary_tests.rs
+@@ -153,6 +153,7 @@ pub(super) async fn read_child(
+     actions: BTreeMap<StableId, String>,
+     root: &Path,
+ ) -> TestResult<Value> {
++    codex_hepta_agentd::preflight_evidence_recovery(&config).await?;
+     let identity = config.identity().clone();
+     let parameter: Digest32 = installed.child["file_sha256"]
+         .as_str()

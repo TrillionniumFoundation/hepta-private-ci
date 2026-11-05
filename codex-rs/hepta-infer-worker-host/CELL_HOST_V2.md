@@ -9,16 +9,18 @@ qualify the separate #4368 PQ branch.
 ## Explicit format and original owners
 
 The existing command accepts `--host-format cell-v2` alongside its independently
-authorized `--host-config` and `--host-config-sha256`. Its default `owner-v1`
-retains the original host file. Unknown and duplicate format arguments fail.
-The two formats use distinct strict schemas; an old host-v1 JSON file cannot
-satisfy Cell-v2 admission.
+authorized `--host-config` and `--host-config-sha256`. Its default `owner-v2`
+requires the runtime-bound `hepta-smollm-cognitive-host-v2` file. Unknown,
+duplicate and obsolete `owner-v1` format arguments fail. The Cell container
+retains its own v2 schema and embeds a self-versioned owner-v2 object; an old
+owner-v1 JSON file cannot satisfy either current route.
 
 An explicitly selected Cell-v2 daemon must have a current executable path that
 can be reopened to the same device/inode as `/proc/self/exe`. This narrow check
 runs after original helper dispatch but before dotenv, PATH aliases, qualification
-or any model owner. The original `owner-v1` and helper dispatch behavior stays
-unchanged. It grants no new process or sandbox permission.
+or any model owner. The `owner-v2` route retains the original non-Cell owner
+dispatch, and helper dispatch keeps its original priority. This grants no new
+process or sandbox permission.
 
 Anonymous sealed ELF execution does not currently meet this requirement: its
 `current_exe()` path cannot supply the original aliases and later sandbox re-execs.
@@ -33,7 +35,7 @@ The new `hepta-smollm-cognitive-cell-host-v2` object contains these exact fields
 | Field | Meaning |
 | --- | --- |
 | `schema` | `hepta-smollm-cognitive-cell-host-v2` |
-| `owner` | Unchanged complete `hepta-smollm-cognitive-host-v1` object |
+| `owner` | Complete self-versioned `hepta-smollm-cognitive-host-v2` object with required runtime snapshot pin |
 | `sidecar` | `{path, sha256}` for the existing controlled eleven-object sidecar |
 | `dependency_closure` | `{path, sha256}` for canonical TCD1 bytes |
 | `dependency_closure_id` | TCD1 domain-separated content id, independently pinned by the host owner |
@@ -44,6 +46,12 @@ and FinalUse issuer configuration. Protected files use the existing bounded
 regular-file, canonical-path, ownership, permissions and link-count checks.
 Sidecars are at most 65,536 bytes; TCD1 objects are at most 1,048,576 bytes. The
 decoder holds owned byte snapshots and opens no inference journal or model.
+
+The owner-v2 worker also requires an independently pinned cold-runtime snapshot.
+Its interpreter, installed files, import policy, execution-profile namespace and
+known limitations are specified in [Python runtime contract v2](PYTHON_RUNTIME_CONTRACT_V2.md).
+The selected owner must authorize the new execution-profile digest; an old model
+qualification does not acquire this runtime binding by changing its JSON label.
 
 Preparation still replays the original product-qualified descriptor and CURRENT
 selector and reads parameters from the selected descriptor FD. Only then does
@@ -103,8 +111,9 @@ make #4491 and #4368 an accepted joint PQ source pair.
 The new fixture is an independent Python-generated TCD1 vector with synthetic
 bytes for the exact eleven-file roster. Rust reconstructs it and rejects every
 mutated byte, missing member, wrong profile/generation and README case alias.
-Protected-file tests cover separate v1/v2 decoding, pinned-byte mismatch, missing
-or unknown fields, operation identity, and symlinks. Real CLI subprocess controls
+Protected-file tests cover distinct owner-v2/Cell-v2 decoding, obsolete owner-v1
+rejection, pinned-byte mismatch, missing or unknown fields, operation identity,
+and symlinks. Real CLI subprocess controls
 exercise format dispatch and strict rejection before any fleet/model owner.
 The actual CLI image control copies the native daemon into a sealed memfd and
 checks both `cell-v2 --help` and a cold config reject before creating aliases.

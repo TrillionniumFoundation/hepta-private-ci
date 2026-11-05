@@ -10,7 +10,7 @@ use anyhow::Result;
 use anyhow::ensure;
 use app_test_support::MockResponsesConfig;
 use codex_hepta_agentd::AgentdError;
-use codex_hepta_agentd::EvidenceRecoveryFrontierV1;
+use codex_hepta_agentd::EvidenceRecoveryFrontierV4;
 use codex_hepta_agentd::KernelEvidenceAppendIngress;
 use codex_hepta_agentd::KernelEvidenceCandidateV1;
 use codex_hepta_agentd::KernelEvidenceQueryV1;
@@ -20,6 +20,9 @@ use codex_hepta_agentd::kernel_evidence_claims;
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_contracts::pq_auth::ML_DSA_65_SIGNATURE_BYTES;
+use codex_hepta_contracts::pq_auth::PqNativeSigningKey;
+use codex_hepta_contracts::pq_auth::ml_dsa_65_key_id_from_spki;
 use codex_hepta_evidence::EvidenceCandidateV1;
 use codex_hepta_evidence::EvidenceClaimClassV1;
 use codex_hepta_evidence::EvidenceDispositionV1;
@@ -94,7 +97,21 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         ],
     )?;
 
-    fleet.start_with_evidence_trust_file(&agent, &trust_file)?;
+    let sqlite = SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(
+        agent.layout.home_root(),
+    )?);
+    let store = HeptaEvidenceStore::open(&sqlite).await?;
+    let snapshot = store.recovery_snapshot().await?;
+    store.close().await;
+    let external = tempfile::tempdir()?;
+    let (frontier_file, frontier_trust_file) =
+        write_recovery_frontier(external.path(), "store:kernel-evidence-product", snapshot)?;
+    fleet.start_with_evidence_recovery(
+        &agent,
+        &trust_file,
+        &frontier_file,
+        &frontier_trust_file,
+    )?;
     let (control, _) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
     let capabilities = control.capabilities().await?;
     ensure!(
@@ -586,6 +603,20 @@ async fn signed_recovery_frontier_allows_exact_current_database() -> Result<()> 
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn signed_recovery_frontier_rejects_valid_older_database_image() -> Result<()> {
+    check_recovery_rollback(RecoveryRollbackFixture::Qualification).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn signed_recovery_frontier_rejects_effect_only_database_rollback() -> Result<()> {
+    check_recovery_rollback(RecoveryRollbackFixture::ProviderEffect).await
+}
+
+enum RecoveryRollbackFixture {
+    Qualification,
+    ProviderEffect,
+}
+
+async fn check_recovery_rollback(fixture: RecoveryRollbackFixture) -> Result<()> {
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(RECOVERY_OLD_AGENT_ID, "kernel-evidence-recovery-old")?;
     let model = core_test_support::responses::start_mock_server().await;
@@ -620,27 +651,46 @@ async fn signed_recovery_frontier_rejects_valid_older_database_image() -> Result
     std::fs::copy(&database_path, &old_image)?;
 
     let current_store = HeptaEvidenceStore::open(&sqlite).await?;
-    let envelope = base_evidence(
-        "evidence:recovery-newer",
-        EvidenceCandidateV1 {
-            candidate_id: "candidate:kernel-evidence-recovery-old".to_string(),
-            source_commit: "c".repeat(40),
-            source_tree: "d".repeat(40),
-        },
-        EvidenceClaimClassV1::ExactSource,
-        EvidenceIssuerRoleV1::Architecture,
-        now_ms()?,
-        None,
-        json!({"frontier": "newer"}),
-    )?;
-    append_direct_evidence(
-        &current_store,
-        ARCHITECTURE_ISSUER,
-        &architecture_key,
-        1,
-        &envelope,
-    )
-    .await?;
+    match fixture {
+        RecoveryRollbackFixture::Qualification => {
+            let envelope = base_evidence(
+                "evidence:recovery-newer",
+                EvidenceCandidateV1 {
+                    candidate_id: "candidate:kernel-evidence-recovery-old".to_string(),
+                    source_commit: "c".repeat(40),
+                    source_tree: "d".repeat(40),
+                },
+                EvidenceClaimClassV1::ExactSource,
+                EvidenceIssuerRoleV1::Architecture,
+                now_ms()?,
+                None,
+                json!({"frontier": "newer"}),
+            )?;
+            append_direct_evidence(
+                &current_store,
+                ARCHITECTURE_ISSUER,
+                &architecture_key,
+                1,
+                &envelope,
+            )
+            .await?;
+        }
+        RecoveryRollbackFixture::ProviderEffect => {
+            let intent = codex_hepta_contracts::ProviderEffectIntent::new(
+                codex_hepta_contracts::ProviderEffectKey::for_operation(
+                    "provider:recovery",
+                    "run",
+                    "step",
+                )
+                .map_err(|error| anyhow::anyhow!("invalid provider effect key: {error:?}"))?,
+                Sha256Digest::for_bytes(b"original external effect"),
+            );
+            current_store.append_provider_effect_intent(&intent).await?;
+            current_store
+                .mark_provider_effect_indeterminate(&intent.key, "provider_result_unknown")
+                .await?;
+        }
+    }
     let current_snapshot = current_store.recovery_snapshot().await?;
     current_store.close().await;
 
@@ -651,6 +701,7 @@ async fn signed_recovery_frontier_rejects_valid_older_database_image() -> Result
     )?;
 
     std::fs::copy(&old_image, &database_path)?;
+    let restored_image_bytes = std::fs::read(&database_path)?;
     fleet.start_with_evidence_recovery(
         &agent,
         &trust_file,
@@ -665,6 +716,10 @@ async fn signed_recovery_frontier_rejects_valid_older_database_image() -> Result
     ensure!(
         format!("{failure:#}").contains("recovery_required"),
         "older database failed without the recovery-required oracle: {failure:#}"
+    );
+    ensure!(
+        std::fs::read(&database_path)? == restored_image_bytes,
+        "rejected recovery rewrote the restored database before admission"
     );
     Ok(())
 }
@@ -801,11 +856,15 @@ async fn append_direct_evidence(
 fn write_recovery_frontier(
     directory: &Path,
     store_id: &str,
-    snapshot: codex_hepta_evidence::EvidenceRecoverySnapshotV1,
+    snapshot: codex_hepta_evidence::EvidenceRecoverySnapshotV3,
 ) -> Result<(std::path::PathBuf, std::path::PathBuf)> {
-    let signer_key = SigningKey::from_bytes(&[63; 32]);
-    let mut frontier = EvidenceRecoveryFrontierV1 {
-        schema_version: 1,
+    let directory = directory.canonicalize()?;
+    let seed = [63; 32].into();
+    let spki = PqNativeSigningKey::public_spki_from_seed(&seed);
+    let signer_key = PqNativeSigningKey::from_owned_seed(seed, ml_dsa_65_key_id_from_spki(&spki)?)?;
+    let mut frontier = EvidenceRecoveryFrontierV4 {
+        schema_version: 4,
+        authentication_profile: "ml_dsa65_v2".into(),
         store_id: store_id.to_string(),
         frontier_generation: 1,
         snapshot,
@@ -814,11 +873,12 @@ fn write_recovery_frontier(
         created_at_unix_ms: now_ms()?,
         signer_principal_id: RECOVERY_SIGNER.to_string(),
         signer_key_epoch: 1,
-        signature_hex: "00".repeat(64),
+        signer_public_key_id_hex: hex(&signer_key.public_key_id()),
+        signature_hex: "00".repeat(ML_DSA_65_SIGNATURE_BYTES),
     };
-    frontier.signature_hex = hex(&signer_key
-        .sign(&evidence_recovery_frontier_signing_bytes(&frontier)?)
-        .to_bytes());
+    frontier.signature_hex =
+        hex(&signer_key
+            .sign_exact_message(&evidence_recovery_frontier_signing_bytes(&frontier)?)?);
 
     let frontier_file = directory.join("evidence-recovery-frontier.json");
     write_private_json(&frontier_file, &frontier)?;
@@ -826,10 +886,14 @@ fn write_recovery_frontier(
     write_private_json(
         &trust_file,
         &json!({
-            "schemaVersion": 1,
+            "schemaVersion": 2,
+            "authenticationProfile": "ml_dsa65_v2",
+            "storeId": store_id,
+            "minimumFrontierGeneration": 1,
             "signerPrincipalId": RECOVERY_SIGNER,
             "signerKeyEpoch": 1,
-            "publicKeyHex": hex(signer_key.verifying_key().as_bytes()),
+            "publicSpkiHex": hex(signer_key.public_spki()),
+            "publicKeyIdHex": hex(&signer_key.public_key_id()),
             "revoked": false
         }),
     )?;

@@ -1,0 +1,43 @@
+{
+  "started_utc": "2026-11-05T01:16:59.834168+00:00",
+  "source_checkout": "/workspace/scratch/0bc97e9264aa/hepta-pq-effect",
+  "exact_checkout": "/workspace/scratch/822cc50e24f0/authority-recovery/runtime-4812-exact",
+  "base_commit": "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52",
+  "steps": [
+    {
+      "command": [
+        "git",
+        "-C",
+        "/workspace/scratch/0bc97e9264aa/hepta-pq-effect",
+        "ls-tree",
+        "-r",
+        "--long",
+        "-z",
+        "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52"
+      ],
+      "cwd": null,
+      "exit_code": 0,
+      "stdout": "[tree inventory summarized; no source content]",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "/workspace/scratch/0bc97e9264aa/hepta-pq-effect",
+        "/workspace/scratch/822cc50e24f0/authority-recovery/runtime-4812-exact"
+      ],
+      "cwd": null,
+      "exit_code": 128,
+      "stdout": "",
+      "stderr": "Cloning into '/workspace/scratch/822cc50e24f0/authority-recovery/runtime-4812-exact'...\nremote: warning: lazy fetching disabled; some objects may not be available        \nremote: fatal: could not fetch 53d232e4be368e077be30a743115a56a828fc9c4 from promisor remote        \nerror: git upload-pack: git-pack-objects died with error.\nfatal: git upload-pack: aborting due to possible repository corruption on the remote side.\nremote: aborting due to possible repository corruption on the remote side.\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\n"
+    }
+  ],
+  "native_tests": "NOT_RUN",
+  "source_inventory": {
+    "files": 11258,
+    "blob_bytes": 142767844
+  }
+}

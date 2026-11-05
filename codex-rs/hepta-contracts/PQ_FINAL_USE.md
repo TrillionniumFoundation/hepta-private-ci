@@ -13,6 +13,33 @@ single-entry token, write-ahead ordering and post-persistence expiry check.
 Successful verification cannot manufacture `VerifiedUseToken` outside this
 owner. A failed or uncertain effect still consumes its nonce.
 
+Every token, consumer, effect and dispatch boundary also compares the current
+revocation head with the exact head authenticated at claim time. A revision
+advance requires a fresh claim even when the old grant was not explicitly
+revoked. The stale claim's nonce remains consumed.
+
+Every final effect entry reloads its configured external frontier while holding
+its original state mutex. The complete profile-bound state digest must match,
+including consumed nonces and revocation state; an epoch/revision match alone
+is insufficient. Divergence or an unavailable frontier permanently fences that
+owner. Local observability getters remain local; claim and revocation updates
+retain their original atomic external CAS. An external advance visible to this
+entry observation fences the old owner before its token can be admitted.
+Refusal never refunds its nonce. The frontier implementation must provide a
+current, authenticated observation; a cached response cannot establish current
+authorization. Its synchronous call must also be bounded and must not reenter
+the same owner while the state mutex is held.
+This adds one external load and a complete frontier digest computation at each
+PQ effect entry. No throughput or latency qualification is implied.
+
+The external observation precedes the existing clock and local effect-entry
+checks. It does not make frontier observation and an external provider effect
+one distributed transaction. Another owner can advance the frontier after this
+observation, including during the protected clock call and before local effect
+entry. Closing that distributed race requires a shared admission lease or
+transaction; this check neither supplies one nor cancels an admitted remote
+effect. The existing in-flight effect and reconciliation semantics remain.
+
 The canonical implementation is RustCrypto `ml-dsa = 0.1.1`. The pure FIPS 204
 mode has an empty algorithm context; the complete versioned Hepta application
 domain is inside the signed message. The SPKI grammar, key-ID domain,
@@ -41,6 +68,13 @@ Each key ring is bounded to eight distinct keys and inclusive authority-epoch
 windows. A deployment must additionally keep issuer, independent approver,
 revocation distributor, clock and frontier identities separate. Merely giving
 one key several role names does not establish independent authorization.
+
+The ordinary Unix `UnixFinalUseAuthorizer::open` entry requires the explicit
+`ml_dsa65_v2` profile. An omitted or classical profile is refused before any
+issuer/clock/frontier contact or durable authority opening. The explicit
+low-level classical constructors remain available for compatibility analysis;
+they are not a fallback in the ordinary configuration path. Existing classical
+snapshots are not implicitly migrated into PQ authorization.
 
 The ordinary Unix final-use configuration checks its issuer and revocation
 rings and its clock and frontier keys before contacting external services or

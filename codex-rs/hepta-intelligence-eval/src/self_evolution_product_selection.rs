@@ -85,6 +85,7 @@ pub fn prepare_self_evolution_product_selection_v1(
     let mut prepared = prepare_self_evolution_selection_v1(
         policy,
         request,
+        qualification,
         evaluation_bundle,
         metric_roles,
         evaluation_evidence,

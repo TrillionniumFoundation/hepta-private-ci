@@ -47,7 +47,7 @@ fn current(fixture: &Fixture) -> Value {
     let trust = &fixture.trust;
     let head = &fixture.head;
     let witness = &head.witness;
-    json!({"root":fixture.root.join("artifacts"),"trust":{"registry_id":trust.registry_id.as_str(),
+    json!({"authentication_profile":head.signature.profile(),"root":fixture.root.join("artifacts"),"trust":{"registry_id":trust.registry_id.as_str(),
         "withdrawal_scope_digest":trust.withdrawal_scope_digest.to_string(),"minimum_registry_generation":trust.minimum_registry_generation.get(),
         "genesis_predecessor_head_digest":trust.genesis_predecessor_head_digest.to_string(),"minimum_authority_epoch":trust.minimum_authority_epoch,
         "writer_signers":trust.writer_signers.iter().map(signer).collect::<Vec<_>>(),"head_signers":trust.head_signers.iter().map(signer).collect::<Vec<_>>()},
@@ -73,6 +73,16 @@ pub(super) fn install(
     actions: BTreeMap<StableId, String>,
     qualified: evaluation::Qualified,
 ) -> TestResult<Installed> {
+    if fixture.head.signature.profile() != LearningAuthenticationProfile::MlDsa65V2
+        || roles.verifier.authentication_profile() != LearningAuthenticationProfile::MlDsa65V2
+        || ledger.authentication_profile() != LearningAuthenticationProfile::MlDsa65V2
+    {
+        return Err(
+            "ordinary study installation requires PQ CURRENT, role evidence and training history"
+                .into(),
+        );
+    }
+    let pq_activation = roles.pq_activation()?;
     let parent = read_pin(&trained["parent"])?;
     let training_data = read_pin(&trained["training_data"])?;
     let consumption = read_pin(&trained["training_consumption"])?;
@@ -131,7 +141,7 @@ pub(super) fn install(
     )?;
     let selector = roles.sign(
         /*index*/ 3,
-        &eval::selection_signing_payload_v1(prepared.receipt())?,
+        &eval::selection_signing_payload_v2(prepared.receipt())?,
     );
     let admitted =
         eval::admit_self_evolution_selection_v1(prepared, &selector, &roles.verifier, now())?;
@@ -381,7 +391,8 @@ pub(super) fn install(
     let descriptor = root.join("child-bootstrap.json");
     let descriptor_pin = save(
         &descriptor,
-        &json!({"schema":"hepta.agentd.cognitive-bootstrap.v3","profile":"published_neural_product_qualification_v1",
+        &json!({"schema":"hepta.agentd.cognitive-bootstrap.pq.v4","profile":"published_neural_product_qualification_pq_v2",
+        "authentication_profile":"ml_dsa65_v2","pq_learning_activation":pq_activation,
         "agent_id":config.identity().agent_id.as_str(),"spawn_generation":config.identity().spawn_generation,
         "snapshot_path":snapshot,"payload_path":payload,"selected":PinnedCandidateSpecRaw::from(PinnedCandidateSpec { manifest,registry_receipt:receipt }),
         "model_pin":{"payload_digest":model.payload_digest.to_string(),"objective_digest":model.objective_digest.to_string(),"dataset_digest":model.dataset_digest.to_string(),

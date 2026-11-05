@@ -1,6 +1,7 @@
 //! Real named-owner publication, independent selector and original Unix issuer.
 //! Controlled test keys establish no product enrollment or efficacy.
 use super::*;
+use codex_hepta_contracts::pq_auth::PqNativeSigningKey;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
@@ -19,6 +20,13 @@ use std::fs;
 use std::os::unix::fs::PermissionsExt;
 
 type TestResult<T> = Result<T, Box<dyn Error>>;
+
+#[path = "smollm_agentd_recovery_tests.rs"]
+mod evidence_recovery;
+#[path = "smollm_initial_pq_inputs_tests.rs"]
+mod pq_inputs;
+use pq_inputs::archive_pq_authority as archive_authority;
+use pq_inputs::ordinary_inputs as inputs;
 fn issuer_error(error: Box<dyn Error + Send + Sync>) -> Box<dyn Error> {
     error
 }
@@ -29,31 +37,76 @@ fn digest(s: &str) -> Digest32 {
     Digest32::of_bytes(s.as_bytes())
 }
 
+enum FixtureSigningKey {
+    Classical(Box<SigningKey>),
+    Pq(Box<PqNativeSigningKey>),
+}
+
+impl FixtureSigningKey {
+    fn new(profile: LearningAuthenticationProfile, seed: u8) -> TestResult<Self> {
+        match profile {
+            LearningAuthenticationProfile::ClassicalV1 => Ok(Self::Classical(Box::new(
+                SigningKey::from_bytes(&[seed; 32]),
+            ))),
+            LearningAuthenticationProfile::MlDsa65V2 => {
+                crate::authority_trust_unix::tests::key(seed)
+                    .map(|(key, _)| Self::Pq(Box::new(key)))
+                    .map_err(issuer_error)
+            }
+        }
+    }
+
+    fn verifying_key(&self) -> LearningVerificationKey {
+        match self {
+            Self::Classical(key) => key.verifying_key().to_bytes().into(),
+            Self::Pq(key) => LearningVerificationKey::MlDsa65V2(key.public_spki().to_vec()),
+        }
+    }
+
+    fn signature_template(&self) -> LearningSignature {
+        match self {
+            Self::Classical(_) => [0; 64].into(),
+            Self::Pq(_) => LearningSignature::MlDsa65V2(Vec::new()),
+        }
+    }
+
+    fn sign(&self, bytes: &[u8]) -> TestResult<LearningSignature> {
+        match self {
+            Self::Classical(key) => Ok(key.sign(bytes).to_bytes().into()),
+            Self::Pq(key) => Ok(LearningSignature::MlDsa65V2(
+                key.sign_exact_message(bytes)?.to_vec(),
+            )),
+        }
+    }
+}
+
 struct Fixture {
     root: PathBuf,
     service: LearningArtifactOwnerService,
     trust: ArtifactOwnerTrustV1,
     head: SignedCurrentArtifactHeadV1,
-    owner_key: SigningKey,
-    selector_key: SigningKey,
+    owner_key: FixtureSigningKey,
+    selector_key: FixtureSigningKey,
     now: u64,
 }
 
 impl Fixture {
     fn new(root: PathBuf, bytes: &[u8]) -> TestResult<Self> {
-        Self::with_profile(
+        Self::with_authentication(
             root,
             bytes,
             "561414aec8b51f2a18ae3948dd44a321f924b1e12961a8e0139774b42387fcf0".parse()?,
+            digest("initial-material-without-efficacy"),
+            LearningAuthenticationProfile::MlDsa65V2,
         )
     }
 
-    fn with_profile(
+    fn with_pq_profile(
         root: PathBuf,
         bytes: &[u8],
         compatibility_digest: Digest32,
     ) -> TestResult<Self> {
-        Self::with_study_objective(
+        Self::with_pq_study_objective(
             root,
             bytes,
             compatibility_digest,
@@ -61,16 +114,32 @@ impl Fixture {
         )
     }
 
-    fn with_study_objective(
+    fn with_pq_study_objective(
         root: PathBuf,
         bytes: &[u8],
         compatibility_digest: Digest32,
         objective: Digest32,
     ) -> TestResult<Self> {
+        Self::with_authentication(
+            root,
+            bytes,
+            compatibility_digest,
+            objective,
+            LearningAuthenticationProfile::MlDsa65V2,
+        )
+    }
+
+    fn with_authentication(
+        root: PathBuf,
+        bytes: &[u8],
+        compatibility_digest: Digest32,
+        objective: Digest32,
+        profile: LearningAuthenticationProfile,
+    ) -> TestResult<Self> {
         fs::create_dir(&root)?;
         let now = initial_now_seconds()?;
-        let owner_key = SigningKey::from_bytes(&[71; 32]);
-        let selector_key = SigningKey::from_bytes(&[72; 32]);
+        let owner_key = FixtureSigningKey::new(profile, /*seed*/ 71)?;
+        let selector_key = FixtureSigningKey::new(profile, /*seed*/ 72)?;
         let scope = DatasetWithdrawalScopeV1 {
             authority_domain_id: id("initial-test-authority"),
             registry_id: id("initial-test-registry"),
@@ -80,7 +149,7 @@ impl Fixture {
         let scope_digest = withdrawals.scope_digest().unwrap();
         let signer = TrustedArtifactSignerV1 {
             signer_id: id("original-owner"),
-            verifying_key: owner_key.verifying_key().to_bytes().into(),
+            verifying_key: owner_key.verifying_key(),
             minimum_authority_epoch: 1,
             maximum_authority_epoch: 9,
             valid_from: now - 1,
@@ -102,14 +171,14 @@ impl Fixture {
             registry_id: trust.registry_id.clone(),
             withdrawal_scope_digest: scope_digest,
             signer_id: id("original-owner"),
-            signing_key_digest: Digest32::of_bytes(&owner_key.verifying_key().to_bytes()),
+            signing_key_digest: Digest32::of_bytes(&owner_key.verifying_key()),
             authority_epoch: 1,
             lease_generation: 1,
             issued_at: now,
             expires_at: now + 3600,
-            signature: [0; 64].into(),
+            signature: owner_key.signature_template(),
         };
-        lease.signature = owner_key.sign(&lease.signing_bytes()).to_bytes().into();
+        lease.signature = owner_key.sign(&lease.signing_bytes())?;
         let mut service =
             LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
                 root: root.join("artifacts"),
@@ -200,7 +269,7 @@ impl Fixture {
 
     fn sign_head(
         trust: &ArtifactOwnerTrustV1,
-        key: &SigningKey,
+        key: &FixtureSigningKey,
         registry: &ArtifactRegistry,
         before: Digest32,
         now: u64,
@@ -216,13 +285,13 @@ impl Fixture {
                 predecessor_head_digest: before,
                 authority_epoch: 1,
                 signer_id: id("original-owner"),
-                signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+                signing_key_digest: Digest32::of_bytes(&key.verifying_key()),
                 issued_at: now,
                 expires_at: now + 3600,
             },
-            signature: [0; 64].into(),
+            signature: key.signature_template(),
         };
-        head.signature = key.sign(&head.signing_bytes()).to_bytes().into();
+        head.signature = key.sign(&head.signing_bytes())?;
         Ok(head)
     }
 
@@ -311,17 +380,13 @@ impl Fixture {
             encoded_size_bytes: m.encoded_size_bytes,
             selector_id: id("independent-selector"),
             selector_credential_digest: digest("initial-selector-credential"),
-            signing_key_digest: Digest32::of_bytes(&self.selector_key.verifying_key().to_bytes()),
+            signing_key_digest: Digest32::of_bytes(&self.selector_key.verifying_key()),
             authority_epoch: 1,
             issued_at,
             expires_at: issued_at + 180,
-            signature: [0; 64].into(),
+            signature: self.selector_key.signature_template(),
         };
-        signed.signature = self
-            .selector_key
-            .sign(&signed.signing_bytes())
-            .to_bytes()
-            .into();
+        signed.signature = self.selector_key.sign(&signed.signing_bytes())?;
         let verifier = ArtifactSelectionVerifierV1::new(
             ArtifactSelectionTrustV1 {
                 registry_id: self.trust.registry_id.clone(),
@@ -329,7 +394,7 @@ impl Fixture {
                 minimum_authority_epoch: 1,
                 selectors: vec![TrustedArtifactSelectorV1 {
                     selector_id: id("independent-selector"),
-                    verifying_key: self.selector_key.verifying_key().to_bytes().into(),
+                    verifying_key: self.selector_key.verifying_key(),
                     minimum_authority_epoch: 1,
                     maximum_authority_epoch: 9,
                     valid_from: self.now,
@@ -379,7 +444,7 @@ impl Fixture {
         )?;
         fs::create_dir_all(record.layout.home_root())?;
         fs::create_dir_all(record.layout.run_root())?;
-        Ok(AgentdConfig::load(
+        let config = AgentdConfig::load(
             root.join("fleet"),
             owner,
             /*spawn_generation*/ 1,
@@ -387,7 +452,8 @@ impl Fixture {
             record.layout.run_root().to_path_buf(),
             record.layout.home_root().to_path_buf(),
             workspace,
-        )?)
+        )?;
+        evidence_recovery::stage_initial(config)
     }
 
     fn withdraw(&mut self) -> TestResult<()> {
@@ -423,6 +489,8 @@ impl Fixture {
 struct NativeInput {
     schema: String,
     python: PathBuf,
+    runtime_snapshot: PathBuf,
+    runtime_snapshot_sha256: String,
     chain: PathBuf,
     materials: PathBuf,
     parent: PathBuf,
@@ -434,7 +502,7 @@ fn input_and_worker(name: &str) -> TestResult<(NativeInput, SmolLmNeuralReadConf
     let path = std::env::var_os("HEPTA_PN3_NEURAL_NATIVE_CONFIG")
         .ok_or("explicit real-model config required")?;
     let input: NativeInput = serde_json::from_slice(&fs::read(path)?)?;
-    assert_eq!(input.schema, "hepta-smollm-neural-native-check-v1");
+    assert_eq!(input.schema, "hepta-smollm-neural-native-check-v2");
     let raw = fs::read(&input.parent)?;
     assert_eq!(Digest32::of_bytes(&raw).to_string(), input.parent_sha256);
     let parent: serde_json::Value = serde_json::from_slice(&raw)?;
@@ -445,10 +513,17 @@ fn input_and_worker(name: &str) -> TestResult<(NativeInput, SmolLmNeuralReadConf
     let c: serde_json::Value = serde_json::from_slice(&target_contract)?;
     let mut source_pins = BTreeMap::new();
     for relative in [
+        "formal/pon-nakamoto-v1/contract_wire.py",
+        "config/pon/devnet-v1.json",
+        "config/pon/ledger-v1.json",
+        "config/pon/model-family-v1.json",
+        "config/pon/work-profile-v1.json",
         "formal/pon-nakamoto-v1/llm_adapter_contract.py",
+        "scripts/llm_base_material.py",
         "scripts/llm_inherited_runtime.py",
         "scripts/llm_neural_read_worker.py",
         "scripts/llm_parent_material.py",
+        "scripts/llm_python_runtime_contract.py",
         "scripts/llm_runtime_pilot.py",
         "config/pon/model-family-smollm2-135m-v1.json",
     ] {
@@ -458,12 +533,21 @@ fn input_and_worker(name: &str) -> TestResult<(NativeInput, SmolLmNeuralReadConf
     fs::create_dir_all(&input.output)?;
     let run = input.output.join(name);
     fs::create_dir(&run)?;
+    if fs::metadata(&input.runtime_snapshot)?.len() > 16 * 1024 * 1024 {
+        return Err("runtime snapshot byte bound".into());
+    }
+    let runtime_snapshot = fs::read(&input.runtime_snapshot)?;
+    assert_eq!(
+        Digest32::of_bytes(&runtime_snapshot).to_string(),
+        input.runtime_snapshot_sha256
+    );
     let worker = SmolLmNeuralReadConfigV1 {
         python: input.python.clone(),
         script: input.chain.join("scripts/llm_neural_read_worker.py"),
         materials: input.materials.clone(),
         run_directory: run.join("session"),
         source_pins,
+        runtime_snapshot,
         target_contract,
         wrapped_adapter: fs::read(directory.join("wrapped-adapter.json"))?,
         contract_digest: parent["contract"].as_str().unwrap().parse()?,
@@ -476,81 +560,6 @@ fn input_and_worker(name: &str) -> TestResult<(NativeInput, SmolLmNeuralReadConf
         ]),
     };
     Ok((input, worker, parameters))
-}
-
-async fn inputs(
-    worker: SmolLmNeuralReadConfigV1,
-    root: &Path,
-    expected_claims: u8,
-) -> TestResult<(
-    SmolLmInitialHostInputsV1,
-    tokio::task::JoinHandle<Result<(), Box<dyn Error + Send + Sync>>>,
-    tempfile::TempDir,
-)> {
-    fs::create_dir(root)?;
-    fs::set_permissions(root, fs::Permissions::from_mode(0o700))?;
-    let authority = tempfile::tempdir()?;
-    let (authorizer, issuer) = crate::final_use_authorizer::tests::independent_test_authorizer(
-        authority.path(),
-        expected_claims,
-    )
-    .await
-    .map_err(issuer_error)?;
-    drop(authorizer);
-    let key = SigningKey::from_bytes(&[79; 32]);
-    let path = root.join("authority.json");
-    fs::write(
-        &path,
-        serde_json::to_vec(&serde_json::json!({
-            "issuer_socket": authority.path().join("cognitive-authority.sock"),
-            "issuer_uid": rustix::process::geteuid().as_raw(),
-            "signer_id": "authority-owner",
-            "verifying_key": key.verifying_key().to_bytes(),
-            "authority_state_dir": authority.path().join("authority-state"),
-            "authority_epoch": 9,
-            "revocation_revision": 1,
-            "revoked_grant_ids": [],
-            "issuer_timeout_ms": 2000,
-        }))?,
-    )?;
-    fs::set_permissions(&path, fs::Permissions::from_mode(0o600))?;
-    let now = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)?
-        .as_millis() as u64;
-    Ok((
-        SmolLmInitialHostInputsV1 {
-            worker,
-            worker_id: "selected-initial-native-worker".to_owned(),
-            resource_grant: ResourceGrant {
-                grant_id: "selected-initial-resource".to_owned(),
-                authority_epoch: 9,
-                generation: 1,
-                expires_at_ms: now + 900000,
-                revoked: false,
-                maximum_models: 1,
-                maximum_active_requests: 1,
-                maximum_memory_bytes: 8 * 1024 * 1024 * 1024,
-                semantic_digest: digest("controlled-initial-resource").to_string(),
-            },
-            inference_journal: root.join("inference.control"),
-            inference_journal_capacity: 8,
-            final_use_authorizer_config: path,
-        },
-        issuer,
-        authority,
-    ))
-}
-
-fn archive_authority(authority: &tempfile::TempDir, output: &Path) -> TestResult<()> {
-    let target = output.join(authority.path().file_name().unwrap());
-    fs::create_dir(&target)?;
-    for item in fs::read_dir(authority.path().join("authority-state"))? {
-        let item = item?;
-        if item.file_type()?.is_file() {
-            fs::copy(item.path(), target.join(item.file_name()))?;
-        }
-    }
-    Ok(())
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -638,7 +647,7 @@ async fn real_selected_initial_current_window_callback_and_load_binding_fail_clo
             "{name}"
         );
         owner.shutdown().await?;
-        issuer.await?.map_err(issuer_error)?;
+        issuer.finish().await.map_err(issuer_error)?;
         archive_authority(&authority, &input.output)?;
     }
     Ok(())
@@ -656,17 +665,16 @@ async fn real_selected_initial_postload_rejection_keeps_same_owner_cleanup() -> 
             None
         };
         let (material, current) = fixture.selected(revoked_at)?;
-        let (inputs, issuer, authority) = inputs(
+        let late = fixture.now + if name == "expiry" { 181 } else { 60 };
+        let (inputs, issuer, authority) = pq_inputs::ordinary_inputs_after_load(
             worker,
             &input.output.join(format!("postload-effects-{name}")),
             /*expected_claims*/ 1,
+            late.checked_mul(1000).ok_or("postload clock overflow")?,
         )
         .await?;
         let config = fixture.config("body")?;
         let runtime = tokio::runtime::Handle::current();
-        let now = initial_now_seconds()?;
-        let late = fixture.now + if name == "expiry" { 181 } else { 60 };
-        let mut clocks = [now, late, late].into_iter();
         let result = tokio::task::spawn_blocking(move || {
             prepare_initial(
                 config,
@@ -675,7 +683,7 @@ async fn real_selected_initial_postload_rejection_keeps_same_owner_cleanup() -> 
                 inputs,
                 runtime,
                 SmolLmStartupExecutionV1::new(CancellationToken::new()),
-                || Ok(clocks.next().unwrap_or(late)),
+                || panic!("PQ post-load check fell back to the legacy clock"),
             )
         })
         .await?;
@@ -710,7 +718,7 @@ async fn real_selected_initial_postload_rejection_keeps_same_owner_cleanup() -> 
         assert_eq!(load_ids.1, format!("reservation-{}", load_ids.0));
         failure.shutdown_retained().await?;
         assert!(failure.retained.is_none());
-        issuer.await?.map_err(issuer_error)?;
+        issuer.finish().await.map_err(issuer_error)?;
         archive_authority(&authority, &input.output)?;
     }
     Ok(())
@@ -751,7 +759,7 @@ async fn real_selected_initial_substituted_owner_trust_refuses_before_effects() 
         }
     }
     assert!(!journal.exists());
-    issuer.await?.map_err(issuer_error)?;
+    issuer.finish().await.map_err(issuer_error)?;
     archive_authority(&authority, &input.output)?;
     Ok(())
 }

@@ -13,12 +13,16 @@ mod governance_store;
 mod governance_validation;
 mod historical;
 mod provider_claim;
+mod provider_effect_observation_schema;
 mod provider_effect_store;
 mod provider_insert;
 mod provider_record;
 mod provider_store;
 mod qualification;
+mod recovery_effect_frontier;
 mod recovery_frontier;
+mod recovery_invocation_frontier;
+mod recovery_invocation_schema;
 mod schema_validation;
 mod store;
 mod summary;
@@ -80,7 +84,7 @@ pub use qualification::qualification_append_scope_digest;
 pub use qualification::qualification_envelope_bytes;
 pub use qualification::qualification_subject;
 pub use recovery_frontier::EVIDENCE_DATABASE_LINEAGE;
-pub use recovery_frontier::EvidenceRecoverySnapshotV1;
+pub use recovery_frontier::EvidenceRecoverySnapshotV3;
 pub use store::AppendDisposition;
 pub use store::HeptaEvidenceStore;
 pub use store::StoredActionEvidence;
@@ -120,6 +124,10 @@ mod provider_claim_tests;
 mod provider_effect_tests;
 
 #[cfg(test)]
+#[path = "provider_effect_recovery_provenance_tests.rs"]
+mod provider_effect_recovery_provenance_tests;
+
+#[cfg(test)]
 #[path = "summary_tests.rs"]
 mod summary_tests;
 
@@ -138,3 +146,15 @@ mod authbus_outbox_quarantine_tests;
 #[cfg(test)]
 #[path = "qualification_tests.rs"]
 mod qualification_tests;
+
+#[cfg(test)]
+#[path = "recovery_effect_frontier_tests.rs"]
+mod recovery_effect_frontier_tests;
+
+#[cfg(test)]
+#[path = "recovery_invocation_frontier_tests.rs"]
+mod recovery_invocation_frontier_tests;
+
+#[cfg(test)]
+#[path = "recovery_invocation_schema_tests.rs"]
+mod recovery_invocation_schema_tests;

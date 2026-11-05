@@ -1,0 +1,147 @@
+{
+  "scope": "provider-effect durable observation migration, cold recovery projection, and final-source native package gates; ordinary external end-to-end effect closure remains HOLD",
+  "runtime_repository": "TrillionniumFoundation/hepta-private-ci",
+  "runtime_commit": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+  "runtime_tree": "b79a4a4677b672a89cce53c9abe6f6c71810ee88",
+  "paired_chain_commit": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+  "production_patch_commit": "b5bb98297a1765d71160dd62d1cd53863f948012",
+  "migration_fixture_patch_commit": "cec7a61b6c0aed19abd13bdbda0c6838aa398ef3",
+  "preserved_concurrent_parent": "d206c3c787f6b67c771b67a8e1d46c8261810042",
+  "fixed_semantics": [
+    "ACK and uncertainty logs preserve genuinely later observations, even when canonical payload bytes repeat. Only the latest exact observation with no intervening counterpart event is a replay.",
+    "Migration 16 removes content UNIQUE constraints while retaining historical rows, sequence values, allocator high-water marks, provider-operation identity, consumed rights, and immutable guards.",
+    "Cold verification retains the first terminal barrier; a same-terminal status at t3 cannot conceal an imported unknown at t2 after terminal t1. Both Completed and Rejected are covered.",
+    "Schema fingerprint changes are real and included in recovery snapshot identity; direct Agentd signature-path migration rejection was not executed."
+  ],
+  "final_evidence": {
+    "receipt": "final-evidence.json",
+    "receipt_sha256": "92e96d2a43b810737a46d9249e49157cfd22db26928894d7881122646300a6d3",
+    "log_sha256": "fe0df047caf463e294b6796536a05af2f0ef0b4fa6abb1780b17ec3a6662eaf8",
+    "tests_run": 145,
+    "passed": 145,
+    "failed": 0,
+    "skipped": 1,
+    "skip_note": "Existing ignored crash_delivery_child is a subprocess fixture launched by the parent crash test, not counted as a 146th independent pass.",
+    "exit_code": 0,
+    "native_seconds": 42.291,
+    "elapsed_seconds": 45.70638009600043
+  },
+  "final_automation": {
+    "coverage": "final-automation-coverage.json",
+    "coverage_sha256": "d6ab2a837ecc4d7c1976a9fcffb3874aedf0f9981723243574ba58697b8d49ee",
+    "default_feature_target_count": 12,
+    "nonempty_targets": 10,
+    "empty_targets": 2,
+    "tests_run": 137,
+    "passed": 137,
+    "failed_tests": 0,
+    "skipped_tests": 0,
+    "empty_native_exit_codes": [
+      4,
+      4
+    ],
+    "earlier_full_package_command_succeeded": false,
+    "mode": "complete default-feature target inventory executed sequentially with original just test --no-capture semantics, parameters, and native profile"
+  },
+  "final_clippy": {
+    "receipt": "final-two-package-clippy.json",
+    "receipt_sha256": "fbcf26d3eaae2d92aa25c78d28413d5ebddc14dc0ae6825d64bc668a8134a482",
+    "log_sha256": "11219d10c293ebb17a0d7ee7001a734f6afc5e5f411b88858680990cbe00c0be",
+    "argv": [
+      "just",
+      "clippy",
+      "-p",
+      "codex-hepta-evidence",
+      "-p",
+      "codex-hepta-automation",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "recipe": "cargo clippy --tests; read-only, no --fix",
+    "exit_code": 0,
+    "elapsed_seconds": 181.7919942469989,
+    "source_changed": false,
+    "dependency_warning_note": "Existing vendored sqlx-sqlite emitted 40 deprecation warnings; scoped -D warnings passed, not a zero-warning claim for every dependency."
+  },
+  "full_source_guards": {
+    "tracked_raw_blob_count": 11372,
+    "all_before_after_passed": true,
+    "raw_manifest_sha256": "339992164ae01b39aaf6a9532e961458ddc8d43d77f3bbf0f7c358f7022a3f1a",
+    "compressed_manifest_sha256": "7d256956f77de4e6e5fe12cecdce8303d3bbd76862ca482c37953e487c4e2b9d",
+    "working_tree_clean": true,
+    "hidden_flags": 0,
+    "missing_or_changed_raw_blobs": 0,
+    "lockfile_sha256": "aabdc987ff578836729359be72ce15b383d6dd86f8689680e1d8ac8291772349",
+    "wrapper_sha256": "3220d3ce466c0b0defc3557b34e74fdf466cc37320158689f49a619dfdc9bd06"
+  },
+  "core_regressions": {
+    "file": "final-native-effect-case-results.json",
+    "sha256": "2a9f378e9966976ab9d1c2245947ea5b9e81c7f3a3e2d411b4022cb7f9e6fc54",
+    "case_count": 14
+  },
+  "preserved_original_results": {
+    "red": {
+      "receipt": "red-observations.json",
+      "tests_run": 9,
+      "passed": 7,
+      "failed": 2,
+      "exit_code": 100,
+      "production_unchanged": true
+    },
+    "first_green_attempt": {
+      "receipt": "green-observations.json",
+      "tests_run": 145,
+      "passed": 144,
+      "failed": 1,
+      "skipped": 1,
+      "exit_code": 100,
+      "reason": "new migration 16 exposed a fixture assuming migration 15 was latest; unchanged permission refusal assertions were retained in fix"
+    },
+    "package_pass_at_cec7": {
+      "receipt": "green-final-observations.json",
+      "tests_run": 145,
+      "passed": 145,
+      "failed": 0,
+      "skipped": 1,
+      "exit_code": 0
+    },
+    "strict_fix_at_cec7": {
+      "receipt": "green-strict-fix.json",
+      "exit_code": 0,
+      "checked_file_hash_count": 65,
+      "source_changed": false
+    },
+    "f852_full_automation_failures": [
+      "integrated-automation.json",
+      "integrated-automation-retry-2.json",
+      "integrated-automation-retry-3.json"
+    ],
+    "f852_failure_notes": [
+      "Offline cache missing diff 0.1.13; native tests 0.",
+      "Offline cache missing pretty_assertions 1.4.1; native tests 0.",
+      "Linker terminated by SIGBUS while filesystem was effectively full; native tests 0. No unproven Rust defect diagnosis is asserted."
+    ]
+  },
+  "internal_review": {
+    "reviewer": "parallel team agent /root/liveness",
+    "scope": "read-only review of terminal barrier, migration preservation and final receipt/case/source hash linkage",
+    "external_audit": false,
+    "independently_executed_native_tests_by_reviewer": false,
+    "final_review_findings": "137 unique Automation cases and 145 Evidence passes match logs and summaries; all 12 targets and both empty classifications match inventory; all hash associations checked; no new substantive issue.",
+    "cleanup_provenance_note": "cleanup-helper-provenance-note.json"
+  },
+  "hold_boundaries": [
+    "real provider operation execution and provider-owned fresh status authenticity",
+    "physical exactly-once beyond qualification adapters",
+    "independent current frontier custody, freshness and whole-host rollback",
+    "distributed external frontier CAS atomicity with real effects",
+    "direct native Agentd signature rejection for the migration case",
+    "ordinary Growth/PQ account/service/payment/recovery configuration",
+    "observation history storage, migration temporary space and retained roots total budget"
+  ],
+  "security_claim_changed": false,
+  "remote_writes_by_effects_agent": false,
+  "finished_utc": "2026-11-05T05:45:42Z"
+}

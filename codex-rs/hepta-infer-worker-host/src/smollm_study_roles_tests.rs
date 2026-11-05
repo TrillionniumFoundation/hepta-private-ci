@@ -8,6 +8,10 @@ use std::path::Path;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use super::super::FixtureSigningKey;
+use super::TestResult;
+use super::pq_authority::PqStudyAuthority;
+use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_intelligence_eval as eval;
 use codex_hepta_learning_ledger as ledger;
 use codex_hepta_types::Digest32;
@@ -16,6 +20,7 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use ledger::LearningAuthenticationProfile;
 use serde_json::Value;
 
 pub fn id(value: &str) -> StableId {
@@ -42,7 +47,8 @@ pub fn create(path: &Path) -> File {
 }
 
 pub struct ControlledRoles {
-    keys: [SigningKey; 4],
+    keys: [FixtureSigningKey; 4],
+    pq_authority: Option<PqStudyAuthority>,
     pub principals: Vec<ledger::AuthenticatedPrincipalV1>,
     pub verifier: ledger::LearningEvidenceVerifierV1,
     pub trust: ledger::LearningEvidenceTrustV1,
@@ -55,9 +61,55 @@ pub struct ControlledRoles {
 
 impl ControlledRoles {
     pub fn new(objective: Digest32, actions: [StableId; 2], yes: StableId) -> Self {
-        let from = micros();
+        Self::with_profile(
+            objective,
+            actions,
+            yes,
+            LearningAuthenticationProfile::ClassicalV1,
+        )
+    }
+
+    pub fn new_pq(
+        objective: Digest32,
+        actions: [StableId; 2],
+        yes: StableId,
+        authority_root: &Path,
+        binding: Digest32,
+    ) -> TestResult<Self> {
+        let mut roles = Self::with_profile(
+            objective,
+            actions,
+            yes,
+            LearningAuthenticationProfile::MlDsa65V2,
+        );
+        let authority = PqStudyAuthority::start(
+            authority_root,
+            binding,
+            roles.trust.clone(),
+            roles.from,
+            roles.until,
+        )?;
+        roles.verifier = authority
+            .activated
+            .verifier()
+            .clone()
+            .with_microsecond_authority_clock(authority.clock.clone())?;
+        roles.pq_authority = Some(authority);
+        Ok(roles)
+    }
+
+    fn with_profile(
+        objective: Digest32,
+        actions: [StableId; 2],
+        yes: StableId,
+        profile: LearningAuthenticationProfile,
+    ) -> Self {
+        let from = match profile {
+            LearningAuthenticationProfile::ClassicalV1 => micros(),
+            LearningAuthenticationProfile::MlDsa65V2 => micros() / 1_000 * 1_000,
+        };
         let until = from + 3_600_000_000;
-        let keys = [31, 47, 53, 89].map(|byte| SigningKey::from_bytes(&[byte; 32]));
+        let keys = [31, 47, 53, 89].map(|seed| FixtureSigningKey::new(profile, seed).unwrap());
         let scope = hash("controlled-neural-comparison-scope-not-production");
         let kinds = [
             ledger::LearningEvidenceRoleV1::Generator,
@@ -71,7 +123,7 @@ impl ControlledRoles {
             .map(|(index, key)| ledger::AuthenticatedPrincipalV1 {
                 principal_id: id(&format!("controlled-neural-role-{index}")),
                 credential_chain_digest: hash(&format!("controlled-test-credential-{index}")),
-                signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+                signing_key_digest: Digest32::of_bytes(&key.verifying_key()),
                 scope_digest: scope,
                 authority_epoch: 1,
                 authenticated_at: from,
@@ -88,7 +140,7 @@ impl ControlledRoles {
                 .map(|(index, key)| ledger::TrustedLearningSignerV1 {
                     principal: principals[index].clone(),
                     controller_id: id(&format!("controlled-test-role-{index}")),
-                    verifying_key: key.verifying_key().to_bytes().into(),
+                    verifying_key: key.verifying_key(),
                     roles: vec![kinds[index]],
                     revoked_at: None,
                 })
@@ -98,6 +150,7 @@ impl ControlledRoles {
             .unwrap_or_else(|error| panic!("{error:?}"));
         Self {
             keys,
+            pq_authority: None,
             principals,
             verifier,
             trust,
@@ -107,6 +160,25 @@ impl ControlledRoles {
             actions,
             yes,
         }
+    }
+
+    fn authority_micros(&self) -> u64 {
+        match &self.pq_authority {
+            Some(authority) => authority
+                .clock
+                .now_unix_ms()
+                .unwrap()
+                .checked_mul(1_000)
+                .unwrap(),
+            None => micros(),
+        }
+    }
+
+    pub fn pq_activation(&self) -> TestResult<Value> {
+        self.pq_authority
+            .as_ref()
+            .map(PqStudyAuthority::descriptor)
+            .ok_or_else(|| "ordinary study installation requires PQ role activation".into())
     }
 
     pub fn sign(&mut self, index: usize, payload: &[u8]) -> ledger::SignedLearningEvidenceV1 {
@@ -119,15 +191,12 @@ impl ControlledRoles {
             scope_digest: self.trust.scope_digest,
             objective_digest: self.trust.objective_digest,
             authority_epoch: 1,
-            issued_at: micros(),
+            issued_at: self.authority_micros(),
             expires_at: self.until,
             payload_digest: Digest32::of_bytes(payload),
-            signature: [0; 64].into(),
+            signature: self.keys[index].signature_template(),
         };
-        signed.signature = self.keys[index]
-            .sign(&signed.signing_bytes())
-            .to_bytes()
-            .into();
+        signed.signature = self.keys[index].sign(&signed.signing_bytes()).unwrap();
         signed
     }
 
@@ -140,14 +209,10 @@ impl ControlledRoles {
         }
     }
 
-    pub fn dataset(
-        &mut self,
-        profile: super::StudyProfile,
-        root: &Path,
-        training_rows: &[Value],
-    ) -> (ledger::DatasetSnapshotReceiptV3, ledger::LedgerSnapshot) {
-        assert_eq!(training_rows.len(), profile.training_source_rows());
-        std::fs::create_dir(root).unwrap_or_else(|error| panic!("{error:?}"));
+    fn activated_trust(&self) -> ledger::ActivatedLearningTrustV1 {
+        if let Some(authority) = &self.pq_authority {
+            return authority.activated.clone();
+        }
         let root_key = SigningKey::from_bytes(&[61; 32]);
         let root_trust = ledger::LearningTrustRootV1 {
             root_id: id("controlled-neural-test-root"),
@@ -178,17 +243,49 @@ impl ControlledRoles {
             )
             .to_bytes()
             .into();
-        let activated = ledger::activate_learning_trust(&root_trust, distribution, None, micros())
-            .unwrap_or_else(|error| panic!("{error:?}"));
+        ledger::activate_learning_trust(&root_trust, distribution, /*previous*/ None, micros())
+            .unwrap_or_else(|error| panic!("{error:?}"))
+    }
+
+    pub fn dataset(
+        &mut self,
+        profile: super::StudyProfile,
+        root: &Path,
+        training_rows: &[Value],
+    ) -> (ledger::DatasetSnapshotReceiptV3, ledger::LedgerSnapshot) {
+        assert_eq!(training_rows.len(), profile.training_source_rows());
+        std::fs::create_dir(root).unwrap_or_else(|error| panic!("{error:?}"));
+        let activated = self.activated_trust();
+        let authentication = self.verifier.authentication_profile();
         let binding = profile.training_ledger_binding();
-        let durable = ledger::DurableLedger::create(create(&root.join("ledger")), binding, 512)
-            .unwrap_or_else(|error| panic!("{error:?}"));
-        let witness = ledger::LedgerWitnessStore::create(create(&root.join("witness")), binding)
-            .unwrap_or_else(|error| panic!("{error:?}"));
+        let durable = ledger::DurableLedger::create_with_authentication_profile(
+            create(&root.join("ledger")),
+            binding,
+            /*max_records*/ 512,
+            authentication,
+        )
+        .unwrap_or_else(|error| panic!("{error:?}"));
+        let witness = ledger::LedgerWitnessStore::create_with_authentication_profile(
+            create(&root.join("witness")),
+            binding,
+            authentication,
+        )
+        .unwrap_or_else(|error| panic!("{error:?}"));
         let directory = File::open(root).unwrap_or_else(|error| panic!("{error:?}"));
-        let mut writer =
-            ledger::LedgerWriter::from_durable(durable, witness, activated, &directory, &directory)
-                .unwrap_or_else(|error| panic!("{error:?}"));
+        let mut writer = match &self.pq_authority {
+            Some(authority) => ledger::LedgerWriter::from_durable_with_trust_frontier(
+                durable,
+                witness,
+                activated,
+                &directory,
+                &directory,
+                authority.frontier.clone(),
+            ),
+            None => ledger::LedgerWriter::from_durable(
+                durable, witness, activated, &directory, &directory,
+            ),
+        }
+        .unwrap_or_else(|error| panic!("{error:?}"));
         let mut candidates = self.actions.to_vec();
         candidates.push(id("abstain"));
         // One ground-truth answer per exact supervised row consumed by the
@@ -262,9 +359,9 @@ impl ControlledRoles {
                     .anchor
                     .chain_digest;
                 let decision_receipt = writer
-                    .append_decision(head, decision, &signed, micros())
+                    .append_decision(head, decision, &signed, self.authority_micros())
                     .unwrap_or_else(|error| panic!("{error:?}"));
-                let now = micros();
+                let now = self.authority_micros();
                 let correct = expected_yes == (*action == self.yes);
                 let outcome = ledger::AuthenticatedOutcomeV1 {
                     record_id: id(&format!("{episode}-outcome")),
@@ -293,7 +390,12 @@ impl ControlledRoles {
                     &ledger::outcome_signing_payload_v2(&outcome),
                 );
                 writer
-                    .append_outcome(decision_receipt.chain_digest, outcome, &signed, micros())
+                    .append_outcome(
+                        decision_receipt.chain_digest,
+                        outcome,
+                        &signed,
+                        self.authority_micros(),
+                    )
                     .unwrap_or_else(|error| panic!("{error:?}"));
             }
         }
@@ -320,13 +422,20 @@ impl ControlledRoles {
             .unwrap_or_else(|error| panic!("{error:?}")),
         );
         let dataset = writer
-            .freeze_dataset(plan, &signed, micros())
+            .freeze_dataset(plan, &signed, self.authority_micros())
             .unwrap_or_else(|error| panic!("{error:?}"));
         let snapshot = writer
             .snapshot()
             .unwrap_or_else(|error| panic!("{error:?}"));
-        ledger::verify_dataset_snapshot_receipt_against_ledger_v3(&dataset, &snapshot, micros())
-            .unwrap_or_else(|error| panic!("{error:?}"));
+        ledger::verify_dataset_snapshot_receipt_against_ledger_v3(
+            &dataset,
+            &snapshot,
+            self.authority_micros(),
+        )
+        .unwrap_or_else(|error| panic!("{error:?}"));
         (dataset, snapshot)
     }
 }
+
+#[path = "smollm_study_pq_roles_tests.rs"]
+mod pq_tests;

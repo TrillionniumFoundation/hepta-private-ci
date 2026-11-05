@@ -1,0 +1,568 @@
+{
+  "schema": "hepta-pair-v10-source-gate-status-v1",
+  "prepared_at_utc": "2026-11-05T05:08:53.158912+00:00",
+  "record_state": "FINAL_LOCAL_COMPONENT_EVIDENCE_RECONCILED",
+  "overall_status": "HOLD",
+  "destination": "qualification/learning-generations/hepta-pair-v10-source-20261105",
+  "source_pair": {
+    "chain": {
+      "repository": "TrillionniumFoundation/Trillionnium-Chain",
+      "commit": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+      "tree": "d4f4a85c439982d8decec9265c1993408f3577cf",
+      "lockfile": "trillionnium/Cargo.lock",
+      "lockfile_sha256": "00f3573879f3da7d5a702a8bc13245196bbfd53b86b0b6eb19c51f14887cef61"
+    },
+    "hepta": {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "commit": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+      "tree": "b79a4a4677b672a89cce53c9abe6f6c71810ee88",
+      "lockfile": "codex-rs/Cargo.lock",
+      "lockfile_sha256": "aabdc987ff578836729359be72ce15b383d6dd86f8689680e1d8ac8291772349",
+      "ordered_parents": [
+        "ce56018cadc83120068de1a63020c60e92b48f42",
+        "f85289eff7366b60940d72cc611217db1bf1aef9"
+      ],
+      "preserved_concurrent_evidence_commit": "ce56018cadc83120068de1a63020c60e92b48f42",
+      "preserved_concurrent_commit_parent": "367e27fb6bf30443641b9e23a063d24e49eda9f7",
+      "changed_paths_from_previous_runtime": 8,
+      "changed_path_scope": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/"
+    },
+    "execution_profile": "hepta-integrated-chain-execution-v10",
+    "manifest_sha256": "97e5311a86a0dc6fcd62a29ca9cd8a323c9b34a6991790ae347cfbb57bf796ed",
+    "manifest_entry_count": 51,
+    "all_tracked_raw_byte_check_implemented": true,
+    "hidden_index_and_untracked_ignored_input_refusal_implemented": true,
+    "source_binding_is_product_qualification": false,
+    "raw_byte_check_scope": "V10 selected Chain checkout; completed final Runtime controls are independently bound to exact d7c32f38 source-head receipts.",
+    "identity_role": "FROZEN_TESTED_CODE_PAIR; distinct from moving branch heads and any future evidence-only delivery tip."
+  },
+  "authorization": {
+    "product_qualification": false,
+    "production_authorized": false,
+    "installation_authorized": false,
+    "model_installation_authorized": false,
+    "public_network_activation_authorized": false,
+    "whole_chain_pq_security_claim_authorized": false,
+    "security_claim_changed": false
+  },
+  "final_runtime_validation": {
+    "required_commit": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+    "native_status": "PASS_COMPONENT_SCOPE",
+    "source_controls_status": "PASS",
+    "passed": 145,
+    "failed": 0,
+    "result_inherited_from_prior_pair": false,
+    "evidence_directories": [
+      "effects/",
+      "source/"
+    ],
+    "prior_launch_observation": {
+      "status": "WRAPPER_REJECTED_BEFORE_TEST",
+      "reason": "invalid source_sha",
+      "command_exit_code": null,
+      "counts_as_native_test_failure": false,
+      "counts_as_pass": false,
+      "note": "Historical wrapper rejection before test execution is retained separately from the completed d7c controls and native component validation.",
+      "evidence_directory": "source/",
+      "observed_local_receipt_name": "runtime-final-v10-controls.json",
+      "copied_receipt_name_pending_root_reconciliation": false
+    },
+    "required_tree": "b79a4a4677b672a89cce53c9abe6f6c71810ee88",
+    "automation_status": "ALL_COLLECTED_DEFAULT_FEATURE_TESTS_PASSED",
+    "strict_status": "PASS",
+    "owner_controls_status": "PASS",
+    "pair_binding_status": "PASS",
+    "counts_scope": "145 Evidence tests; 137 distinct Automation tests over the complete 12-target default-feature inventory. Two empty targets retain native Nextest exit 4. Source/owner control counts and manifest file counts remain separate.",
+    "completed_controls": {
+      "source_controls": {
+        "status": "PASS",
+        "source_sha": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+        "tested_sha": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+        "tree": "b79a4a4677b672a89cce53c9abe6f6c71810ee88",
+        "before_clean": true,
+        "after_clean": true,
+        "observed_passed_tests": 107,
+        "observed_failed_tests": 0,
+        "receipt": "source/runtime-published-v10-controls.json",
+        "receipt_sha256": "8345c760dfd7951ae2537b0b4262ea224cab37bd6b3112edcc4957267d5ed9cf",
+        "log": "source/runtime-published-v10-controls.json.73d54bd2b4694a74af281ae50994c679.log",
+        "log_sha256": "c22e4326d572a770f9ca38c3ae95b8d4b94443bc18ae78c6b97e2f54cf949979",
+        "command_exit_code": 0,
+        "finished_at": "2026-11-05T05:20:28.201988+00:00",
+        "counts_as_runtime_native_validation": false
+      },
+      "owner_controls": {
+        "status": "PASS",
+        "source_sha": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+        "tested_sha": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+        "tree": "b79a4a4677b672a89cce53c9abe6f6c71810ee88",
+        "before_clean": true,
+        "after_clean": true,
+        "observed_passed_tests": 60,
+        "observed_failed_tests": 0,
+        "receipt": "source/runtime-published-owner-controls.json",
+        "receipt_sha256": "530dafe40040069f81b3d199d51f2942bfb9bc2399a88d40d702220321f1cde0",
+        "log": "source/runtime-published-owner-controls.json.82b8aabef9a2430aae834db39cbc08df.log",
+        "log_sha256": "afb48f18ada9771f5b4d8783563cdbb8bc77e3594b2a8612d14e2c72f4015222",
+        "command_exit_code": 0,
+        "finished_at": "2026-11-05T05:20:17.074086+00:00",
+        "counts_as_runtime_native_validation": false
+      },
+      "pair_binding": {
+        "status": "PASS",
+        "source_sha": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+        "tested_sha": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+        "tree": "b79a4a4677b672a89cce53c9abe6f6c71810ee88",
+        "before_clean": true,
+        "after_clean": true,
+        "observed_passed_tests": 0,
+        "observed_failed_tests": 0,
+        "receipt": "source/runtime-published-pair-binding.json",
+        "receipt_sha256": "fccc255f0343d36e19056ea2ee2a004226f27e1d91eb693d29d1eaafd4d8c579",
+        "log": "source/runtime-published-pair-binding.json.6c31e2ee1b1a414fa270486fdc164b89.log",
+        "log_sha256": "ffab5fa74e764e2d5d8bb223f9cafa0de97e0bf53776f4e08959354ed1a5cf62",
+        "command_exit_code": 0,
+        "finished_at": "2026-11-05T05:20:17.246983+00:00",
+        "counts_as_runtime_native_validation": false,
+        "verified_manifest_files": 51,
+        "manifest_sha256": "97e5311a86a0dc6fcd62a29ca9cd8a323c9b34a6991790ae347cfbb57bf796ed",
+        "paired_chain_commit": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+        "paired_chain_tree": "d4f4a85c439982d8decec9265c1993408f3577cf",
+        "product_qualification": false,
+        "installation_authorized": false,
+        "file_count_is_test_count": false
+      }
+    },
+    "remediation_status": "Final d7c component validation completed. Automation used complete default-feature target-by-target execution after cache/disk build failures; two empty targets keep exit4, and the original full-package failures remain unsuccessful.",
+    "skipped": 1,
+    "automation_passed": 137,
+    "automation_failed_tests": 0,
+    "automation_skipped_tests": 0,
+    "automation_targets": 12,
+    "automation_nonempty_targets": 10,
+    "automation_empty_targets": 2,
+    "automation_empty_target_exit_codes": [
+      4,
+      4
+    ],
+    "automation_default_features_only": true,
+    "automation_original_full_package_command_succeeded": false,
+    "raw_tracked_file_count": 11372,
+    "raw_tracked_manifest_sha256": "339992164ae01b39aaf6a9532e961458ddc8d43d77f3bbf0f7c358f7022a3f1a",
+    "native_receipt": "effects/final-evidence.json",
+    "native_receipt_sha256": "92e96d2a43b810737a46d9249e49157cfd22db26928894d7881122646300a6d3",
+    "native_log_sha256": "fe0df047caf463e294b6796536a05af2f0ef0b4fa6abb1780b17ec3a6662eaf8",
+    "automation_coverage": "effects/final-automation-coverage.json",
+    "automation_coverage_sha256": "d6ab2a837ecc4d7c1976a9fcffb3874aedf0f9981723243574ba58697b8d49ee",
+    "strict_receipt": "effects/final-two-package-clippy.json",
+    "strict_receipt_sha256": "fbcf26d3eaae2d92aa25c78d28413d5ebddc14dc0ae6825d64bc668a8134a482",
+    "strict_log_sha256": "11219d10c293ebb17a0d7ee7001a734f6afc5e5f411b88858680990cbe00c0be",
+    "strict_command": [
+      "just",
+      "clippy",
+      "-p",
+      "codex-hepta-evidence",
+      "-p",
+      "codex-hepta-automation",
+      "--locked",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "selected_component_native_and_strict_checks_completed": true,
+    "completed_check_scope": "Only the Evidence145 suite, complete default-feature Automation12-target inventory/137 tests, and two-package readonly strict Clippy recorded here. This does not complete the nine system exit conditions or the ordinary product end-to-end loop."
+  },
+  "known_component_evidence": {
+    "growth": {
+      "commit": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+      "production_fix_added_lines": 6,
+      "new_tests": 2,
+      "baseline_production_commit": "47b4a62463d8e1371a175c74196d52d99c5fccb8",
+      "red": {
+        "passed": 0,
+        "failed": 2
+      },
+      "green_activation": {
+        "passed": 2,
+        "failed": 0
+      },
+      "distinct_final_tests": {
+        "passed": 51,
+        "failed": 0,
+        "ignored": 2
+      },
+      "activation_tests_included_in_distinct_count": true,
+      "profile": "Node opt-level=3, debug=0 diagnostic; Rust 1.95.0/OpenSSL 3.5.9/locked graph",
+      "original_profile_baseline_compile": "SIGKILL; tests not run",
+      "original_profile_qualification": false,
+      "fused_growth_pq_configuration": false,
+      "evidence": "growth/growth-pq-validation-summary.json"
+    },
+    "m06": {
+      "commit": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+      "profile_overrides": false,
+      "unit": {
+        "passed": 133,
+        "failed": 0,
+        "ignored": 8
+      },
+      "capacity_progress": {
+        "passed": 7,
+        "failed": 0
+      },
+      "strict_clippy_exit_code": 0,
+      "public_capacity_progress_contract_preserved": true,
+      "original_host_confirmation_qualified": false,
+      "evidence": "m06/summary.json"
+    },
+    "effects_preintegration": {
+      "commit": "cec7a61b6c0aed19abd13bdbda0c6838aa398ef3",
+      "tree": "c0df69ecfdf84d375e57c7ea0cd1d3d4e833cb0b",
+      "executed": 145,
+      "passed": 145,
+      "failed": 0,
+      "skipped": 1,
+      "migration": 16,
+      "independent_observation_order_and_first_terminal_boundary_implemented": true,
+      "inherited_by_final_hepta": false,
+      "final_pair_qualification": false,
+      "evidence": "effects/provider-observation-acceptance-summary.json"
+    },
+    "v10_source_probe": {
+      "runtime_commit": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+      "runtime_tree": "b79a4a4677b672a89cce53c9abe6f6c71810ee88",
+      "chain_commit": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+      "chain_tree": "d4f4a85c439982d8decec9265c1993408f3577cf",
+      "verified_manifest_entries": 51,
+      "manifest_entry_count_is_native_test_count": false,
+      "product_qualification": false,
+      "installation_authorized": false,
+      "native_validation_inferred_pass": false,
+      "evidence": "source/runtime-published-pair-binding.json",
+      "receipt_sha256": "fccc255f0343d36e19056ea2ee2a004226f27e1d91eb693d29d1eaafd4d8c579",
+      "actual_output_log": "source/runtime-published-pair-binding.json.6c31e2ee1b1a414fa270486fdc164b89.log",
+      "actual_output_log_sha256": "ffab5fa74e764e2d5d8bb223f9cafa0de97e0bf53776f4e08959354ed1a5cf62"
+    },
+    "effects_f852_historical": {
+      "commit": "f85289eff7366b60940d72cc611217db1bf1aef9",
+      "tree": "0b73080c1520f2d6b1c711662ea7df3d73b09b64",
+      "paired_chain_commit": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+      "executed": 145,
+      "passed": 145,
+      "failed": 0,
+      "skipped": 1,
+      "source_before_clean": true,
+      "source_after_clean": true,
+      "raw_source_unchanged": true,
+      "profile_override": null,
+      "inherited_by_final_hepta": false,
+      "final_pair_qualification": false,
+      "receipt": "effects/integrated-evidence.json",
+      "receipt_sha256": "f6f225b0a4bca4093cb4abbde3bfa7637c2b4a42114803c5e7343a726f1cb670",
+      "log": "effects/integrated-evidence.log",
+      "log_sha256": "9eb508761473f07bfc4a7e79e26af8d0f560bf2179e1cc647ef1279df59c98d2"
+    },
+    "effects_final": {
+      "commit": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+      "tree": "b79a4a4677b672a89cce53c9abe6f6c71810ee88",
+      "passed": 145,
+      "failed": 0,
+      "skipped": 1,
+      "profile_override": null,
+      "raw_source_unchanged": true,
+      "independent_external_provider_qualification": false,
+      "receipt": "effects/final-evidence.json",
+      "receipt_sha256": "92e96d2a43b810737a46d9249e49157cfd22db26928894d7881122646300a6d3",
+      "core_case_extract": "effects/final-native-effect-case-results.json"
+    },
+    "automation_final": {
+      "commit": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+      "tree": "b79a4a4677b672a89cce53c9abe6f6c71810ee88",
+      "passed": 137,
+      "failed": 0,
+      "skipped": 0,
+      "default_features_only": true,
+      "all_target_inventory_covered": true,
+      "nonempty_targets": 10,
+      "empty_targets": 2,
+      "original_full_package_command_succeeded": false,
+      "receipt": "effects/final-automation-coverage.json",
+      "receipt_sha256": "d6ab2a837ecc4d7c1976a9fcffb3874aedf0f9981723243574ba58697b8d49ee"
+    },
+    "chain_source_pq_w1_controls": {
+      "commit": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+      "passed": 127,
+      "failed": 0,
+      "receipt": "source/published-source-pq-w1-controls.json",
+      "receipt_sha256": "86036e4b85ec46e6de8d4775241e26b3755047a8a6f10cd9219df6449a6d3a12",
+      "is_minimum_w1_cost_or_pq_release_proof": false
+    }
+  },
+  "preserved_constraints": {
+    "original_confirmation": {
+      "deadline_seconds": 4,
+      "attackers": 16,
+      "confirmation_depth": 6,
+      "original_hardware_retested": false,
+      "gate_closed": false
+    },
+    "model_trial_family": {
+      "historical_used": 1,
+      "historical_limit": 1,
+      "budget_reset_authorized": false,
+      "historical_rss_failure_cleared": false,
+      "legal_no_update_is_successful_upgrade": false
+    },
+    "prior_failed_receipts_must_remain": true,
+    "different_source_or_workload_results_may_be_inherited": false
+  },
+  "gates": [
+    {
+      "id": "P0_SOURCE_PAIR",
+      "priority": "P0",
+      "work": "固定同一组 Chain／Hepta 源码、lockfile 和配置",
+      "exit_condition": "普通入口的学习、评价、安装或拒绝、下一次使用、结算与恢复，在同一源码对上运行；不继承其他组合的绿灯",
+      "implementation": "PARTIAL",
+      "observed": "冻结04be/d7c源码对、lockfile与配置；V10控件107、owner控件60、实际51文件绑定通过；最终Runtime Evidence145及Automation137通过，严格Clippy通过。",
+      "hold_reason": "完整普通入口的学习、评价、安装或拒绝、下一次使用、结算与恢复尚未在这对源码上全部执行并获得资格。移动Chain头另有生产源码与Cargo.lock变化，不能继承本记录。 Runtime也新增fc0c6f7的Agentd/PQ恢复源码与Cargo.lock变更；本记录不继承到该新头。",
+      "evidence": [
+        "source/runtime-published-v10-controls.json",
+        "source/runtime-published-owner-controls.json",
+        "source/runtime-published-pair-binding.json",
+        "growth/",
+        "m06/",
+        "effects/",
+        "branch-readback.json",
+        "publication-parent-readback.json"
+      ],
+      "status": "HOLD",
+      "exit_condition_met": false
+    },
+    {
+      "id": "P0_GROWTH_PQ",
+      "priority": "P0",
+      "work": "融合 Growth 与 PQ",
+      "exit_condition": "PQ 账户、服务身份、Growth 状态、真实交易和恢复在同一配置成立，并验证错配与降级拒绝",
+      "implementation": "PARTIAL",
+      "observed": "同一最终 Chain ELF 的 Growth 与 PQ 分项测试通过，包含真实 listener、交易、错配拒绝与冷重开。",
+      "hold_reason": "这些测试仍使用不同配置；Growth wire/账户证明/时间绑定/owner backend/服务身份与 PQ 尚未融合。",
+      "evidence": [
+        "growth/growth-pq-validation-summary.json",
+        "growth/retained-command-result.json",
+        "source/",
+        "growth-pq-boundaries.md"
+      ],
+      "status": "HOLD",
+      "exit_condition_met": false
+    },
+    {
+      "id": "P0_CONFIRMATION_LIVENESS",
+      "priority": "P0",
+      "work": "关闭当前确认活性失败",
+      "exit_condition": "保持原硬件、期限和攻击条件重复通过；新的宽松或不同 workload 只作补充",
+      "implementation": "PARTIAL",
+      "observed": "M06 精确 namespace 范围扫描及资金聚合优化已实现；公开 capacity_with_progress 保持完整扫描、256 行取消间隔和原错误边界。",
+      "hold_reason": "原硬件／原 slice 的 4 秒、16 攻击者、depth 6 场景未重测；组件正确性和编译诊断不能关闭原确认失败。",
+      "evidence": [
+        "m06/summary.json",
+        "growth/red-command-result.json",
+        "w1-host-boundaries.md"
+      ],
+      "status": "HOLD",
+      "exit_condition_met": false
+    },
+    {
+      "id": "P0_REAL_EFFECTS",
+      "priority": "P0",
+      "work": "完成真实效果协议",
+      "exit_condition": "frontier 更新竞态、崩溃、重复请求、provider 结果不明、整库恢复均不会重复执行或恢复已消耗权利",
+      "implementation": "PARTIAL",
+      "observed": "Migration 0016 保留独立观察顺序、原记录字节／序号／allocator 高水位；首个 Completed/Rejected 终态边界保持，重复状态不能掩盖中间 uncertainty。 最终d7c的Evidence145与Automation137实际通过；迁移、重复观察、首终态与本地adapter恢复的分项证据齐备。",
+      "hold_reason": "真实provider状态真实性、外部frontier CAS与真实效果原子性、整机回滚和物理exactly-once的独立闭环仍未完成；本地store/adapter测试不授予该资格。历史cec7/f852结果和三次native0构建失败保留各自来源。",
+      "evidence": [
+        "effects/provider-observation-acceptance-summary.json",
+        "effects/integrated-evidence.json",
+        "effects/integrated-automation.json",
+        "effects/integrated-automation-retry-2.json",
+        "effects/integrated-automation-retry-3.json",
+        "effects/",
+        "source/",
+        "effects/final-evidence.json",
+        "effects/final-automation-coverage.json",
+        "effects/final-native-effect-case-results.json"
+      ],
+      "status": "HOLD",
+      "exit_condition_met": false
+    },
+    {
+      "id": "P0_CHEAPEST_LEGAL_W1",
+      "priority": "P0",
+      "work": "独立审计最便宜合法 W1",
+      "exit_condition": "特殊输入、复用、预计算、硬件差异和量子 oracle 均纳入成本模型；结论覆盖实际 fork choice／DAA",
+      "implementation": "NOT_QUALIFIED",
+      "observed": "内部源码复核已连接实际W1接纳、required_work、fork choice及DAA，并区分legacy31/37与Growth257/263材料；reader的最低成本/原生认证/真实chainwork资格字段仍为false。127项source/PQ/W1控件通过只说明所测控制行为。",
+      "hold_reason": "最便宜合法 W1 的独立成本下界及其对实际 fork choice／DAA 的覆盖未完成；本轮未提供替代审计结论。",
+      "evidence": [
+        "w1-host-boundaries.md",
+        "source/published-source-pq-w1-controls.json"
+      ],
+      "status": "HOLD",
+      "exit_condition_met": false
+    },
+    {
+      "id": "P1_P2P_MODEL_RELEASE",
+      "priority": "P1",
+      "work": "完整模型 release 经 P2P 普通安装",
+      "exit_condition": "源节点和原缓存不可用时，仍能取得全部依赖、真实加载、推理，并通过当前授权执行",
+      "implementation": "NOT_QUALIFIED",
+      "observed": "V10 源码绑定保留原模型 profile 与历史失败。",
+      "hold_reason": "本代码对尚未证明源节点／原缓存不可用时的完整 release 依赖获取、普通安装、真实加载推理及当前授权执行。旧 RSS 失败和 1/1 试验预算不因换源码而清零。",
+      "evidence": [
+        "source/"
+      ],
+      "status": "HOLD",
+      "exit_condition_met": false
+    },
+    {
+      "id": "P1_LEARNING_QUALITY",
+      "priority": "P1",
+      "work": "持续学习质量门禁",
+      "exit_condition": "隐藏／未来任务、试验家族预算、独立评价、负迁移与成本检查；合法无更新不会被迫包装成成功升级",
+      "implementation": "NOT_QUALIFIED",
+      "observed": "原试验家族已用 1/1 预算与 RSS 失败继续保留；本记录不授予新试验额度。",
+      "hold_reason": "隐藏/未来任务、独立评价、负迁移和成本质量门禁尚无本代码对完整证据。退出条件允许合法无更新；旧实验因RSS检查中止，未完成评价，也没有产生已验收的无更新结果。",
+      "evidence": [
+        "source/"
+      ],
+      "status": "HOLD",
+      "exit_condition_met": false
+    },
+    {
+      "id": "P1_STORAGE_RETENTION",
+      "priority": "P1",
+      "work": "长期存储与账本保留",
+      "exit_condition": "权重续租、repair、所有 retained roots、fork roots、WAL 和临时文件都在总预算内",
+      "implementation": "NOT_QUALIFIED",
+      "observed": "Growth 原生恢复与本地 effect 观察历史有分项证据；Migration 0016 的观察历史及迁移临时空间仍需纳入总量。",
+      "hold_reason": "权重续租／repair、全部 retained/fork roots、WAL、effect 观察历史和临时文件的联合长期总预算尚未获得资格。",
+      "evidence": [
+        "growth/",
+        "effects/",
+        "source/"
+      ],
+      "status": "HOLD",
+      "exit_condition_met": false
+    },
+    {
+      "id": "RELEASE_FULL_CHAIN_PQ",
+      "priority": "独立发布门禁",
+      "work": "关闭整链 PQ 六项要求",
+      "exit_condition": "全部授权根、迁移、量子共识、容量与独立端到端证据齐备后，才修改安全声明",
+      "implementation": "NOT_QUALIFIED",
+      "observed": "已有 PQ 分项真实交易、服务身份与降级拒绝测试；本次安全声明未修改。",
+      "hold_reason": "既有整链 PQ 六项要求尚未全部关闭，全部授权根、迁移、量子共识、容量及独立端到端证据不齐。",
+      "evidence": [
+        "growth/",
+        "effects/",
+        "source/"
+      ],
+      "status": "HOLD",
+      "exit_condition_met": false
+    }
+  ],
+  "evidence_layout": {
+    "growth/": "Growth original-profile failure, diagnostic RED/GREEN, final native retained receipts.",
+    "m06/": "Final pinned Chain M06 unit, cancellation-contract integration and strict Clippy receipts; original liveness boundary.",
+    "effects/": "Migration 0016 and observation/first-terminal boundary evidence; cec7 and f852 historical results, Automation pre-test failures, and final d7c32f38 receipts remain separately bound.",
+    "source/": "Exact pair/lockfiles, final d7c32f38 V10 controls (107), owner controls (60), 51-file actual pair probe and original model limits/failures."
+  },
+  "evidence_copy_status": "Original receipts, logs, source inventories and failures are delivered under the relative directories in evidence_layout; artifact-index.json binds their bytes.",
+  "updated_at_utc": "2026-11-05T05:45:20.773541+00:00",
+  "historical_automation_build_failures": [
+    {
+      "commit": "f85289eff7366b60940d72cc611217db1bf1aef9",
+      "tree": "0b73080c1520f2d6b1c711662ea7df3d73b09b64",
+      "phase": "PRE_TEST_BUILD",
+      "reason": "offline cache missing diff v0.1.13",
+      "exit_code": 101,
+      "native_tests_executed": 0,
+      "counts_as_pass": false,
+      "counts_as_native_test_failure": false,
+      "source_unchanged": true,
+      "receipt": "effects/integrated-automation.json",
+      "receipt_sha256": "814b4e20157fdd324fe498f0162a3c419e7fea117ed8265d31653eb150a97a1e",
+      "log": "effects/integrated-automation.log",
+      "log_sha256": "29ec28f74a303846fe13dd691ccd9b07b7f779bc444c05f6befcf2fe4a466fb8",
+      "final_runtime_revalidation_status": "COMPLETED_SEPARATELY_AS_DEFAULT_FEATURE_TARGET_COVERAGE_ON_D7C"
+    },
+    {
+      "commit": "f85289eff7366b60940d72cc611217db1bf1aef9",
+      "tree": "0b73080c1520f2d6b1c711662ea7df3d73b09b64",
+      "phase": "PRE_TEST_BUILD",
+      "reason": "offline cache missing pretty_assertions v1.4.1",
+      "exit_code": 101,
+      "native_tests_executed": 0,
+      "counts_as_pass": false,
+      "counts_as_native_test_failure": false,
+      "source_unchanged": true,
+      "receipt": "effects/integrated-automation-retry-2.json",
+      "receipt_sha256": "545c737e6d27ad7ed69f7b037bec89dd1363e13f098d354c98c05d8187dfe8bb",
+      "log": "effects/integrated-automation-retry-2.log",
+      "log_sha256": "dfe2165a3a7c4cb7491a56c012e2639c25c8525cb44d1ce6bda62316292b277b",
+      "final_runtime_revalidation_status": "COMPLETED_SEPARATELY_AS_DEFAULT_FEATURE_TARGET_COVERAGE_ON_D7C"
+    },
+    {
+      "commit": "f85289eff7366b60940d72cc611217db1bf1aef9",
+      "tree": "0b73080c1520f2d6b1c711662ea7df3d73b09b64",
+      "phase": "PRE_TEST_BUILD",
+      "reason": "linker terminated with SIGBUS while disk was full; native tests did not start",
+      "exit_code": 101,
+      "native_tests_executed": 0,
+      "counts_as_pass": false,
+      "counts_as_native_test_failure": false,
+      "source_unchanged": true,
+      "receipt": "effects/integrated-automation-retry-3.json",
+      "receipt_sha256": "90a16e4044b9229a3756df5eb8118bd8491d22498514b53f482f4ed1a996ddae",
+      "log": "effects/integrated-automation-retry-3.log",
+      "log_sha256": "8f4cd0f8474440c0829333ba63322e993125c529224626edf984888a8c719037",
+      "final_runtime_revalidation_status": "COMPLETED_SEPARATELY_AS_DEFAULT_FEATURE_TARGET_COVERAGE_ON_D7C"
+    }
+  ],
+  "branch_readback": {
+    "observed_at": "2026-11-05T05:25:44.360Z",
+    "evidence": "branch-readback.json",
+    "receipt_sha256": "289f6402ab5ceb60e0b29ac4c50fd8c85bec628e562b1bb34353cbb3cb920429",
+    "chain_pr": 688,
+    "chain_branch": "fix/chain-six-axis-performance-20261103",
+    "observed_chain_head": "fc86ed8e927a8eb4e048b160437126a6c0b96c0d",
+    "frozen_chain_commit": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+    "ahead_by": 12,
+    "changed_path_count": 142,
+    "production_source_changed": true,
+    "cargo_lock_changed": true,
+    "evidence_only_change": false,
+    "qualified_by_frozen_pair_receipts": false,
+    "runtime_pr": 4812,
+    "observed_runtime_head": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+    "runtime_pr_observation_basis": "root final branch-readback report; frozen d7c receipt identity separately verified",
+    "claim": "The moving branch has additional code and lockfile changes. Results recorded against the frozen pair do not qualify this moving branch head."
+  },
+  "evidence_delivery_tip": {
+    "status": "IDENTIFIED_BY_CONTAINING_GIT_COMMIT",
+    "commit": null,
+    "reason": "The containing Git commit supplies the evidence delivery identity; no self-referential commit hash is embedded.",
+    "is_tested_code_sha": false,
+    "may_replace_frozen_code_pair": false,
+    "scope": "Evidence-only delivery preserves the frozen tested code identities; no result is inherited by a later branch head.",
+    "publication_parent_commit": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+    "publication_parent_contains_later_code": true
+  },
+  "publication_parent_readback": {
+    "evidence": "publication-parent-readback.json",
+    "sha256": "a0eb6a59eacf57b864c1463380b73ab482382c65a1bf6447d37e8b5c4ba28bbb",
+    "runtime_head": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+    "changed_paths": 22,
+    "source_and_lockfile_changed": true,
+    "qualified_by_frozen_pair_receipts": false
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "time_unix": 1793858369.091639,
+  "source_commit": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+  "native_attempt": "R-fc0c6f74-agentd-frontier-attempt2",
+  "scope": "Only this completed core incremental directory, no active crate or dependency output; profile/flags unchanged",
+  "cache_path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental/codex_core-12yfp9qqf6i8d",
+  "logical_bytes": 688146436,
+  "visible_rustc_before": [
+    {
+      "pid": "449761",
+      "crate": "trnm_mvcc_fee",
+      "incremental": [
+        "incremental=/workspace/scratch/0c2d131ac5a9/target/debug/incremental"
+      ]
+    },
+    {
+      "pid": "451208",
+      "crate": "app_test_support",
+      "incremental": [
+        "incremental=/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/incremental"
+      ]
+    }
+  ],
+  "dependency_hashes_before": [
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/libcodex_core-7f5e8d7e5e76fc87.rlib",
+      "bytes": 270419894,
+      "mtime_unix": 1793858207.636326,
+      "sha256": "1781275e119140bae7e4b327759891868fca2601049917ae58c02f6e732090f4"
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/libcodex_core-7f5e8d7e5e76fc87.rmeta",
+      "bytes": 35377764,
+      "mtime_unix": 1793858158.0483305,
+      "sha256": "2e987e6c7484056368509d872ab12fffc6b09f0fb03f71c1fbe1ed16a04da8c1"
+    }
+  ],
+  "before_all_free_bytes": 901816320,
+  "dependency_hashes_after": [
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/libcodex_core-7f5e8d7e5e76fc87.rlib",
+      "bytes": 270419894,
+      "mtime_unix": 1793858207.636326,
+      "sha256": "1781275e119140bae7e4b327759891868fca2601049917ae58c02f6e732090f4"
+    },
+    {
+      "path": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps/libcodex_core-7f5e8d7e5e76fc87.rmeta",
+      "bytes": 35377764,
+      "mtime_unix": 1793858158.0483305,
+      "sha256": "2e987e6c7484056368509d872ab12fffc6b09f0fb03f71c1fbe1ed16a04da8c1"
+    }
+  ],
+  "after_all_free_bytes": 1551888384,
+  "after_available_bytes": 0
+}

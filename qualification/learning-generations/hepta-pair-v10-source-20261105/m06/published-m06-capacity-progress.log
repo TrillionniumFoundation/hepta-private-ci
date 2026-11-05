@@ -1,0 +1,15 @@
+   Compiling trnm-mvcc-fee v0.1.0 (/workspace/scratch/48266f5bd43f/chain/trillionnium/crates/trnm-mvcc-fee)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 05s
+     Running tests/capacity_progress.rs (/workspace/scratch/48266f5bd43f/chain-target/debug/deps/capacity_progress-7693071852bf8c5f)
+
+running 7 tests
+test cancellation_payload_cannot_be_reinterpreted_as_invalid_state ... ok
+test complete_scan_matches_legacy_at_batch_and_capacity_boundaries ... ok
+test complete_scan_preserves_shared_zero_reward_and_archive_reservations ... ok
+test every_interruption_cut_stops_without_publishing_or_mutating_and_can_retry ... ok
+test malformed_state_keeps_original_error_and_cannot_publish_partial_capacity ... ok
+test non_clone_cancellation_payload_keeps_its_identity ... ok
+test wrong_profile_rejects_before_progress_without_upgrading_old_context ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.79s
+

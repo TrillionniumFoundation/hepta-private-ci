@@ -492,6 +492,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 
 #[derive(Debug)]
 pub enum ArtifactSelectionError {
+    AuthenticationProfile,
     InvalidTrust,
     InvalidOwnerTrust,
     OwnerTrustMismatch,
@@ -522,7 +523,8 @@ impl StdError for ArtifactSelectionError {
         match self {
             Self::Lifecycle(error) => Some(error),
             Self::Load(error) => Some(error),
-            Self::InvalidTrust
+            Self::AuthenticationProfile
+            | Self::InvalidTrust
             | Self::InvalidOwnerTrust
             | Self::OwnerTrustMismatch
             | Self::AuthorityKeyCollision

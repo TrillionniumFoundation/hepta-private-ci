@@ -1,0 +1,43 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling getrandom v0.4.2
+   Compiling rand_core v0.10.1
+   Compiling crypto-common v0.2.2
+   Compiling const-oid v0.10.2
+   Compiling der v0.8.3
+   Compiling digest v0.11.3
+   Compiling spki v0.8.1
+   Compiling rustix v1.1.4
+   Compiling shake v0.1.0
+   Compiling pkcs8 v0.11.0
+   Compiling signature v3.0.0
+   Compiling linux-raw-sys v0.12.1
+   Compiling trnm-protocol v0.1.0 (/workspace/scratch/48266f5bd43f/liveness/trillionnium/crates/trnm-protocol)
+   Compiling ml-dsa v0.1.1
+   Compiling tempfile v3.27.0
+   Compiling rusqlite v0.39.0
+   Compiling trnm-crypto-primitives v0.1.0 (/workspace/scratch/48266f5bd43f/liveness/trillionnium/crates/trnm-crypto-primitives)
+   Compiling trnm-verification-profiles v0.1.0 (/workspace/scratch/48266f5bd43f/liveness/trillionnium/crates/trnm-verification-profiles)
+   Compiling trnm-mvcc-fee v0.1.0 (/workspace/scratch/48266f5bd43f/liveness/trillionnium/crates/trnm-mvcc-fee)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8m 58s
+     Running unittests src/lib.rs (/workspace/scratch/48266f5bd43f/chain-target/debug/deps/trnm_mvcc_fee-d84608d7777c78ee)
+
+running 6 tests
+test continuity_v1::capacity_range_tests::capacity_range_full_return_abba_observation ... ignored, paired complete-capacity observation; not original Host or confirmation acceptance
+test continuity_v1::capacity_range_tests::capacity_ranges_match_full_state_and_authenticated_monetary_sources ... 
+thread 'continuity_v1::capacity_range_tests::capacity_ranges_match_full_state_and_authenticated_monetary_sources' (1064) panicked at crates/trnm-mvcc-fee/src/continuity_v1/capacity_range_tests.rs:5:55:
+called `Result::unwrap()` on an `Err` value: "PUBLIC_EVAL_NATIVE_REPLAY_REQUIRED"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+test continuity_v1::capacity_range_tests::capacity_ranges_preserve_first_error_and_exact_account_access_order ... ok
+test continuity_v1::capacity_range_tests::liability_ranges_keep_original_order_and_every_prefix_boundary ... ok
+test continuity_v1::capacity_range_tests::ordinary_capacity_keeps_full_key_limit_and_profile_error_precedence ... ok
+test continuity_v1::capacity_range_tests::ordinary_capacity_range_work_does_not_visit_unrelated_state_rows ... ok
+
+failures:
+
+failures:
+    continuity_v1::capacity_range_tests::capacity_ranges_match_full_state_and_authenticated_monetary_sources
+
+test result: FAILED. 4 passed; 1 failed; 1 ignored; 0 measured; 133 filtered out; finished in 0.55s
+
+error: test failed, to rerun pass `-p trnm-mvcc-fee --lib`

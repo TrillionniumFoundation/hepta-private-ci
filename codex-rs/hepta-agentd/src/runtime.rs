@@ -47,9 +47,10 @@ pub async fn run(
     let evidence_trust_file = config
         .evidence_trust_file()
         .map(std::path::Path::to_path_buf);
-    let evidence_recovery_frontier = config
-        .evidence_recovery_frontier_files()
-        .map(|(frontier, trust)| (frontier.to_path_buf(), trust.to_path_buf()));
+    // The ordinary App Server enables governance even without the evidence API
+    // or AuthBus flags. Every Agentd startup therefore requires this shared-store
+    // recovery gate, including a host that appears to be new or empty.
+    let evidence_recovery = crate::evidence_frontier::load_evidence_recovery_for_config(&config)?;
     let automation_effect_host_file = config
         .automation_effect_host_file()
         .map(std::path::Path::to_path_buf);
@@ -79,6 +80,7 @@ pub async fn run(
     let intuition_policy_host = config.intuition_policy_host();
     let intelligence_product = config.intelligence_product_runner();
     let intelligence_invocation = config.intelligence_invocation_provider();
+    let recovered_evidence_store = evidence_recovery.open(config.identity()).await?;
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -129,6 +131,18 @@ pub async fn run(
             AgentdError::Invalid("cognitive retrieval learning sink already attached".to_string())
         })?;
     }
+    if let Some(path) = evidence_trust_file {
+        state.refresh_generation()?;
+        let host = crate::evidence_host::EvidenceHost::open(
+            &identity,
+            path,
+            recovered_evidence_store.clone(),
+        )?;
+        state.refresh_generation()?;
+        state.evidence.set(Arc::new(host)).map_err(|_| {
+            AgentdError::Protocol("kernel evidence host already attached".to_string())
+        })?;
+    }
     match (trust_file, checkpoint_file) {
         (Some(trust), Some(checkpoint)) => {
             state.refresh_generation()?;
@@ -147,20 +161,6 @@ pub async fn run(
                     .to_string(),
             ));
         }
-    }
-    if let Some(path) = evidence_trust_file {
-        state.refresh_generation()?;
-        let host =
-            crate::evidence_host::EvidenceHost::open(&identity, path, evidence_recovery_frontier)
-                .await?;
-        state.refresh_generation()?;
-        state.evidence.set(Arc::new(host)).map_err(|_| {
-            AgentdError::Protocol("kernel evidence host already attached".to_string())
-        })?;
-    } else if evidence_recovery_frontier.is_some() {
-        return Err(AgentdError::Invalid(
-            "kernel evidence recovery frontier requires --evidence-trust-file".to_string(),
-        ));
     }
     if let Some(path) = objective_profile_file {
         state.refresh_generation()?;

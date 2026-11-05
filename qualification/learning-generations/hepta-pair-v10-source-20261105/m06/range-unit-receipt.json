@@ -1,0 +1,47 @@
+{
+  "args": [
+    "cargo",
+    "test",
+    "--locked",
+    "--offline",
+    "--manifest-path",
+    "trillionnium/Cargo.toml",
+    "-p",
+    "trnm-mvcc-fee",
+    "--all-features",
+    "--lib",
+    "capacity_range_tests",
+    "--",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "cwd": "/workspace/scratch/48266f5bd43f/liveness",
+  "base": "47b4a62463d8e1371a175c74196d52d99c5fccb8",
+  "inputs_before": {
+    "trillionnium/Cargo.toml": "48e0094090202b3b6d12331965be846a34c2a454ff3dc3717a532f228e4dd50b",
+    "trillionnium/Cargo.lock": "00f3573879f3da7d5a702a8bc13245196bbfd53b86b0b6eb19c51f14887cef61",
+    "rust-toolchain.toml": "24ef3b9d3edbd850aa386cb0a98e10450b0030991a4537cb359f54d49dbbb33a",
+    "trillionnium/crates/trnm-mvcc-fee/src/continuity_v1.rs": "3a31cb510391ae569c555c70ce9190670909ed1fb46234d02483c9a2eb170503",
+    "trillionnium/crates/trnm-mvcc-fee/src/continuity_v1/capacity_range_tests.rs": "7bbfd12015d29d1dd1d288c843063f2d2dd7bdf4f4695acccbc32c270e103466"
+  },
+  "start_epoch": 1793851936.4977846,
+  "environment": {
+    "CARGO_HOME": "/workspace/scratch/fee7901564fd-next/cargo-native799",
+    "CARGO_TARGET_DIR": "/workspace/scratch/48266f5bd43f/chain-target",
+    "CARGO_BUILD_JOBS": "1",
+    "OPENSSL_DIR": "/workspace/scratch/fee7901564fd-next/provider-native799/trnm-pq-provider-3.5.9.UF6qy3Q5/install",
+    "OPENSSL_STATIC": "1",
+    "OPENSSL_CONF": "/dev/null",
+    "OPENSSL_MODULES": "/workspace/scratch/fee7901564fd-next/provider-native799/trnm-pq-provider-3.5.9.UF6qy3Q5/install/lib/ossl-modules"
+  },
+  "status": "completed",
+  "exit_code": 101,
+  "end_epoch": 1793852476.1503458,
+  "inputs_after": {
+    "trillionnium/Cargo.toml": "48e0094090202b3b6d12331965be846a34c2a454ff3dc3717a532f228e4dd50b",
+    "trillionnium/Cargo.lock": "00f3573879f3da7d5a702a8bc13245196bbfd53b86b0b6eb19c51f14887cef61",
+    "rust-toolchain.toml": "24ef3b9d3edbd850aa386cb0a98e10450b0030991a4537cb359f54d49dbbb33a",
+    "trillionnium/crates/trnm-mvcc-fee/src/continuity_v1.rs": "3a31cb510391ae569c555c70ce9190670909ed1fb46234d02483c9a2eb170503",
+    "trillionnium/crates/trnm-mvcc-fee/src/continuity_v1/capacity_range_tests.rs": "7bbfd12015d29d1dd1d288c843063f2d2dd7bdf4f4695acccbc32c270e103466"
+  }
+}

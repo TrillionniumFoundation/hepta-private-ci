@@ -232,6 +232,11 @@ fn prepare(
     )
     .map_err(|error| format!("neural product qualification: {error}"))?;
     let authentication_profile = bootstrap.verifier.authentication_profile();
+    if authentication_profile != LearningAuthenticationProfile::MlDsa65V2 {
+        return Err(
+            "ordinary neural runtime requires PQ CURRENT and selector authority".to_owned(),
+        );
+    }
     let pin = bootstrap.model_pin.pin.clone();
     let parameters = read_parameter_fd(&bootstrap.payload, pin.payload_digest)?;
     let config = config

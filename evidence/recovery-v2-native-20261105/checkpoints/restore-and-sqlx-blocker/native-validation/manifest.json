@@ -1,0 +1,355 @@
+{
+  "schema_version": 1,
+  "status": "HOLD_NO_GO",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4812,
+  "baseline_commit": "3a8e50ddd79ec3e52ca58157323726c37069202c",
+  "upstream_source_commit": "ff280f268f4f2d2287109b7af7f8c22ba790df6c",
+  "upstream_pr": 4729,
+  "upstream_evidence_head": "a53e6e2a7aacf4784e48c680a5980960a17d8a35",
+  "qualification_target": "Code commit/tree above. Reproduction accepts a clean exact --candidate commit with only the accompanying evidence directory changed after that code commit; it verifies all fourteen source identities and records the actual checkout commit/tree.",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_frontier.rs",
+      "mode": "100644",
+      "bytes": 9724,
+      "sha256": "aa04df00510000848bd1ddb316ecf7f2f0832ed9d1f178215492ad9ed266d70c",
+      "git_blob": "202486445c3ae9a75e3eb63726313145332a8438",
+      "base": {
+        "bytes": 9042,
+        "sha256": "413aa945299d4a1ef1ea7b207725bbe7ec942fdb5a2913f06b13db0ea98546b8",
+        "git_blob": "aff8cdd21913699d6081949b4fa912e4d8aae86e",
+        "ref": "3a8e50ddd79ec3e52ca58157323726c37069202c"
+      },
+      "upstream": {
+        "bytes": 9724,
+        "sha256": "aa04df00510000848bd1ddb316ecf7f2f0832ed9d1f178215492ad9ed266d70c",
+        "git_blob": "202486445c3ae9a75e3eb63726313145332a8438",
+        "ref": "ff280f268f4f2d2287109b7af7f8c22ba790df6c",
+        "copied_byte_identical": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_effect_frontier.rs",
+      "mode": "100644",
+      "bytes": 4395,
+      "sha256": "86f5e0c2fea6909bffa871775336d2dd82edcb7e33cfbf7700494fd2af7f44a2",
+      "git_blob": "9cd2cfb8e8409df19ae18ee9042641cb0e493837",
+      "base": null,
+      "upstream": {
+        "bytes": 4395,
+        "sha256": "86f5e0c2fea6909bffa871775336d2dd82edcb7e33cfbf7700494fd2af7f44a2",
+        "git_blob": "9cd2cfb8e8409df19ae18ee9042641cb0e493837",
+        "ref": "ff280f268f4f2d2287109b7af7f8c22ba790df6c",
+        "copied_byte_identical": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "mode": "100644",
+      "bytes": 10582,
+      "sha256": "f1b85c12e4a31927e4eac92be675a1cbd00162d8451fff35d79c8a492f5d4229",
+      "git_blob": "1b03f6f7975331088fd3cfa08839d51f7e736a29",
+      "base": null,
+      "upstream": {
+        "bytes": 9737,
+        "sha256": "e3ffb6b954cfe9666818586eca261cd83db9a05d883d6b8d5acbccd15918399a",
+        "git_blob": "369d06302da7abda994e3befb3e5dbdd8a4648e9",
+        "ref": "ff280f268f4f2d2287109b7af7f8c22ba790df6c",
+        "copied_byte_identical": false
+      },
+      "integration_adjustment": "SQLx 0.9 literal-query compatibility for the identical corruption/restoration fixture."
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
+      "mode": "100644",
+      "bytes": 58338,
+      "sha256": "90a763e505766d3e85f62e26af89e5e501c3ed8f8c4175ce407d7b3490f13f22",
+      "git_blob": "a1015a232d770b920bf814f3ed0eb0aa44b73891",
+      "base": {
+        "bytes": 57680,
+        "sha256": "f7072bba360bba3ffbef66aff7026828177be05f429c1b0be9457f6fdedc9b98",
+        "git_blob": "f022838e72d3d1111b8795473fb5f56f2fafa0ce",
+        "ref": "3a8e50ddd79ec3e52ca58157323726c37069202c"
+      },
+      "upstream": {
+        "bytes": 58338,
+        "sha256": "90a763e505766d3e85f62e26af89e5e501c3ed8f8c4175ce407d7b3490f13f22",
+        "git_blob": "a1015a232d770b920bf814f3ed0eb0aa44b73891",
+        "ref": "ff280f268f4f2d2287109b7af7f8c22ba790df6c",
+        "copied_byte_identical": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/lib.rs",
+      "mode": "100644",
+      "bytes": 5262,
+      "sha256": "fcb7f7ed340233d05fb69bd184f58932cfe9ed1d57b61cedcf9e7d64e773a52b",
+      "git_blob": "2bf6230c9a8a615fde97eaabf5d1222c82093628",
+      "base": {
+        "bytes": 5018,
+        "sha256": "2667409f86e5db740737cd3ef688980ed4f1f60f0c29c40e500d85ce74456a18",
+        "git_blob": "55972501f7ec928c6b3d561573b1f566c72d3262",
+        "ref": "3a8e50ddd79ec3e52ca58157323726c37069202c"
+      },
+      "upstream": {
+        "bytes": 5262,
+        "sha256": "fcb7f7ed340233d05fb69bd184f58932cfe9ed1d57b61cedcf9e7d64e773a52b",
+        "git_blob": "2bf6230c9a8a615fde97eaabf5d1222c82093628",
+        "ref": "ff280f268f4f2d2287109b7af7f8c22ba790df6c",
+        "copied_byte_identical": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
+      "mode": "100644",
+      "bytes": 10833,
+      "sha256": "ac8cb28362eb509b2b5cb18b1b45b5201d3e79a2ec8804b7d64c0facdeada24b",
+      "git_blob": "758a78047e2d5666cb2c839e5abee1bc3e424657",
+      "base": {
+        "bytes": 10243,
+        "sha256": "d4b3ec3fb8beae06a73e583c0014b4302de03464a2e9c6825e1b31736c094e9e",
+        "git_blob": "e8e1c304e8ba4b333fd272a1a4e48d94bea4d087",
+        "ref": "3a8e50ddd79ec3e52ca58157323726c37069202c"
+      },
+      "upstream": {
+        "bytes": 10833,
+        "sha256": "ac8cb28362eb509b2b5cb18b1b45b5201d3e79a2ec8804b7d64c0facdeada24b",
+        "git_blob": "758a78047e2d5666cb2c839e5abee1bc3e424657",
+        "ref": "ff280f268f4f2d2287109b7af7f8c22ba790df6c",
+        "copied_byte_identical": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "mode": "100644",
+      "bytes": 7231,
+      "sha256": "8a469e6db132aed35a58130047874f2e25c916ffaae75e4da709a6b6f0c5383a",
+      "git_blob": "2d3c263aaa447fce32e867f98c9ecad65aeb7f1c",
+      "base": null,
+      "upstream": {
+        "bytes": 7231,
+        "sha256": "8a469e6db132aed35a58130047874f2e25c916ffaae75e4da709a6b6f0c5383a",
+        "git_blob": "2d3c263aaa447fce32e867f98c9ecad65aeb7f1c",
+        "ref": "ff280f268f4f2d2287109b7af7f8c22ba790df6c",
+        "copied_byte_identical": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "mode": "100644",
+      "bytes": 14213,
+      "sha256": "99f43e9eaa31b4be7d7cf59e32f2c0c9a0e29650645e033bce16b056c8286265",
+      "git_blob": "e173a35b89d0bc79f68e35c4ee558c5b37998173",
+      "base": {
+        "bytes": 14213,
+        "sha256": "686d425fe825c33457773897773d736400de18fecf7de853745e9f570d757679",
+        "git_blob": "3375eedbf970551b4a183e84c6bfcc701fa4b07f",
+        "ref": "3a8e50ddd79ec3e52ca58157323726c37069202c"
+      },
+      "upstream": {
+        "bytes": 14213,
+        "sha256": "99f43e9eaa31b4be7d7cf59e32f2c0c9a0e29650645e033bce16b056c8286265",
+        "git_blob": "e173a35b89d0bc79f68e35c4ee558c5b37998173",
+        "ref": "ff280f268f4f2d2287109b7af7f8c22ba790df6c",
+        "copied_byte_identical": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "mode": "100644",
+      "bytes": 31625,
+      "sha256": "9f39733d5d275150f12fc29c0a23899f880b308ff182dff5aa45636e90cf732b",
+      "git_blob": "33df89f287b98e5b0dbbe2bd3305d2007812e613",
+      "base": {
+        "bytes": 30280,
+        "sha256": "0e9509f9ef5cb7e788275e1828f4a0c6894db78b5c70e5364b90ad22732fed2f",
+        "git_blob": "c13d0f5e12625d15555ec7467071987dc6242369",
+        "ref": "3a8e50ddd79ec3e52ca58157323726c37069202c"
+      },
+      "upstream": {
+        "bytes": 31625,
+        "sha256": "9f39733d5d275150f12fc29c0a23899f880b308ff182dff5aa45636e90cf732b",
+        "git_blob": "33df89f287b98e5b0dbbe2bd3305d2007812e613",
+        "ref": "ff280f268f4f2d2287109b7af7f8c22ba790df6c",
+        "copied_byte_identical": true
+      }
+    },
+    {
+      "path": "docs/lane-a-foundation/kernel.evidence/RECOVERY_FRONTIER_V1.md",
+      "mode": "100644",
+      "bytes": 9155,
+      "sha256": "c74ebc984f65df8290455bb5a736f14efb681020c45b035b9f75e3e80bcabdd5",
+      "git_blob": "9674f1f086ecc0a680e864a71c4f4c3018c25873",
+      "base": {
+        "bytes": 7045,
+        "sha256": "01c5f72be34aa3c93e1b92f29133377188a9894c90743f50b7b7d5f610d7c331",
+        "git_blob": "951c4067adb5fae242497733d711bc3d18745007",
+        "ref": "3a8e50ddd79ec3e52ca58157323726c37069202c"
+      },
+      "upstream": {
+        "bytes": 9155,
+        "sha256": "c74ebc984f65df8290455bb5a736f14efb681020c45b035b9f75e3e80bcabdd5",
+        "git_blob": "9674f1f086ecc0a680e864a71c4f4c3018c25873",
+        "ref": "ff280f268f4f2d2287109b7af7f8c22ba790df6c",
+        "copied_byte_identical": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs",
+      "mode": "100644",
+      "bytes": 5296,
+      "sha256": "afb1fafde1fbadb16377bee14367fa32f8e79fe482c29a6ee1e30642f92aa8c1",
+      "git_blob": "e5b4abbb143dd49b0f4eec37f09b7bf3c9efdc5d",
+      "base": null,
+      "upstream": {
+        "bytes": 5296,
+        "sha256": "afb1fafde1fbadb16377bee14367fa32f8e79fe482c29a6ee1e30642f92aa8c1",
+        "git_blob": "e5b4abbb143dd49b0f4eec37f09b7bf3c9efdc5d",
+        "ref": "ff280f268f4f2d2287109b7af7f8c22ba790df6c",
+        "copied_byte_identical": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-contracts/FINAL_USE.md",
+      "mode": "100644",
+      "bytes": 32860,
+      "sha256": "2ec9743f181c3adf927a414b2f8bb463fde320759aa54c69487be85a9969f5da",
+      "git_blob": "c74e2cecf9f56ee9a424f05ed7edd006729e05a3",
+      "base": {
+        "bytes": 31162,
+        "sha256": "17ce460bb4298e0505a970a481e6bdb322d904d4a0de6449955e73516ff77971",
+        "git_blob": "dda6b2e8614bfe0d359f3c53d55490440ccb7d1d",
+        "ref": "3a8e50ddd79ec3e52ca58157323726c37069202c"
+      },
+      "upstream": {
+        "bytes": 37043,
+        "sha256": "eb1dc8db8e986f5ac247a2d22cd7ec2d3b65be84e1d8d442149319be3e13b971",
+        "git_blob": "d6fb8d9e90c047481dff6607b7e2b7822568d910",
+        "ref": "ff280f268f4f2d2287109b7af7f8c22ba790df6c",
+        "copied_byte_identical": false
+      }
+    },
+    {
+      "path": "docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json",
+      "mode": "100644",
+      "bytes": 25296,
+      "sha256": "bbeabddfb7c914d2a01c4cbdababd810fa1e9de84a875efc79283845f2cd72b4",
+      "git_blob": "6f5fc8a8ec580d156d112aadb2326b9dba88fb56",
+      "base": {
+        "bytes": 25296,
+        "sha256": "dc578042b6f6f22442615104bd903d17a817e1a41fe24d8056f78d6610b35bb0",
+        "git_blob": "0d8a3e30dd57ee5ac7fa4047d4fa113f5d5edd16",
+        "ref": "3a8e50ddd79ec3e52ca58157323726c37069202c"
+      },
+      "upstream": null
+    },
+    {
+      "path": "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json",
+      "mode": "100644",
+      "bytes": 73068,
+      "sha256": "f31fc5f71cebbb55926bee21f1074ecdc8f0377843df46d9cdb95b62325f48f9",
+      "git_blob": "bd9fe1c31b46f80e9266b815659fc6b1e07362ab",
+      "base": {
+        "bytes": 73068,
+        "sha256": "6f0399689efbbfb0e599d338f93b04f9ef6a8a42652ad66ef17541da62e03076",
+        "git_blob": "3587652254cf7b9b1395231d11fa8b989350a21c",
+        "ref": "3a8e50ddd79ec3e52ca58157323726c37069202c"
+      },
+      "upstream": null
+    }
+  ],
+  "unchanged_actual_caller": {
+    "path": "codex-rs/hepta-agentd/src/evidence_host.rs",
+    "ref": "3a8e50ddd79ec3e52ca58157323726c37069202c",
+    "bytes": 9084,
+    "sha256": "1dc2036d79d2e039ff28f7b7761e058d9cbb4dc27069fcf38d43eb36fe9c0962",
+    "git_blob": "8296fab73f1aa439e46b264ce33f12ec1ad0a737",
+    "unchanged": true
+  },
+  "static_checks": {
+    "algorithm_known_vectors": "PASS",
+    "upstream_manifest_files": 10,
+    "upstream_provenance_blob": "PASS",
+    "base_files": 12,
+    "status": "PASS",
+    "json_minimal_substitutions": {
+      "docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json": {
+        "snapshot": 1,
+        "frontier": 1
+      },
+      "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json": {
+        "snapshot": 1,
+        "frontier": 3
+      }
+    },
+    "legacy_signing_domain_mentions": [
+      {
+        "path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "line": 166,
+        "text": "let mut bytes = b\"hepta.kernel.evidence.recovery-frontier.v1\\0\".to_vec();"
+      }
+    ],
+    "final_use_preserves_current_prefix": true,
+    "source_scan": "Retained exact-baseline repository rg plus complete in-memory candidate closure scan; source inspection only.",
+    "root_publication": "Both root and a second agent reviewed the literal-SQL-only correction; root published d206 as a one-file source change after f2bc. This is source review, not independent runtime acceptance."
+  },
+  "validation": {
+    "status": "Results are recorded separately; this source manifest is not a native PASS receipt.",
+    "original_script_ast_compile": "PASS",
+    "original_script_format_phase": "PASS",
+    "original_owner_green_initial": "BUILD_BLOCKED_MISSING_PKG_CONFIG_ZERO_TESTS",
+    "original_owner_red": "COMPILE_FAILED_E0277_ZERO_TESTS_NOT_RED",
+    "corrected_owner_red": "PENDING",
+    "corrected_owner_green": "PENDING",
+    "corrected_signed_frontier": "PENDING",
+    "corrected_owner_full_package": "PENDING",
+    "corrected_scoped_lint": "PENDING",
+    "product_ipc": "Previously observed AF_UNIX EPERM; no bypass attempted."
+  },
+  "expected_owner_red": {
+    "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt": "FAIL",
+    "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback": "FAIL",
+    "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order": "FAIL",
+    "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page": "FAIL",
+    "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests": "FAIL",
+    "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty": "FAIL",
+    "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status": "PASS"
+  },
+  "expected_signed_tests": [
+    "evidence_frontier::tests::recovery_frontier_refuses_a_valid_old_v1_signature",
+    "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields"
+  ],
+  "expected_product_tests": [
+    "signed_recovery_frontier_allows_exact_current_database",
+    "signed_recovery_frontier_rejects_valid_older_database_image",
+    "signed_recovery_frontier_rejects_effect_only_database_rollback"
+  ],
+  "expected_statuses_are_observations": false,
+  "scope": {
+    "recovery_configuration": "V2 is enforced when EvidenceHost::open receives configured frontier and signer-trust paths; no universal mandatory-frontier policy was added.",
+    "authentication": "The recovery checkpoint and trust key remain Ed25519; this is not a PQ recovery root.",
+    "storage": "No SQLite schema migration; public snapshot/frontier types and signed record/domain are V2; old V1 files are rejected and require a reviewed new V2 checkpoint.",
+    "failure_domain": "A signed file outside Agent home is not authenticated freshness, an independent physical rollback domain, remote CAS, or durable co-signing.",
+    "effect_owners": "Provider-effect rows owned by hepta-evidence are covered. AutomationStore and FinalUse/provider atomic consume/execution remain outside this integration.",
+    "currentness": "The live frontier-to-clock-to-provider execution race is not closed.",
+    "acceptance": "A1/A2/A3 and B/C/D/E overall gates remain HOLD; no independent runtime acceptance is claimed."
+  },
+  "reproduction": {
+    "path": "evidence/recovery-v2-native-20261105/reproduce.py",
+    "mode": "100755",
+    "bytes": 9748,
+    "sha256": "0af61cb35c99ac84e4e5d6d6a7fc510e5fe8f3ca4609868e3ea234f90255c9a2",
+    "git_blob": "26253d471f992a576f4a6fe9f65dc6ae13167edc"
+  },
+  "candidate_code_commit": "d206c3c787f6b67c771b67a8e1d46c8261810042",
+  "candidate_code_tree": "00048be8564f7726716f78edbb37d79ab273167a",
+  "previous_code_commit": "29fcd2e88654d5bec2bf30134cc030b5bfa7831b",
+  "previous_code_tree": "9653293a81dfda7f17c12a54fd7bd5f4170ea867",
+  "history": {
+    "original_evidence_commit": "f2bc730eb40faaf1937c5f5f5c6286e24cb2b4f7",
+    "original_scope_record": "evidence/recovery-v2-integration-20261105/manifest.json",
+    "original_native_attempt": "The original fixture failed to compile with four SQLx SqlSafeStr E0277 errors; zero tests ran. This is not a successful RED.",
+    "fix": "Only recovery_effect_frontier_tests.rs changed: all 12 SELECT/DROP/UPDATE/restore strings are fixed literals, preserving three tables and every assertion."
+  }
+}

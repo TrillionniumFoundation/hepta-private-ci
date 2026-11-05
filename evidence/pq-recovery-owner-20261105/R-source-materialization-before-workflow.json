@@ -1,0 +1,682 @@
+{
+  "time_unix": 1793857423.7013605,
+  "source_commit": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+  "source_tree": "8403d5acabc83707e9b5fcb4e5250a4883c12293",
+  "own_paths": 22,
+  "incoming_paths": 61,
+  "checked_workspace_paths": 9302,
+  "git_status_porcelain": "",
+  "lazy_fetch_disabled": true,
+  "errors": [
+    {
+      "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+      "reason": "required source not materialized"
+    }
+  ],
+  "records": [
+    {
+      "family": "own",
+      "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+      "expected_git_blob": "392ad92cfdf63c6a1a8281683ec1074a845cff68",
+      "HEAD_git_blob": "392ad92cfdf63c6a1a8281683ec1074a845cff68",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/Cargo.lock",
+      "expected_git_blob": "181d14a3124d94fb1f2c880da93f1c09a1f5cf76",
+      "HEAD_git_blob": "181d14a3124d94fb1f2c880da93f1c09a1f5cf76",
+      "materialized": true,
+      "worktree_git_blob": "181d14a3124d94fb1f2c880da93f1c09a1f5cf76"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-agentd/PQ_INSTALLATION.md",
+      "expected_git_blob": "37876ccf43fc00daf42af856779feed150508691",
+      "HEAD_git_blob": "37876ccf43fc00daf42af856779feed150508691",
+      "materialized": true,
+      "worktree_git_blob": "37876ccf43fc00daf42af856779feed150508691"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "expected_git_blob": "fdb40b98af1774f3e4684955ce6a71e933ae00ec",
+      "HEAD_git_blob": "fdb40b98af1774f3e4684955ce6a71e933ae00ec",
+      "materialized": true,
+      "worktree_git_blob": "fdb40b98af1774f3e4684955ce6a71e933ae00ec"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
+      "expected_git_blob": "74a95d84f8bf1bc78eb372a50ffc03124f57e34e",
+      "HEAD_git_blob": "74a95d84f8bf1bc78eb372a50ffc03124f57e34e",
+      "materialized": true,
+      "worktree_git_blob": "74a95d84f8bf1bc78eb372a50ffc03124f57e34e"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "expected_git_blob": "4cc294ec045dbd737b8a5d4df0efd0502ece04fa",
+      "HEAD_git_blob": "4cc294ec045dbd737b8a5d4df0efd0502ece04fa",
+      "materialized": true,
+      "worktree_git_blob": "4cc294ec045dbd737b8a5d4df0efd0502ece04fa"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-agentd/src/evidence_host.rs",
+      "expected_git_blob": "fe25ae2911be52bbf6323f0cb1da6c726d777367",
+      "HEAD_git_blob": "fe25ae2911be52bbf6323f0cb1da6c726d777367",
+      "materialized": true,
+      "worktree_git_blob": "fe25ae2911be52bbf6323f0cb1da6c726d777367"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "expected_git_blob": "0163c93fe252e2f73ed4c1870229204a1a9c6c3d",
+      "HEAD_git_blob": "0163c93fe252e2f73ed4c1870229204a1a9c6c3d",
+      "materialized": true,
+      "worktree_git_blob": "0163c93fe252e2f73ed4c1870229204a1a9c6c3d"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "expected_git_blob": "01387f0f2fcaa4641b6851961c4f9961913e7cb5",
+      "HEAD_git_blob": "01387f0f2fcaa4641b6851961c4f9961913e7cb5",
+      "materialized": true,
+      "worktree_git_blob": "01387f0f2fcaa4641b6851961c4f9961913e7cb5"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "expected_git_blob": "2931472d8378984e8a7c17872dd4f8255bf041f4",
+      "HEAD_git_blob": "2931472d8378984e8a7c17872dd4f8255bf041f4",
+      "materialized": true,
+      "worktree_git_blob": "2931472d8378984e8a7c17872dd4f8255bf041f4"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+      "expected_git_blob": "1af182f3aca43c2f466a2e41a7eeff21adb2b0a5",
+      "HEAD_git_blob": "1af182f3aca43c2f466a2e41a7eeff21adb2b0a5",
+      "materialized": true,
+      "worktree_git_blob": "1af182f3aca43c2f466a2e41a7eeff21adb2b0a5"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "expected_git_blob": "763f4c6e2c5c8f97817dd4f6eb48bc4052ee704c",
+      "HEAD_git_blob": "763f4c6e2c5c8f97817dd4f6eb48bc4052ee704c",
+      "materialized": true,
+      "worktree_git_blob": "763f4c6e2c5c8f97817dd4f6eb48bc4052ee704c"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+      "expected_git_blob": "0be55823473976b8cd95dec236412b744e585498",
+      "HEAD_git_blob": "0be55823473976b8cd95dec236412b744e585498",
+      "materialized": true,
+      "worktree_git_blob": "0be55823473976b8cd95dec236412b744e585498"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "expected_git_blob": "b82b225213a149103fd47a57fee9256bcb328b22",
+      "HEAD_git_blob": "b82b225213a149103fd47a57fee9256bcb328b22",
+      "materialized": true,
+      "worktree_git_blob": "b82b225213a149103fd47a57fee9256bcb328b22"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-agentd/tests/support/mod.rs",
+      "expected_git_blob": "93319893c69292d151aaf3ca46a2a5527cc4aada",
+      "HEAD_git_blob": "93319893c69292d151aaf3ca46a2a5527cc4aada",
+      "materialized": true,
+      "worktree_git_blob": "93319893c69292d151aaf3ca46a2a5527cc4aada"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-agentd/tests/support/recovery.rs",
+      "expected_git_blob": "52f6805d7497b6e51a36fb2bf175299aec41bfd8",
+      "HEAD_git_blob": "52f6805d7497b6e51a36fb2bf175299aec41bfd8",
+      "materialized": true,
+      "worktree_git_blob": "52f6805d7497b6e51a36fb2bf175299aec41bfd8"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-infer-worker-host/Cargo.toml",
+      "expected_git_blob": "7bc85caa06ff80587496acb36fc7d1499fcb7b1c",
+      "HEAD_git_blob": "7bc85caa06ff80587496acb36fc7d1499fcb7b1c",
+      "materialized": true,
+      "worktree_git_blob": "7bc85caa06ff80587496acb36fc7d1499fcb7b1c"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-neural-agentd.rs",
+      "expected_git_blob": "5d6835b5a995604fc96f6f996c92f1d0102a3fd1",
+      "HEAD_git_blob": "5d6835b5a995604fc96f6f996c92f1d0102a3fd1",
+      "materialized": true,
+      "worktree_git_blob": "5d6835b5a995604fc96f6f996c92f1d0102a3fd1"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_agentd_recovery_tests.rs",
+      "expected_git_blob": "443232c4298c1608f9abcb455371d3a04ced7052",
+      "HEAD_git_blob": "443232c4298c1608f9abcb455371d3a04ced7052",
+      "materialized": true,
+      "worktree_git_blob": "443232c4298c1608f9abcb455371d3a04ced7052"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_agentd_tests.rs",
+      "expected_git_blob": "2b8d02fdc93a82f6e6b1c2c8acbef1357f1b4436",
+      "HEAD_git_blob": "2b8d02fdc93a82f6e6b1c2c8acbef1357f1b4436",
+      "materialized": true,
+      "worktree_git_blob": "2b8d02fdc93a82f6e6b1c2c8acbef1357f1b4436"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs",
+      "expected_git_blob": "9cd45cabc7539a1810eb3c5afa0055633b67a7d8",
+      "HEAD_git_blob": "9cd45cabc7539a1810eb3c5afa0055633b67a7d8",
+      "materialized": true,
+      "worktree_git_blob": "9cd45cabc7539a1810eb3c5afa0055633b67a7d8"
+    },
+    {
+      "family": "own",
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_study_ordinary_tests.rs",
+      "expected_git_blob": "8b724e5ba0e923e57fc69e7d718b41ba4b3ef5ae",
+      "HEAD_git_blob": "8b724e5ba0e923e57fc69e7d718b41ba4b3ef5ae",
+      "materialized": true,
+      "worktree_git_blob": "8b724e5ba0e923e57fc69e7d718b41ba4b3ef5ae"
+    },
+    {
+      "family": "incoming",
+      "path": ".github/workflows/hepta-pon-native-pair.yml",
+      "expected_git_blob": "7c0cb5ead4fb0a811ed286afee1472a903bd2200",
+      "HEAD_git_blob": "7c0cb5ead4fb0a811ed286afee1472a903bd2200",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": ".github/workflows/hepta-public-initial-v2.yml",
+      "expected_git_blob": "311eec628a0b2eaf4de358f9597ff152331bbf6c",
+      "HEAD_git_blob": "311eec628a0b2eaf4de358f9597ff152331bbf6c",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-automation/src/taskflow.rs",
+      "expected_git_blob": "c1641baa6e07cca7a0ebdb3264c3f0dd066c3c69",
+      "HEAD_git_blob": "c1641baa6e07cca7a0ebdb3264c3f0dd066c3c69",
+      "materialized": true,
+      "worktree_git_blob": "c1641baa6e07cca7a0ebdb3264c3f0dd066c3c69"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-automation/tests/taskflow_step.rs",
+      "expected_git_blob": "c07efe5770043eefe5ed7a1ad8cdfc28b2d78d12",
+      "HEAD_git_blob": "c07efe5770043eefe5ed7a1ad8cdfc28b2d78d12",
+      "materialized": true,
+      "worktree_git_blob": "c07efe5770043eefe5ed7a1ad8cdfc28b2d78d12"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-evidence/migrations/0016_provider_effect_observation_history.sql",
+      "expected_git_blob": "c6c0a4e0d68600dfc2d6527f181ad9a1616b74ee",
+      "HEAD_git_blob": "c6c0a4e0d68600dfc2d6527f181ad9a1616b74ee",
+      "materialized": true,
+      "worktree_git_blob": "c6c0a4e0d68600dfc2d6527f181ad9a1616b74ee"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-evidence/src/authbus_owner_policy_tests.rs",
+      "expected_git_blob": "e7df9bf12a95b5e88954b649ac7bbbc2dc1f2308",
+      "HEAD_git_blob": "e7df9bf12a95b5e88954b649ac7bbbc2dc1f2308",
+      "materialized": true,
+      "worktree_git_blob": "e7df9bf12a95b5e88954b649ac7bbbc2dc1f2308"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-evidence/src/lib.rs",
+      "expected_git_blob": "8772f8709ec194030c00e61913e832ae719a0306",
+      "HEAD_git_blob": "8772f8709ec194030c00e61913e832ae719a0306",
+      "materialized": true,
+      "worktree_git_blob": "8772f8709ec194030c00e61913e832ae719a0306"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-evidence/src/provider_effect_observation_migration_tests.rs",
+      "expected_git_blob": "fe8037965dedcfd77487aa12244d5ca5014a5761",
+      "HEAD_git_blob": "fe8037965dedcfd77487aa12244d5ca5014a5761",
+      "materialized": true,
+      "worktree_git_blob": "fe8037965dedcfd77487aa12244d5ca5014a5761"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-evidence/src/provider_effect_observation_schema.rs",
+      "expected_git_blob": "6fd3eb5942a8f0cef42d5947386784c025392619",
+      "HEAD_git_blob": "6fd3eb5942a8f0cef42d5947386784c025392619",
+      "materialized": true,
+      "worktree_git_blob": "6fd3eb5942a8f0cef42d5947386784c025392619"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs",
+      "expected_git_blob": "d4c3b801015e4fcd6ee8b089ca04aaa80cec3ce4",
+      "HEAD_git_blob": "d4c3b801015e4fcd6ee8b089ca04aaa80cec3ce4",
+      "materialized": true,
+      "worktree_git_blob": "d4c3b801015e4fcd6ee8b089ca04aaa80cec3ce4"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
+      "expected_git_blob": "c8784d8284d7253383cf45d96ad9923d9cb57530",
+      "HEAD_git_blob": "c8784d8284d7253383cf45d96ad9923d9cb57530",
+      "materialized": true,
+      "worktree_git_blob": "c8784d8284d7253383cf45d96ad9923d9cb57530"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-evidence/src/provider_effect_tests.rs",
+      "expected_git_blob": "cdf5772506371af60d443d21b6c729c64b9a2cf6",
+      "HEAD_git_blob": "cdf5772506371af60d443d21b6c729c64b9a2cf6",
+      "materialized": true,
+      "worktree_git_blob": "cdf5772506371af60d443d21b6c729c64b9a2cf6"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-evidence/src/store.rs",
+      "expected_git_blob": "a250a58f7a26377481fba466446aa72e99aa0c89",
+      "HEAD_git_blob": "a250a58f7a26377481fba466446aa72e99aa0c89",
+      "materialized": true,
+      "worktree_git_blob": "a250a58f7a26377481fba466446aa72e99aa0c89"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v10.json",
+      "expected_git_blob": "91b0159b7c5120270098af20172bf0d98dd4f06b",
+      "HEAD_git_blob": "91b0159b7c5120270098af20172bf0d98dd4f06b",
+      "materialized": true,
+      "worktree_git_blob": "91b0159b7c5120270098af20172bf0d98dd4f06b"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v6.json",
+      "expected_git_blob": "39d8968f038cebcaaa702b909629f6858d0aeebf",
+      "HEAD_git_blob": "39d8968f038cebcaaa702b909629f6858d0aeebf",
+      "materialized": true,
+      "worktree_git_blob": "39d8968f038cebcaaa702b909629f6858d0aeebf"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v7.json",
+      "expected_git_blob": "19bdab011d806663c8ae72ecaaf1101a5eea317e",
+      "HEAD_git_blob": "19bdab011d806663c8ae72ecaaf1101a5eea317e",
+      "materialized": true,
+      "worktree_git_blob": "19bdab011d806663c8ae72ecaaf1101a5eea317e"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v8.json",
+      "expected_git_blob": "c8ba72ae8c29826f632a937b6addceeb8e6320ff",
+      "HEAD_git_blob": "c8ba72ae8c29826f632a937b6addceeb8e6320ff",
+      "materialized": true,
+      "worktree_git_blob": "c8ba72ae8c29826f632a937b6addceeb8e6320ff"
+    },
+    {
+      "family": "incoming",
+      "path": "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v9.json",
+      "expected_git_blob": "ec50603e8ff8daf8de97fc8a7c0960a9bcf059f4",
+      "HEAD_git_blob": "ec50603e8ff8daf8de97fc8a7c0960a9bcf059f4",
+      "materialized": true,
+      "worktree_git_blob": "ec50603e8ff8daf8de97fc8a7c0960a9bcf059f4"
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v6-source-20261104/binding-and-local-controls.json",
+      "expected_git_blob": "fc3947e4d4049e9bb4e8dd94b8c123435b4f84e4",
+      "HEAD_git_blob": "fc3947e4d4049e9bb4e8dd94b8c123435b4f84e4",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v6-source-20261104/coverage-review.json",
+      "expected_git_blob": "7fd4856760d65f1d1a7282d8e236d00a03fbbf70",
+      "HEAD_git_blob": "7fd4856760d65f1d1a7282d8e236d00a03fbbf70",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v6-source-20261104/diverse-installed-context.log",
+      "expected_git_blob": "3494df075505298d5e1edad5ba4237214de2c839",
+      "HEAD_git_blob": "3494df075505298d5e1edad5ba4237214de2c839",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v6-source-20261104/merge-tree-controls.json",
+      "expected_git_blob": "de2691882df22ebab81e55cb8ea429f6622bca4a",
+      "HEAD_git_blob": "de2691882df22ebab81e55cb8ea429f6622bca4a",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v6-source-20261104/source-active-v6.log",
+      "expected_git_blob": "fbfc69f5885ff96d9e3169afc36cdc2839a90d74",
+      "HEAD_git_blob": "fbfc69f5885ff96d9e3169afc36cdc2839a90d74",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v7-source-20261104/binding-and-local-controls.json",
+      "expected_git_blob": "d5a68d870751971487fee11c46b0b5951dade03a",
+      "HEAD_git_blob": "d5a68d870751971487fee11c46b0b5951dade03a",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v7-source-20261104/chain-a10c-business.json",
+      "expected_git_blob": "92092d8056d5bdea0e912982f69c1e4fd2f646cb",
+      "HEAD_git_blob": "92092d8056d5bdea0e912982f69c1e4fd2f646cb",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v7-source-20261104/chain-a10c-protocol-execution.json",
+      "expected_git_blob": "7b1db22c8db2e66de9d129582659e75cc23fef7d",
+      "HEAD_git_blob": "7b1db22c8db2e66de9d129582659e75cc23fef7d",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v7-source-20261104/chain-parent-44d-business.json",
+      "expected_git_blob": "3f244e91c1e6bf6e2d07f37a0096b16654d36bc8",
+      "HEAD_git_blob": "3f244e91c1e6bf6e2d07f37a0096b16654d36bc8",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v7-source-20261104/chain-parent-44d-false-trace.json",
+      "expected_git_blob": "e7440fb45b04e20ee3333896b16db645e199c998",
+      "HEAD_git_blob": "e7440fb45b04e20ee3333896b16db645e199c998",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v7-source-20261104/chain-parent-44d-pq-controls.json",
+      "expected_git_blob": "52e487ecccb3fc2e401545d86f4727edfd1bb6a0",
+      "HEAD_git_blob": "52e487ecccb3fc2e401545d86f4727edfd1bb6a0",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v7-source-20261104/chain-parent-44d-pq-full-regression.json",
+      "expected_git_blob": "697ac273f4e8aeac020b182ce5599719c03aaf88",
+      "HEAD_git_blob": "697ac273f4e8aeac020b182ce5599719c03aaf88",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v7-source-20261104/controlled-pq-workflow-wiring.json",
+      "expected_git_blob": "dad86a3c95d2600c37f1687f0f0e4ac1fcfca36b",
+      "HEAD_git_blob": "dad86a3c95d2600c37f1687f0f0e4ac1fcfca36b",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v7-source-20261104/current-pq-binary-controls.log",
+      "expected_git_blob": "e25e4edbf4d37da6bb2c260440df2d4fb17a9db0",
+      "HEAD_git_blob": "e25e4edbf4d37da6bb2c260440df2d4fb17a9db0",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v7-source-20261104/diverse-installed-context.log",
+      "expected_git_blob": "7fcfc4786aaaf37008d181fe53305a576a462887",
+      "HEAD_git_blob": "7fcfc4786aaaf37008d181fe53305a576a462887",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v7-source-20261104/legacy-pq-owner-selector-failure.json",
+      "expected_git_blob": "1ccc3e4edf6e3ca7d20188002969c2a004457b76",
+      "HEAD_git_blob": "1ccc3e4edf6e3ca7d20188002969c2a004457b76",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/pon-v7-source-20261104/source-active-v7.log",
+      "expected_git_blob": "64a442be955b23d25c85ef33380a687a6ce18cac",
+      "HEAD_git_blob": "64a442be955b23d25c85ef33380a687a6ce18cac",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/README.md",
+      "expected_git_blob": "123d4ce79bbf2e3158e430f550254dc3ed006f7c",
+      "HEAD_git_blob": "123d4ce79bbf2e3158e430f550254dc3ed006f7c",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/cache-preparation/quarantine-receipt.json",
+      "expected_git_blob": "2d89e1b7cf49cd83e51f1744ae17bd4b8894bf13",
+      "HEAD_git_blob": "2d89e1b7cf49cd83e51f1744ae17bd4b8894bf13",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/cache-preparation/quarantine-refusal-argv0.json",
+      "expected_git_blob": "76bc0cbede9337b7fedab7f1cd69fa6f2fb7a21e",
+      "HEAD_git_blob": "76bc0cbede9337b7fedab7f1cd69fa6f2fb7a21e",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/cache-preparation/quarantine-refusal-cwd.json",
+      "expected_git_blob": "1b82bfc1f860289746dbe79ae02a176b15635dba",
+      "HEAD_git_blob": "1b82bfc1f860289746dbe79ae02a176b15635dba",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/cache-preparation/quarantine_sqlx_macros.py",
+      "expected_git_blob": "2597cb0717c8c46c6c96162b278ed98b752bb517",
+      "HEAD_git_blob": "2597cb0717c8c46c6c96162b278ed98b752bb517",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/cache-preparation/quarantine_sqlx_macros_v2.py",
+      "expected_git_blob": "8babf8da4a1028c73e69062b6b824c7a2f52d8fb",
+      "HEAD_git_blob": "8babf8da4a1028c73e69062b6b824c7a2f52d8fb",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/cache-preparation/quarantine_sqlx_macros_v3.py",
+      "expected_git_blob": "dd95ee42d16595b5c84df2addbf739ce4a6c6e84",
+      "HEAD_git_blob": "dd95ee42d16595b5c84df2addbf739ce4a6c6e84",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "evidence/recovery-v2-native-20261105/final-runtime-367e27fb/manifest.json",
+      "expected_git_blob": "3b0fc545b97866ed188fdb00dd6a2bd220a82422",
+      "HEAD_git_blob": "3b0fc545b97866ed188fdb00dd6a2bd220a82422",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "qualification/learning-generations/hepta-pair-v8-source-20261104/README.md",
+      "expected_git_blob": "41335297d41671d64df7561dd1bed53e281d1b9b",
+      "HEAD_git_blob": "41335297d41671d64df7561dd1bed53e281d1b9b",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "qualification/learning-generations/hepta-pair-v8-source-20261104/chain73-service-failure-readback.json",
+      "expected_git_blob": "4f58de407c2fc2406e0c83b98bb7c4febf071b80",
+      "HEAD_git_blob": "4f58de407c2fc2406e0c83b98bb7c4febf071b80",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "qualification/learning-generations/hepta-pair-v8-source-20261104/hepta-v7-model-failure-readback.json",
+      "expected_git_blob": "4acf681ca9bad819d890c521a96fcdc38165cc60",
+      "HEAD_git_blob": "4acf681ca9bad819d890c521a96fcdc38165cc60",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "qualification/learning-generations/hepta-pair-v8-source-20261104/local-source-controls.json",
+      "expected_git_blob": "b69fb155c39003cf5794ece4f2f886fb21e291a5",
+      "HEAD_git_blob": "b69fb155c39003cf5794ece4f2f886fb21e291a5",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "qualification/learning-generations/hepta-pair-v8-source-20261104/ordinary-authorization-audit.json",
+      "expected_git_blob": "eb4365207d012965713db3901e13f6b2cd1e8feb",
+      "HEAD_git_blob": "eb4365207d012965713db3901e13f6b2cd1e8feb",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "qualification/learning-generations/hepta-pair-v8-source-20261104/w1-base-source-readback.json",
+      "expected_git_blob": "16bc2daa71d20bc58a5869abbd37e45187ad390e",
+      "HEAD_git_blob": "16bc2daa71d20bc58a5869abbd37e45187ad390e",
+      "materialized": false,
+      "worktree_git_blob": null
+    },
+    {
+      "family": "incoming",
+      "path": "scripts/hepta_ci_pq_binary_v7.py",
+      "expected_git_blob": "e2380f1aa78d8f0abb85ac9b38b31d19d9172d04",
+      "HEAD_git_blob": "e2380f1aa78d8f0abb85ac9b38b31d19d9172d04",
+      "materialized": true,
+      "worktree_git_blob": "e2380f1aa78d8f0abb85ac9b38b31d19d9172d04"
+    },
+    {
+      "family": "incoming",
+      "path": "scripts/hepta_neural_evidence_diverse_v3.py",
+      "expected_git_blob": "7912b53f9378a6035cccbcc787c92fde4958e4ed",
+      "HEAD_git_blob": "7912b53f9378a6035cccbcc787c92fde4958e4ed",
+      "materialized": true,
+      "worktree_git_blob": "7912b53f9378a6035cccbcc787c92fde4958e4ed"
+    },
+    {
+      "family": "incoming",
+      "path": "scripts/hepta_neural_study_diverse_v3.py",
+      "expected_git_blob": "e72870e23477820f3861865c67b6fdf6883f4f4d",
+      "HEAD_git_blob": "e72870e23477820f3861865c67b6fdf6883f4f4d",
+      "materialized": true,
+      "worktree_git_blob": "e72870e23477820f3861865c67b6fdf6883f4f4d"
+    },
+    {
+      "family": "incoming",
+      "path": "scripts/hepta_smollm_execution_source_v1.py",
+      "expected_git_blob": "929b46d50bb22e708b1c3b4a69d518233b04d7ac",
+      "HEAD_git_blob": "929b46d50bb22e708b1c3b4a69d518233b04d7ac",
+      "materialized": true,
+      "worktree_git_blob": "929b46d50bb22e708b1c3b4a69d518233b04d7ac"
+    },
+    {
+      "family": "incoming",
+      "path": "scripts/test_hepta_ci_pq_binary_v7.py",
+      "expected_git_blob": "a7b67117a39cfb19b8a1ad9115aca4f9859913ae",
+      "HEAD_git_blob": "a7b67117a39cfb19b8a1ad9115aca4f9859913ae",
+      "materialized": true,
+      "worktree_git_blob": "a7b67117a39cfb19b8a1ad9115aca4f9859913ae"
+    },
+    {
+      "family": "incoming",
+      "path": "scripts/test_hepta_smollm_execution_source_v1.py",
+      "expected_git_blob": "5bd9cc9e3f4064ac1f81fd454b9825993fa8cfde",
+      "HEAD_git_blob": "5bd9cc9e3f4064ac1f81fd454b9825993fa8cfde",
+      "materialized": true,
+      "worktree_git_blob": "5bd9cc9e3f4064ac1f81fd454b9825993fa8cfde"
+    },
+    {
+      "family": "incoming",
+      "path": "scripts/test_hepta_smollm_execution_source_v10.py",
+      "expected_git_blob": "b290465be566684238d7d5e5af2d9281af6c06d3",
+      "HEAD_git_blob": "b290465be566684238d7d5e5af2d9281af6c06d3",
+      "materialized": true,
+      "worktree_git_blob": "b290465be566684238d7d5e5af2d9281af6c06d3"
+    },
+    {
+      "family": "incoming",
+      "path": "scripts/test_hepta_smollm_execution_source_v5.py",
+      "expected_git_blob": "1b23c488b362a97502c8d81c2fdc0c4f1c578b57",
+      "HEAD_git_blob": "1b23c488b362a97502c8d81c2fdc0c4f1c578b57",
+      "materialized": true,
+      "worktree_git_blob": "1b23c488b362a97502c8d81c2fdc0c4f1c578b57"
+    },
+    {
+      "family": "incoming",
+      "path": "scripts/test_hepta_smollm_execution_source_v6.py",
+      "expected_git_blob": "b03cdc56ae61af431e8df6850e72f6c906c9bf70",
+      "HEAD_git_blob": "b03cdc56ae61af431e8df6850e72f6c906c9bf70",
+      "materialized": true,
+      "worktree_git_blob": "b03cdc56ae61af431e8df6850e72f6c906c9bf70"
+    },
+    {
+      "family": "incoming",
+      "path": "scripts/test_hepta_smollm_execution_source_v7.py",
+      "expected_git_blob": "7194fc2b1be1fd0a90a151febbd1b0786b7c2ce1",
+      "HEAD_git_blob": "7194fc2b1be1fd0a90a151febbd1b0786b7c2ce1",
+      "materialized": true,
+      "worktree_git_blob": "7194fc2b1be1fd0a90a151febbd1b0786b7c2ce1"
+    },
+    {
+      "family": "incoming",
+      "path": "scripts/test_hepta_smollm_execution_source_v8.py",
+      "expected_git_blob": "595baf011c841825cbf7370807b50a45b0c551bb",
+      "HEAD_git_blob": "595baf011c841825cbf7370807b50a45b0c551bb",
+      "materialized": true,
+      "worktree_git_blob": "595baf011c841825cbf7370807b50a45b0c551bb"
+    },
+    {
+      "family": "incoming",
+      "path": "scripts/test_hepta_smollm_execution_source_v9.py",
+      "expected_git_blob": "3999bce53a09f7aff0a2b49ae3e6bb2e71d637b0",
+      "HEAD_git_blob": "3999bce53a09f7aff0a2b49ae3e6bb2e71d637b0",
+      "materialized": true,
+      "worktree_git_blob": "3999bce53a09f7aff0a2b49ae3e6bb2e71d637b0"
+    }
+  ]
+}

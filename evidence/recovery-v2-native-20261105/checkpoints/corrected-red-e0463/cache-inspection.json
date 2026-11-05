@@ -1,0 +1,198 @@
+{
+  "error": "E0463 cannot find sqlx_macros_core; no test execution",
+  "artifacts": [
+    {
+      "name": "libsqlx_macros_core-67b73f8b5327a208.rlib",
+      "bytes": 2920886,
+      "mtime_ns": 1793851241541959114
+    },
+    {
+      "name": "libsqlx_macros_core-67b73f8b5327a208.rmeta",
+      "bytes": 700801,
+      "mtime_ns": 1793851703788458021
+    },
+    {
+      "name": "libsqlx_sqlite-0a969cb8eb061c05.rlib",
+      "bytes": 15542908,
+      "mtime_ns": 1793851711416865550
+    },
+    {
+      "name": "libsqlx_sqlite-0a969cb8eb061c05.rmeta",
+      "bytes": 1632497,
+      "mtime_ns": 1793851707953883806
+    },
+    {
+      "name": "libsqlx_sqlite-f6551c5373f34d67.rlib",
+      "bytes": 14693208,
+      "mtime_ns": 1793851702620741271
+    },
+    {
+      "name": "libsqlx_sqlite-f6551c5373f34d67.rmeta",
+      "bytes": 1618734,
+      "mtime_ns": 1793851697854741144
+    },
+    {
+      "name": "libsqlx_core-3a1b8ad9625bb6f5.rlib",
+      "bytes": 6763916,
+      "mtime_ns": 1793851150056949595
+    },
+    {
+      "name": "libsqlx_core-3a1b8ad9625bb6f5.rmeta",
+      "bytes": 3503864,
+      "mtime_ns": 1793851149291379692
+    },
+    {
+      "name": "libsqlx_core-45ddc56478833a53.rlib",
+      "bytes": 7253280,
+      "mtime_ns": 1793851249186287147
+    },
+    {
+      "name": "libsqlx_core-45ddc56478833a53.rmeta",
+      "bytes": 3103949,
+      "mtime_ns": 1793851248513011582
+    },
+    {
+      "name": "libsqlx_macros-de58ffc848cccd8c.so",
+      "bytes": 25454832,
+      "mtime_ns": 1793851271743036144
+    },
+    {
+      "name": "libsqlx_macros_core-67b73f8b5327a208.rlib",
+      "bytes": 2920886,
+      "mtime_ns": 1793851241541959114
+    },
+    {
+      "name": "libsqlx_macros_core-67b73f8b5327a208.rmeta",
+      "bytes": 700801,
+      "mtime_ns": 1793851703788458021
+    }
+  ],
+  "fingerprints": [
+    {
+      "path": "target/debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208/lib-sqlx_macros_core.json",
+      "value": {
+        "rustc": 16696009966390864400,
+        "features": "[\"_rt-tokio\", \"_sqlite\", \"_tls-rustls-ring-webpki\", \"chrono\", \"default\", \"derive\", \"json\", \"macros\", \"migrate\", \"sqlite\", \"sqlx-sqlite\", \"thiserror\", \"time\", \"tokio\", \"uuid\"]",
+        "declared_features": "[\"_rt-async-global-executor\", \"_rt-async-std\", \"_rt-smol\", \"_rt-tokio\", \"_sqlite\", \"_tls-native-tls\", \"_tls-rustls-aws-lc-rs\", \"_tls-rustls-ring-native-roots\", \"_tls-rustls-ring-webpki\", \"async-global-executor\", \"async-std\", \"bigdecimal\", \"bit-vec\", \"chrono\", \"default\", \"derive\", \"ipnet\", \"ipnetwork\", \"json\", \"mac_address\", \"macros\", \"migrate\", \"mysql\", \"mysql-rsa\", \"postgres\", \"rust_decimal\", \"smol\", \"sqlite\", \"sqlite-load-extension\", \"sqlite-unbundled\", \"sqlx-mysql\", \"sqlx-postgres\", \"sqlx-sqlite\", \"sqlx-toml\", \"thiserror\", \"time\", \"tokio\", \"uuid\"]",
+        "target": 4793575140097667164,
+        "profile": 17240087306159092934,
+        "path": 5812071862452083708,
+        "deps": [
+          [
+            530211389790465181,
+            "hex",
+            false,
+            14002105796070643019
+          ],
+          [
+            1528297757488249563,
+            "url",
+            false,
+            5936259142658550465
+          ],
+          [
+            1957009224993739128,
+            "thiserror",
+            false,
+            14880983454710552106
+          ],
+          [
+            2145939652136225981,
+            "tokio",
+            false,
+            9460560856607995547
+          ],
+          [
+            3405707034081185165,
+            "dotenvy",
+            false,
+            16499704465995581106
+          ],
+          [
+            4027967331092545739,
+            "sqlx_sqlite",
+            false,
+            2994800369584727363
+          ],
+          [
+            4289358735036141001,
+            "proc_macro2",
+            false,
+            5817400947841653132
+          ],
+          [
+            4625273848613046095,
+            "sqlx_core",
+            false,
+            3403789377324398349
+          ],
+          [
+            5330460842384404171,
+            "serde_json",
+            false,
+            8788490480334923924
+          ],
+          [
+            6557439603276904804,
+            "serde",
+            false,
+            17365741154515072182
+          ],
+          [
+            7667230146095136825,
+            "cfg_if",
+            false,
+            8502346892807717928
+          ],
+          [
+            9857275760291862238,
+            "sha2",
+            false,
+            13450538497414344863
+          ],
+          [
+            10420560437213941093,
+            "syn",
+            false,
+            18236000337730769070
+          ],
+          [
+            12170264697963848012,
+            "either",
+            false,
+            7047452192338889447
+          ],
+          [
+            13077543566650298139,
+            "heck",
+            false,
+            14393851571974622587
+          ],
+          [
+            13111758008314797071,
+            "quote",
+            false,
+            6395963404010330871
+          ]
+        ],
+        "local": [
+          {
+            "CheckDepInfo": {
+              "dep_info": "debug/.fingerprint/sqlx-macros-core-67b73f8b5327a208/dep-lib-sqlx_macros_core",
+              "checksum": false
+            }
+          }
+        ],
+        "rustflags": [],
+        "config": 8247474407144887393,
+        "compile_kind": 0
+      }
+    }
+  ],
+  "dependency_paths": [
+    {
+      "name": "sqlx_macros_core-67b73f8b5327a208.d",
+      "first_line": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/target/debug/deps/sqlx_macros_core-67b73f8b5327a208.d: /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/lib.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/common.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/database/mod.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/database/impls.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/derives/mod.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/derives/attributes.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/derives/decode.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/derives/encode.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/derives/row.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/derives/type.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/query/mod.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/query/args.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/query/cache.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/query/data.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/query/input.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/query/metadata.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/query/output.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.9.0/src/test_attr.rs /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557"
+    }
+  ]
+}

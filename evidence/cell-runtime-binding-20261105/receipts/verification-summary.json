@@ -1,0 +1,251 @@
+{
+  "cache_preparation": {
+    "provenance": "Root task instruction and retained cleanup receipt; no relaxed verifier was introduced",
+    "receipt": "receipts/v11-explicit-cache-preparation.json",
+    "removed_bytes": 286001,
+    "removed_files": 11,
+    "scope": "Explicit removal only of this run checkout generated rebuildable Python caches",
+    "subsequent_attempt": "logs/runtime-v11-source-probe-attempt2.log",
+    "verifier_unchanged": true
+  },
+  "completed_gates": {
+    "cell_cli_native_controls": {
+      "distinct_from_library_tests": true,
+      "does_not_change_failed_package_result": true,
+      "exit_code": 0,
+      "exit_code_observer": "integrating root agent process completion; raw log has terminal 3-pass summary",
+      "failed": 0,
+      "log": "logs/hepta-host-nextest-cell-cli-attempt1.log",
+      "passed": 3,
+      "skipped": 0,
+      "status": "PASS",
+      "tests_run": 3
+    },
+    "chain_admission_and_handoff_controls": {
+      "log": "logs/runtime-admission-post-versioned-tests.log",
+      "scope": "Includes real Cell transport/exec-contract controls; not model-load or installed-host qualification",
+      "skipped": 0,
+      "status": "PASS",
+      "tests": 44
+    },
+    "evidence_packaging_preflight": {
+      "code_executed": false,
+      "command": "python3 -I -B scripts/hepta_workspace.py",
+      "exit_code": 0,
+      "local_manifests": 199,
+      "observer": "independent evidence-packaging agent tool result",
+      "status": "PASS",
+      "structural_errors": 0
+    },
+    "format_after_fix": {
+      "exit_code": 0,
+      "exit_code_observer": "integrating root agent process completion; not inferred from an empty file",
+      "log": "logs/hepta-format-after-fix.log",
+      "log_bytes": 0,
+      "status": "PASS"
+    },
+    "introduced_rust_controls": {
+      "included_in_library_pass_count": true,
+      "other_controls": 4,
+      "python_runtime_subset": 8,
+      "receipt": "receipts/runtime-native-introduced-test-status.json",
+      "status": "PASS_WITHIN_FAILED_LIBRARY_RUN",
+      "tests": 12
+    },
+    "python_runtime_native_admission": {
+      "log": "logs/hepta-host-nextest-library-attempt1.log",
+      "scope": "Eight filesystem refusal fixtures; no Python model execution",
+      "selectors": [
+        "pre_spawn_interpreter_replacement_is_rejected_at_the_same_path",
+        "pre_spawn_requires_the_declared_interpreter_and_nonempty_contract",
+        "runtime_check_keeps_original_deadline_and_cancellation",
+        "pre_spawn_snapshot_hashes_stdlib_before_any_python_code",
+        "pre_spawn_snapshot_rejects_unlisted_installed_file",
+        "pre_spawn_rejects_startup_zip_outside_the_canonical_stdlib_inventory",
+        "pre_spawn_rejects_underscore_pth_at_the_real_or_launch_executable",
+        "pre_spawn_rejects_bootstrap_stdlib_alias_replacement"
+      ],
+      "status": "PASS_WITHIN_FAILED_LIBRARY_RUN",
+      "tests": 8
+    },
+    "schema_consumer_controls": {
+      "groups": [
+        {
+          "log": "logs/runtime-admission-descendant-schema-tests.log",
+          "tests": 4
+        },
+        {
+          "log": "logs/runtime-admission-research-schema-tests.log",
+          "tests": 8
+        }
+      ],
+      "scope": "Descendant/research boundary controls after native-input schema migration",
+      "status": "PASS",
+      "tests": 12
+    },
+    "scoped_just_fix": {
+      "command_family": "just fix",
+      "duplicate_warning_summary_retained": true,
+      "exit_code": 0,
+      "exit_code_observer": "integrating root agent process completion",
+      "log": "logs/hepta-host-fix-attempt1.log",
+      "package_scope": "codex-hepta-infer-worker-host",
+      "profile": "original dev profile; unoptimized + debuginfo",
+      "status": "PASS",
+      "toolchain": "Rust 1.96.0",
+      "unique_sqlx_sqlite_dependency_warnings": 40
+    },
+    "source_profiles_v1_through_v11": {
+      "log": "logs/runtime-admission-source-v1-v11-tests.log",
+      "status": "PASS",
+      "tests": 116
+    }
+  },
+  "created_at": "2026-11-05T09:41:04.344493+00:00",
+  "integration_followup": {
+    "format": "PASS",
+    "new_native_assertions": 0,
+    "receipt": "receipts/integration-followup.json",
+    "scoped_just_fix": "PASS",
+    "source_commit": "3e96ece120cda5cbf75b84f05edc2edb15d41000",
+    "tree": "1b64fd14890e6db0e4a26ced0f151c94629f2ca7",
+    "whole_native_or_model_acceptance": false
+  },
+  "native_test_runs": {
+    "cell_cli_attempt1": {
+      "distinct_from_library_tests": true,
+      "exit_code": 0,
+      "failed": 0,
+      "log": "logs/hepta-host-nextest-cell-cli-attempt1.log",
+      "passed": 3,
+      "skipped": 0,
+      "status": "PASS",
+      "tests_run": 3
+    },
+    "full_package_attempt2": {
+      "assertions_executed": 0,
+      "complete_cli_integration_test_elf_already_built": true,
+      "complete_library_test_elf_already_built": true,
+      "error": "ld terminated with signal 7 [Bus error]",
+      "exit_code": 101,
+      "failed_unit": "codex-hepta-infer-worker-host bin hepta-infer-worker test",
+      "kernel_cause_proven": false,
+      "log": "logs/hepta-host-nextest-attempt2.log",
+      "reclamation_receipt": "receipts/runtime-nextest2-failed-link-reclamation.json",
+      "status": "FAILED_BEFORE_TEST_EXECUTION"
+    },
+    "library_attempt1": {
+      "environmental_error_classification_does_not_promote_pass": true,
+      "exit_code": 100,
+      "failed": 20,
+      "failure_categories": {
+        "bare_eperm_without_syscall_trace": 12,
+        "codex_binary_not_found": 2,
+        "explicit_unix_listener_bind_eperm": 6
+      },
+      "failure_classification": "receipts/runtime-native-library-failure-classification.json",
+      "failure_definition_files_unchanged_from_base": true,
+      "log": "logs/hepta-host-nextest-library-attempt1.log",
+      "passed": 161,
+      "post_execution_elf_reclamation": "receipts/completed-runtime-library-elf-reclamation.json",
+      "raw_failure_blocks": "receipts/runtime-native-library-failure-blocks.json",
+      "skipped": 16,
+      "status": "FAILED",
+      "tests_run": 181
+    }
+  },
+  "not_claimed": [
+    "actual ordinary model execution",
+    "actual model Ready",
+    "GPU or VRAM ownership",
+    "independent WAN or administrators",
+    "immutable held runtime namespace",
+    "installation or product qualification",
+    "full native host package PASS",
+    "native qualification of later concurrent Runtime integration",
+    "ordinary multi-Cell model use or FinalUse"
+  ],
+  "paired_chain_publication": {
+    "delivered_commit": "cbead1508ce8b6d9deb2a86b4bc3181da09694e7",
+    "delivered_tree": "624c8aad419ee05dc71a4aac507abea429018289",
+    "does_not_qualify_runtime_postmerge_source": true,
+    "integration_log": "logs/cell-final-integration-source.log",
+    "integration_receipt": "receipts/cell-final-integration-source.json",
+    "python_controls": 194,
+    "receipt": "receipts/chain-publication.json",
+    "source_checked_integration": "4771f7b46276f65cc7ca558b31056194d83a7de2",
+    "source_checked_tree": "a82804baeca600b2cf66c83411545b4563884fe1",
+    "v11_source_is_explicit_parent": true
+  },
+  "paired_source": {
+    "chain_commit": "cfa57cd04751427451302b5c10539b3984d7f8db",
+    "chain_tree": "155213c2468edc411325f4f1853b471a6b25f355",
+    "installation_authorized": false,
+    "manifest_path": "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v11.json",
+    "manifest_sha256": "a951e866f66b0e251fc5a9f81d02a7f86954d1b3ca8ac483890fcb23a4955647",
+    "probe_log": "logs/runtime-v11-source-probe-attempt2.log",
+    "product_qualification": false,
+    "profile": "hepta-integrated-chain-execution-v11",
+    "verified_source_files": 53
+  },
+  "preserved_failures": [
+    {
+      "attempt": "host-check-attempt1",
+      "cause": "openssl-sys could not find pkg-config/OpenSSL installation",
+      "log": "logs/hepta-host-check-attempt1.log",
+      "status": "FAILED_BEFORE_ACCEPTANCE"
+    },
+    {
+      "attempt": "host-check-attempt2",
+      "cause": "include_str! could not read docs/modules/MODULES.json",
+      "log": "logs/hepta-host-check-attempt2.log",
+      "status": "FAILED_BEFORE_ACCEPTANCE"
+    },
+    {
+      "attempt": "nextest-attempt1",
+      "cause": "--config runner override caused full Cargo metadata; offline resolution could not download accessory v2.1.1",
+      "log": "logs/hepta-host-nextest-attempt1.log",
+      "recipe_exit_code_in_log": 102,
+      "status": "FAILED_BEFORE_TEST_EXECUTION"
+    },
+    {
+      "attempt": "v11-source-probe-attempt1",
+      "cause": "Strict V11 source verifier found this checkout generated ignored/untracked Python caches",
+      "log": "logs/runtime-v11-source-probe-attempt1.log",
+      "status": "REFUSED"
+    },
+    {
+      "attempt": "nextest-attempt2",
+      "cause": "Worker binary-test linker terminated with Bus error",
+      "exit_code": 101,
+      "log": "logs/hepta-host-nextest-attempt2.log",
+      "status": "FAILED_BEFORE_TEST_EXECUTION"
+    },
+    {
+      "attempt": "nextest-library-attempt1",
+      "cause": "20 terminal failures; 2 missing codex binary and 18 EPERM with separately limited callsite attribution",
+      "exit_code": 100,
+      "log": "logs/hepta-host-nextest-library-attempt1.log",
+      "status": "FAILED"
+    }
+  ],
+  "runtime_source_scope": {
+    "base_commit": "7530e4bc7aa61a0c23a5933fef4a65d86a586cf8",
+    "follow_up_anchor": "README.md#later-integration-boundary",
+    "frozen_chain_files": 11,
+    "frozen_file_count": 38,
+    "frozen_file_drift_at_packaging": [],
+    "frozen_receipt": "receipts/runtime-admission-frozen-files.json",
+    "frozen_runtime_files": 27,
+    "github_source_commit": "72fd6ad2d665489d64271b6c3146debbd201df4d",
+    "github_source_tree": "3a4ef7e082bd64cdd8a73b857810992713909cef",
+    "later_upstream_not_covered": "f55752abbf516febfa0db89cb833dcf1fd1a2221",
+    "qualification_inherited_by_later_merge": false,
+    "source_kind": "premerge working candidate reconstructed from base plus changed input rows",
+    "source_projection": "receipts/native-source-projection.json",
+    "whole_repository_raw_verification": false
+  },
+  "schema": "cell-runtime-binding-verification-summary-v1",
+  "scope": "Premerge source-admission, schema-consumer, scoped build and terminal native observations; full native package and library gates failed; no model qualification",
+  "updated_at": "2026-11-05T10:17:08.474641+00:00"
+}

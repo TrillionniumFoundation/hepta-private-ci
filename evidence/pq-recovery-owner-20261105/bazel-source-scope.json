@@ -1,0 +1,22 @@
+{
+  "command": [
+    "just",
+    "bazel-lock-update"
+  ],
+  "actual_exit_code": 0,
+  "elapsed_seconds": 72.1563572883606,
+  "original_receipt_sha256": "6d14c6fdbe1b44251990ea54cffae818ed1c43be8e0a811575b3f152a338b33a",
+  "source_commit_at_start": null,
+  "source_tree_at_start": null,
+  "full_worktree_dirty_state_at_start_captured": false,
+  "source_boundary_classification": "SOURCE_NOT_CAPTURED_AT_COMMAND_BOUNDARY",
+  "contemporaneous_mid_run_observation": {
+    "evidence": "object-inventory-current.json",
+    "time_unix": 1793856963.7153952,
+    "observed_HEAD": "f04033d852ee9c1c9ba88a9fc48c21b798c39f97",
+    "scope": "Git object inventory recorded this HEAD during the successful command interval; it did not record the complete dirty working state or start/end source identities."
+  },
+  "module_lock_diff_observed_after_command": false,
+  "scoped_as_R2_execution": false,
+  "scope": "Dependency-lock regeneration succeeded with the exact pinned Bazel binary and verified TLS. This is not a native test or a claim that complete R2 was the checkout at execution. Original receipt remains unmodified."
+}

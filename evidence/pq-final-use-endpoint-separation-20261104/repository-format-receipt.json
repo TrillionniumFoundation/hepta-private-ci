@@ -1,0 +1,152 @@
+{
+  "started_utc": "2026-11-05T01:19:29.899337+00:00",
+  "source_checkout": "/workspace/scratch/0bc97e9264aa/hepta-pq-effect",
+  "exact_checkout": "/workspace/scratch/822cc50e24f0/authority-recovery/runtime-4812-format",
+  "base_commit": "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52",
+  "initial_shared_clone": "FAILED_EXIT_128_RETAINED",
+  "initial_clone_receipt": "repository-format-initial-clone-receipt.json",
+  "exact_tree_preflight": {
+    "base": "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52",
+    "object_count": 12554,
+    "batch_exit": 0,
+    "batch_stderr": "",
+    "missing": [],
+    "failed_clone_object_in_exact_tree": false,
+    "failed_clone_object_paths": [],
+    "all_required_objects_local": true
+  },
+  "steps": [
+    {
+      "command": [
+        "git",
+        "-C",
+        "/workspace/scratch/0bc97e9264aa/hepta-pq-effect",
+        "rev-parse",
+        "--git-path",
+        "objects"
+      ],
+      "cwd": null,
+      "exit_code": 0,
+      "stdout": ".git/objects\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "init",
+        "--quiet",
+        "/workspace/scratch/822cc50e24f0/authority-recovery/runtime-4812-format"
+      ],
+      "cwd": null,
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52"
+      ],
+      "cwd": "/workspace/scratch/822cc50e24f0/authority-recovery/runtime-4812-format",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "HEAD is now at 5bf9e9eb7 docs(hepta): retain ordinary PQ validation checkpoint and open gates [skip ci]\n"
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/workspace/scratch/822cc50e24f0/authority-recovery/runtime-4812-format",
+      "exit_code": 0,
+      "stdout": "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=no"
+      ],
+      "cwd": "/workspace/scratch/822cc50e24f0/authority-recovery/runtime-4812-format",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/workspace/scratch/0bc97e9264aa/tools/bin/just",
+        "fmt",
+        "--base",
+        "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52"
+      ],
+      "cwd": "/workspace/scratch/822cc50e24f0/authority-recovery/runtime-4812-format/codex-rs",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/workspace/scratch/822cc50e24f0/authority-recovery/runtime-4812-format",
+      "exit_code": 0,
+      "stdout": "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-only"
+      ],
+      "cwd": "/workspace/scratch/822cc50e24f0/authority-recovery/runtime-4812-format",
+      "exit_code": 0,
+      "stdout": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs\ncodex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/workspace/scratch/822cc50e24f0/authority-recovery/runtime-4812-format",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "native_tests": "NOT_RUN",
+  "repository_just_fmt": "PASS",
+  "object_alternate": "/workspace/scratch/0bc97e9264aa/hepta-pq-effect/.git/objects",
+  "head_after_selection": "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52",
+  "head_after_format": "5bf9e9eb7dc49ef56caf5143531f3a705fcd0e52",
+  "changed_files": [
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs",
+    "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs"
+  ],
+  "final_files": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs",
+      "bytes": 11473,
+      "git_blob": "5f7c4e58418af1deb57ebb12a62ef1742f4c75c8",
+      "sha256": "8248dce487954198981a1359d1f4848be140b5230952e0231068dc27c0a87195",
+      "matches_handoff": true
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs",
+      "bytes": 7776,
+      "git_blob": "c58526d1071d1b6cc30981c101abbca0e8ec775d",
+      "sha256": "5dea0536135f7eb8c88b5ca44630f561392461302042d2a573015c0c8ab264e6",
+      "matches_handoff": true
+    }
+  ],
+  "completed_utc": "2026-11-05T01:19:31.528747+00:00"
+}

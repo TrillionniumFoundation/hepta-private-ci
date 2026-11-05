@@ -138,7 +138,7 @@ async fn real_selected_initial_load_fresh_current_and_old_trait_refusal() -> Tes
     let reopened = DurableInferenceControl::open(&journal, /*capacity*/ 8)?;
     assert_eq!(reopened.get(first_load), Some(&first_record));
     assert!(reopened.get(&cold_load).is_some());
-    issuer.await?.map_err(issuer_error)?;
+    issuer.finish().await.map_err(issuer_error)?;
     archive_authority(&authority, &input.output)?;
     Ok(())
 }

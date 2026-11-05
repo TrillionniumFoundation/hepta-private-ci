@@ -1,0 +1,202 @@
+{
+  "base": "3558ced0fd983603a3082a42359e8da63dfc8418",
+  "candidate_commit": "7292152e0dd8a592d01110a8b42db4a0deafaf25",
+  "candidate_tree": "1d3c7d5804202c23a2bdbcb6edddc3e12c174b06",
+  "changed_path_count": 22,
+  "patch_sha256": "03cefcdfdd47e8723e1b0f9351f6004f67af3e5ceebe67d4d4d7b0525fef3509",
+  "files": [
+    {
+      "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+      "base_blob": "4833854841826eafe385cf242fb30e3eb6500aee",
+      "candidate_blob": "392ad92cfdf63c6a1a8281683ec1074a845cff68",
+      "sha256": "4ddddcc5fb88cf182ab430fb898f55c34d3e5c06b14170b1be977751026091ae",
+      "bytes": 16969,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "base_blob": "10a474421ed4bb7a46c56a73739355b4efedfc72",
+      "candidate_blob": "181d14a3124d94fb1f2c880da93f1c09a1f5cf76",
+      "sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+      "bytes": 425188,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/PQ_INSTALLATION.md",
+      "base_blob": "204129a6f5739e75d7086cd65fd19f8789ff9ff7",
+      "candidate_blob": "37876ccf43fc00daf42af856779feed150508691",
+      "sha256": "afb8eb74c49487a47632d599bc856dc91e54c76800aef74f52dc70a0403968ab",
+      "bytes": 11171,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "base_blob": "89c3d1e64322c8847a8facc03eaba3e0d11c0c47",
+      "candidate_blob": "fdb40b98af1774f3e4684955ce6a71e933ae00ec",
+      "sha256": "adf0507109e15577774a86b1f27c591f7f64c1d42570976c93c12bfb4330cd8e",
+      "bytes": 25215,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
+      "base_blob": "758a78047e2d5666cb2c839e5abee1bc3e424657",
+      "candidate_blob": "74a95d84f8bf1bc78eb372a50ffc03124f57e34e",
+      "sha256": "40db2a44263ad53f8791fe781b7214d70b1939dbc6774cc4b22a62de0dc025fe",
+      "bytes": 17350,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "base_blob": "2d3c263aaa447fce32e867f98c9ecad65aeb7f1c",
+      "candidate_blob": "4cc294ec045dbd737b8a5d4df0efd0502ece04fa",
+      "sha256": "09e39e65f712d0c8d0e75de3e11253b5661e2ec765bc3b2afa2a28ebeddf275f",
+      "bytes": 19523,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/evidence_host.rs",
+      "base_blob": "8296fab73f1aa439e46b264ce33f12ec1ad0a737",
+      "candidate_blob": "fe25ae2911be52bbf6323f0cb1da6c726d777367",
+      "sha256": "c80db5daf78ffccb9d0374ab3089ee198565c3b24cc314a68ba3d10899061378",
+      "bytes": 8521,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "base_blob": "e173a35b89d0bc79f68e35c4ee558c5b37998173",
+      "candidate_blob": "0163c93fe252e2f73ed4c1870229204a1a9c6c3d",
+      "sha256": "27277d0cb2e5201baae7a7767bcbaadcf1618159a1e87f47ba351c28a6ca593a",
+      "bytes": 14269,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "base_blob": "5162cdb700ce0c37d130920c29d743c76bbc42b5",
+      "candidate_blob": "01387f0f2fcaa4641b6851961c4f9961913e7cb5",
+      "sha256": "a569c4f6247576b0bc3dc20fc386ea41eec35785088c01ae4d1ace9347586005",
+      "bytes": 11654,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "base_blob": "ed31f22dc430ca7a396a9df0e27373dc19f7f424",
+      "candidate_blob": "2931472d8378984e8a7c17872dd4f8255bf041f4",
+      "sha256": "226c53fdf0b724e4dae40428c086e8c9533b95ed78189f0f4d64a34e6251bd92",
+      "bytes": 22250,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+      "base_blob": "08afc2c6c333974567385a9f5630e0b6b71a6fbd",
+      "candidate_blob": "1af182f3aca43c2f466a2e41a7eeff21adb2b0a5",
+      "sha256": "8b7f7724d35ab1be6915f3e2ed4a2c3a8a6933ac3f1f1165299e82ddd557729d",
+      "bytes": 31985,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "base_blob": "33df89f287b98e5b0dbbe2bd3305d2007812e613",
+      "candidate_blob": "763f4c6e2c5c8f97817dd4f6eb48bc4052ee704c",
+      "sha256": "a93857beff50c265d09a38e7280f2702a63f6ea27fb4e4866d32896e4f6fab23",
+      "bytes": 33073,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+      "base_blob": "c2ecc470dadc6a30ce5246ee689d70f3042ea009",
+      "candidate_blob": "0be55823473976b8cd95dec236412b744e585498",
+      "sha256": "ee5413f5ec52e7ed1e5026314c82274a0b540a354bd2af1bd018b5451ed90696",
+      "bytes": 26896,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "base_blob": "f9ee63660527298ca6a4d59182c6c09d28977f41",
+      "candidate_blob": "b82b225213a149103fd47a57fee9256bcb328b22",
+      "sha256": "b294ac3a75f52200dd89b5a2c4c9018cb50bf5d59f9664671c488fdd70251fd9",
+      "bytes": 17092,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/mod.rs",
+      "base_blob": "6bf6d12e18304ca7d4c557a47258dda64ac3c1a2",
+      "candidate_blob": "93319893c69292d151aaf3ca46a2a5527cc4aada",
+      "sha256": "c464f460cc7d97eda60c7e2982e2e23dff57069de823b032885f2294602716c8",
+      "bytes": 36,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/recovery.rs",
+      "base_blob": null,
+      "candidate_blob": "52f6805d7497b6e51a36fb2bf175299aec41bfd8",
+      "sha256": "9c7e9c80e39d73e6a298330b770cf0686767a9c166cdf53c5afa6e8361fd38d2",
+      "bytes": 3696,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/Cargo.toml",
+      "base_blob": "1d731623f6c1c937ba3a8c843c1be38b6b56d9ce",
+      "candidate_blob": "7bc85caa06ff80587496acb36fc7d1499fcb7b1c",
+      "sha256": "4e59b2f789bb6f27b138214a9b704c0ccc103ac363604204086941ee6ad3bf59",
+      "bytes": 2228,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-neural-agentd.rs",
+      "base_blob": "b7d93351cf035bc45f6b8c300edd19f8a42953c2",
+      "candidate_blob": "5d6835b5a995604fc96f6f996c92f1d0102a3fd1",
+      "sha256": "8d300b06174341550fe8841e75e0dd523a2bace6d84a0b1dd289a4e03857491b",
+      "bytes": 7662,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_agentd_recovery_tests.rs",
+      "base_blob": null,
+      "candidate_blob": "443232c4298c1608f9abcb455371d3a04ced7052",
+      "sha256": "caec32caec95e809dfb889af37dd74ebd7a502b663838763bb13080ea82d30c3",
+      "bytes": 4301,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_agentd_tests.rs",
+      "base_blob": "2261c6ff4311634132014ffc63f19eb44b8a1b75",
+      "candidate_blob": "2b8d02fdc93a82f6e6b1c2c8acbef1357f1b4436",
+      "sha256": "91e29d99fc0c73a9c2a2a004722b588da8912de53cbc7583feb5d4805e74aa85",
+      "bytes": 24200,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs",
+      "base_blob": "b3afba4346e707da77d905754f901898ccc6c0fe",
+      "candidate_blob": "9cd45cabc7539a1810eb3c5afa0055633b67a7d8",
+      "sha256": "f7cd438c69827b96b87aeee88990b2c0d7d2bf9a5df19381cac138190f318a23",
+      "bytes": 28808,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/smollm_study_ordinary_tests.rs",
+      "base_blob": "055f2d53076e05be2924eeaddfb96635eacd0b79",
+      "candidate_blob": "8b724e5ba0e923e57fc69e7d718b41ba4b3ef5ae",
+      "sha256": "45437ffa0ef34fe5461b718a5c26dfa453a5b0ebe4ce46573b3564d14ed139e7",
+      "bytes": 23927,
+      "mode": "100644"
+    }
+  ],
+  "native_validation": "f040 source only: BUILD_BLOCKED_ENOSPC, 0 tests; this candidate not executed",
+  "format_check": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "3558ced0fd983603a3082a42359e8da63dfc8418",
+      "--check"
+    ],
+    "exit_code": 0
+  },
+  "bazel_lock_update": {
+    "exit_code": 0,
+    "elapsed_seconds": 72.1563572883606,
+    "generated_lock_diff": false
+  },
+  "materialization": "sparse working tree; current tracked Git blobs independently inventoried present with lazy fetch disabled"
+}

@@ -1,0 +1,1324 @@
+diff --git a/codex-rs/hepta-agentd/PQ_INSTALLATION.md b/codex-rs/hepta-agentd/PQ_INSTALLATION.md
+index 204129a6f5739e75d7086cd65fd19f8789ff9ff7..cb7a7b148321e017a6172cc24c1d8d469beb035a 100644
+--- a/codex-rs/hepta-agentd/PQ_INSTALLATION.md
++++ b/codex-rs/hepta-agentd/PQ_INSTALLATION.md
+@@ -5,6 +5,54 @@ host must independently authorize the entire descriptor digest. A descriptor is
+ untrusted input until the original owners reconstruct and verify its evidence.
+ This candidate does not make every Agentd control protocol post-quantum.
+ 
++## Mandatory Agentd evidence recovery
++
++Every ordinary Agentd startup requires both `--evidence-recovery-frontier-file`
++and `--evidence-recovery-frontier-trust-file`, even without `--evidence-trust-file`
++or AuthBus options. Agentd always enables the governance extension, which opens
++the same evidence database when a thread starts. Disabling the evidence append
++API must not bypass recovery of that shared state.
++
++The checkpoint is `EvidenceRecoveryFrontierV3`, with `schemaVersion: 3` and
++`authenticationProfile: "ml_dsa65_v2"`. It signs the existing V2 snapshot (including
++the provider-effect row count and root), store ID, generation, source commit/tree,
++creation time, signer principal/epoch and canonical signer key ID. The message
++domain is `hepta.kernel.evidence.recovery-frontier.pq.v3` followed by a NUL byte.
++Keys use the existing contracts ML-DSA-65 SPKI and key-ID definitions; signatures
++are pure ML-DSA-65 with empty context. All hex fields use lowercase. There is no
++classical checkpoint fallback or automatic conversion of V1/V2 historical data.
++
++The separately supplied trust file uses `schemaVersion: 2`, the same
++`authenticationProfile`, `storeId`, `minimumFrontierGeneration`,
++`signerPrincipalId`, `signerKeyEpoch`, `publicSpkiHex`, `publicKeyIdHex`, and
++`revoked`. The checkpoint must meet the nonzero generation floor and exact store,
++principal, epoch and key pins. The configured root may be rotated or revoked;
++the operator must independently retain the new root and generation floor.
++
++This recovery file-identity profile is currently Unix-only. Requiring it at the
++global startup boundary makes Windows Agentd refuse startup until an equivalent
++native recovery-root path is implemented and qualified. Windows qualification
++remains open; a classical or unchecked fallback is not an activation option.
++
++Startup authenticates these files before opening owners. It then opens the
++already staged evidence lineage read-only and compares its snapshot before any
++writable open, migration or store-ID binding. A missing or partial database is
++refused. Bootstrap and migration tooling must first stage an explicitly approved
++image and have the recovery owner sign that exact image. The writable open is
++checked again, before `AgentdState::new`, plasticity composition, AuthBus or the
++App Server can run. Process tests stage their initial fixture once and retain the
++same checkpoint over restart; they do not re-sign a restored image automatically.
++
++This is a startup admission boundary. Files outside Agent home do not establish
++independent custody or freshness after an entire host restore. Snapshot matching
++and store-ID binding rely on the runtime's exclusive writer and are not an atomic
++transaction with remote effects. The snapshot's provider-effect tables do not
++cover the separate `provider_invocation_*` governance history or TaskFlow's
++automation database. Source commit/tree fields are signed identities, not a check
++of the running binary. Direct non-Agentd App Server/governance constructors,
++complete effect admission, installation root deployment and original capacity
++qualification remain separate open work.
++
+ ## Version and trust selection
+ 
+ Classical descriptors keep their existing family schema and fixed hexadecimal
+diff --git a/codex-rs/hepta-agentd/src/config.rs b/codex-rs/hepta-agentd/src/config.rs
+index 89c3d1e64322c8847a8facc03eaba3e0d11c0c47..d2d170fbe5e79252b9acbbf62566eeb4f82e0c3f 100644
+--- a/codex-rs/hepta-agentd/src/config.rs
++++ b/codex-rs/hepta-agentd/src/config.rs
+@@ -240,9 +240,9 @@ impl AgentdConfig {
+         self.evidence_trust_file.as_deref()
+     }
+ 
+-    /// Optional restore/startup gate backed by a signed frontier and a signer
+-    /// trust file from outside the Agent home rollback domain. Both files are
+-    /// required together.
++    /// Required for every Agentd startup, including an empty database. The
++    /// ML-DSA-65 frontier and signer trust must be supplied together from outside
++    /// the Agent home rollback domain; no classical recovery fallback exists.
+     pub fn with_evidence_recovery_frontier_files(
+         mut self,
+         frontier_file: PathBuf,
+diff --git a/codex-rs/hepta-agentd/src/evidence_frontier.rs b/codex-rs/hepta-agentd/src/evidence_frontier.rs
+index 758a78047e2d5666cb2c839e5abee1bc3e424657..1c4f7641171e89c3ce408c26021c3c2a69551179 100644
+--- a/codex-rs/hepta-agentd/src/evidence_frontier.rs
++++ b/codex-rs/hepta-agentd/src/evidence_frontier.rs
+@@ -13,13 +13,16 @@ use std::path::Path;
+ use std::time::SystemTime;
+ use std::time::UNIX_EPOCH;
+ 
++use codex_hepta_contracts::pq_auth::ML_DSA_65_SIGNATURE_BYTES;
++use codex_hepta_contracts::pq_auth::ML_DSA_65_SPKI_BYTES;
++use codex_hepta_contracts::pq_auth::PqNativeVerifier;
+ use codex_hepta_evidence::EVIDENCE_DATABASE_LINEAGE;
+ use codex_hepta_evidence::EvidenceRecoverySnapshotV2;
+ use codex_hepta_evidence::HeptaEvidenceStore;
+ use codex_hepta_types::Generation;
+ use codex_hepta_types::StableId;
+-use ed25519_dalek::Signature;
+-use ed25519_dalek::VerifyingKey;
++use codex_state::SqliteConfig;
++use codex_utils_absolute_path::AbsolutePathBuf;
+ use serde::Deserialize;
+ use serde::Serialize;
+ 
+@@ -30,11 +33,13 @@ use crate::authbus_trust::hex_bytes;
+ const MAX_FRONTIER_FILE_BYTES: u64 = 64 * 1024;
+ const MAX_FRONTIER_TRUST_FILE_BYTES: u64 = 8 * 1024;
+ const MAX_FUTURE_CLOCK_SKEW_MS: u64 = 5 * 60 * 1000;
++const AUTHENTICATION_PROFILE: &str = "ml_dsa65_v2";
+ 
+ #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+ #[serde(rename_all = "camelCase", deny_unknown_fields)]
+-pub struct EvidenceRecoveryFrontierV2 {
++pub struct EvidenceRecoveryFrontierV3 {
+     pub schema_version: u32,
++    pub authentication_profile: String,
+     pub store_id: String,
+     pub frontier_generation: u64,
+     pub snapshot: EvidenceRecoverySnapshotV2,
+@@ -43,22 +48,28 @@ pub struct EvidenceRecoveryFrontierV2 {
+     pub created_at_unix_ms: u64,
+     pub signer_principal_id: String,
+     pub signer_key_epoch: u64,
++    pub signer_public_key_id_hex: String,
+     pub signature_hex: String,
+ }
+ 
+ #[derive(Deserialize)]
+ #[serde(rename_all = "camelCase", deny_unknown_fields)]
+-struct EvidenceRecoveryFrontierTrustV1 {
++struct EvidenceRecoveryFrontierTrustV2 {
+     schema_version: u32,
++    authentication_profile: String,
++    store_id: String,
++    minimum_frontier_generation: u64,
+     signer_principal_id: String,
+     signer_key_epoch: u64,
+-    public_key_hex: String,
++    public_spki_hex: String,
++    public_key_id_hex: String,
+     revoked: bool,
+ }
+ 
+-impl EvidenceRecoveryFrontierV2 {
++impl EvidenceRecoveryFrontierV3 {
+     fn validate(&self) -> Result<(), AgentdError> {
+-        if self.schema_version != 2
++        if self.schema_version != 3
++            || self.authentication_profile != AUTHENTICATION_PROFILE
+             || self.frontier_generation == 0
+             || self.snapshot.schema_version != 2
+             || self.snapshot.database_lineage != EVIDENCE_DATABASE_LINEAGE
+@@ -79,16 +90,18 @@ impl EvidenceRecoveryFrontierV2 {
+         if self.created_at_unix_ms > now.saturating_add(MAX_FUTURE_CLOCK_SKEW_MS) {
+             return Err(invalid("frontier creation time is too far in the future"));
+         }
+-        let _: [u8; 64] = hex_bytes(&self.signature_hex)?;
++        let _: [u8; 32] = canonical_hex_bytes(&self.signer_public_key_id_hex)?;
++        let _: [u8; ML_DSA_65_SIGNATURE_BYTES] = canonical_hex_bytes(&self.signature_hex)?;
+         Ok(())
+     }
+ }
+ 
+ pub fn evidence_recovery_frontier_signing_bytes(
+-    frontier: &EvidenceRecoveryFrontierV2,
++    frontier: &EvidenceRecoveryFrontierV3,
+ ) -> Result<Vec<u8>, AgentdError> {
+     frontier.validate()?;
+-    let mut bytes = b"hepta.kernel.evidence.recovery-frontier.v2\0".to_vec();
++    let mut bytes = b"hepta.kernel.evidence.recovery-frontier.pq.v3\0".to_vec();
++    push_part(&mut bytes, frontier.authentication_profile.as_bytes());
+     push_part(&mut bytes, frontier.store_id.as_bytes());
+     bytes.extend_from_slice(&frontier.frontier_generation.to_be_bytes());
+     push_part(&mut bytes, frontier.snapshot.database_lineage.as_bytes());
+@@ -127,67 +140,126 @@ pub fn evidence_recovery_frontier_signing_bytes(
+     bytes.extend_from_slice(&frontier.created_at_unix_ms.to_be_bytes());
+     push_part(&mut bytes, frontier.signer_principal_id.as_bytes());
+     bytes.extend_from_slice(&frontier.signer_key_epoch.to_be_bytes());
++    bytes.extend_from_slice(&canonical_hex_bytes::<32>(
++        &frontier.signer_public_key_id_hex,
++    )?);
+     Ok(bytes)
+ }
+ 
+-pub(crate) async fn verify_evidence_recovery_frontier(
++pub(crate) struct VerifiedEvidenceRecoveryFrontier(EvidenceRecoveryFrontierV3);
++
++/// Authenticate external recovery authority before opening or migrating SQLite.
++pub(crate) fn load_evidence_recovery_frontier(
+     identity: &AgentdIdentity,
+-    store: &HeptaEvidenceStore,
+     frontier_file: &Path,
+     signer_trust_file: &Path,
+-) -> Result<(), AgentdError> {
++) -> Result<VerifiedEvidenceRecoveryFrontier, AgentdError> {
+     let frontier_bytes = read_external_file(frontier_file, identity, MAX_FRONTIER_FILE_BYTES)?;
+-    let frontier: EvidenceRecoveryFrontierV2 =
++    let frontier: EvidenceRecoveryFrontierV3 =
+         serde_json::from_slice(&frontier_bytes).map_err(|_| {
+-            recovery_required("a signed V2 checkpoint covering provider effects is required")
++            recovery_required("an ML-DSA-65 V3 checkpoint covering provider effects is required")
+         })?;
+     frontier.validate()?;
+ 
+     let trust_bytes =
+         read_external_file(signer_trust_file, identity, MAX_FRONTIER_TRUST_FILE_BYTES)?;
+-    let trust: EvidenceRecoveryFrontierTrustV1 = serde_json::from_slice(&trust_bytes)?;
+-    if trust.schema_version != 1
++    let trust: EvidenceRecoveryFrontierTrustV2 = serde_json::from_slice(&trust_bytes)?;
++    if trust.schema_version != 2
++        || trust.authentication_profile != AUTHENTICATION_PROFILE
+         || trust.revoked
++        || trust.store_id != frontier.store_id
++        || trust.minimum_frontier_generation == 0
++        || frontier.frontier_generation < trust.minimum_frontier_generation
+         || trust.signer_principal_id != frontier.signer_principal_id
+         || trust.signer_key_epoch != frontier.signer_key_epoch
++        || trust.public_key_id_hex != frontier.signer_public_key_id_hex
+     {
+         return Err(recovery_required(
+-            "frontier signer trust is missing, revoked or mismatched",
++            "frontier signer trust, store scope or generation floor is revoked or mismatched",
+         ));
+     }
+     StableId::new(trust.signer_principal_id.clone())
+         .map_err(|error| invalid(&format!("invalid trusted frontier signer: {error}")))?;
+     Generation::new(trust.signer_key_epoch)
+         .map_err(|error| invalid(&format!("invalid trusted frontier epoch: {error}")))?;
+-    let verifying_key = VerifyingKey::from_bytes(&hex_bytes(&trust.public_key_hex)?)
+-        .map_err(|_| invalid("invalid trusted frontier Ed25519 public key"))?;
+-    let signature = Signature::from_bytes(&hex_bytes(&frontier.signature_hex)?);
++    let verifying_key = PqNativeVerifier::from_pinned_spki(
++        &canonical_hex_bytes::<ML_DSA_65_SPKI_BYTES>(&trust.public_spki_hex)?,
++        canonical_hex_bytes::<32>(&trust.public_key_id_hex)?,
++    )
++    .map_err(|_| invalid("invalid trusted frontier ML-DSA-65 public key or key pin"))?;
++    let signature = canonical_hex_bytes::<ML_DSA_65_SIGNATURE_BYTES>(&frontier.signature_hex)?;
+     verifying_key
+-        .verify_strict(
++        .verify_exact_message(
+             &evidence_recovery_frontier_signing_bytes(&frontier)?,
+             &signature,
+         )
+         .map_err(|_| recovery_required("frontier signature verification failed"))?;
+ 
+-    if let Some(existing_store_id) = store.recovery_store_id().await.map_err(evidence_error)?
+-        && existing_store_id != frontier.store_id
+-    {
+-        return Err(recovery_required(
+-            "frontier store id does not match the bound evidence database",
+-        ));
++    Ok(VerifiedEvidenceRecoveryFrontier(frontier))
++}
++
++impl VerifiedEvidenceRecoveryFrontier {
++    pub(crate) async fn open(
++        self,
++        identity: &AgentdIdentity,
++    ) -> Result<HeptaEvidenceStore, AgentdError> {
++        let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
++        let sqlite = SqliteConfig::from_sqlite_home(home);
++        // A missing/old/partial image is not permission to initialize or migrate.
++        // Bootstrap and migration must stage the exact image that the external
++        // PQ recovery owner approved before ordinary Agentd startup.
++        let observed = HeptaEvidenceStore::open_existing_read_only(&sqlite)
++            .await
++            .map_err(evidence_error)?;
++        let checked = self.check_snapshot(&observed).await;
++        observed.close().await;
++        checked?;
++        let store = HeptaEvidenceStore::open(&sqlite)
++            .await
++            .map_err(evidence_error)?;
++        if let Err(error) = self.admit(&store).await {
++            store.close().await;
++            return Err(error);
++        }
++        Ok(store)
+     }
+ 
+-    let actual = store.recovery_snapshot().await.map_err(evidence_error)?;
+-    if actual != frontier.snapshot {
+-        return Err(recovery_required(
+-            "local evidence/replay/effect frontier does not match the signed checkpoint",
++    pub(crate) async fn admit(self, store: &HeptaEvidenceStore) -> Result<(), AgentdError> {
++        self.check_snapshot(store).await?;
++        store
++            .bind_recovery_store_id(&self.0.store_id)
++            .await
++            .map_err(evidence_error)?;
++        Ok(())
++    }
++
++    async fn check_snapshot(&self, store: &HeptaEvidenceStore) -> Result<(), AgentdError> {
++        let frontier = &self.0;
++        if let Some(existing_store_id) = store.recovery_store_id().await.map_err(evidence_error)?
++            && existing_store_id != frontier.store_id
++        {
++            return Err(recovery_required(
++                "frontier store id does not match the bound evidence database",
++            ));
++        }
++
++        let actual = store.recovery_snapshot().await.map_err(evidence_error)?;
++        if actual != frontier.snapshot {
++            return Err(recovery_required(
++                "local evidence/replay/effect frontier does not match the signed checkpoint",
++            ));
++        }
++        Ok(())
++    }
++}
++
++fn canonical_hex_bytes<const N: usize>(value: &str) -> Result<[u8; N], AgentdError> {
++    if value.bytes().any(|byte| byte.is_ascii_uppercase()) {
++        return Err(invalid(
++            "recovery hexadecimal fields must use lowercase encoding",
+         ));
+     }
+-    store
+-        .bind_recovery_store_id(&frontier.store_id)
+-        .await
+-        .map_err(evidence_error)?;
+-    Ok(())
++    hex_bytes(value)
+ }
+ 
+ #[cfg(unix)]
+diff --git a/codex-rs/hepta-agentd/src/evidence_frontier_tests.rs b/codex-rs/hepta-agentd/src/evidence_frontier_tests.rs
+index 2d3c263aaa447fce32e867f98c9ecad65aeb7f1c..fb54040ef974c19280770d3c43a6de9fe2ef85ab 100644
+--- a/codex-rs/hepta-agentd/src/evidence_frontier_tests.rs
++++ b/codex-rs/hepta-agentd/src/evidence_frontier_tests.rs
+@@ -6,6 +6,8 @@ use anyhow::Result;
+ use anyhow::ensure;
+ use codex_hepta_contracts::AgentId;
+ use codex_hepta_contracts::Sha256Digest;
++use codex_hepta_contracts::pq_auth::PqNativeSigningKey;
++use codex_hepta_contracts::pq_auth::ml_dsa_65_key_id_from_spki;
+ use codex_hepta_fleet::ResourceBudget;
+ use codex_hepta_paths::HeptaFleetRoot;
+ use codex_state::SqliteConfig;
+@@ -20,10 +22,10 @@ struct Fixture {
+     _temp: tempfile::TempDir,
+     identity: AgentdIdentity,
+     store: HeptaEvidenceStore,
+-    frontier: EvidenceRecoveryFrontierV2,
++    frontier: EvidenceRecoveryFrontierV3,
+     frontier_file: PathBuf,
+     trust_file: PathBuf,
+-    key: SigningKey,
++    key: PqNativeSigningKey,
+ }
+ 
+ impl Fixture {
+@@ -50,9 +52,12 @@ impl Fixture {
+             &identity.home_root,
+         )?);
+         let store = HeptaEvidenceStore::open(&sqlite).await?;
+-        let key = SigningKey::from_bytes(&[73; 32]);
+-        let mut frontier = EvidenceRecoveryFrontierV2 {
+-            schema_version: 2,
++        let seed = [73; 32].into();
++        let spki = PqNativeSigningKey::public_spki_from_seed(&seed);
++        let key = PqNativeSigningKey::from_owned_seed(seed, ml_dsa_65_key_id_from_spki(&spki)?)?;
++        let mut frontier = EvidenceRecoveryFrontierV3 {
++            schema_version: 3,
++            authentication_profile: AUTHENTICATION_PROFILE.into(),
+             store_id: "store:recovery-version-tests".into(),
+             frontier_generation: 1,
+             snapshot: store.recovery_snapshot().await?,
+@@ -61,21 +66,25 @@ impl Fixture {
+             created_at_unix_ms: current_time_millis()?,
+             signer_principal_id: "issuer:recovery-version-tests".into(),
+             signer_key_epoch: 1,
+-            signature_hex: "00".repeat(64),
++            signer_public_key_id_hex: hex(&key.public_key_id()),
++            signature_hex: "00".repeat(ML_DSA_65_SIGNATURE_BYTES),
+         };
+-        frontier.signature_hex = hex(&key
+-            .sign(&evidence_recovery_frontier_signing_bytes(&frontier)?)
+-            .to_bytes());
++        frontier.signature_hex =
++            hex(&key.sign_exact_message(&evidence_recovery_frontier_signing_bytes(&frontier)?)?);
+         let frontier_file = root.join("frontier.json");
+         write_json(&frontier_file, &serde_json::to_value(&frontier)?)?;
+         let trust_file = root.join("trust.json");
+         write_json(
+             &trust_file,
+             &json!({
+-                "schemaVersion": 1,
++                "schemaVersion": 2,
++                "authenticationProfile": AUTHENTICATION_PROFILE,
++                "storeId": frontier.store_id,
++                "minimumFrontierGeneration": 1,
+                 "signerPrincipalId": frontier.signer_principal_id,
+                 "signerKeyEpoch": 1,
+-                "publicKeyHex": hex(key.verifying_key().as_bytes()),
++                "publicSpkiHex": hex(key.public_spki()),
++                "publicKeyIdHex": hex(&key.public_key_id()),
+                 "revoked": false
+             }),
+         )?;
+@@ -91,45 +100,44 @@ impl Fixture {
+     }
+ 
+     async fn verify(&self) -> Result<(), AgentdError> {
+-        verify_evidence_recovery_frontier(
+-            &self.identity,
+-            &self.store,
+-            &self.frontier_file,
+-            &self.trust_file,
+-        )
+-        .await
++        load_evidence_recovery_frontier(&self.identity, &self.frontier_file, &self.trust_file)?
++            .admit(&self.store)
++            .await
+     }
+ }
+ 
+ #[tokio::test]
+-async fn recovery_frontier_refuses_a_valid_old_v1_signature() -> Result<()> {
++async fn recovery_frontier_refuses_valid_classical_v1_and_v2_signatures() -> Result<()> {
+     let fixture = Fixture::new().await?;
+-    // Generate a real V1 preimage/signature with the enrolled key. This is a
+-    // legacy checkpoint, not a V2 signature broken by mutating its JSON.
+-    let preimage = legacy_signing_bytes(&fixture.frontier);
+-    let signature = fixture.key.sign(&preimage);
+-    fixture
+-        .key
+-        .verifying_key()
+-        .verify_strict(&preimage, &signature)?;
+-    let mut legacy = serde_json::to_value(&fixture.frontier)?;
+-    legacy["schemaVersion"] = json!(1);
+-    legacy["snapshot"]["schemaVersion"] = json!(1);
+-    let snapshot = legacy["snapshot"].as_object_mut().expect("snapshot object");
+-    snapshot.remove("providerEffectRows");
+-    snapshot.remove("providerEffectFrontierSha256");
+-    legacy["signatureHex"] = json!(hex(&signature.to_bytes()));
+-    write_json(&fixture.frontier_file, &legacy)?;
+-    let error = fixture
+-        .verify()
+-        .await
+-        .expect_err("V1 cannot attest to missing effect history");
+-    ensure!(
+-        error
+-            .to_string()
+-            .contains("a signed V2 checkpoint covering provider effects is required"),
+-        "wrong rejection: {error}"
+-    );
++    let key = SigningKey::from_bytes(&[73; 32]);
++    for version in [1, 2] {
++        // Real legacy messages/signatures remain historically valid; neither
++        // receives present recovery authority from the PQ loader.
++        let preimage = legacy_signing_bytes(&fixture.frontier, version);
++        let signature = key.sign(&preimage);
++        key.verifying_key().verify_strict(&preimage, &signature)?;
++        let mut legacy = serde_json::to_value(&fixture.frontier)?;
++        legacy["schemaVersion"] = json!(version);
++        let object = legacy.as_object_mut().expect("frontier object");
++        object.remove("authenticationProfile");
++        object.remove("signerPublicKeyIdHex");
++        if version == 1 {
++            legacy["snapshot"]["schemaVersion"] = json!(1);
++            let snapshot = legacy["snapshot"].as_object_mut().expect("snapshot object");
++            snapshot.remove("providerEffectRows");
++            snapshot.remove("providerEffectFrontierSha256");
++        }
++        legacy["signatureHex"] = json!(hex(&signature.to_bytes()));
++        write_json(&fixture.frontier_file, &legacy)?;
++        let error = fixture
++            .verify()
++            .await
++            .expect_err("classical recovery was admitted");
++        ensure!(
++            error.to_string().contains("ML-DSA-65 V3 checkpoint"),
++            "wrong rejection: {error}"
++        );
++    }
+     ensure!(
+         fixture.store.recovery_store_id().await?.is_none(),
+         "legacy import bound a store identity"
+@@ -162,8 +170,8 @@ async fn recovery_frontier_authenticates_both_effect_fields() -> Result<()> {
+     Ok(())
+ }
+ 
+-fn legacy_signing_bytes(frontier: &EvidenceRecoveryFrontierV2) -> Vec<u8> {
+-    let mut bytes = b"hepta.kernel.evidence.recovery-frontier.v1\0".to_vec();
++fn legacy_signing_bytes(frontier: &EvidenceRecoveryFrontierV3, version: u32) -> Vec<u8> {
++    let mut bytes = format!("hepta.kernel.evidence.recovery-frontier.v{version}\0").into_bytes();
+     push_part(&mut bytes, frontier.store_id.as_bytes());
+     bytes.extend_from_slice(&frontier.frontier_generation.to_be_bytes());
+     for part in [
+@@ -176,17 +184,232 @@ fn legacy_signing_bytes(frontier: &EvidenceRecoveryFrontierV2) -> Vec<u8> {
+     for part in [
+         frontier.snapshot.qualification_frontier_sha256.as_str(),
+         frontier.snapshot.authbus_replay_frontier_sha256.as_str(),
+-        frontier.source_commit.as_str(),
+-        frontier.source_tree.as_str(),
+     ] {
+         push_part(&mut bytes, part.as_bytes());
+     }
++    if version == 2 {
++        bytes.extend_from_slice(&frontier.snapshot.provider_effect_rows.to_be_bytes());
++        push_part(
++            &mut bytes,
++            frontier
++                .snapshot
++                .provider_effect_frontier_sha256
++                .as_str()
++                .as_bytes(),
++        );
++    }
++    push_part(&mut bytes, frontier.source_commit.as_bytes());
++    push_part(&mut bytes, frontier.source_tree.as_bytes());
+     bytes.extend_from_slice(&frontier.created_at_unix_ms.to_be_bytes());
+     push_part(&mut bytes, frontier.signer_principal_id.as_bytes());
+     bytes.extend_from_slice(&frontier.signer_key_epoch.to_be_bytes());
+     bytes
+ }
+ 
++#[tokio::test]
++async fn recovery_frontier_pq_survives_store_close_and_reopen() -> Result<()> {
++    let fixture = Fixture::new().await?;
++    fixture.verify().await?;
++    fixture.store.close().await;
++    let reopened = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(
++        AbsolutePathBuf::from_absolute_path(&fixture.identity.home_root)?,
++    ))
++    .await?;
++    load_evidence_recovery_frontier(
++        &fixture.identity,
++        &fixture.frontier_file,
++        &fixture.trust_file,
++    )?
++    .admit(&reopened)
++    .await?;
++    ensure!(
++        reopened.recovery_store_id().await? == Some(fixture.frontier.store_id),
++        "reopen changed the authenticated store binding"
++    );
++    reopened.close().await;
++    Ok(())
++}
++
++#[tokio::test]
++async fn recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry() -> Result<()> {
++    use codex_hepta_fleet::AgentLifecycle;
++    use codex_hepta_fleet::AgentManifest;
++    use codex_hepta_fleet::FleetRegistry;
++    use codex_hepta_fleet::WorkspaceBinding;
++
++    let temp = tempfile::tempdir()?;
++    let root = temp.path().canonicalize()?;
++    let fleet = HeptaFleetRoot::parse(root.join("fleet"))?;
++    let registry = FleetRegistry::initialize(fleet.clone())?;
++    let workspace = root.join("workspace");
++    std::fs::create_dir(&workspace)?;
++    let agent_id = AgentId::parse("00000000-0000-4000-8000-000000000296")?;
++    let manifest = AgentManifest::new(
++        agent_id.clone(),
++        WorkspaceBinding::new(&workspace, &fleet)?,
++        ResourceBudget::local_default(),
++    )?;
++    let record = registry.register(manifest)?;
++    registry.compare_and_transition(
++        &agent_id,
++        /*expected_generation*/ 0,
++        AgentLifecycle::Starting,
++    )?;
++    let config = crate::AgentdConfig::load(
++        fleet.as_path().to_path_buf(),
++        agent_id,
++        /*spawn_generation*/ 1,
++        record.layout.home_root().to_path_buf(),
++        record.layout.run_root().to_path_buf(),
++        record.layout.home_root().to_path_buf(),
++        workspace,
++    )?;
++    // No evidence/API/AuthBus flags: the ordinary App Server would still enable
++    // governance and open the same evidence lineage without the global gate.
++    let error = crate::run(config, codex_arg0::Arg0DispatchPaths::default())
++        .await
++        .expect_err("ordinary startup omitted its PQ recovery authority");
++    ensure!(
++        error
++            .to_string()
++            .contains("PQ recovery frontier and signer trust are required")
++    );
++    ensure!(
++        !record
++            .layout
++            .home_root()
++            .join(EVIDENCE_DATABASE_LINEAGE)
++            .exists()
++    );
++    ensure!(!record.layout.home_root().join("prompt-registry").exists());
++    ensure!(!record.layout.run_root().join("prompt-runtime").exists());
++    Ok(())
++}
++
++#[tokio::test]
++async fn recovery_frontier_rejects_wrong_domain_and_profile() -> Result<()> {
++    let fixture = Fixture::new().await?;
++    let mut wrong_domain = b"hepta.other-effect.v1\0".to_vec();
++    wrong_domain.extend(evidence_recovery_frontier_signing_bytes(&fixture.frontier)?);
++    let mut frontier = fixture.frontier.clone();
++    frontier.signature_hex = hex(&fixture.key.sign_exact_message(&wrong_domain)?);
++    write_json(&fixture.frontier_file, &serde_json::to_value(&frontier)?)?;
++    let error = fixture
++        .verify()
++        .await
++        .expect_err("wrong-domain signature was admitted");
++    ensure!(
++        error
++            .to_string()
++            .contains("frontier signature verification failed")
++    );
++
++    frontier = fixture.frontier.clone();
++    frontier.authentication_profile = "classical_v1".into();
++    write_json(&fixture.frontier_file, &serde_json::to_value(&frontier)?)?;
++    ensure!(
++        fixture.verify().await.is_err(),
++        "classical profile was admitted"
++    );
++    ensure!(fixture.store.recovery_store_id().await?.is_none());
++    Ok(())
++}
++
++#[tokio::test]
++async fn recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor() -> Result<()>
++{
++    let fixture = Fixture::new().await?;
++    let original: serde_json::Value = serde_json::from_slice(&std::fs::read(&fixture.trust_file)?)?;
++    for (field, value) in [
++        ("storeId", json!("store:another-recovery-owner")),
++        ("signerKeyEpoch", json!(2)),
++        ("minimumFrontierGeneration", json!(2)),
++        ("minimumFrontierGeneration", json!(0)),
++        ("revoked", json!(true)),
++        ("authenticationProfile", json!("classical_v1")),
++    ] {
++        let mut trust = original.clone();
++        trust[field] = value;
++        write_json(&fixture.trust_file, &trust)?;
++        ensure!(
++            fixture.verify().await.is_err(),
++            "invalid {field} was admitted"
++        );
++        ensure!(fixture.store.recovery_store_id().await?.is_none());
++    }
++    write_json(&fixture.trust_file, &original)?;
++    fixture.verify().await?;
++    Ok(())
++}
++
++#[tokio::test]
++async fn recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature() -> Result<()> {
++    let fixture = Fixture::new().await?;
++    let original: serde_json::Value = serde_json::from_slice(&std::fs::read(&fixture.trust_file)?)?;
++    let mut trust = original.clone();
++    trust["publicKeyIdHex"] = json!("00".repeat(32));
++    let mut frontier = fixture.frontier.clone();
++    frontier.signer_public_key_id_hex = "00".repeat(32);
++    frontier.signature_hex = hex(&fixture
++        .key
++        .sign_exact_message(&evidence_recovery_frontier_signing_bytes(&frontier)?)?);
++    write_json(&fixture.trust_file, &trust)?;
++    write_json(&fixture.frontier_file, &serde_json::to_value(&frontier)?)?;
++    let error = fixture
++        .verify()
++        .await
++        .expect_err("mismatched key pin was admitted");
++    ensure!(
++        error
++            .to_string()
++            .contains("ML-DSA-65 public key or key pin")
++    );
++
++    write_json(&fixture.trust_file, &original)?;
++    frontier = fixture.frontier.clone();
++    frontier.signature_hex.make_ascii_uppercase();
++    write_json(&fixture.frontier_file, &serde_json::to_value(&frontier)?)?;
++    ensure!(
++        fixture.verify().await.is_err(),
++        "noncanonical signature was admitted"
++    );
++    ensure!(fixture.store.recovery_store_id().await?.is_none());
++    Ok(())
++}
++
++#[tokio::test]
++async fn recovery_frontier_root_rotation_retires_the_old_key() -> Result<()> {
++    let fixture = Fixture::new().await?;
++    fixture.verify().await?;
++    let seed = [74; 32].into();
++    let spki = PqNativeSigningKey::public_spki_from_seed(&seed);
++    let key = PqNativeSigningKey::from_owned_seed(seed, ml_dsa_65_key_id_from_spki(&spki)?)?;
++    let mut frontier = fixture.frontier.clone();
++    frontier.frontier_generation = 2;
++    frontier.signer_key_epoch = 2;
++    frontier.signer_public_key_id_hex = hex(&key.public_key_id());
++    frontier.signature_hex =
++        hex(&key.sign_exact_message(&evidence_recovery_frontier_signing_bytes(&frontier)?)?);
++    let mut trust: serde_json::Value =
++        serde_json::from_slice(&std::fs::read(&fixture.trust_file)?)?;
++    trust["signerKeyEpoch"] = json!(2);
++    trust["minimumFrontierGeneration"] = json!(2);
++    trust["publicSpkiHex"] = json!(hex(key.public_spki()));
++    trust["publicKeyIdHex"] = json!(hex(&key.public_key_id()));
++    write_json(&fixture.trust_file, &trust)?;
++    write_json(&fixture.frontier_file, &serde_json::to_value(&frontier)?)?;
++    fixture.verify().await?;
++    write_json(
++        &fixture.frontier_file,
++        &serde_json::to_value(&fixture.frontier)?,
++    )?;
++    ensure!(
++        fixture.verify().await.is_err(),
++        "retired root checkpoint was admitted"
++    );
++    Ok(())
++}
++
+ fn write_json(path: &Path, value: &serde_json::Value) -> Result<()> {
+     std::fs::write(path, serde_json::to_vec(value)?)?;
+     std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
+diff --git a/codex-rs/hepta-agentd/src/evidence_host.rs b/codex-rs/hepta-agentd/src/evidence_host.rs
+index 8296fab73f1aa439e46b264ce33f12ec1ad0a737..fe25ae2911be52bbf6323f0cb1da6c726d777367 100644
+--- a/codex-rs/hepta-agentd/src/evidence_host.rs
++++ b/codex-rs/hepta-agentd/src/evidence_host.rs
+@@ -29,8 +29,6 @@ use codex_hepta_evidence::qualification_subject;
+ use codex_hepta_types::Digest32;
+ use codex_hepta_types::Generation;
+ use codex_hepta_types::StableId;
+-use codex_state::SqliteConfig;
+-use codex_utils_absolute_path::AbsolutePathBuf;
+ 
+ use crate::AgentdError;
+ use crate::AgentdIdentity;
+@@ -44,25 +42,13 @@ pub(crate) struct EvidenceHost {
+ }
+ 
+ impl EvidenceHost {
+-    pub(crate) async fn open(
++    pub(crate) fn open(
+         identity: &AgentdIdentity,
+         trust_file: PathBuf,
+-        recovery_frontier: Option<(PathBuf, PathBuf)>,
++        store: HeptaEvidenceStore,
+     ) -> Result<Self, AgentdError> {
++        // Runtime supplies the shared store only after global PQ recovery.
+         EvidenceTrust::load(&trust_file, identity)?;
+-        let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
+-        let store = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
+-            .await
+-            .map_err(evidence_error)?;
+-        if let Some((frontier_file, signer_trust_file)) = recovery_frontier {
+-            crate::evidence_frontier::verify_evidence_recovery_frontier(
+-                identity,
+-                &store,
+-                &frontier_file,
+-                &signer_trust_file,
+-            )
+-            .await?;
+-        }
+         Ok(Self { store, trust_file })
+     }
+ 
+diff --git a/codex-rs/hepta-agentd/src/lib.rs b/codex-rs/hepta-agentd/src/lib.rs
+index e173a35b89d0bc79f68e35c4ee558c5b37998173..1d845cfdab9142f2efdeebe6e8f964f425856f6d 100644
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -182,7 +182,7 @@ pub use config::HEPTA_AGENT_ID_ENV;
+ pub use config::HEPTA_AGENT_RUN_ROOT_ENV;
+ pub use config::HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV;
+ pub use error::AgentdError;
+-pub use evidence_frontier::EvidenceRecoveryFrontierV2;
++pub use evidence_frontier::EvidenceRecoveryFrontierV3;
+ pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
+ pub use evidence_host::kernel_evidence_claims;
+ pub use intelligence_ingress::AgentdIntelligenceInvocationProviderV1;
+diff --git a/codex-rs/hepta-agentd/src/runtime.rs b/codex-rs/hepta-agentd/src/runtime.rs
+index ed31f22dc430ca7a396a9df0e27373dc19f7f424..36236d5f5c8b2053a474642c014e6a6d7e39c6ef 100644
+--- a/codex-rs/hepta-agentd/src/runtime.rs
++++ b/codex-rs/hepta-agentd/src/runtime.rs
+@@ -47,9 +47,20 @@ pub async fn run(
+     let evidence_trust_file = config
+         .evidence_trust_file()
+         .map(std::path::Path::to_path_buf);
+-    let evidence_recovery_frontier = config
+-        .evidence_recovery_frontier_files()
+-        .map(|(frontier, trust)| (frontier.to_path_buf(), trust.to_path_buf()));
++    // The ordinary App Server enables governance even without the evidence API
++    // or AuthBus flags. Every Agentd startup therefore requires this shared-store
++    // recovery gate, including a host that appears to be new or empty.
++    let (frontier, trust) = config.evidence_recovery_frontier_files().ok_or_else(|| {
++        AgentdError::Invalid(
++            "kernel.evidence recovery_required: PQ recovery frontier and signer trust are required before Agentd startup"
++                .to_string(),
++        )
++    })?;
++    let evidence_recovery = crate::evidence_frontier::load_evidence_recovery_frontier(
++        config.identity(),
++        frontier,
++        trust,
++    )?;
+     let automation_effect_host_file = config
+         .automation_effect_host_file()
+         .map(std::path::Path::to_path_buf);
+@@ -79,6 +90,7 @@ pub async fn run(
+     let intuition_policy_host = config.intuition_policy_host();
+     let intelligence_product = config.intelligence_product_runner();
+     let intelligence_invocation = config.intelligence_invocation_provider();
++    let recovered_evidence_store = evidence_recovery.open(config.identity()).await?;
+     let (identity, registry, writer_lock) = config.into_parts();
+     let _writer_lock = writer_lock;
+     let federation_owner_layouts = registry
+@@ -129,6 +141,18 @@ pub async fn run(
+             AgentdError::Invalid("cognitive retrieval learning sink already attached".to_string())
+         })?;
+     }
++    if let Some(path) = evidence_trust_file {
++        state.refresh_generation()?;
++        let host = crate::evidence_host::EvidenceHost::open(
++            &identity,
++            path,
++            recovered_evidence_store.clone(),
++        )?;
++        state.refresh_generation()?;
++        state.evidence.set(Arc::new(host)).map_err(|_| {
++            AgentdError::Protocol("kernel evidence host already attached".to_string())
++        })?;
++    }
+     match (trust_file, checkpoint_file) {
+         (Some(trust), Some(checkpoint)) => {
+             state.refresh_generation()?;
+@@ -148,20 +172,6 @@ pub async fn run(
+             ));
+         }
+     }
+-    if let Some(path) = evidence_trust_file {
+-        state.refresh_generation()?;
+-        let host =
+-            crate::evidence_host::EvidenceHost::open(&identity, path, evidence_recovery_frontier)
+-                .await?;
+-        state.refresh_generation()?;
+-        state.evidence.set(Arc::new(host)).map_err(|_| {
+-            AgentdError::Protocol("kernel evidence host already attached".to_string())
+-        })?;
+-    } else if evidence_recovery_frontier.is_some() {
+-        return Err(AgentdError::Invalid(
+-            "kernel evidence recovery frontier requires --evidence-trust-file".to_string(),
+-        ));
+-    }
+     if let Some(path) = objective_profile_file {
+         state.refresh_generation()?;
+         let host = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(
+diff --git a/codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs b/codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs
+index 08afc2c6c333974567385a9f5630e0b6b71a6fbd..1af182f3aca43c2f466a2e41a7eeff21adb2b0a5 100644
+--- a/codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs
++++ b/codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs
+@@ -99,12 +99,7 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
+     // and repeatedly hash a gigabyte debug binary once per isolated peer.
+     for (index, agent) in agents.iter().enumerate() {
+         eprintln!("FLEET_STAGE install agent={index}");
+-        let initial = release(
+-            &fleet.registry,
+-            &agent.agent_id,
+-            &format!("initial-{index}"),
+-            &v1,
+-        )?;
++        let initial = release(&fleet.registry, agent, &format!("initial-{index}"), &v1)?;
+         eprintln!("FLEET_STAGE start agent={index}");
+         fleet.start_release(agent, initial)?;
+         let (control, health) = fleet.wait_ready(agent, 1).await?;
+@@ -226,7 +221,7 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
+ 
+     fleet.supervisor.upgrade(
+         &agents[0].agent_id,
+-        release(&fleet.registry, &agents[0].agent_id, "agent-a-v2", &v2)?,
++        release(&fleet.registry, &agents[0], "agent-a-v2", &v2)?,
+         Instant::now(),
+     )?;
+     let (_, v2_health) = wait_release(&mut fleet, &agents[0], "agent-a-v2").await?;
+@@ -254,12 +249,7 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
+ 
+     fleet.supervisor.upgrade(
+         &agents[0].agent_id,
+-        release(
+-            &fleet.registry,
+-            &agents[0].agent_id,
+-            "agent-a-failing",
+-            &failing,
+-        )?,
++        release(&fleet.registry, &agents[0], "agent-a-failing", &failing)?,
+         Instant::now(),
+     )?;
+     let (_, auto_rollback_health) = wait_release(&mut fleet, &agents[0], "agent-a-v2").await?;
+@@ -346,12 +336,7 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
+     // and repeatedly hash a gigabyte debug binary once per isolated peer.
+     for (index, agent) in agents.iter().enumerate() {
+         eprintln!("FLEET_STAGE install agent={index}");
+-        let initial = release(
+-            &fleet.registry,
+-            &agent.agent_id,
+-            &format!("six-initial-{index}"),
+-            &v1,
+-        )?;
++        let initial = release(&fleet.registry, agent, &format!("six-initial-{index}"), &v1)?;
+         eprintln!("FLEET_STAGE start agent={index}");
+         fleet.start_release(agent, initial)?;
+         let (control, health) = fleet
+@@ -441,7 +426,7 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
+     let target_peer_baseline = peer_snapshots(&fleet, &target_peer_ids)?;
+     fleet.supervisor.upgrade(
+         &agents[5].agent_id,
+-        release(&fleet.registry, &agents[5].agent_id, "six-agent-5-v2", &v2)?,
++        release(&fleet.registry, &agents[5], "six-agent-5-v2", &v2)?,
+         Instant::now(),
+     )?;
+     let (_, upgraded) = wait_release(&mut fleet, &agents[5], "six-agent-5-v2")
+@@ -553,13 +538,21 @@ fn assert_distinct_agent_roots_count(agents: &[AgentFixture], expected: usize) -
+ 
+ fn release(
+     registry: &FleetRegistry,
+-    agent_id: &AgentId,
++    agent: &AgentFixture,
+     identity: &str,
+     program: &Path,
+ ) -> Result<AgentRelease> {
+     let release_id = ReleaseId::parse(identity)?;
+-    let installed = registry.install_release(release_id.clone(), program, Vec::new())?;
+-    registry.allow_release(agent_id, &release_id)?;
++    let args = agent
++        .recovery_args()
++        .into_iter()
++        .map(|arg| {
++            arg.into_string()
++                .map_err(|_| anyhow::anyhow!("fixture recovery path is not UTF-8"))
++        })
++        .collect::<Result<Vec<_>>>()?;
++    let installed = registry.install_release(release_id.clone(), program, args)?;
++    registry.allow_release(&agent.agent_id, &release_id)?;
+     Ok(AgentRelease::try_from(installed)?)
+ }
+ 
+diff --git a/codex-rs/hepta-agentd/tests/kernel_evidence_product.rs b/codex-rs/hepta-agentd/tests/kernel_evidence_product.rs
+index 33df89f287b98e5b0dbbe2bd3305d2007812e613..763f4c6e2c5c8f97817dd4f6eb48bc4052ee704c 100644
+--- a/codex-rs/hepta-agentd/tests/kernel_evidence_product.rs
++++ b/codex-rs/hepta-agentd/tests/kernel_evidence_product.rs
+@@ -10,7 +10,7 @@ use anyhow::Result;
+ use anyhow::ensure;
+ use app_test_support::MockResponsesConfig;
+ use codex_hepta_agentd::AgentdError;
+-use codex_hepta_agentd::EvidenceRecoveryFrontierV2;
++use codex_hepta_agentd::EvidenceRecoveryFrontierV3;
+ use codex_hepta_agentd::KernelEvidenceAppendIngress;
+ use codex_hepta_agentd::KernelEvidenceCandidateV1;
+ use codex_hepta_agentd::KernelEvidenceQueryV1;
+@@ -20,6 +20,9 @@ use codex_hepta_agentd::kernel_evidence_claims;
+ use codex_hepta_authbus::IssuerRegistration;
+ use codex_hepta_authbus::SignedMessage;
+ use codex_hepta_contracts::Sha256Digest;
++use codex_hepta_contracts::pq_auth::ML_DSA_65_SIGNATURE_BYTES;
++use codex_hepta_contracts::pq_auth::PqNativeSigningKey;
++use codex_hepta_contracts::pq_auth::ml_dsa_65_key_id_from_spki;
+ use codex_hepta_evidence::EvidenceCandidateV1;
+ use codex_hepta_evidence::EvidenceClaimClassV1;
+ use codex_hepta_evidence::EvidenceDispositionV1;
+@@ -94,7 +97,21 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
+         ],
+     )?;
+ 
+-    fleet.start_with_evidence_trust_file(&agent, &trust_file)?;
++    let sqlite = SqliteConfig::from_sqlite_home(AbsolutePathBuf::from_absolute_path(
++        agent.layout.home_root(),
++    )?);
++    let store = HeptaEvidenceStore::open(&sqlite).await?;
++    let snapshot = store.recovery_snapshot().await?;
++    store.close().await;
++    let external = tempfile::tempdir()?;
++    let (frontier_file, frontier_trust_file) =
++        write_recovery_frontier(external.path(), "store:kernel-evidence-product", snapshot)?;
++    fleet.start_with_evidence_recovery(
++        &agent,
++        &trust_file,
++        &frontier_file,
++        &frontier_trust_file,
++    )?;
+     let (control, _) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
+     let capabilities = control.capabilities().await?;
+     ensure!(
+@@ -683,6 +700,7 @@ async fn check_recovery_rollback(fixture: RecoveryRollbackFixture) -> Result<()>
+     )?;
+ 
+     std::fs::copy(&old_image, &database_path)?;
++    let restored_image_bytes = std::fs::read(&database_path)?;
+     fleet.start_with_evidence_recovery(
+         &agent,
+         &trust_file,
+@@ -698,6 +716,10 @@ async fn check_recovery_rollback(fixture: RecoveryRollbackFixture) -> Result<()>
+         format!("{failure:#}").contains("recovery_required"),
+         "older database failed without the recovery-required oracle: {failure:#}"
+     );
++    ensure!(
++        std::fs::read(&database_path)? == restored_image_bytes,
++        "rejected recovery rewrote the restored database before admission"
++    );
+     Ok(())
+ }
+ 
+@@ -835,9 +857,13 @@ fn write_recovery_frontier(
+     store_id: &str,
+     snapshot: codex_hepta_evidence::EvidenceRecoverySnapshotV2,
+ ) -> Result<(std::path::PathBuf, std::path::PathBuf)> {
+-    let signer_key = SigningKey::from_bytes(&[63; 32]);
+-    let mut frontier = EvidenceRecoveryFrontierV2 {
+-        schema_version: 2,
++    let directory = directory.canonicalize()?;
++    let seed = [63; 32].into();
++    let spki = PqNativeSigningKey::public_spki_from_seed(&seed);
++    let signer_key = PqNativeSigningKey::from_owned_seed(seed, ml_dsa_65_key_id_from_spki(&spki)?)?;
++    let mut frontier = EvidenceRecoveryFrontierV3 {
++        schema_version: 3,
++        authentication_profile: "ml_dsa65_v2".into(),
+         store_id: store_id.to_string(),
+         frontier_generation: 1,
+         snapshot,
+@@ -846,11 +872,12 @@ fn write_recovery_frontier(
+         created_at_unix_ms: now_ms()?,
+         signer_principal_id: RECOVERY_SIGNER.to_string(),
+         signer_key_epoch: 1,
+-        signature_hex: "00".repeat(64),
++        signer_public_key_id_hex: hex(&signer_key.public_key_id()),
++        signature_hex: "00".repeat(ML_DSA_65_SIGNATURE_BYTES),
+     };
+-    frontier.signature_hex = hex(&signer_key
+-        .sign(&evidence_recovery_frontier_signing_bytes(&frontier)?)
+-        .to_bytes());
++    frontier.signature_hex =
++        hex(&signer_key
++            .sign_exact_message(&evidence_recovery_frontier_signing_bytes(&frontier)?)?);
+ 
+     let frontier_file = directory.join("evidence-recovery-frontier.json");
+     write_private_json(&frontier_file, &frontier)?;
+@@ -858,10 +885,14 @@ fn write_recovery_frontier(
+     write_private_json(
+         &trust_file,
+         &json!({
+-            "schemaVersion": 1,
++            "schemaVersion": 2,
++            "authenticationProfile": "ml_dsa65_v2",
++            "storeId": store_id,
++            "minimumFrontierGeneration": 1,
+             "signerPrincipalId": RECOVERY_SIGNER,
+             "signerKeyEpoch": 1,
+-            "publicKeyHex": hex(signer_key.verifying_key().as_bytes()),
++            "publicSpkiHex": hex(signer_key.public_spki()),
++            "publicKeyIdHex": hex(&signer_key.public_key_id()),
+             "revoked": false
+         }),
+     )?;
+diff --git a/codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs b/codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs
+index c2ecc470dadc6a30ce5246ee689d70f3042ea009..0be55823473976b8cd95dec236412b744e585498 100644
+--- a/codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs
++++ b/codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs
+@@ -34,6 +34,9 @@ use codex_hepta_supervisor::SupervisordMutation;
+ use codex_hepta_supervisor::SupervisordMutationAccepted;
+ use core_test_support::responses;
+ 
++#[path = "support/recovery.rs"]
++mod recovery;
++
+ const CHILD_MODE_ENV: &str = "HEPTA_TEST_SUPERVISORD_CHILD";
+ const CHILD_FLEET_ROOT_ENV: &str = "HEPTA_TEST_SUPERVISORD_FLEET_ROOT";
+ const READY_TIMEOUT: Duration = Duration::from_secs(120);
+@@ -81,6 +84,7 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
+     let model = responses::start_mock_server().await;
+     for agent in &agents {
+         MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
++        recovery::stage_initial(&root, agent.layout.home_root(), &agent.agent_id)?;
+     }
+ 
+     let sources = root.join("release-sources");
+@@ -425,16 +429,22 @@ fn assert_distinct_roots(agents: &[AgentFixture]) -> Result<()> {
+ }
+ 
+ fn agentd_wrapper(root: &Path, name: &str, agentd: &Path) -> Result<PathBuf> {
++    let recovery_root = root
++        .parent()
++        .context("fixture release parent missing")?
++        .join("recovery");
+     ensure!(
+-        !agentd.to_string_lossy().contains('\''),
+-        "fixture binary path cannot contain a shell quote"
++        !agentd.to_string_lossy().contains('\'') && !recovery_root.to_string_lossy().contains('\''),
++        "fixture binary/recovery path cannot contain a shell quote"
+     );
+     let wrapper = root.join(name);
+     std::fs::write(
+         &wrapper,
+         format!(
+-            "#!/bin/sh\n# immutable test release: {name}\nexec '{}' \"$@\"\n",
+-            agentd.display()
++            "#!/bin/sh\n# immutable test release: {name}\nexec '{}' --evidence-recovery-frontier-file '{}/'\"$HEPTA_AGENT_ID\"'/frontier.json' --evidence-recovery-frontier-trust-file '{}/'\"$HEPTA_AGENT_ID\"'/trust.json' \"$@\"\n",
++            agentd.display(),
++            recovery_root.display(),
++            recovery_root.display()
+         ),
+     )?;
+     std::fs::set_permissions(&wrapper, std::fs::Permissions::from_mode(0o555))?;
+diff --git a/codex-rs/hepta-agentd/tests/support/fleet.rs b/codex-rs/hepta-agentd/tests/support/fleet.rs
+index f9ee63660527298ca6a4d59182c6c09d28977f41..b82b225213a149103fd47a57fee9256bcb328b22 100644
+--- a/codex-rs/hepta-agentd/tests/support/fleet.rs
++++ b/codex-rs/hepta-agentd/tests/support/fleet.rs
+@@ -36,6 +36,19 @@ pub(crate) struct AgentFixture {
+     pub(crate) agent_id: AgentId,
+     pub(crate) layout: HeptaAgentLayout,
+     pub(crate) workspace: PathBuf,
++    recovery_frontier_file: PathBuf,
++    recovery_frontier_trust_file: PathBuf,
++}
++
++impl AgentFixture {
++    pub(crate) fn recovery_args(&self) -> Vec<std::ffi::OsString> {
++        vec![
++            "--evidence-recovery-frontier-file".into(),
++            self.recovery_frontier_file.as_os_str().to_owned(),
++            "--evidence-recovery-frontier-trust-file".into(),
++            self.recovery_frontier_trust_file.as_os_str().to_owned(),
++        ]
++    }
+ }
+ 
+ pub(crate) struct FleetHarness {
+@@ -123,17 +136,21 @@ impl FleetHarness {
+             recovery.faults
+         );
+         self.supervisor = supervisor;
++        let (recovery_frontier_file, recovery_frontier_trust_file) =
++            super::recovery::stage_initial(&self.root, record.layout.home_root(), &agent_id)?;
+         Ok(AgentFixture {
+             agent_id,
+             layout: record.layout,
+             workspace,
++            recovery_frontier_file,
++            recovery_frontier_trust_file,
+         })
+     }
+ 
+     #[allow(dead_code)]
+     pub(crate) fn start(&mut self, agent: &AgentFixture) -> Result<()> {
+         let binary = agentd_binary()?;
+-        let command = AgentCommand::new(binary, Vec::new())?;
++        let command = AgentCommand::new(binary, agent.recovery_args())?;
+         self.supervisor
+             .start(&agent.agent_id, command, Instant::now())?;
+         self.started = true;
+@@ -149,12 +166,16 @@ impl FleetHarness {
+     ) -> Result<()> {
+         let command = AgentCommand::new(
+             agentd_binary()?,
+-            vec![
+-                "--authbus-trust-file".into(),
+-                trust_file.as_os_str().to_owned(),
+-                "--authbus-checkpoint-file".into(),
+-                checkpoint_file.as_os_str().to_owned(),
+-            ],
++            agent
++                .recovery_args()
++                .into_iter()
++                .chain(vec![
++                    "--authbus-trust-file".into(),
++                    trust_file.as_os_str().to_owned(),
++                    "--authbus-checkpoint-file".into(),
++                    checkpoint_file.as_os_str().to_owned(),
++                ])
++                .collect(),
+         )?;
+         self.supervisor
+             .start(&agent.agent_id, command, Instant::now())?;
+@@ -170,10 +191,14 @@ impl FleetHarness {
+     ) -> Result<()> {
+         let command = AgentCommand::new(
+             agentd_binary()?,
+-            vec![
+-                "--evidence-trust-file".into(),
+-                trust_file.as_os_str().to_owned(),
+-            ],
++            agent
++                .recovery_args()
++                .into_iter()
++                .chain(vec![
++                    "--evidence-trust-file".into(),
++                    trust_file.as_os_str().to_owned(),
++                ])
++                .collect(),
+         )?;
+         self.supervisor
+             .start(&agent.agent_id, command, Instant::now())?;
+@@ -215,12 +240,16 @@ impl FleetHarness {
+     ) -> Result<()> {
+         let command = AgentCommand::new(
+             agentd_binary()?,
+-            vec![
+-                "--plasticity-bootstrap-descriptor".into(),
+-                descriptor.as_os_str().to_owned(),
+-                "--plasticity-bootstrap-descriptor-digest".into(),
+-                descriptor_digest.into(),
+-            ],
++            agent
++                .recovery_args()
++                .into_iter()
++                .chain(vec![
++                    "--plasticity-bootstrap-descriptor".into(),
++                    descriptor.as_os_str().to_owned(),
++                    "--plasticity-bootstrap-descriptor-digest".into(),
++                    descriptor_digest.into(),
++                ])
++                .collect(),
+         )?;
+         self.supervisor
+             .start(&agent.agent_id, command, Instant::now())?;
+diff --git a/codex-rs/hepta-agentd/tests/support/mod.rs b/codex-rs/hepta-agentd/tests/support/mod.rs
+index 6bf6d12e18304ca7d4c557a47258dda64ac3c1a2..93319893c69292d151aaf3ca46a2a5527cc4aada 100644
+--- a/codex-rs/hepta-agentd/tests/support/mod.rs
++++ b/codex-rs/hepta-agentd/tests/support/mod.rs
+@@ -1 +1,2 @@
+ pub(crate) mod fleet;
++mod recovery;
+diff --git a/codex-rs/hepta-agentd/tests/support/recovery.rs b/codex-rs/hepta-agentd/tests/support/recovery.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..52f6805d7497b6e51a36fb2bf175299aec41bfd8
+--- /dev/null
++++ b/codex-rs/hepta-agentd/tests/support/recovery.rs
+@@ -0,0 +1,92 @@
++//! Test-only custody for an explicitly staged initial evidence image. A fixture
++//! checkpoint is created once at registration and is never refreshed on restart.
++
++use std::os::unix::fs::PermissionsExt;
++use std::path::Path;
++use std::path::PathBuf;
++use std::time::SystemTime;
++use std::time::UNIX_EPOCH;
++
++use anyhow::Result;
++use anyhow::ensure;
++use codex_hepta_agentd::EvidenceRecoveryFrontierV3;
++use codex_hepta_agentd::evidence_recovery_frontier_signing_bytes;
++use codex_hepta_contracts::AgentId;
++use codex_hepta_contracts::pq_auth::ML_DSA_65_SIGNATURE_BYTES;
++use codex_hepta_contracts::pq_auth::PqNativeSigningKey;
++use codex_hepta_contracts::pq_auth::ml_dsa_65_key_id_from_spki;
++use codex_hepta_evidence::HeptaEvidenceStore;
++use codex_state::SqliteConfig;
++use codex_utils_absolute_path::AbsolutePathBuf;
++use serde_json::json;
++
++pub(super) fn stage_initial(
++    root: &Path,
++    home: &Path,
++    agent_id: &AgentId,
++) -> Result<(PathBuf, PathBuf)> {
++    let directory = root.join("recovery").join(agent_id.as_str());
++    std::fs::create_dir_all(&directory)?;
++    let frontier_file = directory.join("frontier.json");
++    let trust_file = directory.join("trust.json");
++    ensure!(
++        !frontier_file.exists() && !trust_file.exists(),
++        "fixture recovery is already staged"
++    );
++    let home = AbsolutePathBuf::from_absolute_path(home)?;
++    let snapshot = std::thread::spawn(move || -> Result<_> {
++        tokio::runtime::Builder::new_current_thread()
++            .enable_all()
++            .build()?
++            .block_on(async {
++                let store = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home)).await?;
++                let snapshot = store.recovery_snapshot().await?;
++                store.close().await;
++                Ok(snapshot)
++            })
++    })
++    .join()
++    .map_err(|_| anyhow::anyhow!("fixture recovery preparation panicked"))??;
++    let seed = [62; 32].into();
++    let spki = PqNativeSigningKey::public_spki_from_seed(&seed);
++    let key = PqNativeSigningKey::from_owned_seed(seed, ml_dsa_65_key_id_from_spki(&spki)?)?;
++    let mut frontier = EvidenceRecoveryFrontierV3 {
++        schema_version: 3,
++        authentication_profile: "ml_dsa65_v2".into(),
++        store_id: format!("store:fixture:{agent_id}"),
++        frontier_generation: 1,
++        snapshot,
++        source_commit: "e".repeat(40),
++        source_tree: "f".repeat(40),
++        created_at_unix_ms: u64::try_from(
++            SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis(),
++        )?,
++        signer_principal_id: "issuer:fixture-recovery".into(),
++        signer_key_epoch: 1,
++        signer_public_key_id_hex: hex(&key.public_key_id()),
++        signature_hex: "00".repeat(ML_DSA_65_SIGNATURE_BYTES),
++    };
++    frontier.signature_hex =
++        hex(&key.sign_exact_message(&evidence_recovery_frontier_signing_bytes(&frontier)?)?);
++    for (path, value) in [
++        (&frontier_file, serde_json::to_value(&frontier)?),
++        (
++            &trust_file,
++            json!({
++                "schemaVersion": 2, "authenticationProfile": "ml_dsa65_v2",
++                "storeId": frontier.store_id, "minimumFrontierGeneration": 1,
++                "signerPrincipalId": frontier.signer_principal_id, "signerKeyEpoch": 1,
++                "publicSpkiHex": hex(key.public_spki()), "publicKeyIdHex": hex(&key.public_key_id()),
++                "revoked": false
++            }),
++        ),
++    ] {
++        std::fs::write(path, serde_json::to_vec(&value)?)?;
++        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))?;
++    }
++    Ok((frontier_file, trust_file))
++}
++
++fn hex(bytes: &[u8]) -> String {
++    bytes.iter().map(|byte| format!("{byte:02x}")).collect()
++}

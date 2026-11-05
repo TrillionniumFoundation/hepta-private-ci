@@ -1,0 +1,104 @@
+  CC       cli/pkgconf-main.o
+  CC       cli/pkgconf-core.o
+  CC       cli/pkgconf-getopt_long.o
+  CC       cli/pkgconf-renderer-msvc.o
+  CC       libpkgconf/argvsplit.lo
+  CC       libpkgconf/audit.lo
+  CC       libpkgconf/bsdstubs.lo
+  CC       libpkgconf/buffer.lo
+  CC       libpkgconf/bufferset.lo
+  CC       libpkgconf/bytecode.lo
+  CC       libpkgconf/cache.lo
+  CC       libpkgconf/client.lo
+  CC       libpkgconf/dependency.lo
+  CC       libpkgconf/fileio.lo
+  CC       libpkgconf/fragment.lo
+  CC       libpkgconf/license.lo
+  CC       libpkgconf/output.lo
+  CC       libpkgconf/parser.lo
+  CC       libpkgconf/path.lo
+  CC       libpkgconf/personality.lo
+  CC       libpkgconf/pkg.lo
+  CC       libpkgconf/queue.lo
+  CC       libpkgconf/tuple.lo
+  CC       libpkgconf/variable.lo
+  CC       libpkgconf/version.lo
+  CCLD     libpkgconf.la
+  CCLD     pkgconf
+  CC       cli/bomtool/bomtool-main.o
+  CC       cli/bomtool-getopt_long.o
+  CCLD     bomtool
+  CC       cli/spdxtool/spdxtool-main.o
+  CC       cli/spdxtool/spdxtool-core.o
+  CC       cli/spdxtool/spdxtool-software.o
+  CC       cli/spdxtool/spdxtool-serialize.o
+  CC       cli/spdxtool/spdxtool-simplelicensing.o
+  CC       cli/spdxtool/spdxtool-util.o
+  CC       cli/spdxtool/spdxtool-generate.o
+  CC       cli/spdxtool-getopt_long.o
+  CCLD     spdxtool
+  CC       cli/pccritic/pccritic-main.o
+  CC       cli/pccritic/pccritic-critic.o
+  CC       cli/pccritic-getopt_long.o
+  CCLD     pccritic
+  CC       cli/test_runner-core.o
+  CC       cli/test_runner-getopt_long.o
+  CC       cli/test_runner-renderer-msvc.o
+  CC       tests/test_runner-test-runner.o
+tests/test-runner.c: In function ‘run_test_case’:
+tests/test-runner.c:1231:25: warning: ignoring return value of ‘chdir’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+ 1231 |                         chdir(original_cwd);
+      |                         ^~~~~~~~~~~~~~~~~~~
+tests/test-runner.c:1386:17: warning: ignoring return value of ‘chdir’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+ 1386 |                 chdir(original_cwd);
+      |                 ^~~~~~~~~~~~~~~~~~~
+  CCLD     test-runner
+  CC       tests/api/test_api_audit-test-audit.o
+  CCLD     test-api-audit
+  CC       tests/api/test_api_buffer-test-buffer.o
+  CCLD     test-api-buffer
+  CC       tests/api/test_api_bytecode-test-bytecode.o
+  CCLD     test-api-bytecode
+  CC       tests/api/test_api_client-test-client.o
+  CCLD     test-api-client
+  CC       tests/api/test_api_dependency-test-dependency.o
+  CCLD     test-api-dependency
+  CC       tests/api/test_api_fileio-test-fileio.o
+  CCLD     test-api-fileio
+  CC       tests/api/test_api_fragment-test-fragment.o
+  CCLD     test-api-fragment
+  CC       tests/api/test_api_license-test-license.o
+  CCLD     test-api-license
+  CC       tests/api/test_api_path_utils-test-path-utils.o
+  CCLD     test-api-path-utils
+  CC       tests/api/test_api_personality-test-personality.o
+  CCLD     test-api-personality
+  CC       tests/api/test_api_queue-test-queue.o
+  CCLD     test-api-queue
+  CC       tests/api/test_api_serialize-test-serialize.o
+  CC       cli/spdxtool/test_api_serialize-core.o
+  CC       cli/spdxtool/test_api_serialize-software.o
+  CC       cli/spdxtool/test_api_serialize-serialize.o
+  CC       cli/spdxtool/test_api_serialize-simplelicensing.o
+  CC       cli/spdxtool/test_api_serialize-util.o
+  CCLD     test-api-serialize
+  CC       tests/api/test_api_tuple-test-tuple.o
+  CCLD     test-api-tuple
+  CC       tests/api/test_api_util-test-util.o
+  CC       cli/spdxtool/test_api_util-core.o
+  CC       cli/spdxtool/test_api_util-software.o
+  CC       cli/spdxtool/test_api_util-serialize.o
+  CC       cli/spdxtool/test_api_util-simplelicensing.o
+  CC       cli/spdxtool/test_api_util-util.o
+  CCLD     test-api-util
+  CC       tests/api/test_api_variable-test-variable.o
+  CCLD     test-api-variable
+  CC       tests/api/test_api_version-test-version.o
+  CCLD     test-api-version
+
+============================================================================
+WARNING: Autotools support is deprecated and will be removed in pkgconf 3.1.
+Please migrate to Meson or Muon.
+See README.md for instructions on building with Meson.
+============================================================================
+

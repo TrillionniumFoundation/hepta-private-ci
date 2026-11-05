@@ -1,0 +1,14 @@
+diff --git a/codex-rs/hepta-agentd/tests/kernel_evidence_product.rs b/codex-rs/hepta-agentd/tests/kernel_evidence_product.rs
+index 763f4c6e2c5c8f97817dd4f6eb48bc4052ee704c..d87d97f193a6095e77a60fb3cb1894f77ebc6f95 100644
+--- a/codex-rs/hepta-agentd/tests/kernel_evidence_product.rs
++++ b/codex-rs/hepta-agentd/tests/kernel_evidence_product.rs
+@@ -681,7 +681,8 @@ async fn check_recovery_rollback(fixture: RecoveryRollbackFixture) -> Result<()>
+                     "provider:recovery",
+                     "run",
+                     "step",
+-                )?,
++                )
++                .map_err(|error| anyhow::anyhow!("invalid provider effect key: {error:?}"))?,
+                 Sha256Digest::for_bytes(b"original external effect"),
+             );
+             current_store.append_provider_effect_intent(&intent).await?;

@@ -34,6 +34,9 @@ use codex_hepta_supervisor::SupervisordMutation;
 use codex_hepta_supervisor::SupervisordMutationAccepted;
 use core_test_support::responses;
 
+#[path = "support/recovery.rs"]
+mod recovery;
+
 const CHILD_MODE_ENV: &str = "HEPTA_TEST_SUPERVISORD_CHILD";
 const CHILD_FLEET_ROOT_ENV: &str = "HEPTA_TEST_SUPERVISORD_FLEET_ROOT";
 const READY_TIMEOUT: Duration = Duration::from_secs(120);
@@ -81,6 +84,7 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     let model = responses::start_mock_server().await;
     for agent in &agents {
         MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+        recovery::stage_initial(&root, agent.layout.home_root(), &agent.agent_id)?;
     }
 
     let sources = root.join("release-sources");
@@ -425,16 +429,22 @@ fn assert_distinct_roots(agents: &[AgentFixture]) -> Result<()> {
 }
 
 fn agentd_wrapper(root: &Path, name: &str, agentd: &Path) -> Result<PathBuf> {
+    let recovery_root = root
+        .parent()
+        .context("fixture release parent missing")?
+        .join("recovery");
     ensure!(
-        !agentd.to_string_lossy().contains('\''),
-        "fixture binary path cannot contain a shell quote"
+        !agentd.to_string_lossy().contains('\'') && !recovery_root.to_string_lossy().contains('\''),
+        "fixture binary/recovery path cannot contain a shell quote"
     );
     let wrapper = root.join(name);
     std::fs::write(
         &wrapper,
         format!(
-            "#!/bin/sh\n# immutable test release: {name}\nexec '{}' \"$@\"\n",
-            agentd.display()
+            "#!/bin/sh\n# immutable test release: {name}\nexec '{}' --evidence-recovery-frontier-file '{}/'\"$HEPTA_AGENT_ID\"'/frontier.json' --evidence-recovery-frontier-trust-file '{}/'\"$HEPTA_AGENT_ID\"'/trust.json' \"$@\"\n",
+            agentd.display(),
+            recovery_root.display(),
+            recovery_root.display()
         ),
     )?;
     std::fs::set_permissions(&wrapper, std::fs::Permissions::from_mode(0o555))?;

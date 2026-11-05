@@ -1,0 +1,106 @@
+{
+  "status": "CACHE_QUARANTINE_REFUSED",
+  "started_at": "2026-11-05T04:52:29.396445+00:00",
+  "selected_runtime_commit": "367e27fb6bf30443641b9e23a063d24e49eda9f7",
+  "selected_runtime_tree": "6a2465606f0270eeecec83c2b7d9dbef5dc96076",
+  "target": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/target",
+  "quarantine": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/cache-quarantine-367e27fb-20261105T045229Z-659c1af7/retained-target-paths",
+  "script_sha256": "6457fe397b2f531a48695ac1857c8460ed250f0fae10d6ae04a2705b0c723854",
+  "cargo_or_test_invoked": false,
+  "test_count": 0,
+  "e0463_resolution": "UNKNOWN_REBUILD_NOT_RUN",
+  "before": {},
+  "after": {},
+  "moved": [],
+  "cargo_lock": "NONBLOCKING_EXCLUSIVE_ACQUIRED",
+  "active_owned_compilers": [
+    {
+      "pid": 236802,
+      "name": "cargo-nextest",
+      "reason": "owned argument present"
+    }
+  ],
+  "observed_cargo_frontends": [
+    {
+      "pid": 216505,
+      "name": "cargo",
+      "explicit_owned_argument": false,
+      "cwd_read": false
+    },
+    {
+      "pid": 217732,
+      "name": "cargo",
+      "explicit_owned_argument": false,
+      "cwd_read": false
+    },
+    {
+      "pid": 218444,
+      "name": "cargo",
+      "explicit_owned_argument": false,
+      "cwd_read": false
+    },
+    {
+      "pid": 236802,
+      "name": "cargo-nextest",
+      "explicit_owned_argument": true,
+      "cwd_read": false
+    },
+    {
+      "pid": 236846,
+      "name": "cargo",
+      "explicit_owned_argument": false,
+      "cwd_read": false
+    },
+    {
+      "pid": 250327,
+      "name": "cargo",
+      "explicit_owned_argument": false,
+      "cwd_read": false
+    },
+    {
+      "pid": 251359,
+      "name": "cargo",
+      "explicit_owned_argument": false,
+      "cwd_read": false
+    }
+  ],
+  "observed_foreign_compilers": [
+    {
+      "pid": 221218,
+      "name": "rustc",
+      "output_paths": [
+        "/workspace/scratch/48266f5bd43f/chain-target/debug/deps"
+      ],
+      "cwd_read": false
+    },
+    {
+      "pid": 251425,
+      "name": "rustc",
+      "output_paths": [
+        "/workspace/scratch/7318042bb6cb/target/debug/deps"
+      ],
+      "cwd_read": false
+    },
+    {
+      "pid": 257215,
+      "name": "rustc",
+      "output_paths": [
+        "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target/debug/deps"
+      ],
+      "cwd_read": false
+    },
+    {
+      "pid": 257228,
+      "name": "rustc",
+      "output_paths": [
+        "/workspace/scratch/48266f5bd43f/hepta-effects-target/debug/deps"
+      ],
+      "cwd_read": false
+    }
+  ],
+  "frontend_protection": "Exclusive target Cargo lock held throughout inventory and rename; external frontend cwd is neither accessed nor inferred.",
+  "error": "RuntimeError: active owned compiler: refuse cache mutation",
+  "rollback": [],
+  "completed_at": "2026-11-05T04:52:29.399372+00:00",
+  "safe_manual_rollback": "Only under the same exclusive target lock and with no active target user: verify every retained SHA256/mode/size against before, refuse any existing original path, rename the exact seven entries back, and verify the restored identities. Never overwrite new rebuild output."
+}

@@ -153,6 +153,7 @@ pub(super) async fn read_child(
     actions: BTreeMap<StableId, String>,
     root: &Path,
 ) -> TestResult<Value> {
+    codex_hepta_agentd::preflight_evidence_recovery(&config).await?;
     let identity = config.identity().clone();
     let parameter: Digest32 = installed.child["file_sha256"]
         .as_str()
@@ -189,13 +190,16 @@ pub(super) async fn read_child(
         return Err("installed child differs from the next ordinary owner's immutable pins".into());
     }
     let codex_executable = codex_utils_cargo_bin::cargo_bin("codex")?.canonicalize()?;
-    let (original, issuer, authority) =
-        super::super::inputs(installed.worker, root, /*expected_claims*/ 2).await?;
+    let (original, mut issuer, authority) = super::super::pq_inputs::ordinary_inputs(
+        installed.worker,
+        root,
+        /*expected_claims*/ 2,
+    )
+    .await?;
     let journal = original.inference_journal.clone();
     let capacity = original.inference_journal_capacity;
     let grant = original.resource_grant.clone();
     let worker_id = original.worker_id.clone();
-    let mut issuer = OwnedTask(Some(issuer));
     let prepared = prepare_smollm_neural_agentd_v1(
         config,
         SmolLmCognitiveHostInputsV1 {
@@ -216,10 +220,11 @@ pub(super) async fn read_child(
     } = match prepared {
         Ok(prepared) => prepared,
         Err(error) => {
-            issuer.abort_and_join().await;
-            let archived = super::super::archive_authority(&authority, root);
+            let issuer_cleanup = issuer.abort_and_join().await;
+            let archived = super::super::pq_inputs::archive_pq_authority(&authority, root);
             let failure = json!({"schema":"hepta-ordinary-child-preparation-failure-v1",
-                "error":error,"issuer_aborted_and_joined":true,
+                "error":error,"issuer_aborted_and_joined":issuer_cleanup.is_ok(),
+                "issuer_cleanup_error":issuer_cleanup.err().map(|error|error.to_string()),
                 "archive_error":archived.err().map(|error|error.to_string()),"ordinary_child_reads":0});
             save(&root.join("ordinary-failure.json"), &failure)?;
             return Err(failure.to_string().into());
@@ -409,15 +414,17 @@ pub(super) async fn read_child(
     drop(port);
     let issuer_result: TestResult<()> =
         if result.is_ok() && stop_result.is_ok() && model_shutdown.is_ok() {
-            match issuer.finish().await {
-                Ok(outcome) => outcome.map_err(super::super::issuer_error),
-                Err(error) => Err(error.into()),
-            }
+            issuer
+                .finish_owned()
+                .await
+                .map_err(super::super::issuer_error)
         } else {
-            issuer.abort_and_join().await;
-            Ok(())
+            issuer
+                .abort_and_join()
+                .await
+                .map_err(super::super::issuer_error)
         };
-    let archived = super::super::archive_authority(&authority, root);
+    let archived = super::super::pq_inputs::archive_pq_authority(&authority, root);
     let tail: TestResult<Value> = (|| {
         let (_, join) = result.as_ref().map_err(ToString::to_string)?;
         let cold = cold_journal(&journal, capacity, join)?;

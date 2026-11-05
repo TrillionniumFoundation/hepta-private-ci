@@ -1,0 +1,2727 @@
+{
+  "schema": "runtime-r2-peer-blob-import-v1",
+  "source_repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+  "source_tree": "bb7a1894be69eadb4478d1256b18b7f7a591c7b5",
+  "target_repo": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo",
+  "target_source_candidate": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "target_source_tree": "ebd1437475d71252786788f67d2911f5a6e6108d",
+  "incoming_list_sha256": "3fb00a9a26ac627fe1313b1e3c4cad6c4fc04840ae3d77b4710112a68ace356e",
+  "incoming_paths": 229,
+  "unique_blobs": 189,
+  "total_path_bytes": 35249275,
+  "unique_blob_bytes": 5552255,
+  "already_present_unique": 2,
+  "downloaded_unique": 187,
+  "downloaded_bytes": 5547191,
+  "imported_unique": 187,
+  "became_present_before_write": 0,
+  "fetch_calls": 188,
+  "transient_fetch_errors_retried_successfully": 1,
+  "payload_staging_sha256": "2eb8bf2d20254aedc2d7a1f239a16c4929b82a7abd414b7005502faf20a41f8b",
+  "started_object_import_utc": "2026-11-05T06:18:15.246079+00:00",
+  "completed_utc": "2026-11-05T06:18:17.582233+00:00",
+  "verified_downloads": [
+    {
+      "sha": "7434bfbe998e99c68ac57729458a9deb4571dedd",
+      "bytes": 10449,
+      "sha256": "da54e329e83586cd65a587920751a04d5f19e96f4bf7d63d771dec6e07e3bd37",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/README.md"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/README.md",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/README.md",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "bdc7982bc9c0dfc39495c02609da3c50fa54f286",
+      "bytes": 70010,
+      "sha256": "2ff663cac5347b110e9823d3ec6264bb9465ed7e034200680ae077084d28b64d",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/artifact-index.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/artifact-index.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/artifact-index.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "18b1607bdb1cab3baa27e170120298efb463d4bb",
+      "bytes": 21818,
+      "sha256": "289f6402ab5ceb60e0b29ac4c50fd8c85bec628e562b1bb34353cbb3cb920429",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/branch-readback.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/branch-readback.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/branch-readback.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "78108d3d8204efc0932d66d8d379414bb676a95b",
+      "bytes": 647,
+      "sha256": "521e91a9e476fcc62c2e94ef412a856be4a1e0713cdad9d0b885658bea782536",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/baseline-owner.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/baseline-owner.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/baseline-owner.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "d30e8881c5e85cacd06e51ca00e98c918c64712b",
+      "bytes": 24953,
+      "sha256": "50ca92827dfa38c09c9dd6fc96821ce96e2627ba4fe22d451f53fdfcbe967824",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/baseline-owner.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/baseline-owner.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/baseline-owner.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "16bbe6121cb6b63bac964b0f47eeb926bf9ce72c",
+      "bytes": 2748,
+      "sha256": "a798c1c84cb598a5fb502ca92e30d20eca59bf1eb7d3b399190bbf133cdbdbfb",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/cleanup-helper-provenance-note.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/cleanup-helper-provenance-note.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/cleanup-helper-provenance-note.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "1170aab705c425d7012aa79c96e9452f510653b3",
+      "bytes": 766,
+      "sha256": "ca6e365a06a315b800b107703e432c165d2d14e487be7cdad9cd42bc49872c81",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/dependency-diff-0.1.13.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/dependency-diff-0.1.13.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/dependency-diff-0.1.13.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "a9702431814a9f8ab8416ae42865421df64d9381",
+      "bytes": 694,
+      "sha256": "b927d03e7f48f053ff8fe9e3613754599f4944fc1ece9199175347f53188b21f",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/dependency-pretty_assertions-1.4.1.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/dependency-pretty_assertions-1.4.1.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/dependency-pretty_assertions-1.4.1.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "dca8030670931e004c26e8cd4b1f736dff3c5b79",
+      "bytes": 646,
+      "sha256": "0bc56b43d7aa9eb9d9c311c52413c77c4b6d8e61c9c7767682a511c1b77ef35b",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/dependency-yansi-1.0.1.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/dependency-yansi-1.0.1.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/dependency-yansi-1.0.1.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "8a705e2a36a13ca191e70f79073c538cdfe4b1e9",
+      "bytes": 873540,
+      "sha256": "7d256956f77de4e6e5fe12cecdce8303d3bbd76862ca482c37953e487c4e2b9d",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-authorized-effect-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-authorized-effect-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-automation-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-automation-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-bin-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-bin-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-durable-causal-chain-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-durable-causal-chain-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-kernel-operations-destination-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-kernel-operations-destination-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-lib-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-lib-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-operation-timer-fence-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-operation-timer-fence-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-retirement-recovery-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-retirement-recovery-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-execution-boundary-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-execution-boundary-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-kernel-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-kernel-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-step-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-step-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-evidence-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-evidence-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-two-package-clippy-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-two-package-clippy-before-raw-tracked.json.gz"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-authorized-effect-after-raw-tracked.json.gz",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-authorized-effect-after-raw-tracked.json.gz",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "893e8e8eca88dfc0c6281a63a19e375196b81a35",
+      "bytes": 2296,
+      "sha256": "4b89514c3c8f2a003c1e0dc055ad764112497cba98aadbdf69658e40348339cf",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-authorized-effect-binary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-authorized-effect-binary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-authorized-effect-binary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "d677fd6df292db2080e469fa9dd1999373bd3486",
+      "bytes": 2315,
+      "sha256": "3c52bef9d3e84f50a2e0f73fb0fd2bf53d2794a4421017e9b03d9603252869ac",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-authorized-effect.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-authorized-effect.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-authorized-effect.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "7bfe1625d081a31304d9e62fd9098c073df1b69f",
+      "bytes": 43626,
+      "sha256": "a3fa7b5b4dfd8160a6ae5fd7e3d6f0bd670b5ac588c8d4f1b760752697be7d57",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-authorized-effect.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-authorized-effect.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-authorized-effect.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "d354f4c288babebfe23cbdbd87ac6362843631a7",
+      "bytes": 2085,
+      "sha256": "19d5637436c95dccd31cc848b950bd07c4b245b5f2711edbe3bcaf47c626d406",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-automation-binary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-automation-binary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-automation-binary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "d68e45a3f0bd58f835a941ed4885733f283b6a6d",
+      "bytes": 2302,
+      "sha256": "5cf7cec4e85745274b62a4277f337d31e17529904eb5426d244ddaa6797f3b81",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-automation.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-automation.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-automation.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "5c1ecdba2d725ad36db709648901657e4971102c",
+      "bytes": 30674,
+      "sha256": "bde95fa7a6fb3bcd4927e1c7dacfb2ac688fd23f53ae126d99811b2603030e80",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-automation.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-automation.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-automation.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "62bffa76f704f749b17e69f13922975eefb74881",
+      "bytes": 2486,
+      "sha256": "305b18f1b96dd4dab04ed5bda58432338ad200a61bd9208930ea2efb55a605c4",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-bin-binary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-bin-binary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-bin-binary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "7ff944d07096e8f69c7d84f6efb37627a72e5db8",
+      "bytes": 2299,
+      "sha256": "1f7eaa6c57dd127529d8941a9332a537802b26ff7e746bd104701b2d8805be77",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-bin.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-bin.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-bin.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "21266dadf4d34cfe1ac98055a16d619c497892c0",
+      "bytes": 22567,
+      "sha256": "22f5455f069b246ab1e93945bfa6db5a412419b3a051ca351f8c24842a2541d0",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-bin.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-bin.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-bin.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "7de50d2ffee29701e6e0a5d46d6443d72ea26b2c",
+      "bytes": 54852,
+      "sha256": "d6ab2a837ecc4d7c1976a9fcffb3874aedf0f9981723243574ba58697b8d49ee",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-coverage.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-coverage.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-coverage.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "7c9d3291cc2b945d87cea6eccd701c3640c8cc10",
+      "bytes": 2074,
+      "sha256": "b63d502f40587edaba8f79264b513ef231daee817f9ec91ce9001cd6e50cef2c",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-durable-causal-chain-binary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-durable-causal-chain-binary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-durable-causal-chain-binary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "730df488f3c779d3cee1efdad45c4dff6faa4db4",
+      "bytes": 2332,
+      "sha256": "94362b9fe8344d2b7133fb6ef844c9733601f5d906defa2a3e793f534b61e80d",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-durable-causal-chain.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-durable-causal-chain.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-durable-causal-chain.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "0e54d23bd28516f5773fb1a8378d6e4c1e08b537",
+      "bytes": 27219,
+      "sha256": "77ceaae86d3343f3bda37dd48c8939f9c1e2d62802914dcb4df55f700db68b0a",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-durable-causal-chain.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-durable-causal-chain.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-durable-causal-chain.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "b001d66807ecb3023524758449d68f15da3e4b25",
+      "bytes": 2128,
+      "sha256": "7da3d82392fa9386e87832072e82521bf264905214b303034e18d296a53f0680",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-kernel-operations-destination-binary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-kernel-operations-destination-binary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-kernel-operations-destination-binary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "d963feef4e8bc8f7a8c51eb5b24e941b23640702",
+      "bytes": 2358,
+      "sha256": "9192866bff7773820c931f52a83d77b8c4231c6255bcda711f5754fd189faab6",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-kernel-operations-destination.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-kernel-operations-destination.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-kernel-operations-destination.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "674d1f8df7100981ba109d2f4eaccc810c73867a",
+      "bytes": 24352,
+      "sha256": "022d3fa60b77a797f1e3408243b60f78def10d58a1d71e07ae6f01705a5207d0",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-kernel-operations-destination.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-kernel-operations-destination.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-kernel-operations-destination.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "d136a69f0d657c8724f59d750a0ce0b92a1c122c",
+      "bytes": 2024,
+      "sha256": "532830cae4f7192f5f1941a696488591fecb6655035330524cbce89c141f6eb2",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-lib-binary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-lib-binary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-lib-binary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "e14934b21e9bab9e7f4b8ba9dffe3583373673b0",
+      "bytes": 2267,
+      "sha256": "d6e20845fa18ea79fb91580c9648281cd33536cd59e621084c6f63d0c1ec42de",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-lib.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-lib.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-lib.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "7fa11568bd2583c43711f64d95915d4229c339b7",
+      "bytes": 37673,
+      "sha256": "6175378a689533b7a90ddc478d68cb8263cba5151aa11c0d8e6d9a23865d93d7",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-lib.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-lib.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-lib.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "36d48b62b60001065e435242081c0aa54f9110a5",
+      "bytes": 2212,
+      "sha256": "12cf9144be56d20c3248b404480f803c83ce4f50474410bb6dfa1eeef6cd3eb5",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-operation-timer-fence-binary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-operation-timer-fence-binary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-operation-timer-fence-binary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "44de53c99c4c6ec88dc9da9b039eb7016599db32",
+      "bytes": 2334,
+      "sha256": "c1a83887a72f17e8f5b1d27d393dd623814db987f305af49c8be5bbaeafaeeb7",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-operation-timer-fence.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-operation-timer-fence.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-operation-timer-fence.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "3b7ca6abc722902b673d5123936b4cda3b8c9d1f",
+      "bytes": 23881,
+      "sha256": "5827dcc54f6ea08230d4c551b4a79475f8b90c3299cfd9bca53637d6fca8af35",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-operation-timer-fence.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-operation-timer-fence.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-operation-timer-fence.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "b7576eadc098a2d21770ef6e4a20d141c2aa23f9",
+      "bytes": 2236,
+      "sha256": "aca7b35bcc570ebb72a831b595c1698f1a8c469787a668d306193057f1e7a3ea",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-retirement-recovery-binary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-retirement-recovery-binary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-retirement-recovery-binary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "3ae3aa530abb7c7baf28bdc5db1f2d39cb3c0462",
+      "bytes": 2329,
+      "sha256": "8592d36e666bf9b9ee86fbc37e842ada3f10cde9a6a9b0142024290dd12047a3",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-retirement-recovery.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-retirement-recovery.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-retirement-recovery.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "6214895343b952f6a7bca37b432c9c20cd9b45bf",
+      "bytes": 24272,
+      "sha256": "e17a53106cfd1c84c349f443e4c28e90c2a356efddd5ea59b22dfe637b2ad126",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-retirement-recovery.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-retirement-recovery.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-retirement-recovery.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "e7b9b513e09780283d0b49e891d7912275785a6f",
+      "bytes": 8877,
+      "sha256": "61f30161c1c28780e961878a51e926004fc75f675ed5bd9d8b67bd8c80aa3fc7",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-target-inventory.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-target-inventory.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-target-inventory.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "fb62ac7c18913ba953f88436f7c5aed536b8fe7c",
+      "bytes": 2259,
+      "sha256": "8ae0810dba46cf14ee957fdb2c6f1de82000453fd6527212b0c67df1773702d2",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-binary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-binary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-binary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "539d2c9200a567d615f1af1e87fceb5a505f2c2a",
+      "bytes": 2307,
+      "sha256": "de7c2a5eccdfc41fc573e99e6ddf54d2bc62e9a0401660b2180e920273d3f732",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-execution-boundary-binary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-execution-boundary-binary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-execution-boundary-binary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "afbc59017226225d5a133cd3fa15aa117993468d",
+      "bytes": 2352,
+      "sha256": "d06ba507a9575fd461c4c43e703af3de96637f99ff0bf63c930ccfcf75fb37dc",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-execution-boundary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-execution-boundary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-execution-boundary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "157209a875092348548070083a311e69348d2afd",
+      "bytes": 27516,
+      "sha256": "32966237a23bca242b18990f340d247a3edb0f2afc449c68ca93dd5a97276369",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-execution-boundary.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-execution-boundary.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-execution-boundary.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "309129a8d9d4fed3685df7037291b9096daad308",
+      "bytes": 2335,
+      "sha256": "46eff065cd423f119f1ea171986b154e3aaff20f76fd1b0e485d02a6f16ef57b",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-kernel-binary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-kernel-binary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-kernel-binary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "8218d4cce65b83edf09bff84058a1527fb587c0c",
+      "bytes": 2317,
+      "sha256": "36a2b5197ed13b88db61853db75f092a7375fedca282a4976297373947d1db93",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-kernel.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-kernel.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-kernel.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "6a988ec6c41e8f67bcd498d01b652b953b7a0dd1",
+      "bytes": 22567,
+      "sha256": "5410b36ac61b583465954cfee60e4ac68ec074d24b9245bfff453f3610c4e14b",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-kernel.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-kernel.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-kernel.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "80de09d494ffcb435ae0044639906a15f996ddba",
+      "bytes": 2360,
+      "sha256": "28627cf626f5baa20ccb24cd4e89c72f88db15b755adf13f5d06a840938860f3",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-step-binary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-step-binary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-step-binary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "89d982eb5b3ff32daa3a8c5ad7920e9b6071e183",
+      "bytes": 2310,
+      "sha256": "3ea502b19af726a71fe9cab829d051c27bc1114fc40d9ebfed9c2386f0558b7a",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-step.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-step.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-step.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "f894f7ab48b893161962590126f03b8d456b02cd",
+      "bytes": 25773,
+      "sha256": "ea6d2f30c5c9abd9252056346c28e2b26eead886217d208b959cf22b29e44e0c",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-step.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-step.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow-step.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "6fb3c5cb6001c0451d69e9b44c5fc26a14d5548d",
+      "bytes": 2295,
+      "sha256": "974249512a6b98187ce0ff8c5860c8e5b45b76b3342042d038eefa24554a7b63",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "d093d1318f1437e0dace758814605421430c6343",
+      "bytes": 28029,
+      "sha256": "87e1c90646a99e0828db328c18e6c6425a7a07aefeb79abb4fc44fa85107814b",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-automation-taskflow.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "182b4babef51c6db994470c5a984a2c3d189b5e3",
+      "bytes": 4156,
+      "sha256": "cb1cb05d8066b0e2eca5468e080bfb5b7d30f4096fc681d514c803df6fd97cff",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-clippy-active-argv.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-clippy-active-argv.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-clippy-active-argv.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "0d8037917f7d421f573d86105fe94133e4b90304",
+      "bytes": 2524,
+      "sha256": "c2c85570dbdefda6e9bd1c8f2c490438724521e6a628965c8d8090def84078da",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-d7c-checkout.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-d7c-checkout.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-d7c-checkout.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "5e3de7e7fcdd7d2ca370ae65c6492630a7e7e80a",
+      "bytes": 6815,
+      "sha256": "405d908660bf063864754f199dc14aaee65849b20d32a9620cb72a1697b289c7",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-effects-handoff.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-effects-handoff.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-effects-handoff.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "bb3d17642b0c0d55086fc800234f7b51732d754c",
+      "bytes": 2247,
+      "sha256": "92e96d2a43b810737a46d9249e49157cfd22db26928894d7881122646300a6d3",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-evidence.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-evidence.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-evidence.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "49d7bbd6e431a7aec9d60837d78dc9de8dab6f6d",
+      "bytes": 42624,
+      "sha256": "fe0df047caf463e294b6796536a05af2f0ef0b4fa6abb1780b17ec3a6662eaf8",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-evidence.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-evidence.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-evidence.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "46549e7e602e25f43dbf9bf7bf6cd0286c2ef86a",
+      "bytes": 3784,
+      "sha256": "2a9f378e9966976ab9d1c2245947ea5b9e81c7f3a3e2d411b4022cb7f9e6fc54",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-native-effect-case-results.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-native-effect-case-results.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-native-effect-case-results.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "819e8e4479bce2b6f3fcae3113fbdd038eb1d55b",
+      "bytes": 1052,
+      "sha256": "1c4368e05cfd378bc67b2bb259edfdcc3f2049af36556f95d90b8809299d2f34",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-runtime-checkout-preparation.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-runtime-checkout-preparation.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-runtime-checkout-preparation.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "1e8a6f05ac57ba5ed80f79633d9d31b094f035c8",
+      "bytes": 53300,
+      "sha256": "7b9017f689809bb4aea654093b2beb99266bf122eac1137497e9b2a004e87e82",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-runtime-object-ids.txt"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-runtime-object-ids.txt",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-runtime-object-ids.txt",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "f5355f38a30cc28ec447612fe7cb0a97a22e1c6b",
+      "bytes": 1027,
+      "sha256": "c4ce9a538d5cd893b70c8134cfc6cae32b99ed9d8ab97ac60a8b9c657ad2d0df",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-runtime-object-import.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-runtime-object-import.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-runtime-object-import.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "e5d96e2f5f10dc985d2fd670cfc88d8712e498b9",
+      "bytes": 2319,
+      "sha256": "fbcf26d3eaae2d92aa25c78d28413d5ebddc14dc0ae6825d64bc668a8134a482",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-two-package-clippy.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-two-package-clippy.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-two-package-clippy.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "d96555a1c273e92c6c9416546ae02987a8996951",
+      "bytes": 15732,
+      "sha256": "11219d10c293ebb17a0d7ee7001a734f6afc5e5f411b88858680990cbe00c0be",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-two-package-clippy.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-two-package-clippy.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-two-package-clippy.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "573ffd38f9a4dba33cede16a2b30cac55ca80da0",
+      "bytes": 3668,
+      "sha256": "e91980f6b1bffa8b4747f1f8ff7bc2ec167844e8e8e89e2889b049b22c6c2cbf",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-final-observations.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-final-observations.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-final-observations.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "650eff0586ade9f2edbcd605281cda59a8abfb06",
+      "bytes": 42744,
+      "sha256": "29decf3e884510bafa70e238bf1c7191d6cd8c25d7a24e855dd997e919001124",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-final-observations.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-final-observations.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-final-observations.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "b7ef97f42349cea099885b09a081084e90bae01e",
+      "bytes": 3404,
+      "sha256": "0788326f009a13de801febdf8d1666100ad5d3d89e720ba9cb6ffb0edd56ea0a",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-observations.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-observations.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-observations.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "58605d70cc6f9397c281febd13775e1da17adfb4",
+      "bytes": 44604,
+      "sha256": "09088fe2b326ed9c07c91de5d17465ec39e05db4b81f25ff9506b8c83dfac8d7",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-observations.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-observations.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-observations.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "0a9d76d195dbe9a4fe9d63c819b9eef172241bf1",
+      "bytes": 17535,
+      "sha256": "ba65bb59706649940a1e609efaf05b630107fe947294523c88d32007adb45f15",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-strict-fix.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-strict-fix.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-strict-fix.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "9431e8a3901b5f3b8a5426d43393f5a8b3ae6d75",
+      "bytes": 29971,
+      "sha256": "d197f45923530c8c4aa98137ee0f59761210124e08dc858aabad8b6c748596ee",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-strict-fix.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-strict-fix.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-strict-fix.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "cee49ad3a357ec6dfebc0e48898c0cae71471727",
+      "bytes": 872876,
+      "sha256": "ee3e97edc05c97be78aa0056b5158fb47b9ca42089a5d10f0ea83a682802c4ac",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-2-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-2-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-3-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-3-before-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-evidence-after-raw-tracked.json.gz",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-evidence-before-raw-tracked.json.gz"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-after-raw-tracked.json.gz",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-after-raw-tracked.json.gz",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "213551d962a34ded41ca42a3821fda2fca237c6c",
+      "bytes": 2277,
+      "sha256": "545c737e6d27ad7ed69f7b037bec89dd1363e13f098d354c98c05d8187dfe8bb",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-2.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-2.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-2.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "48c3420dd73b05afd5114096ecd573d9f04feec1",
+      "bytes": 584,
+      "sha256": "dfe2165a3a7c4cb7491a56c012e2639c25c8525cb44d1ce6bda62316292b277b",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-2.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-2.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-2.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "6e7f9fd6369ec788ce92475d1a9895180db55070",
+      "bytes": 2277,
+      "sha256": "90a16e4044b9229a3756df5eb8118bd8491d22498514b53f482f4ed1a996ddae",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-3.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-3.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-3.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "29a848c51157d4e42e9b6353725c774b16f45bac",
+      "bytes": 39316,
+      "sha256": "8f4cd0f8474440c0829333ba63322e993125c529224626edf984888a8c719037",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-3.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-3.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation-retry-3.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "c19a836b5b84dc5a05a88d2aee06655f1abb3eaf",
+      "bytes": 2261,
+      "sha256": "814b4e20157fdd324fe498f0162a3c419e7fea117ed8265d31653eb150a97a1e",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "cb6cf1011eed1b4008af7413ff0e139d5489db67",
+      "bytes": 572,
+      "sha256": "29ec28f74a303846fe13dd691ccd9b07b7f779bc444c05f6befcf2fe4a466fb8",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-automation.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "a02791328f6d7eafdc0aa2d4497109e845c014ca",
+      "bytes": 2257,
+      "sha256": "f6f225b0a4bca4093cb4abbde3bfa7637c2b4a42114803c5e7343a726f1cb670",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-evidence.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-evidence.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-evidence.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "a46f7d349279e4e2856d8aba46418176dd935f47",
+      "bytes": 42624,
+      "sha256": "9eb508761473f07bfc4a7e79e26af8d0f560bf2179e1cc647ef1279df59c98d2",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-evidence.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-evidence.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-evidence.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "24d4bd58dfb5987e36148f13ab33520622bcf8fc",
+      "bytes": 687,
+      "sha256": "8bc96234c16362e1b31ba333ce97015a754cd1729717288cf14711d9ecc18256",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-runtime-checkout.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-runtime-checkout.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/integrated-runtime-checkout.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "0c4a443fdbc6d1619262624adae49548c2b3a972",
+      "bytes": 3550,
+      "sha256": "c2d917aefae5722579e6e94125998a4f635e52e1d1ad8b300b75ee776b447feb",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/native-effect-case-results.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/native-effect-case-results.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/native-effect-case-results.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "315e0bf7aad591005cf3015896885c1a8c8b8c1b",
+      "bytes": 477,
+      "sha256": "93d8bdb5a8d47ef420d5944cf12540de89bf5eb6333355cdef5ec28585523674",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/native-inherited-build-env.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/native-inherited-build-env.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/native-inherited-build-env.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "2e265cae9dfbb8f215d7598663865b34696b8dda",
+      "bytes": 924,
+      "sha256": "267debbeff61d9881cbb9194e328c3c3b2df4672fe403c25c8d7b6b719b67f44",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/native-toolchain.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/native-toolchain.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/native-toolchain.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "7513ca88592307d2ed1dade640343bad42d030ab",
+      "bytes": 16853,
+      "sha256": "4d78cb984289b3b44a33666c4a42ae7f22b2972237801eacc0746d52338f3a4c",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/nextest-run-help.txt"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/nextest-run-help.txt",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/nextest-run-help.txt",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "ac5e0ecc9618e3344ec2b383365ed3373c5c645c",
+      "bytes": 8706,
+      "sha256": "eb26d3f9df3dcf8b7047322ddefe321ca5b3cc25641f98886d6997436d1f143d",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/observation-red.patch"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/observation-red.patch",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/observation-red.patch",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "3789dec9ea3a8ceed7e1d2c7b620e49294721f32",
+      "bytes": 1410,
+      "sha256": "137ffb68a116e459e9573b1bfa340bb89752bc0a1b7858c5203db71f1b57c2ae",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/owned-cache-cleanup.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/owned-cache-cleanup.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/owned-cache-cleanup.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "11f7520667ac7238d64fd63709ae2683e936b4fb",
+      "bytes": 1451,
+      "sha256": "755c98d63a12345247251ee67e7dfb3bd3f0589d5199c690ccf2c1006109afcf",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/owned-post-final-evidence-cleanup.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/owned-post-final-evidence-cleanup.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/owned-post-final-evidence-cleanup.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "ee021a4cc043f7df89d7b75759ccd8681d1b230f",
+      "bytes": 5563,
+      "sha256": "fea44ec7710071d888c3a80b3b65c3995c370a36c6af6bf7a8b127815e64efef",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/owned-terminal-build-cleanup.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/owned-terminal-build-cleanup.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/owned-terminal-build-cleanup.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "6093ee4a67d2d448e04607df1dad4083ff7004be",
+      "bytes": 3247,
+      "sha256": "7b669857e7a2889611b6bc29120120237766cd0897dc6c94b14257010c1ca6a4",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/owner-policy-migration-fixture.patch"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/owner-policy-migration-fixture.patch",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/owner-policy-migration-fixture.patch",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "01a9e50a8f44aa8053acdf24d40b139bd5ea8fb8",
+      "bytes": 1958,
+      "sha256": "e3b4657ed0c3208815585354e741decf36a7d114dcccff188f2c3822ae138d3a",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/provider-observation-acceptance-summary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/provider-observation-acceptance-summary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/provider-observation-acceptance-summary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "860e3e6b608348f33bd7bcabace6af01ab0accb5",
+      "bytes": 2712,
+      "sha256": "75cba348cf11db1c83ca701b0e2bd8ca3e3425d0186f389898257e314635dc55",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/provider-observation-final-source.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/provider-observation-final-source.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/provider-observation-final-source.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "4158158b0037cda5f96d357d37003b2a121d5c75",
+      "bytes": 54252,
+      "sha256": "ade328f906100021ec8d47fa6b318376b3ddf201160a85bbc26fdb10d2efc765",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/provider-observation-history.patch"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/provider-observation-history.patch",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/provider-observation-history.patch",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "02f4b2a0a5a794246058b2a8fc43a5b07fe3bccb",
+      "bytes": 1947,
+      "sha256": "a4eda1a579be1b7aa737871b3caae289e45e07c7a89b5732b1811710a5f58f58",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/provider-observation-source.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/provider-observation-source.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/provider-observation-source.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "cbb175f3e996aa4836a90889707ecbc35205ae5a",
+      "bytes": 1694,
+      "sha256": "41edc23dcb15c002fe482fa4953fd8bce9c66bd6df6c445720ad81ee88380473",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/red-observations.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/red-observations.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/red-observations.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "00d4e4bcd2e17f4d560cb278ee7b60f74323c425",
+      "bytes": 45660,
+      "sha256": "62336384b9e3b770952f14dad172d80495f00db01b012b8dfc9cbef03628e3e5",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/red-observations.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/red-observations.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/red-observations.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "c82a9481305994e70b5225cfb592312d305ce969",
+      "bytes": 5619,
+      "sha256": "202391b72578761f6af2864b30eab275825d6f09e38188aa1b771e0c9d69d5a9",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/retain-completed-test-binary.py"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/retain-completed-test-binary.py",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/retain-completed-test-binary.py",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "97015ba045e5c2dd2881f1f56eff7dadd8935961",
+      "bytes": 6329,
+      "sha256": "3220d3ce466c0b0defc3557b34e74fdf466cc37320158689f49a619dfdc9bd06",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/run-final-native.py"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/run-final-native.py",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/run-final-native.py",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "b097476c1cc6f03b8dc40a5134e389ab1a51ec28",
+      "bytes": 6329,
+      "sha256": "312fedece2fe33226f82dcfb6662aa8369f07c2186dd87cfaa514e31bf3c121c",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/run-integrated-native.py"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/run-integrated-native.py",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/run-integrated-native.py",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "a667419df5ba57b3fe280bfddb2fe11841ab980b",
+      "bytes": 3432,
+      "sha256": "613f39e87cf2d64a4de61e8f979e76aa1930aeefd22479634c12002bbbaf99f2",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/run-remaining-automation-targets.py"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/run-remaining-automation-targets.py",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/run-remaining-automation-targets.py",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "de4d512947ce8a0575d7882248318dd6477033c6",
+      "bytes": 307,
+      "sha256": "9b773e1fe95af35771307d743796fcafd041b57b79cbcbdb8f7ef28ac3eb2461",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/test-binaries.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/test-binaries.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/effects/test-binaries.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "f0041c15747d0e0eab656d0b50813894355fdb13",
+      "bytes": 28079,
+      "sha256": "7f4d0bcf681f2d9f0568ed3c1cda64c2a21ac68c9d5854dedf4421940363ae93",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/gate-status.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/gate-status.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/gate-status.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "05cc6974dd047c5354bcda24d13d052f5496f5a9",
+      "bytes": 10976,
+      "sha256": "055669d91c17080690edf16a95eefcabcff0cadc8bfa7662c943db6c0631936e",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth-pq-boundaries.md"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth-pq-boundaries.md",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth-pq-boundaries.md",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "78070d4aca36372556ce8543e98f5e916170100e",
+      "bytes": 217457,
+      "sha256": "4d40714547d9175e7229b88a13b8d960c49e96d3b176634b8d5984696b80cd05",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-final-source.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-final-source.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-final-source.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "266bae5767e0a8eb33a03d23d2fd9b736bda96b4",
+      "bytes": 2544,
+      "sha256": "87a8fc86820462fd5b97251f3b6c61eeec9a93be9238b7204fe92c9fec78061f",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-nodebug-command-result.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-nodebug-command-result.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-nodebug-command-result.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "77159058c8fb292221679e1c5d02f85c87b37ab3",
+      "bytes": 1955,
+      "sha256": "361c36eefd9f6da61cc5f943cb860a7e0278b8f601e95731d0f3f8c27645eb1e",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-nodebug-command-start.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-nodebug-command-start.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-nodebug-command-start.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "7da25bb5d3d7a84867866d627e54d988486ae88e",
+      "bytes": 10533,
+      "sha256": "e91049a6340f36ee08967655fd6a181a8104b0a83005f38c9abcf7bfdd120cbe",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-nodebug.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-nodebug.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-nodebug.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "01ca7f68c163db28675217558f512d12417df315",
+      "bytes": 1336,
+      "sha256": "24c3c7741099760f29a1379aff54e7115c08627f2d680e2de7368ccf9eda77ea",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-provider-inputs.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-provider-inputs.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-provider-inputs.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "ca76ae578774cb1475754f2c2f1ef9873242c1a9",
+      "bytes": 184914,
+      "sha256": "e0810d4a3b7dd1a9be6db69d6f5e6680a5b0d416d976f3d4e533c6df96ab5a0b",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-source.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-source.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/green-source.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "72c115b4020525b3c4acfcbe1d2dc9ca9c6a5af8",
+      "bytes": 9393,
+      "sha256": "2c677cec65d384203fb6ab3fee3b1d04c785528c5505ac953e9185f1d4ac6051",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/growth-pq-activation.patch"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/growth-pq-activation.patch",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/growth-pq-activation.patch",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "3c8a47bb39fb100fd316154a8e252bedab08e258",
+      "bytes": 8218,
+      "sha256": "0d0ddf3791b790000f704c9689402fa23b5373f0638b381b449e7f72fa5df720",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/growth-pq-red-tests.patch"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/growth-pq-red-tests.patch",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/growth-pq-red-tests.patch",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "4796f4a3bbc5911cb16fda128bff4f792d2f022c",
+      "bytes": 8416,
+      "sha256": "a26a836b24007de208ae84ee4aabbecd4c0fd60466caed9263f0492869ebb937",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/growth-pq-validation-summary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/growth-pq-validation-summary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/growth-pq-validation-summary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "a41c51973eb5291a84d5620ab17c39fefc2049d1",
+      "bytes": 31804,
+      "sha256": "54031b6a771cc1acb31e010a2af94a9b729d9d3d7023b676d78b7758740776be",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/recovery-fixed.rs"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/recovery-fixed.rs",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/recovery-fixed.rs",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "4e5094ffd63fc9cc292acadc758b0208a56bc06b",
+      "bytes": 1374,
+      "sha256": "d4f858d3b113139cbc9f7352163e9922ee9989e690ea22e1fba273bc5646c7a7",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-command-result.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-command-result.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-command-result.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "e05708ff18e1c5c9984d9b98cbda41427c7f3f19",
+      "bytes": 1146,
+      "sha256": "7a2ec17d25d69bfd037e67aa91dd7623b0a004dc43943a382ef7c35c9d2f8c5f",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-command-start.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-command-start.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-command-start.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "9d9fd2d2db14ccb9e71155c223f08a8ffe793412",
+      "bytes": 1745,
+      "sha256": "9e4aa6a80247283e6b07c7200e442e2ec19032143c7268b58616286fbe575c48",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-nodebug-command-result.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-nodebug-command-result.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-nodebug-command-result.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "01c34db939ca8d686aacfedf28f45b908be34de0",
+      "bytes": 1521,
+      "sha256": "5a17f771645bf7a6ca3ec87075c893ee839cd4b37a8fa190a155d1bbc19a28c7",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-nodebug-command-start.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-nodebug-command-start.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-nodebug-command-start.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "a598cd44d74b6d513c7ea7a675c947c4421f62ce",
+      "bytes": 685,
+      "sha256": "2dc4f126202fcfb2ec1a958243c49149eacb9d71a66fb84b69c9abaf61a18a71",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-nodebug-observation.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-nodebug-observation.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-nodebug-observation.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "0d684703649978caa9bb395dc6081d0266ed0bef",
+      "bytes": 9118,
+      "sha256": "a30c4f9eaaad27e54c1cb228e45f69f5d5dc28b1c6377d8f49bd4c248ba3e288",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-nodebug.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-nodebug.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-nodebug.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "97c123a49d79e7af6b5ce0c423990ea5a7dff935",
+      "bytes": 2081,
+      "sha256": "08142e2cf2bfb457657c8fa2b242caf3b1600bedb1bff7ad369825e1378b7627",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-reproduction.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-reproduction.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-reproduction.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "1211fef3267a357193b3d1f2a804352b80cad6eb",
+      "bytes": 183903,
+      "sha256": "6664ccafa29d57b877b1b8881e89ad03bd99c6e123e8581b69b9988e5697b89c",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-source.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-source.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red-source.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "5047dda7c2131449b76a804ab1fc3faf2fc5de1c",
+      "bytes": 7469,
+      "sha256": "83b935357a3e2bf11d9ca6e1d51f8ee4544ee134fb439376223e25a87b2c8c83",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/red.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "ae5182323cc0e44e4b5a65eff1d29c32a38f9c32",
+      "bytes": 572,
+      "sha256": "add6132a80abf4361f6d7a730001002c29b9f5a9043faa295ae5923ad45a237a",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-binary-location.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-binary-location.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-binary-location.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "3cb05b8fac28dee0a35e20564031d52bf170acaf",
+      "bytes": 652,
+      "sha256": "23bc63716f0636afda57f543713537aa41fb4172bf7658fd9f31b3be9a46ccd2",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-binary-storage.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-binary-storage.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-binary-storage.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "4df5482295978f85cdafbb627fcd44736c5da10c",
+      "bytes": 15139,
+      "sha256": "290ed974251685002c2cd8dd6ab635be035df0dcb46cfe010f437d4792dc21a2",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-command-result.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-command-result.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-command-result.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "49ffdeafbeea40dbb5030e284b145f2afdf00656",
+      "bytes": 8311,
+      "sha256": "98d56cbb73fc73475bca3185836b7cc1fc885dc6bd1a853ed58f0f1e534b71d1",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-command-start.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-command-start.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-command-start.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "c926f8042e1b882d45a1840d24c70392386a262c",
+      "bytes": 611,
+      "sha256": "1cb4698f3a12ef27117099a2e72c99432a4d491690191e02f468e6c91c6376a7",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-native_growth_family.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-native_growth_family.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-native_growth_family.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "0f87cd24fb8274739c3813a5551952dd2583f6c3",
+      "bytes": 5851,
+      "sha256": "b9eafda786623a15dddc749a44c5880794fbabcb7d66162ab403980032c68a18",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-native_growth_family.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-native_growth_family.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-native_growth_family.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "60ff03614686f457b7e1ca96a96e3011e0809970",
+      "bytes": 733,
+      "sha256": "f3f7ebb015b8dfb9193f1a6ea9f15a7ac7f18c37877809423247acf4ee6bc16c",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_application_paid_owner.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_application_paid_owner.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_application_paid_owner.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "5a1415ee761fdd5af2bf573c6f8ad54f46f1b12d",
+      "bytes": 245,
+      "sha256": "36b92a03529e297d9812945914c160838cceb00d272eacb37381a499e4c93117",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_application_paid_owner.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_application_paid_owner.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_application_paid_owner.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "e04917cd9a9aba05773dae89e8122446240d89d0",
+      "bytes": 732,
+      "sha256": "095b537d6efdd364eacf482bda441829d58de5adf95cf513e43765e866973076",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_classic_client_refusal.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_classic_client_refusal.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_classic_client_refusal.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "bb0f1dfdc9b77943bd9c3ca5b59fe0f73850825c",
+      "bytes": 244,
+      "sha256": "2c3b8fa6a357ed5dde110edfe5cacab964f943e2c12b5f3b8ec1c3a7d1c714e7",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_classic_client_refusal.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_classic_client_refusal.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_classic_client_refusal.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "b60efe31625157ed1da10c104d2ceeb2f5d477ff",
+      "bytes": 711,
+      "sha256": "e512430c9c8098a66ae2d06290ebef52609967e33b9d116a21c69eb550362988",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_context_wire_downgrade.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_context_wire_downgrade.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_context_wire_downgrade.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "d2bbc753be95f2dce56568bfd8b0eb081c38a83b",
+      "bytes": 223,
+      "sha256": "6a7c19294459dff2ecf6bb52b8633a6abdbcc9c39e5935256f68c66b74f25078",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_context_wire_downgrade.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_context_wire_downgrade.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_context_wire_downgrade.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "6a51468141cd86689ec66267e32f343a8cd597f9",
+      "bytes": 743,
+      "sha256": "a81547f71d437af203e7d9002af9458add318c743b39204f429645486e19b840",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_real_listener_downgrade.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_real_listener_downgrade.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_real_listener_downgrade.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "6acf8ace38550d6f7df797095423add1e95aa24d",
+      "bytes": 252,
+      "sha256": "a445531ab9051e43885d667c5666f2f02195dd60faf44d242bd024e208d952c4",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_real_listener_downgrade.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_real_listener_downgrade.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_real_listener_downgrade.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "fcb2dfd5caa8e8d496415b4226b607b2555b8245",
+      "bytes": 708,
+      "sha256": "9698e66573bc3598f6a23579b2b8d1982c4433a9f1cf5ff65e5a72749cf45f7b",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_tcp_lost_ack_recovery.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_tcp_lost_ack_recovery.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_tcp_lost_ack_recovery.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "ea5ab92967f43fc7338330216ce9b1a2b021d93e",
+      "bytes": 531,
+      "sha256": "49bb7766793b49d3899874362ecede439b8523c00c2cebc4b5c9c2d20a212cc0",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_tcp_lost_ack_recovery.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_tcp_lost_ack_recovery.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-pq_tcp_lost_ack_recovery.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "02e6bb3a9426f275ed685151d695eda3a14c6d6d",
+      "bytes": 718,
+      "sha256": "752f69ffa1357d7dc965e1e1e44152ee27389f5349ef44aacfdaf7d892f3d092",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-public_growth_mismatch.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-public_growth_mismatch.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-public_growth_mismatch.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "a346a7d67ec9a0515d934f47dfd042c9824ba567",
+      "bytes": 235,
+      "sha256": "051cf3a4069892543e2745ba293970f7adbd44cca0503135fab2738a2a06cabb",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-public_growth_mismatch.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-public_growth_mismatch.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-public_growth_mismatch.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "269b214455761c2ba0839cd3f4801ba1596c3fe7",
+      "bytes": 719,
+      "sha256": "814d8aef27aa8b1dac16fd91fac8ce6a0aebaf4619e721d9cdad6acf0a44acc2",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-public_growth_recovery.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-public_growth_recovery.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-public_growth_recovery.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "6cfc5d15384ff85b3da8e15579c2421ea4eafe0c",
+      "bytes": 236,
+      "sha256": "40acfad331048bf8e12c91c51115a32a6dd9fdef0ba398da9788434024e610d3",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-public_growth_recovery.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-public_growth_recovery.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-public_growth_recovery.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "3170c67d66a75d3780d9c8cd41652b4c61cbf118",
+      "bytes": 121521,
+      "sha256": "9deae52e0a0745e162e8fbbdf44935d9e4c8a92d9ba0f2f47126bd8aa3030adb",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-test-list.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-test-list.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/growth/retained-test-list.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "b282f6cf9c3acd1d33045e5bd4b1210217bf33e9",
+      "bytes": 9961,
+      "sha256": "add6f747dadebc6826a3b41e872e8bc1a02a0672eb402d1888f88b251b703626",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/final-m06-config-inputs.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/final-m06-config-inputs.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/final-m06-config-inputs.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "e6632d2ab22d1620fb098aec5f0f261b8bbedc48",
+      "bytes": 365711,
+      "sha256": "e1546c2b1cc8e05480b0a0ba872989f3fb7fef5a8e5398f97db37ff8a285e4f7",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/final-m06-native-receipt.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/final-m06-native-receipt.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/final-m06-native-receipt.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "c3beab6cdf3259bcb8a5929a660c56c47eed9c53",
+      "bytes": 18367,
+      "sha256": "97ce5227af33c7a26cbd52b123f9539cb5ebaed35d611ccf2c46372427d3404f",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/final-m06-native.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/final-m06-native.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/final-m06-native.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "f455f6d364c306a754864b68dcb509435d1a15a0",
+      "bytes": 4124,
+      "sha256": "95a43d40604fd5cecdedf8181671538e1d482d3b4e1a95826ae98ef9104d1973",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/liveness-capacity-fixture-fix.patch"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/liveness-capacity-fixture-fix.patch",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/liveness-capacity-fixture-fix.patch",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "745aab31055bc8e3b564b767707a79bf85ec12d3",
+      "bytes": 17416,
+      "sha256": "627e38b333019e2232bfe0010d781f854f0a660b7cf78e299ca4629c6e3f9f11",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/liveness-capacity.patch"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/liveness-capacity.patch",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/liveness-capacity.patch",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "defc978b0b1d10fecceb6a502432f61e1bfb72ed",
+      "bytes": 4249,
+      "sha256": "d30f3959a6546c61ce3137ecb0335ef581c0d5edda21995dddbc3efa744b8747",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/liveness-funds.patch"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/liveness-funds.patch",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/liveness-funds.patch",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "482d355cebcfa4fe6f0f38aa1bf29cd31603c594",
+      "bytes": 375679,
+      "sha256": "5516e771ac6d2c4a0f54c3c3a1483e22dbd96dddd2e294a3a875abf9e1382cd1",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-capacity-progress-receipt.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-capacity-progress-receipt.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-capacity-progress-receipt.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "cf2c2cb584b4755d9c3b661e6c0e8dedc4f4a99f",
+      "bytes": 969,
+      "sha256": "89989f5f871fffe5a0d713047c32c3369806d80d8db278233f57ccfa69204cec",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-capacity-progress.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-capacity-progress.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-capacity-progress.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "45cfa4163a9a1e27d9590c9cf320beb4b4330cd0",
+      "bytes": 375757,
+      "sha256": "7802cf96e7ec511a558e3020e10609066ac41fd1e8ebd6883fa5ae9829cab738",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-clippy-receipt.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-clippy-receipt.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-clippy-receipt.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "fa306ebb716cabf25ba2bec16531561d1824ec91",
+      "bytes": 2439,
+      "sha256": "6857b6c669c2bd30a0d86f1d0a6fa844117588ccac1da2d158e4be2004007f42",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-clippy.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-clippy.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-clippy.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "790dfdc0dc9e771d94a0ef6c6730a14d2af87e6f",
+      "bytes": 375757,
+      "sha256": "cc03cdf491982cf018b48bb437e917708264af5232d6293c722a51b798860b58",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-native-receipt.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-native-receipt.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-native-receipt.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "a928fc884c8339f406a49b38eaddc0ff71791774",
+      "bytes": 18259,
+      "sha256": "7b52a36202cc3e84d7b7b7eaeab40556b2d33a2080ae23b5298ae0b3d6f8488c",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-native.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-native.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/published-m06-native.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "118f61e983a8e223ebb1c91768604cf9f5c61916",
+      "bytes": 2214,
+      "sha256": "3e7410065c409d82d0839a62d2822dd13f3d30f7c0d190133ebb049d168cceec",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/range-unit-receipt.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/range-unit-receipt.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/range-unit-receipt.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "2b8ae2bbedbf6f76adc8fab410fb1d05ac1f2f51",
+      "bytes": 2612,
+      "sha256": "8b722e1b36f73380003a85573a007d69b17a5e36a788397a77a96b0c6f6732d7",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/range-unit.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/range-unit.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/range-unit.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "86038213f3d5fe72cb345db9b4f8c6f9d309a8c0",
+      "bytes": 4155,
+      "sha256": "863ab143f1fbfc7639bd6d690272c60d8668d3c3b3631b29b445b22a37d513c9",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/summary.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/m06/summary.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/m06/summary.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "0bab016181fe06699f1918af5bb560e8051fe5d3",
+      "bytes": 3428,
+      "sha256": "a0eb6a59eacf57b864c1463380b73ab482382c65a1bf6447d37e8b5c4ba28bbb",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/publication-parent-readback.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/publication-parent-readback.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/publication-parent-readback.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "28ed81aba49367ba89c5d065da4718d9109118c9",
+      "bytes": 992,
+      "sha256": "ee9afca7f613d7083c809017670a2292b34b4544aef34af745736802e3b441bb",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source-state-at-delivery.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source-state-at-delivery.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source-state-at-delivery.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "9ca5b59017ccc3750a836b8f509962b51e35a998",
+      "bytes": 961,
+      "sha256": "b9e67527f8baa65e07c1efbab861198a52367477935c1420b5b1ca8db709f2ac",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/actual-pair-source-binding.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/actual-pair-source-binding.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/actual-pair-source-binding.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "3b8efce9fd02c69c92ef4593d4942e18a875341d",
+      "bytes": 654,
+      "sha256": "ffab5fa74e764e2d5d8bb223f9cafa0de97e0bf53776f4e08959354ed1a5cf62",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/actual-v10-chain-source.json",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-pair-binding.json.6c31e2ee1b1a414fa270486fdc164b89.log",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-pair-binding.json.05cd6c66948f4763b1f2a25b9040b79b.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/actual-v10-chain-source.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/actual-v10-chain-source.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "87858c7eb275952fbb0d455fafd6e04f2b462cfa",
+      "bytes": 1911,
+      "sha256": "f2860572fdfbe5e081edf15ae8d3be2dd6d2098f8fb22e35ef7f81840a34adf8",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/commits/chain-candidate-commit.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/commits/chain-candidate-commit.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/commits/chain-candidate-commit.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "6984a3d6ad85f08d3d07216ce232a917fa7f92bd",
+      "bytes": 2821,
+      "sha256": "770d30b69ac50390ec26e5bfa85d6699e93c56aed7939fa81662c3438d5c2adc",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/commits/chain-final-merge.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/commits/chain-final-merge.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/commits/chain-final-merge.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "6e4c4badbaa97aa324c47ffd44922b99a91e3ac6",
+      "bytes": 2488,
+      "sha256": "ef4015db9c94cb76d78fba2ce3b511a1b5de1c307523bb5089e20596c4b32b1d",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/commits/runtime-final-code-commit.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/commits/runtime-final-code-commit.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/commits/runtime-final-code-commit.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "78c20db592e0f7088b9f161ca332fdb5356b0af7",
+      "bytes": 2175,
+      "sha256": "2d73e0f00c8c37a84eefcf6116b998a041a438fb7d9657e20a7110df7e557558",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/commits/runtime-frozen-code.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/commits/runtime-frozen-code.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/commits/runtime-frozen-code.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "1da63b4097c3292832f66ab5f1bab0aca8404e44",
+      "bytes": 2252,
+      "sha256": "51568f73cac4ef727b900672e05d3a48899a8701abedf6529bf6ec29f40e961b",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-all-source-v10-tests.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-all-source-v10-tests.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-all-source-v10-tests.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "010648422461a35d16a138bb7dd90d32da7396f3",
+      "bytes": 203,
+      "sha256": "f2096fe3050e98d5d8d2226d67c732fa5615d0548601405387f2d922869b44e4",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-source-merge-tests.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-source-merge-tests.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-source-merge-tests.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "8e6ae55979d8c993284f7c9d44fd3bb5f776e764",
+      "bytes": 20825,
+      "sha256": "cf34dc7b65a498023bdc3a3f2c02bb5d498c993286ef65fcce0e12507a96fb3e",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-v10-frozen-source-tests.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-v10-frozen-source-tests.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-v10-frozen-source-tests.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "c1f391a8d7576e46f4b212fd7dba562f4b3c52cf",
+      "bytes": 1108,
+      "sha256": "afb99e7a0e0907d15f9624440546300396384720b6d8c2d81e3601b541bdd5c6",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-v10-tests-2.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-v10-tests-2.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-v10-tests-2.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "2b33e7c05e5c60eb642d2c415479856882e0f78e",
+      "bytes": 20175,
+      "sha256": "b70c03ec12eb1514faad16af1415167c0a3cb9e38d576bb4259ad4a5e4464530",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-v10-tests.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-v10-tests.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/development/runtime-v10-tests.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "b8fc83375168165984d3e5bfce8d99becd84cadf",
+      "bytes": 2173,
+      "sha256": "86036e4b85ec46e6de8d4775241e26b3755047a8a6f10cd9219df6449a6d3a12",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/published-source-pq-w1-controls.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/published-source-pq-w1-controls.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/published-source-pq-w1-controls.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "43ea86b3007c93f0a94995ece27d9a097e96b167",
+      "bytes": 21896,
+      "sha256": "f242d618617f67db4cea5179e481125e9db1a41276f0eadc4c1ff2dd38f5bab6",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/published-source-pq-w1-controls.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/published-source-pq-w1-controls.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/published-source-pq-w1-controls.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "54437b773ac8873334bcba0133cf53ed08579882",
+      "bytes": 144,
+      "sha256": "3231c3e70de01f2c8373d9c65ab719087cb18f2b9b4982e159fe3ed4d20214e5",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/published-source-pq-w1-driver.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/published-source-pq-w1-driver.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/published-source-pq-w1-driver.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "25b026f1252e35bcbe6c63e7887a789782423c65",
+      "bytes": 927,
+      "sha256": "052c41ed762712db958cdd2e8dba84081f8025d5b22a2edf62ee32543b690e87",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-final-owner-controls.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-final-owner-controls.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-final-owner-controls.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "bd9caea8d23185d180c0abf9352bb7d9ce308c9a",
+      "bytes": 371,
+      "sha256": "b83ed8a5d096f2d4a072e9d1ca35e07714e4b07e9cd20f1f958b2ae898344db0",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-final-source.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-final-source.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-final-source.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "8157264d2688309ac6861cbe538dde749d1f81a5",
+      "bytes": 924,
+      "sha256": "44000d1f3c9123381b403acfae71d5f8b78834e23919eb4f9f6cb63940ac3a2d",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-final-v10-controls.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-final-v10-controls.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-final-v10-controls.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "997ef5bbde207e08334a2a158a5f9ba4448ea2f6",
+      "bytes": 1646,
+      "sha256": "530dafe40040069f81b3d199d51f2942bfb9bc2399a88d40d702220321f1cde0",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-owner-controls.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-owner-controls.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-owner-controls.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "14a5442049c5242d01e3374b8c9160d18c25b18a",
+      "bytes": 10738,
+      "sha256": "afb48f18ada9771f5b4d8783563cdbb8bc77e3594b2a8612d14e2c72f4015222",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-owner-controls.json.82b8aabef9a2430aae834db39cbc08df.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-owner-controls.json.82b8aabef9a2430aae834db39cbc08df.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-owner-controls.json.82b8aabef9a2430aae834db39cbc08df.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "61be832642305bcc4e52a28c9b545aeecc6f0f76",
+      "bytes": 1639,
+      "sha256": "fccc255f0343d36e19056ea2ee2a004226f27e1d91eb693d29d1eaafd4d8c579",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-pair-binding.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-pair-binding.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-pair-binding.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "7321d950b66f53bf638934fd8970a327f7202c87",
+      "bytes": 371,
+      "sha256": "6c1726ad0e9d7a60000a4a139cedb7784a35f0e5eed9b2d8b34deba54b9ec73c",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-source.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-source.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-source.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "a8abdb761a7b1ec861cfb4fa37f78b5231fd47cd",
+      "bytes": 1608,
+      "sha256": "8345c760dfd7951ae2537b0b4262ea224cab37bd6b3112edcc4957267d5ed9cf",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-v10-controls.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-v10-controls.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-v10-controls.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "79034ea1f90daeeb7afd90359223ff48ecdc0bb9",
+      "bytes": 20825,
+      "sha256": "c22e4326d572a770f9ca38c3ae95b8d4b94443bc18ae78c6b97e2f54cf949979",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-v10-controls.json.73d54bd2b4694a74af281ae50994c679.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-v10-controls.json.73d54bd2b4694a74af281ae50994c679.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-published-v10-controls.json.73d54bd2b4694a74af281ae50994c679.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "9ef307855ddc6180c8650ad4700a256dc3728818",
+      "bytes": 1656,
+      "sha256": "b762f54a64dbb3e860f96ed518b8229b7b126538c2c253cdc305ca2bb70a37d0",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-owner-controls-complete.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-owner-controls-complete.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-owner-controls-complete.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "8bd5e20331ea8b61f7c68b245cd954968840b6b0",
+      "bytes": 10738,
+      "sha256": "331d6940ccc67b8a32880e5f42eee6df1cd540dcc4e9d2e8145eedc927281248",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-owner-controls-complete.json.6feed79c321a48209d05d3ee520d106c.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-owner-controls-complete.json.6feed79c321a48209d05d3ee520d106c.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-owner-controls-complete.json.6feed79c321a48209d05d3ee520d106c.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "b166e50465f1c4759538298e6d55cf6d544e497e",
+      "bytes": 1664,
+      "sha256": "5f0b45c79e67ea51654e7a525a65a8e8e3fa7b6896b864c5044b6ed307a2fa5e",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-owner-controls.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-owner-controls.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-owner-controls.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "99f01167f7f8120d16ecf9933d0069f580da287f",
+      "bytes": 5529,
+      "sha256": "0fe8ea7a422b7fa4e9aaf5850797df3aaafd674927c80dec27eddfdf5e08a6af",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-owner-controls.json.5dad5771a53b40909a7f28cf145ed54d.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-owner-controls.json.5dad5771a53b40909a7f28cf145ed54d.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-owner-controls.json.5dad5771a53b40909a7f28cf145ed54d.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "84481a10e9f1aeca1072275a5874196408d6b0de",
+      "bytes": 1640,
+      "sha256": "76cdcc04efe4ab3e671b4d46ed2e93f064d3a677dc6ddd28709c612a052da890",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-pair-binding.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-pair-binding.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-pair-binding.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "4fe2e04794e4880f8fb2b8b10a9179184909129f",
+      "bytes": 1609,
+      "sha256": "82ec7d3ae5e44a47a2874d401aec779a4c18e8d2944652c8cc88ad1e01848b9e",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-v10-controls.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-v10-controls.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-v10-controls.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "fbe7fa7fed02001ffadf8ec689f11e4063fd9a6d",
+      "bytes": 20825,
+      "sha256": "5891a8b3f9956dbe60d61e7113f3d28a27bfaaae9716fba50d7dea99f61d27c3",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-v10-controls.json.321c0418b340462b98320ed9f9ed027c.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-v10-controls.json.321c0418b340462b98320ed9f9ed027c.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/runtime-source-head-v10-controls.json.321c0418b340462b98320ed9f9ed027c.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "a8539830503b621d44d6cea2d0262b49b173e676",
+      "bytes": 2162,
+      "sha256": "ba2c3e6b3b16dd80cab13613c68b7c91f67ba9172c8df80d7797c0e61528f6d0",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/source-pq-w1-controls.json"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/source-pq-w1-controls.json",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/source-pq-w1-controls.json",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "04a926b7f92a0d16edfeabc8395be489d71e936a",
+      "bytes": 21896,
+      "sha256": "dfebca64d9e57a1f4ecfd9341c05537353ae29f5423c2307b587fd316941a6f4",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/source/source-pq-w1-controls.log"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/source/source-pq-w1-controls.log",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/source/source-pq-w1-controls.log",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    },
+    {
+      "sha": "4f8ec66dbc7548f4b71b8c78371255525b8254d0",
+      "bytes": 15776,
+      "sha256": "4fe264f07fdb6ca257d6a0efdee0bd12eb03f4e81656bea03bcdf208d0067d16",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/w1-host-boundaries.md"
+      ],
+      "fetch_path": "qualification/learning-generations/hepta-pair-v10-source-20261105/w1-host-boundaries.md",
+      "requested_ref": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9",
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9e8faef449a4392b7b9aa6a9071f260a34d95ec9/qualification/learning-generations/hepta-pair-v10-source-20261105/w1-host-boundaries.md",
+      "base64_decoded_size_verified": true,
+      "git_blob_sha_verified": true,
+      "object_write": "imported"
+    }
+  ],
+  "verified_existing": [
+    {
+      "sha": "c6c0a4e0d68600dfc2d6527f181ad9a1616b74ee",
+      "bytes": 5064,
+      "sha256": "c08db803851dde8df7e2df6305cf98faa75268d4b7104959f15a81e90ebd5b3b",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/0016_provider_effect_observation_history.sql"
+      ],
+      "git_blob_sha_verified": true,
+      "downloaded": false
+    },
+    {
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "paths": [
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-d7c-pack-objects.log",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/final-runtime-pack-objects.log",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-format-initial.log",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-format-pretest.log",
+        "qualification/learning-generations/hepta-pair-v10-source-20261105/effects/green-owner-fixture-format.log"
+      ],
+      "git_blob_sha_verified": true,
+      "downloaded": false
+    }
+  ],
+  "source_state_before": {
+    "head": "f88f2a03dc06a639fa7622154163d22e01e5d892",
+    "tree": "990ae49d3021b4431b55f7f5c78356199587e7f4",
+    "git_index_sha256": "2355edf4138165e9e53cb46089ea169b99170abb8ee9a4c1c5f4223052db988b",
+    "status": "",
+    "ref_source": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9"
+  },
+  "source_state_after": {
+    "head": "f88f2a03dc06a639fa7622154163d22e01e5d892",
+    "tree": "990ae49d3021b4431b55f7f5c78356199587e7f4",
+    "git_index_sha256": "2355edf4138165e9e53cb46089ea169b99170abb8ee9a4c1c5f4223052db988b",
+    "status": "",
+    "ref_source": "9e8faef449a4392b7b9aa6a9071f260a34d95ec9"
+  },
+  "head_index_and_status_unchanged": true,
+  "workingtree_writes": false,
+  "remote_writes": false,
+  "rust_executed": false,
+  "r2_all_distinct_leaf_blobs": 11375,
+  "r2_missing_leaf_blobs": [],
+  "scope": "Exact object transport and hash verification only; no imported evidence claim is independently accepted by this receipt."
+}

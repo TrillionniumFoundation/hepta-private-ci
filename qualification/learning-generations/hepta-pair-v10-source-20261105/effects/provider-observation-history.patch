@@ -1,0 +1,1341 @@
+From b5bb98297a1765d71160dd62d1cd53863f948012 Mon Sep 17 00:00:00 2001
+From: Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com>
+Date: Thu, 5 Nov 2026 13:22:02 +0900
+Subject: [PATCH] fix(evidence): retain distinct provider effect observations
+ through recovery
+
+Append source changes and observations following uncertainty instead of deduplicating by logical ACK content. Keep true latest-event retries idempotent under BEGIN IMMEDIATE. Migration 0016 preserves old rows, identities, sequences, and allocator floors; recovery retains the first terminal barrier and rejects obsolete content-unique indexes. Add cold-open, repeated-observation, multi-writer, clock-boundary, and migration regressions. Native qualification is pending and no whole-runtime acceptance is asserted.
+---
+ ...16_provider_effect_observation_history.sql | 121 ++++++
+ codex-rs/hepta-evidence/src/lib.rs            |   1 +
+ ...ider_effect_observation_migration_tests.rs | 223 ++++++++++
+ .../src/provider_effect_observation_schema.rs |  33 ++
+ ...ovider_effect_recovery_provenance_tests.rs | 407 ++++++++++++++++++
+ .../src/provider_effect_store.rs              | 229 ++++++----
+ .../src/provider_effect_tests.rs              |  52 ++-
+ codex-rs/hepta-evidence/src/store.rs          |   5 +
+ 8 files changed, 975 insertions(+), 96 deletions(-)
+ create mode 100644 codex-rs/hepta-evidence/migrations/0016_provider_effect_observation_history.sql
+ create mode 100644 codex-rs/hepta-evidence/src/provider_effect_observation_migration_tests.rs
+ create mode 100644 codex-rs/hepta-evidence/src/provider_effect_observation_schema.rs
+
+diff --git a/codex-rs/hepta-evidence/migrations/0016_provider_effect_observation_history.sql b/codex-rs/hepta-evidence/migrations/0016_provider_effect_observation_history.sql
+new file mode 100644
+index 0000000000..c6c0a4e0d6
+--- /dev/null
++++ b/codex-rs/hepta-evidence/migrations/0016_provider_effect_observation_history.sql
+@@ -0,0 +1,121 @@
++-- Logical effect identity remains in provider_effect_intents. A later
++-- observation of that same operation is not necessarily the same journal
++-- event: source changes and observations after uncertainty must be retained.
++-- Preserve every original byte, sequence and allocator high-water mark;
++-- only serialized append code decides whether the latest event is a retry.
++CREATE TABLE provider_effect_acknowledgements_observations (
++    seq INTEGER PRIMARY KEY AUTOINCREMENT,
++    effect_key TEXT NOT NULL,
++    payload_sha256 TEXT NOT NULL CHECK (
++        length(payload_sha256) = 64
++        AND payload_sha256 NOT GLOB '*[^0-9a-f]*'
++    ),
++    provider_operation_id_sha256 TEXT NOT NULL CHECK (
++        length(provider_operation_id_sha256) = 64
++        AND provider_operation_id_sha256 NOT GLOB '*[^0-9a-f]*'
++    ),
++    status TEXT NOT NULL CHECK (status IN ('accepted', 'completed', 'rejected')),
++    schema_version INTEGER NOT NULL CHECK (schema_version = 1),
++    payload_json TEXT NOT NULL,
++    record_sha256 TEXT NOT NULL CHECK (
++        length(record_sha256) = 64
++        AND record_sha256 NOT GLOB '*[^0-9a-f]*'
++    ),
++    recorded_at_ms INTEGER NOT NULL,
++    source TEXT CHECK (
++        source IS NULL
++        OR source IN ('dispatch_response', 'status_lookup')
++    ),
++    FOREIGN KEY(effect_key)
++        REFERENCES provider_effect_intents(effect_key)
++        ON UPDATE RESTRICT ON DELETE RESTRICT
++);
++INSERT INTO provider_effect_acknowledgements_observations (
++    seq, effect_key, payload_sha256, provider_operation_id_sha256,
++    status, schema_version, payload_json, record_sha256, recorded_at_ms, source
++)
++SELECT seq, effect_key, payload_sha256, provider_operation_id_sha256,
++       status, schema_version, payload_json, record_sha256, recorded_at_ms, source
++FROM provider_effect_acknowledgements ORDER BY seq;
++INSERT INTO sqlite_sequence(name, seq)
++SELECT 'provider_effect_acknowledgements_observations', 0
++WHERE NOT EXISTS (
++    SELECT 1 FROM sqlite_sequence
++    WHERE name = 'provider_effect_acknowledgements_observations'
++);
++UPDATE sqlite_sequence
++SET seq = max(seq, coalesce((
++    SELECT seq FROM sqlite_sequence WHERE name = 'provider_effect_acknowledgements'
++), 0))
++WHERE name = 'provider_effect_acknowledgements_observations';
++DROP TABLE provider_effect_acknowledgements;
++ALTER TABLE provider_effect_acknowledgements_observations
++RENAME TO provider_effect_acknowledgements;
++CREATE INDEX provider_effect_acknowledgements_key_seq
++    ON provider_effect_acknowledgements(effect_key, seq);
++CREATE TRIGGER provider_effect_acknowledgements_no_update
++BEFORE UPDATE ON provider_effect_acknowledgements
++BEGIN
++    SELECT RAISE(ABORT, 'provider effect acknowledgements are immutable');
++END;
++CREATE TRIGGER provider_effect_acknowledgements_no_delete
++BEFORE DELETE ON provider_effect_acknowledgements
++BEGIN
++    SELECT RAISE(ABORT, 'provider effect acknowledgements are immutable');
++END;
++
++CREATE TABLE provider_effect_uncertainties_observations (
++    seq INTEGER PRIMARY KEY AUTOINCREMENT,
++    effect_key TEXT NOT NULL,
++    payload_sha256 TEXT NOT NULL CHECK (
++        length(payload_sha256) = 64
++        AND payload_sha256 NOT GLOB '*[^0-9a-f]*'
++    ),
++    reason_code TEXT NOT NULL CHECK (
++        length(reason_code) BETWEEN 1 AND 128
++        AND reason_code NOT GLOB '*[^a-z0-9_.-]*'
++    ),
++    schema_version INTEGER NOT NULL CHECK (schema_version = 1),
++    payload_json TEXT NOT NULL,
++    record_sha256 TEXT NOT NULL CHECK (
++        length(record_sha256) = 64
++        AND record_sha256 NOT GLOB '*[^0-9a-f]*'
++    ),
++    recorded_at_ms INTEGER NOT NULL,
++    FOREIGN KEY(effect_key)
++        REFERENCES provider_effect_intents(effect_key)
++        ON UPDATE RESTRICT ON DELETE RESTRICT
++);
++INSERT INTO provider_effect_uncertainties_observations (
++    seq, effect_key, payload_sha256, reason_code,
++    schema_version, payload_json, record_sha256, recorded_at_ms
++)
++SELECT seq, effect_key, payload_sha256, reason_code,
++       schema_version, payload_json, record_sha256, recorded_at_ms
++FROM provider_effect_uncertainties ORDER BY seq;
++INSERT INTO sqlite_sequence(name, seq)
++SELECT 'provider_effect_uncertainties_observations', 0
++WHERE NOT EXISTS (
++    SELECT 1 FROM sqlite_sequence
++    WHERE name = 'provider_effect_uncertainties_observations'
++);
++UPDATE sqlite_sequence
++SET seq = max(seq, coalesce((
++    SELECT seq FROM sqlite_sequence WHERE name = 'provider_effect_uncertainties'
++), 0))
++WHERE name = 'provider_effect_uncertainties_observations';
++DROP TABLE provider_effect_uncertainties;
++ALTER TABLE provider_effect_uncertainties_observations
++RENAME TO provider_effect_uncertainties;
++CREATE INDEX provider_effect_uncertainties_key_seq
++    ON provider_effect_uncertainties(effect_key, seq);
++CREATE TRIGGER provider_effect_uncertainties_no_update
++BEFORE UPDATE ON provider_effect_uncertainties
++BEGIN
++    SELECT RAISE(ABORT, 'provider effect uncertainties are immutable');
++END;
++CREATE TRIGGER provider_effect_uncertainties_no_delete
++BEFORE DELETE ON provider_effect_uncertainties
++BEGIN
++    SELECT RAISE(ABORT, 'provider effect uncertainties are immutable');
++END;
+diff --git a/codex-rs/hepta-evidence/src/lib.rs b/codex-rs/hepta-evidence/src/lib.rs
+index 2bf6230c9a..8772f8709e 100644
+--- a/codex-rs/hepta-evidence/src/lib.rs
++++ b/codex-rs/hepta-evidence/src/lib.rs
+@@ -13,6 +13,7 @@ mod governance_store;
+ mod governance_validation;
+ mod historical;
+ mod provider_claim;
++mod provider_effect_observation_schema;
+ mod provider_effect_store;
+ mod provider_insert;
+ mod provider_record;
+diff --git a/codex-rs/hepta-evidence/src/provider_effect_observation_migration_tests.rs b/codex-rs/hepta-evidence/src/provider_effect_observation_migration_tests.rs
+new file mode 100644
+index 0000000000..fe8037965d
+--- /dev/null
++++ b/codex-rs/hepta-evidence/src/provider_effect_observation_migration_tests.rs
+@@ -0,0 +1,223 @@
++use codex_hepta_contracts::ProviderEffectAck;
++use codex_hepta_contracts::ProviderEffectAckSource;
++use codex_hepta_contracts::ProviderEffectAckStatus;
++use codex_hepta_contracts::ProviderEffectAdapter;
++use codex_hepta_contracts::ProviderEffectDispatch;
++use codex_hepta_contracts::ProviderEffectFuture;
++use codex_hepta_contracts::ProviderEffectIdempotencyCapability;
++use codex_hepta_contracts::ProviderEffectIntent;
++use codex_hepta_contracts::ProviderEffectKey;
++use codex_hepta_contracts::ProviderEffectLookup;
++use codex_hepta_contracts::ProviderEffectState;
++use codex_hepta_contracts::Sha256Digest;
++use codex_state::SqliteConfig;
++use codex_utils_absolute_path::AbsolutePathBuf;
++
++use super::*;
++
++struct NoDispatch;
++
++impl ProviderEffectAdapter for NoDispatch {
++    fn capability(&self) -> ProviderEffectIdempotencyCapability {
++        ProviderEffectIdempotencyCapability::KeyAndStatusLookup
++    }
++
++    fn dispatch<'a>(
++        &'a self,
++        _: &'a ProviderEffectIntent,
++    ) -> ProviderEffectFuture<'a, ProviderEffectDispatch> {
++        panic!("migration must not grant another provider dispatch")
++    }
++
++    fn lookup<'a>(
++        &'a self,
++        _: &'a ProviderEffectKey,
++    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
++        panic!("migration must not invent a provider lookup")
++    }
++}
++
++#[tokio::test]
++async fn observation_migration_preserves_effect_rows_sequences_and_consumed_boundary() {
++    let temp = tempfile::TempDir::new().expect("temp dir");
++    let sqlite = SqliteConfig::new_for_testing(
++        AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute temp path"),
++    );
++    let path = sqlite.home().join(EVIDENCE_DATABASE_LINEAGE);
++    let pool = sqlite
++        .open_durable_evidence_pool(&path)
++        .await
++        .expect("legacy pool");
++    MIGRATOR
++        .run_to(/*target*/ 15, &pool)
++        .await
++        .expect("original migrations only");
++    let legacy = HeptaEvidenceStore {
++        pool,
++        path,
++        provider_effect_boundary_lock: Arc::new(tokio::sync::Mutex::new(())),
++    };
++    legacy
++        .bind_recovery_store_id("store:observation-migration")
++        .await
++        .expect("store identity");
++    let intent = ProviderEffectIntent::new(
++        ProviderEffectKey::for_operation("provider", "migration", "step").expect("stable key"),
++        Sha256Digest::for_bytes(b"original immutable payload"),
++    );
++    let accepted = ProviderEffectAck::new(
++        intent.key.clone(),
++        intent.payload_sha256.clone(),
++        Sha256Digest::for_bytes(b"original provider operation"),
++        ProviderEffectAckStatus::Accepted,
++    );
++    legacy
++        .append_provider_effect_intent(&intent)
++        .await
++        .expect("original intent");
++    legacy
++        .append_provider_effect_ack(&accepted)
++        .await
++        .expect("original dispatch ACK");
++    legacy
++        .mark_provider_effect_indeterminate(&intent.key, "response_lost")
++        .await
++        .expect("original unknown");
++    // Unused allocation gaps are still part of the allocator's durable floor.
++    sqlx::query("UPDATE sqlite_sequence SET seq = seq + 100 WHERE name IN ('provider_effect_acknowledgements', 'provider_effect_uncertainties')")
++        .execute(&legacy.pool).await.expect("retain allocator gaps");
++    let before = legacy
++        .get_provider_effect(&intent.key)
++        .await
++        .expect("read old effect")
++        .expect("old effect");
++    let old_snapshot = legacy
++        .recovery_snapshot()
++        .await
++        .expect("old checkpoint input");
++    let old_allocators: Vec<(String, i64)> =
++        sqlx::query_as("SELECT name, seq FROM sqlite_sequence ORDER BY name")
++            .fetch_all(&legacy.pool)
++            .await
++            .expect("old allocator floors");
++    let old_migrations: Vec<(i64, String, Vec<u8>)> = sqlx::query_as(
++        "SELECT version, description, checksum FROM _sqlx_migrations ORDER BY version",
++    )
++    .fetch_all(&legacy.pool)
++    .await
++    .expect("old migration ledger");
++    legacy.close().await;
++
++    let migrated = HeptaEvidenceStore::open(&sqlite)
++        .await
++        .expect("ordinary open runs new migration");
++    assert_eq!(
++        migrated
++            .get_provider_effect(&intent.key)
++            .await
++            .expect("migrated effect")
++            .expect("effect"),
++        before
++    );
++    assert_eq!(
++        migrated
++            .recovery_store_id()
++            .await
++            .expect("retained store id")
++            .as_deref(),
++        Some("store:observation-migration")
++    );
++    let new_allocators: Vec<(String, i64)> =
++        sqlx::query_as("SELECT name, seq FROM sqlite_sequence ORDER BY name")
++            .fetch_all(&migrated.pool)
++            .await
++            .expect("migrated allocator floors");
++    assert_eq!(new_allocators, old_allocators);
++    let new_migrations: Vec<(i64, String, Vec<u8>)> = sqlx::query_as(
++        "SELECT version, description, checksum FROM _sqlx_migrations ORDER BY version",
++    )
++    .fetch_all(&migrated.pool)
++    .await
++    .expect("migrated ledger");
++    assert_eq!(
++        &new_migrations[..old_migrations.len()],
++        old_migrations.as_slice()
++    );
++    assert_eq!(new_migrations.last().expect("new migration").0, 16);
++    let new_snapshot = migrated
++        .recovery_snapshot()
++        .await
++        .expect("new checkpoint input");
++    assert_ne!(
++        new_snapshot, old_snapshot,
++        "old signed checkpoint cannot match the migrated store"
++    );
++    let mut compared = new_snapshot.clone();
++    compared.migration_set_sha256 = old_snapshot.migration_set_sha256.clone();
++    assert_eq!(
++        compared, old_snapshot,
++        "migration changed original effect history"
++    );
++    let refusal = migrated
++        .dispatch_provider_effect_qualification(&NoDispatch, &intent)
++        .await
++        .expect("existing effect remains fenced");
++    assert!(!refusal.dispatch_attempted);
++    assert!(!refusal.dispatch_claimed);
++    assert_eq!(refusal.state, ProviderEffectState::Indeterminate);
++
++    migrated
++        .append_provider_effect_ack_from_source(&accepted, ProviderEffectAckSource::StatusLookup)
++        .await
++        .expect("new observation resolves the original operation");
++    let observed = migrated
++        .get_provider_effect(&intent.key)
++        .await
++        .expect("new observation")
++        .expect("effect");
++    assert_eq!(observed.state(), ProviderEffectState::Accepted);
++    let last = observed.acknowledgements.last().expect("new ACK");
++    assert!(
++        last.seq
++            > old_allocators
++                .iter()
++                .find(|(name, _)| name == "provider_effect_acknowledgements")
++                .expect("old floor")
++                .1
++    );
++    migrated.close().await;
++    let reopened = HeptaEvidenceStore::open(&sqlite)
++        .await
++        .expect("reopen migrated history");
++    assert_eq!(
++        reopened
++            .get_provider_effect(&intent.key)
++            .await
++            .expect("reopened effect")
++            .expect("effect"),
++        observed
++    );
++}
++
++#[tokio::test]
++async fn observation_schema_rejects_reintroduced_content_deduplication() {
++    for statement in [
++        "CREATE UNIQUE INDEX imported_effect_ack_dedup ON provider_effect_acknowledgements(effect_key, provider_operation_id_sha256, status, payload_sha256)",
++        "CREATE UNIQUE INDEX imported_effect_unknown_dedup ON provider_effect_uncertainties(effect_key, payload_sha256, reason_code)",
++    ] {
++        let temp = tempfile::TempDir::new().expect("temp dir");
++        let sqlite = SqliteConfig::new_for_testing(
++            AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute temp path"),
++        );
++        let store = HeptaEvidenceStore::open(&sqlite)
++            .await
++            .expect("open evidence");
++        sqlx::query(statement)
++            .execute(&store.pool)
++            .await
++            .expect("introduce schema drift");
++        store.close().await;
++        assert!(matches!(HeptaEvidenceStore::open(&sqlite).await,
++            Err(EvidenceError::Corrupt(detail)) if detail.contains("content-unique index")));
++    }
++}
+diff --git a/codex-rs/hepta-evidence/src/provider_effect_observation_schema.rs b/codex-rs/hepta-evidence/src/provider_effect_observation_schema.rs
+new file mode 100644
+index 0000000000..6fd3eb5942
+--- /dev/null
++++ b/codex-rs/hepta-evidence/src/provider_effect_observation_schema.rs
+@@ -0,0 +1,33 @@
++//! Migration 0016 replaces content-unique projections with observation logs.
++//! Reintroducing a unique content index would silently discard later status
++//! observations or quarantine events, even when all current rows are valid.
++
++use sqlx::Row;
++use sqlx::SqlitePool;
++
++use crate::EvidenceError;
++use crate::schema_validation::classify_sqlx_error;
++
++pub(crate) async fn verify_schema(pool: &SqlitePool) -> Result<(), EvidenceError> {
++    for query in [
++        "PRAGMA index_list(provider_effect_acknowledgements)",
++        "PRAGMA index_list(provider_effect_uncertainties)",
++    ] {
++        let indexes = sqlx::query(query)
++            .fetch_all(pool)
++            .await
++            .map_err(classify_sqlx_error)?;
++        for index in indexes {
++            if index
++                .try_get::<i64, _>("unique")
++                .map_err(classify_sqlx_error)?
++                != 0
++            {
++                return Err(EvidenceError::Corrupt(
++                    "provider effect observation history has a content-unique index".into(),
++                ));
++            }
++        }
++    }
++    Ok(())
++}
+diff --git a/codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs b/codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs
+index e5b4abbb14..d4c3b80101 100644
+--- a/codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs
++++ b/codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs
+@@ -4,11 +4,13 @@ use codex_hepta_contracts::ProviderEffectAckStatus;
+ use codex_hepta_contracts::ProviderEffectIntent;
+ use codex_hepta_contracts::ProviderEffectKey;
+ use codex_hepta_contracts::ProviderEffectState;
++use codex_hepta_contracts::ProviderEffectUncertainty;
+ use codex_hepta_contracts::Sha256Digest;
+ use codex_state::SqliteConfig;
+ use codex_utils_absolute_path::AbsolutePathBuf;
+ use tempfile::TempDir;
+ 
++use crate::AppendDisposition;
+ use crate::EvidenceError;
+ use crate::HeptaEvidenceStore;
+ 
+@@ -139,3 +141,408 @@ async fn recovery_provenance_preserves_dispatch_then_authoritative_status() {
+         .expect("stored effect");
+     assert_eq!(after, before);
+ }
++
++#[tokio::test]
++async fn repeated_status_ack_persists_provenance_and_fences_late_dispatch_after_restart() {
++    let temp = TempDir::new().expect("temp dir");
++    let sqlite = sqlite_config(&temp);
++    let store = HeptaEvidenceStore::open(&sqlite)
++        .await
++        .expect("open evidence");
++    let (intent, accepted, completed) = intent_and_acknowledgements();
++    store
++        .append_provider_effect_intent(&intent)
++        .await
++        .expect("intent");
++    store
++        .append_provider_effect_ack(&accepted)
++        .await
++        .expect("dispatch acceptance");
++    let before = store.recovery_snapshot().await.expect("dispatch snapshot");
++    assert_eq!(
++        store
++            .append_provider_effect_ack_from_source(
++                &accepted,
++                ProviderEffectAckSource::StatusLookup
++            )
++            .await
++            .expect("authoritative re-observation"),
++        AppendDisposition::Inserted,
++        "identical ACK bytes from a new source are a new durable observation"
++    );
++    let after = store.recovery_snapshot().await.expect("status snapshot");
++    assert_ne!(
++        after, before,
++        "the recovery commitment must retain the provenance boundary"
++    );
++    assert_eq!(
++        store
++            .append_provider_effect_ack_from_source(
++                &accepted,
++                ProviderEffectAckSource::StatusLookup
++            )
++            .await
++            .expect("identical latest observation replay"),
++        AppendDisposition::AlreadyPresent
++    );
++    assert!(matches!(
++        store.append_provider_effect_ack(&completed).await,
++        Err(EvidenceError::IdempotencyConflict { .. })
++    ));
++    store.close().await;
++
++    let reopened = HeptaEvidenceStore::open(&sqlite)
++        .await
++        .expect("reopen status history");
++    assert_eq!(
++        reopened
++            .recovery_snapshot()
++            .await
++            .expect("reopened snapshot"),
++        after
++    );
++    assert!(matches!(
++        reopened.append_provider_effect_ack(&completed).await,
++        Err(EvidenceError::IdempotencyConflict { .. })
++    ));
++    reopened
++        .append_provider_effect_ack_from_source(&completed, ProviderEffectAckSource::StatusLookup)
++        .await
++        .expect("provider-owned completion remains legal");
++    assert_eq!(
++        reopened
++            .get_provider_effect(&intent.key)
++            .await
++            .expect("effect read")
++            .expect("stored effect")
++            .state(),
++        ProviderEffectState::Completed
++    );
++}
++
++#[tokio::test]
++async fn repeated_unknown_and_status_observations_survive_recovery_without_erasing_quarantine() {
++    let temp = TempDir::new().expect("temp dir");
++    let sqlite = sqlite_config(&temp);
++    let (intent, accepted, completed) = intent_and_acknowledgements();
++    let mut store = HeptaEvidenceStore::open(&sqlite)
++        .await
++        .expect("open evidence");
++    store
++        .append_provider_effect_intent(&intent)
++        .await
++        .expect("intent");
++    store
++        .append_provider_effect_ack_from_source(&accepted, ProviderEffectAckSource::StatusLookup)
++        .await
++        .expect("first authoritative acceptance");
++    for _ in 0..3 {
++        let prior = store.recovery_snapshot().await.expect("prior snapshot");
++        assert_eq!(
++            store
++                .mark_provider_effect_indeterminate(&intent.key, "provider_lookup_unknown")
++                .await
++                .expect("new unknown observation"),
++            AppendDisposition::Inserted
++        );
++        let quarantined = store
++            .get_provider_effect(&intent.key)
++            .await
++            .expect("read quarantine")
++            .expect("stored effect");
++        assert_eq!(quarantined.state(), ProviderEffectState::Indeterminate);
++        let unknown = store.recovery_snapshot().await.expect("unknown snapshot");
++        assert_ne!(unknown, prior);
++        assert_eq!(
++            store
++                .mark_provider_effect_indeterminate(&intent.key, "provider_lookup_unknown")
++                .await
++                .expect("same latest unknown replay"),
++            AppendDisposition::AlreadyPresent
++        );
++        assert_eq!(
++            store
++                .recovery_snapshot()
++                .await
++                .expect("replayed unknown snapshot"),
++            unknown
++        );
++        store.close().await;
++        store = HeptaEvidenceStore::open(&sqlite)
++            .await
++            .expect("reopen quarantine");
++        assert_eq!(
++            store
++                .get_provider_effect(&intent.key)
++                .await
++                .expect("read restored quarantine")
++                .expect("stored effect"),
++            quarantined
++        );
++        assert_eq!(
++            store
++                .append_provider_effect_ack_from_source(
++                    &accepted,
++                    ProviderEffectAckSource::StatusLookup
++                )
++                .await
++                .expect("fresh authoritative acceptance after unknown"),
++            AppendDisposition::Inserted
++        );
++        assert_eq!(
++            store
++                .get_provider_effect(&intent.key)
++                .await
++                .expect("read acceptance")
++                .expect("stored effect")
++                .state(),
++            ProviderEffectState::Accepted
++        );
++    }
++    store
++        .append_provider_effect_ack_from_source(&completed, ProviderEffectAckSource::StatusLookup)
++        .await
++        .expect("terminal completion");
++    assert!(matches!(
++        store
++            .mark_provider_effect_indeterminate(&intent.key, "provider_lookup_unknown")
++            .await,
++        Err(EvidenceError::IdempotencyConflict { .. })
++    ));
++    store.close().await;
++    let reopened = HeptaEvidenceStore::open(&sqlite)
++        .await
++        .expect("reopen complete history");
++    let effect = reopened
++        .get_provider_effect(&intent.key)
++        .await
++        .expect("read complete history")
++        .expect("stored effect");
++    assert_eq!(effect.state(), ProviderEffectState::Completed);
++    assert_eq!(
++        (effect.acknowledgements.len(), effect.uncertainties.len()),
++        (5, 3)
++    );
++}
++
++#[tokio::test]
++async fn exhausted_observation_clock_refuses_new_events_without_forgetting_exact_retries() {
++    let temp = TempDir::new().expect("temp dir");
++    let sqlite = sqlite_config(&temp);
++    let store = HeptaEvidenceStore::open(&sqlite)
++        .await
++        .expect("open evidence");
++    let (intent, accepted, completed) = intent_and_acknowledgements();
++    store
++        .append_provider_effect_intent(&intent)
++        .await
++        .expect("intent");
++    let bytes = crate::canonical::canonical_json(&accepted).expect("canonical accepted ACK");
++    sqlx::query(
++        "INSERT INTO provider_effect_acknowledgements (
++        effect_key, payload_sha256, provider_operation_id_sha256, status,
++        schema_version, payload_json, record_sha256, recorded_at_ms, source
++        ) VALUES (?, ?, ?, 'accepted', 1, ?, ?, ?, 'status_lookup')",
++    )
++    .bind(accepted.key.as_str())
++    .bind(accepted.payload_sha256.as_str())
++    .bind(accepted.provider_operation_id_sha256.as_str())
++    .bind(String::from_utf8(bytes.clone()).expect("ACK JSON"))
++    .bind(Sha256Digest::for_bytes(&bytes).as_str())
++    .bind(i64::MAX)
++    .execute(&store.pool)
++    .await
++    .expect("import exhausted ordering clock");
++    let before = store.recovery_snapshot().await.expect("exhausted snapshot");
++    assert!(
++        matches!(store.append_provider_effect_ack_from_source(&completed, ProviderEffectAckSource::StatusLookup).await,
++        Err(EvidenceError::Corrupt(detail)) if detail.contains("clock is exhausted"))
++    );
++    assert!(
++        matches!(store.mark_provider_effect_indeterminate(&intent.key, "later_unknown").await,
++        Err(EvidenceError::Corrupt(detail)) if detail.contains("clock is exhausted"))
++    );
++    assert_eq!(
++        store
++            .append_provider_effect_ack_from_source(
++                &accepted,
++                ProviderEffectAckSource::StatusLookup
++            )
++            .await
++            .expect("exact latest ACK retry"),
++        AppendDisposition::AlreadyPresent
++    );
++    assert_eq!(
++        store
++            .recovery_snapshot()
++            .await
++            .expect("no ambiguous event was appended"),
++        before
++    );
++}
++
++#[tokio::test]
++async fn separate_store_writers_preserve_latest_observation_idempotency() {
++    let temp = TempDir::new().expect("temp dir");
++    let sqlite = sqlite_config(&temp);
++    let first = HeptaEvidenceStore::open(&sqlite)
++        .await
++        .expect("first writer");
++    let second = HeptaEvidenceStore::open(&sqlite)
++        .await
++        .expect("second writer");
++    let (intent, accepted, _) = intent_and_acknowledgements();
++    first
++        .append_provider_effect_intent(&intent)
++        .await
++        .expect("intent");
++    for round in 0..2 {
++        let (a, b) = tokio::join!(
++            first.append_provider_effect_ack_from_source(
++                &accepted,
++                ProviderEffectAckSource::StatusLookup
++            ),
++            second.append_provider_effect_ack_from_source(
++                &accepted,
++                ProviderEffectAckSource::StatusLookup
++            )
++        );
++        let dispositions = [a.expect("first ACK result"), b.expect("second ACK result")];
++        assert_eq!(
++            dispositions
++                .iter()
++                .filter(|value| **value == AppendDisposition::Inserted)
++                .count(),
++            1
++        );
++        assert_eq!(
++            dispositions
++                .iter()
++                .filter(|value| **value == AppendDisposition::AlreadyPresent)
++                .count(),
++            1
++        );
++        let (a, b) = tokio::join!(
++            first.mark_provider_effect_indeterminate(&intent.key, "same_unknown"),
++            second.mark_provider_effect_indeterminate(&intent.key, "same_unknown")
++        );
++        let dispositions = [
++            a.expect("first unknown result"),
++            b.expect("second unknown result"),
++        ];
++        assert_eq!(
++            dispositions
++                .iter()
++                .filter(|value| **value == AppendDisposition::Inserted)
++                .count(),
++            1
++        );
++        assert_eq!(
++            dispositions
++                .iter()
++                .filter(|value| **value == AppendDisposition::AlreadyPresent)
++                .count(),
++            1
++        );
++        let effect = first
++            .get_provider_effect(&intent.key)
++            .await
++            .expect("observed effect")
++            .expect("effect");
++        assert_eq!(effect.state(), ProviderEffectState::Indeterminate);
++        assert_eq!(
++            (effect.acknowledgements.len(), effect.uncertainties.len()),
++            (round + 1, round + 1)
++        );
++    }
++    assert_eq!(
++        first.recovery_snapshot().await.expect("first snapshot"),
++        second.recovery_snapshot().await.expect("second snapshot")
++    );
++}
++
++#[tokio::test]
++async fn terminal_status_reobservation_cannot_hide_an_intervening_imported_uncertainty() {
++    for status in [
++        ProviderEffectAckStatus::Completed,
++        ProviderEffectAckStatus::Rejected,
++    ] {
++        let temp = TempDir::new().expect("temp dir");
++        let sqlite = sqlite_config(&temp);
++        let store = HeptaEvidenceStore::open(&sqlite)
++            .await
++            .expect("open evidence");
++        let (intent, _, mut terminal) = intent_and_acknowledgements();
++        terminal.status = status;
++        store
++            .append_provider_effect_intent(&intent)
++            .await
++            .expect("intent");
++        store
++            .append_provider_effect_ack(&terminal)
++            .await
++            .expect("first terminal result");
++        assert!(matches!(
++            store
++                .mark_provider_effect_indeterminate(&intent.key, "late_unknown")
++                .await,
++            Err(EvidenceError::IdempotencyConflict { .. })
++        ));
++        let first_terminal_at = store
++            .get_provider_effect(&intent.key)
++            .await
++            .expect("terminal history")
++            .expect("stored effect")
++            .acknowledgements[0]
++            .recorded_at_ms;
++
++        // Preserve canonical bytes, operation identity, schema and ordering.
++        // Only the forbidden uncertainty after the first terminal is imported.
++        let unknown = ProviderEffectUncertainty::new(
++            intent.key.clone(),
++            intent.payload_sha256.clone(),
++            "late_unknown",
++        );
++        let bytes = crate::canonical::canonical_json(&unknown).expect("canonical uncertainty");
++        sqlx::query(
++            "INSERT INTO provider_effect_uncertainties (
++            effect_key, payload_sha256, reason_code, schema_version,
++            payload_json, record_sha256, recorded_at_ms
++            ) VALUES (?, ?, ?, 1, ?, ?, ?)",
++        )
++        .bind(intent.key.as_str())
++        .bind(intent.payload_sha256.as_str())
++        .bind(&unknown.reason_code)
++        .bind(String::from_utf8(bytes.clone()).expect("unknown JSON"))
++        .bind(Sha256Digest::for_bytes(&bytes).as_str())
++        .bind(first_terminal_at + 1)
++        .execute(&store.pool)
++        .await
++        .expect("import intervening unknown");
++        let bytes = crate::canonical::canonical_json(&terminal).expect("canonical terminal ACK");
++        let status_text = match status {
++            ProviderEffectAckStatus::Completed => "completed",
++            ProviderEffectAckStatus::Rejected => "rejected",
++            ProviderEffectAckStatus::Accepted => unreachable!("terminal fixtures only"),
++        };
++        sqlx::query(
++            "INSERT INTO provider_effect_acknowledgements (
++            effect_key, payload_sha256, provider_operation_id_sha256, status,
++            schema_version, payload_json, record_sha256, recorded_at_ms, source
++            ) VALUES (?, ?, ?, ?, 1, ?, ?, ?, 'status_lookup')",
++        )
++        .bind(terminal.key.as_str())
++        .bind(terminal.payload_sha256.as_str())
++        .bind(terminal.provider_operation_id_sha256.as_str())
++        .bind(status_text)
++        .bind(String::from_utf8(bytes.clone()).expect("terminal JSON"))
++        .bind(Sha256Digest::for_bytes(&bytes).as_str())
++        .bind(first_terminal_at + 2)
++        .execute(&store.pool)
++        .await
++        .expect("import later status re-observation");
++        store.close().await;
++        assert!(matches!(HeptaEvidenceStore::open(&sqlite).await,
++            Err(EvidenceError::Corrupt(detail)) if detail.contains("uncertainty follows terminal ACK")));
++    }
++}
+diff --git a/codex-rs/hepta-evidence/src/provider_effect_store.rs b/codex-rs/hepta-evidence/src/provider_effect_store.rs
+index a1015a232d..c8784d8284 100644
+--- a/codex-rs/hepta-evidence/src/provider_effect_store.rs
++++ b/codex-rs/hepta-evidence/src/provider_effect_store.rs
+@@ -92,6 +92,11 @@ struct DispatchBoundaryClaim {
+     recorded_at_ms: i64,
+ }
+ 
++enum AckObservationWrite {
++    Append,
++    Replay { seq: i64 },
++}
++
+ impl StoredProviderEffect {
+     pub fn state(&self) -> ProviderEffectState {
+         let latest_ack = self.acknowledgements.last();
+@@ -454,7 +459,7 @@ impl HeptaEvidenceStore {
+             ));
+         };
+         ack.validate_for(&intent.intent).map_err(binding_invalid)?;
+-        validate_ack_transition_in_transaction(
++        let write = validate_ack_transition_in_transaction(
+             &mut transaction,
+             &intent.intent,
+             ack,
+@@ -462,33 +467,38 @@ impl HeptaEvidenceStore {
+             boundary_claim,
+         )
+         .await?;
+-        let recorded_at_ms = next_effect_recorded_at_ms(&mut transaction, &ack.key).await?;
+-        let insert = sqlx::query(
+-            "INSERT INTO provider_effect_acknowledgements (
++        let (seq, disposition) = match write {
++            AckObservationWrite::Replay { seq } => (seq, AppendDisposition::AlreadyPresent),
++            AckObservationWrite::Append => {
++                let recorded_at_ms = next_effect_recorded_at_ms(&mut transaction, &ack.key).await?;
++                let insert = sqlx::query(
++                    "INSERT INTO provider_effect_acknowledgements (
+                 effect_key, payload_sha256, provider_operation_id_sha256,
+                 status, source, schema_version, payload_json, record_sha256, recorded_at_ms
+-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+-             ON CONFLICT DO NOTHING",
+-        )
+-        .bind(ack.key.as_str())
+-        .bind(ack.payload_sha256.as_str())
+-        .bind(ack.provider_operation_id_sha256.as_str())
+-        .bind(ack_status_as_str(ack.status))
+-        .bind(source.as_str())
+-        .bind(i64::from(ack.schema_version))
+-        .bind(&payload_json)
+-        .bind(record_sha256.as_str())
+-        .bind(recorded_at_ms)
+-        .execute(&mut *transaction)
+-        .await
+-        .map_err(classify_sqlx_error)?;
+-        let disposition = verify_effect_ack(
++             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
++                )
++                .bind(ack.key.as_str())
++                .bind(ack.payload_sha256.as_str())
++                .bind(ack.provider_operation_id_sha256.as_str())
++                .bind(ack_status_as_str(ack.status))
++                .bind(source.as_str())
++                .bind(i64::from(ack.schema_version))
++                .bind(&payload_json)
++                .bind(record_sha256.as_str())
++                .bind(recorded_at_ms)
++                .execute(&mut *transaction)
++                .await
++                .map_err(classify_sqlx_error)?;
++                (insert.last_insert_rowid(), AppendDisposition::Inserted)
++            }
++        };
++        verify_effect_ack(
+             &mut transaction,
+             ack,
+             source,
+             &payload_json,
+             record_sha256.as_str(),
+-            insert.rows_affected() == 1,
++            seq,
+         )
+         .await?;
+         transaction.commit().await.map_err(classify_sqlx_error)?;
+@@ -587,13 +597,47 @@ impl HeptaEvidenceStore {
+         let payload_json = String::from_utf8(payload.clone())
+             .map_err(|error| EvidenceError::Serialization(error.to_string()))?;
+         let record_sha256 = Sha256Digest::for_bytes(&payload);
++        let latest = sqlx::query(
++            "SELECT seq, effect_key, payload_sha256, reason_code,
++                    schema_version, payload_json, record_sha256, recorded_at_ms
++             FROM provider_effect_uncertainties
++             WHERE effect_key = ? ORDER BY recorded_at_ms DESC, seq DESC LIMIT 1",
++        )
++        .bind(key.as_str())
++        .fetch_optional(&mut *transaction)
++        .await
++        .map_err(classify_sqlx_error)?
++        .map(|row| decode_effect_uncertainty_row(&row, &intent.intent))
++        .transpose()?;
++        let latest_ack_at: Option<i64> = sqlx::query_scalar(
++            "SELECT MAX(recorded_at_ms) FROM provider_effect_acknowledgements
++             WHERE effect_key = ?",
++        )
++        .bind(key.as_str())
++        .fetch_one(&mut *transaction)
++        .await
++        .map_err(classify_sqlx_error)?;
++        if let Some(latest) = latest
++            && latest.uncertainty == uncertainty
++            && latest_ack_at.is_none_or(|recorded_at| recorded_at < latest.recorded_at_ms)
++        {
++            verify_effect_uncertainty(
++                &mut transaction,
++                &uncertainty,
++                &payload_json,
++                record_sha256.as_str(),
++                latest.seq,
++            )
++            .await?;
++            transaction.commit().await.map_err(classify_sqlx_error)?;
++            return Ok((AppendDisposition::AlreadyPresent, latest.recorded_at_ms));
++        }
+         let recorded_at_ms = next_effect_recorded_at_ms(&mut transaction, key).await?;
+         let insert = sqlx::query(
+             "INSERT INTO provider_effect_uncertainties (
+                 effect_key, payload_sha256, reason_code, schema_version,
+                 payload_json, record_sha256, recorded_at_ms
+-             ) VALUES (?, ?, ?, ?, ?, ?, ?)
+-             ON CONFLICT DO NOTHING",
++             ) VALUES (?, ?, ?, ?, ?, ?, ?)",
+         )
+         .bind(key.as_str())
+         .bind(uncertainty.payload_sha256.as_str())
+@@ -605,16 +649,16 @@ impl HeptaEvidenceStore {
+         .execute(&mut *transaction)
+         .await
+         .map_err(classify_sqlx_error)?;
+-        let disposition = verify_effect_uncertainty(
++        verify_effect_uncertainty(
+             &mut transaction,
+             &uncertainty,
+             &payload_json,
+             record_sha256.as_str(),
+-            insert.rows_affected() == 1,
++            insert.last_insert_rowid(),
+         )
+         .await?;
+         transaction.commit().await.map_err(classify_sqlx_error)?;
+-        Ok((disposition, recorded_at_ms))
++        Ok((AppendDisposition::Inserted, recorded_at_ms))
+     }
+ 
+     pub async fn get_provider_effect(
+@@ -838,21 +882,27 @@ pub(crate) async fn verify_provider_effect_rows(pool: &SqlitePool) -> Result<(),
+                     let recorded_at_ms = uncertainty_row.get::<i64, _>("recorded_at_ms");
+                     recorded_at_ms > previous.recorded_at_ms && recorded_at_ms < ack.recorded_at_ms
+                 });
+-                if previous.ack.state().is_terminal() {
++                // A lookup may confirm the exact terminal result first seen
++                // at dispatch. This records provenance, never a new effect.
++                let terminal_reobservation = previous.ack == ack.ack
++                    && previous.source == ProviderEffectAckSource::DispatchResponse
++                    && ack.source == ProviderEffectAckSource::StatusLookup;
++                if previous.ack.state().is_terminal() && !terminal_reobservation {
+                     return Err(EvidenceError::Corrupt(
+                         "provider effect terminal ACK has a later ACK".to_string(),
+                     ));
+                 }
+-                let legal_status_transition = matches!(
+-                    (previous.ack.status, ack.ack.status),
+-                    (
+-                        ProviderEffectAckStatus::Accepted,
+-                        ProviderEffectAckStatus::Accepted
+-                    ) | (
+-                        ProviderEffectAckStatus::Accepted,
+-                        ProviderEffectAckStatus::Completed
+-                    )
+-                );
++                let legal_status_transition = terminal_reobservation
++                    || matches!(
++                        (previous.ack.status, ack.ack.status),
++                        (
++                            ProviderEffectAckStatus::Accepted,
++                            ProviderEffectAckStatus::Accepted
++                        ) | (
++                            ProviderEffectAckStatus::Accepted,
++                            ProviderEffectAckStatus::Completed
++                        )
++                    );
+                 let operation_rebound = previous.ack.provider_operation_id_sha256
+                     != ack.ack.provider_operation_id_sha256;
+                 let legal = legal_status_transition
+@@ -866,7 +916,10 @@ pub(crate) async fn verify_provider_effect_rows(pool: &SqlitePool) -> Result<(),
+                 }
+             }
+             if ack.ack.state().is_terminal() {
+-                terminal_ack = Some(ack.clone());
++                // The first terminal result permanently closes uncertainty
++                // admission. A later lookup of the same result must not move
++                // that boundary forward and hide an intervening quarantine.
++                terminal_ack.get_or_insert_with(|| ack.clone());
+             }
+             previous_ack = Some(ack);
+         }
+@@ -1041,47 +1094,34 @@ async fn verify_effect_ack(
+     source: ProviderEffectAckSource,
+     payload_json: &str,
+     record_sha256: &str,
+-    inserted: bool,
+-) -> Result<AppendDisposition, EvidenceError> {
+-    let rows = sqlx::query(
++    seq: i64,
++) -> Result<(), EvidenceError> {
++    let row = sqlx::query(
+         "SELECT seq, effect_key, payload_sha256,
+                 provider_operation_id_sha256, status, source, schema_version,
+                 payload_json, record_sha256, recorded_at_ms
+          FROM provider_effect_acknowledgements
+-         WHERE effect_key = ? AND provider_operation_id_sha256 = ?
+-           AND status = ? AND payload_sha256 = ?",
++         WHERE seq = ?",
+     )
+-    .bind(ack.key.as_str())
+-    .bind(ack.provider_operation_id_sha256.as_str())
+-    .bind(ack_status_as_str(ack.status))
+-    .bind(ack.payload_sha256.as_str())
+-    .fetch_all(&mut **transaction)
++    .bind(seq)
++    .fetch_optional(&mut **transaction)
+     .await
+-    .map_err(classify_sqlx_error)?;
+-    if rows.len() != 1 {
+-        return Err(EvidenceError::Corrupt(format!(
+-            "expected one provider effect acknowledgement row but found {}",
+-            rows.len()
+-        )));
+-    }
++    .map_err(classify_sqlx_error)?
++    .ok_or_else(|| EvidenceError::Corrupt("provider effect acknowledgement disappeared".into()))?;
+     let intent = load_effect_intent_in_transaction(transaction, &ack.key)
+         .await?
+         .ok_or_else(|| EvidenceError::Corrupt("provider effect ACK lost its intent".to_string()))?;
+-    let stored = decode_effect_ack_row(&rows[0], &intent.intent)?;
++    let stored = decode_effect_ack_row(&row, &intent.intent)?;
+     if stored.ack != *ack
+-        || (inserted && stored.source != source)
+-        || rows[0].get::<String, _>("payload_json") != payload_json
+-        || rows[0].get::<String, _>("record_sha256") != record_sha256
++        || stored.source != source
++        || row.get::<String, _>("payload_json") != payload_json
++        || row.get::<String, _>("record_sha256") != record_sha256
+     {
+         return Err(EvidenceError::IdempotencyConflict {
+             record_id: ack.key.as_str().to_string(),
+         });
+     }
+-    Ok(if inserted {
+-        AppendDisposition::Inserted
+-    } else {
+-        AppendDisposition::AlreadyPresent
+-    })
++    Ok(())
+ }
+ 
+ async fn verify_effect_uncertainty(
+@@ -1089,45 +1129,34 @@ async fn verify_effect_uncertainty(
+     uncertainty: &ProviderEffectUncertainty,
+     payload_json: &str,
+     record_sha256: &str,
+-    inserted: bool,
+-) -> Result<AppendDisposition, EvidenceError> {
+-    let rows = sqlx::query(
++    seq: i64,
++) -> Result<(), EvidenceError> {
++    let row = sqlx::query(
+         "SELECT seq, effect_key, payload_sha256, reason_code,
+                 schema_version, payload_json, record_sha256, recorded_at_ms
+          FROM provider_effect_uncertainties
+-         WHERE effect_key = ? AND payload_sha256 = ? AND reason_code = ?",
++         WHERE seq = ?",
+     )
+-    .bind(uncertainty.key.as_str())
+-    .bind(uncertainty.payload_sha256.as_str())
+-    .bind(&uncertainty.reason_code)
+-    .fetch_all(&mut **transaction)
++    .bind(seq)
++    .fetch_optional(&mut **transaction)
+     .await
+-    .map_err(classify_sqlx_error)?;
+-    if rows.len() != 1 {
+-        return Err(EvidenceError::Corrupt(format!(
+-            "expected one provider effect uncertainty row but found {}",
+-            rows.len()
+-        )));
+-    }
++    .map_err(classify_sqlx_error)?
++    .ok_or_else(|| EvidenceError::Corrupt("provider effect uncertainty disappeared".into()))?;
+     let intent = load_effect_intent_in_transaction(transaction, &uncertainty.key)
+         .await?
+         .ok_or_else(|| {
+             EvidenceError::Corrupt("provider effect uncertainty lost its intent".to_string())
+         })?;
+-    let stored = decode_effect_uncertainty_row(&rows[0], &intent.intent)?;
++    let stored = decode_effect_uncertainty_row(&row, &intent.intent)?;
+     if stored.uncertainty != *uncertainty
+-        || rows[0].get::<String, _>("payload_json") != payload_json
+-        || rows[0].get::<String, _>("record_sha256") != record_sha256
++        || row.get::<String, _>("payload_json") != payload_json
++        || row.get::<String, _>("record_sha256") != record_sha256
+     {
+         return Err(EvidenceError::IdempotencyConflict {
+             record_id: uncertainty.key.as_str().to_string(),
+         });
+     }
+-    Ok(if inserted {
+-        AppendDisposition::Inserted
+-    } else {
+-        AppendDisposition::AlreadyPresent
+-    })
++    Ok(())
+ }
+ 
+ async fn validate_ack_transition_in_transaction(
+@@ -1136,7 +1165,7 @@ async fn validate_ack_transition_in_transaction(
+     next: &ProviderEffectAck,
+     source: ProviderEffectAckSource,
+     boundary_claim: Option<&DispatchBoundaryClaim>,
+-) -> Result<(), EvidenceError> {
++) -> Result<AckObservationWrite, EvidenceError> {
+     let ack_rows = sqlx::query(
+         "SELECT seq, effect_key, payload_sha256,
+                 provider_operation_id_sha256, status, source, schema_version,
+@@ -1207,7 +1236,18 @@ async fn validate_ack_transition_in_transaction(
+         // uncertainty is still forbidden.  A status lookup is an
+         // authoritative observation and may repeat the same ACK.
+         if uncertainties.is_empty() || source == ProviderEffectAckSource::StatusLookup {
+-            return Ok(());
++            // Identical bytes from a new source, or after a later unknown
++            // outcome, are a fresh observation. Content deduplication must
++            // not discard that new provenance or leave an old quarantine
++            // effective after an authoritative status lookup.
++            let later_uncertainty = uncertainties
++                .iter()
++                .any(|uncertainty| uncertainty.recorded_at_ms > previous.recorded_at_ms);
++            return Ok(if previous.source == source && !later_uncertainty {
++                AckObservationWrite::Replay { seq: previous.seq }
++            } else {
++                AckObservationWrite::Append
++            });
+         }
+         return Err(EvidenceError::IdempotencyConflict {
+             record_id: next.key.as_str().to_string(),
+@@ -1235,7 +1275,7 @@ async fn validate_ack_transition_in_transaction(
+         });
+     }
+     let Some(previous) = previous else {
+-        return Ok(());
++        return Ok(AckObservationWrite::Append);
+     };
+     if previous.ack.provider_operation_id_sha256 != next.provider_operation_id_sha256 {
+         return Err(EvidenceError::IdempotencyConflict {
+@@ -1268,7 +1308,7 @@ async fn validate_ack_transition_in_transaction(
+             )
+         );
+         if source == ProviderEffectAckSource::StatusLookup && legal_after_uncertainty {
+-            return Ok(());
++            return Ok(AckObservationWrite::Append);
+         }
+         return Err(EvidenceError::IdempotencyConflict {
+             record_id: next.key.as_str().to_string(),
+@@ -1285,7 +1325,7 @@ async fn validate_ack_transition_in_transaction(
+         )
+     );
+     if legal {
+-        Ok(())
++        Ok(AckObservationWrite::Append)
+     } else {
+         Err(EvidenceError::IdempotencyConflict {
+             record_id: next.key.as_str().to_string(),
+@@ -1336,7 +1376,10 @@ async fn next_effect_recorded_at_ms(
+     .map_err(classify_sqlx_error)?;
+     let now = now_millis()?;
+     let previous = latest_ack.unwrap_or(0).max(latest_uncertainty.unwrap_or(0));
+-    Ok(now.max(previous.saturating_add(1)))
++    let next = previous.checked_add(1).ok_or_else(|| {
++        EvidenceError::Corrupt("provider effect observation clock is exhausted".into())
++    })?;
++    Ok(now.max(next))
+ }
+ 
+ pub(super) fn verify_record_digest(
+diff --git a/codex-rs/hepta-evidence/src/provider_effect_tests.rs b/codex-rs/hepta-evidence/src/provider_effect_tests.rs
+index a8e356b849..cdf5772506 100644
+--- a/codex-rs/hepta-evidence/src/provider_effect_tests.rs
++++ b/codex-rs/hepta-evidence/src/provider_effect_tests.rs
+@@ -358,8 +358,22 @@ async fn duplicate_dispatch_ack_after_quarantine_requires_status_lookup_source()
+                 ProviderEffectAckSource::StatusLookup
+             )
+             .await
+-            .expect("status lookup duplicate is idempotent"),
+-        AppendDisposition::AlreadyPresent
++            .expect("fresh status lookup must retain its later observation"),
++        AppendDisposition::Inserted
++    );
++    let reconciled = store
++        .get_provider_effect(&intent.key)
++        .await
++        .expect("reconciled effect")
++        .expect("effect");
++    assert_eq!(reconciled.state(), ProviderEffectState::Accepted);
++    assert_eq!(
++        reconciled
++            .acknowledgements
++            .last()
++            .expect("status observation")
++            .source,
++        ProviderEffectAckSource::StatusLookup
+     );
+ }
+ 
+@@ -1447,8 +1461,40 @@ async fn terminal_lookup_replay_is_idempotent_without_late_uncertainty() {
+         .expect("read terminal effect")
+         .expect("effect");
+     assert_eq!(effect.state(), ProviderEffectState::Completed);
+-    assert_eq!(effect.acknowledgements.len(), 1);
++    assert_eq!(
++        effect
++            .acknowledgements
++            .iter()
++            .map(|ack| ack.source)
++            .collect::<Vec<_>>(),
++        vec![
++            ProviderEffectAckSource::DispatchResponse,
++            ProviderEffectAckSource::StatusLookup
++        ]
++    );
+     assert!(effect.uncertainties.is_empty());
++    assert_eq!(
++        store
++            .append_provider_effect_ack_from_source(
++                &completion,
++                ProviderEffectAckSource::StatusLookup
++            )
++            .await
++            .expect("latest terminal observation replay"),
++        AppendDisposition::AlreadyPresent
++    );
++    store.close().await;
++    let reopened = HeptaEvidenceStore::open(&sqlite_config(&temp))
++        .await
++        .expect("reopen terminal provenance");
++    assert_eq!(
++        reopened
++            .get_provider_effect(&key)
++            .await
++            .expect("read terminal history")
++            .expect("effect"),
++        effect
++    );
+ }
+ 
+ #[tokio::test]
+diff --git a/codex-rs/hepta-evidence/src/store.rs b/codex-rs/hepta-evidence/src/store.rs
+index 04faa323b5..a250a58f7a 100644
+--- a/codex-rs/hepta-evidence/src/store.rs
++++ b/codex-rs/hepta-evidence/src/store.rs
+@@ -345,6 +345,7 @@ async fn verify_existing_store(pool: &SqlitePool) -> Result<(), EvidenceError> {
+     verify_current_migration_ledger(pool).await?;
+     verify_schema_manifest(pool).await?;
+     verify_provider_effect_ack_source_schema(pool).await?;
++    crate::provider_effect_observation_schema::verify_schema(pool).await?;
+     verify_provider_host_bindings(pool).await?;
+     verify_provider_ephemeral_input_projection(pool).await?;
+     verify_provider_effect_rows(pool).await?;
+@@ -352,6 +353,10 @@ async fn verify_existing_store(pool: &SqlitePool) -> Result<(), EvidenceError> {
+     verify_foreign_keys(pool).await
+ }
+ 
++#[cfg(test)]
++#[path = "provider_effect_observation_migration_tests.rs"]
++mod provider_effect_observation_migration_tests;
++
+ async fn verify_current_migration_ledger(pool: &SqlitePool) -> Result<(), EvidenceError> {
+     let ledger_count: i64 = sqlx::query_scalar(
+         "SELECT COUNT(*) FROM sqlite_schema

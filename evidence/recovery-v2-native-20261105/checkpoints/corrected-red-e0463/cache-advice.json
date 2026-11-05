@@ -1,0 +1,29 @@
+{
+  "recorded_at": "2026-11-05T04:17:16.016051+00:00",
+  "target": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/target",
+  "active_owned_compilers": [],
+  "cargo_lock_exclusive": "PASS",
+  "operation": "read-only POSIX_FADV_DONTNEED on ordinary files; no file deletion/modification; symlinks skipped",
+  "files_advised": 14221,
+  "bytes_advised": 7075370105,
+  "before": {
+    "anon": 6026108928,
+    "file": 1463603200,
+    "shmem": 147456,
+    "file_dirty": 6975488,
+    "file_writeback": 0,
+    "inactive_file": 684138496,
+    "active_file": 779255808
+  },
+  "after": {
+    "anon": 6035050496,
+    "file": 1541906432,
+    "shmem": 147456,
+    "file_dirty": 12234752,
+    "file_writeback": 0,
+    "inactive_file": 719015936,
+    "active_file": 822677504
+  },
+  "errors": [],
+  "qualification": "No test result; only cache pressure reduction"
+}

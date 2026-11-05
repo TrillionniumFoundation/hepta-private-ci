@@ -226,7 +226,7 @@ async fn real_public_initial_three_rounds_hold_and_read_original_current() -> Te
     // Short owned fixture paths preserve the original AF_UNIX socket layout.
     let root = input.output.join("p");
     fs::create_dir(&root)?;
-    let fixture = Fixture::with_profile(
+    let fixture = Fixture::with_pq_profile(
         root.join("o"),
         &bytes,
         Digest32::of_bytes(SMOLLM_PUBLIC_INITIAL_PROFILE_V2),

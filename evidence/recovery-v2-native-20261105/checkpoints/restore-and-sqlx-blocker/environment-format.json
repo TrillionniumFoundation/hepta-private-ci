@@ -1,0 +1,75 @@
+{
+  "recorded_at": "2026-11-05T03:50:43.987135+00:00",
+  "source_commit": "29fcd2e88654d5bec2bf30134cc030b5bfa7831b",
+  "source_tree": "9653293a81dfda7f17c12a54fd7bd5f4170ea867",
+  "versions": [
+    {
+      "argv": [
+        "rustc",
+        "-Vv"
+      ],
+      "exit_code": 0,
+      "stdout": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "cargo 1.96.0 (30a34c682 2026-05-25)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "just",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "just 1.59.0\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cargo-nextest",
+        "nextest",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "cargo-nextest 0.9.151 (6b3f99457 2026-11-02)\nrelease: 0.9.151\ncommit-hash: 6b3f994577a98874a2e0ea5bef77fbbab3434044\ncommit-date: 2026-11-02\nhost: x86_64-unknown-linux-gnu\n",
+      "stderr": ""
+    }
+  ],
+  "official_tool_downloads": [
+    {
+      "name": "just",
+      "version": "1.59.0",
+      "url": "https://github.com/casey/just/releases/download/1.59.0/just-1.59.0-x86_64-unknown-linux-musl.tar.gz",
+      "sha256": "409044617b6f06517c1035e55ca38c8c856ff8b650e41bc2aa1ef82d5903a23e",
+      "size": 2572537,
+      "asset": "just-1.59.0-x86_64-unknown-linux-musl.tar.gz"
+    },
+    {
+      "name": "cargo-nextest",
+      "version": "cargo-nextest-0.9.151",
+      "url": "https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.151/cargo-nextest-0.9.151-x86_64-unknown-linux-gnu.tar.gz",
+      "sha256": "1d4ce302b820c41f4b89c5fb9bce45f0f0c94882c1cf08fc360caf08be6e7df4",
+      "size": 12161169,
+      "asset": "cargo-nextest-0.9.151-x86_64-unknown-linux-gnu.tar.gz"
+    }
+  ],
+  "format": {
+    "argv": [
+      "just",
+      "fmt",
+      "--base",
+      "3a8e50ddd79ec3e52ca58157323726c37069202c"
+    ],
+    "exit_code": 0,
+    "git_status_after": "",
+    "source_changes": false
+  },
+  "native": "RUNNING_NO_RESULT",
+  "cgroup_limit": "8589934592"
+}

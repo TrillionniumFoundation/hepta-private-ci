@@ -1,0 +1,33 @@
+{
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--locked",
+    "--lib",
+    "-E",
+    "test(evidence_frontier)"
+  ],
+  "cwd": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo",
+  "source_commit": "f04033d852ee9c1c9ba88a9fc48c21b798c39f97",
+  "source_tree": "e6103f5f5fa3f6ba7938f78bc616ad2dd90e6e89",
+  "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_TARGET_DIR": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target"
+  },
+  "started_unix": 1793853902.0431566,
+  "status": "failed",
+  "exit_code": 101,
+  "elapsed_seconds": 1838.714882850647,
+  "classification": "BUILD_BLOCKED_ENOSPC",
+  "executed_tests": 0,
+  "wall_timeout_seconds": null,
+  "termination": "natural codex-core compilation failure while writing full.rmeta",
+  "test_result": "NOT_EXECUTED",
+  "native_gate_pass": false,
+  "log_sha256": "1b80395ab8b21d2c928694adfa90e32371ceeb7b2ec4a6d275aa6c27189fd943",
+  "source_tree_materialization": "partial; all changed source blobs present; complete remote tree overlay required",
+  "source_rust_diff_at_completion": "empty relative to f04033d852ee9c1c9ba88a9fc48c21b798c39f97"
+}

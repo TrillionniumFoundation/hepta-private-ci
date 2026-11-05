@@ -1,0 +1,226 @@
+test_clean_source_binds_all_ordinary_roles_without_granting_authority (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_clean_source_binds_all_ordinary_roles_without_granting_authority) ... ERROR
+test_ignored_native_inputs_and_cargo_configuration_refuse (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_ignored_native_inputs_and_cargo_configuration_refuse) ... 
+  test_ignored_native_inputs_and_cargo_configuration_refuse (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_ignored_native_inputs_and_cargo_configuration_refuse) (path='trillionnium/crates/native/src/ambient-module.rs') ... ERROR
+  test_ignored_native_inputs_and_cargo_configuration_refuse (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_ignored_native_inputs_and_cargo_configuration_refuse) (path='trillionnium/.cargo/ambient-config.toml') ... ERROR
+  test_ignored_native_inputs_and_cargo_configuration_refuse (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_ignored_native_inputs_and_cargo_configuration_refuse) (path='.cargo/ambient-config.toml') ... ERROR
+test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence) ... 
+  test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence) (role='chain-observed') ... ERROR
+  test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence) (role='chain-diverse') ... ERROR
+  test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence) (role='chain') ... ERROR
+  test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence) (role='hepta') ... ERROR
+  test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence) (role='chain-answer-eos') ... ERROR
+test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence) ... FAIL
+test_native_hidden_index_entries_refuse_without_clearing_flags (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_native_hidden_index_entries_refuse_without_clearing_flags) ... 
+  test_native_hidden_index_entries_refuse_without_clearing_flags (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_native_hidden_index_entries_refuse_without_clearing_flags) (flag='assume-unchanged') ... ERROR
+  test_native_hidden_index_entries_refuse_without_clearing_flags (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_native_hidden_index_entries_refuse_without_clearing_flags) (flag='skip-worktree') ... ERROR
+test_native_raw_bytes_and_lockfile_drift_refuse_ordinary_source (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_native_raw_bytes_and_lockfile_drift_refuse_ordinary_source) ... 
+  test_native_raw_bytes_and_lockfile_drift_refuse_ordinary_source (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_native_raw_bytes_and_lockfile_drift_refuse_ordinary_source) (path=PosixPath('trillionnium/crates/native/src/lib.rs')) ... ERROR
+  test_native_raw_bytes_and_lockfile_drift_refuse_ordinary_source (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_native_raw_bytes_and_lockfile_drift_refuse_ordinary_source) (path=PosixPath('trillionnium/Cargo.lock')) ... ERROR
+
+======================================================================
+ERROR: test_clean_source_binds_all_ordinary_roles_without_granting_authority (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_clean_source_binds_all_ordinary_roles_without_granting_authority)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v10.py", line 99, in test_clean_source_binds_all_ordinary_roles_without_granting_authority
+    result = execution.verify(self.chain, execution.PROFILE_V10)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 216, in verify
+    return _verify(chain, profile, None)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 233, in _verify
+    value = checked_manifest(profile)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 138, in checked_manifest
+    require(
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 82, in require
+    raise ValueError(reason)
+ValueError: unpublishable execution source has not been frozen
+
+======================================================================
+ERROR: test_ignored_native_inputs_and_cargo_configuration_refuse (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_ignored_native_inputs_and_cargo_configuration_refuse) (path='trillionnium/crates/native/src/ambient-module.rs')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v10.py", line 89, in test_ignored_native_inputs_and_cargo_configuration_refuse
+    execution.verify(self.chain, execution.PROFILE_V9)
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 216, in verify
+    return _verify(chain, profile, None)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 233, in _verify
+    value = checked_manifest(profile)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 138, in checked_manifest
+    require(
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 82, in require
+    raise ValueError(reason)
+ValueError: unpublishable execution source has not been frozen
+
+======================================================================
+ERROR: test_ignored_native_inputs_and_cargo_configuration_refuse (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_ignored_native_inputs_and_cargo_configuration_refuse) (path='trillionnium/.cargo/ambient-config.toml')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v10.py", line 89, in test_ignored_native_inputs_and_cargo_configuration_refuse
+    execution.verify(self.chain, execution.PROFILE_V9)
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 216, in verify
+    return _verify(chain, profile, None)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 233, in _verify
+    value = checked_manifest(profile)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 138, in checked_manifest
+    require(
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 82, in require
+    raise ValueError(reason)
+ValueError: unpublishable execution source has not been frozen
+
+======================================================================
+ERROR: test_ignored_native_inputs_and_cargo_configuration_refuse (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_ignored_native_inputs_and_cargo_configuration_refuse) (path='.cargo/ambient-config.toml')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v10.py", line 89, in test_ignored_native_inputs_and_cargo_configuration_refuse
+    execution.verify(self.chain, execution.PROFILE_V9)
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 216, in verify
+    return _verify(chain, profile, None)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 233, in _verify
+    value = checked_manifest(profile)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 138, in checked_manifest
+    require(
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 82, in require
+    raise ValueError(reason)
+ValueError: unpublishable execution source has not been frozen
+
+======================================================================
+ERROR: test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence) (role='chain-observed')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v10.py", line 133, in test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence
+    evidence.execution_binding(repositories, execution.PROFILE_V10)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'hepta_neural_evidence_diverse_v3' has no attribute 'execution_binding'
+
+======================================================================
+ERROR: test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence) (role='chain-diverse')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v10.py", line 133, in test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence
+    evidence.execution_binding(repositories, execution.PROFILE_V10)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'hepta_neural_evidence_diverse_v3' has no attribute 'execution_binding'
+
+======================================================================
+ERROR: test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence) (role='chain')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v10.py", line 133, in test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence
+    evidence.execution_binding(repositories, execution.PROFILE_V10)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'hepta_neural_evidence_diverse_v3' has no attribute 'execution_binding'
+
+======================================================================
+ERROR: test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence) (role='hepta')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v10.py", line 133, in test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence
+    evidence.execution_binding(repositories, execution.PROFILE_V10)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'hepta_neural_evidence_diverse_v3' has no attribute 'execution_binding'
+
+======================================================================
+ERROR: test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence) (role='chain-answer-eos')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v10.py", line 133, in test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence
+    evidence.execution_binding(repositories, execution.PROFILE_V10)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'hepta_neural_evidence_diverse_v3' has no attribute 'execution_binding'
+
+======================================================================
+ERROR: test_native_hidden_index_entries_refuse_without_clearing_flags (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_native_hidden_index_entries_refuse_without_clearing_flags) (flag='assume-unchanged')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v10.py", line 69, in test_native_hidden_index_entries_refuse_without_clearing_flags
+    execution.verify(self.chain, execution.PROFILE_V9)
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 216, in verify
+    return _verify(chain, profile, None)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 233, in _verify
+    value = checked_manifest(profile)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 138, in checked_manifest
+    require(
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 82, in require
+    raise ValueError(reason)
+ValueError: unpublishable execution source has not been frozen
+
+======================================================================
+ERROR: test_native_hidden_index_entries_refuse_without_clearing_flags (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_native_hidden_index_entries_refuse_without_clearing_flags) (flag='skip-worktree')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v10.py", line 69, in test_native_hidden_index_entries_refuse_without_clearing_flags
+    execution.verify(self.chain, execution.PROFILE_V9)
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 216, in verify
+    return _verify(chain, profile, None)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 233, in _verify
+    value = checked_manifest(profile)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 138, in checked_manifest
+    require(
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 82, in require
+    raise ValueError(reason)
+ValueError: unpublishable execution source has not been frozen
+
+======================================================================
+ERROR: test_native_raw_bytes_and_lockfile_drift_refuse_ordinary_source (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_native_raw_bytes_and_lockfile_drift_refuse_ordinary_source) (path=PosixPath('trillionnium/crates/native/src/lib.rs'))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v10.py", line 56, in test_native_raw_bytes_and_lockfile_drift_refuse_ordinary_source
+    execution.verify(self.chain, execution.PROFILE_V9)
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 216, in verify
+    return _verify(chain, profile, None)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 233, in _verify
+    value = checked_manifest(profile)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 138, in checked_manifest
+    require(
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 82, in require
+    raise ValueError(reason)
+ValueError: unpublishable execution source has not been frozen
+
+======================================================================
+ERROR: test_native_raw_bytes_and_lockfile_drift_refuse_ordinary_source (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_native_raw_bytes_and_lockfile_drift_refuse_ordinary_source) (path=PosixPath('trillionnium/Cargo.lock'))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v10.py", line 56, in test_native_raw_bytes_and_lockfile_drift_refuse_ordinary_source
+    execution.verify(self.chain, execution.PROFILE_V9)
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 216, in verify
+    return _verify(chain, profile, None)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 233, in _verify
+    value = checked_manifest(profile)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 138, in checked_manifest
+    require(
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/hepta_smollm_execution_source_v1.py", line 82, in require
+    raise ValueError(reason)
+ValueError: unpublishable execution source has not been frozen
+
+======================================================================
+FAIL: test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence (test_hepta_smollm_execution_source_v10.ExecutionSourceV10Tests.test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence)
+----------------------------------------------------------------------
+ValueError: unpublishable execution source has not been frozen
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/48266f5bd43f/runtime/scripts/test_hepta_smollm_execution_source_v10.py", line 138, in test_mixed_execution_roles_and_successor_metadata_need_fresh_evidence
+    with self.assertRaisesRegex(ValueError, "exact integrated Chain commit"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "exact integrated Chain commit" does not match "unpublishable execution source has not been frozen"
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.356s
+
+FAILED (failures=1, errors=13)

@@ -1,0 +1,29 @@
+docs/lane-a-foundation/kernel.evidence/RECOVERY_FRONTIER_V1.md:42:  - `providerEffectRows`: total retained intent, uncertainty and ACK rows;
+docs/lane-a-foundation/kernel.evidence/RECOVERY_FRONTIER_V1.md:43:  - `providerEffectFrontierSha256`: ordered commitment to each table identity,
+codex-rs/hepta-agentd/src/evidence_frontier.rs:87:pub fn evidence_recovery_frontier_signing_bytes(
+codex-rs/hepta-agentd/src/evidence_frontier.rs:167:            &evidence_recovery_frontier_signing_bytes(&frontier)?,
+codex-rs/hepta-agentd/src/evidence_frontier.rs:180:    let actual = store.recovery_snapshot().await.map_err(evidence_error)?;
+codex-rs/hepta-agentd/src/evidence_frontier_tests.rs:58:            snapshot: store.recovery_snapshot().await?,
+codex-rs/hepta-agentd/src/evidence_frontier_tests.rs:67:            .sign(&evidence_recovery_frontier_signing_bytes(&frontier)?)
+codex-rs/hepta-agentd/src/evidence_frontier_tests.rs:119:    snapshot.remove("providerEffectRows");
+codex-rs/hepta-agentd/src/evidence_frontier_tests.rs:120:    snapshot.remove("providerEffectFrontierSha256");
+codex-rs/hepta-agentd/tests/kernel_evidence_product.rs:555:    let snapshot = store.recovery_snapshot().await?;
+codex-rs/hepta-agentd/tests/kernel_evidence_product.rs:676:    let current_snapshot = current_store.recovery_snapshot().await?;
+codex-rs/hepta-agentd/tests/kernel_evidence_product.rs:852:        .sign(&evidence_recovery_frontier_signing_bytes(&frontier)?)
+codex-rs/hepta-evidence/src/recovery_frontier.rs:72:    pub async fn recovery_snapshot(&self) -> Result<EvidenceRecoverySnapshotV2, EvidenceError> {
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:33:    let before = store.recovery_snapshot().await.expect("empty snapshot");
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:39:    let prepared = store.recovery_snapshot().await.expect("prepared snapshot");
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:49:    let unknown = store.recovery_snapshot().await.expect("unknown snapshot");
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:64:    let resolved = store.recovery_snapshot().await.expect("receipt snapshot");
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:79:        store.recovery_snapshot().await.expect("stable read"),
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:93:    let old_snapshot = store.recovery_snapshot().await.expect("old snapshot");
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:110:        .recovery_snapshot()
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:127:        .recovery_snapshot()
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:159:        .recovery_snapshot()
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:173:        .recovery_snapshot()
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:183:            .recovery_snapshot()
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:207:    let first_page = store.recovery_snapshot().await.expect("first page");
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:213:        store.recovery_snapshot().await.expect("complete snapshot"),
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:244:    let before = store.recovery_snapshot().await.expect("valid snapshot");
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:264:                store.recovery_snapshot().await,
+codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs:275:            store.recovery_snapshot().await.expect("restored snapshot"),

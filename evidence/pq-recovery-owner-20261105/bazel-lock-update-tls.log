@@ -1,0 +1,17 @@
+bazel mod deps --lockfile_mode=update
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+INFO: Invocation ID: 12c0ad06-4969-4240-b6bf-ef8cab43f850
+ no actions running
+ no actions running
+ no actions running
+ no actions running
+WARNING: Download from https://github.com/v8/v8/archive/refs/tags/15.0.245.2.tar.gz failed: class com.google.devtools.build.lib.bazel.repository.downloader.UnrecoverableHttpException TLS error: (certificate_unknown) PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+INFO: Repo v8+ defined by rule http_archive in @@bazel_tools//tools/build_defs/repo:http.bzl
+ERROR: /workspace/scratch/aea25ba345a8/hepta-effects-agent/bazel-output/5fa91d2d4890187d48b8aa12e863ec68/external/bazel_tools/tools/build_defs/repo/http.bzl:203:45: An error occurred during the fetch of repository 'v8+':
+   Traceback (most recent call last):
+	File "/workspace/scratch/aea25ba345a8/hepta-effects-agent/bazel-output/5fa91d2d4890187d48b8aa12e863ec68/external/bazel_tools/tools/build_defs/repo/http.bzl", line 203, column 45, in _http_archive_impl
+		download_info = ctx.download_and_extract(
+Error in download_and_extract: java.io.IOException: Error downloading [https://github.com/v8/v8/archive/refs/tags/15.0.245.2.tar.gz] to /workspace/scratch/aea25ba345a8/hepta-effects-agent/bazel-output/5fa91d2d4890187d48b8aa12e863ec68/external/v8+/temp8147112779479065741/15.0.245.2.tar.gz: TLS error: (certificate_unknown) PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+ no actions running
+ERROR: Error accessing registry https://bcr.bazel.build/: Failed to fetch registry file https://bcr.bazel.build/modules/bazel_skylib/1.9.0/MODULE.bazel: TLS error: (certificate_unknown) PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+error: recipe `bazel-lock-update` failed on line 150 with exit code 37

@@ -40,6 +40,8 @@ mod evaluation;
 mod install;
 #[path = "smollm_study_ordinary_tests.rs"]
 mod ordinary;
+#[path = "smollm_study_pq_authority_tests.rs"]
+mod pq_authority;
 #[path = "smollm_study_roles_tests.rs"]
 mod roles;
 
@@ -326,7 +328,7 @@ async fn run_study(profile: StudyProfile) -> TestResult<()> {
         diverse::declaration(&mut declaration)?;
     }
     let study = save(&root.join("study.json"), &declaration)?;
-    let mut fixture = Fixture::with_study_objective(
+    let mut fixture = Fixture::with_pq_study_objective(
         root.join("o"),
         &parent_bytes,
         Digest32::of_bytes(SMOLLM_PUBLIC_INITIAL_PROFILE_V2),
@@ -366,7 +368,14 @@ async fn run_study(profile: StudyProfile) -> TestResult<()> {
         .ok_or("yes action")?
         .0
         .clone();
-    let mut roles = roles::ControlledRoles::new(objective, action_ids.clone(), yes.clone());
+    let mut roles = roles::ControlledRoles::new_pq(
+        objective,
+        action_ids.clone(),
+        yes.clone(),
+        // Keep the original Unix socket paths short without aliases.
+        &root.join("a"),
+        profile.training_ledger_binding(),
+    )?;
     let plan_path = script
         .parent()
         .and_then(Path::parent)
@@ -480,6 +489,7 @@ async fn run_study(profile: StudyProfile) -> TestResult<()> {
     )?;
     let next =
         ordinary::read_child(config, installed, &input, actions, &root.join("next-use")).await?;
+    drop(roles);
     let completed_executable = actual_test_executable()?;
     if completed_executable != executable {
         return Err("actual test executable changed during the positive loop".into());

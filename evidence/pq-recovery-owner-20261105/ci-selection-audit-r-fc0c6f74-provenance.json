@@ -1,0 +1,40 @@
+{
+  "kind": "CI_SOURCE_AND_SELECTION_AUDIT_INVOCATION_PROVENANCE",
+  "source_commit": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+  "source_tree": "8403d5acabc83707e9b5fcb4e5250a4883c12293",
+  "source_parent": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+  "before": {
+    "head": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+    "tree": "8403d5acabc83707e9b5fcb4e5250a4883c12293",
+    "status_porcelain": ""
+  },
+  "after": {
+    "head": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+    "tree": "8403d5acabc83707e9b5fcb4e5250a4883c12293",
+    "status_porcelain": ""
+  },
+  "source_unchanged_and_clean": true,
+  "started_at_utc": "2026-11-05T05:43:30.786982+00:00",
+  "finished_at_utc": "2026-11-05T05:43:41.841730+00:00",
+  "duration_seconds": 11.054764679998698,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/scratch/aea25ba345a8/hepta-effects-agent/validation/evidence-pq-recovery-owner-20261105/ci-validate-selection.py",
+    "--repository",
+    "/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo",
+    "--output",
+    "/workspace/scratch/aea25ba345a8/hepta-effects-agent/validation/ci-selection-audit-r-fc0c6f74.json"
+  ],
+  "command_exit_code": 1,
+  "validator_sha256": "85dda7f92d774db9ea0a5709b3bcfda6a50e8dfd396d9a6bc9353a2689bd470c",
+  "raw_receipt_file": "ci-selection-audit-r-fc0c6f74.json",
+  "raw_receipt_sha256": null,
+  "log_file": "ci-selection-audit-r-fc0c6f74.log",
+  "log_sha256": "073b8b871952dcdb790d3937d9d38f0701f1a89753fecdfc54ed00be0ccab620",
+  "fixture_cases_passed": null,
+  "native_tests_executed_by_this_audit": 0,
+  "audit_did_not_trigger_ci": true,
+  "legacy_raw_receipt_ci_triggered_field_scope": "The unchanged validator writes ci_triggered=false for its own audit invocation only. It makes no statement about GitHub events caused by the separate root push of R.",
+  "separate_root_push_of_R": "Parent agent reports R was pushed to the existing PR before this audit; any resulting GitHub events are separate and were not inspected here.",
+  "qualification": "HOLD_NO_GO"
+}

@@ -2,16 +2,16 @@ use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
 use codex_hepta_intelligence_eval::CrossFoldPlanV1;
 use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
 use codex_hepta_intelligence_eval::EvaluationDirectionV1;
-use codex_hepta_intelligence_eval::EvaluationIntervalV1;
-use codex_hepta_intelligence_eval::FinalHoldoutRegistry;
-use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::MetricContractV1;
-use codex_hepta_intelligence_eval::MetricGateV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
 use codex_hepta_intelligence_eval::MetricRoleV2;
+use codex_hepta_intelligence_eval::ProductQualificationContextV1;
+use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
+
+#[path = "intelligence_qualification_test_support.rs"]
+mod qualification_support;
 use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
-use codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
@@ -134,6 +134,14 @@ pub(super) fn evidence_fixture(
     binding: &AgentdEvaluationBindingV1,
     now: u64,
 ) -> (ActivatedLearningTrustV1, AgentdSignedEvaluationV1) {
+    evidence_fixture_with_publication(binding, now, digest("agentd-evaluation-publication"))
+}
+
+fn evidence_fixture_with_publication(
+    binding: &AgentdEvaluationBindingV1,
+    now: u64,
+    publication_namespace: Digest32,
+) -> (ActivatedLearningTrustV1, AgentdSignedEvaluationV1) {
     let objective_digest = binding.objective_digest;
     let dataset_digest = digest("dataset");
     let estimand_digest = digest("qualification-estimand");
@@ -161,7 +169,7 @@ pub(super) fn evidence_fixture(
             minimum_improvement: FixedQ32::from_raw(5),
         },
     }];
-    let frozen_plan = freeze_cross_fold_plan_v2(
+    let (runner, temporal) = qualification_support::evaluate(
         CrossFoldPlanV1 {
             plan_id: id("qualification-plan"),
             claim_scope: EvaluationClaimScopeV1::Qualification,
@@ -182,46 +190,17 @@ pub(super) fn evidence_fixture(
             final_holdout_digest: digest("final-holdout"),
         },
         roles.clone(),
-    )
-    .unwrap();
-    let holdout_use = FinalHoldoutRegistry::new().consume(&frozen_plan).unwrap();
+        vec![id("snapshot-1")],
+        vec![id("holdout-window-2")],
+    );
 
-    let bundle = IndependentEvaluationBundleV1 {
-        evaluation_id: id("evaluation"),
-        candidate_id: binding.selected_candidate_id.clone(),
-        baseline_id: id("baseline"),
-        claim_scope: EvaluationClaimScopeV1::Qualification,
+    let context = ProductQualificationContextV1 {
         generator: generator.clone(),
         evaluator: evaluator.clone(),
-        frozen_plan,
-        holdout_use,
-        objective_digest,
-        dataset_digest,
-        estimand_digest,
-        estimate_receipt_digest: digest("estimate"),
-        support_audit_digest: digest("support-audit"),
-        confidence_receipt_digest: digest("confidence"),
         retention_receipt_digests: Vec::new(),
         unlearning_receipt_digest: Digest32::ZERO,
-        snapshot_ids: vec![id("snapshot-1")],
-        future_window_ids: vec![id("future-window-1")],
-        family_alpha_ppm: 50_000,
-        simultaneous_comparisons: 1,
-        metrics: vec![MetricGateV1 {
-            metric_id: id("task-utility"),
-            direction: EvaluationDirectionV1::Maximize,
-            candidate: EvaluationIntervalV1 {
-                lower: FixedQ32::from_raw(100),
-                upper: FixedQ32::from_raw(110),
-            },
-            baseline: EvaluationIntervalV1 {
-                lower: FixedQ32::from_raw(80),
-                upper: FixedQ32::from_raw(90),
-            },
-            safety_floor: Some(FixedQ32::from_raw(80)),
-            support_digest: digest("metric-support"),
-        }],
     };
+    let bundle = runner.qualification_bundle(&temporal, &context).unwrap();
 
     let trust_definition = LearningEvidenceTrustV1 {
         scope_digest,
@@ -267,7 +246,23 @@ pub(super) fn evidence_fixture(
         ),
     };
 
-    let payload = intelligence_evaluation_binding_payload_v1(binding, &evidence).unwrap();
+    let qualification = runner
+        .qualify_and_persist(
+            &temporal,
+            &context,
+            &evidence,
+            ProductTimingEvidenceV1::Qualification,
+            verifier,
+            now,
+            &mut qualification_support::Sink(publication_namespace),
+        )
+        .unwrap();
+    assert_eq!(
+        qualification.decision.decision.disposition,
+        codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
+    );
+    let payload =
+        intelligence_evaluation_binding_payload_v2(binding, &evidence, &qualification).unwrap();
     let use_attestation = sign(
         verifier,
         &evaluator,
@@ -279,6 +274,7 @@ pub(super) fn evidence_fixture(
     (
         trust,
         AgentdSignedEvaluationV1 {
+            qualification,
             bundle,
             roles,
             evidence,
@@ -397,5 +393,89 @@ fn evaluator_key_epoch_expiry_and_signed_metrics_are_not_self_asserted() {
         changed
             .evaluate(&input(&binding), &binding.selected_candidate_id, 1_000)
             .is_err()
+    );
+}
+
+#[test]
+fn independently_resigned_metrics_cannot_replace_the_qualified_estimator_evidence() {
+    let binding = binding();
+    let mut changed = session(&binding, /*now*/ 1_000);
+    changed.signed.bundle.metrics[0].candidate.upper =
+        FixedQ32::from_raw(changed.signed.bundle.metrics[0].candidate.upper.raw() + 1);
+    let key = SigningKey::from_bytes(&[47; 32]);
+    changed.signed.evidence.evaluator_bundle = sign(
+        changed.trust.verifier(),
+        &changed.signed.bundle.evaluator,
+        &key,
+        LearningEvidenceRoleV1::Evaluator,
+        binding.objective_digest,
+        &evaluation_signing_payload_v2(&changed.signed.bundle, &changed.signed.roles).unwrap(),
+    );
+    let use_payload = intelligence_evaluation_binding_payload_v2(
+        &binding,
+        &changed.signed.evidence,
+        &changed.signed.qualification,
+    )
+    .unwrap();
+    changed.signed.use_attestation = sign(
+        changed.trust.verifier(),
+        &changed.signed.bundle.evaluator,
+        &key,
+        LearningEvidenceRoleV1::Evaluator,
+        binding.objective_digest,
+        &use_payload,
+    );
+    assert!(matches!(
+        changed.evaluate(
+            &input(&binding),
+            &binding.selected_candidate_id,
+            /*now*/ 1_000
+        ),
+        Err(AgentdIntelligenceEvaluationError::Qualification(
+            codex_hepta_intelligence_eval::ProductEvaluationError::Binding(
+                "qualification use evidence"
+            )
+        ))
+    ));
+}
+
+#[test]
+fn current_use_attestation_binds_the_exact_sealed_publication() {
+    let binding = binding();
+    let mut original = session(&binding, /*now*/ 1_000);
+    let (_, other_publication) = evidence_fixture_with_publication(
+        &binding,
+        /*now*/ 1_000,
+        digest("another-publication"),
+    );
+    assert_eq!(
+        original.signed.qualification.decision,
+        other_publication.qualification.decision
+    );
+    assert_ne!(
+        original.signed.qualification.publication_digest,
+        other_publication.qualification.publication_digest,
+    );
+    original.signed.qualification = other_publication.qualification.clone();
+    assert!(matches!(
+        original.evaluate(
+            &input(&binding),
+            &binding.selected_candidate_id,
+            /*now*/ 1_000
+        ),
+        Err(AgentdIntelligenceEvaluationError::Evidence(_))
+    ));
+
+    // The same publication is usable with its own exact current-use signature.
+    let mut correctly_bound = session(&binding, /*now*/ 1_000);
+    correctly_bound.signed = other_publication;
+    assert!(
+        correctly_bound
+            .evaluate(
+                &input(&binding),
+                &binding.selected_candidate_id,
+                /*now*/ 1_000,
+            )
+            .is_ok()
     );
 }

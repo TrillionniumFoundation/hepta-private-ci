@@ -1,0 +1,23 @@
+{
+  "label": "public_growth_recovery",
+  "argv": [
+    "/workspace/scratch/48266f5bd43f/chain-target/debug/deps/trnm_pon_node-33be7312af1f531b",
+    "ingress::public_v3::growth::tests::public_growth_v1_real_listener_lost_ack_exact_query_reorg_and_cold_reopen",
+    "--exact",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "returncode": 0,
+  "wall_seconds": 0.48655994000000646,
+  "log": "retained-public_growth_recovery.log",
+  "log_sha256": "40acfad331048bf8e12c91c51115a32a6dd9fdef0ba398da9788434024e610d3",
+  "selected_test_count": 1,
+  "test_status": "ok",
+  "passed": 1,
+  "failed": 0,
+  "ignored": 0,
+  "measured": 0,
+  "filtered_out": 1081,
+  "test_seconds": 0.48,
+  "enumerated_count_matches_result": true
+}

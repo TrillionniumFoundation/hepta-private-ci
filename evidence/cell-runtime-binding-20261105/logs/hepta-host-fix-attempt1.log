@@ -1,0 +1,410 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking codex-utils-absolute-path v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/absolute-path)
+    Checking codex-utils-rustls-provider v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/rustls-provider)
+    Checking codex-http-client v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/http-client)
+    Checking codex-utils-home-dir v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/home-dir)
+    Checking codex-utils-cache v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/cache)
+    Checking codex-execpolicy v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/execpolicy)
+    Checking codex-network-proxy v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/network-proxy)
+    Checking codex-utils-image v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/image)
+    Checking codex-utils-path-uri v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/path-uri)
+    Checking codex-extension-items v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/items)
+    Checking codex-utils-redacted-string v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/redacted-string)
+    Checking codex-utils-string v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/string)
+    Checking codex-async-utils v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/async-utils)
+    Checking codex-protocol v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/protocol)
+    Checking codex-utils-pty v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/pty)
+    Checking codex-file-system v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/file-system)
+    Checking codex-git-utils v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/git-utils)
+    Checking codex-websocket-client v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/websocket-client)
+    Checking codex-client v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/codex-client)
+    Checking codex-api v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/codex-api)
+    Checking codex-otel v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/otel)
+    Checking codex-hepta-contracts v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-contracts)
+    Checking codex-utils-path v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/path-utils)
+    Checking codex-shell-command v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/shell-command)
+   Compiling i18n-config v0.4.8 (/workspace/scratch/42d46a663b73/runtime/codex-rs/third_party/i18n-config-0.4.8)
+    Checking codex-features v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/features)
+    Checking codex-model-provider-info v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/model-provider-info)
+    Checking codex-config v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/config)
+   Compiling i18n-embed-impl v0.8.4
+   Compiling codex-windows-sandbox v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/windows-sandbox-rs)
+   Compiling i18n-embed v0.15.4
+   Compiling i18n-embed-fl v0.9.4
+    Checking age v0.11.2
+    Checking codex-keyring-store v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/keyring-store)
+    Checking codex-sandboxing v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/sandboxing)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:196:67
+    |
+196 |     use time::format_description::BorrowedFormatItem::{Component, Literal, Optional};
+    |                                                                   ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:199:52
+    |
+199 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:200:35
+    |
+200 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:42
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:53
+    |
+208 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:43
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:222:52
+    |
+222 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:223:35
+    |
+223 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:263:13
+    |
+263 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:265:13
+    |
+265 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:267:23
+    |
+267 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:268:23
+    |
+268 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:270:13
+    |
+270 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:23
+    |
+272 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:23
+    |
+274 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:285:13
+    |
+285 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:287:13
+    |
+287 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:289:13
+    |
+289 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:291:13
+    |
+291 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:293:23
+    |
+293 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:295:23
+    |
+295 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:297:23
+    |
+297 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:13
+    |
+304 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:13
+    |
+306 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:308:13
+    |
+308 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:310:13
+    |
+310 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:312:23
+    |
+312 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:314:23
+    |
+314 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:316:23
+    |
+316 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:201:9
+    |
+201 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:202:9
+    |
+202 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:203:9
+    |
+203 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:9
+    |
+204 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:224:9
+    |
+224 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:225:9
+    |
+225 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+    Checking codex-secrets v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/secrets)
+    Checking codex-exec-server-protocol v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/exec-server-protocol)
+    Checking codex-exec-server v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/exec-server)
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+    Checking codex-utils-template v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/template)
+    Checking codex-agent-identity v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/agent-identity)
+    Checking codex-history v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/history)
+    Checking codex-workload-identity v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/workload-identity)
+    Checking codex-terminal-detection v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/terminal-detection)
+    Checking codex-login v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/login)
+    Checking codex-state v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/state)
+    Checking codex-utils-output-truncation v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/output-truncation)
+    Checking codex-install-context v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/install-context)
+    Checking codex-utils-plugins v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/plugins)
+    Checking codex-hepta-types v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-types)
+   Compiling codex-code-mode-protocol v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/code-mode-protocol)
+    Checking codex-plugin v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/plugin)
+    Checking codex-collaboration-mode-templates v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/collaboration-mode-templates)
+    Checking codex-models-manager v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/models-manager)
+    Checking codex-feedback v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/feedback)
+    Checking codex-aws-auth v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/aws-auth)
+    Checking codex-response-debug-context v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/response-debug-context)
+    Checking codex-model-provider v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/model-provider)
+    Checking codex-code-mode v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/code-mode)
+    Checking codex-connectors v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/connectors)
+    Checking codex-rmcp-client v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/rmcp-client)
+    Checking codex-exec-server-test-support v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/exec-server/tests/support)
+    Checking codex-diagnostics v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/diagnostics)
+    Checking codex-tools v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/tools)
+    Checking codex-mcp v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/codex-mcp)
+    Checking codex-context-fragments v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/context-fragments)
+    Checking codex-file-search v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/file-search)
+    Checking codex-utils-cargo-bin v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/cargo-bin)
+    Checking codex-rollout v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/rollout)
+    Checking codex-extension-api v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/extension-api)
+   Compiling codex-experimental-api-macros v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/codex-experimental-api-macros)
+   Compiling codex-app-server-protocol-noop-macros v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/app-server-protocol-noop-macros)
+    Checking codex-app-server-protocol v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/app-server-protocol)
+   Compiling codex-skills v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/skills)
+    Checking codex-analytics v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/analytics)
+    Checking codex-hooks v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hooks)
+    Checking codex-core-plugins v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/core-plugins)
+    Checking codex-apply-patch v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/apply-patch)
+    Checking codex-shell-escalation v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/shell-escalation)
+    Checking codex-thread-store v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/thread-store)
+    Checking codex-utils-audio v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/audio)
+    Checking codex-skills-extension v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/skills)
+    Checking codex-prompts v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/prompts)
+    Checking codex-rollout-trace v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/rollout-trace)
+    Checking codex-agent-graph-store v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/agent-graph-store)
+    Checking codex-memories-read v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/memories/read)
+    Checking codex-utils-stream-parser v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/stream-parser)
+    Checking codex-core v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/core)
+    Checking codex-hepta-cognitive-types v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-cognitive-types)
+    Checking codex-hepta-memory-retrieval v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-memory-retrieval)
+    Checking codex-hepta-prompt-registry v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-prompt-registry)
+    Checking codex-hepta-paths v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-paths)
+    Checking codex-hepta-kg v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-kg)
+    Checking codex-hepta-operations v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-operations)
+    Checking codex-backend-openapi-models v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/codex-backend-openapi-models)
+    Checking codex-backend-client v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/backend-client)
+    Checking codex-hepta-cognitive-read v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-cognitive-read)
+   Compiling codex-linux-sandbox v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/linux-sandbox)
+    Checking codex-hepta-memory-federation v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-memory-federation)
+    Checking codex-process-hardening v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/process-hardening)
+    Checking codex-hepta-memory v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-memory)
+    Checking codex-hepta-authbus v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-authbus)
+    Checking codex-hepta-intuition v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-intuition)
+    Checking codex-arg0 v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/arg0)
+    Checking codex-hepta-learning-ledger v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-learning-ledger)
+    Checking codex-hepta-evidence v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-evidence)
+    Checking codex-memories-write v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/memories/write)
+    Checking codex-connectors-extension v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/connectors)
+    Checking codex-home v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/codex-home)
+    Checking codex-utils-cli v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/cli)
+    Checking codex-uds v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/uds)
+    Checking codex-app-server-transport v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/app-server-transport)
+    Checking codex-chatgpt v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/chatgpt)
+    Checking codex-mcp-extension v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/mcp)
+    Checking codex-external-agent-migration v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/external-agent-migration)
+    Checking codex-hepta-governance v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/hepta-governance)
+    Checking codex-hepta-memory-extension v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/hepta-memory)
+    Checking codex-file-watcher v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/file-watcher)
+    Checking codex-cloud-config v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/cloud-config)
+    Checking codex-git-attribution v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/git-attribution)
+    Checking codex-guardian-v2 v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/guardian-v2)
+    Checking codex-image-generation-extension v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/image-generation)
+    Checking codex-goal-extension v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/goal)
+    Checking codex-web-search-extension v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/web-search)
+    Checking codex-queue-extension v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/queue)
+    Checking codex-memories-extension v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/memories)
+    Checking codex-history-notes-extension v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/history-notes)
+    Checking codex-agent-extension v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/agent)
+    Checking codex-hepta-prompt-extension v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/ext/hepta-prompt)
+    Checking codex-hepta-wire v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-wire)
+    Checking codex-utils-json-to-toml v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/utils/json-to-toml)
+    Checking codex-app-server v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/app-server)
+    Checking codex-hepta-infer-core v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-core)
+    Checking codex-hepta-ndu v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-ndu)
+    Checking codex-hepta-neuron v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-neuron)
+    Checking codex-app-server-client v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/app-server-client)
+    Checking codex-hepta-context-compiler v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-context-compiler)
+    Checking codex-hepta-intelligence-eval v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-intelligence-eval)
+    Checking codex-hepta-prompt-optimizer v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-prompt-optimizer)
+    Checking codex-hepta-automation v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-automation)
+    Checking codex-hepta-fleet v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-fleet)
+    Checking codex-hepta-learning-artifacts v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-learning-artifacts)
+    Checking codex-hepta-plasticity v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-plasticity)
+    Checking codex-hepta-objective v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-objective)
+    Checking num_cpus v1.17.0
+    Checking deadpool-runtime v0.1.4
+   Compiling dtor-proc-macro v0.0.6
+    Checking dtor v0.1.1
+    Checking deadpool v0.12.3
+    Checking codex-hepta-intelligence v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-intelligence)
+    Checking codex-hepta-agent-protocol v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-agent-protocol)
+    Checking codex-hepta-codex-adapter v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-codex-adapter)
+    Checking codex-hepta-control-plane v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-control-plane)
+    Checking codex-hepta-bellman-operator v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-bellman-operator)
+    Checking codex-hepta-cognitive-store v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-cognitive-store)
+    Checking assert-json-diff v2.0.2
+   Compiling ctor-proc-macro v0.0.7
+    Checking ctor v0.6.3
+    Checking wiremock v0.6.5
+    Checking codex-hepta-agentd v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-agentd)
+    Checking diff v0.1.13
+    Checking yansi v1.0.1
+    Checking pretty_assertions v1.4.1
+    Checking core_test_support v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/core/tests/common)
+    Checking codex-hepta-infer-worker-host v0.0.0 (/workspace/scratch/42d46a663b73/runtime/codex-rs/hepta-infer-worker-host)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6m 28s

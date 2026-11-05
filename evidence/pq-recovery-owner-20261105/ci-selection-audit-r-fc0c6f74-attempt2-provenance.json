@@ -1,0 +1,141 @@
+{
+  "kind": "CI_SOURCE_AND_SELECTION_AUDIT_INVOCATION_PROVENANCE",
+  "source_commit": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+  "source_tree": "8403d5acabc83707e9b5fcb4e5250a4883c12293",
+  "source_parent": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+  "before": {
+    "head": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+    "tree": "8403d5acabc83707e9b5fcb4e5250a4883c12293",
+    "status_porcelain": "",
+    "audit_inputs": {
+      ".github/workflows/hepta-pq-policy-renewal.yml": {
+        "git_blob": "392ad92cfdf63c6a1a8281683ec1074a845cff68",
+        "sha256": "4ddddcc5fb88cf182ab430fb898f55c34d3e5c06b14170b1be977751026091ae"
+      },
+      "scripts/run-nextest.py": {
+        "git_blob": "952fd964e36af1e713eae04b54d4887695e6dd43",
+        "sha256": "b939d9c06af3269924e05de14abb1cc7e4c44be32024325a593300b5199dd385"
+      },
+      "codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs": {
+        "git_blob": "ee0fc17125fa7c74f82ff500330d2bdcea9b6485",
+        "sha256": "46d49bb9e0ebf7e602b52123d13f7e646af8c8114da2505922c538cb7ae8b761"
+      },
+      "codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs": {
+        "git_blob": "0ea056f429138579dcd4c7c39b2525f22a08b51d",
+        "sha256": "578b0bcd17048e822d555ef79ad5ec33fb276f2681fb7b82c624b80f5d6acd9c"
+      },
+      "codex-rs/hepta-agentd/src/authbus_pq_dispatch_tests.rs": {
+        "git_blob": "7109c2b6442a26a19a28bea558cec422274339d9",
+        "sha256": "680d7331e69dfeb6b01918cd386959496c248226abe0fbbd3e8aff87eaf6864a"
+      },
+      "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs": {
+        "git_blob": "f880c98b1261d8d5d8c9a1d94602fbc4cb0e982e",
+        "sha256": "1a72763311cfa8e03e6c2992c75c413cab4c3ed0519376d856010cc4b6f18eed"
+      },
+      "codex-rs/hepta-agentd/src/authbus_lease_delay_tests.rs": {
+        "git_blob": "2c342acfcb754a8be7128a1f3ea14f1dbfa19bf8",
+        "sha256": "de863b0bbddacce54f764bfd1acbc5789dce94b8d9d39e701ada8d769da2eba4"
+      },
+      "codex-rs/hepta-agentd/tests/authbus_text_product.rs": {
+        "git_blob": "5ed7f4e57f9fbff3317b20c2d557b76a2465d40a",
+        "sha256": "38a4791af499795e304108407c96795629886959489172064bdbba6164462d34"
+      },
+      "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs": {
+        "git_blob": "1b03f6f7975331088fd3cfa08839d51f7e736a29",
+        "sha256": "f1b85c12e4a31927e4eac92be675a1cbd00162d8451fff35d79c8a492f5d4229"
+      },
+      "codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs": {
+        "git_blob": "d4c3b801015e4fcd6ee8b089ca04aaa80cec3ce4",
+        "sha256": "cce524c13697ca265cda23dade36401aaf74f84681c7c5859f22e6a34642223e"
+      },
+      "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs": {
+        "git_blob": "4cc294ec045dbd737b8a5d4df0efd0502ece04fa",
+        "sha256": "09e39e65f712d0c8d0e75de3e11253b5661e2ec765bc3b2afa2a28ebeddf275f"
+      },
+      "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": {
+        "git_blob": "763f4c6e2c5c8f97817dd4f6eb48bc4052ee704c",
+        "sha256": "a93857beff50c265d09a38e7280f2702a63f6ea27fb4e4866d32896e4f6fab23"
+      }
+    }
+  },
+  "after": {
+    "head": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+    "tree": "8403d5acabc83707e9b5fcb4e5250a4883c12293",
+    "status_porcelain": "",
+    "audit_inputs": {
+      ".github/workflows/hepta-pq-policy-renewal.yml": {
+        "git_blob": "392ad92cfdf63c6a1a8281683ec1074a845cff68",
+        "sha256": "4ddddcc5fb88cf182ab430fb898f55c34d3e5c06b14170b1be977751026091ae"
+      },
+      "scripts/run-nextest.py": {
+        "git_blob": "952fd964e36af1e713eae04b54d4887695e6dd43",
+        "sha256": "b939d9c06af3269924e05de14abb1cc7e4c44be32024325a593300b5199dd385"
+      },
+      "codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs": {
+        "git_blob": "ee0fc17125fa7c74f82ff500330d2bdcea9b6485",
+        "sha256": "46d49bb9e0ebf7e602b52123d13f7e646af8c8114da2505922c538cb7ae8b761"
+      },
+      "codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs": {
+        "git_blob": "0ea056f429138579dcd4c7c39b2525f22a08b51d",
+        "sha256": "578b0bcd17048e822d555ef79ad5ec33fb276f2681fb7b82c624b80f5d6acd9c"
+      },
+      "codex-rs/hepta-agentd/src/authbus_pq_dispatch_tests.rs": {
+        "git_blob": "7109c2b6442a26a19a28bea558cec422274339d9",
+        "sha256": "680d7331e69dfeb6b01918cd386959496c248226abe0fbbd3e8aff87eaf6864a"
+      },
+      "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs": {
+        "git_blob": "f880c98b1261d8d5d8c9a1d94602fbc4cb0e982e",
+        "sha256": "1a72763311cfa8e03e6c2992c75c413cab4c3ed0519376d856010cc4b6f18eed"
+      },
+      "codex-rs/hepta-agentd/src/authbus_lease_delay_tests.rs": {
+        "git_blob": "2c342acfcb754a8be7128a1f3ea14f1dbfa19bf8",
+        "sha256": "de863b0bbddacce54f764bfd1acbc5789dce94b8d9d39e701ada8d769da2eba4"
+      },
+      "codex-rs/hepta-agentd/tests/authbus_text_product.rs": {
+        "git_blob": "5ed7f4e57f9fbff3317b20c2d557b76a2465d40a",
+        "sha256": "38a4791af499795e304108407c96795629886959489172064bdbba6164462d34"
+      },
+      "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs": {
+        "git_blob": "1b03f6f7975331088fd3cfa08839d51f7e736a29",
+        "sha256": "f1b85c12e4a31927e4eac92be675a1cbd00162d8451fff35d79c8a492f5d4229"
+      },
+      "codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs": {
+        "git_blob": "d4c3b801015e4fcd6ee8b089ca04aaa80cec3ce4",
+        "sha256": "cce524c13697ca265cda23dade36401aaf74f84681c7c5859f22e6a34642223e"
+      },
+      "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs": {
+        "git_blob": "4cc294ec045dbd737b8a5d4df0efd0502ece04fa",
+        "sha256": "09e39e65f712d0c8d0e75de3e11253b5661e2ec765bc3b2afa2a28ebeddf275f"
+      },
+      "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs": {
+        "git_blob": "763f4c6e2c5c8f97817dd4f6eb48bc4052ee704c",
+        "sha256": "a93857beff50c265d09a38e7280f2702a63f6ea27fb4e4866d32896e4f6fab23"
+      }
+    }
+  },
+  "source_unchanged_and_clean": true,
+  "started_at_utc": "2026-11-05T05:44:35.678508+00:00",
+  "finished_at_utc": "2026-11-05T05:44:45.815515+00:00",
+  "duration_seconds": 10.137000722999801,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/scratch/aea25ba345a8/hepta-effects-agent/validation/evidence-pq-recovery-owner-20261105/ci-validate-selection.py",
+    "--repository",
+    "/workspace/scratch/aea25ba345a8/hepta-effects-agent/repo",
+    "--output",
+    "/workspace/scratch/aea25ba345a8/hepta-effects-agent/validation/ci-selection-audit-r-fc0c6f74-attempt2.json"
+  ],
+  "command_exit_code": 0,
+  "validator_sha256": "85dda7f92d774db9ea0a5709b3bcfda6a50e8dfd396d9a6bc9353a2689bd470c",
+  "raw_receipt_file": "ci-selection-audit-r-fc0c6f74-attempt2.json",
+  "raw_receipt_sha256": "56c12da5443567bc580b986bc1591af5038e06a4ff4395510be83c17edad8d16",
+  "log_file": "ci-selection-audit-r-fc0c6f74-attempt2.log",
+  "log_sha256": "e96122c0f98a00dca5dce16748c26231c080a10a6a67730d49a574e8d52629cb",
+  "fixture_cases_passed": 154,
+  "native_tests_executed_by_this_audit": 0,
+  "audit_did_not_trigger_ci": true,
+  "legacy_raw_receipt_ci_triggered_field_scope": "The unchanged validator writes ci_triggered=false for its own audit invocation only. It makes no statement about GitHub events caused by the separate root push of R.",
+  "separate_root_push_of_R": "Parent agent reports R was pushed to the existing PR before this audit; any resulting GitHub events are separate and were not inspected here.",
+  "earlier_attempt": "ci-selection-audit-r-fc0c6f74-provenance.json records exit 1 before fixtures because the workflow was not yet materialized. Its log is preserved. The source owner subsequently materialized the exact tracked workflow; this is a separate invocation.",
+  "qualification": "HOLD_NO_GO"
+}

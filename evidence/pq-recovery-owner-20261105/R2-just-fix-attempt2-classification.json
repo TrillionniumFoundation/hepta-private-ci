@@ -1,0 +1,29 @@
+{
+  "source_commit": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "source_tree": "ebd1437475d71252786788f67d2911f5a6e6108d",
+  "status": "BUILD_BLOCKED_ENOSPC",
+  "lint_passed": false,
+  "exit_code": 101,
+  "elapsed_seconds": 337.49704241752625,
+  "command": [
+    "just",
+    "fix",
+    "-p",
+    "codex-hepta-evidence",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--locked"
+  ],
+  "observed_error": "failed to write query cache to codex_extension_api incremental query-cache.bin: No space left on device (os error 28)",
+  "source_clean_before_and_after": true,
+  "tests_executed": 0,
+  "strict_D_warnings_not_requested": true,
+  "original_recipe": "cargo clippy --fix --tests --allow-dirty {args}",
+  "raw_receipt": "R2-70115620-scoped-just-fix-attempt2.json",
+  "raw_log": "R2-70115620-scoped-just-fix-attempt2.log",
+  "log_sha256": "19ccde6a1c4b54f4532ca9a06059c5a0f165e53fc2988f33cdb1f7ca3c0e23d8",
+  "preceding_attempt": "R2-just-fix-attempt1-classification.json",
+  "retry_scope": "One identical-command retry after measurable private-cache reclamation. No profile/flag/permission workaround. Both natural terminal failures retained; no further native retry."
+}

@@ -99,12 +99,7 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
     // and repeatedly hash a gigabyte debug binary once per isolated peer.
     for (index, agent) in agents.iter().enumerate() {
         eprintln!("FLEET_STAGE install agent={index}");
-        let initial = release(
-            &fleet.registry,
-            &agent.agent_id,
-            &format!("initial-{index}"),
-            &v1,
-        )?;
+        let initial = release(&fleet.registry, agent, &format!("initial-{index}"), &v1)?;
         eprintln!("FLEET_STAGE start agent={index}");
         fleet.start_release(agent, initial)?;
         let (control, health) = fleet.wait_ready(agent, 1).await?;
@@ -226,7 +221,7 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
 
     fleet.supervisor.upgrade(
         &agents[0].agent_id,
-        release(&fleet.registry, &agents[0].agent_id, "agent-a-v2", &v2)?,
+        release(&fleet.registry, &agents[0], "agent-a-v2", &v2)?,
         Instant::now(),
     )?;
     let (_, v2_health) = wait_release(&mut fleet, &agents[0], "agent-a-v2").await?;
@@ -254,12 +249,7 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
 
     fleet.supervisor.upgrade(
         &agents[0].agent_id,
-        release(
-            &fleet.registry,
-            &agents[0].agent_id,
-            "agent-a-failing",
-            &failing,
-        )?,
+        release(&fleet.registry, &agents[0], "agent-a-failing", &failing)?,
         Instant::now(),
     )?;
     let (_, auto_rollback_health) = wait_release(&mut fleet, &agents[0], "agent-a-v2").await?;
@@ -346,12 +336,7 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
     // and repeatedly hash a gigabyte debug binary once per isolated peer.
     for (index, agent) in agents.iter().enumerate() {
         eprintln!("FLEET_STAGE install agent={index}");
-        let initial = release(
-            &fleet.registry,
-            &agent.agent_id,
-            &format!("six-initial-{index}"),
-            &v1,
-        )?;
+        let initial = release(&fleet.registry, agent, &format!("six-initial-{index}"), &v1)?;
         eprintln!("FLEET_STAGE start agent={index}");
         fleet.start_release(agent, initial)?;
         let (control, health) = fleet
@@ -441,7 +426,7 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
     let target_peer_baseline = peer_snapshots(&fleet, &target_peer_ids)?;
     fleet.supervisor.upgrade(
         &agents[5].agent_id,
-        release(&fleet.registry, &agents[5].agent_id, "six-agent-5-v2", &v2)?,
+        release(&fleet.registry, &agents[5], "six-agent-5-v2", &v2)?,
         Instant::now(),
     )?;
     let (_, upgraded) = wait_release(&mut fleet, &agents[5], "six-agent-5-v2")
@@ -553,13 +538,21 @@ fn assert_distinct_agent_roots_count(agents: &[AgentFixture], expected: usize) -
 
 fn release(
     registry: &FleetRegistry,
-    agent_id: &AgentId,
+    agent: &AgentFixture,
     identity: &str,
     program: &Path,
 ) -> Result<AgentRelease> {
     let release_id = ReleaseId::parse(identity)?;
-    let installed = registry.install_release(release_id.clone(), program, Vec::new())?;
-    registry.allow_release(agent_id, &release_id)?;
+    let args = agent
+        .recovery_args()
+        .into_iter()
+        .map(|arg| {
+            arg.into_string()
+                .map_err(|_| anyhow::anyhow!("fixture recovery path is not UTF-8"))
+        })
+        .collect::<Result<Vec<_>>>()?;
+    let installed = registry.install_release(release_id.clone(), program, args)?;
+    registry.allow_release(&agent.agent_id, &release_id)?;
     Ok(AgentRelease::try_from(installed)?)
 }
 

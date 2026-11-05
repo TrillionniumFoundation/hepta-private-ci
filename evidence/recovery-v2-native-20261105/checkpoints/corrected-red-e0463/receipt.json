@@ -1,0 +1,66 @@
+{
+  "candidate": "d206c3c787f6b67c771b67a8e1d46c8261810042",
+  "candidate_tree": "00048be8564f7726716f78edbb37d79ab273167a",
+  "base": "3a8e50ddd79ec3e52ca58157323726c37069202c",
+  "source_commit": "d206c3c787f6b67c771b67a8e1d46c8261810042",
+  "source_tree": "00048be8564f7726716f78edbb37d79ab273167a",
+  "phase": "owner",
+  "qualification": "HOLD_NO_GO",
+  "commands": [
+    {
+      "label": "create-red-worktree",
+      "cwd": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/runtime",
+      "argv": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/corrected-owner/red-worktree",
+        "3a8e50ddd79ec3e52ca58157323726c37069202c"
+      ],
+      "exit_code": 0,
+      "log": "create-red-worktree.log",
+      "observed_test_statuses": {},
+      "expected_statuses_match": null
+    },
+    {
+      "label": "owner-red",
+      "cwd": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/corrected-owner/red-worktree/codex-rs",
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-evidence",
+        "--locked",
+        "--lib",
+        "--retries",
+        "0",
+        "-E",
+        "test(recovery_effect_frontier_tests::) | test(provider_effect_recovery_provenance_tests::)"
+      ],
+      "exit_code": 101,
+      "log": "owner-red.log",
+      "observed_test_statuses": {},
+      "expected_statuses_match": false
+    }
+  ],
+  "environment": {
+    "CARGO_TARGET_DIR": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/target",
+    "RUSTFLAGS": null,
+    "CARGO_ENCODED_RUSTFLAGS": null,
+    "RUSTC_WRAPPER": null,
+    "RUSTC_WORKSPACE_WRAPPER": null,
+    "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": null
+  },
+  "red_tree_modified_paths": [
+    "codex-rs/hepta-evidence/src/lib.rs",
+    "codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs",
+    "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs"
+  ],
+  "red_files": {
+    "codex-rs/hepta-evidence/src/lib.rs": "d651d902b5db04e22fc493e0b0d7d9dfafb3e8fd3a658cb7a85f81e6d7f37843",
+    "codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs": "afb1fafde1fbadb16377bee14367fa32f8e79fe482c29a6ee1e30642f92aa8c1",
+    "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs": "f1b85c12e4a31927e4eac92be675a1cbd00162d8451fff35d79c8a492f5d4229"
+  },
+  "error": "owner-red: assertions not verified; inspect the raw log"
+}

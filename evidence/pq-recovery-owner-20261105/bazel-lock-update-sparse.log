@@ -1,0 +1,6 @@
+bazel mod deps --lockfile_mode=update
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+INFO: Invocation ID: 96408b07-0b68-4f1e-911f-70cb1910f3a3
+ERROR: unable to load package for '//bazel/modules:wine.MODULE.bazel' included at /workspace/scratch/aea25ba345a8/hepta-effects-agent/repo/MODULE.bazel:507:1: BUILD file not found in any of the following directories. Add a BUILD file to a directory to mark it as a package.
+ - bazel/modules
+error: recipe `bazel-lock-update` failed on line 150 with exit code 37

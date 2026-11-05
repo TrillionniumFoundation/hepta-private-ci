@@ -1,0 +1,61 @@
+{
+  "commit": "cec7a61b6c0aed19abd13bdbda0c6838aa398ef3",
+  "tree": "c0df69ecfdf84d375e57c7ea0cd1d3d4e833cb0b",
+  "parent": "b5bb98297a1765d71160dd62d1cd53863f948012",
+  "production_fix_commit": "b5bb98297a1765d71160dd62d1cd53863f948012",
+  "runtime_base_commit": "d206c3c787f6b67c771b67a8e1d46c8261810042",
+  "files": {
+    "codex-rs/hepta-evidence/migrations/0016_provider_effect_observation_history.sql": {
+      "sha256": "c08db803851dde8df7e2df6305cf98faa75268d4b7104959f15a81e90ebd5b3b",
+      "bytes": 5064
+    },
+    "codex-rs/hepta-evidence/src/authbus_owner_policy_tests.rs": {
+      "sha256": "4478511ca609ff72a26b8e891719569d7b12278df225f75469a2481a9761821e",
+      "bytes": 7134
+    },
+    "codex-rs/hepta-evidence/src/lib.rs": {
+      "sha256": "1a7529f3abe7263e7136d22740461038d3fb5570bb5ae5e99e33ddad2b6aac3c",
+      "bytes": 5302
+    },
+    "codex-rs/hepta-evidence/src/provider_effect_observation_migration_tests.rs": {
+      "sha256": "02efd45481004f8d69297a65951638dd29c3fe992d07c6a40990d5f5ca9c2b06",
+      "bytes": 8119
+    },
+    "codex-rs/hepta-evidence/src/provider_effect_observation_schema.rs": {
+      "sha256": "7ee35ce057ec7e31fe7b15553f544877d1e54eeff908e6fbdab702a91f8665cc",
+      "bytes": 1102
+    },
+    "codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs": {
+      "sha256": "cce524c13697ca265cda23dade36401aaf74f84681c7c5859f22e6a34642223e",
+      "bytes": 20051
+    },
+    "codex-rs/hepta-evidence/src/provider_effect_store.rs": {
+      "sha256": "3f4d4dd0c029874f5882f2a659dfef3579728a1551cc62565f83cae597a9b8e0",
+      "bytes": 60878
+    },
+    "codex-rs/hepta-evidence/src/provider_effect_tests.rs": {
+      "sha256": "031eba89ab1eaace4d00bf5c6cdb667299f115790c0970dd1057f21b526a7875",
+      "bytes": 74555
+    },
+    "codex-rs/hepta-evidence/src/store.rs": {
+      "sha256": "e93f7c803470479f632c8fc0efa070c483adeb215f427950ef41debe285080fc",
+      "bytes": 17815
+    }
+  },
+  "lockfile_sha256": "aabdc987ff578836729359be72ce15b383d6dd86f8689680e1d8ac8291772349",
+  "native_tests": {
+    "run": 145,
+    "passed": 145,
+    "failed": 0,
+    "skipped": 1,
+    "skip": "authbus_outbox_tests::crash_delivery_child (subprocess crash fixture)",
+    "receipt": "green-final-observations.json",
+    "log": "green-final-observations.log",
+    "log_sha256": "29decf3e884510bafa70e238bf1c7191d6cd8c25d7a24e855dd997e919001124"
+  },
+  "strict_lint_status": "PASS",
+  "qualification_scope": "local journal and migration only; no ordinary end-to-end or external provider proof",
+  "strict_lint_receipt": "green-strict-fix.json",
+  "strict_lint_log_sha256": "d197f45923530c8c4aa98137ee0f59761210124e08dc858aabad8b6c748596ee",
+  "strict_lint_source_drift": false
+}

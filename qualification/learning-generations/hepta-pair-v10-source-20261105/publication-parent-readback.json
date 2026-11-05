@@ -1,0 +1,111 @@
+{
+  "schema": "hepta-v10-publication-parent-readback-v1",
+  "observed_at": "2026-11-05T05:49:48.132Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr_number": 4812,
+  "branch": "fix/hepta-ordinary-pq-effects-20261104",
+  "tested_runtime_commit": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+  "publication_parent_commit": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+  "publication_parent_tree": "8403d5acabc83707e9b5fcb4e5250a4883c12293",
+  "parents": [
+    "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58"
+  ],
+  "comparison": {
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "changed_paths": [
+      {
+        "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/Cargo.lock",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/PQ_INSTALLATION.md",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/evidence_host.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/main.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/tests/support/mod.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/tests/support/recovery.rs",
+        "status": "added"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/Cargo.toml",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/bin/hepta-neural-agentd.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/smollm_agentd_recovery_tests.rs",
+        "status": "added"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_agentd_tests.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs",
+        "status": "modified"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/smollm_study_ordinary_tests.rs",
+        "status": "modified"
+      }
+    ]
+  },
+  "source_and_lockfile_changed": true,
+  "qualified_by_frozen_pair_receipts": false,
+  "claim": "Preserve this concurrent Agentd/PQ recovery code and Cargo.lock change. Append evidence without changing the tested source identities; the new parent and delivery tip do not inherit d7c results."
+}

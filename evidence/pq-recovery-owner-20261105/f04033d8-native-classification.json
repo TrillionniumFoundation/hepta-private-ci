@@ -1,0 +1,23 @@
+{
+  "source_commit": "f04033d852ee9c1c9ba88a9fc48c21b798c39f97",
+  "source_tree": "e6103f5f5fa3f6ba7938f78bc616ad2dd90e6e89",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-agentd",
+    "--locked",
+    "--lib",
+    "-E",
+    "test(evidence_frontier)"
+  ],
+  "actual_process_exit_code": 101,
+  "actual_elapsed_seconds": 1838.714882850647,
+  "classification": "BUILD_BLOCKED_ENOSPC",
+  "executed_tests": 0,
+  "code_regression_result": null,
+  "failure_summary": "codex-core could not write target/debug/deps/rmetaJGYMjD/full.rmeta: No space left on device (os error 28)",
+  "wall_timeout_configured": false,
+  "native_log_sha256": "1b80395ab8b21d2c928694adfa90e32371ceeb7b2ec4a6d275aa6c27189fd943",
+  "scope": "Historical f040 source; does not validate later four-root repair or remote integrated source containing evidence schema 0016"
+}

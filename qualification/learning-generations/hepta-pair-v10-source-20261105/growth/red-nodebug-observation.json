@@ -1,0 +1,21 @@
+{
+  "phase": "RED_NODEBUG_DIAGNOSTIC",
+  "recorded_utc": "2026-11-05T04:37:35.148210+00:00",
+  "source_drift_after_command": [],
+  "test_elf": "/workspace/scratch/48266f5bd43f/chain-target/debug/deps/trnm_pon_node-33be7312af1f531b",
+  "test_elf_sha256": "579ed8bdf3a9c4e5d12dc1fefbf1a954bf915ec4a714983f2d9a927ca093c6fe",
+  "test_elf_bytes": 158535352,
+  "actual_test_result": {
+    "passed": 0,
+    "failed": 2,
+    "ignored": 0,
+    "filtered_out": 1080,
+    "test_seconds": 0.15
+  },
+  "failure_messages": [
+    "cancelled activation returned success",
+    "activation returned from a changed storage epoch"
+  ],
+  "original_test_profile": false,
+  "new_source_acceptance": false
+}

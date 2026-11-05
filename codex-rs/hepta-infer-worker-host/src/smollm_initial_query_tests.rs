@@ -76,7 +76,7 @@ async fn real_selected_initial_query_actual_forward_then_withdrawal_is_sticky() 
             .is_err()
     );
     owner.shutdown().await?;
-    issuer.await?.map_err(issuer_error)?;
+    issuer.finish().await.map_err(issuer_error)?;
     archive_authority(&authority, &input.output)?;
     Ok(())
 }
@@ -135,7 +135,7 @@ async fn real_selected_initial_query_refuses_before_claim_and_keeps_cleanup() ->
                 .is_err()
         );
         owner.shutdown().await?;
-        issuer.await?.map_err(issuer_error)?;
+        issuer.finish().await.map_err(issuer_error)?;
         archive_authority(&authority, &input.output)?;
     }
     Ok(())
@@ -199,7 +199,7 @@ async fn real_selected_initial_query_outer_error_closes_owner_and_keeps_complete
         .ok_or("completed original read missing")?;
     assert_eq!(completed.state, RequestState::Completed);
     assert!(completed.terminal_observation_digest.is_some());
-    issuer.await?.map_err(issuer_error)?;
+    issuer.finish().await.map_err(issuer_error)?;
     archive_authority(&authority, &input.output)?;
     Ok(())
 }

@@ -1,0 +1,57 @@
+{
+  "after": {
+    "commit": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+    "dirty": false,
+    "parents": [
+      "c90d13228514440e82d4bbb0da2bdaf13d145c8a"
+    ],
+    "tree": "1c34e75019730bfdd238ebc612701d9f9583759d"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+    "dirty": false,
+    "parents": [
+      "c90d13228514440e82d4bbb0da2bdaf13d145c8a"
+    ],
+    "tree": "1c34e75019730bfdd238ebc612701d9f9583759d"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(authbus_dispatch::tests::)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 101,
+  "elapsed_seconds": 74.85158250500172,
+  "error": "required tests were not observed passing",
+  "exit_code": 101,
+  "finished_at": "2026-11-05T10:16:40.632949+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 26925,
+  "log_file": "hepta-composed-dispatcher.json.c3eb0d09e1404761b1e702ffcf920126.log",
+  "log_sha256": "0b5b580c2bb98c4f55402915817d14e3f0fc084f52f6ba5778ff308c71367934",
+  "minimum_tests": 14,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 101,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+  "started_at": "2026-11-05T10:15:25.779597+00:00",
+  "status": "failed",
+  "tested_sha": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+  "timed_out": false,
+  "working_directory": "/workspace/scratch/768fd621f7e2/hepta"
+}

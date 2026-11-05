@@ -14,13 +14,17 @@ const MAX_AUTHBUS_REPLAY_FRONTIER_ROWS: usize = 16_384;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct EvidenceRecoverySnapshotV1 {
+pub struct EvidenceRecoverySnapshotV3 {
     pub schema_version: u32,
     pub database_lineage: String,
     pub migration_set_sha256: Sha256Digest,
     pub qualification_max_seq: u64,
     pub qualification_frontier_sha256: Sha256Digest,
     pub authbus_replay_frontier_sha256: Sha256Digest,
+    pub provider_effect_rows: u64,
+    pub provider_effect_frontier_sha256: Sha256Digest,
+    pub provider_invocation_rows: u64,
+    pub provider_invocation_frontier_sha256: Sha256Digest,
 }
 
 impl HeptaEvidenceStore {
@@ -67,14 +71,17 @@ impl HeptaEvidenceStore {
             .map_err(classify_sqlx_error)
     }
 
-    pub async fn recovery_snapshot(&self) -> Result<EvidenceRecoverySnapshotV1, EvidenceError> {
+    pub async fn recovery_snapshot(&self) -> Result<EvidenceRecoverySnapshotV3, EvidenceError> {
+        // One SQLite snapshot must cover every component. An effect append
+        // between independent pool reads must not create a mixed checkpoint.
+        let mut transaction = self.pool.begin().await.map_err(classify_sqlx_error)?;
         let migration_rows = sqlx::query(
             "SELECT version, description, checksum
              FROM _sqlx_migrations
              WHERE success = 1
              ORDER BY version",
         )
-        .fetch_all(&self.pool)
+        .fetch_all(&mut *transaction)
         .await
         .map_err(classify_sqlx_error)?;
         let mut migration_frontier = empty_frontier(b"hepta.evidence.migrations.v1");
@@ -104,7 +111,7 @@ impl HeptaEvidenceStore {
                 EvidenceError::InvalidRecord("qualification recovery bound overflow".into())
             })?,
         )
-        .fetch_all(&self.pool)
+        .fetch_all(&mut *transaction)
         .await
         .map_err(classify_sqlx_error)?;
         if qualification_rows.len() > MAX_QUALIFICATION_FRONTIER_ROWS {
@@ -146,7 +153,7 @@ impl HeptaEvidenceStore {
                 EvidenceError::InvalidRecord("AuthBus recovery bound overflow".into())
             })?,
         )
-        .fetch_all(&self.pool)
+        .fetch_all(&mut *transaction)
         .await
         .map_err(classify_sqlx_error)?;
         if replay_rows.len() > MAX_AUTHBUS_REPLAY_FRONTIER_ROWS {
@@ -187,25 +194,38 @@ impl HeptaEvidenceStore {
             );
         }
 
-        Ok(EvidenceRecoverySnapshotV1 {
-            schema_version: 1,
+        let (provider_effect_rows, provider_effect_frontier_sha256) =
+            crate::recovery_effect_frontier::snapshot(&mut transaction).await?;
+        let (provider_invocation_rows, provider_invocation_frontier_sha256) =
+            crate::recovery_invocation_frontier::snapshot(&mut transaction).await?;
+        transaction.commit().await.map_err(classify_sqlx_error)?;
+        Ok(EvidenceRecoverySnapshotV3 {
+            schema_version: 3,
             database_lineage: EVIDENCE_DATABASE_LINEAGE.to_string(),
             migration_set_sha256: migration_frontier,
             qualification_max_seq,
             qualification_frontier_sha256: qualification_frontier,
             authbus_replay_frontier_sha256: replay_frontier,
+            provider_effect_rows,
+            provider_effect_frontier_sha256,
+            provider_invocation_rows,
+            provider_invocation_frontier_sha256,
         })
     }
 }
 
-fn empty_frontier(domain: &[u8]) -> Sha256Digest {
+pub(super) fn empty_frontier(domain: &[u8]) -> Sha256Digest {
     let mut bytes = Vec::with_capacity(domain.len() + 1);
     bytes.extend_from_slice(domain);
     bytes.push(0);
     Sha256Digest::for_bytes(&bytes)
 }
 
-fn extend_frontier(domain: &[u8], previous: &Sha256Digest, parts: &[&[u8]]) -> Sha256Digest {
+pub(super) fn extend_frontier(
+    domain: &[u8],
+    previous: &Sha256Digest,
+    parts: &[&[u8]],
+) -> Sha256Digest {
     let mut bytes = Vec::with_capacity(
         domain.len()
             + previous.as_str().len()

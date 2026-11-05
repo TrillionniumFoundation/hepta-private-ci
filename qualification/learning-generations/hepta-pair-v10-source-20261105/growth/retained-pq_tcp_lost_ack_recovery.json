@@ -1,0 +1,23 @@
+{
+  "label": "pq_tcp_lost_ack_recovery",
+  "argv": [
+    "/workspace/scratch/48266f5bd43f/chain-target/debug/deps/trnm_pon_node-33be7312af1f531b",
+    "ingress::pq_network::tests::real_tcp_node_submit_lost_ack_signature_randomness_and_cold_reopen",
+    "--exact",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "returncode": 0,
+  "wall_seconds": 0.30077887599964015,
+  "log": "retained-pq_tcp_lost_ack_recovery.log",
+  "log_sha256": "49bb7766793b49d3899874362ecede439b8523c00c2cebc4b5c9c2d20a212cc0",
+  "selected_test_count": 1,
+  "test_status": "ok",
+  "passed": 1,
+  "failed": 0,
+  "ignored": 0,
+  "measured": 0,
+  "filtered_out": 1081,
+  "test_seconds": 0.3,
+  "enumerated_count_matches_result": true
+}

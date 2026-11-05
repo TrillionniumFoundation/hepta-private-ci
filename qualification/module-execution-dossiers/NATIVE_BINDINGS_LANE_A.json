@@ -56,7 +56,8 @@
         "VerifiedUseToken",
         "claim",
         "with_verified_use",
-        "verify_strict"
+        "grant_signing_input",
+        "PinnedAuthorityKey"
       ]
     },
     {
@@ -115,6 +116,6 @@
   "interpretation": "Historical blobSha values record earlier source observations and do not freeze future implementations. Current verification checks registered module ownership, paths and observed source identifiers against committed checkout bytes, and emits actual sourceSha, sourceTree and per-file blobSha alongside historicalBlobSha. Lane A rows override the corresponding general rows. Source identity proves neither complete operation coverage nor production callers, activation, external effects, independent acceptance, promotion or release.",
   "sourceCodeCommitRole": "provenance_only_non_authoritative",
   "candidateBinding": "runtime_head_tree_and_source_blob_receipt",
-  "sourceObservationDigest": "29043ce2adfb1359a5b8a8189127cf1eabc317d0de2f772e93349def3f0996a2",
+  "sourceObservationDigest": "a0e274289b2fb0f179e40d1e43ed62adf6d08fad935fea5edf96c6c3af3b2b26",
   "blobShaRole": "historical_observation_only"
 }

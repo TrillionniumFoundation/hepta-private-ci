@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/42d46a663b73/runtime/scripts/hepta_smollm_execution_source_v1.py", line 451, in <module>
+    main()
+  File "/workspace/scratch/42d46a663b73/runtime/scripts/hepta_smollm_execution_source_v1.py", line 447, in main
+    print(json.dumps(verify(args.chain, args.profile), sort_keys=True))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/42d46a663b73/runtime/scripts/hepta_smollm_execution_source_v1.py", line 246, in verify
+    return _verify(chain, profile, None)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/42d46a663b73/runtime/scripts/hepta_smollm_execution_source_v1.py", line 339, in _verify
+    require(
+  File "/workspace/scratch/42d46a663b73/runtime/scripts/hepta_smollm_execution_source_v1.py", line 105, in require
+    raise ValueError(reason)
+ValueError: V11 execution source contains untracked or ignored inputs

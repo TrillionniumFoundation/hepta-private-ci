@@ -1,0 +1,21 @@
+{
+  "source_commit": "70115620a7f540c8618a9b0d32ead20f8bc508f0",
+  "command": [
+    "just",
+    "fix",
+    "-p",
+    "codex-hepta-evidence",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--locked"
+  ],
+  "actual_exit_code": 101,
+  "elapsed_seconds": 368.1885404586792,
+  "classification": "BUILD_BLOCKED_ENOSPC",
+  "native_tests_executed": 0,
+  "source_unchanged": true,
+  "scope": "Required scoped lint did not finish; failed to write codex-protocol incremental dep-graph.part.bin with OS error28. No lint PASS inferred.",
+  "log_sha256": "583307cfd4e4e4a7548a689255bd50b2e989dcb8b0885b2e1101d33c5eb1f998"
+}

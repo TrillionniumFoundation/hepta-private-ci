@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-05T04:29:24.561626+00:00",
+  "scope": "Workflow selection and audit extension; no Rust source, dependencies, permissions, profiles, existing budgets or runner matrix changed.",
+  "production_and_test_source_commit": "d206c3c787f6b67c771b67a8e1d46c8261810042",
+  "production_and_test_source_tree": "00048be8564f7726716f78edbb37d79ab273167a",
+  "root_reported_current_remote_parent": "3558ced0fd983603a3082a42359e8da63dfc8418",
+  "parent_note": "Root publishes the workflow only on the current evidence successor; no ref movement or workflow dispatch by this agent. New CI observations must bind the later actual tested workflow commit.",
+  "workflow_path": ".github/workflows/hepta-pq-policy-renewal.yml",
+  "base_workflow_blob": "4833854841826eafe385cf242fb30e3eb6500aee",
+  "workflow": {
+    "git_blob": "c07b903bc589096f5927ee224abd10684d9a3c82",
+    "sha256": "2d4beae141331aebc8715ff8d4cb0e1513c436b60227e530b2abbaa94f4c53e9",
+    "bytes": 14190
+  },
+  "diff": {
+    "files": 1,
+    "insertions": 53,
+    "deletions": 0
+  },
+  "configuration_preservation": "Parsed configuration and every original step match d206 exactly, apart from adding the two recovery steps and nine names to the existing audit. Audit AST with those new name sets removed equals the original AST.",
+  "native_controls": {
+    "existing_dispatcher": 14,
+    "existing_product": 3,
+    "new_owner": 7,
+    "new_signed_frontier": 2
+  },
+  "new_step_timeouts_seconds": [
+    600,
+    600
+  ],
+  "original_job_timeout_minutes": 90,
+  "validation": {
+    "yaml_parse": "PASS",
+    "rust_function_name_and_module_selection": "PASS 9 exact selectors",
+    "actual_inline_audit_fixtures": "PASS 43 fixture cases; native test count is zero",
+    "shell_syntax": "PASS 3 changed shell blocks",
+    "git_diff_check": "PASS",
+    "original_d206_checkout_clean": "PASS",
+    "repository_just_fmt": "PASS exit 0; workflow-only diff has no applicable formatter groups",
+    "native_owner_red_green": "NOT_RUN by this change; prior corrected attempt failed compilation E0463 with zero tests",
+    "native_signed_two": "NOT_RUN",
+    "ci_dispatch": "NOT_TRIGGERED"
+  },
+  "qualification": "HOLD_NO_GO",
+  "scope_limits": [
+    "Recovery signing remains Ed25519; this is not a PQ recovery root.",
+    "No independent custody, freshness, provider exactly-once or whole-host rollback qualification.",
+    "The existing 14+3 controls and new 7+2 controls are enforced without weakening old conditions."
+  ]
+}

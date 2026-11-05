@@ -340,12 +340,9 @@ impl VerifiedUseToken {
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
-        let state = self.owner.ensure_live_state(state)?;
+        let state = self.owner.ensure_current_effect_state(state)?;
         let now_unix_ms = self.owner.clock.now_unix_ms().map_err(map_trust_error)?;
-        validate_live(&self.grant, &state.head, now_unix_ms)?;
-        if state.head != self.claimed_head {
-            return Err(FinalUseError::StaleRevocationHead);
-        }
+        self.validate_entry(&state.head, now_unix_ms)?;
         let entered = EnteredUseToken {
             _owner: Arc::clone(&self.owner),
             binding: self.grant.binding,
@@ -353,6 +350,20 @@ impl VerifiedUseToken {
         };
         drop(state);
         Ok(entered)
+    }
+
+    // Keep every final boundary bound to the head authenticated at claim time.
+    // Advancing the owner requires a fresh claim and freshness presentation.
+    fn validate_entry(
+        &self,
+        head: &FinalUseRevocations,
+        now_unix_ms: u64,
+    ) -> Result<(), FinalUseError> {
+        validate_live(&self.grant, head, now_unix_ms)?;
+        if head != &self.claimed_head {
+            return Err(FinalUseError::StaleRevocationHead);
+        }
+        Ok(())
     }
 }
 
@@ -787,8 +798,8 @@ impl FinalUseAuthority {
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
-        let state = self.0.ensure_live_state(state)?;
-        validate_live(&token.grant, &state.head, self.now_unix_ms()?)?;
+        let state = self.0.ensure_current_effect_state(state)?;
+        token.validate_entry(&state.head, self.now_unix_ms()?)?;
         self.0.active_dispatches.fetch_add(1, Ordering::AcqRel);
         drop(state);
         Ok(ActiveDispatchGuard {
@@ -829,9 +840,9 @@ impl FinalUseAuthority {
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
-        let state = self.0.ensure_live_state(state)?;
+        let state = self.0.ensure_current_effect_state(state)?;
         let now_unix_ms = self.now_unix_ms()?;
-        validate_live(&token.grant, &state.head, now_unix_ms)?;
+        token.validate_entry(&state.head, now_unix_ms)?;
         Ok(VerifiedUseTokenWitnessV1::final_use(
             self.0.signer_id.clone(),
             token.grant.grant_id.clone(),
@@ -857,9 +868,9 @@ impl FinalUseAuthority {
             .state
             .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
-        let state = self.0.ensure_live_state(state)?;
+        let state = self.0.ensure_current_effect_state(state)?;
         let now_unix_ms = self.now_unix_ms()?;
-        validate_live(&token.grant, &state.head, now_unix_ms)?;
+        token.validate_entry(&state.head, now_unix_ms)?;
         let witness = VerifiedUseTokenWitnessV1::final_use(
             self.0.signer_id.clone(),
             token.grant.grant_id,

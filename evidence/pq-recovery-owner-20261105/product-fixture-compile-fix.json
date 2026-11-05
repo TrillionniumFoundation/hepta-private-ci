@@ -1,0 +1,41 @@
+{
+  "base": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+  "candidate_commit": "f88f2a03dc06a639fa7622154163d22e01e5d892",
+  "candidate_tree": "990ae49d3021b4431b55f7f5c78356199587e7f4",
+  "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+  "base_blob": "763f4c6e2c5c8f97817dd4f6eb48bc4052ee704c",
+  "candidate_blob": "d87d97f193a6095e77a60fb3cb1894f77ebc6f95",
+  "candidate_sha256": "5baaac0f3034422f28bdbd14379b2d8bb08a42eb84c8e174245aa171d3649b32",
+  "patch_sha256": "541814af737a34475abde045b5fbcab0d7a05ebeb62d008f75156c2fd4e40079",
+  "scope": "Only map ProviderEffectBindingError into anyhow in the existing product fixture. Provider identifiers, payload, persisted effect and rollback oracles unchanged. The unconvertible ? also exists at reviewed base 3558 lines663-667.",
+  "native_original_result": {
+    "source": "fc0c6f7430cc1cce9274d407536e7249f2290ccd",
+    "command": [
+      "just",
+      "test",
+      "-p",
+      "codex-hepta-agentd",
+      "--locked",
+      "--test",
+      "kernel_evidence_product"
+    ],
+    "exit_code": 101,
+    "elapsed_seconds": 8.182188272476196,
+    "executed_tests": 0,
+    "classification": "COMPILE_FAILED_E0277",
+    "log_sha256": "8465ede469397284d303383b5c34e6ac63948fa8d5c88a2b8e65b240d31b4954"
+  },
+  "format_command": [
+    "just",
+    "fmt",
+    "--base",
+    "fc0c6f7430cc1cce9274d407536e7249f2290ccd"
+  ],
+  "format_exit_code": 0,
+  "diff_check_exit_code": 0,
+  "local_candidate_raw_commit": {
+    "path": "f88f2a03-commit.raw",
+    "sha256": "dba1dff70738a88cf8875127f35d1a7b46606342482339ab7d62be31efde006b",
+    "git_commit_sha": "f88f2a03dc06a639fa7622154163d22e01e5d892"
+  }
+}

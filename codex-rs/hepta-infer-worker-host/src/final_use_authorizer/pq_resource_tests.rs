@@ -113,7 +113,18 @@ async fn max_rotation_config_loads_only_as_pq_and_oversize_response_stops_at_pre
     let mut classic = serde_json::to_vec(&classic_config)?;
     classic.resize(MAX_CONFIG_BYTES, b' ');
     fs::write(&path, &classic)?;
-    let classic_owner = UnixFinalUseAuthorizer::open(&path)?;
+    assert!(
+        UnixFinalUseAuthorizer::open(&path)
+            .err()
+            .unwrap()
+            .to_string()
+            .contains("requires explicit ml_dsa65_v2 authentication profile")
+    );
+    assert!(!root.path().join("classic-state").exists());
+    // Historical compatibility is an explicit API, never a configuration-file
+    // fallback in the ordinary runtime. Keep exercising the bounded classic
+    // fixture through that API without weakening the PQ wire-size checks.
+    let classic_owner = UnixFinalUseAuthorizer::from_config(serde_json::from_slice(&classic)?)?;
     assert_eq!(
         classic_owner.authentication_profile(),
         FinalUseAuthenticationProfile::ClassicalV1

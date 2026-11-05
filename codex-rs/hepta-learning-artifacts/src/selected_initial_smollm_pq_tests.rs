@@ -5,7 +5,7 @@ use codex_hepta_contracts::pq_auth::PqNativeSigningKey;
 use codex_hepta_contracts::pq_auth::ml_dsa_65_key_id_from_spki;
 use pretty_assertions::assert_eq;
 
-fn pq_key(seed: u8) -> PqNativeSigningKey {
+pub(super) fn pq_key(seed: u8) -> PqNativeSigningKey {
     let spki = PqNativeSigningKey::public_spki_from_seed(&[seed; 32].into());
     PqNativeSigningKey::from_owned_seed(
         [seed; 32].into(),
@@ -14,7 +14,7 @@ fn pq_key(seed: u8) -> PqNativeSigningKey {
     .fixture("PQ initial-material test signer")
 }
 
-fn pq_current(
+pub(super) fn pq_current(
     fixture: &Fixture,
     key: &PqNativeSigningKey,
 ) -> (VerifiedCurrentRegistryViewV1, PathBuf) {

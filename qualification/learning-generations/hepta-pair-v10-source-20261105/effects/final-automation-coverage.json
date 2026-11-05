@@ -1,0 +1,1419 @@
+{
+  "runtime_commit": "d7c32f38ae1c3890e73ff48ef8ee725ba4e80c58",
+  "runtime_tree": "b79a4a4677b672a89cce53c9abe6f6c71810ee88",
+  "paired_chain_commit": "04be5f02c84cf5cb626a53f34bc03a5bd6ff5137",
+  "inventory": "final-automation-target-inventory.json",
+  "inventory_sha256": "61f30161c1c28780e961878a51e926004fc75f675ed5bd9d8b67bd8c80aa3fc7",
+  "target_count": 12,
+  "default_features_only": true,
+  "test_profile": "unoptimized + debuginfo",
+  "nextest_profile": "local",
+  "no_capture_runs_serially": true,
+  "nextest_help_sha256": "4d78cb984289b3b44a33666c4a42ae7f22b2972237801eacc0746d52338f3a4c",
+  "nonempty_targets": 10,
+  "empty_targets": 2,
+  "tests_run": 137,
+  "passed": 137,
+  "failed_tests": 0,
+  "skipped_tests": 0,
+  "default_feature_target_inventory_coverage_complete": true,
+  "original_full_package_command_succeeded": false,
+  "raw_tracked_file_count": 11372,
+  "raw_tracked_manifest_sha256": "339992164ae01b39aaf6a9532e961458ddc8d43d77f3bbf0f7c358f7022a3f1a",
+  "execution_wrapper_sha256": "3220d3ce466c0b0defc3557b34e74fdf466cc37320158689f49a619dfdc9bd06",
+  "targets": [
+    {
+      "target": "codex_hepta_automation",
+      "kind": "lib",
+      "selection_argv": [
+        "--lib"
+      ],
+      "classification": "all collected tests passed",
+      "exit_code": 0,
+      "tests_run": 31,
+      "passed": 31,
+      "skipped": 0,
+      "native_seconds": 4.28,
+      "elapsed_seconds": 25.2782492489996,
+      "receipt": "final-automation-lib.json",
+      "receipt_sha256": "d6e20845fa18ea79fb91580c9648281cd33536cd59e621084c6f63d0c1ec42de",
+      "log": "final-automation-lib.log",
+      "log_sha256": "6175378a689533b7a90ddc478d68cb8263cba5151aa11c0d8e6d9a23865d93d7",
+      "binary_receipt": "final-automation-lib-binary.json",
+      "binary_receipt_sha256": "532830cae4f7192f5f1941a696488591fecb6655035330524cbce89c141f6eb2",
+      "test_elf_sha256": "bc6dda324fd297da2e6516144b588ae60c45f7c3aa59d7707393f5cd9a715f38",
+      "source_guards_passed": true,
+      "raw_source_unchanged": true
+    },
+    {
+      "target": "hepta-taskflow-runtime",
+      "kind": "bin",
+      "selection_argv": [
+        "--bin",
+        "hepta-taskflow-runtime"
+      ],
+      "classification": "empty target; original exit 4 preserved",
+      "exit_code": 4,
+      "tests_run": 0,
+      "passed": 0,
+      "skipped": 0,
+      "native_seconds": 0.0,
+      "elapsed_seconds": 4.640741006000098,
+      "receipt": "final-automation-bin.json",
+      "receipt_sha256": "1f7eaa6c57dd127529d8941a9332a537802b26ff7e746bd104701b2d8805be77",
+      "log": "final-automation-bin.log",
+      "log_sha256": "22f5455f069b246ab1e93945bfa6db5a412419b3a051ca351f8c24842a2541d0",
+      "binary_receipt": "final-automation-bin-binary.json",
+      "binary_receipt_sha256": "305b18f1b96dd4dab04ed5bda58432338ad200a61bd9208930ea2efb55a605c4",
+      "test_elf_sha256": "50f8d507b0afa983d7c15ad97a59be64fc7b26355f4eaed88ce0b5f80b8e0902",
+      "source_guards_passed": true,
+      "raw_source_unchanged": true
+    },
+    {
+      "target": "authorized_effect",
+      "kind": "test",
+      "selection_argv": [
+        "--test",
+        "authorized_effect"
+      ],
+      "classification": "all collected tests passed",
+      "exit_code": 0,
+      "tests_run": 36,
+      "passed": 36,
+      "skipped": 0,
+      "native_seconds": 16.943,
+      "elapsed_seconds": 35.7480501,
+      "receipt": "final-automation-authorized-effect.json",
+      "receipt_sha256": "3c52bef9d3e84f50a2e0f73fb0fd2bf53d2794a4421017e9b03d9603252869ac",
+      "log": "final-automation-authorized-effect.log",
+      "log_sha256": "a3fa7b5b4dfd8160a6ae5fd7e3d6f0bd670b5ac588c8d4f1b760752697be7d57",
+      "binary_receipt": "final-automation-authorized-effect-binary.json",
+      "binary_receipt_sha256": "4b89514c3c8f2a003c1e0dc055ad764112497cba98aadbdf69658e40348339cf",
+      "test_elf_sha256": "ad4685cf5ee990006aa1e2adea2f367b05df4062073a52b416e14e6eea1bd8fe",
+      "source_guards_passed": true,
+      "raw_source_unchanged": true
+    },
+    {
+      "target": "automation",
+      "kind": "test",
+      "selection_argv": [
+        "--test",
+        "automation"
+      ],
+      "classification": "all collected tests passed",
+      "exit_code": 0,
+      "tests_run": 18,
+      "passed": 18,
+      "skipped": 0,
+      "native_seconds": 7.132,
+      "elapsed_seconds": 24.396679221999875,
+      "receipt": "final-automation-automation.json",
+      "receipt_sha256": "5cf7cec4e85745274b62a4277f337d31e17529904eb5426d244ddaa6797f3b81",
+      "log": "final-automation-automation.log",
+      "log_sha256": "bde95fa7a6fb3bcd4927e1c7dacfb2ac688fd23f53ae126d99811b2603030e80",
+      "binary_receipt": "final-automation-automation-binary.json",
+      "binary_receipt_sha256": "19d5637436c95dccd31cc848b950bd07c4b245b5f2711edbe3bcaf47c626d406",
+      "test_elf_sha256": "7c8c28e64bcb24f223abeb7e69ef66d5c3ae8a5c38054adb3c63b71626ee01eb",
+      "source_guards_passed": true,
+      "raw_source_unchanged": true
+    },
+    {
+      "target": "durable_causal_chain",
+      "kind": "test",
+      "selection_argv": [
+        "--test",
+        "durable_causal_chain"
+      ],
+      "classification": "all collected tests passed",
+      "exit_code": 0,
+      "tests_run": 10,
+      "passed": 10,
+      "skipped": 0,
+      "native_seconds": 2.644,
+      "elapsed_seconds": 15.383297917000164,
+      "receipt": "final-automation-durable-causal-chain.json",
+      "receipt_sha256": "94362b9fe8344d2b7133fb6ef844c9733601f5d906defa2a3e793f534b61e80d",
+      "log": "final-automation-durable-causal-chain.log",
+      "log_sha256": "77ceaae86d3343f3bda37dd48c8939f9c1e2d62802914dcb4df55f700db68b0a",
+      "binary_receipt": "final-automation-durable-causal-chain-binary.json",
+      "binary_receipt_sha256": "b63d502f40587edaba8f79264b513ef231daee817f9ec91ce9001cd6e50cef2c",
+      "test_elf_sha256": "ab94715d80a1a7211448a4efed31088137f58f1a06281cc0596998b2e8bcbe66",
+      "source_guards_passed": true,
+      "raw_source_unchanged": true
+    },
+    {
+      "target": "kernel_operations_destination",
+      "kind": "test",
+      "selection_argv": [
+        "--test",
+        "kernel_operations_destination"
+      ],
+      "classification": "all collected tests passed",
+      "exit_code": 0,
+      "tests_run": 4,
+      "passed": 4,
+      "skipped": 0,
+      "native_seconds": 0.477,
+      "elapsed_seconds": 9.583769666999615,
+      "receipt": "final-automation-kernel-operations-destination.json",
+      "receipt_sha256": "9192866bff7773820c931f52a83d77b8c4231c6255bcda711f5754fd189faab6",
+      "log": "final-automation-kernel-operations-destination.log",
+      "log_sha256": "022d3fa60b77a797f1e3408243b60f78def10d58a1d71e07ae6f01705a5207d0",
+      "binary_receipt": "final-automation-kernel-operations-destination-binary.json",
+      "binary_receipt_sha256": "7da3d82392fa9386e87832072e82521bf264905214b303034e18d296a53f0680",
+      "test_elf_sha256": "3cb99428d3fde542184fe5928eadc24b59c55fffeab3b6205be34b11269da4bb",
+      "source_guards_passed": true,
+      "raw_source_unchanged": true
+    },
+    {
+      "target": "operation_timer_fence",
+      "kind": "test",
+      "selection_argv": [
+        "--test",
+        "operation_timer_fence"
+      ],
+      "classification": "all collected tests passed",
+      "exit_code": 0,
+      "tests_run": 3,
+      "passed": 3,
+      "skipped": 0,
+      "native_seconds": 0.607,
+      "elapsed_seconds": 8.326570632999392,
+      "receipt": "final-automation-operation-timer-fence.json",
+      "receipt_sha256": "c1a83887a72f17e8f5b1d27d393dd623814db987f305af49c8be5bbaeafaeeb7",
+      "log": "final-automation-operation-timer-fence.log",
+      "log_sha256": "5827dcc54f6ea08230d4c551b4a79475f8b90c3299cfd9bca53637d6fca8af35",
+      "binary_receipt": "final-automation-operation-timer-fence-binary.json",
+      "binary_receipt_sha256": "12cf9144be56d20c3248b404480f803c83ce4f50474410bb6dfa1eeef6cd3eb5",
+      "test_elf_sha256": "2bf356f67fe3d79f55baa397ea49e67507b9ad458353a45ae2981c942a7544e3",
+      "source_guards_passed": true,
+      "raw_source_unchanged": true
+    },
+    {
+      "target": "retirement_recovery",
+      "kind": "test",
+      "selection_argv": [
+        "--test",
+        "retirement_recovery"
+      ],
+      "classification": "all collected tests passed",
+      "exit_code": 0,
+      "tests_run": 4,
+      "passed": 4,
+      "skipped": 0,
+      "native_seconds": 2.432,
+      "elapsed_seconds": 12.252181773999837,
+      "receipt": "final-automation-retirement-recovery.json",
+      "receipt_sha256": "8592d36e666bf9b9ee86fbc37e842ada3f10cde9a6a9b0142024290dd12047a3",
+      "log": "final-automation-retirement-recovery.log",
+      "log_sha256": "e17a53106cfd1c84c349f443e4c28e90c2a356efddd5ea59b22dfe637b2ad126",
+      "binary_receipt": "final-automation-retirement-recovery-binary.json",
+      "binary_receipt_sha256": "aca7b35bcc570ebb72a831b595c1698f1a8c469787a668d306193057f1e7a3ea",
+      "test_elf_sha256": "041d2566c6002351274ffe7b3bdcf009e67c87ed5c1d91d3297a194d69efe824",
+      "source_guards_passed": true,
+      "raw_source_unchanged": true
+    },
+    {
+      "target": "taskflow",
+      "kind": "test",
+      "selection_argv": [
+        "--test",
+        "taskflow"
+      ],
+      "classification": "all collected tests passed",
+      "exit_code": 0,
+      "tests_run": 13,
+      "passed": 13,
+      "skipped": 0,
+      "native_seconds": 2.208,
+      "elapsed_seconds": 6.594981696999639,
+      "receipt": "final-automation-taskflow.json",
+      "receipt_sha256": "974249512a6b98187ce0ff8c5860c8e5b45b76b3342042d038eefa24554a7b63",
+      "log": "final-automation-taskflow.log",
+      "log_sha256": "87e1c90646a99e0828db328c18e6c6425a7a07aefeb79abb4fc44fa85107814b",
+      "binary_receipt": "final-automation-taskflow-binary.json",
+      "binary_receipt_sha256": "8ae0810dba46cf14ee957fdb2c6f1de82000453fd6527212b0c67df1773702d2",
+      "test_elf_sha256": "750a021e831e04b85be44ae276dec546d50c81f47e4397e456b3d2c8b2145ee9",
+      "source_guards_passed": true,
+      "raw_source_unchanged": true
+    },
+    {
+      "target": "taskflow_execution_boundary",
+      "kind": "test",
+      "selection_argv": [
+        "--test",
+        "taskflow_execution_boundary"
+      ],
+      "classification": "all collected tests passed",
+      "exit_code": 0,
+      "tests_run": 11,
+      "passed": 11,
+      "skipped": 0,
+      "native_seconds": 0.117,
+      "elapsed_seconds": 9.654796471999362,
+      "receipt": "final-automation-taskflow-execution-boundary.json",
+      "receipt_sha256": "d06ba507a9575fd461c4c43e703af3de96637f99ff0bf63c930ccfcf75fb37dc",
+      "log": "final-automation-taskflow-execution-boundary.log",
+      "log_sha256": "32966237a23bca242b18990f340d247a3edb0f2afc449c68ca93dd5a97276369",
+      "binary_receipt": "final-automation-taskflow-execution-boundary-binary.json",
+      "binary_receipt_sha256": "de7c2a5eccdfc41fc573e99e6ddf54d2bc62e9a0401660b2180e920273d3f732",
+      "test_elf_sha256": "eaf1397a3b0d5ee52f3ec30cec0b9d8b21ffc83d538f007e9a3d8eabd090003a",
+      "source_guards_passed": true,
+      "raw_source_unchanged": true
+    },
+    {
+      "target": "taskflow_kernel",
+      "kind": "test",
+      "selection_argv": [
+        "--test",
+        "taskflow_kernel"
+      ],
+      "classification": "empty target; original exit 4 preserved",
+      "exit_code": 4,
+      "tests_run": 0,
+      "passed": 0,
+      "skipped": 0,
+      "native_seconds": 0.0,
+      "elapsed_seconds": 4.810976819999269,
+      "receipt": "final-automation-taskflow-kernel.json",
+      "receipt_sha256": "36a2b5197ed13b88db61853db75f092a7375fedca282a4976297373947d1db93",
+      "log": "final-automation-taskflow-kernel.log",
+      "log_sha256": "5410b36ac61b583465954cfee60e4ac68ec074d24b9245bfff453f3610c4e14b",
+      "binary_receipt": "final-automation-taskflow-kernel-binary.json",
+      "binary_receipt_sha256": "46eff065cd423f119f1ea171986b154e3aaff20f76fd1b0e485d02a6f16ef57b",
+      "test_elf_sha256": "7325fdaa823a0dd8e0bf6b22384cf9f85aad8eb91bdbc723a12850a69760e6c0",
+      "source_guards_passed": true,
+      "raw_source_unchanged": true
+    },
+    {
+      "target": "taskflow_step",
+      "kind": "test",
+      "selection_argv": [
+        "--test",
+        "taskflow_step"
+      ],
+      "classification": "all collected tests passed",
+      "exit_code": 0,
+      "tests_run": 7,
+      "passed": 7,
+      "skipped": 0,
+      "native_seconds": 2.344,
+      "elapsed_seconds": 14.27624727500006,
+      "receipt": "final-automation-taskflow-step.json",
+      "receipt_sha256": "3ea502b19af726a71fe9cab829d051c27bc1114fc40d9ebfed9c2386f0558b7a",
+      "log": "final-automation-taskflow-step.log",
+      "log_sha256": "ea6d2f30c5c9abd9252056346c28e2b26eead886217d208b959cf22b29e44e0c",
+      "binary_receipt": "final-automation-taskflow-step-binary.json",
+      "binary_receipt_sha256": "28627cf626f5baa20ccb24cd4e89c72f88db15b755adf13f5d06a840938860f3",
+      "test_elf_sha256": "180d50b8654f5d17ddd82bad2e5f5c58bd25407e3731409e50eb90afad91717b",
+      "source_guards_passed": true,
+      "raw_source_unchanged": true
+    }
+  ],
+  "case_inventory": [
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "authorized_effect::intent_tests::canonical_effect_intent_binds_every_execution_dimension",
+      "seconds": 0.008,
+      "log": "final-automation-lib.log",
+      "log_line": 324
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "authorized_effect::intent_tests::canonical_effect_intent_rejects_noncanonical_dependencies",
+      "seconds": 0.011,
+      "log": "final-automation-lib.log",
+      "log_line": 332
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "effect_dispatch_ledger::tests::effect_dispatch_barrier_absence_cut_requires_settlement_and_new_fence",
+      "seconds": 0.21,
+      "log": "final-automation-lib.log",
+      "log_line": 340
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "effect_dispatch_ledger::tests::indeterminate_provider_evidence_reconciles_after_reopen_without_redispatch",
+      "seconds": 0.2,
+      "log": "final-automation-lib.log",
+      "log_line": 348
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "effect_executor::tests::current_fence_executes_once",
+      "seconds": 0.006,
+      "log": "final-automation-lib.log",
+      "log_line": 356
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "effect_executor::tests::stale_fence_and_unknown_effect_fail_closed",
+      "seconds": 0.008,
+      "log": "final-automation-lib.log",
+      "log_line": 364
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "lifecycle::tests::deterministic_occurrence_identity_binds_revision_and_instant",
+      "seconds": 0.007,
+      "log": "final-automation-lib.log",
+      "log_line": 372
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "lifecycle::tests::missed_run_math_is_bounded_and_deterministic",
+      "seconds": 0.006,
+      "log": "final-automation-lib.log",
+      "log_line": 380
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "neural_circuit::tests::circuit_compiles_to_existing_taskflow_without_authority",
+      "seconds": 0.008,
+      "log": "final-automation-lib.log",
+      "log_line": 388
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "neural_circuit::tests::circuit_reuses_taskflow_cycle_and_terminal_rejection",
+      "seconds": 0.006,
+      "log": "final-automation-lib.log",
+      "log_line": 396
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "neural_circuit::tests::structural_successor_cannot_rebind_predecessor_or_widen_capabilities",
+      "seconds": 0.008,
+      "log": "final-automation-lib.log",
+      "log_line": 404
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "neural_circuit::tests::successor_binds_exact_predecessor_and_can_change_route_and_parameters",
+      "seconds": 0.007,
+      "log": "final-automation-lib.log",
+      "log_line": 412
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "schedule_v2::tests::calendar_policy_revision_preserves_authoritative_schedule_bytes",
+      "seconds": 0.138,
+      "log": "final-automation-lib.log",
+      "log_line": 420
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "schedule_v2::tests::dst_gap_policy_is_explicit_and_deterministic",
+      "seconds": 0.016,
+      "log": "final-automation-lib.log",
+      "log_line": 428
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "schedule_v2::tests::dst_overlap_selects_first_or_second_utc_instant",
+      "seconds": 0.017,
+      "log": "final-automation-lib.log",
+      "log_line": 436
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "schedule_v2::tests::missed_run_catch_up_is_bounded_then_skips_the_remaining_backlog",
+      "seconds": 0.175,
+      "log": "final-automation-lib.log",
+      "log_line": 444
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "schedule_v2::tests::missed_run_coalesce_materializes_only_the_latest_past_instant",
+      "seconds": 0.094,
+      "log": "final-automation-lib.log",
+      "log_line": 452
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "schedule_v2::tests::missed_run_skip_jumps_past_the_observation_frontier",
+      "seconds": 0.12,
+      "log": "final-automation-lib.log",
+      "log_line": 460
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "schedule_v2::tests::tzdb_identity_changes_schedule_digest",
+      "seconds": 0.015,
+      "log": "final-automation-lib.log",
+      "log_line": 468
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "store::migration_convergence_tests::both_historical_branches_converge_without_rewriting_checksums",
+      "seconds": 0.557,
+      "log": "final-automation-lib.log",
+      "log_line": 476
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "store::migration_convergence_tests::canonical_cut_after_rebind_reopens",
+      "seconds": 0.995,
+      "log": "final-automation-lib.log",
+      "log_line": 484
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "store::migration_convergence_tests::canonical_cut_before_rebind_reopens",
+      "seconds": 0.156,
+      "log": "final-automation-lib.log",
+      "log_line": 492
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "store::migration_convergence_tests::displaced_cut_after_rebind_reopens",
+      "seconds": 0.238,
+      "log": "final-automation-lib.log",
+      "log_line": 500
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "store::migration_convergence_tests::displaced_cut_before_rebind_reopens",
+      "seconds": 0.118,
+      "log": "final-automation-lib.log",
+      "log_line": 508
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "store::migration_convergence_tests::occupied_relocation_rolls_back_all_history_rebinding",
+      "seconds": 0.028,
+      "log": "final-automation-lib.log",
+      "log_line": 516
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "store::migration_convergence_tests::unknown_or_dirty_history_is_not_relabelled",
+      "seconds": 0.045,
+      "log": "final-automation-lib.log",
+      "log_line": 524
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "store::provider_append_migration_tests::pre_upgrade_open_connection_cannot_append_through_old_insert_statements",
+      "seconds": 0.17,
+      "log": "final-automation-lib.log",
+      "log_line": 532
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "store::provider_append_migration_tests::schema_tests::altered_append_default_fails_reopen_with_triggers_and_migration_checksums_intact",
+      "seconds": 0.457,
+      "log": "final-automation-lib.log",
+      "log_line": 540
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "store::provider_append_migration_tests::v20_existing_terminal_evidence_survives_migration_without_new_binding",
+      "seconds": 0.142,
+      "log": "final-automation-lib.log",
+      "log_line": 548
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "store::provider_append_migration_tests::v20_lost_accepted_cannot_acquire_a_replacement_operation_after_migration",
+      "seconds": 0.135,
+      "log": "final-automation-lib.log",
+      "log_line": 556
+    },
+    {
+      "target": "codex_hepta_automation",
+      "binary": "codex-hepta-automation",
+      "case": "store::provider_append_migration_tests::v21_full_typed_binding_continues_after_migration_and_restart",
+      "seconds": 0.173,
+      "log": "final-automation-lib.log",
+      "log_line": 564
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "async_provider_effect_binds_exact_wire_bytes_before_burning_grant",
+      "seconds": 0.217,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 324
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "async_provider_unknown_and_lookup_not_found_stay_unresolved",
+      "seconds": 0.213,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 332
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "compensation_crash_preserves_intent_identity_and_requires_reconciliation",
+      "seconds": 0.211,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 340
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "crash_after_provider_contact_before_observation_requires_recovery_without_redispatch",
+      "seconds": 0.227,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 352
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant",
+      "seconds": 0.89,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 360
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "indeterminate_effect_reopens_without_redispatch_then_reconciles_terminally",
+      "seconds": 0.307,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 368
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "owner_recovery_tests::stale_recovery_cannot_poison_original_attempt_after_reopen",
+      "seconds": 0.59,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 376
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "proven_pre_contact_failure_never_blindly_redispatches_same_attempt",
+      "seconds": 0.202,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 384
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::barrier_tests::taskflow_dispatch_barrier_cancelled_or_expired_claim_never_contacts_provider",
+      "seconds": 0.695,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 392
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::barrier_tests::taskflow_dispatch_barrier_post_send_cancel_retains_ack_without_redispatch",
+      "seconds": 0.742,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 400
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::barrier_tests::taskflow_dispatch_barrier_preclaimed_attempt_cannot_repeat_unknown_or_accepted",
+      "seconds": 0.497,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 408
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::barrier_tests::taskflow_dispatch_barrier_preclaimed_race_allows_one_physical_contact",
+      "seconds": 0.289,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 416
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::identity_tests::legacy_tests::taskflow_provider_identity_legacy_absence_retry_keeps_first_key_and_wire",
+      "seconds": 0.294,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 424
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::identity_tests::legacy_tests::taskflow_provider_identity_legacy_absence_retry_rejects_replacement_payload_or_scope",
+      "seconds": 0.62,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 432
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::identity_tests::legacy_tests::taskflow_provider_identity_legacy_lookup_retains_original_key_wire_without_dispatch",
+      "seconds": 0.56,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 440
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::identity_tests::taskflow_provider_identity_async_uses_durable_owner_and_separate_fields",
+      "seconds": 1.143,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 448
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::identity_tests::taskflow_provider_identity_missing_material_and_changed_scope_never_query",
+      "seconds": 0.202,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 456
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::identity_tests::taskflow_provider_identity_mixed_history_is_rejected_before_lookup_and_reopen",
+      "seconds": 0.222,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 464
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::identity_tests::taskflow_provider_identity_sync_uses_durable_owner_and_separate_fields",
+      "seconds": 1.095,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 472
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::late_ack_tests::taskflow_provider_receipt_late_dispatch_cannot_replace_or_reject_accepted_operation",
+      "seconds": 0.522,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 480
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::late_ack_tests::taskflow_provider_receipt_late_dispatch_completion_after_lookup_is_retained",
+      "seconds": 0.252,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 488
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::late_ack_tests::taskflow_provider_receipt_late_dispatch_preserves_original_unknown_and_cancellation",
+      "seconds": 0.518,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 496
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::late_ack_tests::taskflow_provider_receipt_late_dispatch_reopen_requires_binding_from_same_attempt",
+      "seconds": 0.274,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 504
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::reopen_tests::taskflow_dispatch_barrier_explicit_absence_allows_new_fence_and_preserves_history",
+      "seconds": 0.579,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 512
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::reopen_tests::taskflow_provider_receipt_first_binding_on_retry_preserves_earlier_absence",
+      "seconds": 0.343,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 520
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::reopen_tests::taskflow_provider_receipt_migration_preserves_legacy_recovery_material",
+      "seconds": 0.549,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 528
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_reconciliation_without_uncertainty",
+      "seconds": 0.265,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 536
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_rejects_terminal_binding_without_observation",
+      "seconds": 0.402,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 544
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::reopen_tests::taskflow_provider_receipt_reopen_requires_all_append_only_guards",
+      "seconds": 2.123,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 552
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::reopen_tests::taskflow_provider_receipt_storage_rejects_oversized_binding_without_partial_write",
+      "seconds": 0.166,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 560
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::taskflow_provider_receipt_lost_ack_then_accepted_is_bounded_and_concurrent_safe",
+      "seconds": 0.297,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 568
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::taskflow_provider_receipt_pins_accepted_identity_and_blocks_opaque_bypass",
+      "seconds": 0.252,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 576
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "provider_receipt_tests::taskflow_provider_receipt_reopen_rejects_canonical_substitution",
+      "seconds": 0.491,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 584
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "revocation_race_is_fenced_across_the_physical_provider_call",
+      "seconds": 0.268,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 592
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "successful_effect_is_at_most_once_for_one_durable_step_attempt",
+      "seconds": 0.206,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 600
+    },
+    {
+      "target": "authorized_effect",
+      "binary": "codex-hepta-automation::authorized_effect",
+      "case": "wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant",
+      "seconds": 0.21,
+      "log": "final-automation-authorized-effect.log",
+      "log_line": 608
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "copied_database_cannot_cross_agent_owner_boundary",
+      "seconds": 0.173,
+      "log": "final-automation-automation.log",
+      "log_line": 324
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "crash_after_external_acceptance_keeps_unknown_intent_across_reopen",
+      "seconds": 0.234,
+      "log": "final-automation-automation.log",
+      "log_line": 332
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "disabling_an_inflight_lease_never_resurrects_the_task",
+      "seconds": 0.985,
+      "log": "final-automation-automation.log",
+      "log_line": 340
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "drain_blockers_require_classification_but_allow_durable_uncertainty",
+      "seconds": 0.35,
+      "log": "final-automation-automation.log",
+      "log_line": 348
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "duplicate_provider_receipt_is_rejected_by_local_outcome_fence",
+      "seconds": 0.298,
+      "log": "final-automation-automation.log",
+      "log_line": 356
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "explicit_dispatch_failure_retries_same_occurrence_and_client_id",
+      "seconds": 0.234,
+      "log": "final-automation-automation.log",
+      "log_line": 364
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "five_real_agent_identities_are_isolated_and_one_blocked_backlog_cannot_starve_peers",
+      "seconds": 0.926,
+      "log": "final-automation-automation.log",
+      "log_line": 372
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "in_flight_unknown_intent_fences_stale_generation_and_second_claim",
+      "seconds": 0.192,
+      "log": "final-automation-automation.log",
+      "log_line": 380
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "legacy_unknown_without_frozen_revision_requires_absence_proof_before_new_claim",
+      "seconds": 0.153,
+      "log": "final-automation-automation.log",
+      "log_line": 388
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "one_shot_periodic_disable_and_cancel_are_durable",
+      "seconds": 0.421,
+      "log": "final-automation-automation.log",
+      "log_line": 396
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "owner_or_generation_fence_is_not_downgraded_to_a_dispatch_retry",
+      "seconds": 0.599,
+      "log": "final-automation-automation.log",
+      "log_line": 404
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "pre_admission_dispatch_error_clears_intent_and_allows_next_generation_retry",
+      "seconds": 0.344,
+      "log": "final-automation-automation.log",
+      "log_line": 412
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "restart_reclaims_same_occurrence_with_same_core_client_id_and_fences_old_lease",
+      "seconds": 0.635,
+      "log": "final-automation-automation.log",
+      "log_line": 420
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "stale_generation_recovery_is_owner_fenced",
+      "seconds": 0.17,
+      "log": "final-automation-automation.log",
+      "log_line": 428
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "successful_dispatch_upgrades_pre_admission_intent_atomically",
+      "seconds": 0.157,
+      "log": "final-automation-automation.log",
+      "log_line": 436
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "uncertain_dispatch_requires_explicit_negative_provider_proof_before_retry",
+      "seconds": 0.247,
+      "log": "final-automation-automation.log",
+      "log_line": 444
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "unknown_provider_outcome_is_quarantined_across_store_recovery_until_reconciled",
+      "seconds": 0.196,
+      "log": "final-automation-automation.log",
+      "log_line": 452
+    },
+    {
+      "target": "automation",
+      "binary": "codex-hepta-automation::automation",
+      "case": "v1_store_migrates_atomically_to_dispatch_outcome_schema",
+      "seconds": 0.815,
+      "log": "final-automation-automation.log",
+      "log_line": 460
+    },
+    {
+      "target": "durable_causal_chain",
+      "binary": "codex-hepta-automation::durable_causal_chain",
+      "case": "allow_overlap_advances_recurrence_without_terminalizing_prior_occurrence",
+      "seconds": 0.49,
+      "log": "final-automation-durable-causal-chain.log",
+      "log_line": 324
+    },
+    {
+      "target": "durable_causal_chain",
+      "binary": "codex-hepta-automation::durable_causal_chain",
+      "case": "claim_freezes_schedule_revision_before_occurrence_materialization",
+      "seconds": 0.591,
+      "log": "final-automation-durable-causal-chain.log",
+      "log_line": 332
+    },
+    {
+      "target": "durable_causal_chain",
+      "binary": "codex-hepta-automation::durable_causal_chain",
+      "case": "forbid_overlap_parks_recurrence_until_terminal_observation",
+      "seconds": 0.214,
+      "log": "final-automation-durable-causal-chain.log",
+      "log_line": 340
+    },
+    {
+      "target": "durable_causal_chain",
+      "binary": "codex-hepta-automation::durable_causal_chain",
+      "case": "proven_absent_unknown_dispatch_reuses_same_occurrence_identity",
+      "seconds": 0.233,
+      "log": "final-automation-durable-causal-chain.log",
+      "log_line": 348
+    },
+    {
+      "target": "durable_causal_chain",
+      "binary": "codex-hepta-automation::durable_causal_chain",
+      "case": "queue_submission_is_not_occurrence_or_taskflow_success",
+      "seconds": 0.184,
+      "log": "final-automation-durable-causal-chain.log",
+      "log_line": 356
+    },
+    {
+      "target": "durable_causal_chain",
+      "binary": "codex-hepta-automation::durable_causal_chain",
+      "case": "reopen_rejects_tampered_canonical_occurrence_identity",
+      "seconds": 0.149,
+      "log": "final-automation-durable-causal-chain.log",
+      "log_line": 364
+    },
+    {
+      "target": "durable_causal_chain",
+      "binary": "codex-hepta-automation::durable_causal_chain",
+      "case": "retired_schedule_with_proven_absence_terminalizes_taskflow_and_occurrence",
+      "seconds": 0.209,
+      "log": "final-automation-durable-causal-chain.log",
+      "log_line": 372
+    },
+    {
+      "target": "durable_causal_chain",
+      "binary": "codex-hepta-automation::durable_causal_chain",
+      "case": "retired_stale_generation_before_uncertainty_closes_without_provider_contact",
+      "seconds": 0.157,
+      "log": "final-automation-durable-causal-chain.log",
+      "log_line": 380
+    },
+    {
+      "target": "durable_causal_chain",
+      "binary": "codex-hepta-automation::durable_causal_chain",
+      "case": "stale_generation_between_taskflow_intent_and_uncertainty_recovers_same_occurrence",
+      "seconds": 0.205,
+      "log": "final-automation-durable-causal-chain.log",
+      "log_line": 388
+    },
+    {
+      "target": "durable_causal_chain",
+      "binary": "codex-hepta-automation::durable_causal_chain",
+      "case": "terminal_observer_cursor_is_durable_bounded_progress",
+      "seconds": 0.205,
+      "log": "final-automation-durable-causal-chain.log",
+      "log_line": 396
+    },
+    {
+      "target": "kernel_operations_destination",
+      "binary": "codex-hepta-automation::kernel_operations_destination",
+      "case": "destination_dedupe_and_task_survive_store_reopen",
+      "seconds": 0.117,
+      "log": "final-automation-kernel-operations-destination.log",
+      "log_line": 324
+    },
+    {
+      "target": "kernel_operations_destination",
+      "binary": "codex-hepta-automation::kernel_operations_destination",
+      "case": "exact_operation_replay_returns_one_task_and_one_destination_receipt",
+      "seconds": 0.149,
+      "log": "final-automation-kernel-operations-destination.log",
+      "log_line": 332
+    },
+    {
+      "target": "kernel_operations_destination",
+      "binary": "codex-hepta-automation::kernel_operations_destination",
+      "case": "mismatched_destination_or_scope_is_denied_before_domain_mutation",
+      "seconds": 0.098,
+      "log": "final-automation-kernel-operations-destination.log",
+      "log_line": 340
+    },
+    {
+      "target": "kernel_operations_destination",
+      "binary": "codex-hepta-automation::kernel_operations_destination",
+      "case": "same_operation_identity_with_changed_task_payload_conflicts",
+      "seconds": 0.112,
+      "log": "final-automation-kernel-operations-destination.log",
+      "log_line": 348
+    },
+    {
+      "target": "operation_timer_fence",
+      "binary": "codex-hepta-automation::operation_timer_fence",
+      "case": "kernel_destination_rejects_new_schedule_while_timer_is_draining",
+      "seconds": 0.146,
+      "log": "final-automation-operation-timer-fence.log",
+      "log_line": 324
+    },
+    {
+      "target": "operation_timer_fence",
+      "binary": "codex-hepta-automation::operation_timer_fence",
+      "case": "predecessor_kernel_destination_cannot_write_after_timer_handoff",
+      "seconds": 0.178,
+      "log": "final-automation-operation-timer-fence.log",
+      "log_line": 332
+    },
+    {
+      "target": "operation_timer_fence",
+      "binary": "codex-hepta-automation::operation_timer_fence",
+      "case": "retirement_blocks_new_effects_after_restart_but_preserves_old_receipts",
+      "seconds": 0.282,
+      "log": "final-automation-operation-timer-fence.log",
+      "log_line": 340
+    },
+    {
+      "target": "retirement_recovery",
+      "binary": "codex-hepta-automation::retirement_recovery",
+      "case": "all_release_paths_preserve_disable_and_cancel_across_restart",
+      "seconds": 0.662,
+      "log": "final-automation-retirement-recovery.log",
+      "log_line": 324
+    },
+    {
+      "target": "retirement_recovery",
+      "binary": "codex-hepta-automation::retirement_recovery",
+      "case": "receipt_replay_retains_later_control_decisions_and_rejects_substitution",
+      "seconds": 0.212,
+      "log": "final-automation-retirement-recovery.log",
+      "log_line": 332
+    },
+    {
+      "target": "retirement_recovery",
+      "binary": "codex-hepta-automation::retirement_recovery",
+      "case": "reopen_rejects_mismatched_durable_receipt_copies",
+      "seconds": 1.265,
+      "log": "final-automation-retirement-recovery.log",
+      "log_line": 340
+    },
+    {
+      "target": "retirement_recovery",
+      "binary": "codex-hepta-automation::retirement_recovery",
+      "case": "unknown_dispatch_cannot_be_released_as_a_pre_dispatch_retry",
+      "seconds": 0.291,
+      "log": "final-automation-retirement-recovery.log",
+      "log_line": 348
+    },
+    {
+      "target": "taskflow",
+      "binary": "codex-hepta-automation::taskflow",
+      "case": "automation_opener_rejects_foreign_taskflow_rows",
+      "seconds": 0.163,
+      "log": "final-automation-taskflow.log",
+      "log_line": 324
+    },
+    {
+      "target": "taskflow",
+      "binary": "codex-hepta-automation::taskflow",
+      "case": "automation_opener_rejects_hash_valid_taskflow_event_fence_tamper",
+      "seconds": 0.183,
+      "log": "final-automation-taskflow.log",
+      "log_line": 332
+    },
+    {
+      "target": "taskflow",
+      "binary": "codex-hepta-automation::taskflow",
+      "case": "automation_opener_rejects_tampered_taskflow_event_history",
+      "seconds": 0.189,
+      "log": "final-automation-taskflow.log",
+      "log_line": 340
+    },
+    {
+      "target": "taskflow",
+      "binary": "codex-hepta-automation::taskflow",
+      "case": "automation_opener_rejects_taskflow_event_generation_drift",
+      "seconds": 0.169,
+      "log": "final-automation-taskflow.log",
+      "log_line": 348
+    },
+    {
+      "target": "taskflow",
+      "binary": "codex-hepta-automation::taskflow",
+      "case": "automation_opener_rejects_uncomputed_persisted_definition_digest",
+      "seconds": 0.396,
+      "log": "final-automation-taskflow.log",
+      "log_line": 356
+    },
+    {
+      "target": "taskflow",
+      "binary": "codex-hepta-automation::taskflow",
+      "case": "command_writer_enforces_graph_resume_target_and_advances_current_node",
+      "seconds": 0.327,
+      "log": "final-automation-taskflow.log",
+      "log_line": 364
+    },
+    {
+      "target": "taskflow",
+      "binary": "codex-hepta-automation::taskflow",
+      "case": "definition_registration_is_idempotent_and_generation_scoped",
+      "seconds": 0.128,
+      "log": "final-automation-taskflow.log",
+      "log_line": 372
+    },
+    {
+      "target": "taskflow",
+      "binary": "codex-hepta-automation::taskflow",
+      "case": "indeterminate_requires_explicit_receipt_reconcile",
+      "seconds": 0.097,
+      "log": "final-automation-taskflow.log",
+      "log_line": 380
+    },
+    {
+      "target": "taskflow",
+      "binary": "codex-hepta-automation::taskflow",
+      "case": "invalid_graph_and_effect_contract_fail_closed",
+      "seconds": 0.007,
+      "log": "final-automation-taskflow.log",
+      "log_line": 388
+    },
+    {
+      "target": "taskflow",
+      "binary": "codex-hepta-automation::taskflow",
+      "case": "invalid_transition_does_not_advance_projection_or_event_tail",
+      "seconds": 0.106,
+      "log": "final-automation-taskflow.log",
+      "log_line": 396
+    },
+    {
+      "target": "taskflow",
+      "binary": "codex-hepta-automation::taskflow",
+      "case": "run_lifecycle_is_fenced_and_command_deduplicated",
+      "seconds": 0.151,
+      "log": "final-automation-taskflow.log",
+      "log_line": 404
+    },
+    {
+      "target": "taskflow",
+      "binary": "codex-hepta-automation::taskflow",
+      "case": "taskflow_mutations_reject_corrupt_event_chain_before_replay_or_append",
+      "seconds": 0.163,
+      "log": "final-automation-taskflow.log",
+      "log_line": 412
+    },
+    {
+      "target": "taskflow",
+      "binary": "codex-hepta-automation::taskflow",
+      "case": "taskflow_read_rejects_tampered_event_history",
+      "seconds": 0.125,
+      "log": "final-automation-taskflow.log",
+      "log_line": 420
+    },
+    {
+      "target": "taskflow_execution_boundary",
+      "binary": "codex-hepta-automation::taskflow_execution_boundary",
+      "case": "callers_cannot_add_verified_use_approval_or_graph_completeness_claims",
+      "seconds": 0.012,
+      "log": "final-automation-taskflow-execution-boundary.log",
+      "log_line": 324
+    },
+    {
+      "target": "taskflow_execution_boundary",
+      "binary": "codex-hepta-automation::taskflow_execution_boundary",
+      "case": "canonical_digest_has_independent_golden_values",
+      "seconds": 0.015,
+      "log": "final-automation-taskflow-execution-boundary.log",
+      "log_line": 332
+    },
+    {
+      "target": "taskflow_execution_boundary",
+      "binary": "codex-hepta-automation::taskflow_execution_boundary",
+      "case": "every_digest_is_nonzero_lowercase_and_bound",
+      "seconds": 0.012,
+      "log": "final-automation-taskflow-execution-boundary.log",
+      "log_line": 340
+    },
+    {
+      "target": "taskflow_execution_boundary",
+      "binary": "codex-hepta-automation::taskflow_execution_boundary",
+      "case": "every_proposed_terminal_state_requires_a_trusted_external_observer",
+      "seconds": 0.007,
+      "log": "final-automation-taskflow-execution-boundary.log",
+      "log_line": 348
+    },
+    {
+      "target": "taskflow_execution_boundary",
+      "binary": "codex-hepta-automation::taskflow_execution_boundary",
+      "case": "json_shape_version_and_enums_are_exact",
+      "seconds": 0.007,
+      "log": "final-automation-taskflow-execution-boundary.log",
+      "log_line": 356
+    },
+    {
+      "target": "taskflow_execution_boundary",
+      "binary": "codex-hepta-automation::taskflow_execution_boundary",
+      "case": "numeric_and_identifier_bounds_fail_closed",
+      "seconds": 0.008,
+      "log": "final-automation-taskflow-execution-boundary.log",
+      "log_line": 364
+    },
+    {
+      "target": "taskflow_execution_boundary",
+      "binary": "codex-hepta-automation::taskflow_execution_boundary",
+      "case": "predecessor_count_identity_and_order_are_strictly_bounded",
+      "seconds": 0.009,
+      "log": "final-automation-taskflow-execution-boundary.log",
+      "log_line": 372
+    },
+    {
+      "target": "taskflow_execution_boundary",
+      "binary": "codex-hepta-automation::taskflow_execution_boundary",
+      "case": "rejected_requests_are_failure_atomic_and_do_not_poison_later_results",
+      "seconds": 0.008,
+      "log": "final-automation-taskflow-execution-boundary.log",
+      "log_line": 380
+    },
+    {
+      "target": "taskflow_execution_boundary",
+      "binary": "codex-hepta-automation::taskflow_execution_boundary",
+      "case": "request_digest_binds_identity_count_and_action_shape",
+      "seconds": 0.011,
+      "log": "final-automation-taskflow-execution-boundary.log",
+      "log_line": 388
+    },
+    {
+      "target": "taskflow_execution_boundary",
+      "binary": "codex-hepta-automation::taskflow_execution_boundary",
+      "case": "valid_effect_request_is_deterministically_unavailable_and_deny_all",
+      "seconds": 0.01,
+      "log": "final-automation-taskflow-execution-boundary.log",
+      "log_line": 396
+    },
+    {
+      "target": "taskflow_execution_boundary",
+      "binary": "codex-hepta-automation::taskflow_execution_boundary",
+      "case": "validation_errors_do_not_reflect_untrusted_values",
+      "seconds": 0.008,
+      "log": "final-automation-taskflow-execution-boundary.log",
+      "log_line": 404
+    },
+    {
+      "target": "taskflow_step",
+      "binary": "codex-hepta-automation::taskflow_step",
+      "case": "reconciled_step_remains_readable_after_run_projection_refence",
+      "seconds": 0.255,
+      "log": "final-automation-taskflow-step.log",
+      "log_line": 324
+    },
+    {
+      "target": "taskflow_step",
+      "binary": "codex-hepta-automation::taskflow_step",
+      "case": "step_mutation_waits_for_writer_without_blocking_snapshot_reads",
+      "seconds": 1.112,
+      "log": "final-automation-taskflow-step.log",
+      "log_line": 332
+    },
+    {
+      "target": "taskflow_step",
+      "binary": "codex-hepta-automation::taskflow_step",
+      "case": "step_outbox_failed_commands_leave_no_partial_event_and_expiry_is_fenced",
+      "seconds": 0.141,
+      "log": "final-automation-taskflow-step.log",
+      "log_line": 340
+    },
+    {
+      "target": "taskflow_step",
+      "binary": "codex-hepta-automation::taskflow_step",
+      "case": "step_outbox_lifecycle_is_durable_fenced_and_idempotent",
+      "seconds": 0.167,
+      "log": "final-automation-taskflow-step.log",
+      "log_line": 348
+    },
+    {
+      "target": "taskflow_step",
+      "binary": "codex-hepta-automation::taskflow_step",
+      "case": "step_outbox_rejects_wrong_order_and_append_only_tamper",
+      "seconds": 0.14,
+      "log": "final-automation-taskflow-step.log",
+      "log_line": 356
+    },
+    {
+      "target": "taskflow_step",
+      "binary": "codex-hepta-automation::taskflow_step",
+      "case": "write_contention_tests::run_write_waits_for_reservation_while_ordinary_reads_remain_available",
+      "seconds": 0.243,
+      "log": "final-automation-taskflow-step.log",
+      "log_line": 364
+    },
+    {
+      "target": "taskflow_step",
+      "binary": "codex-hepta-automation::taskflow_step",
+      "case": "write_contention_tests::step_write_waits_for_reservation_while_ordinary_reads_remain_available",
+      "seconds": 0.285,
+      "log": "final-automation-taskflow-step.log",
+      "log_line": 372
+    }
+  ],
+  "recorded_utc": "2026-11-05T05:42:21Z",
+  "notes": [
+    "This is complete default-feature Cargo target coverage by sequential just test invocations, not a successful rerun of the earlier full-package command.",
+    "The two empty targets preserve native exit 4 and contribute zero passing tests. taskflow_kernel remains disabled by its existing feature cfg.",
+    "All command argv, original test deadlines/retry settings, native profile, and full raw source guards were retained. No --no-tests=pass or all-features override was used.",
+    "Each completed test ELF was hashed before removal to bound resident disk use. Earlier cleanup-helper revision hashes were not recorded; see cleanup-helper-provenance-note.json.",
+    "Local qualification adapter results do not establish a live external provider or ordinary end-to-end effect closure."
+  ]
+}

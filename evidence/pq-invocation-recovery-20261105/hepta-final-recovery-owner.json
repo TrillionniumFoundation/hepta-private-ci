@@ -1,0 +1,56 @@
+{
+  "after": {
+    "commit": "9438a6c27a5e2f25169445f39499631db4e00529",
+    "dirty": false,
+    "parents": [
+      "ff19c86b7190204e9172a1595a58d8eb9f897c6d"
+    ],
+    "tree": "a9cba014de26164f0285c6c886fb071b19a04845"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "9438a6c27a5e2f25169445f39499631db4e00529",
+    "dirty": false,
+    "parents": [
+      "ff19c86b7190204e9172a1595a58d8eb9f897c6d"
+    ],
+    "tree": "a9cba014de26164f0285c6c886fb071b19a04845"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-evidence",
+    "--lib",
+    "-E",
+    "test(=recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt) | test(=recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status) | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states) | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page) | test(=recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns) | test(=recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent) | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary) | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking) | test(=recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 11.595617016002507,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T10:19:47.586116+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 31603,
+  "log_file": "hepta-final-recovery-owner.json.f8c148a73bcb483b86b13cbf81924736.log",
+  "log_sha256": "1588557c6b50c4e1d43d17979d0f99747b03253d5d0e761a2b4d13ea11b975a7",
+  "minimum_tests": 17,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 17,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+  "started_at": "2026-11-05T10:19:35.989597+00:00",
+  "status": "passed",
+  "tested_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+  "timed_out": false,
+  "working_directory": "/workspace/scratch/768fd621f7e2/hepta"
+}
