@@ -1,0 +1,11 @@
+--- unexecuted-index-continuation-v1
++++ index-continuation-v2
+@@ -222,7 +222,7 @@
+  if not expected:raise RuntimeError("empty full-workspace roster")
+  if unmatched:raise RuntimeError("full-workspace catalog has unexpected unmatched cases")
+  reference=request["full_roster_reference"];reference_path=pathlib.Path(reference["path"])
+- assert reference["source"]==approved["initial_tree"], "frozen App roster source mismatch"
++ assert reference["source"]=="c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7", "frozen App roster source mismatch"
+  assert reference_path.resolve().is_relative_to((root/"evidence").resolve()) and reference_path.is_file() and not reference_path.is_symlink()
+  assert all(rec(reference_path)[k]==reference[k] for k in ("bytes","sha256")), "frozen App catalog bytes changed"
+  reference_catalog=json.loads(reference_path.read_text());reference_eligible=[];reference_ignored=[]

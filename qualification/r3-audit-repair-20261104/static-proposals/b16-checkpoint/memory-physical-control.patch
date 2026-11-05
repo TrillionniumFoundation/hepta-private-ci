@@ -1,0 +1,349 @@
+diff --git a/codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs b/codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs
+--- a/codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs
+@@ -33,6 +33,9 @@
+ #[cfg(unix)]
+ #[path = "cognitive_store_recovery_read_only_tests.rs"]
+ mod cold_read_only;
++
++#[path = "cognitive_store_recovery_custody_tests.rs"]
++mod checkpoint_custody;
+ 
+ struct RecoveryVerifier;
+ 
+diff --git a/codex-rs/hepta-memory/Cargo.toml b/codex-rs/hepta-memory/Cargo.toml
+--- a/codex-rs/hepta-memory/Cargo.toml
++++ b/codex-rs/hepta-memory/Cargo.toml
+@@ -37,6 +37,7 @@
+ unicode-segmentation = { workspace = true }
+ 
+ [dev-dependencies]
++libsqlite3-sys = { workspace = true }
+ pretty_assertions = { workspace = true }
+ tempfile = { workspace = true }
+ tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+diff --git a/codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs b/codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs
+@@ -0,0 +1,320 @@
++use pretty_assertions::assert_eq;
++use std::ffi::CStr;
++use std::ffi::c_char;
++use std::ffi::c_int;
++use std::ffi::c_uint;
++use std::ffi::c_void;
++use std::fs::OpenOptions;
++use std::fs::TryLockError;
++use std::io::BufRead;
++use std::io::BufReader;
++use std::io::Write;
++use std::path::Path;
++use std::path::PathBuf;
++use std::process::Child;
++use std::process::ChildStdin;
++use std::process::Command;
++use std::process::Stdio;
++use std::sync::Mutex;
++use std::sync::OnceLock;
++use std::sync::atomic::AtomicBool;
++use std::sync::atomic::AtomicI32;
++use std::sync::atomic::AtomicUsize;
++use std::sync::atomic::Ordering;
++use std::sync::mpsc;
++use std::thread;
++use std::thread::JoinHandle;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_paths::HeptaFleetRoot;
++use futures::channel::oneshot;
++use libsqlite3_sys::SQLITE_OK;
++use libsqlite3_sys::SQLITE_TRACE_CLOSE;
++use libsqlite3_sys::SQLITE_TRACE_STMT;
++use libsqlite3_sys::sqlite3;
++use libsqlite3_sys::sqlite3_api_routines;
++use libsqlite3_sys::sqlite3_auto_extension;
++use libsqlite3_sys::sqlite3_cancel_auto_extension;
++use libsqlite3_sys::sqlite3_progress_handler;
++use libsqlite3_sys::sqlite3_trace_v2;
++use tempfile::TempDir;
++
++use super::CognitiveRecoveryRequirement;
++use super::CognitiveStore;
++use super::RecoveryVerifier;
++use super::agent_id;
++use super::layout;
++use super::recovery_authority;
++use crate::cognitive_store::COGNITIVE_STORE_LOCK_FILENAME;
++
++const BOUND: Duration = Duration::from_secs(5);
++const OWNER: u8 = 209;
++const CHILD: &str = "cognitive_store::recovery::tests::checkpoint_custody::owned_checkpoint_scenario";
++
++struct OwnedRecovery {
++    child: Child,
++    input: Option<ChildStdin>,
++    lines: Option<mpsc::Receiver<String>>,
++    reader: Option<JoinHandle<()>>,
++    root: PathBuf,
++    reaped: bool,
++    _temporary: TempDir,
++}
++
++impl OwnedRecovery {
++    fn start() -> Self {
++        let temporary = TempDir::new().unwrap();
++        let agent_layout = layout(&temporary, &agent_id(OWNER));
++        let mut child = Command::new(std::env::current_exe().unwrap())
++            .args(["--exact", CHILD, "--ignored", "--nocapture", "--test-threads=1"])
++            .env("HEPTA_RECOVERY_CHECKPOINT_FLEET",
++                temporary.path().join("fleet").canonicalize().unwrap())
++            .stdin(Stdio::piped())
++            .stdout(Stdio::piped())
++            .stderr(Stdio::inherit())
++            .spawn()
++            .unwrap();
++        let input = child.stdin.take();
++        let output = child.stdout.take().unwrap();
++        let (sender, lines) = mpsc::sync_channel(64);
++        let mut owned = Self {
++            child, input, lines: Some(lines), reader: None,
++            root: agent_layout.cognitive_root().to_path_buf(), reaped: false,
++            _temporary: temporary,
++        };
++        owned.reader = Some(thread::spawn(move || {
++            for line in BufReader::new(output).lines() {
++                match line {
++                    Ok(line) => { if sender.send(line).is_err() { break; } }
++                    Err(_) => break,
++                }
++            }
++        }));
++        owned
++    }
++
++    fn marker(&self) -> String {
++        let deadline = Instant::now() + BOUND;
++        loop {
++            let line = self.lines.as_ref().unwrap()
++                .recv_timeout(deadline.saturating_duration_since(Instant::now()))
++                .expect("actual recovery did not reach the required native stage");
++            if let Some(stage) = line.strip_prefix("RECOVERY_CUSTODY: ") {
++                eprintln!("actual recovery stage={stage}");
++                return stage.to_owned();
++            }
++        }
++    }
++
++    fn send(&mut self, bytes: &[u8]) {
++        self.input.as_mut().unwrap().write_all(bytes).unwrap();
++        self.input.as_mut().unwrap().flush().unwrap();
++    }
++
++    fn finish(&mut self) {
++        let deadline = Instant::now() + BOUND;
++        loop {
++            if let Some(status) = self.child.try_wait().unwrap() {
++                self.reaped = true;
++                assert!(status.success(), "owned recovery child failed: {status}");
++                return;
++            }
++            assert!(Instant::now() < deadline, "owned recovery child did not exit");
++            thread::sleep(Duration::from_millis(10));
++        }
++    }
++}
++
++impl Drop for OwnedRecovery {
++    fn drop(&mut self) {
++        drop(self.input.take());
++        drop(self.lines.take());
++        if !self.reaped {
++            let _ = self.child.kill();
++            let _ = self.child.wait();
++        }
++        if let Some(reader) = self.reader.take() {
++            let _ = reader.join();
++        }
++    }
++}
++
++fn probe_fence(root: &Path) -> Result<(), TryLockError> {
++    let file = OpenOptions::new().read(true).write(true)
++        .open(root.join(COGNITIVE_STORE_LOCK_FILENAME)).unwrap();
++    file.try_lock()
++}
++
++#[test]
++fn cancelled_private_checkpoint_keeps_actual_recovery_fence_until_native_close() {
++    let mut child = OwnedRecovery::start();
++    assert_eq!(child.marker(), "cancelled_at_actual_checkpoint_progress");
++    let actual = probe_fence(&child.root);
++    eprintln!("recovery checkpoint cancelled: actual_cross_process_lock={actual:?}");
++    child.send(b"inspect\n");
++    // Observe the callback after probing so timeout/release cannot masquerade
++    // as the intended missing-binding negative.
++    assert_eq!(child.marker(), "gate_status=0");
++    assert!(matches!(actual, Err(TryLockError::WouldBlock)),
++        "actual recovery fence escaped while checkpoint work remained live: {actual:?}");
++    child.send(b"go\n");
++    assert_eq!(child.marker(), "native_close_seen_and_fence_released");
++    assert!(probe_fence(&child.root).is_ok());
++    child.send(b"inspect\n");
++    assert_eq!(child.marker(), "gate_status=1");
++    child.send(b"go\n");
++    child.finish();
++}
++
++struct NativeGate {
++    entered: Mutex<Option<oneshot::Sender<()>>>,
++    release: Mutex<mpsc::Receiver<()>>,
++    close_seen: mpsc::SyncSender<()>,
++    target: AtomicUsize,
++    first_progress: AtomicBool,
++    outcome: AtomicI32,
++}
++
++static GATE: OnceLock<NativeGate> = OnceLock::new();
++
++unsafe extern "C" fn trace(
++    event: c_uint,
++    context: *mut c_void,
++    _: *mut c_void,
++    text: *mut c_void,
++) -> c_int {
++    let Some(gate) = GATE.get() else { return 0 };
++    if event == SQLITE_TRACE_STMT && !text.is_null() {
++        // SAFETY: SQLite supplies the nul-terminated SQL for this event.
++        let sql = unsafe { CStr::from_ptr(text.cast::<c_char>()) }.to_bytes();
++        if sql == b"PRAGMA wal_checkpoint(TRUNCATE)" {
++            gate.target.store(context as usize, Ordering::Release);
++        }
++    } else if event == SQLITE_TRACE_CLOSE
++        && gate.target.load(Ordering::Acquire) == context as usize
++    {
++        let _ = gate.close_seen.try_send(());
++    }
++    0
++}
++
++unsafe extern "C" fn progress(context: *mut c_void) -> c_int {
++    let Some(gate) = GATE.get() else { return 1 };
++    if gate.target.load(Ordering::Acquire) != context as usize
++        || !gate.first_progress.swap(false, Ordering::AcqRel)
++    {
++        return 0;
++    }
++    let sent = gate.entered.lock().ok().and_then(|mut sender| sender.take())
++        .is_some_and(|sender| sender.send(()).is_ok());
++    if !sent {
++        gate.outcome.store(2, Ordering::Release);
++        return 1;
++    }
++    let released = gate.release.lock().ok()
++        .is_some_and(|receiver| receiver.recv_timeout(BOUND).is_ok());
++    gate.outcome.store(if released { 1 } else { 2 }, Ordering::Release);
++    if released { 0 } else { 1 }
++}
++
++unsafe extern "C" fn opened(
++    database: *mut sqlite3,
++    _: *mut *mut c_char,
++    _: *const sqlite3_api_routines,
++) -> c_int {
++    // All callbacks belong to this owned child. Progress is armed only by the
++    // actual checkpoint statement, never by counting opens or delaying startup.
++    // SAFETY: SQLite passes its live connection to the static autoextension;
++    // context is used only for identity comparison, never dereferenced.
++    let rc = unsafe {
++        sqlite3_trace_v2(database, SQLITE_TRACE_STMT | SQLITE_TRACE_CLOSE,
++            Some(trace), database.cast())
++    };
++    if rc != SQLITE_OK { return rc; }
++    // SAFETY: same live connection and static callback lifetime as above.
++    unsafe { sqlite3_progress_handler(database, 1, Some(progress), database.cast()); }
++    SQLITE_OK
++}
++
++fn checkpoint(stage: &str) {
++    println!("\nRECOVERY_CUSTODY: {stage}");
++    std::io::stdout().flush().unwrap();
++    let mut line = String::new();
++    std::io::stdin().read_line(&mut line).unwrap();
++    assert_eq!(line, "inspect\n");
++    let status = GATE.get().unwrap().outcome.load(Ordering::Acquire);
++    println!("RECOVERY_CUSTODY: gate_status={status}");
++    std::io::stdout().flush().unwrap();
++    line.clear();
++    std::io::stdin().read_line(&mut line).unwrap();
++    assert_eq!(line, "go\n");
++}
++
++// The parent invokes this ordinary libtest entry explicitly; it is not another
++// selected passing case and is not a production recovery authority.
++#[test]
++#[ignore]
++fn owned_checkpoint_scenario() {
++    let fleet = PathBuf::from(std::env::var_os("HEPTA_RECOVERY_CHECKPOINT_FLEET").unwrap());
++    let owner = agent_id(OWNER);
++    let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);
++    let runtime = tokio::runtime::Builder::new_multi_thread().worker_threads(1)
++        .enable_all().build().unwrap();
++    let anchor = runtime.block_on(async {
++        let store = CognitiveStore::open(&layout).await.unwrap();
++        let anchor = store.recovery_anchor().await.unwrap();
++        store.close().await;
++        anchor
++    });
++    assert!(probe_fence(layout.cognitive_root()).is_ok());
++    let (entered, receiver) = oneshot::channel();
++    let (release, release_receiver) = mpsc::channel();
++    let (close_seen, closed) = mpsc::sync_channel(1);
++    assert!(GATE.set(NativeGate {
++        entered: Mutex::new(Some(entered)), release: Mutex::new(release_receiver),
++        close_seen, target: AtomicUsize::new(0), first_progress: AtomicBool::new(true),
++        outcome: AtomicI32::new(0),
++    }).is_ok());
++    // SAFETY: this process is an owned, isolated ordinary libtest child; the
++    // static callback remains valid until explicitly removed below.
++    assert_eq!(unsafe { sqlite3_auto_extension(Some(opened)) }, SQLITE_OK);
++    let authority = recovery_authority(&owner);
++    let mut recovering = Box::pin(CognitiveStore::open_with_recovery(
++        &layout, CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
++        &authority, &RecoveryVerifier,
++    ));
++    runtime.block_on(async {
++        tokio::time::timeout(BOUND, async {
++            tokio::select! {
++                result = recovering.as_mut() => match result {
++                    Ok(_) => panic!("recovery completed before actual checkpoint gate"),
++                    Err(error) => panic!("recovery failed before actual checkpoint gate: {error}"),
++                },
++                reached = receiver => assert!(reached.is_ok(), "native checkpoint did not enter"),
++            }
++        }).await.expect("actual checkpoint callback did not enter");
++    });
++    drop(recovering);
++    // Runtime stays alive, including its worker, throughout cancellation and
++    // native completion; only the actual recovery future is dropped here.
++    checkpoint("cancelled_at_actual_checkpoint_progress");
++    release.send(()).unwrap();
++    closed.recv_timeout(BOUND).expect("target native connection did not report close");
++    // TRACE_CLOSE marks close entry, not its return. Require the actual fence
++    // to become available as a separate physical completion observation.
++    let deadline = Instant::now() + BOUND;
++    loop {
++        match probe_fence(layout.cognitive_root()) {
++            Ok(()) => break,
++            Err(TryLockError::WouldBlock) => {}
++            Err(error) => panic!("cannot inspect actual recovery fence: {error:?}"),
++        }
++        assert!(Instant::now() < deadline, "native close did not release the recovery fence");
++        thread::sleep(Duration::from_millis(10));
++    }
++    // SAFETY: unregister exactly the static callback installed in this child.
++    assert_eq!(unsafe { sqlite3_cancel_auto_extension(Some(opened)) }, 1);
++    checkpoint("native_close_seen_and_fence_released");
++    drop(runtime);
++}

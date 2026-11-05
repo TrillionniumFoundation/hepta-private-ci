@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.core-cold-root-diagnosis.publication.v1",
+  "files": [
+    {
+      "path": "core-cold-root-static-diagnosis.json",
+      "bytes": 55679,
+      "sha256": "9f3f5e7fa6237c8161f605afe85f057c88e8d371088287033364b0c90aa49093",
+      "git_blob": "9e860385dccb24ab3debe0cf748e33950e4895ca",
+      "created_and_get_byte_equal": true
+    },
+    {
+      "path": "CORE_COLD_ROOT_DIAGNOSIS.zh-CN.md",
+      "bytes": 2956,
+      "sha256": "819a7ad44522706a9f84bf4fd5ecdc0fa4449420465884b2e434a77bae741227",
+      "git_blob": "dea99715983d6306648764e181f23b44c79c924f",
+      "created_and_get_byte_equal": true
+    },
+    {
+      "path": "core-cold-root-fb9-original-block.log",
+      "bytes": 596,
+      "sha256": "b616de94819aebe43cf8de1748dd59560452eedb5cf5f30903f936b70a33dacb",
+      "git_blob": "d3631986e5cafd679e585b7c2fe40aebe743eb9a",
+      "created_and_get_byte_equal": true
+    },
+    {
+      "path": "core-diagnostic-proposal/repair-manifest.json",
+      "bytes": 4912,
+      "sha256": "7570a0774e13735a113a9c08ba89f8e2ce26bb34c7921c6e403a03223be2166b",
+      "git_blob": "0f7a9952ef577090bf29d270bc85581595347efb",
+      "created_and_get_byte_equal": true
+    },
+    {
+      "path": "core-diagnostic-proposal/core-cold-root-stage-diagnostic.patch",
+      "bytes": 3098,
+      "sha256": "24c67f040eb76ca087dcf4dd754536ee213c72cb34d7505229139911b2cbcefe",
+      "git_blob": "525c4702fe3d2f8193e45d37fde977402cb7180b",
+      "created_and_get_byte_equal": true
+    },
+    {
+      "path": "core-diagnostic-proposal/candidate/codex-rs/core/tests/suite/multi_agent_resume.rs",
+      "bytes": 25159,
+      "sha256": "3439c978dfcdfd177dbc08b3bedf21986997f49c47d6fead159b0b95229d09f4",
+      "git_blob": "e2b3daac03d9e15b1641e11f23377bf56bf397db",
+      "created_and_get_byte_equal": true
+    },
+    {
+      "path": "build_core_diagnostic.py",
+      "bytes": 6396,
+      "sha256": "b615bd06eb83cb5b91cc84165bbe7a14dfff7ea5e11d4d64efc526de9cd947e7",
+      "git_blob": "651029c1916cd5b2412dab84ea10cfc5f0b2e053",
+      "created_and_get_byte_equal": true
+    },
+    {
+      "path": "freeze_core_diagnosis.py",
+      "bytes": 15026,
+      "sha256": "ac183878d4970fbb01336c29f1e8383f22032d96e44a380d6ca88f0315ff2e9d",
+      "git_blob": "d49120fe309a19e4647b51930bb0eb239cce5277",
+      "created_and_get_byte_equal": true
+    }
+  ],
+  "superseded_wording_only": [
+    {
+      "path": "CORE_COLD_ROOT_DIAGNOSIS.zh-CN.md",
+      "bytes": 2943,
+      "sha256": "d16be735e64344941282134544ed12a3cb606e5fd44badac907b6e4da6758f79",
+      "git_blob": "97856001aafff89ed562f780667fe8c29e33af06",
+      "created_and_get_byte_equal": true
+    },
+    {
+      "path": "freeze_core_diagnosis.py",
+      "bytes": 15013,
+      "sha256": "ced1ba97becdf518ddbb28b00467161cd015c3cd803ec8380046aaeb0130a72d",
+      "git_blob": "c4a8f815249c8f0cedcb0ee150a3dbc30b103b65",
+      "created_and_get_byte_equal": true
+    }
+  ],
+  "change": "MD labels the original Result-return failure as ordinary test failure (exit 101), not assertion panic. JSON, source candidate and patch are unchanged.",
+  "no_refs_changed": true
+}

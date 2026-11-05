@@ -1,0 +1,301 @@
+{
+  "schema": "hepta.final-A.actual-fmt-root-review.v1",
+  "verdict": "ACCEPT_ACTUAL_FMT_DELTA_FOR_REMAINING_TWO_DIFF_GATES",
+  "source_before": "b2901e2beb8171f125fe5906d585fbe134802423",
+  "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "last_tested_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "native_job": "1a1aa209167-fc05-3db7",
+  "original_fmt_exit": 0,
+  "original_fmt_seconds": 42.683927650010446,
+  "original_controller_exit_reported_by_native_owner": 3,
+  "controller_state": "AUTOMATIC_SOURCE_CHANGES_REQUIRE_ROOT_REVIEW",
+  "controller_exit3_reason": "Automatic source changes intentionally stop the controller for root review; not an original fmt failure.",
+  "all12_original_metadata_and_empty_stream_files_reopened": [
+    {
+      "name": "execution-request.json",
+      "bytes": 9225,
+      "sha256": "cc2445de8a07d7c0e9a9b276bf2a7455a9008bd6c08c41f22012d8eb04acf650",
+      "blob": "6276837e306aaa6266f1b93b343ff8d91f57563f"
+    },
+    {
+      "name": "native-host.json",
+      "bytes": 682,
+      "sha256": "c4c95e840f9f972dd69bfdb82385d5d08f8a68c0ee16658189b925a0cc941cbf",
+      "blob": "c17b6e2658b62fcd499df232a383b683cca89820"
+    },
+    {
+      "name": "prior-scoped-fix-reference.json",
+      "bytes": 2874,
+      "sha256": "58f74db368292a5e15a0f8589c4c4ca148726fb8aea7915965f70632076f4002",
+      "blob": "0c5e508bce64a8cad92785db677426592cebedb4"
+    },
+    {
+      "name": "1-initial-source-guard.json",
+      "bytes": 3595,
+      "sha256": "45d7849a61b6dd145e54a2c3cd7aa8094c0cd9218c8c3da90ea0604c8af82331",
+      "blob": "1528dd30cc4b08d3c4ff6512793952598cd5dd2f"
+    },
+    {
+      "name": "2-original-fmt-before-source-guard.json",
+      "bytes": 3607,
+      "sha256": "be5a9d7dc1edb46b2e52d327bd44db8a232491b809942b19990722c74c2fdf2c",
+      "blob": "e8b0dd0a84b949e15a831da8c2b7816c352bc7c2"
+    },
+    {
+      "name": "3-original-fmt-after-source-guard.json",
+      "bytes": 3606,
+      "sha256": "6a6118d86606bba44484c1ef8662046eb7eac20275599cc8ed7ca4832057a80e",
+      "blob": "c097b6e2dd4ee8172d4403e607e6bb70c04f4d3c"
+    },
+    {
+      "name": "original-fmt-command.json",
+      "bytes": 795,
+      "sha256": "6c0e2143efab5bd2f73d17b91414b6c95eb3f0a9389e64b1c18dd1aed62bd927",
+      "blob": "9911bf270aba5d211017420ac83c35603f3778c9"
+    },
+    {
+      "name": "original-fmt-status.json",
+      "bytes": 14063,
+      "sha256": "8eaeeb55b05f31340a7f2a802619a96aad92bb322d2eedbc4123268140698db3",
+      "blob": "9b316d02ecdcb15e6aabcb2eb02abf05a5927c31"
+    },
+    {
+      "name": "original-fmt-changes.json",
+      "bytes": 11057,
+      "sha256": "3deb3880dc5f7fa7ce9b49502d3836fa59cf8fd9a1c6b5af15003299033ea5fa",
+      "blob": "11ba001abeac1edeebceb1aa2edf0611c9121a85"
+    },
+    {
+      "name": "terminal.json",
+      "bytes": 54856,
+      "sha256": "d263684929039925c0295debf74d7e071968c17587d24b64222668a1608f5643",
+      "blob": "12efc096deb85c22b069938df2e67987982010f6"
+    },
+    {
+      "name": "original-fmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "name": "original-fmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  ],
+  "complete_patch_and_all17_exact_postimage_review": {
+    "schema": "hepta.final-A.fmt-root-exact-postimage-check.v1",
+    "scope": "Root read full 66988-byte patch; independently verified all17 postimages and reversed/applied original patch in isolated scratch directory; no native source or tests touched.",
+    "before_tree": "b2901e2beb8171f125fe5906d585fbe134802423",
+    "after_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "patch": {
+      "bytes": 66988,
+      "sha256": "870bebd231538f636a89e4e23b87b2933429ae75d9977b9c88b6141a92afa66d",
+      "blob": "99ca4fb388b31cc0e0cbd6ed5646a0c77357b1c9"
+    },
+    "files": [
+      {
+        "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+        "mode": "100644",
+        "git_blob": "2142eeb382664d95f77d83ac7ae3da4459601abf",
+        "bytes": 16260,
+        "sha256": "55353f094531a4af974c519fadca01dcd0c8be6ece1f8b10efb70d24ae2a44eb",
+        "pre_blob": "5427be6c1f37bd7c302d808c2e4f194727abe700",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/.github/scripts/collect_bazel_failed_test_logs.py.source.txt",
+        "python_ast_equal": true
+      },
+      {
+        "path": ".github/scripts/test_run_bazel_ci.py",
+        "mode": "100644",
+        "git_blob": "ed8276016bcf8ff7738c1769907ae1c145438add",
+        "bytes": 33989,
+        "sha256": "83dfc9788189aa2279dbc4be8ad0aacca31c9c63c0d2cd3b58e386784b7cc80d",
+        "pre_blob": "045457bb4d7f5e54d4429a93615970a223bb48db",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/.github/scripts/test_run_bazel_ci.py.source.txt",
+        "python_ast_equal": true
+      },
+      {
+        "path": "codex-rs/apply-patch/src/lib.rs",
+        "mode": "100644",
+        "git_blob": "6e585b683e9e40e0a4d759674207647d716d53bd",
+        "bytes": 47989,
+        "sha256": "2a72afc9b9c8514bc64b4d97400d5d1cf1ff5b2aee9bb6f4aa2b0e45531d4894",
+        "pre_blob": "e21b00a4282e247c7a4341095367bf81e7a59aa1",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/apply-patch/src/lib.rs.source.txt"
+      },
+      {
+        "path": "codex-rs/cli/src/doctor.rs",
+        "mode": "100644",
+        "git_blob": "7b23af0646fbae988d58c6828e2878c19224d6c7",
+        "bytes": 158254,
+        "sha256": "efd89178c1073b679661b8fe0a1daa5799d15c31bc57b5d275c40115ad34476a",
+        "pre_blob": "31405ef75226a02b5f3e724e30ef6fbce828ceb8",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/cli/src/doctor.rs.source.txt"
+      },
+      {
+        "path": "codex-rs/core/tests/suite/hooks.rs",
+        "mode": "100644",
+        "git_blob": "f8cf3fe144ebb42cd08faed023161ce6423c5b8f",
+        "bytes": 179712,
+        "sha256": "438731ed5c05f862f2fe3fddf3485b94272cabdc343d5ed51dadd852c1949c63",
+        "pre_blob": "e9ddd7198c4c1550741fcb58524ba2108337ab15",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/core/tests/suite/hooks.rs.source.txt"
+      },
+      {
+        "path": "codex-rs/core/tests/suite/turn_state.rs",
+        "mode": "100644",
+        "git_blob": "8c20f52ed34b6cf848ee1851f0ff3507f6a26cb6",
+        "bytes": 16656,
+        "sha256": "434a40d98a8c399144d430799332f9706b54d0494a6fe26c1ec031bca61008d0",
+        "pre_blob": "7744c37e11b596d53db1e716de4e7adeff213936",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/core/tests/suite/turn_state.rs.source.txt"
+      },
+      {
+        "path": "codex-rs/ext/skills/src/host_roots_tests.rs",
+        "mode": "100644",
+        "git_blob": "36a8127e157540d78d4abf0408e7d792b69d39c6",
+        "bytes": 23555,
+        "sha256": "a4df9258761578f5532e44cec9318e10a4c005f838d903db6e1e6bf8c335a8e4",
+        "pre_blob": "ffae69d365402929787f9029a15f02d9c328149b",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/ext/skills/src/host_roots_tests.rs.source.txt"
+      },
+      {
+        "path": "codex-rs/linux-sandbox/src/launcher.rs",
+        "mode": "100644",
+        "git_blob": "bd36a1d8d49ccde5cc892e36e323443323e3c167",
+        "bytes": 17251,
+        "sha256": "1d85a735ba4d0c8096c73a094e7bb2e1e4fb320086ace6a1ab6cbeacef93b732",
+        "pre_blob": "a1d761fba56d6b1653598e82f5d5d81207719ef5",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/linux-sandbox/src/launcher.rs.source.txt"
+      },
+      {
+        "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+        "mode": "100644",
+        "git_blob": "03170649aa71575c88a3307f78095b03855d0c34",
+        "bytes": 56614,
+        "sha256": "70a8e4f72413a07ba2dce95e1e0f4c453d4642d761b3f98f05f13966b0621b53",
+        "pre_blob": "e8eab2ed1b8221c75a366e0cc93851cf98d6f490",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/linux-sandbox/src/linux_run_main.rs.source.txt"
+      },
+      {
+        "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+        "mode": "100644",
+        "git_blob": "8f500e03938718820360ce2ad41f2286eb9071bd",
+        "bytes": 8228,
+        "sha256": "6b1df4d24e48d9eaf772c85e70ebca822b5fd23d3708b2c749158b9cb4350c68",
+        "pre_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/linux-sandbox/src/parent_lifecycle.rs.source.txt"
+      },
+      {
+        "path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+        "mode": "100644",
+        "git_blob": "b6a52517913ad570b9468ec69bcb3c2741f1e40a",
+        "bytes": 13771,
+        "sha256": "61bf19d456a4ec7e6133792907a092af29d2ba4dc564e4e9715e4c2b622ae098",
+        "pre_blob": "58eff73120448cb122c3e6d22ea60a7ee1899844",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs.source.txt"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+        "mode": "100644",
+        "git_blob": "8f73a1a58176a1a15b3476c008cb3682b24f6579",
+        "bytes": 7038,
+        "sha256": "d5025de042ffe10f8aa1692fbee8858a0178012b62a9cc77fd9152c3f715fb50",
+        "pre_blob": "3aeb65179f1a8bc77f0314974efdcf8940e5a1f6",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/windows-sandbox-rs/src/acl_deny.rs.source.txt"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+        "mode": "100644",
+        "git_blob": "2e16c9e370368fd4b75e346dd2aac7e632b19975",
+        "bytes": 17018,
+        "sha256": "c3046023fa1be667d93386968e73e88bbc42dfc618a1b7ecebcd771a25e09023",
+        "pre_blob": "31db071d8a2fe2de3e9e9f37cb245a0757ecb973",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/windows-sandbox-rs/src/acl_tests.rs.source.txt"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+        "mode": "100644",
+        "git_blob": "d324b587bc298b84fea79239bbd74d2352fc7f39",
+        "bytes": 16652,
+        "sha256": "a0954c32043c5d4a816cceed2d985d9b299755bd3c041834a9b5bae8ed1f58a9",
+        "pre_blob": "e3c999e68382837bde16e2621de94bcb83509bc8",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs.source.txt"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+        "mode": "100644",
+        "git_blob": "11778af7beb645b36401807cf3e31a0dd4deddc0",
+        "bytes": 30379,
+        "sha256": "6a656c06930bcf07075db8712292bb8040a33667231783dba177e62230982b38",
+        "pre_blob": "f7b90d6f2d3ecad07f487e05932431c979450c77",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/windows-sandbox-rs/src/lib.rs.source.txt"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "mode": "100644",
+        "git_blob": "042858ce22b784d7809612e2d80e35d29b559f1a",
+        "bytes": 22681,
+        "sha256": "cda729e069f427b9fb197a75391ea30b3427a6b6c98a8ecb60d858328b808af0",
+        "pre_blob": "d406532fd3b69bc4a3635963022365aaec93280e",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/windows-sandbox-rs/src/token_tests.rs.source.txt"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+        "mode": "100644",
+        "git_blob": "a0cb1647d95f067fcf135bc9ea2a654ca3e5e7a2",
+        "bytes": 6807,
+        "sha256": "8dc0ae01935586ac22001a5b567c148fa9ff744bf10e4de691c6fbe0993021da",
+        "pre_blob": "4727675e9b85d75bfbe1de175571bcc481906353",
+        "postimage_local": "hepta-audit-fourth/inputs/final-A-fmt-root-review/postimages/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs.source.txt"
+      }
+    ],
+    "all_original_pre_and_post_git_identities_verified": true,
+    "python_AST_identical_count": 2,
+    "manual_semantic_review": "Rust wrapping, optional trailing commas, same return expression in a block, and intact cfg/path test-only module reorder. Original assertions, deadlines, values, APIs, rearm/check/close/fork order and strict Windows token/DELETE controls preserved. Awaiting final original guard bundle before execution guard.",
+    "no_tests_executed": true
+  },
+  "all_three_index_and_lock_guards_passed": true,
+  "all_prior_full_result_file_identities_unchanged": true,
+  "independent_semantic_review_blob": "0ecaf044f6e3bdd87a2e7500cc9346812a338466",
+  "manual_semantic_decision": "All17 complete diff sections reviewed. Python ASTs identical. Rust wrapping/trailing commas preserve tokens and constants; return expression remains unconditional within the same match arm. Whole test-only cfg/path module reordered with no lexical macro-use dependency in it or crossed modules. Assertions, errno, physical file effects, budgets, signal/rearm/check/close/fork sequence and Windows strict security controls preserved.",
+  "tests_after_hygiene": false,
+  "remaining_native_gates": [
+    [
+      "git",
+      "diff",
+      "--check"
+    ],
+    [
+      "git",
+      "diff",
+      "--check",
+      "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+      "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "--"
+    ]
+  ],
+  "latest_free_bytes": 25447063552,
+  "resource_observation_limit": "Free-space observations span different instants; the intervening delta is not attributed entirely to formatting. Current B foundation40,122,997,968-byte estimate does not fit.",
+  "original_full_result_preserved": {
+    "selected": 19506,
+    "junit_pass": 19490,
+    "fail": 16,
+    "original_ignored": 57,
+    "known_early_returns": 25,
+    "retry": 0
+  },
+  "whole_candidate_qualified": false,
+  "all_blockers_closed": false,
+  "original_bundle": {
+    "bytes": 197886,
+    "sha256": "c093fd1ef85882e345a03fced1ec33f39e98ef31ad1f1b9d425798ac044377ac",
+    "blob": "27597951472e3b5851a5fcd15a27896fbd719dba"
+  },
+  "all13_embedded_original_files_independently_verified": true,
+  "controller_exit_code": 3,
+  "controller_complete_stdout_bytes": 714,
+  "controller_complete_stderr_bytes": 0,
+  "controller_no_retry_timeout_cancel_or_truncation": true
+}

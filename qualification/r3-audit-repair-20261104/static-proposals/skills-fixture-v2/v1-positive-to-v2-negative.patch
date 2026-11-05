@@ -1,0 +1,25 @@
+--- a/codex-rs/ext/skills/src/host_roots_tests.rs
++++ b/codex-rs/ext/skills/src/host_roots_tests.rs
+@@ -422,12 +422,20 @@
+         );
+     }
+     let mut config = empty_config();
+-    config["project_root_markers"] =
+-        toml::Value::Array(vec![toml::Value::String(marker.clone())]);
++    config
++        .as_table_mut()
++        .expect("empty config table")
++        .insert(
++            "project_root_markers".to_string(),
++            toml::Value::Array(vec![toml::Value::String(marker.clone())]),
++        );
+     let config_stack = stack(vec![ConfigLayerEntry::new(
+         ConfigLayerSource::SessionFlags,
+         config,
+     )]);
++
++    // Controlled counterfactual: discovery must now include the real outer root.
++    fs::write(outer.join(&marker), "project marker\n").expect("write controlled outer marker");
+ 
+     let roots = repo_agents_skill_roots(Some(Arc::clone(&LOCAL_FS)), &config_stack, &cwd)
+         .await

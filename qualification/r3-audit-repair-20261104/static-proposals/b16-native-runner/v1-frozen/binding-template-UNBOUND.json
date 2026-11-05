@@ -1,0 +1,120 @@
+{
+  "schema": "hepta-b16-explicit-native-binding-v1",
+  "execute": false,
+  "approval_reference": null,
+  "authorized_epoch": "foundation",
+  "final_A_tree": null,
+  "initial_tree": null,
+  "ordinary_head": null,
+  "ordinary_index": {
+    "bytes": null,
+    "sha256": null
+  },
+  "approved_payload_sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+  "approved_runner_integrity_sha256": "c1b41ab8c3caf696e84c335cdbb542923509038d0d89807f29102d1889c545e7",
+  "source_directory": null,
+  "target_directory": null,
+  "evidence_directory": null,
+  "bazel_cache_directory": null,
+  "previous_epoch_receipt": null,
+  "baseline_metadata": {
+    "path": null,
+    "bytes": null,
+    "sha256": null
+  },
+  "allowed_untracked_source_paths": [],
+  "locks": {
+    "codex-rs/Cargo.lock": {
+      "bytes": null,
+      "sha256": null
+    },
+    "MODULE.bazel.lock": {
+      "bytes": null,
+      "sha256": null
+    }
+  },
+  "cargo_profile": "dev-small",
+  "nextest_profile": "local",
+  "junit_relative_path": "codex-rs/target/nextest/local/junit.xml",
+  "min_free_bytes": 8000000000,
+  "tools": [
+    {
+      "name": "git",
+      "path": null,
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "name": "cargo",
+      "path": null,
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "name": "rustc",
+      "path": null,
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "name": "just",
+      "path": null,
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "name": "cargo-nextest",
+      "path": null,
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "name": "bazel",
+      "path": null,
+      "bytes": null,
+      "sha256": null
+    }
+  ],
+  "recipe_sources": [
+    {
+      "path": "justfile",
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "path": "scripts/run-nextest.py",
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "path": "scripts/check-module-bazel-lock.sh",
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "path": ".bazelrc",
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "path": "defs.bzl",
+      "bytes": null,
+      "sha256": null
+    }
+  ],
+  "environment": {
+    "PATH": null,
+    "CARGO_TARGET_DIR": null,
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "4",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "NEXTEST_PROFILE": "local",
+    "DOTSLASH_CACHE": null,
+    "UV_CACHE_DIR": null,
+    "UV_PYTHON_DOWNLOADS": "never",
+    "RUSTY_V8_ARCHIVE": null,
+    "RUSTY_V8_SRC_BINDING_PATH": null
+  }
+}

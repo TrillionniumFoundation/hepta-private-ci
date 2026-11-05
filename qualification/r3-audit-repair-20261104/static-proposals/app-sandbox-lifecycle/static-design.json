@@ -1,0 +1,285 @@
+{
+  "schema": "hepta.app-sandbox-lifecycle.static-design.v1",
+  "status": "STATIC_SOURCE_FINDING_AND_CONDITIONAL_REPAIR_DESIGN_NOT_EXECUTED",
+  "date_utc": "2026-11-05",
+  "scope": {
+    "native_source_changed": false,
+    "native_job_started": false,
+    "ref_updated": false,
+    "production_patch_created": false,
+    "signal_or_host_policy_changed": false
+  },
+  "baseline": {
+    "blob": "106cf2684ee66709db063d714c5d31f86d42fd45",
+    "bytes": 166118,
+    "sha256": "d42561e6c804537b91dbf427df5cb63bda176ec3e15a4716da68d98fe32ff709",
+    "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "complete_records_independently_verified": 9,
+    "case": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+    "result": "FAIL",
+    "seconds": 5.491,
+    "exit_budget_seconds": 5,
+    "retries": 0,
+    "observed": "Outer bwrap PID702763/PGID702763 was no longer observed at t=3.254144 after first observed t=2.944507; inner PID702768 and Python702769 remain sleeping, same owned PID/starttime identities, inner reparented to2217. Observer terminated at t=8.311713. This is not a zombie-only observation.",
+    "not_observed": [
+      "Actual kill syscall/return in baseline",
+      "PR_GET_PDEATHSIG values in baseline",
+      "LSM profile transition or exact cause of signal clearing"
+    ]
+  },
+  "installed_bwrap": {
+    "receipt": "92e337c9814e0dd761fda33b277a68387cd7fa4f",
+    "path": "/usr/bin/bwrap",
+    "bytes": 80424,
+    "sha256": "523da3e7399044be5163aee6f57a77a6bef7454376e28f0a0627920bae1b76b6",
+    "mode": "0o755",
+    "device": 66306,
+    "inode": 17180687,
+    "is_symlink": false,
+    "upstream_version": "0.11.1",
+    "package_version": "0.11.1-1ubuntu0.3",
+    "kernel": "Linux7.0.0-42-generic x86_64",
+    "limit": "Installed version/bytes observed; upstream tag source is not an independently reconstructed Ubuntu package build or exact kernel build."
+  },
+  "repo_sources": [
+    {
+      "path": "codex-rs/linux-sandbox/src/launcher.rs",
+      "blob": "d4e9b521bf93f0861cf497c3153a9efdc6e3c67b",
+      "bytes": 16007,
+      "sha256": "bf1d23f8020d4e73f7a3e235165f0953154170256a92cf0c8254e5ab32578f91"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/bwrap.rs",
+      "blob": "11e8e612af3cc4245a537fae18199acc74075a3b",
+      "bytes": 106289,
+      "sha256": "bfce8aa44048b2441a7c02b301fe7366ae1b8b9ddd8ff8518711cd874a9e749e"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "blob": "b50f19732bc0a4744c62f7300f955b9f9d17bf08",
+      "bytes": 55308,
+      "sha256": "3be631c566fbd4cbd08eea042cf425164d01002951b0dcad927c674beb571134"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/exec_util.rs",
+      "blob": "594c7a725d50d274a5edf40a66a40134d99204c4",
+      "bytes": 2500,
+      "sha256": "6bf01ef0e7094f6e82c7bf495b0b334d4a6fa229616e1a260b3e8813b0278a8b"
+    }
+  ],
+  "primary_sources": [
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "codex-rs/linux-sandbox/tests/suite/managed_proxy.rs",
+      "blob": "2b03c9d020f4a1af239010ad1bae45f10a989e73",
+      "bytes": 23798,
+      "sha256": "074833e911bf9e0ba8ce6cdfaa78058f3654fcef1f4e3e854d724bc1f2a63e19"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "codex-rs/linux-sandbox/src/bundled_bwrap.rs",
+      "blob": "61d10547d3b3eb499f8b8a06d6444845c4ff7f93",
+      "bytes": 11001,
+      "sha256": "6d57a035029048db8aeabed4a56c18f7fc72017dafb9ce61a53bd1b384e49566"
+    },
+    {
+      "repository": "containers/bubblewrap",
+      "ref": "v0.11.1",
+      "path": "bubblewrap.c",
+      "blob": "687ed71f7044ca997a100eef847a5de71164581b",
+      "bytes": 116430,
+      "sha256": "e81e833751d3d247d72dff1ad1792ca72939fa6956974dde2cb86f9f1b0a2bb3"
+    },
+    {
+      "repository": "containers/bubblewrap",
+      "ref": "v0.11.1",
+      "path": "bwrap.xml",
+      "blob": "f379f0fa46a98ddb648efef6ca9e49e29b7e8c4f",
+      "bytes": 32070,
+      "sha256": "8af8e849cd635c1db3bbe06733ac4817671441b6c46cb2f0701cbe487278463d"
+    },
+    {
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "security/apparmor/lsm.c",
+      "blob": "f5d05297d59ee4b0a563f11cb7b0bdf38ea4f4cd",
+      "bytes": 60669,
+      "sha256": "850e180a4ae3459bce329e21a2089b58c16ef5e58224e34585ff435f7678542d"
+    }
+  ],
+  "source_chain": [
+    {
+      "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "lines": [
+        290,
+        334
+      ],
+      "finding": "The restricted filesystem route constructs the trusted inner helper, builds bwrap arguments, and uses run_bwrap_with_proc_fallback. Existing direct full-disk and legacy paths are different and must not be silently changed."
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "lines": [
+        559,
+        616
+      ],
+      "finding": "The ordinary no-synthetic/no-protected-target route directly execs bwrap. Existing terminate_with_parent(getpid before fork) is only in the separate synthetic/protected-create cleanup-child branch; it does not provide the inner namespace reaper with a post-exec stable parent reference."
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/launcher.rs",
+      "lines": [
+        38,
+        56
+      ],
+      "finding": "Every bwrap launch adds --as-pid-1. System launcher is preferred when required capabilities are supported; system and bundled exec paths preserve only explicitly owned files by clearing CLOEXEC before exec."
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "lines": [
+        192,
+        274
+      ],
+      "finding": "Inner stage verifies zero effective/permitted capabilities, activates any proxy routes, applies the original restrictions, then forks the command and acts as the signal-forwarding waitpid(-1) reaper. It does not currently establish a new parent-death signal or check a stable reference to the pre-exec parent."
+    },
+    {
+      "path": "codex-rs/linux-sandbox/tests/suite/managed_proxy.rs",
+      "lines": [
+        177,
+        292
+      ],
+      "finding": "Two original tests require command PPID1, namespace PID1 Seccomp2 and equal inherited+1 filter counts; a third requires a real orphan proc entry to disappear. Removing --as-pid-1 would change this security/reaping contract."
+    }
+  ],
+  "external_mechanism": {
+    "bwrap": {
+      "blob": "687ed71f7044ca997a100eef847a5de71164581b",
+      "lines": [
+        [
+          380,
+          388
+        ],
+        [
+          512,
+          521
+        ],
+        [
+          3184,
+          3188
+        ],
+        [
+          3543,
+          3605
+        ],
+        [
+          3622,
+          3626
+        ]
+      ],
+      "finding": "Upstream0.11.1 sets SIGKILL parent-death in monitor and again immediately before final exec. --new-session calls setsid. With --as-pid-1 it omits its own PID1 reaper. Monitor closes extra descriptors only in its own copy; inherited descriptors are already passed to child."
+    },
+    "apparmor": {
+      "blob": "f5d05297d59ee4b0a563f11cb7b0bdf38ea4f4cd",
+      "upstream_ref": "v6.12",
+      "lines": [
+        951,
+        970
+      ],
+      "finding": "A specific confined profile transition in apparmor_bprm_committing_creds clears pdeath_signal. This demonstrates a possible exec mechanism; it is not evidence that this host took that transition."
+    },
+    "manuals": [
+      {
+        "url": "https://man7.org/linux/man-pages/man2/PR_SET_PDEATHSIG.2const.html",
+        "claim": "Signal is for subsequent creator-thread death; no retroactive signal if relevant parent/subreapers already died. Fork and specified credential/exec changes can clear it."
+      },
+      {
+        "url": "https://man7.org/linux/man-pages/man7/pid_namespaces.7.html",
+        "claim": "A parent outside the current PID namespace is reported as PPID0; terminating namespace init causes kernel SIGKILL of its remaining processes."
+      },
+      {
+        "url": "https://man7.org/linux/man-pages/man2/pidfd_open.2.html",
+        "claim": "A pidfd is a stable task reference, born CLOEXEC, pollable on exit/reap. Process pidfd is available since Linux5.3; plain proc directory fd is not a pollable substitute."
+      }
+    ]
+  },
+  "decision": {
+    "retain": [
+      "--as-pid-1",
+      "--new-session",
+      "--die-with-parent",
+      "Original capability checks and drops",
+      "Original seccomp/no_new_privs, filesystem/network policy",
+      "Original forwarding/reaping and 5-second failure oracle"
+    ],
+    "reject": [
+      "Drop --as-pid-1 and use an unfiltered bwrap PID1",
+      "Drop --new-session to force common PGID",
+      "Only PR_SET_PDEATHSIG in inner followed by getppid==0",
+      "Longer deadlines/retries/ignored exits",
+      "Modify host LSM profiles or disable restrictions",
+      "Plain parent PID polling or scanning unrelated processes"
+    ]
+  },
+  "minimal_direction": {
+    "conditional_on": "Use original temporary GET/kill diagnostics to distinguish the actual failure first. This is a concrete design direction, not an accepted production fix or a claim of observed root cause.",
+    "capture": "At the final exec_bwrap invocation, after any synthetic/protected-create fork, open pidfd for getpid() itself. That same process becomes the outer bwrap monitor. Self-open avoids a getppid-to-pidfd identity-reuse race.",
+    "placement_constraint": "Do not open the pidfd in build_bwrap_argv or before the cleanup supervisor fork: then it would identify an ancestor supervisor instead of the actual inner reaper's direct bwrap parent, leaving an early bwrap-death race.",
+    "role_constraint": "Make the trusted-inner-reaper launch role explicit at private call sites. The /bin/true preflight has no inner helper and must not receive the new hidden lifecycle argument. Avoid interpreting untrusted final-command argv as launcher metadata.",
+    "inheritance": "Carry the owned pidfd through the already existing preserved_files chain in both system and bundled launchers. Upstream bwrap's monitor closes its own descriptor copy; the sandbox child keeps the passed reference. No writable filesystem mount, PATH, capability or loader change is needed.",
+    "inner_sequence": [
+      "Parse only the private constructed lifecycle FD for the trusted inner stage; reject invalid/missing required input before command execution.",
+      "Own the FD immediately and restore CLOEXEC defensively; preserve all existing capability and policy validation.",
+      "Establish SIGKILL parent-death for the current direct parent, then perform a zero-time poll of the captured stable pidfd. Readable or HUP means original bwrap is already dead and the namespace init must exit; poll failure/ERR/NVAL fails closed.",
+      "Only a live result permits proceeding. Close the pidfd before the final untrusted command fork/exec; do not expose it to user code.",
+      "Prove no later exec/credential-changing operation in the reaper can clear this re-established relationship before its wait loop. Current nonproxy chain is capget plus restrictions then fork; preserve proxy path qualification separately."
+    ],
+    "race_argument": [
+      "If original bwrap dies during exec or before re-arm, the captured pidfd stays observable as exited even if the namespace reaper has reparented and sees PPID0.",
+      "If it dies between re-arm and poll, SIGKILL or the poll readiness prevents admission.",
+      "If it dies after a live poll while the unchanged direct-parent relationship remains, the re-established parent-death signal terminates namespace init and the kernel terminates descendants.",
+      "This argument depends on the captured FD really coming from the private final-launch constructor, its preservation through bwrap, and no later signal-clearing transition; arbitrary caller-supplied numeric FD is not authenticated parent identity."
+    ],
+    "compatibility": [
+      "pidfd_open ENOSYS/EPERM or blocked syscall requires an explicit fail-closed error or separately reviewed compatible mechanism; no silent unsafe fallback.",
+      "This adds a Linux5.3 API dependency on the selected route; actual supported-kernel policy and original platform tests must be checked before adoption.",
+      "Polling needs no /proc mount, so it can retain the original no-proc fallback contract.",
+      "A simple inherited pipe whose write end is only held by bwrap is unsuitable without further ownership: monitor_child closes extra descriptors while still alive."
+    ],
+    "not_claimed": [
+      "Full application-parent-to-outer-bwrap startup death guarantee before bwrap's own registration",
+      "General support for arbitrary manual --apply-seccomp-then-exec arguments",
+      "Actual fixed behavior or root-cause confirmation",
+      "B16 authority or Windows sandbox qualification"
+    ]
+  },
+  "required_controls": [
+    {
+      "kind": "Original failure",
+      "case": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+      "requirements": "Same feature graph/helper epoch, original5s marker oracle,0retry, full raw/JUnit; both inner helper and command must actually terminate."
+    },
+    {
+      "kind": "Deterministic before-arm race",
+      "requirements": "Real owned launcher/namespace/exec chain; hold inner before arm, terminate exactly its captured launcher identity, release owned gate, require no untrusted-command admission and no remaining owned inner. Same control without stable poll must exhibit the early-parent-death hole. No generic timeout counts as cause."
+    },
+    {
+      "kind": "Existing security and reaping",
+      "cases": [
+        "suite::managed_proxy::sandboxed_commands_have_a_seccomp_filtered_namespace_reaper",
+        "suite::managed_proxy::managed_proxy_commands_have_a_seccomp_filtered_namespace_reaper",
+        "suite::managed_proxy::namespace_reaper_collects_orphaned_descendants"
+      ],
+      "requirements": "Preserve exact original bodies and assert namespaces actually available; early skip messages do not qualify these contracts."
+    },
+    {
+      "kind": "Ownership and route correctness",
+      "requirements": "Real FD must be closed before command; wrong/closed FD fails before admission; both normal and cleanup-fork routes identify the actual bwrap process; preflight unchanged. System/bundled qualification is distinct."
+    }
+  ],
+  "temporary_diagnostic": {
+    "patch": "b8fd274928353fc28f79ef5bb653b4466d48b439",
+    "temporary_tree": "1e936b1ca6df807d8928a4cc6c527f40f92808aa",
+    "restore_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "review_scope": "Read-only PR_GET_PDEATHSIG/self identifiers, original killpg result logging and fixture-process-id filtered stderr relay; no setter or flag change. Runtime results not yet reviewed here."
+  }
+}

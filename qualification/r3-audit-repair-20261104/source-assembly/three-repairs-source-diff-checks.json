@@ -1,0 +1,59 @@
+[
+  {
+    "stage": "SkillsFixtureIsolationV2",
+    "commit": "1175e9b91528db4ab9426fe0bec92aa34a1013d2",
+    "parent": "7bc267096f23159605c0b6563374e697f8a0bd1f",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "files": [
+      {
+        "path": "codex-rs/ext/skills/src/host_roots_tests.rs",
+        "sha": "ffae69d365402929787f9029a15f02d9c328149b",
+        "status": "modified",
+        "additions": 29,
+        "deletions": 1,
+        "changes": 30
+      }
+    ],
+    "non_lock_changed_lines": 30
+  },
+  {
+    "stage": "MigrationOfflineOfficialFixture",
+    "commit": "d09b54495a364170859a28d1656dc9fe4286c216",
+    "parent": "1175e9b91528db4ab9426fe0bec92aa34a1013d2",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "files": [
+      {
+        "path": "codex-rs/external-agent-migration/src/service_tests/plugins/marketplaces.rs",
+        "sha": "5894278bdfb88d5272180651d1a66123cd105200",
+        "status": "modified",
+        "additions": 75,
+        "deletions": 0,
+        "changes": 75
+      }
+    ],
+    "non_lock_changed_lines": 75
+  },
+  {
+    "stage": "V8DefaultSandboxAlignment",
+    "commit": "bd7631e98f295fefad7654865cea497ceacf7d06",
+    "parent": "d09b54495a364170859a28d1656dc9fe4286c216",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "files": [
+      {
+        "path": "codex-rs/v8-poc/Cargo.toml",
+        "sha": "a34a1306f1082b3347543749cbfd9a05eee7cb91",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1
+      }
+    ],
+    "non_lock_changed_lines": 1
+  }
+]

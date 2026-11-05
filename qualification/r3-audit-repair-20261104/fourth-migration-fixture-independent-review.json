@@ -1,0 +1,129 @@
+{
+  "schema": "hepta.migration-local-git-fixture.independent-static-review.v1",
+  "status": "STATIC_PASS_UNEXECUTED",
+  "path": "codex-rs/external-agent-migration/src/service_tests/plugins/marketplaces.rs",
+  "before": {
+    "bytes": 27353,
+    "blob": "682000381ac7da7d5c4022a83ee6aaf991aa4df5",
+    "sha256": "a0899f521c2e3eb2a65d012c65a9d9e6531928e4ee692786085ed36131c27d5b"
+  },
+  "after": {
+    "bytes": 30695,
+    "blob": "5894278bdfb88d5272180651d1a66123cd105200",
+    "sha256": "1900d0dcab3fb4a5bc3c24dd277c2da249d2b917cc6bd10a31bc103f5a37c5d3"
+  },
+  "patch": {
+    "bytes": 3932,
+    "blob": "d357eaeda4c184cf31da39d0f2292cc75d9081ca",
+    "sha256": "6313ea3a32d2fcf1f170739548b8bb86312be6274e56e00705ddf5e37e5ceb07"
+  },
+  "static_commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "--check",
+        "reviewed.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "reviewed.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "exact_postimage": true,
+  "only_75_added_lines": true,
+  "original_entire_source_restored_by_removing_only_added_block": true,
+  "source_evidence": [
+    {
+      "path": "codex-rs/external-agent-migration/src/service_tests/plugins/marketplaces.rs",
+      "bytes": 27353,
+      "blob": "682000381ac7da7d5c4022a83ee6aaf991aa4df5",
+      "sha256": "a0899f521c2e3eb2a65d012c65a9d9e6531928e4ee692786085ed36131c27d5b"
+    },
+    {
+      "path": "codex-rs/external-agent-migration/src/service_tests.rs",
+      "bytes": 2441,
+      "blob": "2ddc1017a3fb550738dfabb5dcad47ce346691aa",
+      "sha256": "381b2663194ae244b0cb2c1573a6679e3a97747dabfb363d30e366a60b43c0e0"
+    },
+    {
+      "path": "codex-rs/external-agent-migration/src/source_cla.rs",
+      "bytes": 13268,
+      "blob": "b2620eaf1a3b673d451b3fa7448b26ef286bb03b",
+      "sha256": "a0efc66a1e66d6a3870d4915961bcd708996055bbf0ce89ea8af932e145358ee"
+    },
+    {
+      "path": "codex-rs/external-agent-migration/src/plugins.rs",
+      "bytes": 11142,
+      "blob": "26932c4278cd87142a1306239092e3c6f0b7b727",
+      "sha256": "a4ddfce7b02dd97058f89f1e937f1d9605b0a786279c84a48ac3bf10d9ff22f9"
+    },
+    {
+      "path": "codex-rs/core-plugins/src/marketplace_add.rs",
+      "bytes": 17186,
+      "blob": "008927b70ed27b56badf9fbeacf2e1d85374cf38",
+      "sha256": "3cb6be87e681abe10ea80e0d06e46611304229ff67d619f6dbd40bf973f93c58"
+    },
+    {
+      "path": "codex-rs/core-plugins/src/marketplace_add/install.rs",
+      "bytes": 4211,
+      "blob": "84cb7d973e469b35a3547b52a7c90da39101c8ef",
+      "sha256": "27d0e1226318c3586efc26df8740c6006acf9bfa24b2958c62dd2e42f1b78518"
+    },
+    {
+      "path": "codex-rs/core-plugins/src/marketplace_add/source.rs",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "blob": "043c6a3f7d2ce1f61af083cd65e60bfabcda3dc5",
+      "bytes": 12329,
+      "sha256": "a39e303d6102ecc724a62759ade3517887a88f75e3d4472b335f96e649a2f99d"
+    }
+  ],
+  "original_failure": {
+    "classname": "codex-external-agent-migration",
+    "name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
+    "raw_result": "TIMEOUT",
+    "seconds": "60.004",
+    "offset": 20373812,
+    "bytes": 236,
+    "sha256": "f12a001480d7efaeea8b94f4a241fbd1d370dfd3483311a57bd07beac4f9965b",
+    "original_raw_block": "     TIMEOUT [  60.004s] codex-external-agent-migration service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings\n  stdout ───\n\n    running 1 test\n\n    (test timed out)\n\n"
+  },
+  "failure_source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "failure_scope": "Independently checked this complete raw block inside the full root review, not independently parsed the entire full-workspace raw log. TIMEOUT does not prove network contact or remote Git is the only cause.",
+  "preserved": [
+    "Entire original function body and all other test definitions",
+    "Exact succeeded_marketplaces/succeeded_plugin_ids/failed_marketplaces/failed_plugin_ids and raw plugin_not_found assertions",
+    "Parent original test name and original 60 second/zero retry gate",
+    "Real production inference, Git source validation/clone, stage/install/configuration and plugin lookup",
+    "Inherited security environment; no parent global environment mutation or production code change"
+  ],
+  "new_support_scope": "Normal libtest child with exact original full test name, only its private GIT_CONFIG_GLOBAL and reexecution marker added. Child must exit successfully and report exactly 1 passed, 0 failed and 0 ignored. It is not a separate selected product test.",
+  "negative_acceptance": "Deleting only the official inference tuple must reach the unchanged original succeeded_marketplaces assertion in the child (currently around line588); the parent additionally fails on child status. A setup/git/zero-test/timeout/parent-only failure is not causal proof. Restore the exact original production bytes before positive execution.",
+  "qualification_pending": [
+    "Actual compilation of this one test-only candidate",
+    "Negative child original assertion with full stdout/stderr",
+    "Restored original one-case PASS and actual selected roster",
+    "Applicable owning/full gate and source/format fences"
+  ],
+  "native_or_shared_source_mutation": false,
+  "tests_executed": false,
+  "claim_limits": [
+    "No remote marketplace freshness or connectivity claim",
+    "No original timeout or assertion relaxation",
+    "No whole-workspace qualification inferred from this static review"
+  ],
+  "actual_call_chain": "source_cla.rs official inference tuple -> plugins.rs import source request -> parse_marketplace_source preserves Git kind and normalizes shorthand to the exact rewritten HTTPS .git URL -> original run_git clone with existing safe bare-repository config and GIT_TERMINAL_PROMPT=0 -> actual staging/rename/config entry -> real plugin install lookup returning plugin_not_found."
+}

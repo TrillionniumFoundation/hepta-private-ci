@@ -1,0 +1,197 @@
+{
+  "schema": "hepta.fourth.r2e2-protocol.root-static-review.v1",
+  "observed_at_utc": "2026-11-04 22:52:03 UTC",
+  "reviewer": "root",
+  "disposition": "STATIC_ACCEPTED_AS_TWO_PROTOCOL_ONLY_PREREQUISITES_NATIVE_PENDING",
+  "base_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "cohorts": [
+    {
+      "name": "R2e2a",
+      "manifest": "2fccd651a28b485348aeb8073079663870b4c771",
+      "patch": "9743a504dc5993a5d7b47dac49e94e64e158a252",
+      "paths": 4,
+      "insertions": 468,
+      "deletions": 0
+    },
+    {
+      "name": "R2e2b",
+      "manifest": "ba53d728a0b893e990fead60055707f84821fc7b",
+      "patch": "cbeca259e8fe571e8926c6331df6fa67dfbffa0b",
+      "paths": 2,
+      "insertions": 325,
+      "deletions": 37
+    }
+  ],
+  "independently_verified_postimages": [
+    {
+      "cohort": "a",
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "roundtrip": true,
+      "identity": true,
+      "bytes": 26608,
+      "sha256": "bdaafbdfc78a8ded68676729d401d0b8a74fbeb65bcfd296014a3fa08dae7c86"
+    },
+    {
+      "cohort": "a",
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+      "roundtrip": true,
+      "identity": true,
+      "bytes": 5040,
+      "sha256": "7d88111a6ee92e91af1317f6e00fe5e6cd45b86571853dbeb39777a75df7dd40"
+    },
+    {
+      "cohort": "a",
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "roundtrip": true,
+      "identity": true,
+      "bytes": 6187,
+      "sha256": "6605e4ba63809117700e93d343e6e4ebe532c7809edb96a230031420e5656aaa"
+    },
+    {
+      "cohort": "a",
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "roundtrip": true,
+      "identity": true,
+      "bytes": 6755,
+      "sha256": "c2fb0dd3dcc42adf47c082a462ab391920c6fcd9e0d28a8d05f61ebc968ca631"
+    },
+    {
+      "cohort": "b",
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "roundtrip": true,
+      "identity": true,
+      "bytes": 11437,
+      "sha256": "bea6cd9ed80d5a04e5cfc7d47707b9313d216509449e0360cbcd4f6ac566b3ae"
+    },
+    {
+      "cohort": "b",
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "roundtrip": true,
+      "identity": true,
+      "bytes": 20212,
+      "sha256": "9e19b65bc67a3b43c87611006b363c5e65a089a6061bfd6bcce01a1819e2b931"
+    }
+  ],
+  "frozen_wire_request_hashes": [
+    {
+      "command": "begin_writes",
+      "request_id": "00000000000000070000000000000003",
+      "calculated": {
+        "bytes": 281,
+        "sha256": "62d929bbcdedfa662403a40b9c1ad02667a85ddd2c20852d19fd551c0964b5d7"
+      },
+      "recorded_sha256": "62d929bbcdedfa662403a40b9c1ad02667a85ddd2c20852d19fd551c0964b5d7",
+      "match": true
+    },
+    {
+      "command": "prepare_publication",
+      "request_id": "00000000000000070000000000000004",
+      "calculated": {
+        "bytes": 1019,
+        "sha256": "177cc26478704bbbcafa50763f8a2b2ae7f8e91c45c3e1cf35f896eca09dca6d"
+      },
+      "recorded_sha256": "177cc26478704bbbcafa50763f8a2b2ae7f8e91c45c3e1cf35f896eca09dca6d",
+      "match": true
+    },
+    {
+      "command": "commit_publication",
+      "request_id": "00000000000000070000000000000005",
+      "calculated": {
+        "bytes": 287,
+        "sha256": "9f1d9c58b23324b42b202c84d148e67a445265459a6b4913d294c913108ccb07"
+      },
+      "recorded_sha256": "9f1d9c58b23324b42b202c84d148e67a445265459a6b4913d294c913108ccb07",
+      "match": true
+    }
+  ],
+  "reviewed_primary_sources": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+      "ref": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "blob": "de9f9690da2853a86da5ea8140b70cc6814f1c24",
+      "use": "All 15 wire declarations and field ordering retained. Corrected docs make authentication/Current separate. Unused private writer matches method deferred until the successor validator actually calls it."
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint.rs",
+      "ref": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "blob": "43df08a341423db901a800749ee7387c084afb35",
+      "lines": "116-183",
+      "use": "Original exact-byte request digest contract, 32768-byte limit, request/schema/status binding and token/head epoch/counter consistency. No donor transport/coordinator moved."
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "blob": "fe3be44196377039070c62c228d5c2e642560ac0",
+      "lines": "45-67",
+      "use": "Reuse the existing Refused/Unavailable checkpoint error, while leaving its real protected acknowledgement trait and caller unmodified."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/receipt.rs",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "blob": "bc8bb81d4e29d54877fb406899aa9269a924c444",
+      "use": "Sha256Digest derives transparent Deserialize; that path does not call parse. Codec explicitly invokes parse for all digest-valued request/ACK fields, including optional proposal and retained request, without recomputing any opaque server token."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/agent_id.rs",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "blob": "98c9426a2cd7da43cd07458b1472b79acda1f474",
+      "use": "Actual canonical UUID type used by the synthetic wire fixture."
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint.rs",
+      "blob": "43df08a341423db901a800749ee7387c084afb35",
+      "lines": "116-264",
+      "use": "Fixed publisher/sequence request identity, exact prior token, full successor head, encoded request digest, monotonic ReadHead, legal Current→Dirty→Publishing→Current transitions and changed opaque token."
+    },
+    {
+      "ref": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+      "blob": "de9f9690da2853a86da5ea8140b70cc6814f1c24",
+      "lines": "72-81",
+      "use": "Seven-field writer binding equality copied as expressions into the shared proposal validator. No otherwise-unused method added to the wire module."
+    },
+    {
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "path": "codex-rs/hepta-memory/src/objective_sender_model.rs",
+      "blob": "e1e0155936a493adadf883ffda47caea58fbb7ad",
+      "lines": "252-266",
+      "use": "Actual original ObjectiveSenderWriterFence shape; owner binding and full lease/writer digest are retained in the requested and acknowledged proposal. This codec does not independently verify the underlying lease."
+    }
+  ],
+  "current_types": {
+    "digest": "Actual transparent Deserialize does not invoke Sha256Digest::parse; the codec explicitly validates every digest-bearing request and reply field, including optional proposal and retained request. parse requires exactly 64 lowercase hexadecimal ASCII bytes.",
+    "agent_id": "Existing AgentId validates lowercase RFC UUID shape/version/variant through its custom Deserialize.",
+    "anchor": "Existing CognitiveRecoveryAnchor derives deny_unknown_fields and Eq, and explicitly says exact cut is not authentication or authority.",
+    "writer_fence": "Existing ObjectiveSenderWriterFence contains the owner, full lease digest and seven binding fields; the codec retains them and does not create a lease."
+  },
+  "behavior_review": [
+    "Request IDs must be exactly 32 ASCII hex bytes before UTF-8 slicing; both halves must be nonzero. The malicious multibyte cross-boundary case is present.",
+    "Frames are limited to 32768 actual encoded bytes; empty/oversized reply rejection occurs before serde decoding. Trailing non-whitespace, duplicate and unknown fields are controlled by original serde struct checks.",
+    "Opaque peer tokens are returned unchanged. No local JSON/SQLite hash mints a token, grant or trusted Current.",
+    "Request schema/operation/shape, ACK schema/request ID/status/reason, token-head epoch/counter and exact-cut identity/profile/digests are checked. Refused stays Refused; Unknown/malformed becomes Unavailable.",
+    "Mutation validation checks exact full predecessor token and monotonic request sequence, derives complete successor and compares the entire returned head including retained exact request digest/command/predecessor.",
+    "Only Current→Dirty, Dirty→Publishing and Publishing→Current are supported. Prepare/commit verify owner, cut profile and the existing seven writer-binding fields; commit consumes the retained proposed cut. Counter overflow is rejected.",
+    "All three R2e2a controls remain byte-identical in R2e2b; four further controls are added. Independently computed all three frozen request SHA256 values match literal ACK fixture hashes.",
+    "Shared sequence/receipt/digest validators have actual multiple callers. No new Cargo dependency, lock edge, build include, production sender call, Windows private-state behavior or Agentd original_sender change appears in these diffs."
+  ],
+  "important_nonqualification": [
+    "ReadHead decode_against is identity/monotonicity checking only. Its synthetic Fenced test intentionally permits a changed observation with an unchanged counter/token; no full state-transition or authenticated Current proof follows from that API.",
+    "The DTO structs are publicly constructible and deserializable. Any future trusted Current/admission constructor must be private and tied to an actual independently authenticated current peer, owner, lease/expiry/revocation/fence and exact cut; arbitrary Receipt→Current conversion is not accepted.",
+    "No actual transport, retained owner serialization, physical pool custody, cancellation-safe binder or production normal-entry caller is supplied by these protocol cohorts.",
+    "Native compile/test and original owning Memory/full-workspace gates have not run. The seven controls are executable proposals, not seven passing tests; no runtime-negative control is claimed from the absence of a prior API.",
+    "Actual formatted diffs must still satisfy per-cohort review limits. Hygiene is deferred until original required tests, and no tests are to be rerun after final fix/fmt."
+  ],
+  "expected_controls": [
+    "cognitive_checkpoint_codec::tests::bounded_ack_preserves_the_opaque_token_and_complete_head",
+    "cognitive_checkpoint_codec::tests::malformed_or_misbound_ack_is_refused",
+    "cognitive_checkpoint_codec::tests::request_validation_rejects_bad_ids_shapes_and_oversized_frames",
+    "cognitive_checkpoint_codec::tests::complete_current_dirty_publishing_current_transcript_is_required",
+    "cognitive_checkpoint_codec::tests::matching_counters_do_not_accept_tampered_successor_heads",
+    "cognitive_checkpoint_codec::tests::predecessor_cas_replay_phase_and_writer_mismatch_are_refused",
+    "cognitive_checkpoint_codec::tests::read_head_checks_identity_and_monotonicity_without_granting_current"
+  ],
+  "next": "Keep these separate from the currently failing A-batch e84 source. Apply through the sole native executor only after root-reviewed exact source guards and the A repair/qualification boundary.",
+  "closes_blockers": []
+}

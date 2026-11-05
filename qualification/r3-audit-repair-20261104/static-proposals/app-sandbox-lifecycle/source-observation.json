@@ -1,0 +1,197 @@
+{
+  "schema": "hepta.app-sandbox-lifecycle.independent-source-observation.v1",
+  "evidence": {
+    "blob": "106cf2684ee66709db063d714c5d31f86d42fd45",
+    "bytes": 166118,
+    "sha256": "d42561e6c804537b91dbf427df5cb63bda176ec3e15a4716da68d98fe32ff709"
+  },
+  "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "verified_complete_files": [
+    {
+      "basename": "terminal.json",
+      "blob": "273b73f9c7a612d2dc01221503c9534629c119c7",
+      "bytes": 41339,
+      "sha256": "03c9beb2445e5d38cc894ce279a6a17fc70fbb3910f77dda12b4745d1d1e8a4d"
+    },
+    {
+      "basename": "owned-process-observation-summary.json",
+      "blob": "8f1bfc630af1cee1ee4a8b0a0992897c30740f97",
+      "bytes": 3274,
+      "sha256": "f015aa9a8db1f9d51f6ed9052a168aa0a526253538964e7359acb0f86d5ebaea"
+    },
+    {
+      "basename": "app-disconnect-original-diagnostic.log",
+      "blob": "a3241c8e4aa5b74e84b14239a7bed358046fa0e8",
+      "bytes": 10448,
+      "sha256": "3bd0c4477bb7cc6d0ea93aaff3b713fac56844244bdd9801b5950bad1026a240"
+    },
+    {
+      "basename": "app-disconnect-original-diagnostic.junit.xml",
+      "blob": "58c03c6e72410297e82466081c3278de4dc8cf21",
+      "bytes": 2511,
+      "sha256": "c40678750962473f77d373b0533bd406bdea31a44fe882db25fdf7d4f47ec83f"
+    },
+    {
+      "basename": "owned-process-observations.jsonl",
+      "blob": "69dc6b5157cd7cbee6c00d6205cc4aec6acbb6ad",
+      "bytes": 64170,
+      "sha256": "7985d31908b8619f2f81acf3249262e7572d6c9bfb965cbfe6ac7ec0ba17ebb0"
+    },
+    {
+      "basename": "normal-six-helper-build-epoch2-receipt.json",
+      "blob": "ece450c7d06745435e6ca0a2c3e6819c045cd187",
+      "bytes": 7387,
+      "sha256": "fcd66f6f5b4caa6cdc777936ae9cbb394d49217eb0a0bb3346cf08e080f629d3"
+    },
+    {
+      "basename": "full-workspace-feature-graph-binding.json",
+      "blob": "b47f9a714fbec0ea965fb7244573d59ad9d3548e",
+      "bytes": 697,
+      "sha256": "1ca040e0d638dc96db45fb3d73fd821457a7587dded3cdb44b6f2414f0979587"
+    },
+    {
+      "basename": "source-map.json",
+      "blob": "1d8bb948a06415edc30597c3743446c5d811affb",
+      "bytes": 10059,
+      "sha256": "e1685c6b1122e93a0bc6c264122bc1b540f9b465f6fc4c61fd77e8ecfe533fcf"
+    },
+    {
+      "basename": "native-host.json",
+      "blob": "59ba56de87ecd081d169b06594fa30361d6cc91f",
+      "bytes": 480,
+      "sha256": "adbb0d3b6899025fbffd2f1f395923c997bdde2519fa1349b8495edb72952235"
+    }
+  ],
+  "selected_case": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+  "result": "FAIL",
+  "elapsed_seconds": 5.491,
+  "original_exit_budget_seconds": 5,
+  "cases": 1,
+  "retries": 0,
+  "observed_process_events": [
+    {
+      "observed_at": "2026-11-05T02:01:58.753767+00:00",
+      "elapsed_seconds": 2.9445067640044726,
+      "event": "owned-process-state",
+      "process": {
+        "pid": 702763,
+        "comm": "bwrap",
+        "state": "S",
+        "ppid": 702627,
+        "pgid": 702763,
+        "sid": 702763,
+        "starttime_ticks": 17432796,
+        "scope": "current-descendant"
+      }
+    },
+    {
+      "observed_at": "2026-11-05T02:01:58.753863+00:00",
+      "elapsed_seconds": 2.9445879050181247,
+      "event": "owned-process-state",
+      "process": {
+        "pid": 702768,
+        "comm": "codex-app-serve",
+        "state": "R",
+        "ppid": 702763,
+        "pgid": 702768,
+        "sid": 702768,
+        "starttime_ticks": 17432797,
+        "scope": "current-descendant"
+      }
+    },
+    {
+      "observed_at": "2026-11-05T02:01:58.815448+00:00",
+      "elapsed_seconds": 3.0061874219973106,
+      "event": "owned-process-state",
+      "process": {
+        "pid": 702768,
+        "comm": "codex-app-serve",
+        "state": "S",
+        "ppid": 702763,
+        "pgid": 702768,
+        "sid": 702768,
+        "starttime_ticks": 17432797,
+        "scope": "current-descendant"
+      }
+    },
+    {
+      "observed_at": "2026-11-05T02:01:58.815549+00:00",
+      "elapsed_seconds": 3.00627330201678,
+      "event": "owned-process-state",
+      "process": {
+        "pid": 702769,
+        "comm": "python3",
+        "state": "S",
+        "ppid": 702768,
+        "pgid": 702768,
+        "sid": 702768,
+        "starttime_ticks": 17432798,
+        "scope": "current-descendant"
+      }
+    },
+    {
+      "observed_at": "2026-11-05T02:01:59.063302+00:00",
+      "elapsed_seconds": 3.25404541901662,
+      "event": "owned-process-state",
+      "process": {
+        "pid": 702768,
+        "comm": "codex-app-serve",
+        "state": "S",
+        "ppid": 2217,
+        "pgid": 702768,
+        "sid": 702768,
+        "starttime_ticks": 17432797,
+        "scope": "previously-observed-owned-identity"
+      }
+    },
+    {
+      "observed_at": "2026-11-05T02:01:59.063399+00:00",
+      "elapsed_seconds": 3.2541239650163334,
+      "event": "owned-process-state",
+      "process": {
+        "pid": 702769,
+        "comm": "python3",
+        "state": "S",
+        "ppid": 702768,
+        "pgid": 702768,
+        "sid": 702768,
+        "starttime_ticks": 17432798,
+        "scope": "previously-observed-owned-identity"
+      }
+    },
+    {
+      "observed_at": "2026-11-05T02:01:59.063420+00:00",
+      "elapsed_seconds": 3.254143782018218,
+      "event": "owned-identity-no-longer-observed",
+      "pid": 702763,
+      "starttime_ticks": 17432796
+    }
+  ],
+  "source_files": [
+    {
+      "path": "codex-rs/linux-sandbox/src/launcher.rs",
+      "blob": "d4e9b521bf93f0861cf497c3153a9efdc6e3c67b",
+      "bytes": 16007,
+      "sha256": "bf1d23f8020d4e73f7a3e235165f0953154170256a92cf0c8254e5ab32578f91"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/bwrap.rs",
+      "blob": "11e8e612af3cc4245a537fae18199acc74075a3b",
+      "bytes": 106289,
+      "sha256": "bfce8aa44048b2441a7c02b301fe7366ae1b8b9ddd8ff8518711cd874a9e749e"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "blob": "b50f19732bc0a4744c62f7300f955b9f9d17bf08",
+      "bytes": 55308,
+      "sha256": "3be631c566fbd4cbd08eea042cf425164d01002951b0dcad927c674beb571134"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/exec_util.rs",
+      "blob": "594c7a725d50d274a5edf40a66a40134d99204c4",
+      "bytes": 2500,
+      "sha256": "6bf01ef0e7094f6e82c7bf495b0b334d4a6fa229616e1a260b3e8813b0278a8b"
+    }
+  ],
+  "observation_limit": "No signal syscalls, PR_GET_PDEATHSIG, or LSM profile transition was observed in this baseline; do not infer a specific kill or clear cause. Source review is static, no new native operation."
+}

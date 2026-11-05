@@ -1,0 +1,21 @@
+exec ${PAGER:-/usr/bin/less} "$0" || exit 1
+Executing tests from //codex-rs/exec-server:exec-server-forward-test
+-----------------------------------------------------------------------------
+
+running 1 test
+test forwarder_runs_commands_and_transfers_files ... FAILED
+
+failures:
+
+---- forwarder_runs_commands_and_transfers_files stdout ----
+Error: forward large-file write phase timed out: payload_bytes=13631488 elapsed=30.603316921s
+
+Caused by:
+    deadline has elapsed
+
+
+failures:
+    forwarder_runs_commands_and_transfers_files
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 35.07s
+

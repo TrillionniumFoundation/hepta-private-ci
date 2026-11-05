@@ -1,0 +1,164 @@
+{
+  "schema": "hepta-passive-source-evidence-repository-layout-v1",
+  "observed_at_utc": "2026-11-05T04:54:06.536897+00:00",
+  "scope": "Repository layout for immutable proposal, diagnostic and counterfactual postimages. These are evidence copies, not active product modules. Original Git blob, bytes and SHA256 are unchanged.",
+  "reason": "The unchanged original scripts/format.py chooses every changed path ending .rs and uses the nearest Cargo manifest or a Rust2021 fallback. Keeping archived postimages as active .rs paths would incorrectly treat them as repository source and could rewrite original evidence. The repository formatter is unchanged.",
+  "actual_source_files_renamed": false,
+  "original_artifact_content_modified": false,
+  "original_manifests_modified": false,
+  "how_to_reconstruct": "Resolve the declared Git blob or copy repository_path to the original logical path only in an owned reconstruction directory. Verify bytes/SHA256 before applying the original source plan.",
+  "mappings": [
+    {
+      "logical_evidence_source_path": "static-proposals/b16-checkpoint/production-candidate/codex-rs/state/src/sqlite.rs",
+      "repository_path": "static-proposals/b16-checkpoint/production-candidate/codex-rs/state/src/sqlite.rs.source.txt",
+      "mode": "100644",
+      "blob": "85984c8c0fb1f699ad761de7383f920decad4808",
+      "bytes": 20834,
+      "sha256": "d68ee42f26b764105936b57f70f588a4b3d7c0bcc32e4e660680354fa165830c"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/b16-checkpoint/production-candidate/codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "repository_path": "static-proposals/b16-checkpoint/production-candidate/codex-rs/hepta-memory/src/cognitive_store_recovery.rs.source.txt",
+      "mode": "100644",
+      "blob": "fe9f45abbb87393994f7e006db0705de164a9380",
+      "bytes": 27644,
+      "sha256": "dd79f06618de18c3c74d56950e0f3c94d71c803fb5e3d17c02e9224a419b2aa5"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/b16-checkpoint/control-candidate/codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "repository_path": "static-proposals/b16-checkpoint/control-candidate/codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs.source.txt",
+      "mode": "100644",
+      "blob": "9b4767fae6cf319fc99b1e12237d57af1a6566a9",
+      "bytes": 21681,
+      "sha256": "aea5bf98f7de36a2886084688aaf0fd9b39cb477412e38368b34ad3d5cc5fda1"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/b16-checkpoint/control-candidate/codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs",
+      "repository_path": "static-proposals/b16-checkpoint/control-candidate/codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs.source.txt",
+      "mode": "100644",
+      "blob": "377b8227ff9ae33493467527130092415e2a08e0",
+      "bytes": 12147,
+      "sha256": "f82e40b05c99257e30f045f919db10b2976445d2d2f611877456f4d19450af41"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/b16-checkpoint/negative-candidate/codex-rs/state/src/sqlite.rs",
+      "repository_path": "static-proposals/b16-checkpoint/negative-candidate/codex-rs/state/src/sqlite.rs.source.txt",
+      "mode": "100644",
+      "blob": "6133170ba4e2a27c05aa32263b2f3fa5c2697d43",
+      "bytes": 20829,
+      "sha256": "63ace260b537d4f264f7fd18db158d31363860993046f33e5842d2c115515fbc"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/app-parent-observation/codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "repository_path": "static-proposals/app-parent-observation/codex-rs/linux-sandbox/src/linux_run_main.rs.source.txt",
+      "mode": "100644",
+      "blob": "c2a2178d7bd290e8a68ac98722e56c5e39e6b1ba",
+      "bytes": 56293,
+      "sha256": "17d0992010ddf7798db83d9a6564e8a770a83b851b748ebe8a8b9c9c2f294406"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/app-parent-observation/codex-rs/utils/pty/src/pipe.rs",
+      "repository_path": "static-proposals/app-parent-observation/codex-rs/utils/pty/src/pipe.rs.source.txt",
+      "mode": "100644",
+      "blob": "69586ccac9c02e133c36ec07fdca1842c3cc0731",
+      "bytes": 10840,
+      "sha256": "e9005838982937f2b4622289b91100c56be74a28b22b4c069c8c6f9d1f8ec2d7"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/app-parent-observation/codex-rs/app-server/src/command_exec.rs",
+      "repository_path": "static-proposals/app-parent-observation/codex-rs/app-server/src/command_exec.rs.source.txt",
+      "mode": "100644",
+      "blob": "b4c353f3d793cfb431d79ec73887d8d7ba6b3fb2",
+      "bytes": 38797,
+      "sha256": "5954d9cec76840c74e425216769ad40106bcd3cf6a367a42a04e7b53124d119d"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/skills-fixture-v2/candidate/codex-rs/ext/skills/src/host_roots_tests.rs",
+      "repository_path": "static-proposals/skills-fixture-v2/candidate/codex-rs/ext/skills/src/host_roots_tests.rs.source.txt",
+      "mode": "100644",
+      "blob": "ffae69d365402929787f9029a15f02d9c328149b",
+      "bytes": 23508,
+      "sha256": "1987b4f5b24df98283281f1124f6ab9fa364da41ac1cbf352e4b952058f82f94"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/skills-fixture-v2/counterfactual/codex-rs/ext/skills/src/host_roots_tests.rs",
+      "repository_path": "static-proposals/skills-fixture-v2/counterfactual/codex-rs/ext/skills/src/host_roots_tests.rs.source.txt",
+      "mode": "100644",
+      "blob": "0af7f9a6be0f1e6795bd5f7ab9006d0c8ce24a88",
+      "bytes": 23687,
+      "sha256": "33d606f5e35b6c8b77a4693a516c376a498c55e40fbdc811fdb7cbfab721daef"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/app-parent-liveness/candidate/codex-rs/linux-sandbox/src/launcher.rs",
+      "repository_path": "static-proposals/app-parent-liveness/candidate/codex-rs/linux-sandbox/src/launcher.rs.source.txt",
+      "mode": "100644",
+      "blob": "a1d761fba56d6b1653598e82f5d5d81207719ef5",
+      "bytes": 17189,
+      "sha256": "4c8c80c86477b6bbfdc002eee06c3d70ea09829a92eb079f8d309a13d22ea8bf"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/app-parent-liveness/candidate/codex-rs/linux-sandbox/src/lib.rs",
+      "repository_path": "static-proposals/app-parent-liveness/candidate/codex-rs/linux-sandbox/src/lib.rs.source.txt",
+      "mode": "100644",
+      "blob": "8f704a3156998d169ceee6bd5e93bf549da9c5c0",
+      "bytes": 1074,
+      "sha256": "35302eb707a300f974f3fa6873f82a29a4f1c15fb250b10f57c2b4f5ccd99aba"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/app-parent-liveness/candidate/codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "repository_path": "static-proposals/app-parent-liveness/candidate/codex-rs/linux-sandbox/src/linux_run_main.rs.source.txt",
+      "mode": "100644",
+      "blob": "e8eab2ed1b8221c75a366e0cc93851cf98d6f490",
+      "bytes": 56541,
+      "sha256": "c62b0014d1a539bb0343048fffa5283816f66dd17abcfb089ba3bce60eb247ca"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/app-parent-liveness/candidate/codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "repository_path": "static-proposals/app-parent-liveness/candidate/codex-rs/linux-sandbox/src/parent_lifecycle.rs.source.txt",
+      "mode": "100644",
+      "blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+      "bytes": 7437,
+      "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/app-parent-liveness/candidate/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "repository_path": "static-proposals/app-parent-liveness/candidate/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs.source.txt",
+      "mode": "100644",
+      "blob": "0293bce3c08720952fd3413c92c4e9a033da3d03",
+      "bytes": 12752,
+      "sha256": "cbd431000c30fa687422dbed660235edb16c4ce50b6f62c87def5e2957b2487e"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/app-parent-liveness/negative-postimages/no_exit_rejection/codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "repository_path": "static-proposals/app-parent-liveness/negative-postimages/no_exit_rejection/codex-rs/linux-sandbox/src/parent_lifecycle.rs.source.txt",
+      "mode": "100644",
+      "blob": "4b395cc9faa7f10dbd5d4efef8036b0170164ec0",
+      "bytes": 7234,
+      "sha256": "eb552931c2cb8515d577df020196ace5ce5b7e4970775b7b54e8e170539382f1"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/app-parent-liveness/negative-postimages/no_rearm/codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "repository_path": "static-proposals/app-parent-liveness/negative-postimages/no_rearm/codex-rs/linux-sandbox/src/parent_lifecycle.rs.source.txt",
+      "mode": "100644",
+      "blob": "eab9c5023d6f688bfbda563348490e9bb39a6aee",
+      "bytes": 7102,
+      "sha256": "a83ed718ca4171673e56eb9c6421b5abb158ab9ff2ea10cdc98670d5cec199a8"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/app-parent-liveness/negative-postimages/leaked_parent_fd/codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "repository_path": "static-proposals/app-parent-liveness/negative-postimages/leaked_parent_fd/codex-rs/linux-sandbox/src/parent_lifecycle.rs.source.txt",
+      "mode": "100644",
+      "blob": "63df209d8ebda1776b5526123ff08b3382982804",
+      "bytes": 7469,
+      "sha256": "e339d9e553715f27655c5386fcc1d386e8d84477ff92cb325966889cf03a409b"
+    },
+    {
+      "logical_evidence_source_path": "static-proposals/app-parent-liveness/banner-separator-v2/parent_lifecycle_tests.rs",
+      "repository_path": "static-proposals/app-parent-liveness/banner-separator-v2/parent_lifecycle_tests.rs.source.txt",
+      "mode": "100644",
+      "blob": "ed07ba4eed573d659dfdf647b1aab241a28e4b46",
+      "bytes": 12768,
+      "sha256": "08c1c79aaa41a9ca727ce3e4c77a46781d2b167d0127fbc401fba589e5ce4b9d"
+    }
+  ]
+}

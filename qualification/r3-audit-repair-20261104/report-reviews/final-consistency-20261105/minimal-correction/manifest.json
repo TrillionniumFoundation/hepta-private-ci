@@ -1,0 +1,136 @@
+{
+  "schema": "hepta.fourth.final-report-minimal-correction.v1",
+  "observed_at_utc": "2026-11-05T05:10:58.059155+00:00",
+  "base_snapshot": "../snapshot-1/snapshot-receipt.json",
+  "scope": "Proposed edits only in this independent directory. Root deliverables, registry, source, native lane and refs are unchanged.",
+  "files": [
+    {
+      "path": "deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "preimage": {
+        "bytes": 41012,
+        "sha256": "6b337b35b651879cc88f035fdd5403f2ef37b711b181be512914af75273718a7",
+        "blob": "2a2653d43d7d63ac19f6a92f6c1244ce67cca39c"
+      },
+      "postimage": {
+        "bytes": 41263,
+        "sha256": "f87fdb3ae97116bda122c78987c9dcfadd18110dc25102fdf5a286a4fa5f7804",
+        "blob": "f13c800f37546793df76edb4fab1fde1b78cdc51"
+      }
+    },
+    {
+      "path": "deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "preimage": {
+        "bytes": 26040,
+        "sha256": "5ccb3414ea3d204b5748e39c6d3725750eea4d9307af59c585d23581b376d86a",
+        "blob": "47abe9a78a6d00b602c97970fc6eb362a7c873c7"
+      },
+      "postimage": {
+        "bytes": 26136,
+        "sha256": "bb24c02b78b2acb606819fe991aefd4dd1602bc498f1064390d6f71b9369f9c1",
+        "blob": "206a7a9f0320521d84c0b56f96ae8429d774cada"
+      }
+    },
+    {
+      "path": "deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "preimage": {
+        "bytes": 20178,
+        "sha256": "e0a111845a7064aed74f185829b8f02c9c4c529440a6c21afe826a73870d91f7",
+        "blob": "be1ab129ce7f6bf7f5b3d39687f884733df2f457"
+      },
+      "postimage": {
+        "bytes": 20206,
+        "sha256": "30a393f4b1eb85dfa77710ff2defe1730d7fcc4d80c858275c8b8d2f32f5f18b",
+        "blob": "87edc4cdd5bb4ff98941cc12c822498ff52feca4"
+      }
+    },
+    {
+      "path": "deliverables/current-blockers.json",
+      "preimage": {
+        "bytes": 51985,
+        "sha256": "6c2c77f2362eab50999044623b1e3f6a21e20a99366a601a6e84669678d14fc7",
+        "blob": "ac67c950ded85afae9384d547ddcd44f465edae8"
+      },
+      "postimage": {
+        "bytes": 52432,
+        "sha256": "fd733ae37f6339d79da5c417a5390b85b3a6f2a139b2639a1065421d2385b4ee",
+        "blob": "33fc9ab935830c14e512161ff72d941769af3377"
+      }
+    }
+  ],
+  "edits": [
+    {
+      "file": "current-blockers.json",
+      "line_before_edit": 43,
+      "old": "\"PR#4797保持Draft，已发布cabc。第四批f825原25控制25PASS；所属七包5408 JUnit PASS/8FAIL；完整workspace19503 selected=19485 JUnit PASS/17FAIL/1TIMEOUT，0retry。完整原件已独立重建核验。三个新修复静态候选、最终fix/fmt及新head CI仍待验，尚未发布。\"",
+      "new": "\"PR#4797保持Draft，已发布cabc。保留第四批f825原25控制25PASS、所属七包5408 JUnit PASS/8FAIL与完整workspace19503 selected=19485 JUnit PASS/17FAIL/1TIMEOUT的原结果。随后Skills9、Migration166、V8及runtime76已在各自固定源通过，App原断连在c6限域通过；新fb9原full19506 selected=19490 JUnit PASS/16FAIL，57ignored、25早退、零retry。完整新旧原件均已独立重建核验；最终fix/fmt和新head原平台CI仍开放，尚未发布第四批源码。\"",
+      "reason": "B02: synchronize evidence scope with already completed original receipts, without changing status or exit"
+    },
+    {
+      "file": "current-blockers.json",
+      "line_before_edit": 142,
+      "old": "\"cabc source/merge各254exec通过，13resume和121rollout分列。strict ACL/token/delete原3失败保留。保持原public query和token旗标的窄ACL幂等V2、DELETE与父DELETE_CHILD四格物理矩阵V2及原Windows成功日志保留均已静态审查，尚未应用或原生执行。历史助手所述审批限制的原decision/action/reason尚未恢复，不作为新审批事实或永久禁令。\"",
+      "new": "\"cabc source/merge各254exec通过，13resume和121rollout分列。strict ACL/token/delete原3失败保留。保持原public query和token旗标的窄ACL幂等V2、DELETE与父DELETE_CHILD四格物理矩阵V2及原Windows成功日志保留均已静态审查并精确应用到fb9组合源，尚未在Windows原生编译或执行。历史助手所述审批限制的原decision/action/reason尚未恢复，不作为新审批事实或永久禁令。\"",
+      "reason": "B11: synchronize evidence scope with already completed original receipts, without changing status or exit"
+    },
+    {
+      "file": "current-blockers.json",
+      "line_before_edit": 186,
+      "old": "\"cabc19workflow=14成功3失败2跳过；blocking37jobs=22成功11失败4跳过。f825原full19503=19485 JUnit PASS/17FAIL/1TIMEOUT，24remote和另1capability早退保留。Skills9/Migration166/V8+runtime76原范围已通过，App原断连0.606秒通过但capability门开放。新fb9原Python57/57通过，普通index9,575项语义只读核准；新原full19506=19490 JUnit PASS/16FAIL，57ignored、25早退、零retry；14旧同名失败和2新问题待闭合。完整新原件复核、最终fix/fmt与固定新源原平台CI仍待完成。\"",
+      "new": "\"cabc19workflow=14成功3失败2跳过；blocking37jobs=22成功11失败4跳过。f825原full19503=19485 JUnit PASS/17FAIL/1TIMEOUT，24remote和另1capability早退保留。Skills9/Migration166/V8+runtime76原范围已通过，App原断连0.606秒通过但capability门开放。新fb9原Python57/57通过，普通index9,575项语义只读核准；新原full19506=19490 JUnit PASS/16FAIL，57ignored、25早退、零retry；14旧同名失败和2新问题待闭合。完整新42件原件已独立重建复核；最终fix/fmt与固定新源原平台CI仍待完成。\"",
+      "reason": "B15: synchronize evidence scope with already completed original receipts, without changing status or exit"
+    },
+    {
+      "file": "current-blockers.json",
+      "line_before_edit": 326,
+      "old": "\"21 unpublished source commits reach actualfb9. OriginalPython57 passed; post-Python ordinary-index byte failure is preserved and all9575 entry semantics match originalcabc. Root accepted currentc41 snapshot; remaining full stages are running without source reapplication or Python rerun. No final hygiene or final published-head CI qualification.\"",
+      "new": "\"21 unpublished source commits reach actualfb9. OriginalPython57 passed; post-Python ordinary-index byte failure is preserved and all9575 entry semantics match originalcabc. Root accepted currentc41 snapshot. The unfiltered full continuation completed without source reapplication or Python rerun:19490 JUnit PASS/16FAIL,57ignored,25bound early returns,0retry. All42 original files were independently reconstructed. Original scoped hygiene is tracked separately; no final code-tree or published-head CI qualification is claimed.\"",
+      "reason": "Top-level composition note must not say completed full stages are still running"
+    },
+    {
+      "file": "CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "line_before_edit": 9,
+      "old": "[本轮非通过逐项根审](fourth-full-fb9-nonpass-root-review.json)",
+      "new": "[本轮非通过逐项根审](fourth-full-fb9-nonpass-root-review.json) / [新42件完整原件根审](fourth-full-fb9-complete-root-review.json)",
+      "reason": "Bind the 42-file reconstruction statement directly to its completed full review"
+    },
+    {
+      "file": "CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "line_before_edit": 183,
+      "old": "literal-deny原25已通过；继续原所属7包和完整workspace、原fix/fmt，统一源码/锁/证据发布",
+      "new": "保留原25、所属7包与两轮full的已完成原结果；完成原fix/fmt后统一源码/锁/证据发布，16项失败继续开放",
+      "reason": "Current action should not imply that already completed owning/full scopes have not run"
+    },
+    {
+      "file": "CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "line_before_edit": 214,
+      "old": "若继续研究，执行R0/R1/R2的新冻结协议与独立数据；不继续也可保留明确不采用决策，不追求事后正结果。",
+      "new": "保留原D−B采用门与HOLD。J有限规划作为独立有证据的组件继续评估，权重编辑保强普通默认与验证回退；新实验先冻结独立数据、拟合单位、计算成本和全部失败保留，禁止以J−C、原记录重放或移植一致性换名关闭D−B。",
+      "reason": "Keep B18's Markdown next gate consistent with the already updated machine ledger and independent #4823 evidence"
+    },
+    {
+      "file": "FOURTH_BATCH_QUALIFICATION.md",
+      "line_before_edit": 40,
+      "old": "| Final fix/fmt | Pending after concrete failure triage | Not yet executed | No final code-tree qualification |",
+      "new": "| Final fix/fmt | Original scoped flow after fb9 full | Execution and any automatic source delta are tracked by the current root receipt; no terminal success claimed here | No final code-tree qualification |",
+      "reason": "Remove stale unexecuted wording without guessing the ongoing hygiene terminal result"
+    },
+    {
+      "file": "PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "line_before_edit": 49,
+      "old": "先追查新增线程恢复与代理响应失败，再完成最终fix/fmt并发布现有Draft，以固定新提交运行原Windows/macOS Intel/Linux等CI。",
+      "new": "新增线程恢复与代理响应失败的原因保持OPEN并单独继续定位；完成最终fix/fmt后发布现有Draft，以固定新提交运行原Windows/macOS Intel/Linux等CI。",
+      "reason": "Reflect root's explicit non-blocking Draft publication decision while retaining both new failures"
+    }
+  ],
+  "patch": {
+    "path": "report-consistency.patch",
+    "bytes": 17567,
+    "sha256": "a3765a0e932972d5fd2a81bd142dfc18a18c2f062142f378d0a3a1a01c7f4c66",
+    "blob": "5ec9b41f050d333810c960f2c02a04b143ecbe36"
+  },
+  "isolated_git_apply_check_and_postimage_verification": true,
+  "all_23_status_exit_closure_class_unchanged": true,
+  "all_23_id_sets_and_counts_unchanged": true,
+  "no_evidence_index_or_registry_edit": true,
+  "ongoing_hygiene_limit": "This patch claims no hygiene terminal success. Root should merge against its latest actual receipt and retain any subsequent source-specific updates."
+}

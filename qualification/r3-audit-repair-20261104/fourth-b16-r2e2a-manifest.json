@@ -1,0 +1,205 @@
+{
+  "schema": "hepta_b16_r2e2a_checkpoint_wire_review_v1",
+  "status": "SOURCE_CANDIDATE_ONLY_NOT_FORMATTED_COMPILED_OR_EXECUTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "base_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+  "donor_commit": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+  "corrected_r0": {
+    "json": "1bb19c599efc651465d00843fce025635a60556d",
+    "markdown": "bd9f208933636b2f2c3fc24491979fc1d368b058"
+  },
+  "scope": "First of two small protocol prerequisites: real bounded encode/decode, request binding and structural ACK validation. No Current provider, transport, authority, recovery, pool binding or production caller is added.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "add": 18,
+      "del": 0,
+      "before_blob": "65fb9b4dcf09083a7b9562296fc05f3ed3b227d8",
+      "postimage": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33",
+      "bytes": 26608,
+      "sha256": "bdaafbdfc78a8ded68676729d401d0b8a74fbeb65bcfd296014a3fa08dae7c86"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+      "add": 154,
+      "del": 0,
+      "before_blob": null,
+      "postimage": "c6bada509bf9108a2dffad91288b1432c136ef20",
+      "bytes": 5040,
+      "sha256": "7d88111a6ee92e91af1317f6e00fe5e6cd45b86571853dbeb39777a75df7dd40"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "add": 141,
+      "del": 0,
+      "before_blob": null,
+      "postimage": "ea998b49788062dea8d9d93d786e771a76a8e937",
+      "bytes": 6187,
+      "sha256": "6605e4ba63809117700e93d343e6e4ebe532c7809edb96a230031420e5656aaa"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "add": 155,
+      "del": 0,
+      "before_blob": null,
+      "postimage": "04647377829ad94baddc8fef1e92538902e60385",
+      "bytes": 6755,
+      "sha256": "c2fb0dd3dcc42adf47c082a462ab391920c6fcd9e0d28a8d05f61ebc968ca631"
+    }
+  ],
+  "postimages": [
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "blob": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33",
+      "bytes": 26608,
+      "sha256": "bdaafbdfc78a8ded68676729d401d0b8a74fbeb65bcfd296014a3fa08dae7c86"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+      "blob": "c6bada509bf9108a2dffad91288b1432c136ef20",
+      "bytes": 5040,
+      "sha256": "7d88111a6ee92e91af1317f6e00fe5e6cd45b86571853dbeb39777a75df7dd40"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "blob": "ea998b49788062dea8d9d93d786e771a76a8e937",
+      "bytes": 6187,
+      "sha256": "6605e4ba63809117700e93d343e6e4ebe532c7809edb96a230031420e5656aaa"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "blob": "04647377829ad94baddc8fef1e92538902e60385",
+      "bytes": 6755,
+      "sha256": "c2fb0dd3dcc42adf47c082a462ab391920c6fcd9e0d28a8d05f61ebc968ca631"
+    }
+  ],
+  "patch": {
+    "blob": "9743a504dc5993a5d7b47dac49e94e64e158a252",
+    "bytes": 20834,
+    "sha256": "835df1d767cb4f95e4d577072c66c0034978db2d0ce8c51f90163482ecec4d91"
+  },
+  "diff": {
+    "paths": 4,
+    "insertions": 468,
+    "deletions": 0,
+    "roundtrip": [
+      {
+        "path": "codex-rs/hepta-memory/src/lib.rs",
+        "hunks": 2,
+        "exact_reconstructed": true
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+        "hunks": 1,
+        "exact_reconstructed": true
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+        "hunks": 1,
+        "exact_reconstructed": true
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+        "hunks": 1,
+        "exact_reconstructed": true
+      }
+    ],
+    "formatting": "Manual source layout only; original just fmt is still required in the sole native lane."
+  },
+  "source_proofs": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+      "ref": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "blob": "de9f9690da2853a86da5ea8140b70cc6814f1c24",
+      "use": "All 15 wire declarations and field ordering retained. Corrected docs make authentication/Current separate. Unused private writer matches method deferred until the successor validator actually calls it."
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint.rs",
+      "ref": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+      "blob": "43df08a341423db901a800749ee7387c084afb35",
+      "lines": "116-183",
+      "use": "Original exact-byte request digest contract, 32768-byte limit, request/schema/status binding and token/head epoch/counter consistency. No donor transport/coordinator moved."
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender.rs",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "blob": "fe3be44196377039070c62c228d5c2e642560ac0",
+      "lines": "45-67",
+      "use": "Reuse the existing Refused/Unavailable checkpoint error, while leaving its real protected acknowledgement trait and caller unmodified."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/receipt.rs",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "blob": "bc8bb81d4e29d54877fb406899aa9269a924c444",
+      "use": "Sha256Digest derives transparent Deserialize; that path does not call parse. Codec explicitly invokes parse for all digest-valued request/ACK fields, including optional proposal and retained request, without recomputing any opaque server token."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/agent_id.rs",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "blob": "98c9426a2cd7da43cd07458b1472b79acda1f474",
+      "use": "Actual canonical UUID type used by the synthetic wire fixture."
+    }
+  ],
+  "behavior": [
+    "Encode checks schema=1, exact operation, 32 ASCII-hex request ID with nonzero epoch/sequence, supported command/expected/proposal shape, digest syntax and actual serialized byte length.",
+    "The owner codec supports ReadHead and the existing BeginWrites/PreparePublication/CommitPublication shape. FencePublisher remains a wire variant for the protected service lifecycle; this codec refuses to construct that operation.",
+    "Decode rejects empty/oversized frames before JSON decoding, unknown/duplicate fields through the existing explicit serde structs, mismatched request/schema, malformed ACK reason/missing head or token, mismatched token/head epoch/counter, malformed exact-cut identity/profile and malformed digest text.",
+    "Refused remains Refused; Unknown and malformed ACK remain Unavailable. A valid opaque 64-hex token is returned unchanged; no token or authority is derived from local JSON or SQLite.",
+    "Full predecessor/successor comparison is intentionally not supplied by decode_ack. R2e2b adds that next; no recovery/binder/Current caller may treat this wire result alone as qualification."
+  ],
+  "tests": {
+    "exact_names": [
+      "cognitive_checkpoint_codec::tests::bounded_ack_preserves_the_opaque_token_and_complete_head",
+      "cognitive_checkpoint_codec::tests::malformed_or_misbound_ack_is_refused",
+      "cognitive_checkpoint_codec::tests::request_validation_rejects_bad_ids_shapes_and_oversized_frames"
+    ],
+    "expected_new_count": 3,
+    "evidence": "Synthetic real serialized request/response byte frames only, not a live Root or filesystem qualification.",
+    "controls": [
+      "Round-trip the complete typed receipt with a server-supplied opaque token. Exactly 32768 response bytes (valid trailing whitespace) decode; one extra byte, empty, invalid UTF-8 and trailing garbage reject.",
+      "Mutate raw JSON schema/request-id/reason/missing head or token/counters/epochs/cut identity/profile/digest syntax; add unknown outer and nested fields; insert a duplicate schema field. Check exact error classifications including Refused and Unknown.",
+      "Malformed byte-length/non-ASCII/non-hex/zero request IDs fail without indexing unvalidated UTF-8. Bad operation/schema and unsupported command shapes fail. A complete valid PreparePublication request encodes before increasing only its lease_id past the actual byte cap."
+    ],
+    "no_baseline_claim": "This is a new API; absence of the module in cabc is not a runtime negative control. Malformed frames are executable input negatives once the real code compiles."
+  },
+  "preservation": {
+    "original_library_bytes_after_removing_exact_18_added_lines": true,
+    "original_tests": "All pre-existing tests unchanged.",
+    "production_calls": "No Agentd main, production_composition, production_writer_host, generic host attachment, original_sender or bootstrap ACK touched.",
+    "storage_and_platform": "No existing SQLite/read-only/retained-directory/private-state-sync/ordinary-peer/Windows permission code touched.",
+    "r2e1": "The exact-duplicate rollback followed by its independent acknowledgement remains unchanged. from_read_only_pool remains protected by the actual cold-image readonly mechanism, not a newly claimed commit hook."
+  },
+  "dependencies": {
+    "compile": "Uses only current Memory exports and already-declared serde, serde_json, sha2/contracts/error types. No compile dependency on proposed R1/R2a/R2c/R2d/R2e1.",
+    "integration": "A live Current consumer still requires the real transport, full CAS validator, owner serialization, cancellation fence, exact recovery, exclusive ownership, coordinated writer/observer/barrier and preserved original sender.",
+    "files": "No Cargo.toml, Cargo.lock, MODULE.bazel.lock or BUILD change. No include_str/include_bytes/new compile_data or binary.",
+    "lock_gate": "No new dependency edge to regenerate in this cohort; normal frozen lock checks remain applicable when the whole candidate is built."
+  },
+  "required_commands": {
+    "working_directory": "codex-rs",
+    "new_controls": "just test -p codex-hepta-memory --lib --retries 0 -E 'test(=cognitive_checkpoint_codec::tests::bounded_ack_preserves_the_opaque_token_and_complete_head) | test(=cognitive_checkpoint_codec::tests::malformed_or_misbound_ack_is_refused) | test(=cognitive_checkpoint_codec::tests::request_validation_rejects_bad_ids_shapes_and_oversized_frames)'",
+    "original_package": "just test -p codex-hepta-memory --retries 0",
+    "hygiene": [
+      "just fix -p codex-hepta-memory",
+      "just fmt"
+    ],
+    "original_recipe_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "agents_blob": "a22ff3bee70261f6061d598c31f0016e785a7a3c",
+    "receipts": "Sole native executor must retain exact source tree/file hashes, host/toolchain, complete actual roster, fresh JUnit, raw output and terminal exit. No test rerun after fix/fmt; inspect and retain resulting source deltas."
+  },
+  "not_done": [
+    "No native or Cargo/Bazel invocation.",
+    "No source-tree, target, branch, PR or ref mutation.",
+    "No actual Root peer/credential handling, grant/signature creation, Current admission or external action.",
+    "No platform/full-matrix/B16 closure claim.",
+    "No statement that read-only pool is commit-hook protected."
+  ],
+  "source_revision": {
+    "unexecuted_drafts_superseded": [
+      "18e884793c669f4a533aea76bfdf0c28806b39be",
+      "d2284d4c2c7e878e082c21ea1bcd8fd0c748372e"
+    ],
+    "reason": "Inline single-use private helpers per AGENTS; malformed 32-byte UTF-8 ID now crosses the exact 16-byte slicing boundary."
+  }
+}

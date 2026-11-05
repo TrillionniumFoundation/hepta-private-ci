@@ -1,0 +1,232 @@
+{
+  "schema": "hepta.fourth_report_narrow_consistency_review.v1",
+  "verdict": "STATIC_CORRECTIONS_PREPARED_NOT_APPLIED",
+  "observed_at_utc": "2026-11-05T02:33:55.190397+00:00",
+  "inputs": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "snapshot_path": "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-final-consistency-review-20261105/before/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "bytes": 32646,
+      "sha256": "1c1c5d3e31fd84bde66ca0bd0e225028a9ed27405c81496d429309784cba4fcb",
+      "git_blob": "92542e0c6b57bd6f6eafd52fc5c80c7acdde848e"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "snapshot_path": "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-final-consistency-review-20261105/before/FOURTH_BATCH_QUALIFICATION.md",
+      "bytes": 14691,
+      "sha256": "931258351ee4b3fd3e4119a4a4755381e33c183b3e3d59b7e57cdd4d79a3547f",
+      "git_blob": "aa7dedfcbce34be395ba16697650bf1c248e8ad0"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "snapshot_path": "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-final-consistency-review-20261105/before/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "bytes": 16387,
+      "sha256": "c315dc81edb4c98096e3d00750144f300ecbf02a326d90a1000c03fe9a826139",
+      "git_blob": "db8b91d1334223ec05e049da82b41980fa1b1f79"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/deliverables/current-blockers.json",
+      "snapshot_path": "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-final-consistency-review-20261105/before/current-blockers.json",
+      "bytes": 26230,
+      "sha256": "c164db018a3842231832453e81b93848d6a6ffaa0e5a385546c2022aaf831db3",
+      "git_blob": "3fa937e231cdd6beb6a250fc2a6063823597c722"
+    }
+  ],
+  "input_scope": "Full read of the three requested markdown documents and the current ledger only. New event facts and registered destinations are explicitly supplied by root; this pass does not reopen original native logs or the artifact registry.",
+  "changes": [
+    {
+      "id": "APP_EPOCH2_TERMINAL",
+      "documents": [
+        "CURRENT_AUDIT_PROGRESS.zh-CN.md",
+        "FOURTH_BATCH_QUALIFICATION.md",
+        "PROJECT_DIRECTION_AND_PLAN.zh-CN.md"
+      ],
+      "finding": "All three still state terminal review pending.",
+      "correction": "Original one case FAIL, 5.491s; outer bwrap absent while inner bwrap and Python alive. No signal attribution. Prior stopped preflight and original full failure retained.",
+      "evidence_scope": "Root-provided, independently reviewed terminal evidence; no new native observation in this review.",
+      "registered_paths_confirmed_by_root": [
+        "fourth-app-epoch2-terminal-diagnostic.json",
+        "fourth-app-epoch2-root-terminal-review.json",
+        "fourth-app-bwrap-exact-readonly.json"
+      ]
+    },
+    {
+      "id": "B16_CHECKPOINT_STATIC_PROPOSAL",
+      "documents": [
+        "CURRENT_AUDIT_PROGRESS.zh-CN.md",
+        "FOURTH_BATCH_QUALIFICATION.md"
+      ],
+      "finding": "Separate checkpoint repair still described as being prepared, although a concrete static package now exists.",
+      "correction": "Two production paths 15 additions/3 deletions plus three control paths 324 additions, static only. No application, compilation, execution, Current/ACK/publication qualification implied.",
+      "proposal_manifest_blob": "8c39e58cacf1303283ca5854d3ba78673b1ebda2",
+      "registered_path_confirmed_by_root": "static-proposals/b16-checkpoint/repair-manifest.json"
+    },
+    {
+      "id": "B10_GLOBAL_ASSERTION_CLAIM",
+      "documents": [
+        "FOURTH_BATCH_QUALIFICATION.md"
+      ],
+      "finding": "Global statement no altered failure assertions contradicts the explicitly corrected B10 oracle.",
+      "correction": "State stable WebSocket expected total 3 to 4, one real prewarm plus three turn requests; no blanket unchanged-assertion claim.",
+      "evidence_scope": "Already explicit in current ledger B10 and main report, reinforced by root instruction; no new claim of native/platform qualification."
+    },
+    {
+      "id": "WINDOWS_RESTRICTION_CLOSING_WORDING",
+      "documents": [
+        "CURRENT_AUDIT_PROGRESS.zh-CN.md"
+      ],
+      "finding": "Closing phrase concrete Windows approval restrictions can be read as asserting a recovered restriction despite the same report documenting the missing original receipt.",
+      "correction": "Refer to the strict Windows permission contract; preserve the earlier precise historical receipt limitation."
+    }
+  ],
+  "ledger_findings_for_root_only": {
+    "not_modified": true,
+    "app_fields_still_stale": [
+      "native_current_execution.app_disconnect_diagnostic.state",
+      "native_current_execution.app_disconnect_diagnostic.terminal_result",
+      "native_current_execution.app_disconnect_diagnostic.qualification"
+    ],
+    "b16_field_still_stale": "items[id=B16].evidence_scope_zh",
+    "original_23_ids": [
+      "B01",
+      "B02",
+      "B03",
+      "B04",
+      "B05",
+      "B06",
+      "B07",
+      "B08",
+      "B09",
+      "B10",
+      "B11",
+      "B12",
+      "B13",
+      "B14",
+      "B15",
+      "B16",
+      "B17",
+      "B18",
+      "B19",
+      "B20",
+      "B21",
+      "B22",
+      "B23"
+    ],
+    "closure_counts": {
+      "CLOSED_SCOPED": 8,
+      "OPEN": 14,
+      "SCIENTIFIC_HOLD": 1
+    },
+    "closed_ids": [
+      "B01",
+      "B03",
+      "B04",
+      "B05",
+      "B06",
+      "B12",
+      "B14",
+      "B17"
+    ],
+    "open_ids": [
+      "B02",
+      "B07",
+      "B08",
+      "B09",
+      "B10",
+      "B11",
+      "B13",
+      "B15",
+      "B16",
+      "B19",
+      "B20",
+      "B21",
+      "B22",
+      "B23"
+    ],
+    "hold_ids": [
+      "B18"
+    ],
+    "original_exit_conditions_preserved_because_ledger_not_in_patch": true,
+    "original_exit_condition_snapshot_sha256": "89e33d97397d5fd432e89154116928c4c7714ab2b73e4bb58902f4e6d171f6c8"
+  },
+  "arithmetic_and_scope_checks": {
+    "inventory": {
+      "open_pr_total": 1088,
+      "draft_plus_nondraft": 1088,
+      "base_groups_sum": 1088
+    },
+    "registry": {
+      "module_groups_sum": 40,
+      "work_package_groups_sum": 91
+    },
+    "native": {
+      "original25": 25,
+      "owning7_selected": 5416,
+      "full_selected": 19503,
+      "full_nonpassing": 18,
+      "full_ledger_fail18_explicitly_annotated_as_including_one_timeout": true
+    },
+    "seven_rows": {
+      "requested_names": 105,
+      "distinct_observed_names": 72,
+      "rows": 406,
+      "sufficient_plus_missing_ledger_names": 97
+    },
+    "r0_decisions_sum": 102,
+    "no_new_closed_id": true,
+    "scientific_hold_not_reclassified": true,
+    "cross_source_platform_results_not_promoted": true
+  },
+  "relative_link_review": {
+    "existing_markdown_occurrences": 78,
+    "unique_existing_targets": 49,
+    "not_present_in_local_staging_occurrences": 60,
+    "not_present_in_local_staging_unique": 39,
+    "interpretation": "Local staged deliverables are not the final repository assembly. These local absences do not establish missing published or registered artifacts. Registry content was outside this narrow read scope. New references are the exact destinations confirmed registered by root. No unsupported path substitution was made.",
+    "confirmed_bad_final_artifact_paths": [],
+    "final_registry_or_tree_link_validation": "REMAINS_WITH_ROOT_ASSEMBLY_GATE",
+    "detail_file": "relative-link-check.json"
+  },
+  "correction_patch": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-final-consistency-review-20261105/report-corrections.patch",
+    "bytes": 13117,
+    "sha256": "accd93758e9663015abf1dad77b5def96b9a5d9b217f6d38a1ff206a082c5063",
+    "git_blob": "133e1f51c7a79418f5ab50c2220677fa4daadfb7"
+  },
+  "postimages": [
+    {
+      "path": "hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "byte_equal": true,
+      "bytes": 33140,
+      "sha256": "da89022d00020b886748e5f75f7098962e1b3348c85db4d151b96175274da27b",
+      "git_blob": "630348a4a3257f13ce2002d85376ee64add71c93"
+    },
+    {
+      "path": "hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "byte_equal": true,
+      "bytes": 15439,
+      "sha256": "ca8c01c8b1d67b93eabadaca713c17f344e9f96e9ce85869c6b0eb5079526062",
+      "git_blob": "a101b22489fef002db08dc0153f3a6ede1290295"
+    },
+    {
+      "path": "hepta-audit-fourth/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "byte_equal": true,
+      "bytes": 16552,
+      "sha256": "9b0cea3cf3ed1a1638bbf88fc801aae3e1632f22bd2d36997f76c0ae4f53126f",
+      "git_blob": "3156325d42bfe4f4262caa91ce48a2aeb10c3974"
+    }
+  ],
+  "verification": {
+    "isolated_git_apply_check": true,
+    "isolated_git_apply_and_three_postimage_byte_equality": true,
+    "root_files_unchanged_at_verification": true,
+    "source_snapshot": "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-final-consistency-review-20261105/input-snapshot.json",
+    "verification_file": "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-final-consistency-review-20261105/patch-verification.json"
+  },
+  "actions_not_taken": [
+    "No root deliverable/ledger/registry writes",
+    "No native process, build, or test",
+    "No Git ref, PR, or branch mutation",
+    "No new experiment or platform qualification"
+  ]
+}

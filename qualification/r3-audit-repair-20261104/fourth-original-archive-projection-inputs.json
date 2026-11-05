@@ -1,0 +1,2801 @@
+{
+  "schema": "hepta.cabc-seven-scope-existing-archive-projection.v1",
+  "output_dir": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-seven-scope-projection-20261104-2300",
+  "expected_product_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "expected_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+  "evidence_map": "c9265a2edc78d3e78e6ef137cf90498194a5bf5c",
+  "groups": {
+    "B07": [
+      {
+        "test": "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-hooks-after-lifecycle-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+        "binary": "codex-mcp",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+          "blob": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+          "reason": "Existing binding suite: real captured client/catalog/environment/model-visibility controls; not a new test request."
+        }
+      },
+      {
+        "test": "binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh",
+        "binary": "codex-mcp",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+          "blob": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+          "reason": "Existing binding suite: real captured client/catalog/environment/model-visibility controls; not a new test request."
+        }
+      },
+      {
+        "test": "binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes",
+        "binary": "codex-mcp",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+          "blob": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+          "reason": "Existing binding suite: real captured client/catalog/environment/model-visibility controls; not a new test request."
+        }
+      },
+      {
+        "test": "binding::tests::prepared_call_is_rejected_after_catalog_refresh",
+        "binary": "codex-mcp",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+          "blob": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+          "reason": "Existing binding suite: real captured client/catalog/environment/model-visibility controls; not a new test request."
+        }
+      },
+      {
+        "test": "binding::tests::stale_prepared_call_does_not_run_preparation",
+        "binary": "codex-mcp",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+          "blob": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+          "reason": "Existing binding suite: real captured client/catalog/environment/model-visibility controls; not a new test request."
+        }
+      },
+      {
+        "test": "binding::tests::preparation_holds_catalog_authority_until_it_finishes",
+        "binary": "codex-mcp",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+          "blob": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+          "reason": "Existing binding suite: real captured client/catalog/environment/model-visibility controls; not a new test request."
+        }
+      }
+    ],
+    "B09": [
+      {
+        "test": "suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-lifecycle-and-executor-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-lifecycle-and-executor-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-lifecycle-and-executor-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-lifecycle-and-executor-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-lifecycle-and-executor-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-lifecycle-and-executor-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-lifecycle-and-executor-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-lifecycle-and-executor-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-lifecycle-and-executor-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "core-macos-oracle-lifecycle-originals-v2",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "session::tests::panicking_session_task_is_converted_to_terminal_error_and_releases_slot",
+        "binary": "codex-core",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/core/src/session/tests.rs",
+          "blob": "e8be921f4bd2194559f2c55051a3a2201e5d4789",
+          "reason": "Existing named panic/cancellation/watchdog/suspension fence controls required by the original exit condition; not historical phase pass transfer."
+        }
+      },
+      {
+        "test": "session::tests::cancelled_finish_owner_keeps_terminalizer_alive",
+        "binary": "codex-core",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/core/src/session/tests.rs",
+          "blob": "e8be921f4bd2194559f2c55051a3a2201e5d4789",
+          "reason": "Existing named panic/cancellation/watchdog/suspension fence controls required by the original exit condition; not historical phase pass transfer."
+        }
+      },
+      {
+        "test": "session::tests::panicking_finish_terminalizer_retains_fence",
+        "binary": "codex-core",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/core/src/session/tests.rs",
+          "blob": "e8be921f4bd2194559f2c55051a3a2201e5d4789",
+          "reason": "Existing named panic/cancellation/watchdog/suspension fence controls required by the original exit condition; not historical phase pass transfer."
+        }
+      },
+      {
+        "test": "session::tests::hung_finish_terminalizer_watchdog_retains_fence",
+        "binary": "codex-core",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/core/src/session/tests.rs",
+          "blob": "e8be921f4bd2194559f2c55051a3a2201e5d4789",
+          "reason": "Existing named panic/cancellation/watchdog/suspension fence controls required by the original exit condition; not historical phase pass transfer."
+        }
+      },
+      {
+        "test": "session::tests::cancelled_abort_owner_keeps_terminalizer_alive",
+        "binary": "codex-core",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/core/src/session/tests.rs",
+          "blob": "e8be921f4bd2194559f2c55051a3a2201e5d4789",
+          "reason": "Existing named panic/cancellation/watchdog/suspension fence controls required by the original exit condition; not historical phase pass transfer."
+        }
+      },
+      {
+        "test": "session::tests::panicking_abort_terminalizer_retains_fence",
+        "binary": "codex-core",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/core/src/session/tests.rs",
+          "blob": "e8be921f4bd2194559f2c55051a3a2201e5d4789",
+          "reason": "Existing named panic/cancellation/watchdog/suspension fence controls required by the original exit condition; not historical phase pass transfer."
+        }
+      },
+      {
+        "test": "session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive",
+        "binary": "codex-core",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/core/src/session/tests.rs",
+          "blob": "e8be921f4bd2194559f2c55051a3a2201e5d4789",
+          "reason": "Existing named panic/cancellation/watchdog/suspension fence controls required by the original exit condition; not historical phase pass transfer."
+        }
+      },
+      {
+        "test": "session::turn_input::tests::steer_only_requires_active_turn",
+        "binary": "codex-core",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/core/src/session/turn_input_tests.rs",
+          "blob": "d7d9b493ac07c79d0e2c935c7a6df6c0ebada6d0",
+          "reason": "Existing idle/mismatched-turn negative controls; exact module declaration verified in turn_input.rs."
+        }
+      },
+      {
+        "test": "session::turn_input::tests::steer_only_enforces_expected_turn_id",
+        "binary": "codex-core",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/core/src/session/turn_input_tests.rs",
+          "blob": "d7d9b493ac07c79d0e2c935c7a6df6c0ebada6d0",
+          "reason": "Existing idle/mismatched-turn negative controls; exact module declaration verified in turn_input.rs."
+        }
+      }
+    ],
+    "B13": [
+      {
+        "test": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+        "binary": "codex-hepta-agentd",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "agentd-lease-original",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+        "binary": "codex-queue-extension::queue_service",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "queue-claim-originals",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+        "binary": "codex-queue-extension::queue_service",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "queue-claim-originals",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+        "binary": "codex-queue-extension::queue_service",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "queue-claim-originals",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+        "binary": "codex-queue-extension::queue_service",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "queue-claim-originals",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "queued_input_and_unique_event_ids_round_trip",
+        "binary": "codex-queue-extension::queue_service",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/ext/queue/tests/queue_service.rs",
+          "blob": "13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1",
+          "reason": "Existing queue DB-ack/control cohort; historical 869971be pass is not cabc platform qualification."
+        }
+      },
+      {
+        "test": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+        "binary": "codex-queue-extension::queue_service",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/ext/queue/tests/queue_service.rs",
+          "blob": "13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1",
+          "reason": "Existing queue DB-ack/control cohort; historical 869971be pass is not cabc platform qualification."
+        }
+      },
+      {
+        "test": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+        "binary": "codex-queue-extension::queue_service",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/ext/queue/tests/queue_service.rs",
+          "blob": "13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1",
+          "reason": "Existing queue DB-ack/control cohort; historical 869971be pass is not cabc platform qualification."
+        }
+      },
+      {
+        "test": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+        "binary": "codex-queue-extension::queue_service",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/ext/queue/tests/queue_service.rs",
+          "blob": "13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1",
+          "reason": "Existing queue DB-ack/control cohort; historical 869971be pass is not cabc platform qualification."
+        }
+      }
+    ],
+    "B20": [
+      {
+        "test": "suite::v2::remote_control::connected_backend_handles_models_lookup_before_websocket_initialize",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::http_fixture_rejects_eof_before_request_headers_complete",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::explicit_remote_control_startup_fails_when_disabled_by_requirements",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::disable_waits_for_in_flight_durable_enable",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::listen_off_honors_persisted_remote_control_enable",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::listen_off_ignores_persisted_enable_when_disabled_by_requirements",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::models_http_request_is_not_a_websocket_upgrade",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::listen_off_exits_without_persisted_remote_control_enable",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::managed_requirements_allow_remote_control_true_does_not_enable_or_block_it",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::managed_requirements_reject_all_remote_control_rpcs",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::pairing_start_works_after_ephemeral_enable",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_client_management_works_while_disabled",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_disable_returns_disabled_status",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_enable_returns_connecting_status",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_status_read_returns_disabled_status",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_status_read_returns_connecting_status_after_enable",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::remote_control_pairing_start_returns_pairing_artifacts",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::rpc_updates_durable_preference_but_ephemeral_does_not",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      },
+      {
+        "test": "suite::v2::remote_control::stdio_eof_exits_with_remote_control_connection",
+        "binary": "codex-app-server::all",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-remote-fixed-originals",
+          "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900"
+        }
+      }
+    ],
+    "B22": [
+      {
+        "test": "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+        "binary": "codex-tui",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "tui-canonical-original",
+          "source_tree": "d12e1f208276f8986a5dcb641182ec20316ac4c8"
+        }
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_during_mcp_startup_does_not_show_background_exit_menu",
+        "binary": "codex-tui",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "tui-interrupt-fixed-all-originals",
+          "source_tree": "7c4370335115a1eb098c5b88981d9dff24371cf4"
+        }
+      },
+      {
+        "test": "app::tests::background_exit_tests::cancel_task_interrupts_without_exiting",
+        "binary": "codex-tui",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "tui-interrupt-fixed-all-originals",
+          "source_tree": "7c4370335115a1eb098c5b88981d9dff24371cf4"
+        }
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_during_paste_burst_does_not_show_exit_menu",
+        "binary": "codex-tui",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "tui-interrupt-fixed-all-originals",
+          "source_tree": "7c4370335115a1eb098c5b88981d9dff24371cf4"
+        }
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_for_running_background_side_thread",
+        "binary": "codex-tui",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "tui-interrupt-fixed-all-originals",
+          "source_tree": "7c4370335115a1eb098c5b88981d9dff24371cf4"
+        }
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_shows_background_exit_menu_and_escape_dismisses_it",
+        "binary": "codex-tui",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "tui-interrupt-fixed-all-originals",
+          "source_tree": "7c4370335115a1eb098c5b88981d9dff24371cf4"
+        }
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_hides_background_exit_with_queued_follow_up",
+        "binary": "codex-tui",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "tui-interrupt-fixed-all-originals",
+          "source_tree": "7c4370335115a1eb098c5b88981d9dff24371cf4"
+        }
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_with_draft_preserves_composer_cancellation",
+        "binary": "codex-tui",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "tui-interrupt-fixed-all-originals",
+          "source_tree": "7c4370335115a1eb098c5b88981d9dff24371cf4"
+        }
+      },
+      {
+        "test": "app::tests::background_exit_tests::non_daemon_ctrl_c_keeps_interrupt_behavior",
+        "binary": "codex-tui",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "tui-interrupt-fixed-all-originals",
+          "source_tree": "7c4370335115a1eb098c5b88981d9dff24371cf4"
+        }
+      },
+      {
+        "test": "app::tests::background_exit_tests::run_in_background_detaches_without_interrupting_main_or_side_threads",
+        "binary": "codex-tui",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "tui-interrupt-fixed-all-originals",
+          "source_tree": "7c4370335115a1eb098c5b88981d9dff24371cf4"
+        }
+      },
+      {
+        "test": "app::tests::background_exit_tests::background_exit_shell_readiness_rejects_failed_start",
+        "binary": "codex-tui",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "tui-interrupt-fixed-all-originals",
+          "source_tree": "7c4370335115a1eb098c5b88981d9dff24371cf4"
+        }
+      },
+      {
+        "test": "app::tests::background_exit_tests::daemon_ctrl_c_closes_running_side_thread_and_returns_to_parent",
+        "binary": "codex-tui",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "tui-interrupt-fixed-all-originals",
+          "source_tree": "7c4370335115a1eb098c5b88981d9dff24371cf4"
+        }
+      },
+      {
+        "test": "app::tests::background_exit_tests::exit_interrupts_before_requesting_shutdown",
+        "binary": "codex-tui",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "tui-interrupt-fixed-all-originals",
+          "source_tree": "7c4370335115a1eb098c5b88981d9dff24371cf4"
+        }
+      }
+    ],
+    "B23": [
+      {
+        "test": "drain_handle_tests::repeated_drain_requests_preserve_the_real_completion_acknowledgement",
+        "binary": "codex-app-server",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-signal-fixed-parents-and-drain",
+          "source_tree": "57b8d27014ac37bc2ea6262b2c6a52fb6c2e33b0"
+        }
+      },
+      {
+        "test": "drain_handle_tests::requesting_drain_does_not_acknowledge_outstanding_turns",
+        "binary": "codex-app-server",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-signal-fixed-parents-and-drain",
+          "source_tree": "57b8d27014ac37bc2ea6262b2c6a52fb6c2e33b0"
+        }
+      },
+      {
+        "test": "shutdown_signals::tests::first_sigint_survives_cancelled_receive",
+        "binary": "codex-app-server",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-signal-fixed-parents-and-drain",
+          "source_tree": "57b8d27014ac37bc2ea6262b2c6a52fb6c2e33b0"
+        }
+      },
+      {
+        "test": "shutdown_signals::tests::first_sighup_survives_cancelled_receive",
+        "binary": "codex-app-server",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-signal-fixed-parents-and-drain",
+          "source_tree": "57b8d27014ac37bc2ea6262b2c6a52fb6c2e33b0"
+        }
+      },
+      {
+        "test": "shutdown_signals::tests::first_sigterm_survives_cancelled_receive",
+        "binary": "codex-app-server",
+        "origin": {
+          "kind": "historical_roster_only",
+          "phase": "app-signal-fixed-parents-and-drain",
+          "source_tree": "57b8d27014ac37bc2ea6262b2c6a52fb6c2e33b0"
+        }
+      }
+    ],
+    "B08": [
+      {
+        "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_pending_calls_and_preserves_overflow",
+        "binary": "codex-core",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
+          "blob": "5f6000efaf34116e40abae14797df8fac30e4824",
+          "reason": "The two definitions directly verified; do not relabel as three recorder units."
+        }
+      },
+      {
+        "test": "tools::executed_tool_calls::tests::executed_tool_call_recorder_bounds_retained_history_and_reports_omissions",
+        "binary": "codex-core",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/core/src/tools/executed_tool_calls_tests.rs",
+          "blob": "5f6000efaf34116e40abae14797df8fac30e4824",
+          "reason": "The two definitions directly verified; do not relabel as three recorder units."
+        }
+      },
+      {
+        "test": "client::tests::chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it",
+        "binary": "codex-core",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/core/src/client_tests.rs",
+          "blob": "ff91f479aa615f56ae26d910894598a4e51895ae",
+          "reason": "Existing actual serialization matrix: resolved endpoint and both feature/format states, original local annotations unchanged."
+        }
+      },
+      {
+        "test": "suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay",
+        "binary": "codex-core::all",
+        "origin": {
+          "kind": "fixed_cabc_source_control",
+          "path": "codex-rs/core/tests/suite/tools.rs",
+          "blob": "1fc4b08dd39ec30085d38cc3b5b661e2bdc6775e",
+          "reason": "Existing replay oracle binds actual prompt/output retained calls, namespace, escaped truncation and nonofficial-wire absence."
+        }
+      }
+    ]
+  },
+  "additional_lifecycle_names": [
+    "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+    "agent::control::tests::resume_agent_from_rollout_reads_archived_rollout_path",
+    "agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context",
+    "agent::control::tests::spawn_agent_fork_last_n_turns_strips_parent_usage_hints",
+    "agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items",
+    "agent::registry::tests::replacement_registration_rejects_stale_release_and_preserves_budget",
+    "agent::control::tests::shutdown_tests::delayed_shutdown_preserves_replacement_runtime_and_ownership",
+    "agent::control::tests::shutdown_tests::cold_close_waits_for_cancelled_reload_then_releases_ownership"
+  ],
+  "archives": [
+    {
+      "platform": "gnu",
+      "artifact_id": 13360091629,
+      "review_blob": "3a8a43ce9e53a2a9b496403e4437d29f96812d40",
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-linux-full-artifacts-20261104-2038-refreshed/13360091629/artifact.zip",
+      "expected_bytes": 16898070,
+      "expected_sha256": "d64e52191dfa52f66f3f134d8a52250c6a58513f370ba73ffb9a6492c1a2467c",
+      "source": {
+        "commit": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+        "tracked_worktree_dirty": false,
+        "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+      },
+      "members": [
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_10_of_16/test.log",
+          "bytes": 8716,
+          "sha256": "02095bd313df5a7fd0e60af1a39fa0d6d6f0aeba0f6820d66cc7178447cf2b99",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_11_of_16/test.log",
+          "bytes": 8425,
+          "sha256": "0ead0db514ec1888305a5a8cf5f25e8b1b5fa6e1da30b351282f97f15ba8ebf5",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_12_of_16/test.log",
+          "bytes": 9184,
+          "sha256": "b8667115eb0a81c1416b6d68753f72dd38d3f74804ce0ccde3aea7f35ddb59b8",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_13_of_16/test.log",
+          "bytes": 8364,
+          "sha256": "f4c8f598e245719262c8036683a76835cfad5a91775dda41747ca62f1d7a2afe",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_14_of_16/test.log",
+          "bytes": 7924,
+          "sha256": "d911bfc9b76981109e264853033854e972e2fa1f3c11bde2ec3176c593882c5f",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_14_of_16/test_attempts/attempt_1.log",
+          "bytes": 8260,
+          "sha256": "350836c5221d7f810c0ad9607531d1e1428bb24a9a6827080979728baf61b9d5",
+          "attempt_record": true,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_15_of_16/test.log",
+          "bytes": 8722,
+          "sha256": "3d76055ab18e3a8ec84670278dda3570147da9516ee6c9bd70584bdb2a8a994a",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_16_of_16/test.log",
+          "bytes": 7661,
+          "sha256": "2a004a32fac334d83ab1e7781cf51e2d94371ca52c4f820a32f54aecc58721a7",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_1_of_16/test.log",
+          "bytes": 9489,
+          "sha256": "af0488930da8248569760275cb3dd0de528d914e356da8f24c758373fe75e2bd",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_2_of_16/test.log",
+          "bytes": 9001,
+          "sha256": "1e2eaca8716c80c5844b0010f3ecf2b180d61c0a79900d24933386ff0e426592",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_3_of_16/test.log",
+          "bytes": 8404,
+          "sha256": "8eb7b249b8c99f60450b65259ac202c99a39d04f8c97aeb3ce04cdfd2ba2db96",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_4_of_16/test.log",
+          "bytes": 8636,
+          "sha256": "260f6a51239e147069d55b6e2be03bde72f9a1ad426f8de612f1553f0f883d2a",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_5_of_16/test.log",
+          "bytes": 8700,
+          "sha256": "78f379a965fef116ab5b1bbc14cfb96c33f1adb9f0388eebbf211d7d96ed5b65",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_6_of_16/test.log",
+          "bytes": 9669,
+          "sha256": "1bd2e6ce1409b3dba01e079c8eef3a2f457cb265c5e00f97fd24e7acbf12a18b",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_7_of_16/test.log",
+          "bytes": 8954,
+          "sha256": "6ecd7dd836b63d9f654790ff429ad16ac8d0ab69455338ea877ffc0f1c28f416",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_8_of_16/test.log",
+          "bytes": 7648,
+          "sha256": "5dd24d559f8eefcfee56674c39f7c385e56a1d628c93dec9e48ff82408a06e79",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0000/shard_9_of_16/test.log",
+          "bytes": 8110,
+          "sha256": "4928258dc847dd6464d120ce47a35b76edeafc64bb58320e405fb233f4b15e43",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_10_of_16/test.log",
+          "bytes": 2870862,
+          "sha256": "4cb588a5cba0bdad1ec5f8ce554f90911b8933a7c79b7d5df984f928cc746579",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_10_of_16/test_attempts/attempt_1.log",
+          "bytes": 2869979,
+          "sha256": "481549bceb0e850a5f278e14e59c8d09ecf72a42a14247dfe301b6c8a0d90ef5",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_10_of_16/test_attempts/attempt_2.log",
+          "bytes": 2868598,
+          "sha256": "def74e475965501fd6a7da323cfb3e9116227842af6420ee265c074ca743d5cc",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_11_of_16/test.log",
+          "bytes": 8517,
+          "sha256": "c92b76cdd199229ccf747341725596f8de1eda31e10e1c8dbe1789cafccd98d3",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_12_of_16/test.log",
+          "bytes": 10201,
+          "sha256": "3d0b1de33083b554528aa03f2d585fd68914accd628b61e0676b350a57a16357",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_13_of_16/test.log",
+          "bytes": 9300,
+          "sha256": "11b6e7ddf187c3a2ed8afb1def1f7e308dbbce4a133e235cf010f99a6e4478e7",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_14_of_16/test.log",
+          "bytes": 7959,
+          "sha256": "b6aa6b61daad725a9f34e7616842074a945ef1836f171628a9e19f17d8143543",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_15_of_16/test.log",
+          "bytes": 9560,
+          "sha256": "c74ab541d34666f05051d760dc42bfc28a86c4e5f7bf24675d466d79b61add99",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_16_of_16/test.log",
+          "bytes": 10844,
+          "sha256": "ce94cc0018678c8f97bbabe8dd20e5334a3f43ecb69285f6dc885617dbc623ce",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_1_of_16/test.log",
+          "bytes": 7898,
+          "sha256": "1ba0acdaa336ede1b48d4977bba8eea6340c554d7bab7001214b5413ca0df5c2",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_2_of_16/test.log",
+          "bytes": 10793,
+          "sha256": "6e2a0e549fdeb2d3efea39a1eca275bfa8a8acc10ac1e1065a0d8656ed98f45b",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_3_of_16/test.log",
+          "bytes": 7238,
+          "sha256": "2d72f030aa94516ce98700ee50a7604823056e1621bee993bc20fdf8970d1cb2",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_4_of_16/test.log",
+          "bytes": 9589,
+          "sha256": "0a9c2929621a541e8188db0edfcc58b915131ebca8bb2d5628837f2e8b236874",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_5_of_16/test.log",
+          "bytes": 8311,
+          "sha256": "bea5efcc789f82bdaf62bce16ab05c6b458513edaa36bdf03dcd0e4b5840c57d",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_6_of_16/test.log",
+          "bytes": 7908,
+          "sha256": "6d3ec16bcfc64f72bf6ae7cbd73f04142cbe95541f52a1c4ea37c11a1b14b74a",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_7_of_16/test.log",
+          "bytes": 9770,
+          "sha256": "05e33f9b1fc33536b2317ac6551ee2e0a4946994357f0b55a4e7c2723e1179d7",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_8_of_16/test.log",
+          "bytes": 8865,
+          "sha256": "a37ab2ed210affe93385ace1bf840ec5d05f5f651e32de6485aeadadc15b9b58",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0001/shard_9_of_16/test.log",
+          "bytes": 10120,
+          "sha256": "9e73dce629a97a00cc5cf5749b31e2a475e4b4d7a78d76ad0ba7d7e58c64a538",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_10_of_16/test.log",
+          "bytes": 2872238,
+          "sha256": "14ab3332b47af9408b48543a32ded7626aa8a507a8c662f34e7c1098a5db537b",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_10_of_16/test_attempts/attempt_1.log",
+          "bytes": 2865739,
+          "sha256": "effac5e30d6d88781e7c6eb87e8c9916cacd0350db5513628ac69e7642dd54fa",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_10_of_16/test_attempts/attempt_2.log",
+          "bytes": 2876891,
+          "sha256": "cb20644e1b52c719720377060d0c6a960316aa638af2cefaf62f65be3e48eaa1",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_11_of_16/test.log",
+          "bytes": 10198,
+          "sha256": "58ddaea1e7c591fae7b1bb5a82548121346e35cef8283279d417e02a94f85f3e",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_12_of_16/test.log",
+          "bytes": 12064,
+          "sha256": "2ac121321e1224c17b4b7d9e37cb7b0f2d1bdcbbd94b256cf6e93bdbe8778dc8",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_13_of_16/test.log",
+          "bytes": 11235,
+          "sha256": "d066040e0ca9f8811de66633d4d8c8b1b672114bc3b4bc13af1c834e3817745e",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_14_of_16/test.log",
+          "bytes": 9893,
+          "sha256": "b49008fea1371d2450d2af5a5d3f7cefa31b1c265e2c7b72c49735341b879f58",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_15_of_16/test.log",
+          "bytes": 11241,
+          "sha256": "147e997a35547e03ea41961a95261eab9bfb3fa76f4416ab37d4fa765af5dc48",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_16_of_16/test.log",
+          "bytes": 12779,
+          "sha256": "b650c3a990fb082a59349bd4f0d1f6d87b46477e866b895ba705a6b46b2f307a",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_1_of_16/test.log",
+          "bytes": 9833,
+          "sha256": "45e1f0d8f3c6268444d047fb0c19f6e66a992710966dc8f59f950f34cbe04f37",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_2_of_16/test.log",
+          "bytes": 12728,
+          "sha256": "70a288108c2da55f926e0b0a2c2587d0b3b19d96ac93cd7594cc1296f42a07b5",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_3_of_16/test.log",
+          "bytes": 9173,
+          "sha256": "9148f611a1de0941f0e1aae0e179b699fbbeaf0f4602db262f2d97f195242ca4",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_4_of_16/test.log",
+          "bytes": 11524,
+          "sha256": "e86818b96e68b2c8638e6c714648d3a9ea1c918b9f88856b144f52add536cb84",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_5_of_16/test.log",
+          "bytes": 10421,
+          "sha256": "e1fb57028f9cf61168c119bc22f349ff94730cd39861436147c4e0ac608da9d4",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_6_of_16/test.log",
+          "bytes": 9843,
+          "sha256": "e2639c0ce360f5a2b4bdbad5c54b5b1edeb21ec5591fe1785c4096a95c530e62",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_7_of_16/test.log",
+          "bytes": 11705,
+          "sha256": "f39bf728fcb37ce3dd82432e90134033978fd81420f1164801039e682e774209",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_8_of_16/test.log",
+          "bytes": 10801,
+          "sha256": "72228751c02187227b9864db91f8b9590b412100ef1e6923cfde06ddd4ab3b80",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0002/shard_9_of_16/test.log",
+          "bytes": 12055,
+          "sha256": "dbd1fcf5dfff96d709c6f6d9d87ee001f16ff74d8838b54bfb56263fccd97d9d",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3o4m7oxz/targets/0003/test.log",
+          "bytes": 967,
+          "sha256": "512bb5f3d4ddc71e66aca5326b8a9837c88b894b3f4832ac02e5e1ea55472eb7",
+          "attempt_record": false,
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test"
+        }
+      ]
+    },
+    {
+      "platform": "musl-label",
+      "artifact_id": 13359672251,
+      "review_blob": "efd538c8927ff7ee6b654cb2dc545b7b239aaf33",
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-linux-full-artifacts-20261104-2038-refreshed/13359672251/artifact.zip",
+      "expected_bytes": 16641636,
+      "expected_sha256": "4a87876c163629cc7a8c34a1002cfc6e9a749282ef296ba02472dbae1ed97be9",
+      "source": {
+        "commit": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+        "tracked_worktree_dirty": false,
+        "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+      },
+      "members": [
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_10_of_16/test.log",
+          "bytes": 8716,
+          "sha256": "02095bd313df5a7fd0e60af1a39fa0d6d6f0aeba0f6820d66cc7178447cf2b99",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_11_of_16/test.log",
+          "bytes": 8425,
+          "sha256": "0ead0db514ec1888305a5a8cf5f25e8b1b5fa6e1da30b351282f97f15ba8ebf5",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_12_of_16/test.log",
+          "bytes": 9184,
+          "sha256": "b8667115eb0a81c1416b6d68753f72dd38d3f74804ce0ccde3aea7f35ddb59b8",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_13_of_16/test.log",
+          "bytes": 8364,
+          "sha256": "f4c8f598e245719262c8036683a76835cfad5a91775dda41747ca62f1d7a2afe",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_14_of_16/test.log",
+          "bytes": 7924,
+          "sha256": "d911bfc9b76981109e264853033854e972e2fa1f3c11bde2ec3176c593882c5f",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_14_of_16/test_attempts/attempt_1.log",
+          "bytes": 8260,
+          "sha256": "350836c5221d7f810c0ad9607531d1e1428bb24a9a6827080979728baf61b9d5",
+          "attempt_record": true,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_15_of_16/test.log",
+          "bytes": 8722,
+          "sha256": "3d76055ab18e3a8ec84670278dda3570147da9516ee6c9bd70584bdb2a8a994a",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_16_of_16/test.log",
+          "bytes": 7661,
+          "sha256": "2a004a32fac334d83ab1e7781cf51e2d94371ca52c4f820a32f54aecc58721a7",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_1_of_16/test.log",
+          "bytes": 9489,
+          "sha256": "af0488930da8248569760275cb3dd0de528d914e356da8f24c758373fe75e2bd",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_2_of_16/test.log",
+          "bytes": 9001,
+          "sha256": "1e2eaca8716c80c5844b0010f3ecf2b180d61c0a79900d24933386ff0e426592",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_3_of_16/test.log",
+          "bytes": 8404,
+          "sha256": "8eb7b249b8c99f60450b65259ac202c99a39d04f8c97aeb3ce04cdfd2ba2db96",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_4_of_16/test.log",
+          "bytes": 8636,
+          "sha256": "260f6a51239e147069d55b6e2be03bde72f9a1ad426f8de612f1553f0f883d2a",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_5_of_16/test.log",
+          "bytes": 8700,
+          "sha256": "78f379a965fef116ab5b1bbc14cfb96c33f1adb9f0388eebbf211d7d96ed5b65",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_6_of_16/test.log",
+          "bytes": 9669,
+          "sha256": "1bd2e6ce1409b3dba01e079c8eef3a2f457cb265c5e00f97fd24e7acbf12a18b",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_7_of_16/test.log",
+          "bytes": 8954,
+          "sha256": "6ecd7dd836b63d9f654790ff429ad16ac8d0ab69455338ea877ffc0f1c28f416",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_8_of_16/test.log",
+          "bytes": 7648,
+          "sha256": "5dd24d559f8eefcfee56674c39f7c385e56a1d628c93dec9e48ff82408a06e79",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0000/shard_9_of_16/test.log",
+          "bytes": 8110,
+          "sha256": "4928258dc847dd6464d120ce47a35b76edeafc64bb58320e405fb233f4b15e43",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_10_of_16/test.log",
+          "bytes": 2870862,
+          "sha256": "4cb588a5cba0bdad1ec5f8ce554f90911b8933a7c79b7d5df984f928cc746579",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_10_of_16/test_attempts/attempt_1.log",
+          "bytes": 2869979,
+          "sha256": "481549bceb0e850a5f278e14e59c8d09ecf72a42a14247dfe301b6c8a0d90ef5",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_10_of_16/test_attempts/attempt_2.log",
+          "bytes": 2868598,
+          "sha256": "def74e475965501fd6a7da323cfb3e9116227842af6420ee265c074ca743d5cc",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_11_of_16/test.log",
+          "bytes": 8517,
+          "sha256": "c92b76cdd199229ccf747341725596f8de1eda31e10e1c8dbe1789cafccd98d3",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_12_of_16/test.log",
+          "bytes": 10201,
+          "sha256": "3d0b1de33083b554528aa03f2d585fd68914accd628b61e0676b350a57a16357",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_13_of_16/test.log",
+          "bytes": 9300,
+          "sha256": "11b6e7ddf187c3a2ed8afb1def1f7e308dbbce4a133e235cf010f99a6e4478e7",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_14_of_16/test.log",
+          "bytes": 7959,
+          "sha256": "b6aa6b61daad725a9f34e7616842074a945ef1836f171628a9e19f17d8143543",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_15_of_16/test.log",
+          "bytes": 9560,
+          "sha256": "c74ab541d34666f05051d760dc42bfc28a86c4e5f7bf24675d466d79b61add99",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_16_of_16/test.log",
+          "bytes": 10844,
+          "sha256": "ce94cc0018678c8f97bbabe8dd20e5334a3f43ecb69285f6dc885617dbc623ce",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_1_of_16/test.log",
+          "bytes": 7898,
+          "sha256": "1ba0acdaa336ede1b48d4977bba8eea6340c554d7bab7001214b5413ca0df5c2",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_2_of_16/test.log",
+          "bytes": 10793,
+          "sha256": "6e2a0e549fdeb2d3efea39a1eca275bfa8a8acc10ac1e1065a0d8656ed98f45b",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_3_of_16/test.log",
+          "bytes": 7238,
+          "sha256": "2d72f030aa94516ce98700ee50a7604823056e1621bee993bc20fdf8970d1cb2",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_4_of_16/test.log",
+          "bytes": 9589,
+          "sha256": "0a9c2929621a541e8188db0edfcc58b915131ebca8bb2d5628837f2e8b236874",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_5_of_16/test.log",
+          "bytes": 8311,
+          "sha256": "bea5efcc789f82bdaf62bce16ab05c6b458513edaa36bdf03dcd0e4b5840c57d",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_6_of_16/test.log",
+          "bytes": 7908,
+          "sha256": "6d3ec16bcfc64f72bf6ae7cbd73f04142cbe95541f52a1c4ea37c11a1b14b74a",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_7_of_16/test.log",
+          "bytes": 9770,
+          "sha256": "05e33f9b1fc33536b2317ac6551ee2e0a4946994357f0b55a4e7c2723e1179d7",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_8_of_16/test.log",
+          "bytes": 8865,
+          "sha256": "a37ab2ed210affe93385ace1bf840ec5d05f5f651e32de6485aeadadc15b9b58",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0001/shard_9_of_16/test.log",
+          "bytes": 10120,
+          "sha256": "9e73dce629a97a00cc5cf5749b31e2a475e4b4d7a78d76ad0ba7d7e58c64a538",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_10_of_16/test.log",
+          "bytes": 2872238,
+          "sha256": "14ab3332b47af9408b48543a32ded7626aa8a507a8c662f34e7c1098a5db537b",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_10_of_16/test_attempts/attempt_1.log",
+          "bytes": 2865739,
+          "sha256": "effac5e30d6d88781e7c6eb87e8c9916cacd0350db5513628ac69e7642dd54fa",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_10_of_16/test_attempts/attempt_2.log",
+          "bytes": 2876891,
+          "sha256": "cb20644e1b52c719720377060d0c6a960316aa638af2cefaf62f65be3e48eaa1",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_11_of_16/test.log",
+          "bytes": 10198,
+          "sha256": "58ddaea1e7c591fae7b1bb5a82548121346e35cef8283279d417e02a94f85f3e",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_12_of_16/test.log",
+          "bytes": 12064,
+          "sha256": "2ac121321e1224c17b4b7d9e37cb7b0f2d1bdcbbd94b256cf6e93bdbe8778dc8",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_13_of_16/test.log",
+          "bytes": 11235,
+          "sha256": "d066040e0ca9f8811de66633d4d8c8b1b672114bc3b4bc13af1c834e3817745e",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_14_of_16/test.log",
+          "bytes": 9893,
+          "sha256": "b49008fea1371d2450d2af5a5d3f7cefa31b1c265e2c7b72c49735341b879f58",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_15_of_16/test.log",
+          "bytes": 11241,
+          "sha256": "147e997a35547e03ea41961a95261eab9bfb3fa76f4416ab37d4fa765af5dc48",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_16_of_16/test.log",
+          "bytes": 12779,
+          "sha256": "b650c3a990fb082a59349bd4f0d1f6d87b46477e866b895ba705a6b46b2f307a",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_1_of_16/test.log",
+          "bytes": 9833,
+          "sha256": "45e1f0d8f3c6268444d047fb0c19f6e66a992710966dc8f59f950f34cbe04f37",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_2_of_16/test.log",
+          "bytes": 12728,
+          "sha256": "70a288108c2da55f926e0b0a2c2587d0b3b19d96ac93cd7594cc1296f42a07b5",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_3_of_16/test.log",
+          "bytes": 9173,
+          "sha256": "9148f611a1de0941f0e1aae0e179b699fbbeaf0f4602db262f2d97f195242ca4",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_4_of_16/test.log",
+          "bytes": 11524,
+          "sha256": "e86818b96e68b2c8638e6c714648d3a9ea1c918b9f88856b144f52add536cb84",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_5_of_16/test.log",
+          "bytes": 10421,
+          "sha256": "e1fb57028f9cf61168c119bc22f349ff94730cd39861436147c4e0ac608da9d4",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_6_of_16/test.log",
+          "bytes": 9843,
+          "sha256": "e2639c0ce360f5a2b4bdbad5c54b5b1edeb21ec5591fe1785c4096a95c530e62",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_7_of_16/test.log",
+          "bytes": 11705,
+          "sha256": "f39bf728fcb37ce3dd82432e90134033978fd81420f1164801039e682e774209",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_8_of_16/test.log",
+          "bytes": 10801,
+          "sha256": "72228751c02187227b9864db91f8b9590b412100ef1e6923cfde06ddd4ab3b80",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0002/shard_9_of_16/test.log",
+          "bytes": 12055,
+          "sha256": "dbd1fcf5dfff96d709c6f6d9d87ee001f16ff74d8838b54bfb56263fccd97d9d",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-wine-exec-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-bco2aijj/targets/0003/test.log",
+          "bytes": 967,
+          "sha256": "512bb5f3d4ddc71e66aca5326b8a9837c88b894b3f4832ac02e5e1ea55472eb7",
+          "attempt_record": false,
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test"
+        }
+      ]
+    },
+    {
+      "platform": "arm",
+      "artifact_id": 13361006797,
+      "review_blob": "c1d491f4a6d09c8d00dbf12b4f92f0e16d02311d",
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-mac-arm-full-artifact-20261104-2048/13361006797/artifact.zip",
+      "expected_bytes": 13892327,
+      "expected_sha256": "0b667819fd70ae701705fd17113037e0a8300774883437778c1b3dbca21d0215",
+      "source": {
+        "commit": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+        "tracked_worktree_dirty": false,
+        "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+      },
+      "members": [
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_10_of_16/test.log",
+          "bytes": 2915586,
+          "sha256": "2ac5fea7fd4fb0f24e676fc8056fb499767056c17e522e5e33dc4161925dd158",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_10_of_16/test.xml",
+          "bytes": 2916067,
+          "sha256": "7897e361b3d16e2477ed4b3bb9d614f705a1aeda9ea8d4c2360182def70656d5",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_10_of_16/test_attempts/attempt_1.log",
+          "bytes": 2914786,
+          "sha256": "a5646f3a8865503b479905dd192f6d68e40f888c2457f10ca31002246e6891a1",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_10_of_16/test_attempts/attempt_1.xml",
+          "bytes": 2915267,
+          "sha256": "d14829f5ec3078d74dd1e7408f91e43e458a037c546564a97ca2ff0ac44f26da",
+          "attempt_record": true,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_10_of_16/test_attempts/attempt_2.log",
+          "bytes": 2918124,
+          "sha256": "f8a49c6b56fc64791beadf2c8f7c6ea13912325c0a455d1674d233534e986b0b",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_10_of_16/test_attempts/attempt_2.xml",
+          "bytes": 2918605,
+          "sha256": "72c14ff4fb96f037e4eacd637eae86c8c244c6dbd704a62ee783dbe5dcebdd06",
+          "attempt_record": true,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_11_of_16/test.log",
+          "bytes": 8447,
+          "sha256": "713ead978606312ac5632ea1f006aae68264ec7da0696873d280e964e9b5a15f",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_11_of_16/test.xml",
+          "bytes": 8874,
+          "sha256": "807541c880a92e4695c8dc4251fc40f5e12032f992eefaff979c4de02010f5f2",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_12_of_16/test.log",
+          "bytes": 10458,
+          "sha256": "9b69e19f70efdf7735dadff4bc90ae8cab9b44780668b5c4b75e98acd967220f",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_12_of_16/test.xml",
+          "bytes": 10885,
+          "sha256": "02bb35a4b7ca6abbf4941609f50034ad2b78a3f8572c0a5809f2c367e19b9726",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_13_of_16/test.log",
+          "bytes": 9455,
+          "sha256": "b52031d91a715efe81c0d63eb14eb79bebe13a276d372610e0cd6783cee5c365",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_13_of_16/test.xml",
+          "bytes": 9882,
+          "sha256": "67d877cf14edea46b1de6d0fdc0ae9b1544bec0d6fe7a4f03f4c6c0fca99c380",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_14_of_16/test.log",
+          "bytes": 8162,
+          "sha256": "991f7c806a4530fd530245078049518095435888dc045043028ce055cad8e75d",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_14_of_16/test.xml",
+          "bytes": 8589,
+          "sha256": "4bd5872256815d04e8c42feeef2c73c24a018aca57017159b5940bbf0ea729e8",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_15_of_16/test.log",
+          "bytes": 9608,
+          "sha256": "d097f97f910f0146773594f7cb54e711648b0ffe94f47e9616f6d7b42fa7f16c",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_15_of_16/test.xml",
+          "bytes": 10035,
+          "sha256": "041640b352953de68356a5f65ee2304d8e9dac37d44f31d8a4b83d6f210d2506",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_16_of_16/test.log",
+          "bytes": 11043,
+          "sha256": "0854b8abc836a71a2562a8c52cb5e8042e8f18dce5579b0e2c3521c857f0cc8c",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_16_of_16/test.xml",
+          "bytes": 11470,
+          "sha256": "cefd3bd58913ea054c793213712c5add7d47112fbb259a4abb2c8f14e0bba046",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_1_of_16/test.log",
+          "bytes": 8016,
+          "sha256": "b060e0ea97be62bcab98dcb4f40623e7f2ee5eaadfc8a5b8df06003094a30eed",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_1_of_16/test.xml",
+          "bytes": 8441,
+          "sha256": "719a9b79f00f370cf1fb0893730c2c6d1dfaec07acbbfbb3d0d8514d345af710",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_2_of_16/test.log",
+          "bytes": 10887,
+          "sha256": "9de54215528b4aeb3393b0fc5b8566753ff4ec2e09fda8ab49e4449cef6a00f0",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_2_of_16/test.xml",
+          "bytes": 11312,
+          "sha256": "542b429711c992102c624afc2edd492b7b413aee530005062f2075dba95e75dd",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_3_of_16/test.log",
+          "bytes": 7180,
+          "sha256": "f469bd2be18070b5e9fc7941276fdf174221d1c712a8aa217b820020daf54557",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_3_of_16/test.xml",
+          "bytes": 7605,
+          "sha256": "2037a731d64a8a4cc06f748bec989311955c334f3ffb82737c2f4c7dbe1083a2",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_4_of_16/test.log",
+          "bytes": 9472,
+          "sha256": "1f42f33e4c628bccb30f91d4f41718c922fd14b2ae5b60c6feccfb9ade5140a2",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_4_of_16/test.xml",
+          "bytes": 9897,
+          "sha256": "1275806da2e6673c4f97949dd626369328e344e4e89fe3c3606648009e803a04",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_5_of_16/test.log",
+          "bytes": 8362,
+          "sha256": "bbfa8fe2917dae250f139cf13ea3f81cf1d86c64248e4befe8a5308d1b18e585",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_5_of_16/test.xml",
+          "bytes": 8787,
+          "sha256": "6b7de31cb1af1d52e1cd1fee4c265e36eccae4bc2e0d99b4e05bbc23f03a3834",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_6_of_16/test.log",
+          "bytes": 7960,
+          "sha256": "ca800d3df1219890b53a6968addaffdcf8cd9eddf02afd85c7355c20695eaf8c",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_6_of_16/test.xml",
+          "bytes": 8385,
+          "sha256": "fe27df4fb87910b3cec74311323aafb1b1eb915d1f6e8462acd9d399fc188674",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_7_of_16/test.log",
+          "bytes": 9908,
+          "sha256": "e432a8dab200a039a5026804d526cb88c20fa006356df9176e5c20ab7d520509",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_7_of_16/test.xml",
+          "bytes": 10333,
+          "sha256": "ae378c8a5f006f459d247149929b7d90c3d65f90fd53746423a9284b8f249416",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_8_of_16/test.log",
+          "bytes": 8984,
+          "sha256": "e0377c8a394b2904ceb3fea37654f0163e5eded013cefcc4856a554017c788da",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_8_of_16/test.xml",
+          "bytes": 9409,
+          "sha256": "ce3644b43d31aacc51220b1cd5dd9831fdbcb2ca0d75a61af0c15585fc0c193c",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_9_of_16/test.log",
+          "bytes": 10120,
+          "sha256": "1810c59dfde48062d35e0042e66b8bfc267ed131d19209d079cf8f0aad49cde1",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0000/shard_9_of_16/test.xml",
+          "bytes": 10545,
+          "sha256": "67b7969171a70841d2c817c49c3ca8c8d26be7f269264cb32286e1eb8ce732e2",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0001/test.log",
+          "bytes": 9032,
+          "sha256": "412afb3dffe00fde1eecdcebfa6d4fad74348234007e96b95ef851256de15cac",
+          "attempt_record": false,
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-fziepbgx/targets/0001/test.xml",
+          "bytes": 9565,
+          "sha256": "3e0fa32c4a69b350423a47760f92bf8786e3cc2bc6d85801b96e96de7dfede5d",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test"
+        }
+      ]
+    },
+    {
+      "platform": "intel",
+      "artifact_id": 13361109041,
+      "review_blob": "493bceae8e704b162d85e8169d6c99f3763fa7f4",
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-mac-intel-full-artifact-20261104-2105/13361109041/artifact.zip",
+      "expected_bytes": 13890371,
+      "expected_sha256": "f1616c467aad09cafa2c17d73ae1204f6600ad90b2b6f490e472fa05a9f5db53",
+      "source": {
+        "commit": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+        "tracked_worktree_dirty": false,
+        "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+      },
+      "members": [
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_10_of_16/test.log",
+          "bytes": 2914739,
+          "sha256": "1cfd18fd46a30e38e0f1022e9c8108e385a8edc44aa06e75501a3328b2c0c053",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_10_of_16/test.xml",
+          "bytes": 2915220,
+          "sha256": "c61964d3dbdd7b5f310d5f33050200815d9d15174b2a05ef0ac51acaa4e6c648",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_10_of_16/test_attempts/attempt_1.log",
+          "bytes": 2915540,
+          "sha256": "a76e15869587feb4ed9fca4cf48b2f760399b82d814ee92736fb3c07221c79e5",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_10_of_16/test_attempts/attempt_1.xml",
+          "bytes": 2916021,
+          "sha256": "d8fbb9cae0ac2f253b900a3bc16f3fee7e0ed709129b052e422492ae2d16b799",
+          "attempt_record": true,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_10_of_16/test_attempts/attempt_2.log",
+          "bytes": 2913154,
+          "sha256": "6c4cd63ea2339bae2dc305d67c6b401a47b5b5912a1e0db57b41f55bf40d94b3",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_10_of_16/test_attempts/attempt_2.xml",
+          "bytes": 2913635,
+          "sha256": "356ba9776d1298b360d6cd7856bf7b7b454d10ef466ae9f7a424685f514f91c2",
+          "attempt_record": true,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_11_of_16/test.log",
+          "bytes": 8447,
+          "sha256": "5e90f612b154f2af73f6f2f2880da46769f263691b2702117cf9365197fdc736",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_11_of_16/test.xml",
+          "bytes": 8874,
+          "sha256": "c021af2cdb6187e22fdc347ab17ba17de4c65b2284288c08e7406a5287666db0",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_12_of_16/test.log",
+          "bytes": 10459,
+          "sha256": "3b2d047579b82a89653308a750b473964e753f4dbafc572a4e7d4bb64e8d0018",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_12_of_16/test.xml",
+          "bytes": 10888,
+          "sha256": "46d02d26e85c61ca08f10968ac2f378f77af3f6325147469f98e6cca4be9af9b",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_13_of_16/test.log",
+          "bytes": 9455,
+          "sha256": "ed2e6d7362f7d3b95ffee90be0509f9ba2bf7d78d4da8b2202c1aa5fc49621d9",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_13_of_16/test.xml",
+          "bytes": 9882,
+          "sha256": "53947a440b4926c9b872d7d1134ad3344b594edddd6742ab2b51e9aa11717d86",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_14_of_16/test.log",
+          "bytes": 8163,
+          "sha256": "b41aea154630f518fc3148ecdee03e1c3fc66c5b9a730504f63fefd5f308bf40",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_14_of_16/test.xml",
+          "bytes": 8592,
+          "sha256": "ea2daa99ca4332240639c8e908fabb1f52e265a0aa9350900e42bd84fb60fb4a",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_15_of_16/test.log",
+          "bytes": 9608,
+          "sha256": "ccd288da9e1e47aa8ea5b8cb503807b6b088406ccf1721a02d339b97ce35dc16",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_15_of_16/test.xml",
+          "bytes": 10037,
+          "sha256": "1bb507ddd5eb6ccaf898aaaa25ab00c36f328bb80d5f52d6a6ce41122c8dce3e",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_16_of_16/test.log",
+          "bytes": 11044,
+          "sha256": "d634463a4c25e663eb87ec8577be7b24fef6e85ad2f8ec8cfc45495eebc20927",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_16_of_16/test.xml",
+          "bytes": 11473,
+          "sha256": "4c77853197bf75d6fab83a6e0dec9609b1eb5573313dceb068e201a692fba02e",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_1_of_16/test.log",
+          "bytes": 8016,
+          "sha256": "c59f00720ca61ab09ce66488b0a4bae2ae99e8bc865edead315331652c49c3a7",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_1_of_16/test.xml",
+          "bytes": 8443,
+          "sha256": "07645611adf7f7c832f7083f0b5fb0bcc58b5b50849c976a43d382bf01cad11f",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_2_of_16/test.log",
+          "bytes": 10888,
+          "sha256": "0fc3b297cce5548ab57049e6d8f2e689a5b6b96bcea150497994f4a3620c1e5e",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_2_of_16/test.xml",
+          "bytes": 11315,
+          "sha256": "be555ca2df578bf22971cfa4afb1a486a75ec82ebd794516fbd2ef3261bcb975",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_3_of_16/test.log",
+          "bytes": 7180,
+          "sha256": "214bb821eb76fdabdd3b1b91856c9c2f9a116b367cae720d6eeef9526c53f788",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_3_of_16/test.xml",
+          "bytes": 7607,
+          "sha256": "c1fce49f81730cd36374582f792d6a413e0b71120530778cf134b00913c727cf",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_4_of_16/test.log",
+          "bytes": 9472,
+          "sha256": "79134f76784ab0984b516a5a5c44c380fba941ab23a6946ed1d11762e495b6a2",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_4_of_16/test.xml",
+          "bytes": 9899,
+          "sha256": "2e65b25e064c28b6a2b7d858f8c2694dff885bebbe3a3fbe4c82f90962f9844f",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_5_of_16/test.log",
+          "bytes": 8363,
+          "sha256": "c4ba7dbd7cf287c1db64108376dd91dcc67db60cb7e7dd8e4de7e74bff9d0cc3",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_5_of_16/test.xml",
+          "bytes": 8790,
+          "sha256": "2e4334b41b230aa9ec15e87d27f1e3c116044e1fc283c39f9480afe87d7d6350",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_6_of_16/test.log",
+          "bytes": 7961,
+          "sha256": "431555c32ad3adfb7d48f58cd47361e9802ae6deca20a1f810f5686ff69ee245",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_6_of_16/test.xml",
+          "bytes": 8388,
+          "sha256": "9fce3abeab8c0bcde9f62a57ae1860d7b38d3708a0242626a9aa8112d7cd4775",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_7_of_16/test.log",
+          "bytes": 9908,
+          "sha256": "837ca442ce7adf4a9c4c122a67374c6fb7b93e39a6b499602365624de2489cdd",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_7_of_16/test.xml",
+          "bytes": 10333,
+          "sha256": "2317628d7b27a656cff9ec2a44622dfaf92cbf330395ea6367f4f4e5e59de5f9",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_8_of_16/test.log",
+          "bytes": 8984,
+          "sha256": "f510924eb81e72f3fea429d15efb146580b2313e240ddfceb6df4a41139bc249",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_8_of_16/test.xml",
+          "bytes": 9409,
+          "sha256": "9c371d520042d545868d859d410738288c71397dacdb07b87647517abde68bfb",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_9_of_16/test.log",
+          "bytes": 10121,
+          "sha256": "da420ca09ea5dbb775bc0a1bf99338bdb5fba4d664fed160c1ff96673549a6e1",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0000/shard_9_of_16/test.xml",
+          "bytes": 10548,
+          "sha256": "e88f537bcc29cf5cb8728a933e78eaa838d3a5d7049382743cc988c1918f2838",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0001/test.log",
+          "bytes": 632,
+          "sha256": "228e852e65905d64c1f0861f704b467b2da62247507a9eefbb2265a5702cda68",
+          "attempt_record": false,
+          "target": "//codex-rs/exec-server:exec-server-forward-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0001/test.xml",
+          "bytes": 1123,
+          "sha256": "32a3e13e3fa5762a2222afb376f2ef64555121059b95c71c485e26be831109c7",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/exec-server:exec-server-forward-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0002/test.log",
+          "bytes": 3403,
+          "sha256": "7cd3de653d7acecc41a960c406ee931b972413f70d79389f2c2a816f641df47e",
+          "attempt_record": false,
+          "target": "//codex-rs/utils/pty:pty-unit-tests"
+        },
+        {
+          "member": "failed-test-logs/invocation-naq70rbw/targets/0002/test.xml",
+          "bytes": 3870,
+          "sha256": "98b329a05810064e9e9a5ef6e7d8f5b7e82b743e90e11499330c6d24c27fba66",
+          "attempt_record": false,
+          "xml_cases": 1,
+          "xml_root": "testsuites",
+          "target": "//codex-rs/utils/pty:pty-unit-tests"
+        }
+      ]
+    },
+    {
+      "platform": "windows-shard2",
+      "artifact_id": 13358839533,
+      "review_blob": "36920461da0727915efb9e0735377d3d0021f8d7",
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13358839533/artifact.zip",
+      "expected_sha256": "ab0ea89fec39a52394c37248955e6ed0a43c9b5106468e10cf78d7f7960c1c0d",
+      "source": {
+        "commit": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+        "tracked_worktree_dirty": false,
+        "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+      },
+      "members": [
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_10_of_16/test.log",
+          "bytes": 6273,
+          "sha256": "3b976078e871aa28eb71083e5402896522130f3fa6cce7e94d63641adcb88a06",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_11_of_16/test.log",
+          "bytes": 6400,
+          "sha256": "dd90c0b2d905b57ce82c0d06fd5847ff8342aee39ce93d0627800c223b0fe146",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_11_of_16/test_attempts/attempt_1.log",
+          "bytes": 21858,
+          "sha256": "8d136724b392cf0f39724e3a9cdfb75230497c9212c7726ac72de6f2fc8c327d",
+          "attempt_record": true,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_12_of_16/test.log",
+          "bytes": 6839,
+          "sha256": "e4d09bf938231ac7a3c3aac3fc39886f3850454a505984a376fdb221c2405548",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_13_of_16/test.log",
+          "bytes": 5662,
+          "sha256": "471a54916687be1466945c845cfdb9d67c3a610bc6effda81b3553aa672f76f7",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_14_of_16/test.log",
+          "bytes": 5782,
+          "sha256": "e9dcc825ffd995d7eedb26af2aa22f544c4fa3532222791d5753d36fb6d9e39d",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_15_of_16/test.log",
+          "bytes": 6025,
+          "sha256": "76403806c33efba3ea40198432bd249335dcb9d50feb37d760059713f6a1df54",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_16_of_16/test.log",
+          "bytes": 5512,
+          "sha256": "178cb715068072073acf89f47917c3113014ac738e8802486ff0bd1224eeacf0",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_1_of_16/test.log",
+          "bytes": 7170,
+          "sha256": "95bacffb17785f3061699bcb225fed0eec6719e50fac050d2f48a40468c4b4c7",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_2_of_16/test.log",
+          "bytes": 6480,
+          "sha256": "0dc7552f5408b7f7f27ca2b87edac075cf42dda52c3ca3bb85adde7072595d5d",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_3_of_16/test.log",
+          "bytes": 6018,
+          "sha256": "545bb5ad02cf29af963dda0c1a2d5daeb1ad07900ad3d56dea1cbcc54bc2a7b7",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_3_of_16/test_attempts/attempt_1.log",
+          "bytes": 14500,
+          "sha256": "e62fef1ebe2b80fa8ecc9c02c096a252088df5dedab5f30345afa4b029216f93",
+          "attempt_record": true,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_4_of_16/test.log",
+          "bytes": 6069,
+          "sha256": "fdadbde04973c80b78dfb5ef3e358134623fa201ac9c4d6dfeb70d1c87eb4c4a",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_5_of_16/test.log",
+          "bytes": 6163,
+          "sha256": "be3a7088d8e79a9a6e2b3906fd19d9192d631b9649633947d49c8a92b5b2d71d",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_6_of_16/test.log",
+          "bytes": 7403,
+          "sha256": "9db4f14abc4d8df5c197a9f1946d0143b335e346990ac3554f3ca7542b234377",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_7_of_16/test.log",
+          "bytes": 6685,
+          "sha256": "b09788983c4603ea8fe14fee324df88ef59013c8b15e9460745c2ae292a04e4e",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_8_of_16/test.log",
+          "bytes": 5184,
+          "sha256": "e039fd92e311d83ad4ea9cd45aa98aeb279e7ffddb1b79c470a6048a1d97ea81",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_9_of_16/test.log",
+          "bytes": 5726,
+          "sha256": "449dd490e58cf33e113c40b5e156f38a88c7e43870008322312b9a2ace8a713c",
+          "attempt_record": false,
+          "target": "//codex-rs/app-server:app-server-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0001/test.log",
+          "bytes": 22021,
+          "sha256": "b50177bb6fc94d632af28fd2c6a3b6575a91a3934b18ff83b523ba906301b116",
+          "attempt_record": false,
+          "target": "//codex-rs/cli:hepta-bin-unit-tests"
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0002/test.log",
+          "bytes": 42809,
+          "sha256": "3fe130a4fc9a221f7d06bbd6442f7ba73c275ba8a36a0b1a9f25c9c121f5a172",
+          "attempt_record": false,
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests"
+        }
+      ]
+    },
+    {
+      "platform": "windows-shard4",
+      "artifact_id": 13361670377,
+      "review_blob": "36920461da0727915efb9e0735377d3d0021f8d7",
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13361670377/artifact.zip",
+      "expected_sha256": "0fb49f9a704c3b1d8ad754d33286bf81c8716ce1353058e866b3bc54cbc85547",
+      "source": {
+        "commit": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+        "tracked_worktree_dirty": false,
+        "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+      },
+      "members": [
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_10_of_16/test.log",
+          "bytes": 2920815,
+          "sha256": "38d171729ba4e11ebf0fd7dac764f5c4f839b2ee2bc7d1c8eb61da25994ddbba",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_10_of_16/test_attempts/attempt_1.log",
+          "bytes": 2919286,
+          "sha256": "7eda3133210b42e0f2eac40c5ac76c6c706f7eceea89c085e82ddaf940026d4f",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_10_of_16/test_attempts/attempt_2.log",
+          "bytes": 2918284,
+          "sha256": "704a86af54e67d6843fd656328c0eb9756f977de57e84a2bda291e23951291d7",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_11_of_16/test.log",
+          "bytes": 46829,
+          "sha256": "5e9410425eaff5f701254a539156bac24707d78ab23f4969dbf2192cdcd50c68",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_11_of_16/test_attempts/attempt_1.log",
+          "bytes": 43498,
+          "sha256": "8e8444978e9ec71e674d9f92107740376185edf29851d44fa5cbacdcf81a0cf0",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_11_of_16/test_attempts/attempt_2.log",
+          "bytes": 43703,
+          "sha256": "37a1851ca83dbae6c84e2a1c08b648ccb3bceb51e21b7f0289c8cfb32f3b73d5",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_12_of_16/test.log",
+          "bytes": 7521,
+          "sha256": "4059d777f7436eff559d51ff1f2ccbacedd6e117493364cf4bd3408f30f23e4a",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_13_of_16/test.log",
+          "bytes": 6874,
+          "sha256": "c77689c0a3ae67001e8dfa3b1527006cf82a195e44d93cc0392ea22c7471ef8b",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_14_of_16/test.log",
+          "bytes": 6674,
+          "sha256": "a96e817155fe4bd1cfa64768a1a78cc6196914df2a25508d14438046dff24bce",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_15_of_16/test.log",
+          "bytes": 7688,
+          "sha256": "c9091b6aeaccdbc1ce2757c9ba8e3c91a5d18228615d46b56acb6f96f43503ab",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_16_of_16/test.log",
+          "bytes": 9471,
+          "sha256": "36d0ceb5b25c584f6a08b0b0f5387f999d7af02374e65d259bca67e889dd2e43",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_1_of_16/test.log",
+          "bytes": 261006,
+          "sha256": "9ee87877729695b0bb3a4c3204f6a2d8c79574740f648bddacac9d75b2f1ba78",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_1_of_16/test_attempts/attempt_1.log",
+          "bytes": 261657,
+          "sha256": "71b42603830d5a6da34d686e4892b24dd0ba2f0589b8377c0d5fd6e2cbf2ed67",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_1_of_16/test_attempts/attempt_2.log",
+          "bytes": 203205,
+          "sha256": "6220b0ba6b612e10a7f4b81af03fa3036a50558ca7bffabf40f61c7256ffc91d",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_2_of_16/test.log",
+          "bytes": 8413,
+          "sha256": "12501c5f82690c7b3739e1b489bf050f0b1b7997b8af727f1bc464d9b9c06d03",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_3_of_16/test.log",
+          "bytes": 6595,
+          "sha256": "56bf5db1460daf7b07b2e4364c0c5b15b67ebaaa2ad3fde60ee0b8aeee32034b",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_4_of_16/test.log",
+          "bytes": 8362,
+          "sha256": "e2b6897ff46672503f48a3219e19838f89478275d029523a49f3fb80c99e00c5",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_4_of_16/test_attempts/attempt_1.log",
+          "bytes": 8617,
+          "sha256": "a3186ceb483c19a6d66507235efbf799b62943ebd069eee809e9974999106227",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_5_of_16/test.log",
+          "bytes": 6119,
+          "sha256": "f160f200ae2f4996a64d2163928339a6a7341d7c8bbb89824b448abdb65ec5bc",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_6_of_16/test.log",
+          "bytes": 6424,
+          "sha256": "39bef08744f0f645535f4730760c8bbe90be15991c5f335a134a02a9099a27c5",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_6_of_16/test_attempts/attempt_1.log",
+          "bytes": 156006,
+          "sha256": "26548c9702ef3c861230741da86bf2a0de82e52df4010629b01c6af3a0a72847",
+          "attempt_record": true,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_7_of_16/test.log",
+          "bytes": 12531,
+          "sha256": "59cea6da7e0799aa9bf98153842588e6c14963c67833b00943591dfa554b79e1",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_8_of_16/test.log",
+          "bytes": 6644,
+          "sha256": "20fb47a380dd9963fa436136ceb0bd6bb828c860180918e58d1ea0c8ef81a412",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_9_of_16/test.log",
+          "bytes": 7910,
+          "sha256": "b826b83b1047d771b6e081dc6d499d9e2e8cc1baa7b7e5b0e39d00983cbf941b",
+          "attempt_record": false,
+          "target": "//codex-rs/core:core-all-test"
+        }
+      ]
+    },
+    {
+      "platform": "windows-core-lifecycle",
+      "artifact_id": 13359089737,
+      "review_blob": "36920461da0727915efb9e0735377d3d0021f8d7",
+      "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13359089737/artifact.zip",
+      "expected_sha256": "4af4e868138885f5e04ceaade75b2310ca934fad6b7919d5cf3dbb13a3b45ceb",
+      "source": {
+        "source_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "source_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+        "run_id": "41902308860",
+        "run_attempt": "1",
+        "scope": "Original isolated controls and complete Core native target; full repository CI remains independent"
+      },
+      "members": [
+        {
+          "member": "core-fork.log",
+          "bytes": 2255,
+          "sha256": "f986935cb11e89368a11e6874d27e19721f38987bf1d2c7fa572979dec00ff06",
+          "target": "isolated-windows-core-lifecycle"
+        },
+        {
+          "member": "core-resume.log",
+          "bytes": 87603,
+          "sha256": "ff4bfa52f7d3f19361369892de4a79374c51f98511fdeb4b5f1c27ef07947ade",
+          "target": "isolated-windows-core-lifecycle"
+        },
+        {
+          "member": "core-ownership.log",
+          "bytes": 2405,
+          "sha256": "5fe6a3c1026da54519588c4044635242ac759993a7e13238e7a730abab3a61ed",
+          "target": "isolated-windows-core-lifecycle"
+        },
+        {
+          "member": "core-unit-target.log",
+          "bytes": 34170,
+          "sha256": "a0a72c8dfa024cdaef26d6fc47ebff9ce777f7ab2a965e1e5002ab337605e32d",
+          "target": "isolated-windows-core-lifecycle"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log",
+          "bytes": 9292965,
+          "sha256": "dd6fab05f4ee9debbf9da646633b230ad4e7e3f8f89b5002a3a8052fda3b40f8",
+          "target": "//codex-rs/core:core-unit-tests"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_2_of_8/test.log",
+          "bytes": 9311409,
+          "sha256": "16e8f893d6f78ad5d995732b52a11a1610486589c8113995dc194f2ced97d497",
+          "target": "//codex-rs/core:core-unit-tests"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_3_of_8/test.log",
+          "bytes": 9370553,
+          "sha256": "6dd59186195ba8301023163a855e965317f6f69f39d6f30ac93463f42fb7a10c",
+          "target": "//codex-rs/core:core-unit-tests"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_4_of_8/test.log",
+          "bytes": 9221152,
+          "sha256": "ed1345e15cc1f1e22cd5665c4661804fcc3349dc3b94814998379d60f49d7299",
+          "target": "//codex-rs/core:core-unit-tests"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_5_of_8/test.log",
+          "bytes": 9174156,
+          "sha256": "3b29aacf5207d92a90d0882ff418b224ae0c2d4d544bf515fb0f0177a417ba61",
+          "target": "//codex-rs/core:core-unit-tests"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_6_of_8/test.log",
+          "bytes": 9057518,
+          "sha256": "db95f2c5c893aadae31b5a53de386f07b5ac3613082e7fd43c459eacfed602f1",
+          "target": "//codex-rs/core:core-unit-tests"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_7_of_8/test.log",
+          "bytes": 9162458,
+          "sha256": "3fe116580a9d90995717d637c322bd48fb95016f7c2f5e8b2081959fbe965c5d",
+          "target": "//codex-rs/core:core-unit-tests"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_8_of_8/test.log",
+          "bytes": 9008844,
+          "sha256": "4c2420277e4e56e5e7e8bc599b2eabdeb73a17cd2584ef39ebe4c1a67581af6c",
+          "target": "//codex-rs/core:core-unit-tests"
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/test.log",
+          "bytes": 576,
+          "sha256": "77fff3d78cbe5e2a65575cf8c1a5ac1c4513f6c91d632e05f488ada83d30fd69",
+          "target": "//codex-rs/core:core-unit-tests"
+        }
+      ]
+    }
+  ]
+}

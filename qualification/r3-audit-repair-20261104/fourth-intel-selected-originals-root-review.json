@@ -1,0 +1,35 @@
+{
+  "schema": "hepta-intel-complete-selected-originals-root-review-v1",
+  "reviewed_at_utc": "2026-11-05T03:54:56.407604+00:00",
+  "archive_receipt": {
+    "bytes": 3071,
+    "sha256": "092fa17967aac5175cbd93663d56c9d2589da4b820a06f038f41fcafa1372229",
+    "blob": "f137ea9fb2e9701a4f8591bd7b72139bcce4b707"
+  },
+  "parts_verified": 3,
+  "strict_base64": true,
+  "raw_deflate_complete_decode_and_crc": true,
+  "raw_identity": {
+    "bytes": 2914739,
+    "sha256": "1cfd18fd46a30e38e0f1022e9c8108e385a8edc44aa06e75501a3328b2c0c053",
+    "blob": "01b5c9e1df64315ed18c365813d35f230cb7e0db"
+  },
+  "root_checked_original_observations": {
+    "core_server_handshakes": 1,
+    "core_client_handshakes": 1,
+    "core_fixture_requests": [
+      "[ws test server +629ms] connection=0 received request=0 type=Some(\"response.create\") role=None text=None data=None"
+    ],
+    "forward_failed_phase": "13MiB write before read-back/close/shutdown",
+    "pty_actual_cases": 30,
+    "pty_pass": 28,
+    "pty_fail": 2
+  },
+  "root_read_complete_independent_source_review": {
+    "bytes": 26765,
+    "sha256": "7f146438536b81ed58ed437873bc8c0de471d818e41d4d61d1aeeed44b4ac3aa",
+    "blob": "f1439646f3a4f2759b57b3298b19128c71addd7c"
+  },
+  "interpretation": "Source-proven turn-state fixture conflict; remaining three original failure causes open. Current A diagnostics do not establish fresh Intel PASS. The narrow review does not claim full rereads of the two prior Core attempts.",
+  "new_original_blocker_closures": 0
+}

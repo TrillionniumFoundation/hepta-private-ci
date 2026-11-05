@@ -1,0 +1,1346 @@
+{
+  "J_TEST_cold": {
+    "cpu_seconds": 66.20635391799999,
+    "states": 123080,
+    "uncompressed_row_bytes": 23812341,
+    "worlds": 320
+  },
+  "TRAIN_recorded_rows": 144397,
+  "TRAIN_recorded_worlds": 320,
+  "accepted_candidates": 0,
+  "audit_cpu_seconds": 2.028178697,
+  "audit_wall_seconds": 1.5767785610005376,
+  "boundary": [
+    "Feature/quadratic/trajectory values are archived; this audit does not reexecute their provenance.",
+    "Source ordering and recorded times agree with protocol-before-experiment; no separately timestamped pre-result Git publication is established.",
+    "OOD distribution was exposed during VAL; schedule uniqueness is not proof of statistical independence.",
+    "No change to original B18 D-B/HOLD."
+  ],
+  "cost_scope": "shared construction charged separately to each alternative; columns cannot be added; excludes validation/startup; no equal-quality speedup",
+  "costs_aggregate": {
+    "D": {
+      "inclusive_cpu_seconds": 200.809890306,
+      "solver_cpu_seconds": 0.30180631999997587
+    },
+    "G": {
+      "inclusive_cpu_seconds": 206.33077056799996,
+      "solver_cpu_seconds": 5.355101679000022
+    }
+  },
+  "costs_by_fit": [
+    {
+      "D": {
+        "inclusive_cpu_seconds": 43.200605489,
+        "solver_cpu_seconds": 0.052249555999999586
+      },
+      "G": {
+        "inclusive_cpu_seconds": 44.397927558,
+        "solver_cpu_seconds": 0.7402032940000041
+      },
+      "fit": 11,
+      "rows": 28596,
+      "shared_construction_cpu_seconds": 42.981412109
+    },
+    {
+      "D": {
+        "inclusive_cpu_seconds": 39.54001391600001,
+        "solver_cpu_seconds": 0.056043156000015415
+      },
+      "G": {
+        "inclusive_cpu_seconds": 40.69328855799998,
+        "solver_cpu_seconds": 1.220877165999994
+      },
+      "fit": 23,
+      "rows": 28417,
+      "shared_construction_cpu_seconds": 39.29901357199999
+    },
+    {
+      "D": {
+        "inclusive_cpu_seconds": 43.207737081000005,
+        "solver_cpu_seconds": 0.06374874099998351
+      },
+      "G": {
+        "inclusive_cpu_seconds": 44.09393053299999,
+        "solver_cpu_seconds": 0.9440758819999928
+      },
+      "fit": 37,
+      "rows": 28433,
+      "shared_construction_cpu_seconds": 42.96160811600001
+    },
+    {
+      "D": {
+        "inclusive_cpu_seconds": 34.47945317599999,
+        "solver_cpu_seconds": 0.05592505199999209
+      },
+      "G": {
+        "inclusive_cpu_seconds": 35.598825178,
+        "solver_cpu_seconds": 1.1799448480000194
+      },
+      "fit": 53,
+      "rows": 29215,
+      "shared_construction_cpu_seconds": 34.258836565999985
+    },
+    {
+      "D": {
+        "inclusive_cpu_seconds": 40.382080643999984,
+        "solver_cpu_seconds": 0.07383981499998526
+      },
+      "G": {
+        "inclusive_cpu_seconds": 41.546798741,
+        "solver_cpu_seconds": 1.2700004890000116
+      },
+      "fit": 71,
+      "rows": 29736,
+      "shared_construction_cpu_seconds": 40.11229783499999
+    }
+  ],
+  "critical": 4.3146560488867145,
+  "descriptive_raw_contrasts": {
+    "A_iid": {
+      "mean": -0.012151136561483492,
+      "per_fit": {
+        "11": -0.02464936174063482,
+        "23": -0.0010871591001177122,
+        "37": -0.011804607343044563,
+        "53": -0.009792390094783953,
+        "71": -0.013422164528836412
+      }
+    },
+    "A_ood": {
+      "mean": -0.0020993931761120535,
+      "per_fit": {
+        "11": -0.0029404001984918724,
+        "23": 0.0030785741311955923,
+        "37": -0.017525528816687647,
+        "53": 0.0016297122447997857,
+        "71": 0.0052606767586238735
+      }
+    },
+    "DB_iid": {
+      "mean": 0.0027229713497480476,
+      "per_fit": {
+        "11": 0.0016545693789553912,
+        "23": 0.0024259262541502496,
+        "37": -0.0004010423989546654,
+        "53": 0.0007362487657460908,
+        "71": 0.00919915474884317
+      }
+    },
+    "DB_ood": {
+      "mean": 0.010519421229743227,
+      "per_fit": {
+        "11": 0.004750732935208775,
+        "23": -0.004564064267525344,
+        "37": 0.011543711207633955,
+        "53": 0.01584872561101962,
+        "71": 0.025018000662379126
+      }
+    },
+    "DQ_iid": {
+      "mean": -0.046800302702742096,
+      "per_fit": {
+        "11": -0.06020369025023934,
+        "23": -0.03701595604166319,
+        "37": -0.04539475588349546,
+        "53": -0.04393304663282965,
+        "71": -0.04745406470548285
+      }
+    },
+    "DQ_ood": {
+      "mean": -0.04829197938919374,
+      "per_fit": {
+        "11": -0.04291511008017678,
+        "23": -0.058426991648208554,
+        "37": -0.11954047792209806,
+        "53": 0.006917551011424255,
+        "71": -0.02749486830690955
+      }
+    },
+    "D_iid": {
+      "mean": -0.04856289011873033,
+      "per_fit": {
+        "11": -0.055614114714557204,
+        "23": -0.0377812072852412,
+        "37": -0.045349391544962245,
+        "53": -0.04995351219931744,
+        "71": -0.054116224849573555
+      }
+    },
+    "D_ood": {
+      "mean": -0.04792144897850045,
+      "per_fit": {
+        "11": -0.040633834672594724,
+        "23": -0.06610315438192255,
+        "37": -0.1249564804606505,
+        "53": 0.020031424903786333,
+        "71": -0.027945200281120842
+      }
+    },
+    "G_iid": {
+      "mean": -0.04856119011873033,
+      "per_fit": {
+        "11": -0.055614114714557204,
+        "23": -0.0377812072852412,
+        "37": -0.045349391544962245,
+        "53": -0.04995351219931744,
+        "71": -0.05410772484957356
+      }
+    },
+    "G_ood": {
+      "mean": -0.04749152801240186,
+      "per_fit": {
+        "11": -0.040572582558625114,
+        "23": -0.06610315438192255,
+        "37": -0.1249564804606505,
+        "53": 0.020031424903786333,
+        "71": -0.02585684756459747
+      }
+    },
+    "P_iid": {
+      "mean": 0.0013179298436123397,
+      "per_fit": {
+        "11": -0.0005882368942394659,
+        "23": 0.001466560073165025,
+        "37": -0.0029498653590577088,
+        "53": 0.00031242717527951757,
+        "71": 0.008348764222914331
+      }
+    },
+    "P_ood": {
+      "mean": 0.02161010245882056,
+      "per_fit": {
+        "11": 0.013591346943659325,
+        "23": -0.010638091775279614,
+        "37": 0.021484599475755383,
+        "53": 0.07225285376815807,
+        "71": 0.011359803881809637
+      }
+    },
+    "R_iid": {
+      "mean": -0.16595755085111277,
+      "per_fit": {
+        "11": -0.22814467171764308,
+        "23": -0.1868919834437329,
+        "37": -0.1502424682643675,
+        "53": -0.15913298827778563,
+        "71": -0.10537564255203474
+      }
+    },
+    "R_ood": {
+      "mean": -0.1003722377976541,
+      "per_fit": {
+        "11": -0.1528138170152812,
+        "23": -0.10328249544285838,
+        "37": -0.03214313025085207,
+        "53": -0.09202963741910095,
+        "71": -0.12159210886017788
+      }
+    }
+  },
+  "exact_norm_checks": [
+    {
+      "arm": "D",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 11,
+      "group": "continuation"
+    },
+    {
+      "arm": "G",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 11,
+      "group": "continuation"
+    },
+    {
+      "arm": "R",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 11,
+      "group": "continuation"
+    },
+    {
+      "arm": "DQ",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 11,
+      "group": "continuation"
+    },
+    {
+      "arm": "DB",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 11,
+      "group": "continuation"
+    },
+    {
+      "arm": "D",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 11,
+      "group": "belief"
+    },
+    {
+      "arm": "G",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 11,
+      "group": "belief"
+    },
+    {
+      "arm": "R",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 11,
+      "group": "belief"
+    },
+    {
+      "arm": "DQ",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 11,
+      "group": "belief"
+    },
+    {
+      "arm": "DB",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 11,
+      "group": "belief"
+    },
+    {
+      "arm": "D",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 23,
+      "group": "continuation"
+    },
+    {
+      "arm": "G",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 23,
+      "group": "continuation"
+    },
+    {
+      "arm": "R",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 23,
+      "group": "continuation"
+    },
+    {
+      "arm": "DQ",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 23,
+      "group": "continuation"
+    },
+    {
+      "arm": "DB",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 23,
+      "group": "continuation"
+    },
+    {
+      "arm": "D",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 23,
+      "group": "belief"
+    },
+    {
+      "arm": "G",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 23,
+      "group": "belief"
+    },
+    {
+      "arm": "R",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 23,
+      "group": "belief"
+    },
+    {
+      "arm": "DQ",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 23,
+      "group": "belief"
+    },
+    {
+      "arm": "DB",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 23,
+      "group": "belief"
+    },
+    {
+      "arm": "D",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 37,
+      "group": "continuation"
+    },
+    {
+      "arm": "G",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 37,
+      "group": "continuation"
+    },
+    {
+      "arm": "R",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 37,
+      "group": "continuation"
+    },
+    {
+      "arm": "DQ",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 37,
+      "group": "continuation"
+    },
+    {
+      "arm": "DB",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 37,
+      "group": "continuation"
+    },
+    {
+      "arm": "D",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 37,
+      "group": "belief"
+    },
+    {
+      "arm": "G",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 37,
+      "group": "belief"
+    },
+    {
+      "arm": "R",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 37,
+      "group": "belief"
+    },
+    {
+      "arm": "DQ",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 37,
+      "group": "belief"
+    },
+    {
+      "arm": "DB",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 37,
+      "group": "belief"
+    },
+    {
+      "arm": "D",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 53,
+      "group": "continuation"
+    },
+    {
+      "arm": "G",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 53,
+      "group": "continuation"
+    },
+    {
+      "arm": "R",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 53,
+      "group": "continuation"
+    },
+    {
+      "arm": "DQ",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 53,
+      "group": "continuation"
+    },
+    {
+      "arm": "DB",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 53,
+      "group": "continuation"
+    },
+    {
+      "arm": "D",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 53,
+      "group": "belief"
+    },
+    {
+      "arm": "G",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 53,
+      "group": "belief"
+    },
+    {
+      "arm": "R",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 53,
+      "group": "belief"
+    },
+    {
+      "arm": "DQ",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 53,
+      "group": "belief"
+    },
+    {
+      "arm": "DB",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 53,
+      "group": "belief"
+    },
+    {
+      "arm": "D",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 71,
+      "group": "continuation"
+    },
+    {
+      "arm": "G",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 71,
+      "group": "continuation"
+    },
+    {
+      "arm": "R",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 71,
+      "group": "continuation"
+    },
+    {
+      "arm": "DQ",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 71,
+      "group": "continuation"
+    },
+    {
+      "arm": "DB",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 71,
+      "group": "continuation"
+    },
+    {
+      "arm": "D",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 71,
+      "group": "belief"
+    },
+    {
+      "arm": "G",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 71,
+      "group": "belief"
+    },
+    {
+      "arm": "R",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 71,
+      "group": "belief"
+    },
+    {
+      "arm": "DQ",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 71,
+      "group": "belief"
+    },
+    {
+      "arm": "DB",
+      "exact_stored_norm_within_safe_and_declared": true,
+      "fit": 71,
+      "group": "belief"
+    }
+  ],
+  "history": {
+    "all_unique": 2416,
+    "known_prior": 1936,
+    "new_test": 320,
+    "new_validation": 160,
+    "unknown_history": "Original formal-confirmation content is not present in the available public training archive; arbitrary external or unknown earlier content is not covered. Seed definitions alone do not prove content uniqueness."
+  },
+  "inclusive_G_over_D": 1.0274930694578195,
+  "incumbent_matches_published_C": true,
+  "input_identities": {
+    "legacy/analytic_belief_compile/HISTORY_REGISTRY.json.gz": {
+      "bytes": 226015,
+      "git_blob": "a9265347e48b792ba1617f6022ef8a0e9c47e539",
+      "sha256": "e29228a4b6858b6aea4d4fd623bb5ac26db450dab61bc660e148493d97fd9163"
+    },
+    "legacy/analytic_belief_compile/records/fit_11_iid_WORLDS.json.gz": {
+      "bytes": 1321,
+      "git_blob": "c595b253df823b64d22cc52751e578de66b80ee0",
+      "sha256": "d78c5b544825e40118ba1684f1f072fd60496e750c420530e6c3cb21c80eda07"
+    },
+    "legacy/analytic_belief_compile/records/fit_11_ood_WORLDS.json.gz": {
+      "bytes": 1369,
+      "git_blob": "d88d28b1a7d852646242df28604c746cfa9aa737",
+      "sha256": "fd55819e14aca2624ed81af0586902280d43752c107eb022c295a153bda2dbfd"
+    },
+    "legacy/analytic_belief_compile/records/fit_23_iid_WORLDS.json.gz": {
+      "bytes": 1318,
+      "git_blob": "5e0894b81aecfaa0f52a5af71221706c3ffd829d",
+      "sha256": "5c7c67ffbe7bbcfcda51eaa63f8df069fdad82b36633b21ba57baaefa5851f67"
+    },
+    "legacy/analytic_belief_compile/records/fit_23_ood_WORLDS.json.gz": {
+      "bytes": 1405,
+      "git_blob": "cd4d1986f794f6291fd59cd8cb7d0e69c5606441",
+      "sha256": "db6154cfc4544f500977dacbc61f20055017307dc35d772dc544d4ab6b893636"
+    },
+    "legacy/analytic_belief_compile/records/fit_37_iid_WORLDS.json.gz": {
+      "bytes": 1306,
+      "git_blob": "d57d86b0a52890b7d2d1d377b92e878c0871f996",
+      "sha256": "283cc7219bb8430457f19edfc7f6ea0addf4fc44ce3c7fb99705066a0074ee9c"
+    },
+    "legacy/analytic_belief_compile/records/fit_37_ood_WORLDS.json.gz": {
+      "bytes": 1389,
+      "git_blob": "2bfac4a39ac565a5c2c550f58f844349e1adde00",
+      "sha256": "bf9f66c56f24010e9fec746726da3ef8767e8323ddb6b6665cba5d0a651cb57a"
+    },
+    "legacy/analytic_belief_compile/records/fit_53_iid_WORLDS.json.gz": {
+      "bytes": 1304,
+      "git_blob": "3dcf57c8ef1c674f4f561a456b234b8e42aaf0ce",
+      "sha256": "887da9397609946e2a317a4d0fb5540a984c0a5fc1d6a46e310120437687489a"
+    },
+    "legacy/analytic_belief_compile/records/fit_53_ood_WORLDS.json.gz": {
+      "bytes": 1375,
+      "git_blob": "f7187125bf3f086c4332d0ee698537431cc16741",
+      "sha256": "2ebd35f81856ee15d15dd98b963dbeb4d3e099e6d2720a637db248fa7f2e51fa"
+    },
+    "legacy/analytic_belief_compile/records/fit_71_iid_WORLDS.json.gz": {
+      "bytes": 1332,
+      "git_blob": "6930d19d72e2e10d17b574e9ace89f3d7b6911b7",
+      "sha256": "e3652014f1433eb797e52bd65ea2dc3ee3a68d34629c75e5cf24ab4d3ea419a4"
+    },
+    "legacy/analytic_belief_compile/records/fit_71_ood_WORLDS.json.gz": {
+      "bytes": 1404,
+      "git_blob": "0ef2710172b619e91992cbdd71c47a646de62bd5",
+      "sha256": "92a1a3669d03221668775923c4ae368acb75c2d1fdf618406f988abf28b4f2c9"
+    },
+    "legacy/exploratory_belief/OLD_CONTINUATION_HEADS.json.gz": {
+      "bytes": 11128,
+      "git_blob": "c2e3d89a1d2f1ac4b70acf8e1407f333460c3d1d",
+      "sha256": "d4f220739bc5b76d19ab02e1440e48b2ef82f6098a7ff78516284e61d32518e1"
+    },
+    "legacy/joint/acquire_inputs.py": {
+      "bytes": 4549,
+      "git_blob": "c82a8ae1b7861017269b181af416ec068bef064e",
+      "sha256": "bc552c289036e7f0253e8d2b9dbc9d1cc8a6fea7a0d079142e9f1cafde128f89"
+    },
+    "legacy/joint/checked_replay.py": {
+      "bytes": 2614,
+      "git_blob": "7ae7245ebc30b6fd3a215ac9e77aa3799dfbb01b",
+      "sha256": "d0922ab0c458d9d382e1f9c851c52731c4a71256870000862dbebf5d38366b24"
+    },
+    "legacy/joint/joint_compiled_dp.py": {
+      "bytes": 7459,
+      "git_blob": "fb72ee7bd0c299a45ca2b6e76436a0ad8230f07e",
+      "sha256": "a371d745f6340350d393ea055ac5c9b045c9bf3a052f26655eabd6e7dffbceb6"
+    },
+    "legacy/joint/joint_data.py": {
+      "bytes": 7199,
+      "git_blob": "0d3fd09c30665ff43765bbd7e4fc7d9609766dc2",
+      "sha256": "53292842debef33b6c54992b7b0dba80262ba2ee836bfc6fba14ca5c9b5e6e68"
+    },
+    "legacy/joint/joint_deploy.py": {
+      "bytes": 4445,
+      "git_blob": "2932f1207d7a4a70e5eaddc976f23d088daa0de6",
+      "sha256": "c91ef40c484000e2a2b923425467c03fbbfb4e15a1f54856f6c850f9242c8e26"
+    },
+    "legacy/joint/joint_law.py": {
+      "bytes": 4396,
+      "git_blob": "df4670f7027f6ab8fc7c08ab3794571c5920cfe0",
+      "sha256": "2e7f19a2534567e31370eea24dec096a309e4db4aa42770efbf544bed84bcf65"
+    },
+    "legacy/joint/joint_model.py": {
+      "bytes": 10575,
+      "git_blob": "a510c0655da759107607e16b79ff9c47aaa6ae8e",
+      "sha256": "250ec083ce30e11ea55c0347ed2fbc549be02a514e97c6da472699820afd3284"
+    },
+    "legacy/joint/joint_protocol.json": {
+      "bytes": 12063,
+      "git_blob": "e6bc91af1eb5cafe007c687931f2370bb57fddcb",
+      "sha256": "1c6ffc51d8d9df8f57bb350dd9d80a264b889a14882da553c63e60c547a18606"
+    },
+    "legacy/joint/joint_task.py": {
+      "bytes": 12845,
+      "git_blob": "0a9797e183420035d18cc027e4bb32f43a9c2db4",
+      "sha256": "51139ba57004f2a5d69381af2f781b3717404318f122d8b6bec8416004efffa5"
+    },
+    "legacy/joint/legacy_task.py": {
+      "bytes": 12163,
+      "git_blob": "af897f81d3088fa4eb7316766b4e4a01015dcdbd",
+      "sha256": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06"
+    },
+    "legacy/joint/run_head_edit.py": {
+      "bytes": 18348,
+      "git_blob": "d77ea34c83cb55dd1b9dd11d0b686003a913bf9d",
+      "sha256": "fe0681ef732b660db0b195bda21cf9ab40b0d6cd8b7fe0c69ade7b9e67198b6f"
+    },
+    "legacy/joint/truth_transitions.npz": {
+      "bytes": 101566,
+      "git_blob": "c69a72e2d59db9d7ab88e977b08524d727629d81",
+      "sha256": "3a62c48272d90b459622ed8818fddf36de983831fbc0c1306fc39b27345228f0"
+    },
+    "package/ndu_policy/PROTOCOL_FROZEN.json": {
+      "bytes": 13285,
+      "git_blob": "e09374cdc489629c33ba448ec1574d1b3c040fa0",
+      "sha256": "735df99e3366a5d9343e1642a8c370b8d3359169bc70a98572476c6747a88251"
+    },
+    "package/ndu_policy/execution_r1/run/ALL_CANDIDATES_BEFORE_VALIDATION.json": {
+      "bytes": 9309,
+      "git_blob": "ef694ff5558fad20d120b1d7fa5b6184844a1405",
+      "sha256": "e823dded34f54f203e32ada46fe726273b3bb2ada1b1ca74083c15efaece1429"
+    },
+    "package/ndu_policy/execution_r1/run/ALL_GATES_BEFORE_TEST.json": {
+      "bytes": 3289,
+      "git_blob": "4030fcd79ba60331646f05ccfe0217c4803718a8",
+      "sha256": "3c289188b6b7fbd7834d5f3f682b755645dc0b56368c407ae870d1fde849650b"
+    },
+    "package/ndu_policy/execution_r1/run/RESULTS.json": {
+      "bytes": 14209,
+      "git_blob": "b9aeb8ac48f2b3a611d58c7327d4c4a765656e4b",
+      "sha256": "f63cc5264b68fa5e05b60a21b9f306f9027d60d2c80cc02d8c8aff9aaac9501e"
+    },
+    "package/ndu_policy/execution_r1/run/STARTED.json": {
+      "bytes": 2471,
+      "git_blob": "68ab5cc9025eee513c33eef7256f7da0d35fdeac",
+      "sha256": "1e5429defaaf99585de995004c21fd8ad137d0b8dccbc184834a0d53403985c2"
+    },
+    "package/ndu_policy/execution_r1/run/TEST_DEDUP_BEFORE_SCORING.json": {
+      "bytes": 24772,
+      "git_blob": "6fd251f8fedb701a85b167e54e760b73d78f90aa",
+      "sha256": "f2859ad3d7c238083611c32672c3eaee3dfcf42234b97b6bbe6f1775bd435ac9"
+    },
+    "package/ndu_policy/execution_r1/run/VALIDATION_DEDUP_BEFORE_SCORING.json": {
+      "bytes": 12612,
+      "git_blob": "ad50491e13bed94c1225ebb3eda5bd5e7a1d0dc8",
+      "sha256": "eea92318e728962521e55e42d703350c2e0fac0111d4a308ea281a9a1d7f2cd3"
+    },
+    "package/ndu_policy/execution_r1/run/fit_11_CANDIDATES.json.gz": {
+      "bytes": 115057,
+      "git_blob": "5ed07ba486e13a572214218c1f7a6e9fc39c7767",
+      "sha256": "825e8a503ab9ef838c7b5b2abb2e8f01aa6b43b8a6123bee9506f06bd41f359a"
+    },
+    "package/ndu_policy/execution_r1/run/fit_23_CANDIDATES.json.gz": {
+      "bytes": 115253,
+      "git_blob": "bafe2060131df9f19dd32f85e9739a717d1cbde3",
+      "sha256": "d78424e969fe6f8309c1476c80eec928318fc73186cd2a92332834ae42d22933"
+    },
+    "package/ndu_policy/execution_r1/run/fit_37_CANDIDATES.json.gz": {
+      "bytes": 115783,
+      "git_blob": "b6ef5ce5be10b1487df8df16c8670f9d6e0e5ecd",
+      "sha256": "2e2b26e19f7846eb8dc0fd5475abb64816b172dc5d60ca351c261f96d6a350a4"
+    },
+    "package/ndu_policy/execution_r1/run/fit_53_CANDIDATES.json.gz": {
+      "bytes": 115449,
+      "git_blob": "f09d821ee712dbd7e49560b7fc01e3de601c97a2",
+      "sha256": "4143c0aace3c51326f31cf5c32ee0f317046e600e5309634359450914c7ac44c"
+    },
+    "package/ndu_policy/execution_r1/run/fit_71_CANDIDATES.json.gz": {
+      "bytes": 115600,
+      "git_blob": "cd03148ced242ac803a2b68d3ec8df49ae3fbdea",
+      "sha256": "ff1df1393da96817e382968d6f55cea15d594c7f1eebda6241311b209fd4a90a"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_11_A.json.gz": {
+      "bytes": 172523,
+      "git_blob": "936663b5bd2586ea940547583c3013f63488a4d3",
+      "sha256": "91f85a709aa716b1f8c2246b9ac9e8843811279456a15fb126051e55e9155683"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_11_C.json.gz": {
+      "bytes": 172526,
+      "git_blob": "939b7d80f16516f637ecd32b00eae99370ecaf5e",
+      "sha256": "fd4e8104066879320811d8276eb96ff524fcb224f80aab4dd20dacb4a9d628e9"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_11_D.json.gz": {
+      "bytes": 172542,
+      "git_blob": "fc4c663543da4ab86415dcdad2c8fe7e67d4bd2d",
+      "sha256": "60005a70378ff91e7f2c6b8247fe9190225a5f893c7ed35c3eb1539aa9449e2d"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_11_DB.json.gz": {
+      "bytes": 172530,
+      "git_blob": "b2f118d3d05dca4a23db9033ba1b4ca032ec62e0",
+      "sha256": "51a70d54e495c95fb156b6c3fc84fcee9998f63c2a52b204fc532c8cd62c166b"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_11_DQ.json.gz": {
+      "bytes": 172534,
+      "git_blob": "e48aafedfdbbc1b2cd70890040fffcab21c646b0",
+      "sha256": "9b86f841e379b5b1318f7ebc51a3a6fb025b6d9b01c7aed9d5a11cdfb0833431"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_11_G.json.gz": {
+      "bytes": 172520,
+      "git_blob": "00daba53b2cf33254a88a577d7215ff133a434d3",
+      "sha256": "b024d223319843e7a938c19513e4843981d9f60a6095558f595029f6eeaf4c95"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_11_R.json.gz": {
+      "bytes": 172546,
+      "git_blob": "b9d27b8746f20c46ee054d7cf80410d33f3b582e",
+      "sha256": "c91f973fdb36c80d0318ef47609e872198ff72047b5ce328f4fc7468cae8d67f"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_23_A.json.gz": {
+      "bytes": 172594,
+      "git_blob": "5e7893a6d7857ab008c4cabc39220250441dd545",
+      "sha256": "0a6f449677b0ee24a1b83730f3deccdb42b74156aeb5cb175005f000d671dde9"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_23_C.json.gz": {
+      "bytes": 172558,
+      "git_blob": "a54c66956048f480f9f9fdca1bc3ab0a4400cb7c",
+      "sha256": "2037bf93f45bf19cd27f73201e57bedc41ddea08243728eaa466d8f7e3555693"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_23_D.json.gz": {
+      "bytes": 172577,
+      "git_blob": "76739c885c2064065fd9de81e487615c06686fdd",
+      "sha256": "1aa4695b5d4c8a94d1244faa8cdee1a76efe3fb0449279051fa7111e3bd3b29f"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_23_DB.json.gz": {
+      "bytes": 172554,
+      "git_blob": "1b388f79c71a2758c85641c10f733c8d99e4d8a5",
+      "sha256": "2bf87643354db920a41c81841e94924f777e5158dfee2ea71176ffeec95f0dd3"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_23_DQ.json.gz": {
+      "bytes": 172576,
+      "git_blob": "ab85729ccf3feb64805d97de57b14567d288b8df",
+      "sha256": "9c0b5a2aecb636bfc6303e9d0d3514aeedc31a244665cdc002911a7133cc8382"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_23_G.json.gz": {
+      "bytes": 172591,
+      "git_blob": "77441b37028a049862261b454f53a45efe5b0873",
+      "sha256": "d6cdc7f763cbfcb0257e5483a8b05641f86d953d938c7a019958efeabba650f5"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_23_R.json.gz": {
+      "bytes": 172567,
+      "git_blob": "2e911a876343a006d7b9168b64f789f95562671e",
+      "sha256": "0586a752acec94fd222a2eb5748e10848feb0006e30026a22800b38806d691f9"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_37_A.json.gz": {
+      "bytes": 172556,
+      "git_blob": "c7121017e9b68c4500ef0ca3518ddd7f8eba0992",
+      "sha256": "b409dad92df2623972b9a80b4ca6d653328063cdc05fc2799fec957184b69a7f"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_37_C.json.gz": {
+      "bytes": 172564,
+      "git_blob": "f4d8dd1e3bd6894cd877a39406358d0a0a294f1a",
+      "sha256": "1f4a3be85213f3fc221187dcb16308d033d033cccf48c86da7fec703e7bfb774"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_37_D.json.gz": {
+      "bytes": 172561,
+      "git_blob": "527943dc37b3b541d934899e3b8b157af21d8212",
+      "sha256": "99674292360df1c258d9ef91d530296891d7b5cf244944b29081dfba68b50f96"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_37_DB.json.gz": {
+      "bytes": 172570,
+      "git_blob": "f9ff6260f646b944335e5076764bca936e962c76",
+      "sha256": "dc566436e0bf2e42b115356c5fbe30ec56ef1037c5771c2d02ece83026da6256"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_37_DQ.json.gz": {
+      "bytes": 172557,
+      "git_blob": "d9510df2b3fd0dc7bc419bdc1ddbc14bb5c081e1",
+      "sha256": "e48a79ffbda6b1435b4ef12ccfbdfc70cebdc7149d7dba59bf6c02339ddd971c"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_37_G.json.gz": {
+      "bytes": 172539,
+      "git_blob": "cf88e564c026075be1a264305dbc2b89aa7ab1a3",
+      "sha256": "3c3e6edc6d8046cd1761aa95b025987479f1a2f4f2507c38531574691dfd301b"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_37_R.json.gz": {
+      "bytes": 172565,
+      "git_blob": "b45af1b28eb42ae142355b6d618b83a298f873f7",
+      "sha256": "1ecbf53acf3bd5f50282488d3996b91bf14459f4d273b503808bad231d0cb1d5"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_53_A.json.gz": {
+      "bytes": 172566,
+      "git_blob": "2bbde8a081de5a2083c1040fdda3c16a637cc115",
+      "sha256": "6ef8eb01609de914601f591594ef0f733501cb1c4afcba7eddabb1623c73c3d2"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_53_C.json.gz": {
+      "bytes": 172562,
+      "git_blob": "8b2c88c8efb1cf7b5e574807ad6441e014877ab5",
+      "sha256": "b412cd6743563caaa57d66399c46afdd7394bfd4fe4c964a84e221b3c23ffd24"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_53_D.json.gz": {
+      "bytes": 172558,
+      "git_blob": "ad15242a4193e79d696a6c52a3ed70b3348e5c30",
+      "sha256": "01746999c94c9b8d3087e8cf6a5ef49149c19e8146479a7977f48549963e9203"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_53_DB.json.gz": {
+      "bytes": 172561,
+      "git_blob": "b2a62eaa32f4fb1961a352a5441742fdbff0b840",
+      "sha256": "2cee1970789728205adab7891a08887accf9391a0677f57e7bf5b7af6faffdcf"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_53_DQ.json.gz": {
+      "bytes": 172560,
+      "git_blob": "82d3decae53bb3987b7517447e5aefae3536e7a7",
+      "sha256": "da3a2d07f272cc861f66cf2f0312c8eb656cdc5b745ce19a15c324d907f9796c"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_53_G.json.gz": {
+      "bytes": 172553,
+      "git_blob": "7c9188a3871711c4be72342683680702c1ea6660",
+      "sha256": "35ed036394a2768c390e1919d21517b7545bdd4d58e4700c3aa91b81797c9619"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_53_R.json.gz": {
+      "bytes": 172576,
+      "git_blob": "bca28326e4e6b24ad48df5a0a86b99c52ef14548",
+      "sha256": "4d0e9dd5ddc025e0081e04f4c66f2715f4c5ae73a453c919ddacd11207bef0c5"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_71_A.json.gz": {
+      "bytes": 172502,
+      "git_blob": "72b87ffda789aa0950f85ed89a9e7cf517bb1388",
+      "sha256": "f7dc76698aa2fd9c22aa9378f8d797bea57e7ed6c732f8170c11a11120763d79"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_71_C.json.gz": {
+      "bytes": 172492,
+      "git_blob": "d38a5b2f0e40cfb22e8ec8438a416cffab383cbf",
+      "sha256": "8420c224f35255dfba2e30dbbd59947fe3e64281473877d9d47869bef995df6f"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_71_D.json.gz": {
+      "bytes": 172492,
+      "git_blob": "5d289e00587fe2bd40587d6807ae94d62aa062bb",
+      "sha256": "86495cda68758f16a9e95379873c822e6838fa1f8b059244759bf95385526cd8"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_71_DB.json.gz": {
+      "bytes": 172489,
+      "git_blob": "dce6343086570c9e9982c53c31fb2408ce47b756",
+      "sha256": "b0fa901d4cb1eef4a0be755320d5d9cf78c7accf964130646b8343dd976267d6"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_71_DQ.json.gz": {
+      "bytes": 172489,
+      "git_blob": "ac969be1595ab89c92b36ac199d1eb48b5396e56",
+      "sha256": "074beb1863ab5fcfd79f681f5d7e0714c242e5ce2bc0afc4027860102c69c35c"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_71_G.json.gz": {
+      "bytes": 172501,
+      "git_blob": "d6e2e839a82bf7d6292c1d8a6cc32d43a39bcaa9",
+      "sha256": "5887c59ca8653905c146fd5ed1ff53f04337ede6d6b09857ea094efb20e7fa44"
+    },
+    "package/ndu_policy/execution_r1/run/models/fit_71_R.json.gz": {
+      "bytes": 172490,
+      "git_blob": "94fc7978393e5526b9509e9af841907c1a07fcbb",
+      "sha256": "3d9a366b6028d2d80a6931b155984dd425ba7d68502a633d272d0551ab14c22d"
+    },
+    "package/ndu_policy/execution_r1/run/test_11_iid_RESULTS.json.gz": {
+      "bytes": 60605,
+      "git_blob": "fc39a900b654cd59e78e2a9c408cdf690894fdf7",
+      "sha256": "a7533822400f8f5ff6a90e1ac9fd8c7afe0747e87402a89946f541b05e102826"
+    },
+    "package/ndu_policy/execution_r1/run/test_11_ood_RESULTS.json.gz": {
+      "bytes": 54615,
+      "git_blob": "f7a650a3da9ef68708153bed850fc51fb815be93",
+      "sha256": "171ba7129ac5f095ec98d926391351f12075cd3e88926d9fe777f9621ea7b58c"
+    },
+    "package/ndu_policy/execution_r1/run/test_23_iid_RESULTS.json.gz": {
+      "bytes": 65306,
+      "git_blob": "1853d1fa0459fc9efae69a4aeba9e1ba7437ff46",
+      "sha256": "7c3f4b3fde07d550899be5699cb419f59973d9313b0fdab84260b213a765d067"
+    },
+    "package/ndu_policy/execution_r1/run/test_23_ood_RESULTS.json.gz": {
+      "bytes": 56895,
+      "git_blob": "9fc4f8658858d35e5ae0880663678a83e1c1cbb6",
+      "sha256": "de5fe48ce8f6ef88f2bc03520f91e75f3d4773774a01ac4b699aab218fa5eb77"
+    },
+    "package/ndu_policy/execution_r1/run/test_37_iid_RESULTS.json.gz": {
+      "bytes": 63956,
+      "git_blob": "f6516aced2aab564d0f9376333d9c0163470cde8",
+      "sha256": "fdca0a6ababe29842ca74d4fc363585282881dae17cb94e95b65585069bca1b7"
+    },
+    "package/ndu_policy/execution_r1/run/test_37_ood_RESULTS.json.gz": {
+      "bytes": 59714,
+      "git_blob": "5144d38cc0a5b2f39281aa9302b9374fb735bb22",
+      "sha256": "5d6c2abef317d0732f5bf27613c3a9caf9543bbe036d192d1d6fc1013aadc67a"
+    },
+    "package/ndu_policy/execution_r1/run/test_53_iid_RESULTS.json.gz": {
+      "bytes": 59237,
+      "git_blob": "456ca21b9282025dfc203c2dd6f575d554c61d7b",
+      "sha256": "9a555646b50ade8fe4acf69ad10cd3e347ac1956de69df7029181dad7d6d2015"
+    },
+    "package/ndu_policy/execution_r1/run/test_53_ood_RESULTS.json.gz": {
+      "bytes": 46209,
+      "git_blob": "9b8d27d9107d3eb1488d18c5ec57f923077d99aa",
+      "sha256": "28b6429b8c2a7b72392dad392c793feae2281fa6e189012006073dec4d6d8b2f"
+    },
+    "package/ndu_policy/execution_r1/run/test_71_iid_RESULTS.json.gz": {
+      "bytes": 63937,
+      "git_blob": "d0cb21f451b7d480504d7540662c2f4ca82ddb28",
+      "sha256": "530ca65b247c3a502adda2f480246c24a6ba53db271d9fc85358c2a70c4d9064"
+    },
+    "package/ndu_policy/execution_r1/run/test_71_ood_RESULTS.json.gz": {
+      "bytes": 49375,
+      "git_blob": "32b59cf66316a73fc6ccb85030cfbc1a995eb42d",
+      "sha256": "801972a9a42b619a424f074cc3e9f78828ceac2b6a3b9c5507f2459e85bed86d"
+    },
+    "package/ndu_policy/execution_r1/run/validation_11_iid_RESULTS.json.gz": {
+      "bytes": 27435,
+      "git_blob": "8506c776e83107184cdbc3a510dbca36c3bec821",
+      "sha256": "95f5320510d3165d69612985961404c0ef468168639c96706f8f1af43369895e"
+    },
+    "package/ndu_policy/execution_r1/run/validation_11_ood_RESULTS.json.gz": {
+      "bytes": 23243,
+      "git_blob": "4109aacfe540e90da4a5d92e341d80c4effb6c49",
+      "sha256": "5406415890ccd068972de05637df71e5e48771dc95db8f38ef0fe76b2810989d"
+    },
+    "package/ndu_policy/execution_r1/run/validation_23_iid_RESULTS.json.gz": {
+      "bytes": 29952,
+      "git_blob": "e8ea346e89675562875b659d3f5215f822b144e3",
+      "sha256": "3a2e996932ee0beb51d644f4e962e4e7278dd7c4420d5b5f704d8d015ba5f7e4"
+    },
+    "package/ndu_policy/execution_r1/run/validation_23_ood_RESULTS.json.gz": {
+      "bytes": 27251,
+      "git_blob": "a60df88997b761dc21fc5afa5bac16fd6a12020d",
+      "sha256": "1564636032ecf09b2a183ee8bba049f386cf56977141a02197619fcdbeb97d07"
+    },
+    "package/ndu_policy/execution_r1/run/validation_37_iid_RESULTS.json.gz": {
+      "bytes": 30170,
+      "git_blob": "929e27b6dbcaf95ae1d0457668b312ee2ba03f41",
+      "sha256": "5e58bdc13d2ddc54e5a3feeca27711507138b6b01bd6c6e615533e9b8c53f7ae"
+    },
+    "package/ndu_policy/execution_r1/run/validation_37_ood_RESULTS.json.gz": {
+      "bytes": 25906,
+      "git_blob": "826fafb5243cc841d11539fe1b248cbbc40cc93d",
+      "sha256": "f3739f448abde4f8c1683c4712125558493ad0845afbcc1edbb11a7cbc200220"
+    },
+    "package/ndu_policy/execution_r1/run/validation_53_iid_RESULTS.json.gz": {
+      "bytes": 27987,
+      "git_blob": "32dc8afc1a2f10419a09e1a648b5f551295102ef",
+      "sha256": "aba9117e8ad7fe6e72d24b3eb4ce603d62a7c08da85e2b9689a09a53fb48ef92"
+    },
+    "package/ndu_policy/execution_r1/run/validation_53_ood_RESULTS.json.gz": {
+      "bytes": 21475,
+      "git_blob": "ac536a07aeed5750e0e5eb4957125947d7ac5859",
+      "sha256": "b451fd29888e211d789202c722b7174cf96fc46cfb7655e6cb38802e4e78f833"
+    },
+    "package/ndu_policy/execution_r1/run/validation_71_iid_RESULTS.json.gz": {
+      "bytes": 30440,
+      "git_blob": "a30012f12197547a272c7aa259ef323fa3f5d5b0",
+      "sha256": "fd323a8748e2665c69459432ff4ce469333251c5ce6ae831a664a0cf09891def"
+    },
+    "package/ndu_policy/execution_r1/run/validation_71_ood_RESULTS.json.gz": {
+      "bytes": 20820,
+      "git_blob": "77b1e9869b921c415c97c7074ca3247649f0ea43",
+      "sha256": "798f3d3c7e148cb7b8ab894ce71c7ddf4c21b1c3154f6b84d4f5664c82583ce5"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/test_11_iid.json.gz": {
+      "bytes": 1421,
+      "git_blob": "36a4d307b7ce02f7a6cb6a916691db839b338b69",
+      "sha256": "4c5eb52e48b0b6b5d1fa3bd521a77f5ad06b2917725c9d42b493884a822d58e4"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/test_11_ood.json.gz": {
+      "bytes": 1530,
+      "git_blob": "7f3e1ccb0926ef689ad31c9d6ae541199d7a2874",
+      "sha256": "ed3771986348a1c1e5160f14febb8369bd06bf4c10c850eefe51dbaa3513aa21"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/test_23_iid.json.gz": {
+      "bytes": 1436,
+      "git_blob": "3ec593c244b8fee9c77ac8beceb944e08d4d2bbc",
+      "sha256": "e35cb96f5750d70b9944eeda5cb7689422ccb88a99455764540e515e60c89c31"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/test_23_ood.json.gz": {
+      "bytes": 1513,
+      "git_blob": "8c95045e1c0c7195f8cd5d3f0a827ffcb03829bd",
+      "sha256": "c2e222228c4a5414115d976d81140400513b7b6102b25efff921d14772d2a50f"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/test_37_iid.json.gz": {
+      "bytes": 1424,
+      "git_blob": "2be7aa0bb5cbfb7402554e98e47fc9570b256533",
+      "sha256": "74acebcbe839c266defb0cb383439ba170f903814cc2360a39b30798df832a0d"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/test_37_ood.json.gz": {
+      "bytes": 1505,
+      "git_blob": "c02dea517a32f72480e0cc63de5dbdd316d8f3f7",
+      "sha256": "dc43f296cee688cedde130381881a70b176e1510f3aa9ca9b7646dd628968ae9"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/test_53_iid.json.gz": {
+      "bytes": 1431,
+      "git_blob": "0f14a8662910dbd5100379142d4985b86affb37f",
+      "sha256": "068115da53ef0c92198fdbbbf64293fc5f82f7cb13ef2805ff4fe296809a712f"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/test_53_ood.json.gz": {
+      "bytes": 1513,
+      "git_blob": "d79e98f5d756fdeb5d4911e83c3645e090f363f6",
+      "sha256": "431881f189d4d968a03df8be7d1e3d1d9773e86a75c3e3ad41b6c63a2796fc05"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/test_71_iid.json.gz": {
+      "bytes": 1439,
+      "git_blob": "3298e45c1baa60a6d8b0314109da3860b8e1148d",
+      "sha256": "049d13bec340bca04c24fdd4fc13e31c3915e002490fdd1bb3b4b7405715dca9"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/test_71_ood.json.gz": {
+      "bytes": 1500,
+      "git_blob": "452017eb13ae9e4fa1fa598c338d35d5d7d258bc",
+      "sha256": "ca97e640470104887e48445b3d115a451a6fef2610b68ab5a68ac267daad81c2"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/validation_11_iid.json.gz": {
+      "bytes": 991,
+      "git_blob": "d471db8477bdabe42f6214a69e6e26f3cf46d70e",
+      "sha256": "118bf4c213e331cdd25d056600a926ea85c0a812778d30744b0fedde8b0dd98b"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/validation_11_ood.json.gz": {
+      "bytes": 1019,
+      "git_blob": "6a78ab347b3f7eea94e41939e9bc28bcb48d3c16",
+      "sha256": "cdcaa777c60d260a8bd9fd13e314d2b1d608d07df7254ba6e5561c8d4016891c"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/validation_23_iid.json.gz": {
+      "bytes": 987,
+      "git_blob": "54bea045c5797f6c97c1221db23539f4312bd0c1",
+      "sha256": "89e4c4d0c9dfcde9b088318944b716f2fa5687daccd3e301ab199b8eab6029fc"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/validation_23_ood.json.gz": {
+      "bytes": 1013,
+      "git_blob": "b307e1ed46688b142366f34327f500d69dbc1d7d",
+      "sha256": "50f9d60333dc44bf8c925d8b77d88fd5296927aaf6f774b9ca133bcf2bc03d2b"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/validation_37_iid.json.gz": {
+      "bytes": 991,
+      "git_blob": "197e63bb4b1cb131fb275513c17ee199003080f4",
+      "sha256": "b54ae0d1a43dd0be24d9ec11f25050a9499109e5c1212f3e758b9925418e2e09"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/validation_37_ood.json.gz": {
+      "bytes": 1018,
+      "git_blob": "62c842e7bc88f76ebd316f81008ad98248841569",
+      "sha256": "c25955ed78da1bf08fc1f077f98ee12c81d14ea722ad8b61fbb71050b3136b96"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/validation_53_iid.json.gz": {
+      "bytes": 1006,
+      "git_blob": "8a54dfd43799230231de12ac659ac4f0e9937afd",
+      "sha256": "aaef98ef6e30b16405af3380968eddeefb7711b3bd294c49323724c418c377ad"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/validation_53_ood.json.gz": {
+      "bytes": 1028,
+      "git_blob": "6c8d73d48a45218ec6cde29091f3bad9f80b908b",
+      "sha256": "5a3f120ed92aec96d276147705fd7091d11e16b7f79c02a4052f3063e97602f8"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/validation_71_iid.json.gz": {
+      "bytes": 995,
+      "git_blob": "c6ad8feebd0102b3d2fe82befc0f46d49e65eaa1",
+      "sha256": "1948eb8f4e7e64c8cf8bd9605529fa6ca4c658abb39dc37342701031eb0e3d0f"
+    },
+    "package/ndu_policy/execution_r1/run/worlds/validation_71_ood.json.gz": {
+      "bytes": 1022,
+      "git_blob": "a57d57a0bfb6ff31ff835c26a6f6820853074a87",
+      "sha256": "43a516ceee2a3f27e00c883b71afed262233d8ae7c001f7b081e0dbc3b980577"
+    },
+    "package/ndu_policy/planning.py": {
+      "bytes": 12785,
+      "git_blob": "bbed513d90f6a2c49dc21e2631470b21d96bde58",
+      "sha256": "2fbd9b00861d3ff932c81b975b60e39dc9d4e9138e160a99222e6fdc6eb0a687"
+    },
+    "package/ndu_policy/quadratic.py": {
+      "bytes": 8003,
+      "git_blob": "627834153a02b71e0d90c9b6fdddc0daa41bfab3",
+      "sha256": "2cdfabe96b4e9af0cc565352f8ed6fcca02646f667e7e6d34639e39c37a62d6c"
+    },
+    "package/ndu_policy/run_experiment.py": {
+      "bytes": 20326,
+      "git_blob": "2801eea12bc896db2db21870e11bffdf49deef6b",
+      "sha256": "6da9401350c84bf82afa9fef46779d5fd54b391759b5c4578d2c6d77df6f8c58"
+    }
+  },
+  "max_quadratic_gradient_error": 5.532672844171804e-14,
+  "max_quadratic_objective_difference_error": 1.0408340855860843e-17,
+  "max_saved_mean_error": 5.551115123125783e-17,
+  "model_hashes_verified": 35,
+  "model_or_environment_executed": false,
+  "new_scientific_sample": false,
+  "no_experiment_source_imported": true,
+  "observed_at": "2026-11-05T04:15:39.704383+00:00",
+  "original_A_archive_bytes_reacquired": false,
+  "original_A_identity_scope": "source raw digest agrees with pinned prior-head/input receipts; normalized saved A has its own separately verified digest; no equality of those byte formats asserted",
+  "passed": true,
+  "primary": {
+    "D_gated_iid": {
+      "benefit_pass": false,
+      "familywise_95_interval": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "per_fit": {
+        "11": 0.0,
+        "23": 0.0,
+        "37": 0.0,
+        "53": 0.0,
+        "71": 0.0
+      }
+    },
+    "D_gated_ood": {
+      "benefit_pass": false,
+      "familywise_95_interval": [
+        0.0,
+        0.0
+      ],
+      "mean": 0.0,
+      "per_fit": {
+        "11": 0.0,
+        "23": 0.0,
+        "37": 0.0,
+        "53": 0.0,
+        "71": 0.0
+      }
+    },
+    "J_iid": {
+      "benefit_pass": true,
+      "familywise_95_interval": [
+        0.04776707486482772,
+        0.1627864516974913
+      ],
+      "mean": 0.10527676328115952,
+      "per_fit": {
+        "11": 0.0607330243370129,
+        "23": 0.11126113740106072,
+        "37": 0.129912213061558,
+        "53": 0.09187454175064325,
+        "71": 0.13260289985552276
+      }
+    },
+    "J_ood": {
+      "benefit_pass": true,
+      "familywise_95_interval": [
+        0.12035940122243882,
+        0.2839635367327451
+      ],
+      "mean": 0.20216146897759196,
+      "per_fit": {
+        "11": 0.1593398256278178,
+        "23": 0.19437050244688536,
+        "37": 0.22474778440688423,
+        "53": 0.2630344690789142,
+        "71": 0.16931476332745826
+      }
+    }
+  },
+  "primary_unit": "5 existing fit pairs, df=4, two-sided Bonferroni family=4",
+  "resource_fields_excluded_from_semantic_equality": [
+    "arm_initialization_cpu_seconds",
+    "cpu_seconds",
+    "policy_cpu_seconds",
+    "wall_seconds",
+    "world_feature_cpu_seconds"
+  ],
+  "restored_TEST_semantic_arm_records_equal_C": 960,
+  "schema": "hepta.pr4823.independent-archived-record-arithmetic.v1",
+  "source_ref": "9f2d00f79bfe7abc334e51f52a0d16f685656e5d",
+  "training_or_optimization_executed": false,
+  "unchanged_non_head_model_fields_verified": true,
+  "validation_gates": [
+    {
+      "accepted": false,
+      "arm": "D",
+      "delta": {
+        "iid": 0.007742471454511599,
+        "ood": -0.09858691213367539
+      },
+      "fit": 11
+    },
+    {
+      "accepted": false,
+      "arm": "G",
+      "delta": {
+        "iid": 0.007742471454511599,
+        "ood": -0.09858691213367539
+      },
+      "fit": 11
+    },
+    {
+      "accepted": false,
+      "arm": "R",
+      "delta": {
+        "iid": -0.1981216524396377,
+        "ood": -0.13291953775976664
+      },
+      "fit": 11
+    },
+    {
+      "accepted": false,
+      "arm": "D",
+      "delta": {
+        "iid": -0.02200051134050521,
+        "ood": -0.08295982037738323
+      },
+      "fit": 23
+    },
+    {
+      "accepted": false,
+      "arm": "G",
+      "delta": {
+        "iid": -0.02200051134050521,
+        "ood": -0.08295982037738323
+      },
+      "fit": 23
+    },
+    {
+      "accepted": false,
+      "arm": "R",
+      "delta": {
+        "iid": -0.17532179264647352,
+        "ood": -0.08865785285760189
+      },
+      "fit": 23
+    },
+    {
+      "accepted": false,
+      "arm": "D",
+      "delta": {
+        "iid": -0.0016538866567694056,
+        "ood": -0.15564360599520582
+      },
+      "fit": 37
+    },
+    {
+      "accepted": false,
+      "arm": "G",
+      "delta": {
+        "iid": -0.003905401023364989,
+        "ood": -0.15564360599520582
+      },
+      "fit": 37
+    },
+    {
+      "accepted": false,
+      "arm": "R",
+      "delta": {
+        "iid": -0.031913022741872674,
+        "ood": -0.15531968771417348
+      },
+      "fit": 37
+    },
+    {
+      "accepted": false,
+      "arm": "D",
+      "delta": {
+        "iid": -0.07454290515075825,
+        "ood": -0.05260123188248737
+      },
+      "fit": 53
+    },
+    {
+      "accepted": false,
+      "arm": "G",
+      "delta": {
+        "iid": -0.07454290515075825,
+        "ood": -0.05260123188248737
+      },
+      "fit": 53
+    },
+    {
+      "accepted": false,
+      "arm": "R",
+      "delta": {
+        "iid": -0.19569288749200894,
+        "ood": -0.16927478582800573
+      },
+      "fit": 53
+    },
+    {
+      "accepted": false,
+      "arm": "D",
+      "delta": {
+        "iid": -0.04308075185600804,
+        "ood": -0.030784938367201746
+      },
+      "fit": 71
+    },
+    {
+      "accepted": false,
+      "arm": "G",
+      "delta": {
+        "iid": -0.04308075185600804,
+        "ood": -0.030784938367201746
+      },
+      "fit": 71
+    },
+    {
+      "accepted": false,
+      "arm": "R",
+      "delta": {
+        "iid": -0.1459946656871285,
+        "ood": -0.08161919136902282
+      },
+      "fit": 71
+    }
+  ]
+}

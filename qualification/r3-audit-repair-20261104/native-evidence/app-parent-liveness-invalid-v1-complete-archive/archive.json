@@ -1,0 +1,300 @@
+{
+  "schema": "hepta-complete-invalid-app-liveness-first-attempt-git-compressed-archive-v1",
+  "original_job": "1a1a9bd0f35-fc05-3714",
+  "original_authoritative_status": {
+    "at_unix_ms": 1793849683585,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1a9bd0f35-fc05-3714",
+    "launch_nonce": "46aaf2887f3291ae4618e09363058ae7",
+    "log_bytes": {
+      "stderr": {
+        "seen": 901,
+        "stored": 901
+      },
+      "stdout": {
+        "seen": 2765,
+        "stored": 2765
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "original_case_result": "FAIL; invalid causal marker-precondition timeout",
+  "original_small_bundle": "92e85c6f4ccdcf54e49ea7dbb6269bde28938f91",
+  "root_invalid_review": "6f43608e78054b44a541d3d52ebf57965413ccdc",
+  "restored_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+  "native_export_job": "1a1a9d01375-fc05-382b",
+  "native_export_status": {
+    "at_unix_ms": 1793850349623,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a9d01375-fc05-382b",
+    "launch_nonce": "ead08c7cf8a285214315450e14be16f8",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 312,
+        "stored": 312
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "native_export_manifest": {
+    "blob": "0cce07f85c4b01f665acb2fc40e33d68e4188b47",
+    "bytes": 26189,
+    "sha256": "89f923766407c7ae366e5c69d50570313e07900706390c51ca058e5482027e8a"
+  },
+  "cloud_complete_validation": {
+    "blob": "9c2de90f694dd99793d115437acd166950a09e50",
+    "bytes": 12247,
+    "sha256": "928d577ba125e3346c954c0df7339f381353f4cdfe3e354ce325c2640b6380c6"
+  },
+  "original_unique_files": 47,
+  "assets": [
+    {
+      "name": "driver-error.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v1/driver-error.json",
+        "bytes": 155778,
+        "sha256": "49b2ce213084438d49828900c1bf0fa607c540eb3d8f60c7b8ae200a11ead37a"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-invalid-first-frozen-export-20261105/driver-error.json.gz",
+        "bytes": 20169,
+        "sha256": "718172979b1668ce2dc7cbadbe4694408b9649d10aa966d069f7d89da624d00f"
+      },
+      "base64_bytes": 26892,
+      "base64_sha256": "49e0e849250c3a1ccb848b0a190a863f813250406fdb6daf308c8443c32d984d",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 26892,
+          "sha256": "49e0e849250c3a1ccb848b0a190a863f813250406fdb6daf308c8443c32d984d",
+          "blob": "9abe61c641b59e8b8b775f1d75934888380d0736"
+        }
+      ]
+    },
+    {
+      "name": "execution-request.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v1/execution-request.json",
+        "bytes": 170001,
+        "sha256": "9ea4f5b656a12c5513a4ccf05902d0d15ba88b25bc4d0828626d6c0ba8ff021e"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-invalid-first-frozen-export-20261105/execution-request.json.gz",
+        "bytes": 36836,
+        "sha256": "e2268f246618b98a809f40f1bdd1aa3ecf6ca4acdbc15daefad46ebb6295aa7f"
+      },
+      "base64_bytes": 49116,
+      "base64_sha256": "5ba2d309cf13da74ee70bfbe58031b01956c959ae34f566a057682b4f76dbeef",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 49116,
+          "sha256": "5ba2d309cf13da74ee70bfbe58031b01956c959ae34f566a057682b4f76dbeef",
+          "blob": "bce8b2dd1e60edcaaebc75479ab35d7d99b84ad3"
+        }
+      ]
+    },
+    {
+      "name": "no_exit_rejection-negative-catalog.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v1/no_exit_rejection-negative-catalog.stdout",
+        "bytes": 3295538,
+        "sha256": "d32340eb7632d30b33f6f01a827f6c871b2792f1135b1816ddf730c04a660f29"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-invalid-first-frozen-export-20261105/no_exit_rejection-negative-catalog.stdout.gz",
+        "bytes": 378716,
+        "sha256": "8e5cd3fad6d9af104f9d3ca3cb9201146a3cef53634777541695fe160aaefcbc"
+      },
+      "base64_bytes": 504956,
+      "base64_sha256": "c7c2a28253f5b82286d3708f53fdde2bfd862d5339d084ffee162f4f15c61c31",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "fd18fa911d14e37ec224ef6ecd102b1b144aa88fdfd79253ce2344163ba0e553",
+          "blob": "dc70be7916a1624d0cc544b527792a01a46f04fc"
+        },
+        {
+          "offset": 400000,
+          "bytes": 104956,
+          "sha256": "75187b7352847bc2b110707c7b0787c1ce9379cf1c359fc80b2f124315043d99",
+          "blob": "48b0a1a3af01d9c0cbd01d189e7dc20ab5d3a1f7"
+        }
+      ]
+    },
+    {
+      "name": "no_exit_rejection-negative-metadata-status.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v1/no_exit_rejection-negative-metadata-status.json",
+        "bytes": 65937,
+        "sha256": "f166c9e8c0d00459bf23235fae577ad7d8d5390d1f92c13604d28e958f486494"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-invalid-first-frozen-export-20261105/no_exit_rejection-negative-metadata-status.json.gz",
+        "bytes": 9674,
+        "sha256": "c5781ad1b5dae3587e4e37e470fa9197e3dc8aa355099f88f17c3d3aff802010"
+      },
+      "base64_bytes": 12900,
+      "base64_sha256": "9685722877385c2672bb7dac7aaed3c9023c681beb3f9da523f9699199f228f0",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 12900,
+          "sha256": "9685722877385c2672bb7dac7aaed3c9023c681beb3f9da523f9699199f228f0",
+          "blob": "dbe696981c387f73a3c3a57c0ed0c22d28f5049d"
+        }
+      ]
+    },
+    {
+      "name": "no_exit_rejection-negative-metadata.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v1/no_exit_rejection-negative-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-invalid-first-frozen-export-20261105/no_exit_rejection-negative-metadata.stdout.gz",
+        "bytes": 596975,
+        "sha256": "2bfdeb1b46c29492c9af1a154f7a6ef9c2dca853991dc92d66704244fd23553d"
+      },
+      "base64_bytes": 795968,
+      "base64_sha256": "b435316db0802312920c577b35ece7871377b854bada0d9a1451338f8944e720",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "4eff581346b14d5d60dbaa890a2bd6d225604bc8c377b69fb5309ad4f999eaee",
+          "blob": "2bfdec5855e4d8be582c2c45d3e61e853ec8c1b0"
+        },
+        {
+          "offset": 400000,
+          "bytes": 395968,
+          "sha256": "e9d1577555af5f1c029f1a6b7bc52f20a3a8bab2e78405f91d8f9ffbbc9f1466",
+          "blob": "028d94d6f0793bcbf9f9ffe396ba71104a2978d4"
+        }
+      ]
+    },
+    {
+      "name": "no_exit_rejection-negative-normal-six-helper-build.stdout",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v1/no_exit_rejection-negative-normal-six-helper-build.stdout",
+        "bytes": 1129355,
+        "sha256": "8c08026b6b5edd0d431cdac2c142dfa91dba204b333da2c88ebb8eb796991113"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-invalid-first-frozen-export-20261105/no_exit_rejection-negative-normal-six-helper-build.stdout.gz",
+        "bytes": 74490,
+        "sha256": "6c5e8378b31be68d63f072731a3f4260de74e23bac5565368579ec87ef0bb8af"
+      },
+      "base64_bytes": 99320,
+      "base64_sha256": "9d29ce054fab6c4739043a8aab6d52b72260998dab114c74cc8d6cc3f2bb5b3f",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 99320,
+          "sha256": "9d29ce054fab6c4739043a8aab6d52b72260998dab114c74cc8d6cc3f2bb5b3f",
+          "blob": "d5462aed2f127899b1ce1bab32e2738777fcec9e"
+        }
+      ]
+    },
+    {
+      "name": "no_exit_rejection-negative-selection.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v1/no_exit_rejection-negative-selection.json",
+        "bytes": 5903808,
+        "sha256": "bca4e6f45c4d19dcbfbe61c0da24ca05090e38531503340c1e9f6fef7a166eac"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-invalid-first-frozen-export-20261105/no_exit_rejection-negative-selection.json.gz",
+        "bytes": 395332,
+        "sha256": "a847134b9386a770f1a8b7271df1c0267cac64eebe551daf46d7b5a7155905e6"
+      },
+      "base64_bytes": 527112,
+      "base64_sha256": "4181487564cf430f959624d6430634823012f79f341d9a9c0cb82c1e4eaddf6b",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 400000,
+          "sha256": "7c0ab9e476dc3363f81819ff62cf34aab6e1cb0961104c65468ac6f0652805ee",
+          "blob": "400ad544c5eb96a7282883e2559cc2d7e160585e"
+        },
+        {
+          "offset": 400000,
+          "bytes": 127112,
+          "sha256": "64a4776363e6668498b49d10935fb9d20e06075ee4139b15f5545e77c7ca6817",
+          "blob": "642874330d3ce5b8d62a182fd10f34e51011d4c5"
+        }
+      ]
+    },
+    {
+      "name": "complete-small-originals.json",
+      "original": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-invalid-first-frozen-export-20261105/complete-small-originals.json",
+        "bytes": 228098,
+        "sha256": "291a66c7c38909c0fa4ffb51f5c75f12185100f4e84556a039f73cad176ce0fb"
+      },
+      "gzip": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-invalid-first-frozen-export-20261105/complete-small-originals.json.gz",
+        "bytes": 32006,
+        "sha256": "98b58ac3875a31d7611d0c1a36ebaa316722c074bff04ee08ad2801e540e8ccc"
+      },
+      "base64_bytes": 42676,
+      "base64_sha256": "4bf89c10ea968e3865902fec792f7b4855b63e2861c3c19bc4df45bf413d95e5",
+      "chunks": [
+        {
+          "offset": 0,
+          "bytes": 42676,
+          "sha256": "4bf89c10ea968e3865902fec792f7b4855b63e2861c3c19bc4df45bf413d95e5",
+          "blob": "b2e5535eaa3868434d2836fa0ce0f7db5e14fdfd"
+        }
+      ]
+    }
+  ],
+  "decoding": "For each asset, concatenate chunk contents in increasing offset, verify complete base64 byte count and SHA256, strict-base64-decode, verify gzip bytes/SHA256, gzip-decompress, verify original bytes/SHA256. complete-small-originals.json contains all original remaining UTF-8 files with exact hashes. Every chunk<=400000 bytes. Native source files and evidence were not changed or deleted.",
+  "limits": "The failed original case did not reach the intended causal assertion and remains INVALID. The strict parser correctly rejected it and guarded finally restored exact d8. This archive does not count any of the three causal negatives or eight positives as qualified; V2 continuation is separate."
+}

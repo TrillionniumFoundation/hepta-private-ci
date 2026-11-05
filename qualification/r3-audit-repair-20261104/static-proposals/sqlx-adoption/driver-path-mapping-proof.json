@@ -1,0 +1,216 @@
+{
+  "schema": "hepta.sqlx.vendor-path.static-proof.v1",
+  "status": "STATIC_VENDOR_PATH_MAPPING_PASS",
+  "phases": [
+    {
+      "name": "full",
+      "patch_blob": "abe067bc6f2ca9601eef83b0cd4e0db4811827ac",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "-p2",
+            "--directory=codex-rs/third_party/sqlx-sqlite-0.9.0",
+            "--check",
+            "native-lifetime-token.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "-p2",
+            "--directory=codex-rs/third_party/sqlx-sqlite-0.9.0",
+            "native-lifetime-token.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exact_partial_source_map": {
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/establish.rs": "7bf04f3f06165371bfbe525c61cbaafa0c46667f",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/handle.rs": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/mod.rs": "a9da93a72c7840f98dd9b53181c28f7fae5807ae",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime_tests.rs": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime.rs": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc"
+      }
+    },
+    {
+      "name": "no_worker_token",
+      "patch_blob": "916c28d3c54119909342eeebe7beebd1d9ad7e91",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "-p2",
+            "--directory=codex-rs/third_party/sqlx-sqlite-0.9.0",
+            "--check",
+            "negative-no-worker-token.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "-p2",
+            "--directory=codex-rs/third_party/sqlx-sqlite-0.9.0",
+            "negative-no-worker-token.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exact_partial_source_map": {
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/establish.rs": "4e31d9fc66df45eab48b24643f87e5cb52258241",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/handle.rs": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/mod.rs": "a9da93a72c7840f98dd9b53181c28f7fae5807ae",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime_tests.rs": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime.rs": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc"
+      }
+    },
+    {
+      "name": "restore_worker_token",
+      "patch_blob": "cc635a7a55d3737039cc7fa2751fa003a7428b78",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "-p2",
+            "--directory=codex-rs/third_party/sqlx-sqlite-0.9.0",
+            "--check",
+            "restore-worker-token.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "-p2",
+            "--directory=codex-rs/third_party/sqlx-sqlite-0.9.0",
+            "restore-worker-token.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exact_partial_source_map": {
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/establish.rs": "7bf04f3f06165371bfbe525c61cbaafa0c46667f",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/handle.rs": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/mod.rs": "a9da93a72c7840f98dd9b53181c28f7fae5807ae",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime_tests.rs": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime.rs": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc"
+      }
+    },
+    {
+      "name": "unwind_releases",
+      "patch_blob": "5871bdd770ce0c99231a073cc227f320511a5938",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "-p2",
+            "--directory=codex-rs/third_party/sqlx-sqlite-0.9.0",
+            "--check",
+            "negative-close-unwind-releases.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "-p2",
+            "--directory=codex-rs/third_party/sqlx-sqlite-0.9.0",
+            "negative-close-unwind-releases.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exact_partial_source_map": {
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/establish.rs": "7bf04f3f06165371bfbe525c61cbaafa0c46667f",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/handle.rs": "e106e9ec8dd3e5b33ccde609ed22449709f1a488",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/mod.rs": "a9da93a72c7840f98dd9b53181c28f7fae5807ae",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime_tests.rs": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime.rs": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc"
+      }
+    },
+    {
+      "name": "restore_close_retention",
+      "patch_blob": "1e54da270be0c25b381cf3dcf2cbbab1c1ce4515",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "-p2",
+            "--directory=codex-rs/third_party/sqlx-sqlite-0.9.0",
+            "--check",
+            "restore-close-retention.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "-p2",
+            "--directory=codex-rs/third_party/sqlx-sqlite-0.9.0",
+            "restore-close-retention.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exact_partial_source_map": {
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/establish.rs": "7bf04f3f06165371bfbe525c61cbaafa0c46667f",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/handle.rs": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/mod.rs": "a9da93a72c7840f98dd9b53181c28f7fae5807ae",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime_tests.rs": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+        "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime.rs": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc"
+      }
+    }
+  ],
+  "final_source_map": {
+    "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/establish.rs": "7bf04f3f06165371bfbe525c61cbaafa0c46667f",
+    "codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/handle.rs": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6",
+    "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/mod.rs": "a9da93a72c7840f98dd9b53181c28f7fae5807ae",
+    "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime_tests.rs": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+    "codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connection_lifetime.rs": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc"
+  },
+  "complete_crate_materialized": false,
+  "native_cargo_bazel_or_ref_mutation": false,
+  "scope": "The three original driver source preimages and five reviewed patch postimages only; this is not a complete vendor package or runtime qualification."
+}

@@ -1,0 +1,594 @@
+{
+  "schema": "hepta.sqlx.native-token-adoption-and-driver-tests.v2",
+  "status": "COMPLETE_VENDOR_SOURCE_STATICALLY_RECONSTRUCTED_NATIVE_ADOPTION_PENDING",
+  "created_at_utc": "2026-11-05",
+  "purpose": "Make the actual patched driver a deliberately selectable workspace member, provide its own test runtime, preserve original driver unit coverage, and specify the real Cargo/Bazel source and lock gates.",
+  "authorized_scope": {
+    "source_only": true,
+    "no_native_worktree_or_target_changed": true,
+    "no_ref_updated": true,
+    "no_external_pr": true,
+    "explanation": "Parent requested a minimal explicit adoption design and source patch. Earlier public-API no-fork scope is not a permanent prohibition. This artifact does not authorize applying itself to the sole native lane.",
+    "read_only_native_archive_transfer": {
+      "host": "rog",
+      "operations": 2,
+      "tool": "binary_read",
+      "scope": "Only the exact existing sqlx-sqlite-0.9.0.crate; second chunk pinned to first version; no native process or mutation."
+    }
+  },
+  "base": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "root_cargo_blob": "4713741651affd053bb8ae5aa8b5d76831c15c0e",
+    "actual_A_metadata_source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "recheck_required": "All preimages and dependency graph must be checked against the then-final A source; do not overwrite concurrent A changes."
+  },
+  "dependency_candidate": {
+    "manifest": "9262807373267fe42587a36a50721aa08b60c56b",
+    "patch": "abe067bc6f2ca9601eef83b0cd4e0db4811827ac",
+    "static_review": "52dda1339aa03370401be2611ad5002860d37e8b",
+    "actual_vcs": "003b698e99e024f3621b8043a2426fde5b741171",
+    "actual_registry_receipt": "93b99eb2fc88c5b8fd4b48f7efc0db8057e24d47",
+    "alignment": "246b438e9f8026abaa4c48b62dd4d55ffa470cee",
+    "archive": {
+      "name": "sqlx-sqlite-0.9.0.crate",
+      "bytes": 93440,
+      "sha256": "488e99c397a62007e4229aec669a179816339afc6d2620ca6fa420dbee2e982c",
+      "blob": "ba066c6090be2051481fb746326fcc2017dd8de4",
+      "transport": {
+        "path": "published-crate-transport.json",
+        "blob": "934efbb47cafb2b6b16b16257c4d4424b0ff4647",
+        "bytes": 125641,
+        "sha256": "065c622f307e5995c146dfdfbe4898de95332b6201423dc75bd7a9472491ed0e"
+      },
+      "transfer_verification": {
+        "path": "published-crate-transfer-verification.json",
+        "blob": "f8355259ea524426f350c592154349457d780b51",
+        "bytes": 1112,
+        "sha256": "88c053b497950d183d5cc9fda87486bb8bd53594b91a2e9c5c0021db2779a03e"
+      },
+      "materialization": {
+        "path": "published-crate-materialization.json",
+        "blob": "13d34ce4a9059fd8cbdc3bd47228cf1ec9ed1a34",
+        "bytes": 13925,
+        "sha256": "e734491988701c0644420f8acd8d0e1296f356eeafc384dcfa94abc63e03a6e8"
+      },
+      "regular_members": 57,
+      "total_member_bytes": 407888
+    },
+    "normalized_manifest_pre": {
+      "blob": "8a8dafdc79c9811494e3b03faca2af0df4515f3c",
+      "bytes": 3782,
+      "sha256": "d659405cf1a18299845d699b4ab681a3d341805556c4a837d70f5f1c3589bb9a",
+      "dev_dependencies": "Originally empty. Proposed explicit dev-only sqlx-core =0.9.0 with _rt-tokio supplies this driver's own unit-test runtime; its normal dependencies remain unchanged."
+    }
+  },
+  "scaffold_changes": [
+    {
+      "path": "codex-rs/Cargo.toml",
+      "mode": "100644",
+      "pre": {
+        "blob": "4713741651affd053bb8ae5aa8b5d76831c15c0e",
+        "bytes": 22548,
+        "sha256": "5e19cb310c4bcabc082619d64a028358d5d629e26c179fb38a00432be8f54a6a"
+      },
+      "post": {
+        "blob": "ef34e2f3926055d868a00ceafb3ac4694d7156ed",
+        "bytes": 22725,
+        "sha256": "6474e8e9ce81df154d76bc68671acfa25aec0b306b419a14b6ed58dbe8e169ff"
+      },
+      "additions": 3,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml",
+      "mode": "100644",
+      "pre": {
+        "blob": "8a8dafdc79c9811494e3b03faca2af0df4515f3c",
+        "bytes": 3782,
+        "sha256": "d659405cf1a18299845d699b4ab681a3d341805556c4a837d70f5f1c3589bb9a"
+      },
+      "post": {
+        "blob": "39b9edd7321acfcd60dcfc6422160a8b233e9ffc",
+        "bytes": 3836,
+        "sha256": "a344e9400a2cea7feb0d59fbf0122e5b7a1d1e174b31a8b2286d0a585110f3f7"
+      },
+      "additions": 3,
+      "deletions": 1
+    },
+    {
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/BUILD.bazel",
+      "mode": "100644",
+      "pre": null,
+      "post": {
+        "blob": "4b8bcf22ab952a65c3e6bf0a25d36cb49869425d",
+        "bytes": 317,
+        "sha256": "60920bd8b2f0af6742449ee52c5527b40062fd5611c5a46fd82cb10a8df49d88"
+      },
+      "additions": 17,
+      "deletions": 0
+    }
+  ],
+  "scaffold_patch": {
+    "path": "adoption-scaffold.patch",
+    "blob": "0c7c5f3d6cb45cec4a10a64855242ddc22e35eb7",
+    "bytes": 1710,
+    "sha256": "60493f041a0229b093613676626bad7e38582ff667edb9f72c9d869e216d0753"
+  },
+  "authored_diff": {
+    "driver": {
+      "additions": 467,
+      "deletions": 9
+    },
+    "scaffold": {
+      "additions": 23,
+      "deletions": 1
+    },
+    "combined_changed_lines_before_formatting": 500,
+    "unmodified_archive_files_not_counted_as_authored_code": true,
+    "driver_and_scaffold_are_separate_reviewed_patches": true,
+    "mechanical_overlays_separate": {
+      "license_text_files": 2,
+      "license_overlay": {
+        "path": "vendor-license-overlay.patch",
+        "blob": "f62e4cefff604511dec34d1e2edd103863eb2b90",
+        "bytes": 12230,
+        "sha256": "e9d3c088a3166ad60667d173136f9f5169b5acedb8a819b3039652a3100ea8c4"
+      },
+      "mode_only_paths": 54,
+      "all_vendor_regular_files_mode": "100644",
+      "scope": "Fixed upstream license texts and archive mode normalization are mechanical source packaging, separately identified from the 500 changed driver/scaffold lines."
+    }
+  },
+  "exact_decisions": [
+    {
+      "item": "Workspace membership",
+      "decision": "Add third_party/sqlx-sqlite-0.9.0 to the explicit root members list. Do not depend on an implicit member or the behavior of -p against a nonmember dependency.",
+      "evidence": "Original run-nextest checks fresh metadata.workspace_members at lines248–255. Current A driver is not a member. Proposed metadata must prove the new local package id is a member."
+    },
+    {
+      "item": "Source selection",
+      "decision": "Add a root [patch.crates-io] entry for the same sqlx-sqlite0.9.0 package to that exact vendor path.",
+      "scope": "Cargo patch is transitive: all resolved consumers of that same0.9.0 package select this source, including those that keep token=None. Only explicit application options enable the new token. This is not a replacement SQLite backend, different driver version, or a token silently installed on every connection."
+    },
+    {
+      "item": "Independent driver test runtime",
+      "decision": "Replace the normalized empty dev-dependencies table with dev-dependencies.sqlx-core version = '=0.9.0', features = ['_rt-tokio'].",
+      "scope": "Original normal sqlx-core dependency remains exactly unchanged. Driver's public feature/default declarations remain unchanged. Under resolver2 this dev feature is requested for tests; actual generated graph must be inspected."
+    },
+    {
+      "item": "Bazel library and own unit target",
+      "decision": "New vendor BUILD uses existing codex_rust_crate, name=sqlx-sqlite, crate_name=sqlx_sqlite, crate_edition=2021, and the eight features from complete actual A metadata.",
+      "targets": [
+        "//codex-rs/third_party/sqlx-sqlite-0.9.0:sqlx-sqlite",
+        "//codex-rs/third_party/sqlx-sqlite-0.9.0:sqlx-sqlite-unit-tests"
+      ],
+      "scope": "No CI wrapper, test filter, retry, timeout, platform exception or no-tests policy change. Existing macro provides original src glob, normal/dev dependency buckets and unit wrapper."
+    },
+    {
+      "item": "Existing source assets",
+      "decision": "The actual 93,440-byte published archive is now independently transferred and safely materialized: 57 regular files, 407,888 member bytes, including 51 Rust files / 366,610 bytes. All 51 Rust members exactly match the fixed complete Git tree. No include_str/include_bytes/env! calls were found in those Rust sources.",
+      "scope": "The actual archive's two license members are regular 17/14-byte ../LICENSE-* references, not full texts. Preserve them and all archive modes in immutable evidence. The vendor copy separately replaces those two files with the full license texts from the same 003b commit and normalizes all regular files to 100644. No claim that those two overlaid files or modes are original-package-byteequal."
+    }
+  ],
+  "native_input_observation": {
+    "metadata": {
+      "bytes": 8163618,
+      "sha256": "959b827393fc6830e8fd6c55a83a519217ab0debb7c033b42e64306bc373fece",
+      "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+      "archive_index": "4fbfb3d05586f87b449a9ec14097982072917934",
+      "record": "full-workspace-metadata-stdout"
+    },
+    "verification": {
+      "path": "static-verification.json",
+      "blob": "be8a14ca5e4857b9ce5afedcbd977473852f48c8",
+      "bytes": 3541,
+      "sha256": "0b4d454524a13930e6bc984b7d831330440c8b53b2fc57835b2121af12ddcf54"
+    },
+    "driver_package_id": "registry+https://github.com/rust-lang/crates.io-index#sqlx-sqlite@0.9.0",
+    "driver_was_workspace_member": false,
+    "driver_features": [
+      "bundled",
+      "chrono",
+      "json",
+      "migrate",
+      "offline",
+      "serde",
+      "time",
+      "uuid"
+    ],
+    "source_inventory": {
+      "path": "input-manifest.json",
+      "blob": "f88d664eacfb8b9cb13e84e714e0edea7038a1a2",
+      "bytes": 17438,
+      "sha256": "f2fd3bd066fe3501a4d13a846d189298774f263dc9b36d50ff109945981f5137"
+    },
+    "qualified_source_scan_only": "The original 51-file Git source scan is now supplemented by a complete, checksum-matched native registry archive transfer and per-member materialization. This establishes original source identity, not dependency resolution, compilation or runtime qualification.",
+    "complete_archive": {
+      "name": "sqlx-sqlite-0.9.0.crate",
+      "bytes": 93440,
+      "sha256": "488e99c397a62007e4229aec669a179816339afc6d2620ca6fa420dbee2e982c",
+      "blob": "ba066c6090be2051481fb746326fcc2017dd8de4",
+      "transport": {
+        "path": "published-crate-transport.json",
+        "blob": "934efbb47cafb2b6b16b16257c4d4424b0ff4647",
+        "bytes": 125641,
+        "sha256": "065c622f307e5995c146dfdfbe4898de95332b6201423dc75bd7a9472491ed0e"
+      },
+      "transfer_verification": {
+        "path": "published-crate-transfer-verification.json",
+        "blob": "f8355259ea524426f350c592154349457d780b51",
+        "bytes": 1112,
+        "sha256": "88c053b497950d183d5cc9fda87486bb8bd53594b91a2e9c5c0021db2779a03e"
+      },
+      "materialization": {
+        "path": "published-crate-materialization.json",
+        "blob": "13d34ce4a9059fd8cbdc3bd47228cf1ec9ed1a34",
+        "bytes": 13925,
+        "sha256": "e734491988701c0644420f8acd8d0e1296f356eeafc384dcfa94abc63e03a6e8"
+      },
+      "regular_members": 57,
+      "total_member_bytes": 407888
+    }
+  },
+  "source_and_api_proof": {
+    "schema": "hepta.sqlx.adoption-current-runtime-source.v1",
+    "full_metadata": {
+      "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+      "sha256": "959b827393fc6830e8fd6c55a83a519217ab0debb7c033b42e64306bc373fece",
+      "bytes": 8163618,
+      "archive_index": "4fbfb3d05586f87b449a9ec14097982072917934"
+    },
+    "runtime_function": {
+      "repository": "transact-rs/sqlx",
+      "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+      "path": "sqlx-core/src/rt/mod.rs",
+      "blob": "273a1bfcd911be956b388fc7e40f0d37dee780bb",
+      "lines": [
+        147,
+        159
+      ],
+      "meaning": "test_block_on is available, but without an enabled runtime feature falls through to missing_rt; _rt-tokio selects a real current-thread Tokio runtime. No implicit runtime feature is promised by the driver alone."
+    },
+    "facts": [
+      "Current actual driver is not a workspace member in A metadata; --lib product-package tests do not automatically run this dependency's own unit harness.",
+      "The proposed explicit member makes package membership intentional and independently verifiable by normal metadata; the original run-nextest helper may then use its normal member path.",
+      "The new dev-only sqlx-core =0.9.0 edge enables _rt-tokio for driver tests, without modifying normal dependency declarations or public default features.",
+      "The exact observed normal driver feature set is bundled, chrono, json, migrate, offline, serde, time, uuid. The candidate BUILD and qualification commands use that set."
+    ],
+    "state_dependency": {
+      "path": "codex-rs/state/Cargo.toml",
+      "blob": "02cb82d778fc02859a42c0658597799ad00f5559",
+      "existing_tokio_features": [
+        "fs",
+        "io-util",
+        "macros",
+        "rt-multi-thread",
+        "sync",
+        "time"
+      ],
+      "libsqlite3_sys": "existing normal workspace dependency; actual A selected version0.37.0 with bundled, bundled_bindings, cc, default, min_sqlite_version_3_34_1, pkg-config, vcpkg",
+      "change": "none"
+    },
+    "state_build": {
+      "path": "codex-rs/state/BUILD.bazel",
+      "blob": "8f27a6255fa88e40a93db65e110a4b3c934b6958",
+      "defs": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "mechanism": "Original codex_rust_crate lib_srcs native.glob(src/**/*.rs) includes the new state test module and module declaration; the existing state-unit-tests target is retained with no new test filter, shard count, permission or budget."
+    }
+  },
+  "own_unit_roster": {
+    "basis": "Static source names under exactly the observed eight-feature set. Native nextest catalog must independently match before any execution may qualify.",
+    "original_count": 8,
+    "original_names": [
+      "connection::explain::test_explain",
+      "connection::explain::test_root_block_columns_has_types",
+      "options::parse::it_returns_the_parsed_url",
+      "options::parse::test_parse_in_memory",
+      "options::parse::test_parse_read_only",
+      "options::parse::test_parse_shared_in_memory",
+      "testing::test_convert_path",
+      "type_info::test_data_type_from_str"
+    ],
+    "new_parent_count": 4,
+    "new_parent_names": [
+      "options::connection_lifetime::tests::cancellation_during_native_open_keeps_resource_custody",
+      "options::connection_lifetime::tests::cancellation_during_initial_pragmas_keeps_resource_custody",
+      "options::connection_lifetime::tests::pool_growth_and_cancelled_close_keep_borrowed_connection_custody",
+      "options::connection_lifetime::tests::initialization_error_releases_but_failed_native_close_retains_custody"
+    ],
+    "expected_selected_nonignored": 12,
+    "ignored_support": "options::connection_lifetime::tests::owned_scenario",
+    "ignored_support_count": 1,
+    "ignored_support_semantics": "Deliberately invoked only by selected parent controls via exact ordinary libtest child; never counted as an additional PASS.",
+    "not_in_this_scope": "Four original regexp unit functions remain under the unselected regexp feature, matching the observed product graph. No all-features or upstream facade integration qualification is claimed.",
+    "no_no_tests_relaxation": true
+  },
+  "adoption_sequence": [
+    {
+      "phase": "1-source-input",
+      "operations": [
+        "After A is frozen and root authorizes B, sole writer rechecks current root Cargo preimage and exact source graph; never overwrite concurrent A dependency changes.",
+        "Use the immutable raw archive blob ba066c6090be2051481fb746326fcc2017dd8de4 or the two verified base64 chunks in 934efbb47cafb2b6b16b16257c4d4424b0ff4647. Require exact 93,440 bytes / SHA 488e99c… before any extraction.",
+        "Run the reviewed materializer into a new isolated destination; it rejects unsafe/nonregular archive entries and checks all 57 original members / 51 Rust source identities. It preserves original archive bytes/modes in that original source copy.",
+        "Prepare the product vendor copy with all regular files mode 100644. Preserve the raw archive and its complete inventory; mode normalization and the later two license replacements are explicit mechanical overlays."
+      ],
+      "materializer": {
+        "script": {
+          "path": "materialize_verified_driver.py",
+          "blob": "56e8c43cbdafd058c75e7e81f2601b1a46061fd2",
+          "bytes": 6072,
+          "sha256": "330b6275ef5ed37bd0d146cf9353f2cd37b2748d1f97589ff490f31ed8889449"
+        },
+        "command": "python3 materialize_verified_driver.py --archive sqlx-sqlite-0.9.0.crate --destination <new-original-package-directory> --receipt <new-materialization-receipt.json>",
+        "input_manifest": "f88d664eacfb8b9cb13e84e714e0edea7038a1a2"
+      }
+    },
+    {
+      "phase": "2-reviewed-patches",
+      "commands": [
+        "git apply --check -p2 --directory=codex-rs/third_party/sqlx-sqlite-0.9.0 <native-lifetime-token.patch>",
+        "git apply -p2 --directory=codex-rs/third_party/sqlx-sqlite-0.9.0 <native-lifetime-token.patch>",
+        "git apply --check <adoption-scaffold.patch>",
+        "git apply <adoption-scaffold.patch>",
+        "git apply --check <vendor-license-overlay.patch>",
+        "git apply <vendor-license-overlay.patch>"
+      ],
+      "requirements": [
+        "Placeholders identify the immutable reviewed patch blobs, not shell stdin commands to run verbatim.",
+        "Verify all five driver postimages against926280; the first path strip removes a/ and sqlx-sqlite/ before adding the exact vendor directory.",
+        "Verify all three scaffold postimages from this manifest; no extra dependency or source changes. Path materialization must be independently checked before build.",
+        "The driver five postimages and scaffold three postimages remain exact. The separate two-license overlay uses fixed 003b root source blobs e14699fb149e0b5cd2f2aa206d7bc4d5f8828fc3 and 6fe828e8eab3262db2dd59e567e3b35d8aea0f66; do not fabricate full licenses as archive members.",
+        "Full cloud assembly has 61 files: 60 vendor files plus root Cargo. Complete payload ed4b2ade11ac009426131347a127419a179fcf73 includes all 60 vendor text files and their exact bytes/hash/mode; actual native source map must match before resolution."
+      ],
+      "complete_payload": {
+        "path": "complete-vendor-source-bundle.json",
+        "blob": "ed4b2ade11ac009426131347a127419a179fcf73",
+        "bytes": 469133,
+        "sha256": "3735f09d567d860c7caaac0fb5b38d86e948e6c8d5639c7d0e9ad6486f1da288"
+      },
+      "static_proof": {
+        "path": "complete-vendor-static-assembly.json",
+        "blob": "2193443e1cbbd2017ba56d036f863f80cc2b187f",
+        "bytes": 28347,
+        "sha256": "90ee3d21ee2b123b76eb2ede684c25cdbf81755f551ead2c4ef18ed67c0c8554"
+      }
+    },
+    {
+      "phase": "3-real-locks-and-membership",
+      "working_directory": "codex-rs for Cargo; repo root for just bazel recipes",
+      "commands": [
+        "cargo metadata --format-version=1",
+        "just bazel-lock-update",
+        "just bazel-lock-check"
+      ],
+      "requirements": [
+        "Use real normal Cargo resolution to update only necessary codex-rs/Cargo.lock changes; do not edit lock text. Inspect all actual lock changes and reject unrelated upgrades without separate review.",
+        "Require exactly one selected sqlx-sqlite0.9.0 package with source=None, manifest at the approved vendor path and package id in workspace_members; no unused-patch warning or remaining selected registry copy.",
+        "Require dev/runtime graph actually contains sqlx-core0.9.0 _rt-tokio when selecting the driver tests; inspect actual feature and native SQLite links closure.",
+        "Original just bazel-lock-update/check must reach success and produced MODULE.bazel.lock/Cargo.lock identities must be saved even if either has zero diff. No promised lock-change shape or fresh-cache log replay.",
+        "Check generated @crates DEP_DATA has the vendor package key and its real normal/dev dependencies. A static BUILD file alone does not establish that generation succeeded.",
+        "The unchanged nested vendor Cargo.lock is the published package's original member, not the workspace resolution lock. Preserve it as source; the active workspace lock remains codex-rs/Cargo.lock and must be generated normally."
+      ]
+    },
+    {
+      "phase": "4-catalog-and-driver-causality",
+      "catalog_command": "cargo nextest list -p sqlx-sqlite --lib --locked --features bundled,chrono,json,migrate,offline,serde,time,uuid --message-format json",
+      "commands": [
+        "just test -p sqlx-sqlite --lib --locked --retries 0 --features bundled,chrono,json,migrate,offline,serde,time,uuid -E 'test(=options::connection_lifetime::tests::cancellation_during_native_open_keeps_resource_custody) | test(=options::connection_lifetime::tests::cancellation_during_initial_pragmas_keeps_resource_custody)'",
+        "just test -p sqlx-sqlite --lib --locked --retries 0 --features bundled,chrono,json,migrate,offline,serde,time,uuid -E 'test(=options::connection_lifetime::tests::initialization_error_releases_but_failed_native_close_retains_custody)'",
+        "just test -p sqlx-sqlite --lib --locked --retries 0 --features bundled,chrono,json,migrate,offline,serde,time,uuid"
+      ],
+      "requirements": [
+        "The first command runs only after the approved no-worker-token negative is applied; the second only after the approved unwind-release negative. Restore exact reviewed source between them. Follow the original926280 causal stage/physical-lock requirements; generic FAIL does not qualify.",
+        "After both exact restorations, the final original just command must execute all 8 original plus 4 new parent cases with zero failures and zero retries. The one explicit owned-child support remains ignored in the outer harness and must be reported separately as one ignored support, never as another PASS or silently omitted from actual skipped counts.",
+        "Preserve normal local profile, original runner and its status. No direct cargo test, no zero-test allowance, no feature broadening to get a count.",
+        "Store fresh complete parent raw/JUnit, actual source/binary identities, actual parent roster and child checkpoints/stderr. The fixture consumes and discards non-checkpoint child stdout; do not claim complete child stdout retention.",
+        "Original fail-close WorkerCrashed/ROW and real lock state must be seen for the close-error negative; opening negatives require entered callbacks and gate0 after the physical probe."
+      ]
+    },
+    {
+      "phase": "5-bazel-and-application",
+      "commands": [
+        "bazel test //codex-rs/third_party/sqlx-sqlite-0.9.0:sqlx-sqlite-unit-tests"
+      ],
+      "requirements": [
+        "Use the repository's original platform/config invocation in the sole approved lane and later original CI; record actual selected target/case results and source.",
+        "Do not silently merge driver results into the already frozen24 B controls. Preserve the six-stage B plan a46fd separately.",
+        "Caller binding781d/223c has its own two state/oneMemory parent controls and separate negative/restore receipts after B finalsource; existing state/memory owning suites remain required.",
+        "State already has libsqlite3-sys and needed Tokio normal dependencies and original BUILD src/**/*.rs covers the new test module. No new state dependency or test-only backend is needed.",
+        "Actual linked SQLite version comes from the R2c V3 query on the same SQLx pool under qualification; host Python/system SQLite version is not a substitute.",
+        "Original just fix/just fmt and required generated-lock/hygiene gates follow controlled validation. No tests have yet been run by this agent."
+      ]
+    }
+  ],
+  "native_gate_paths": {
+    "cargo_lock": "codex-rs/Cargo.lock",
+    "bazel_lock": "MODULE.bazel.lock",
+    "root_manifest": "codex-rs/Cargo.toml",
+    "vendor_manifest": "codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml",
+    "vendor_build": "codex-rs/third_party/sqlx-sqlite-0.9.0/BUILD.bazel",
+    "state_existing_build": "codex-rs/state/BUILD.bazel"
+  },
+  "static_validation": {
+    "proof": {
+      "path": "static-verification.json",
+      "blob": "be8a14ca5e4857b9ce5afedcbd977473852f48c8",
+      "bytes": 3541,
+      "sha256": "0b4d454524a13930e6bc984b7d831330440c8b53b2fc57835b2121af12ddcf54"
+    },
+    "script": {
+      "path": "verify_adoption_scaffold.py",
+      "blob": "84db5a2ee25b560285b6579bd83e8f626b9582db",
+      "bytes": 4897,
+      "sha256": "5c5e360506c902ddde1a67947cee4486e96c718e3c19c837123a5005509a9fbc"
+    },
+    "input": {
+      "path": "input-manifest.json",
+      "blob": "f88d664eacfb8b9cb13e84e714e0edea7038a1a2",
+      "bytes": 17438,
+      "sha256": "f2fd3bd066fe3501a4d13a846d189298774f263dc9b36d50ff109945981f5137"
+    },
+    "result": "Real isolated git apply check/apply of the three scaffold paths; Python TOML roundtrip proves only explicit member+patch and driver dev runtime edge. Complete existing A metadata was independently hashed and parsed. No Cargo/Bazel or library tests ran.",
+    "history": {
+      "first_attempt": {
+        "path": "static-first-attempt.json",
+        "blob": "3d5fc4c6dc73349df50876dd09b56a36c07704c7",
+        "bytes": 2040,
+        "sha256": "2ff820bc06f29cbcad51e1620334b2faba8358a60d982ff9b2937d5a1e82a2f5"
+      },
+      "meaning": "Input-copy guard correctly rejected a single extra terminal LF introduced while writing local snapshots, before any Git application. Only exact-hash-preserving one-LF corrections were made; initial failure retained.",
+      "archive_license_assumption": {
+        "first_attempt": {
+          "path": "materializer-first-attempt.json",
+          "blob": "ebc725c364b790adc432a10454ef4b5a7f612b16",
+          "bytes": 9125,
+          "sha256": "99137f8bfe26e09fec8db88378f421a7f2627647168675d7880d4ac93110c48b"
+        },
+        "first_script": {
+          "path": "materialize_verified_driver.first.py",
+          "blob": "09efe207d792a755469a896f86948b7f5d95c9a8",
+          "bytes": 5696,
+          "sha256": "2585b6d96c5ed7cdb33130d0a96b93d598e6f47472e59c19ec4aa9d2ea44d1f9"
+        },
+        "meaning": "The initial guard required full license text but the exact archive instead contains 17/14-byte regular reference files. It rejected before creating the destination. The corrected materializer preserves those actual bytes; full source license text is a separately reviewed vendor overlay."
+      }
+    },
+    "vendor_path_mapping": {
+      "proof": {
+        "path": "driver-path-mapping-proof.json",
+        "blob": "447231019390ed0cb393f7c76a7f655131a33401",
+        "bytes": 8455,
+        "sha256": "13ae376a5654e74c837eb90502cc9002a4c23b191904a3850d22217a8905213f"
+      },
+      "script": {
+        "path": "verify_driver_path_mapping.py",
+        "blob": "11739859824d49d4936213e3c4fa65aa1ba565f0",
+        "bytes": 3535,
+        "sha256": "9bfebebfb068ad4f1986e66a066c9887778b389a1c656503270eaf78fe74a6f7"
+      },
+      "scope": "Five real isolated git apply phases validate vendor path mapping for full/negative/restore patches against only their affected source files; no Cargo."
+    },
+    "complete_vendor": {
+      "proof": {
+        "path": "complete-vendor-static-assembly.json",
+        "blob": "2193443e1cbbd2017ba56d036f863f80cc2b187f",
+        "bytes": 28347,
+        "sha256": "90ee3d21ee2b123b76eb2ede684c25cdbf81755f551ead2c4ef18ed67c0c8554"
+      },
+      "script": {
+        "path": "verify_complete_vendor_assembly.py",
+        "blob": "f6f9d0a106770124f465ac8cc487f58a79a4fd26",
+        "bytes": 5772,
+        "sha256": "5e9ee127ab416f7ff7bea13f1a7f12b60da7ed2c9acb42d1acdc2395ec6f15cf"
+      },
+      "payload": {
+        "path": "complete-vendor-source-bundle.json",
+        "blob": "ed4b2ade11ac009426131347a127419a179fcf73",
+        "bytes": 469133,
+        "sha256": "3735f09d567d860c7caaac0fb5b38d86e948e6c8d5639c7d0e9ad6486f1da288"
+      },
+      "scope": "Actual full published package plus three separately checked overlays; 61-file exact map, 54 explicitly recorded mode-only normalizations. No complete product source tree or native build."
+    }
+  },
+  "documentation_sources": [
+    {
+      "url": "https://doc.rust-lang.org/cargo/reference/workspaces.html",
+      "claim": "Explicit members, shared root lock and top-level patch location."
+    },
+    {
+      "url": "https://doc.rust-lang.org/cargo/reference/features.html#feature-resolver-version-2",
+      "claim": "Resolver2 keeps dev-enabled features for targets that need them and accepts selected package features."
+    },
+    {
+      "url": "https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html",
+      "claim": "Root patch applies transitively; source selection and lock must actually resolve to the local package."
+    }
+  ],
+  "explicit_open": [
+    "Actual native adoption/source-map verification against then-final A; normal Cargo resolution/workspace-member catalog; real Cargo.lock/MODULE.bazel.lock generation; compiled driver, original unit/physical controls and original platform jobs.",
+    "B24 serial qualification and three caller-binding controls remain separate future stages. No runtime PASS is created by static full-package reconstruction.",
+    "checkpoint_private_recovery_database remains an explicitly identified unguarded direct connection outside the caller-binding candidate; research agent owns its next independent cohort.",
+    "Current/Root authority, final-use lease/expiry and independent unopted shared-open behavior remain outside this resource lifetime primitive."
+  ],
+  "delivery_artifacts": [
+    {
+      "path": "published-crate-transport.json",
+      "blob": "934efbb47cafb2b6b16b16257c4d4424b0ff4647",
+      "bytes": 125641,
+      "sha256": "065c622f307e5995c146dfdfbe4898de95332b6201423dc75bd7a9472491ed0e"
+    },
+    {
+      "path": "published-crate-transfer-verification.json",
+      "blob": "f8355259ea524426f350c592154349457d780b51",
+      "bytes": 1112,
+      "sha256": "88c053b497950d183d5cc9fda87486bb8bd53594b91a2e9c5c0021db2779a03e"
+    },
+    {
+      "path": "published-crate-materialization.json",
+      "blob": "13d34ce4a9059fd8cbdc3bd47228cf1ec9ed1a34",
+      "bytes": 13925,
+      "sha256": "e734491988701c0644420f8acd8d0e1296f356eeafc384dcfa94abc63e03a6e8"
+    },
+    {
+      "path": "materializer-first-attempt.json",
+      "blob": "ebc725c364b790adc432a10454ef4b5a7f612b16",
+      "bytes": 9125,
+      "sha256": "99137f8bfe26e09fec8db88378f421a7f2627647168675d7880d4ac93110c48b"
+    },
+    {
+      "path": "materialize_verified_driver.first.py",
+      "blob": "09efe207d792a755469a896f86948b7f5d95c9a8",
+      "bytes": 5696,
+      "sha256": "2585b6d96c5ed7cdb33130d0a96b93d598e6f47472e59c19ec4aa9d2ea44d1f9"
+    },
+    {
+      "path": "materialize_verified_driver.py",
+      "blob": "56e8c43cbdafd058c75e7e81f2601b1a46061fd2",
+      "bytes": 6072,
+      "sha256": "330b6275ef5ed37bd0d146cf9353f2cd37b2748d1f97589ff490f31ed8889449"
+    },
+    {
+      "path": "driver-path-mapping-proof.json",
+      "blob": "447231019390ed0cb393f7c76a7f655131a33401",
+      "bytes": 8455,
+      "sha256": "13ae376a5654e74c837eb90502cc9002a4c23b191904a3850d22217a8905213f"
+    },
+    {
+      "path": "verify_driver_path_mapping.py",
+      "blob": "11739859824d49d4936213e3c4fa65aa1ba565f0",
+      "bytes": 3535,
+      "sha256": "9bfebebfb068ad4f1986e66a066c9887778b389a1c656503270eaf78fe74a6f7"
+    },
+    {
+      "path": "vendor-license-overlay.patch",
+      "blob": "f62e4cefff604511dec34d1e2edd103863eb2b90",
+      "bytes": 12230,
+      "sha256": "e9d3c088a3166ad60667d173136f9f5169b5acedb8a819b3039652a3100ea8c4"
+    },
+    {
+      "path": "vendor-license-overlay.json",
+      "blob": "ab11188db9243fbd2d2073b1bf73f53a22cfc49a",
+      "bytes": 2060,
+      "sha256": "20f1f7d574ef39ba6defbeaa0d6ce450025f58f9f2feb8617be4c2b2d96804bc"
+    },
+    {
+      "path": "complete-vendor-static-assembly.json",
+      "blob": "2193443e1cbbd2017ba56d036f863f80cc2b187f",
+      "bytes": 28347,
+      "sha256": "90ee3d21ee2b123b76eb2ede684c25cdbf81755f551ead2c4ef18ed67c0c8554"
+    },
+    {
+      "path": "verify_complete_vendor_assembly.py",
+      "blob": "f6f9d0a106770124f465ac8cc487f58a79a4fd26",
+      "bytes": 5772,
+      "sha256": "5e9ee127ab416f7ff7bea13f1a7f12b60da7ed2c9acb42d1acdc2395ec6f15cf"
+    },
+    {
+      "path": "complete-vendor-source-bundle.json",
+      "blob": "ed4b2ade11ac009426131347a127419a179fcf73",
+      "bytes": 469133,
+      "sha256": "3735f09d567d860c7caaac0fb5b38d86e948e6c8d5639c7d0e9ad6486f1da288"
+    }
+  ]
+}

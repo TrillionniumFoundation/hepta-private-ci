@@ -1,0 +1,335 @@
+{
+  "schema": "hepta.checkpoint-custody-independent-review.v1",
+  "reviewer": "/root/architecture_audit",
+  "verdict": "STATIC_PASS_WITH_UNEXECUTED_ADOPTION_AND_NATIVE_GATES",
+  "review_script_correction": "The first isolated verifier completed four patch stages, then rejected its own expected spelling std::os::raw::c_uint. The actual fixed binding uses core::ffi::c_uint. That spelling expectation was corrected; the first reconstruction remains saved. No candidate source changed and no native test failed or ran.",
+  "author_manifest": {
+    "blob": "8c39e58cacf1303283ca5854d3ba78673b1ebda2",
+    "bytes": 25176,
+    "sha256": "366dd4d05a105e4bf98e5493187e1713a4325700ab3f4966920e6d70b6229b7a"
+  },
+  "preimages": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "blob": "27b123f6862ca4355da74ed4d1b21c7047b3b2df",
+      "bytes": 20446,
+      "sha256": "2f940666b2e309c5767f9e9f5912f403f622886566a7c4275a8f8af03f737088"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "blob": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c",
+      "bytes": 27552,
+      "sha256": "7271ec690ac9bd1ef7242f44d127c74dd6232fca107ac89548da285466648599"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "blob": "20e743f2921ad15399aa6318e6809486daf05f41",
+      "bytes": 21602,
+      "sha256": "a9b9aa9bb6cabea8ef38998ad5392c7275e9a362a44cf14343511161e06e4c7a"
+    },
+    {
+      "path": "codex-rs/hepta-memory/Cargo.toml",
+      "blob": "048e31020125843c2265a8bc0db256fa504d92af",
+      "bytes": 1477,
+      "sha256": "beb9e85b2326099cc2f3542e9fc012a5cf5bf9436caef903c718c98a1fdea373"
+    }
+  ],
+  "four_independently_reconstructed_stages": [
+    {
+      "patch": "production-custody.patch",
+      "blob": "e5334f2c317dd79221edfcd82529efa52b69a2e7",
+      "bytes": 1880,
+      "sha256": "b6ed8fde7f84f2e02b851fae0f1c7be4762366ea66774c74e5dc7cada5cab8f2",
+      "commands": [
+        {
+          "command": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "production-custody.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "production-custody.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exact_file_set_and_source_map": {
+        "codex-rs/hepta-memory/Cargo.toml": "048e31020125843c2265a8bc0db256fa504d92af",
+        "codex-rs/state/src/sqlite.rs": "85984c8c0fb1f699ad761de7383f920decad4808",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "fe9f45abbb87393994f7e006db0705de164a9380",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs": "20e743f2921ad15399aa6318e6809486daf05f41"
+      }
+    },
+    {
+      "patch": "memory-physical-control.patch",
+      "blob": "5cc2b66cca5c8e598c3f632472faa63163f01a8a",
+      "bytes": 13664,
+      "sha256": "20d8449179281e43717cdda614f2ab588f31a8db56a98a96e1a691c423cfad9f",
+      "commands": [
+        {
+          "command": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "memory-physical-control.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "memory-physical-control.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exact_file_set_and_source_map": {
+        "codex-rs/hepta-memory/Cargo.toml": "6a6c2ad82f7ffe72db8b6c8703414f9885119bd8",
+        "codex-rs/state/src/sqlite.rs": "85984c8c0fb1f699ad761de7383f920decad4808",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "fe9f45abbb87393994f7e006db0705de164a9380",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs": "9b4767fae6cf319fc99b1e12237d57af1a6566a9",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs": "377b8227ff9ae33493467527130092415e2a08e0"
+      }
+    },
+    {
+      "patch": "negative-checkpoint-native-binding.patch",
+      "blob": "46f21a20bbaeb8100ae56ff9f04068e65feeb3f6",
+      "bytes": 612,
+      "sha256": "25a096aedc53c0b76177f9bbce58b6f7a3d26c2383bf319f28f7554cca7fc9eb",
+      "commands": [
+        {
+          "command": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "negative-checkpoint-native-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "negative-checkpoint-native-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exact_file_set_and_source_map": {
+        "codex-rs/hepta-memory/Cargo.toml": "6a6c2ad82f7ffe72db8b6c8703414f9885119bd8",
+        "codex-rs/state/src/sqlite.rs": "6133170ba4e2a27c05aa32263b2f3fa5c2697d43",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "fe9f45abbb87393994f7e006db0705de164a9380",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs": "9b4767fae6cf319fc99b1e12237d57af1a6566a9",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs": "377b8227ff9ae33493467527130092415e2a08e0"
+      }
+    },
+    {
+      "patch": "restore-checkpoint-native-binding.patch",
+      "blob": "4f2a33948557226afa92371eab433431afd70a64",
+      "bytes": 612,
+      "sha256": "905411deac3005b0d0f3d0f1e63e0f4ee3a94f5b86e9f479e8c54bff015c142d",
+      "commands": [
+        {
+          "command": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "restore-checkpoint-native-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "restore-checkpoint-native-binding.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exact_file_set_and_source_map": {
+        "codex-rs/hepta-memory/Cargo.toml": "6a6c2ad82f7ffe72db8b6c8703414f9885119bd8",
+        "codex-rs/state/src/sqlite.rs": "85984c8c0fb1f699ad761de7383f920decad4808",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery.rs": "fe9f45abbb87393994f7e006db0705de164a9380",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs": "9b4767fae6cf319fc99b1e12237d57af1a6566a9",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs": "377b8227ff9ae33493467527130092415e2a08e0"
+      }
+    }
+  ],
+  "five_final_postimages": [
+    {
+      "path": "codex-rs/state/src/sqlite.rs",
+      "blob": "85984c8c0fb1f699ad761de7383f920decad4808",
+      "bytes": 20834,
+      "sha256": "d68ee42f26b764105936b57f70f588a4b3d7c0bcc32e4e660680354fa165830c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "blob": "fe9f45abbb87393994f7e006db0705de164a9380",
+      "bytes": 27644,
+      "sha256": "dd79f06618de18c3c74d56950e0f3c94d71c803fb5e3d17c02e9224a419b2aa5"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "blob": "9b4767fae6cf319fc99b1e12237d57af1a6566a9",
+      "bytes": 21681,
+      "sha256": "aea5bf98f7de36a2886084688aaf0fd9b39cb477412e38368b34ad3d5cc5fda1"
+    },
+    {
+      "path": "codex-rs/hepta-memory/Cargo.toml",
+      "blob": "6a6c2ad82f7ffe72db8b6c8703414f9885119bd8",
+      "bytes": 1515,
+      "sha256": "a15ec362eb47247e69561c31509e4ee14f572e33d4ca50d84540f5b7b839dc7d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_custody_tests.rs",
+      "blob": "377b8227ff9ae33493467527130092415e2a08e0",
+      "bytes": 12147,
+      "sha256": "f82e40b05c99257e30f045f919db10b2976445d2d2f611877456f4d19450af41"
+    }
+  ],
+  "context_files_independently_hashed": [
+    {
+      "path": "source/codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+      "blob": "20e743f2921ad15399aa6318e6809486daf05f41",
+      "bytes": 21602,
+      "sha256": "a9b9aa9bb6cabea8ef38998ad5392c7275e9a362a44cf14343511161e06e4c7a"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/src/cognitive_store_recovery_read_only.rs",
+      "blob": "0e8dd0d0f147ee75baba3a613a28f51d8bdd5cb8",
+      "bytes": 5300,
+      "sha256": "930050a22cf813f23163a78299afbeecb7957e5a80517f0b1c83cff412a0e305"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+      "blob": "da72483192728ae45824bd0febe14c86806d2bd8",
+      "bytes": 8390,
+      "sha256": "b2752c6116989c481f9566ffbc6c6f53834bdcb489c30c13771a7cf22a73a93f"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/src/cognitive_test_support.rs",
+      "blob": "11306805bca685a18758b50c16659a75092e0077",
+      "bytes": 1710,
+      "sha256": "a23027d9f04293a0830ebd76a315f8f8a7a6b4844f072519be1c2d33402cf151"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/Cargo.toml",
+      "blob": "048e31020125843c2265a8bc0db256fa504d92af",
+      "bytes": 1477,
+      "sha256": "beb9e85b2326099cc2f3542e9fc012a5cf5bf9436caef903c718c98a1fdea373"
+    },
+    {
+      "path": "source/codex-rs/hepta-memory/BUILD.bazel",
+      "blob": "75dda822f4ef6eac1e15366974f722edf5332781",
+      "bytes": 468,
+      "sha256": "854978f8b89813ce1f9ddf45a06adc1f14fe00f2c989b2465e4e3ece73600ed0"
+    },
+    {
+      "path": "source/codex-rs/Cargo.toml",
+      "blob": "4713741651affd053bb8ae5aa8b5d76831c15c0e",
+      "bytes": 22548,
+      "sha256": "5e19cb310c4bcabc082619d64a028358d5d629e26c179fb38a00432be8f54a6a"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "blob": "f881d7c4d20a189d781977da09237f8c82dc4012",
+      "bytes": 24439,
+      "sha256": "9cbf7ebd1be6c93bbee336c56a020861f85e295778683a729aa8eceaddbd1ecb"
+    },
+    {
+      "path": "source/codex-rs/state/src/sqlite_recovery_tests.rs",
+      "blob": "c039a1b56cfbb53ff4d90d0fe1fbd6018f4be370",
+      "bytes": 13637,
+      "sha256": "14d85fca2a4ebf0aee13c9cc0bc4bf3a010c6c286973a383a476d0f7b4045e16"
+    },
+    {
+      "path": "context/libsqlite3_sys_bindgen_bundled_v0_37.rs.txt",
+      "blob": "c892eefa6d15577af6379e39872420b9829903b7",
+      "bytes": 123641,
+      "sha256": "3640b99203cb2c2dfa5797043cf01dc8dcee8cef62c6b88e937e364a8614744b"
+    },
+    {
+      "path": "context/libsqlite3_sys_v0_37_Cargo.toml.txt",
+      "blob": "0c5c19c5985edfd4f5a1b8ac29b6f64dc7d8ef5d",
+      "bytes": 2084,
+      "sha256": "e0f5f73f6a36336b53d0e4321f48e852aa2fff8f8d2e0033025a4bdc6c5625ed"
+    }
+  ],
+  "findings": [
+    "The checkpoint options receive the same actual exclusive_guard.custody before connect. This covers the separately opened checkpoint connection; the two earlier pool bindings remain unchanged.",
+    "Exact checkpoint SQL, close await, error precedence and the Memory recovery authority/validation/publication/ACK body are byte-preserved outside the specified argument replacement.",
+    "The new owned child is a normal libtest entry. Its exact SQLITE_TRACE_STMT arms progress on the same database; a live Tokio runtime drives actual Memory recovery until the native callback is held.",
+    "Cancellation drops only the actual recovery future. The parent independently opens the real fence file and probes it, then requires callback gate_status=0, so callback timeout cannot establish the negative.",
+    "The positive requires callback release, target TRACE_CLOSE, independent physical lock availability in both child and parent, gate_status=1, and a successful child reap. TRACE_CLOSE is not treated as sqlite3_close return.",
+    "The negative removes only this checkpoint native token attachment, retaining the same incoming owner as a normal future local and preserving both pool bindings. Its valid endpoint requires physical lock acquisition while callback status remains zero.",
+    "Parent cleanup closes channels, kills and waits the owned direct child, and joins its stdout reader; no descendant process is created by this control. Non-marker stdout is discarded rather than preserved as a complete child log.",
+    "No source changes were required by this review. The original recovery test file is byte-preserved except for its new module declaration."
+  ],
+  "preserved_checkpoint_tail": {
+    "blob": "8e25cba2e4b450371710ddc4def6b015117f4562",
+    "bytes": 958,
+    "sha256": "182906ff0180eaaf7fff395484867a8fb74ed8c2fc5e0236990c78f00e855a70"
+  },
+  "original_recovery_test_file": {
+    "blob": "20e743f2921ad15399aa6318e6809486daf05f41",
+    "bytes": 21602,
+    "sha256": "a9b9aa9bb6cabea8ef38998ad5392c7275e9a362a44cf14343511161e06e4c7a"
+  },
+  "original_recovery_definitions": [
+    "exact_current_cut_recovers_writable_generation_and_persists_activation",
+    "graceful_close_retains_store_fence_until_sqlite_connections_finish",
+    "post_rename_publication_failure_is_indeterminate_and_retains_candidate",
+    "writable_recovery_requires_exclusive_store_fence",
+    "predecessor_witness_is_rejected_and_current_witness_recovers",
+    "revoked_owner_profile_and_witness_checks_precede_recovery_admission",
+    "hostile_file_identities_fail_closed_without_additional_mutation",
+    "byte_identical_rename_replacement_can_recover_only_with_current_witness",
+    "recovery_bounds_large_rows_before_loading_payloads_and_rejects_unknown_tables",
+    "corrupt_physical_fts_cannot_obtain_a_witness_or_trigger_recovery_io"
+  ],
+  "required_unexecuted_gates": [
+    "Actual SQLx driver adoption and both original Cargo/MODULE lock generators, including the new Memory libsqlite3-sys dev edge.",
+    "Fresh catalog with exactly one selected parent; the explicitly invoked ignored support is not another passing case.",
+    "Counterfactual must reach exact native checkpoint, cancel, acquire the real fence and report gate_status=0 before the intended parent assertion fails; setup or timeout failures are not causal proof.",
+    "Restore exact production source; run new parent, all original Memory recovery cases and complete owning state/Memory original gates, followed by original fix/fmt.",
+    "Windows remains a source-level owner-retention claim until original platform tests execute."
+  ],
+  "scope_limits": [
+    "The code-search index was default-ref discovery, not a complete B-source content search. Known direct caller is fixed and inspected; actual full compilation must expose any additional callers.",
+    "Does not authenticate Current, Root, signatures, final-use authority or ordinary producer/consumer admission.",
+    "Does not protect independent unopted SQLite opens. Does not replace the driver and two-pool controls for initial native open, initial PRAGMAs and failed close.",
+    "This independent review ran only isolated file hashing and Git patch reconstruction; no Rust compilation, formatting, SQLite execution, native process or ref mutation."
+  ]
+}

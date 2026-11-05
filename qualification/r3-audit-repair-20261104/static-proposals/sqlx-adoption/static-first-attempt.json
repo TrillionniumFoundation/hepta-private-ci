@@ -1,0 +1,27 @@
+{
+  "status": "STATIC_INPUT_COPY_TRAILING_LF_MISMATCH",
+  "rust_or_native_executed": false,
+  "initial_guard_failed_before_any_git_apply": true,
+  "repair": "Removed only one extra terminal LF when the resulting SHA and Git blob exactly matched the fixed source. No arbitrary trim or source rewrite.",
+  "exact_source_copy_repairs": [
+    "architecture-audit/sqlx-adoption-test-entry-20261105/source/codex-rs/Cargo.toml",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/repair-source/codex-rs/Cargo.toml",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/source/codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/repair-source/codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/repair-source/codex-rs/third_party/sqlx-sqlite-0.9.0/BUILD.bazel",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/adoption-scaffold.patch",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/source/justfile.txt",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/source/module.txt",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/source/nextest.txt",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/source/defs.txt",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/source/vendor_matrix_build.txt",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/source/vendor_matrix_cargo.txt",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/source/agent_rules.txt",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/source/run_nextest.txt",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/source/sqlx_rt.txt",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/source/cargo_build.txt",
+    "architecture-audit/sqlx-adoption-test-entry-20261105/source/bazel_tests.txt",
+    "architecture-audit/b16-state-native-token-binding-20261105/repair-manifest.json",
+    "architecture-audit/b16-state-native-token-binding-20261105/README.md"
+  ]
+}

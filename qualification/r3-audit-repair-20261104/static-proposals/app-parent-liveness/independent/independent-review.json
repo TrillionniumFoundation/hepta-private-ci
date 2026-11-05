@@ -1,0 +1,456 @@
+{
+  "schema": "hepta.app_parent_liveness.independent_static_review.v1",
+  "reviewed_at_utc": "2026-11-05T03:07:36.641244+00:00",
+  "reviewer": "research_audit",
+  "verdict": "STATIC_ACCEPT_FOR_EXACT_SOURCE_QUALIFICATION_ONLY",
+  "scope": "Five-path final candidate: original-parent liveness binding, three new physical parent controls, and one explicitly invoked ignored child support. No native run is claimed.",
+  "identity": {
+    "production": {
+      "blob": "e2b969abb65142171c003fea64399c7c61363a3a",
+      "bytes": 14407,
+      "sha256": "b14f75492815dfdbbecd8b1ac28e990d51628eb31b9acb7615f1e73f514f794e"
+    },
+    "controls": {
+      "bytes": 13596,
+      "sha256": "d7a89afa5205457194fc42b15f5e80046d30ea3b29a367c1e7e60ca43f7a4d06",
+      "blob": "55be7761bbd60171155aa1c60448aa6478ab8e01"
+    },
+    "full": {
+      "path": "full.patch",
+      "blob": "5847179e988ea0719766cd25be293e09efd882c3",
+      "bytes": 27742,
+      "sha256": "85edd8c88956ed3d27f7a90a5793cdf38f3c61c1c78043fa14ece1028542dd73",
+      "additions": 492,
+      "deletions": 6
+    },
+    "source_files": [
+      {
+        "path": "codex-rs/linux-sandbox/src/launcher.rs",
+        "before": {
+          "blob": "d4e9b521bf93f0861cf497c3153a9efdc6e3c67b",
+          "bytes": 16007,
+          "sha256": "bf1d23f8020d4e73f7a3e235165f0953154170256a92cf0c8254e5ab32578f91"
+        },
+        "after": {
+          "blob": "a1d761fba56d6b1653598e82f5d5d81207719ef5",
+          "bytes": 17189,
+          "sha256": "4c8c80c86477b6bbfdc002eee06c3d70ea09829a92eb079f8d309a13d22ea8bf"
+        }
+      },
+      {
+        "path": "codex-rs/linux-sandbox/src/lib.rs",
+        "before": {
+          "blob": "ad442168227e5d52c440f5fc740bbd8cb2746fe7",
+          "bytes": 1024,
+          "sha256": "8735433ac001ab723a01cb21ab27ed085c9c0a89dd28941b7d086cd65e8f3905"
+        },
+        "after": {
+          "blob": "8f704a3156998d169ceee6bd5e93bf549da9c5c0",
+          "bytes": 1074,
+          "sha256": "35302eb707a300f974f3fa6873f82a29a4f1c15fb250b10f57c2b4f5ccd99aba"
+        }
+      },
+      {
+        "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+        "before": {
+          "blob": "b50f19732bc0a4744c62f7300f955b9f9d17bf08",
+          "bytes": 55308,
+          "sha256": "3be631c566fbd4cbd08eea042cf425164d01002951b0dcad927c674beb571134"
+        },
+        "after": {
+          "blob": "e8eab2ed1b8221c75a366e0cc93851cf98d6f490",
+          "bytes": 56541,
+          "sha256": "c62b0014d1a539bb0343048fffa5283816f66dd17abcfb089ba3bce60eb247ca"
+        }
+      },
+      {
+        "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+        "before": null,
+        "after": {
+          "blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+          "bytes": 7437,
+          "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6"
+        }
+      },
+      {
+        "path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+        "before": null,
+        "after": {
+          "blob": "0293bce3c08720952fd3413c92c4e9a033da3d03",
+          "bytes": 12752,
+          "sha256": "cbd431000c30fa687422dbed660235edb16c4ce50b6f62c87def5e2957b2487e"
+        }
+      }
+    ],
+    "fixed_callsite_inventory": {
+      "tree": "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+      "bytes": 3634,
+      "sha256": "500398ea2d04645464dc48036f2f788c24757627c0bbda4c24fd2ce2ddf456e2",
+      "blob": "cca20dc45499462ce3fbf4cf2316569c012caf39",
+      "apply_seccomp_literal_hits": 9,
+      "landlock_struct_literal_pattern_hits": 4,
+      "limit": "Exact fixed-tree textual inventory, not a claim all arbitrary external manual helper invocations are supported."
+    }
+  },
+  "findings_resolved_before_acceptance": [
+    {
+      "id": "APP-LIVE-FD-LOW",
+      "severity": "compatibility_and_internal_constructor_invariant",
+      "old_production_patch": "b7953afe44cfdf787d661e02275c094be3721315",
+      "finding": "File::open could return 0/1/2 when a standard descriptor was closed; the same private receiver rejects descriptors <= STDERR_FILENO.",
+      "resolution": "Only such low descriptors are duplicated with F_DUPFD_CLOEXEC(minimum 3); dropping the original restores the closed standard descriptor. No read or permission change occurs.",
+      "static_verified": true,
+      "physical_control_pending": "The owned inspect-exec child closes its own stdin, captures, requires FD > 2 and stdin EBADF, and adopts the resulting descriptor successfully. The nextest parent never closes a standard descriptor."
+    },
+    {
+      "id": "APP-LIVE-PATCH-NEWFILE",
+      "severity": "candidate_transport",
+      "finding": "The first draft lacked new-file mode metadata; actual isolated git apply --check failed with dev/null missing.",
+      "diagnostic": {
+        "path": "patch-format-diagnostic.json",
+        "bytes": 737,
+        "sha256": "22a17bd77b4c564843a8d4902a97d17f11e88542ae49caf86fdb2722e53bdc4b",
+        "blob": "e3af04e8e4ab2160dd0706deb12a5e7eeef18353"
+      },
+      "resolution": "Final patch explicitly declares mode 100644 for new sources; both serial and combined application plus all three negative/restore pairs now reconstruct exact postimages.",
+      "source_body_effect": "None from the header correction.",
+      "static_verified": true
+    }
+  ],
+  "production_contract_review": [
+    {
+      "contract": "Correct task captured",
+      "result": "PASS_STATIC",
+      "evidence": "The direct route and the cleanup-fork child call the SandboxReaper role at final exec_bwrap. Capture is inside that function after preferred-launcher probing and after the optional cleanup fork, before that same process execs into the outer bwrap monitor. The /bin/true proc-mount probe uses a separate ProcMountProbe role."
+    },
+    {
+      "contract": "Private metadata placement",
+      "result": "PASS_STATIC",
+      "evidence": "The launcher injects the new option immediately after the executable following the first bwrap -- separator. The trusted inner builder still has its own -- before the original user command. Existing argv0 and legacy FD-mount translation remain intact. The role is a private enum at three fixed callsites, not inferred from user command tokens."
+    },
+    {
+      "contract": "Owned descriptor and no pre-read",
+      "result": "PASS_STATIC",
+      "evidence": "The constructor opens only /proc/self/stat. Argument formation uses metadata; receiver uses fcntl/fstatfs/lseek(SEEK_CUR,0) and metadata, without reading. Both existing launcher implementations clear CLOEXEC only for owned preserved files. Inner adoption restores CLOEXEC, rejects standard FDs, verifies device/inode, procfs, a readable regular file, and offset zero.",
+      "limit": "Numeric FD/dev/inode is custody consistency within this private handoff, not authentication of arbitrary external caller FDs. Offset zero alone would not prove an externally supplied FD had never been read and rewound; the private constructor provides that premise."
+    },
+    {
+      "contract": "Original permission rejection priority",
+      "result": "PASS_STATIC",
+      "evidence": "Original descriptor-mount verification and exact zero effective/permitted capability guard precede the new parent-FD check. Original permission-profile restriction call remains before re-arm. Network seccomp still has its original default-allow policy plus its explicit denied syscalls; no filter, capability, filesystem, proxy-route or credential policy changes are in this candidate."
+    },
+    {
+      "contract": "Arm, fresh observation, then close",
+      "result": "PASS_STATIC",
+      "evidence": "arm_and_check first sets SIGKILL PDEATHSIG, then performs its sole bounded read. It rejects PF_EXITING or zombie/dead states and all parse/read errors. Consuming self closes the descriptor before the original user fork. The original signal-mask/fork/forward/wait block is byte-identical and has no added reaper exec or credential change after re-arm."
+    },
+    {
+      "contract": "Existing routes",
+      "result": "PASS_STATIC_WITH_EXPLICIT_COMPATIBILITY_LIMIT",
+      "evidence": "Legacy Landlock and full-disk direct execution paths keep their original bodies. The proc-mount probe does not receive parent metadata. Inner --no-proc can still use the already-open host proc inode; this does not claim compatibility with a host that cannot open /proc/self/stat. Missing or invalid custody is an explicit inner-stage failure."
+    }
+  ],
+  "kernel_primary_reasoning": {
+    "versions_checked": [
+      "torvalds/linux v4.19",
+      "torvalds/linux v6.12"
+    ],
+    "exact_sources_and_hashes": [
+      {
+        "key": "base419",
+        "repository": "torvalds/linux",
+        "ref": "v4.19",
+        "path": "fs/proc/base.c",
+        "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/proc/base.c",
+        "blob": "7e9f07bf260d20bb0a0cd4cd6b6b4abe82b23e20",
+        "bytes": 88166,
+        "sha256": "b7ad40f8b47c782ff758dc815fe1d247bbeb848b240477f802f02f91351cf382",
+        "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/proc/base.c",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "key": "array419",
+        "repository": "torvalds/linux",
+        "ref": "v4.19",
+        "path": "fs/proc/array.c",
+        "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/proc/array.c",
+        "blob": "0ceb3b6b37e7310ed12d8d7f4215efe3b4c8a0a8",
+        "bytes": 21289,
+        "sha256": "17920836962650cc030fd3e0a62053e614fd4b58e78262975455c94421648b32",
+        "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/proc/array.c",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "key": "inode419",
+        "repository": "torvalds/linux",
+        "ref": "v4.19",
+        "path": "fs/proc/inode.c",
+        "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/proc/inode.c",
+        "blob": "fc5306a31a1d8b489dc16483d79cf83b6445f387",
+        "bytes": 13428,
+        "sha256": "1d1d8bd5788df1005480f30d2692d0998c09debd006bbcd0f4e5917f45eea425",
+        "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/proc/inode.c",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "key": "internal419",
+        "repository": "torvalds/linux",
+        "ref": "v4.19",
+        "path": "fs/proc/internal.h",
+        "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/proc/internal.h",
+        "blob": "5185d7f6a51ee845fc12c6d49d4497d766af6c23",
+        "bytes": 9030,
+        "sha256": "0cb1f72252809eab0fc08f48623d735b53e69a3901822d10aa4fbcf21fba1bc3",
+        "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/proc/internal.h",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "key": "exit419",
+        "repository": "torvalds/linux",
+        "ref": "v4.19",
+        "path": "kernel/exit.c",
+        "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/kernel/exit.c",
+        "blob": "0e21e6d21f35f884f5b89b4237bd0be4f2b8a085",
+        "bytes": 45270,
+        "sha256": "02c927d08dc611f49b3daea70b5439b2737865a0cf3345588d901bd78c466258",
+        "source_url": "https://github.com/torvalds/linux/blob/v4.19/kernel/exit.c",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "key": "sched419",
+        "repository": "torvalds/linux",
+        "ref": "v4.19",
+        "path": "include/linux/sched.h",
+        "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/include/linux/sched.h",
+        "blob": "977cb57d7bc9e7183e6ca628e4f75d236ddf3951",
+        "bytes": 53091,
+        "sha256": "77f38328d63059101794ddd304bd734419a5da088bd769ab9bb4462291dac960",
+        "source_url": "https://github.com/torvalds/linux/blob/v4.19/include/linux/sched.h",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "key": "seq419",
+        "repository": "torvalds/linux",
+        "ref": "v4.19",
+        "path": "fs/seq_file.c",
+        "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/seq_file.c",
+        "blob": "1dea7a8a52550e234ce3c05565ad8cfa56eeb1f2",
+        "bytes": 24974,
+        "sha256": "886c5d712fc10aff2e495a3611163e8f88725d098656d0531440d4622f89731f",
+        "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/seq_file.c",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "key": "base612",
+        "repository": "torvalds/linux",
+        "ref": "v6.12",
+        "path": "fs/proc/base.c",
+        "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/proc/base.c",
+        "blob": "b31283d81c52ea2a984519dac166d9bcbb7c99a8",
+        "bytes": 98525,
+        "sha256": "3cd005fa6ce3bd17f10acf67d6e4344013da11b4814a269d239d9c1182ad0c68",
+        "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/proc/base.c",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "key": "array612",
+        "repository": "torvalds/linux",
+        "ref": "v6.12",
+        "path": "fs/proc/array.c",
+        "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/proc/array.c",
+        "blob": "34a47fb0c57f2570a4f7cb1f45373ddaf2afa883",
+        "bytes": 23234,
+        "sha256": "23fa35a9e22158c2bee2bf183c748b82438e4919571eac9c04a4028d24764549",
+        "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/proc/array.c",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "key": "inode612",
+        "repository": "torvalds/linux",
+        "ref": "v6.12",
+        "path": "fs/proc/inode.c",
+        "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/proc/inode.c",
+        "blob": "626ad7bd94f244e7e1bd25365e5a31908cb4d72a",
+        "bytes": 17075,
+        "sha256": "78b824230254ddee8739303b602162dcbd07ec5ded91b07d8959724aad404e8b",
+        "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/proc/inode.c",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "key": "internal612",
+        "repository": "torvalds/linux",
+        "ref": "v6.12",
+        "path": "fs/proc/internal.h",
+        "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/proc/internal.h",
+        "blob": "87e4d62820252016bdff5e00c34229d8848902b9",
+        "bytes": 10661,
+        "sha256": "4614df01bc2ccc7b77b90e74e83d085d52fde7f92413499aff3792f87037141a",
+        "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/proc/internal.h",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "key": "exit612",
+        "repository": "torvalds/linux",
+        "ref": "v6.12",
+        "path": "kernel/exit.c",
+        "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/kernel/exit.c",
+        "blob": "619f0014c33be4c88f7d110622124cb5a489e532",
+        "bytes": 49803,
+        "sha256": "7c28bfc644117470b9cbe6d46c84580de98225755bbb227e61d638ea7104025d",
+        "source_url": "https://github.com/torvalds/linux/blob/v6.12/kernel/exit.c",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "key": "sched612",
+        "repository": "torvalds/linux",
+        "ref": "v6.12",
+        "path": "include/linux/sched.h",
+        "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/include/linux/sched.h",
+        "blob": "bb343136ddd05d178f9ca03d797c1da1ef5496d3",
+        "bytes": 64069,
+        "sha256": "a0b8b99bb7608ab3d0b4f86b2ac416ce233b7f03821d26d4cd2f191bd29e489c",
+        "source_url": "https://github.com/torvalds/linux/blob/v6.12/include/linux/sched.h",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "key": "seq612",
+        "repository": "torvalds/linux",
+        "ref": "v6.12",
+        "path": "fs/seq_file.c",
+        "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/seq_file.c",
+        "blob": "e676c8b0cf5d8af861724222c006c67d908c2849",
+        "bytes": 26177,
+        "sha256": "51611d69c6eb1526c9c1365a08bf0d5fa66957ddf4904a8e843da6525e6977b5",
+        "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/seq_file.c",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/primary/bubblewrap-v0.11.1.c.txt",
+        "bytes": 116430,
+        "sha256": "e81e833751d3d247d72dff1ad1792ca72939fa6956974dde2cb86f9f1b0a2bb3",
+        "blob": "687ed71f7044ca997a100eef847a5de71164581b",
+        "independently_verified_bytes_sha256_git_blob": true
+      },
+      {
+        "local_path": "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/primary/bundled_bwrap.rs.txt",
+        "bytes": 11001,
+        "sha256": "6d57a035029048db8aeabed4a56c18f7fc72017dafb9ce61a53bd1b384e49566",
+        "blob": "61d10547d3b3eb499f8b8a06d6444845c4ff7f93",
+        "independently_verified_bytes_sha256_git_blob": true
+      }
+    ],
+    "inode_binding": {
+      "sources": [
+        "7e9f07bf260d20bb0a0cd4cd6b6b4abe82b23e20",
+        "b31283d81c52ea2a984519dac166d9bcbb7c99a8"
+      ],
+      "finding": "proc_pid_make_inode stores a referenced struct pid. proc_single_show looks up the task from that stored pid; a reaped task yields ESRCH rather than a numeric-PID lookup that could select a replacement process."
+    },
+    "no_open_cache": {
+      "sources": [
+        "1dea7a8a52550e234ce3c05565ad8cfa56eeb1f2",
+        "e676c8b0cf5d8af861724222c006c67d908c2849"
+      ],
+      "finding": "single_open establishes the seq_file without calling show; SEEK_CUR 0 on the never-read file remains at read_pos 0 and does not traverse/populate it. First observation is therefore after re-arm for the private source chain."
+    },
+    "flags_not_ptrace_zeroed": {
+      "sources": [
+        "0ceb3b6b37e7310ed12d8d7f4215efe3b4c8a0a8",
+        "34a47fb0c57f2570a4f7cb1f45373ddaf2afa883"
+      ],
+      "finding": "Both do_task_stat implementations emit field 9 directly from task->flags, outside permitted-dependent zeroing. Parser consumes state then skips exactly the five intervening fields; comm is handled as raw bytes using the final closing parenthesis."
+    },
+    "exit_order": {
+      "sources": [
+        "0e21e6d21f35f884f5b89b4237bd0be4f2b8a085",
+        "619f0014c33be4c88f7d110622124cb5a489e532",
+        "977cb57d7bc9e7183e6ca628e4f75d236ddf3951",
+        "bb343136ddd05d178f9ca03d797c1da1ef5496d3"
+      ],
+      "finding": "PF_EXITING is 0x4. exit_signals sets it before exit_notify invokes forget_original_parent, which reparents children before the later EXIT_ZOMBIE/EXIT_DEAD publication. Checking the flag covers a source-level window that an exit_state-only/pidfd-ready check does not establish."
+    },
+    "not_claimed": [
+      "Reconstructed installed Ubuntu kernel or bwrap package",
+      "Observed LSM/PDEATHSIG clearing mechanism in the original failure",
+      "An executed test trapping the reparent-before-zombie instruction window",
+      "A proof for arbitrary multi-threaded replacement bwrap implementations"
+    ]
+  },
+  "physical_controls_review": {
+    "source": {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "bytes": 12752,
+      "sha256": "cbd431000c30fa687422dbed660235edb16c4ce50b6f62c87def5e2957b2487e",
+      "blob": "0293bce3c08720952fd3413c92c4e9a033da3d03"
+    },
+    "selected_parent_count": 3,
+    "selected_parent_cases": [
+      "parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting",
+      "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork",
+      "parent_lifecycle::tests::ordinary_file_and_pre_read_proc_descriptor_are_rejected"
+    ],
+    "ignored_support_not_counted_as_an_extra_pass": "parent_lifecycle::tests::owned_liveness_scenario",
+    "startup": "Real current test executable and ordinary Rust/libtest startup, exact support selector, required output markers; no constructor, fake nextest protocol, or inherited fixture bypass.",
+    "parent_isolation": "Only owned child support arms PDEATHSIG. A dedicated child process group is created. Launcher remains unreaped through waitid WNOWAIT, reserving its PID/group identity until group cleanup and wait. On assertion/error, Drop closes owned pipes, kills the owned group, waits the leader, and joins the bounded reader.",
+    "early_case": "Receives the inherited/unread marker, kills the original launcher, observes actual termination without reaping, releases the blocked probe, checks actual getppid changed and BrokenPipe. This is a real already-reparented-parent control, not a physical replay of the narrower pre-zombie instruction window.",
+    "late_case": "Initial PR_GET_PDEATHSIG must be zero. After production arm/check, actual fcntl observes EBADF before a new fork. The exec child independently rejects the original inode at that FD and exercises closed-stdin promotion. Only then is the original launcher killed. The parent retains stdin, so EOF cannot explain probe completion.",
+    "input_rejections": "An owned ordinary file and an actual pre-read proc file are rejected; the receiver consumes and closes those descriptors.",
+    "budget": "Original App 5-second oracle is untouched. Each new owned control wait has its own fixed 5-second bound; a missing setup marker or a generic harness timeout is invalid causal evidence.",
+    "native_executed": false
+  },
+  "counterfactual_endpoints": [
+    {
+      "name": "no_exit_rejection",
+      "negative_blob": "19275624147c737e527fbcbff3f2999aecf06535",
+      "restore_blob": "2a01dc378463c1b7795ca5ef85b0ace877315ef1",
+      "required": "Original inherited marker and killed launcher/reparenting premises reached; child must print actual result Ok(()) and fail the explicit exited-original-parent admission assertion. Parent channel-disconnect failure alone is insufficient.",
+      "scope": "Removes the full exit rejection; it does not independently distinguish PF_EXITING from the zombie-state branch."
+    },
+    {
+      "name": "no_rearm",
+      "negative_blob": "c1caf99376a90eef2e51d6fea5b5f0e2cca649da",
+      "restore_blob": "f2370e215698b733338e55bf69f3d7a0bba3cc87",
+      "required": "Initial zero signal and inherited/live/FD-closed/exec stages must reach their original markers, and the owned launcher must reach actual killed state; only the specific reaper-survived-original-launcher failure is causal. Setup failures or unrelated timeouts do not qualify."
+    },
+    {
+      "name": "leaked_parent_fd",
+      "negative_blob": "39fafc378c26b4dd2f40e04091db0e480ae95357",
+      "restore_blob": "0c6ce826e8267d8ca3a5d0fe812bd92fda0fe2db",
+      "required": "Adds only mem::forget(self); actual pre-fork fcntl tuple must fail against (-1, EBADF). Later generic child death or selector failure is insufficient."
+    }
+  ],
+  "original_acceptance_required": {
+    "app": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+    "app_deadline_seconds": 5,
+    "original_reaper_cases": [
+      "suite::managed_proxy::sandboxed_commands_have_a_seccomp_filtered_namespace_reaper",
+      "suite::managed_proxy::managed_proxy_commands_have_a_seccomp_filtered_namespace_reaper",
+      "suite::managed_proxy::namespace_reaper_collects_orphaned_descendants"
+    ],
+    "original_capability_negative": "suite::landlock::sandbox_inner_stage_rejects_retained_capabilities",
+    "original_capability_positive": "suite::landlock::sandboxed_command_has_no_effective_or_permitted_capabilities",
+    "capability_source": {
+      "bytes": 42833,
+      "sha256": "7fc3e7d57ce9fcd9f9a7da1e917c8e358145dcc29dc84e62873160ad8cdbd793",
+      "blob": "a82022754d5aa0b1be7d82c4a8a7ba9a1d1f966b"
+    },
+    "capability_scope": "Original missing bwrap/unshare/user-namespace early returns must be identified from raw output and do not prove the capability oracle executed. The old explicit capability error remains before the new missing-FD error.",
+    "required": "Exact final source/helper graph, raw logs/JUnit, zero retries, actual namespace and security-oracle execution. System and bundled launcher qualification remain distinct."
+  },
+  "static_reconstruction": {
+    "path": "final-static-reconstruction.json",
+    "bytes": 18974,
+    "sha256": "b1f8cb42cde52dc9dfaffdd0ef3a12d5d1d54bd7f81cd2b95c5ae4100e094f4b",
+    "blob": "a64364424b4eb940b451ab3c8d0ab79a21524689",
+    "commands": 20,
+    "five_postimages_exact": true,
+    "all_three_negative_restore_pairs_exact": true
+  },
+  "qualification_limits": [
+    "No Rust format, compile, Cargo/Bazel or native test was run by this reviewer.",
+    "The existing observed App failure is not closed by this static acceptance.",
+    "This is a lifecycle repair candidate, not evidence that the original failure was caused by a particular signal-clearing event.",
+    "No current authority, Root/Session, Windows sandbox or unrelated platform qualification is implied.",
+    "No shared source/index/target or external ref was changed."
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "schema": "hepta.independent.report-post-three-repairs-correction.v1",
+  "observed_at_utc": "2026-11-05T03:14:34.535214+00:00",
+  "verdict": "STATIC_REPORT_CORRECTIONS_ONLY_NOT_APPLIED_TO_ROOT_DELIVERABLES",
+  "latest_reviewed_scope_tree": "7d703610ae4f778ad305ebc139860d276f416e8c",
+  "files": [
+    {
+      "path": "hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "before": {
+        "bytes": 33151,
+        "sha256": "c2571f3843c500bef96da51292ae987baf0717629d6d42d908c2a1a9731f7c08",
+        "blob": "daef0fd3c428718b3bd8948c457ae0e88ae51709"
+      },
+      "after": {
+        "bytes": 34587,
+        "sha256": "48727f7e0aab9d7d2e62b38212623694f9b88d7468350f60174f1a80c5e3a855",
+        "blob": "1488270363927d3be44035f9f752a8af205adfac"
+      }
+    },
+    {
+      "path": "hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "before": {
+        "bytes": 15446,
+        "sha256": "147aaccd59cec7918a3eaac1dfa744699d46236d1dda3a59d40154369332c02f",
+        "blob": "6be53e8b3b41ff8ac027e592ee88aed7d6e3952e"
+      },
+      "after": {
+        "bytes": 18179,
+        "sha256": "c76a8bd89805b0fa492f606104e3e8cd9b7fa8382c31185e5bde5fca798e86a5",
+        "blob": "97495e8393e7eed1eaf8573aec6554a0ab95a490"
+      }
+    },
+    {
+      "path": "hepta-audit-fourth/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "before": {
+        "bytes": 16562,
+        "sha256": "3872d0c9544c3ab5620d216abee083c48fa40e6eec2af7e9ee257ab22d0b8e60",
+        "blob": "22fd1903f627a55261a4c87a2646a114821f79f6"
+      },
+      "after": {
+        "bytes": 17410,
+        "sha256": "6c50ba95f528d205fe7884259d8337743788ef5ab042574c378a72356f5c563f",
+        "blob": "0e41fff54230c35772b1bc65750e2472503bfb71"
+      }
+    }
+  ],
+  "patch": {
+    "bytes": 23268,
+    "sha256": "505885147fbfce653741f08507cceee271e23ef836b9edd9914e74c247962c8d",
+    "blob": "de9a9e3362b77967a9016941b4c8c015dae20c2a"
+  },
+  "sources_verified": [
+    {
+      "path": "fourth-three-repairs-v3-root-review.json",
+      "bytes": 16519,
+      "sha256": "8c87a62f4224c062d62306dbd7df4b7b70da706e8ad54f57d10ae3290f5114a8",
+      "blob": "1504d23acdb8fc5076d4216ee693b220d9c44391"
+    },
+    {
+      "path": "fourth-app-parent-probe-complete-root-review.json",
+      "bytes": 24854,
+      "sha256": "a25818b0e6c7a9774262964413dc2479c7357c99c9108a04c809b28f85c264e2",
+      "blob": "508f90b42ce54373abff4c9530f736c36ca154dc"
+    }
+  ],
+  "app_independent_static_review_blob": "ea366bc37dcf9df49e5564329c62f107f9e4b7a7",
+  "corrections": [
+    "Preserve f825 original owning7/full-workspace failures; newer 9/166/76 passes are scoped to their exact serial trees.",
+    "Skills V1 Table indexing panic remains INVALID; V2 actual full-vector marker failure and restored original nine pass are separate.",
+    "Migration original child588 assertion and both nested same-name positive successes, raw lines1613-1627, are retained.",
+    "V8 76 includes runtime68/poc6/jit1/parallel_initialization1; not just a library-only scope.",
+    "Original real Bazel update/check exit0 in111.734/.493s with no generated lock differences; existing cache is not called fresh.",
+    "App epoch2 FAIL5.491 and later observation FAIL5.575 are distinct; signal0 was successfully read twice and original killpg returned Ok.",
+    "All50 App original files and exact restoref825/source-map identity were reviewed; no exact signal-clearing transition is claimed.",
+    "New parent-liveness source/controls remain STATIC, uncompiled/unexecuted; B16 proposals and all original ledger statuses remain unchanged."
+  ],
+  "unchanged_ledger": {
+    "bytes": 33034,
+    "sha256": "8c29157e08e8c5002bb62024f29ffbf63da0676996c5091bdf4344ddb15d2dd8",
+    "blob": "37b80bc2d69138d89d8a2580a0be6e0e3893dd6f",
+    "counts": {
+      "inherited_work_packages": 23,
+      "scoped_closed": 8,
+      "open": 14,
+      "scientific_hold": 1,
+      "new_whole_ids_closed_in_fourth_batch": 0
+    },
+    "scoped_closed_ids": [
+      "B01",
+      "B03",
+      "B04",
+      "B05",
+      "B06",
+      "B12",
+      "B14",
+      "B17"
+    ],
+    "open_ids": [
+      "B02",
+      "B07",
+      "B08",
+      "B09",
+      "B10",
+      "B11",
+      "B13",
+      "B15",
+      "B16",
+      "B19",
+      "B20",
+      "B21",
+      "B22",
+      "B23"
+    ],
+    "scientific_hold_ids": [
+      "B18"
+    ],
+    "all_original_exit_conditions_byte_preserved": true
+  },
+  "static_validation": {
+    "commands": [
+      {
+        "argv": [
+          "git",
+          "init",
+          "-q"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "git",
+          "add",
+          "hepta-audit-fourth/deliverables"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "git",
+          "apply",
+          "--check",
+          "--whitespace=error",
+          "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-post-three-repairs-review-20261105/report-corrections.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "git",
+          "apply",
+          "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-post-three-repairs-review-20261105/report-corrections.patch"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "postimages_byte_equal": true,
+    "root_three_deliverables_unchanged": true,
+    "root_ledger_unchanged": true,
+    "new_evidence_links_exist_and_registered": true
+  },
+  "not_performed": [
+    "native build/test",
+    "Rust compilation/formatting",
+    "root deliverable or registry edits",
+    "Git ref/PR changes",
+    "new whole-blocker closure"
+  ]
+}

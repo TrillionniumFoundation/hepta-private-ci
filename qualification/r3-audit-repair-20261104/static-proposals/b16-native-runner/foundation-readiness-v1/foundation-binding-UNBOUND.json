@@ -1,0 +1,174 @@
+{
+  "schema": "hepta-b16-explicit-native-binding-v3",
+  "internal_stage_ids_are_not_original_blocker_ids": true,
+  "execute": false,
+  "approval_reference": null,
+  "authorized_epoch": "foundation",
+  "final_A_tree": null,
+  "last_tested_A_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "last_tested_A_to_final_A_review": null,
+  "initial_tree": null,
+  "ordinary_head": null,
+  "ordinary_index": {
+    "bytes": null,
+    "sha256": null
+  },
+  "approved_payload_sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+  "approved_runner_integrity_sha256": "dacf3296af381bee42fcf7bafb7796aac8cb558ea8a0df078d325e919344780a",
+  "source_directory": null,
+  "target_directory": null,
+  "target_reuse_mode": "reuse_final_A",
+  "final_A_target_directory": null,
+  "last_tested_A_artifacts": {
+    "path": null,
+    "bytes": 5364870,
+    "sha256": "48dcb2b104793c7dac9699803e4746d6d8145bcc66701de167de57cbf6bd3c6c"
+  },
+  "A_helper_basename_roster": [
+    "apply_patch",
+    "codex",
+    "codex-app-server",
+    "codex-app-server-test-notify-capture",
+    "codex-code-mode-host",
+    "codex-command-runner",
+    "codex-exec",
+    "codex-execpolicy",
+    "codex-execve-wrapper",
+    "codex-hepta-agentd",
+    "codex-linux-sandbox",
+    "codex-mcp-server",
+    "codex-stdio-to-uds",
+    "codex-tui",
+    "codex-windows-sandbox-setup",
+    "codex-write-config-schema",
+    "custom_ca_probe",
+    "exec-server",
+    "hepta",
+    "hepta-agentd-browser",
+    "hepta-shadow-live-trial",
+    "hepta-supervisor-intent-recovery",
+    "hepta-supervisord",
+    "hepta-taskflow-runtime",
+    "logs_client",
+    "md-events",
+    "rmcp_test_server",
+    "test_arg0_preflight",
+    "test_mcp_2026_discovery_stdio_server",
+    "test_mcp_2026_stdio_server",
+    "test_notify_capture",
+    "test_stdio_server",
+    "test_streamable_http_server"
+  ],
+  "evidence_directory": null,
+  "bazel_cache_directory": null,
+  "bazel_cache_owner": null,
+  "capacity_plan": {
+    "additional_executable_families": 1,
+    "other_cargo_growth_bytes": 12000000000,
+    "bazel_growth_bytes": 0,
+    "evidence_growth_bytes": 2000000000,
+    "estimate_review_reference": null
+  },
+  "previous_epoch_receipt": null,
+  "baseline_metadata": {
+    "source_tree": null,
+    "path": null,
+    "bytes": null,
+    "sha256": null
+  },
+  "allowed_untracked_source_paths": [],
+  "locks": {
+    "codex-rs/Cargo.lock": {
+      "bytes": null,
+      "sha256": null
+    },
+    "MODULE.bazel.lock": {
+      "bytes": null,
+      "sha256": null
+    }
+  },
+  "cargo_profile": "dev-small",
+  "nextest_profile": "local",
+  "junit_relative_path": "codex-rs/target/nextest/local/junit.xml",
+  "min_free_bytes": 8000000000,
+  "tools": [
+    {
+      "name": "git",
+      "path": null,
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "name": "cargo",
+      "path": null,
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "name": "rustc",
+      "path": null,
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "name": "just",
+      "path": null,
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "name": "cargo-nextest",
+      "path": null,
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "name": "bazel",
+      "path": null,
+      "bytes": null,
+      "sha256": null
+    }
+  ],
+  "recipe_sources": [
+    {
+      "path": "justfile",
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "path": "scripts/run-nextest.py",
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "path": "scripts/check-module-bazel-lock.sh",
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "path": ".bazelrc",
+      "bytes": null,
+      "sha256": null
+    },
+    {
+      "path": "defs.bzl",
+      "bytes": null,
+      "sha256": null
+    }
+  ],
+  "environment": {
+    "PATH": null,
+    "CARGO_TARGET_DIR": null,
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "4",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "NEXTEST_PROFILE": "local",
+    "DOTSLASH_CACHE": null,
+    "UV_CACHE_DIR": null,
+    "UV_PYTHON_DOWNLOADS": "never",
+    "RUSTY_V8_ARCHIVE": null,
+    "RUSTY_V8_SRC_BINDING_PATH": null
+  }
+}

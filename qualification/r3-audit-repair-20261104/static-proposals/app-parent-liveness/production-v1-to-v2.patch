@@ -1,0 +1,23 @@
+diff --git a/codex-rs/linux-sandbox/src/parent_lifecycle.rs b/codex-rs/linux-sandbox/src/parent_lifecycle.rs
+--- a/codex-rs/linux-sandbox/src/parent_lifecycle.rs
++++ b/codex-rs/linux-sandbox/src/parent_lifecycle.rs
+@@ -21,7 +21,18 @@
+     /// Do not read this file before the inner reaper arms its death signal:
+     /// seq_file could otherwise retain a pre-exit record across exec.
+     pub(crate) fn capture_current_process() -> io::Result<Self> {
+-        File::open("/proc/self/stat").map(Self)
++        let file = File::open("/proc/self/stat")?;
++        if file.as_raw_fd() > libc::STDERR_FILENO {
++            return Ok(Self(file));
++        }
++        // SAFETY: duplicate our owned, unread file above the standard FDs.
++        // Dropping file restores the originally closed standard descriptor.
++        let fd = unsafe { libc::fcntl(file.as_raw_fd(), libc::F_DUPFD_CLOEXEC, libc::STDERR_FILENO + 1) };
++        if fd < 0 {
++            return Err(io::Error::last_os_error());
++        }
++        // SAFETY: fcntl returned a new owned descriptor with CLOEXEC set.
++        Ok(Self(unsafe { File::from_raw_fd(fd) }))
+     }
+ 
+     pub(crate) fn inheritance_argument(&self) -> io::Result<String> {

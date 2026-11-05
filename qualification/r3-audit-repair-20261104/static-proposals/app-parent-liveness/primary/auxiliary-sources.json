@@ -1,0 +1,71 @@
+{
+  "status": "FIXED_SOURCE_EXCERPTS_NO_RUNTIME_PROOF",
+  "sources": [
+    {
+      "key": "app_impl_context2_0",
+      "blob": "9039ddfa80aff65d8296a21098bf43befeb00be5",
+      "bytes": 117032,
+      "sha256": "9bc38fb46080b6854e0c414ccb5fbd369d9d7c0230fdfa877283d31aef0c5720",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cabcb40d36e116beaa65750e1f674c52035da785/codex-rs/vendor/bubblewrap/bubblewrap.c",
+      "excerpts": [
+        {
+          "start": 510,
+          "end": 525,
+          "text": "  int dont_close[] = {-1, -1, -1, -1};\n  unsigned int j = 0;\n  int exitc;\n  pid_t died_pid;\n  int died_status;\n\n  /* Close all extra fds in the monitoring process.\n     Any passed in fds have been passed on to the child anyway. */\n  if (event_fd != -1)\n    dont_close[j++] = event_fd;\n  if (opt_json_status_fd != -1)\n    dont_close[j++] = opt_json_status_fd;\n  if (setup_finished_fd != -1)\n    dont_close[j++] = setup_finished_fd;\n  assert (j < sizeof(dont_close)/sizeof(*dont_close));\n  fdwalk (proc_fd, close_extra_fds, dont_close);"
+        },
+        {
+          "start": 3550,
+          "end": 3630,
+          "text": "      new_cwd = old_cwd;\n    }\n  else\n    {\n      /* If the old cwd is not mapped, go to home */\n      const char *home = getenv (\"HOME\");\n      if (home != NULL &&\n          chdir (home) == 0)\n        new_cwd = home;\n    }\n  xsetenv (\"PWD\", new_cwd, 1);\n  free (old_cwd);\n\n  if (opt_new_session &&\n      setsid () == (pid_t) -1)\n    die_with_error (\"setsid\");\n\n  if (label_exec (opt_exec_label) == -1)\n    die_with_error (\"label_exec %s\", argv[0]);\n\n  debug (\"forking for child\");\n\n  if (!opt_as_pid_1 && (opt_unshare_pid || lock_files != NULL || opt_sync_fd != -1))\n    {\n      /* We have to have a pid 1 in the pid namespace, because\n       * otherwise we'll get a bunch of zombies as nothing reaps\n       * them. Alternatively if we're using sync_fd or lock_files we\n       * need some process to own these.\n       */\n\n      pid = fork ();\n      if (pid == -1)\n        die_with_error (\"Can't fork for pid 1\");\n\n      if (pid != 0)\n        {\n          drop_all_caps (false);\n\n          /* Close fds in pid 1, except stdio and optionally event_fd\n             (for syncing pid 2 lifetime with monitor_child) and\n             opt_sync_fd (for syncing sandbox lifetime with outside\n             process).\n             Any other fds will been passed on to the child though. */\n          {\n            int dont_close[3];\n            int j = 0;\n            if (event_fd != -1)\n              dont_close[j++] = event_fd;\n            if (opt_sync_fd != -1)\n              dont_close[j++] = opt_sync_fd;\n            dont_close[j++] = -1;\n            fdwalk (proc_fd, close_extra_fds, dont_close);\n          }\n\n          return do_init (event_fd, pid);\n        }\n    }\n\n  debug (\"launch executable %s\", argv[0]);\n\n  if (proc_fd != -1)\n    close (proc_fd);\n\n  /* If we are using --as-pid-1 leak the sync fd into the sandbox.\n     --sync-fd will still work unless the container process doesn't close this file.  */\n  if (!opt_as_pid_1)\n    {\n      if (opt_sync_fd != -1)\n        close (opt_sync_fd);\n    }\n\n  /* We want sigchild in the child */\n  unblock_sigchild ();\n\n  /* Optionally bind our lifecycle */\n  handle_die_with_parent ();\n\n  if (!is_privileged)\n    set_ambient_capabilities ();\n\n  /* Should be the last thing before execve() so that filters don't"
+        }
+      ]
+    },
+    {
+      "key": "sandbox_lifecycle_bwrap_upstream_0111",
+      "blob": "687ed71f7044ca997a100eef847a5de71164581b",
+      "bytes": 116430,
+      "sha256": "e81e833751d3d247d72dff1ad1792ca72939fa6956974dde2cb86f9f1b0a2bb3",
+      "source_url": "https://github.com/containers/bubblewrap/blob/v0.11.1/bubblewrap.c",
+      "excerpts": [
+        {
+          "start": 508,
+          "end": 523,
+          "text": "  int exitc;\n  pid_t died_pid;\n  int died_status;\n\n  /* Close all extra fds in the monitoring process.\n     Any passed in fds have been passed on to the child anyway. */\n  if (event_fd != -1)\n    dont_close[j++] = event_fd;\n  if (opt_json_status_fd != -1)\n    dont_close[j++] = opt_json_status_fd;\n  if (setup_finished_fd != -1)\n    dont_close[j++] = setup_finished_fd;\n  assert (j < sizeof(dont_close)/sizeof(*dont_close));\n  fdwalk (proc_fd, close_extra_fds, dont_close);\n\n  sigemptyset (&mask);"
+        },
+        {
+          "start": 3539,
+          "end": 3628,
+          "text": "    }\n  xsetenv (\"PWD\", new_cwd, 1);\n  free (old_cwd);\n\n  if (opt_new_session &&\n      setsid () == (pid_t) -1)\n    die_with_error (\"setsid\");\n\n  if (label_exec (opt_exec_label) == -1)\n    die_with_error (\"label_exec %s\", argv[0]);\n\n  debug (\"forking for child\");\n\n  if (!opt_as_pid_1 && (opt_unshare_pid || lock_files != NULL || opt_sync_fd != -1))\n    {\n      /* We have to have a pid 1 in the pid namespace, because\n       * otherwise we'll get a bunch of zombies as nothing reaps\n       * them. Alternatively if we're using sync_fd or lock_files we\n       * need some process to own these.\n       */\n\n      pid = fork ();\n      if (pid == -1)\n        die_with_error (\"Can't fork for pid 1\");\n\n      if (pid != 0)\n        {\n          drop_all_caps (false);\n\n          /* Close fds in pid 1, except stdio and optionally event_fd\n             (for syncing pid 2 lifetime with monitor_child) and\n             opt_sync_fd (for syncing sandbox lifetime with outside\n             process).\n             Any other fds will been passed on to the child though. */\n          {\n            int dont_close[3];\n            int j = 0;\n            if (event_fd != -1)\n              dont_close[j++] = event_fd;\n            if (opt_sync_fd != -1)\n              dont_close[j++] = opt_sync_fd;\n            dont_close[j++] = -1;\n            fdwalk (proc_fd, close_extra_fds, dont_close);\n          }\n\n          return do_init (event_fd, pid);\n        }\n    }\n\n  debug (\"launch executable %s\", argv[0]);\n\n  if (proc_fd != -1)\n    close (proc_fd);\n\n  /* If we are using --as-pid-1 leak the sync fd into the sandbox.\n     --sync-fd will still work unless the container process doesn't close this file.  */\n  if (!opt_as_pid_1)\n    {\n      if (opt_sync_fd != -1)\n        close (opt_sync_fd);\n    }\n\n  /* We want sigchild in the child */\n  unblock_sigchild ();\n\n  /* Optionally bind our lifecycle */\n  handle_die_with_parent ();\n\n  if (!is_privileged)\n    set_ambient_capabilities ();\n\n  /* Should be the last thing before execve() so that filters don't\n   * need to handle anything above */\n  seccomp_programs_apply ();\n\n  if (setup_finished_pipe[1] != -1)\n    {\n      char data = 0;\n      res = write_to_fd (setup_finished_pipe[1], &data, 1);\n      /* Ignore res, if e.g. the parent died and closed setup_finished_pipe[0]\n         we don't want to error out here */\n    }\n\n  exec_path = argv[0];\n  if (opt_argv0 != NULL)\n    argv[0] = (char *) opt_argv0;\n\n  if (execvp (exec_path, argv) == -1)\n    {\n      if (setup_finished_pipe[1] != -1)"
+        }
+      ]
+    },
+    {
+      "key": "app_install_docs",
+      "blob": "4f63765b5e72a5085585cb6c5b01eecb04200807",
+      "bytes": 2732,
+      "sha256": "1126ec733921878a40720e139ba7be88e325ecf9fa5b113de2cc636bc71a1f5a",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/cabcb40d36e116beaa65750e1f674c52035da785/docs/install.md",
+      "excerpts": [
+        {
+          "start": 1,
+          "end": 55,
+          "text": "## Installing & building\n\n### System requirements\n\n| Requirement                 | Details                                                         |\n| --------------------------- | --------------------------------------------------------------- |\n| Operating systems           | macOS 12+, Ubuntu 20.04+/Debian 10+, or Windows 11 **via WSL2** |\n| Git (optional, recommended) | 2.23+ for built-in PR helpers                                   |\n| RAM                         | 4-GB minimum (8-GB recommended)                                 |\n\n### DotSlash\n\nThe GitHub Release also contains a [DotSlash](https://dotslash-cli.com/) file for the Codex CLI named `codex`. Using a DotSlash file makes it possible to make a lightweight commit to source control to ensure all contributors use the same version of an executable, regardless of what platform they use for development.\n\n### Build from source\n\n```bash\n# Clone the repository and navigate to the root of the Cargo workspace.\ngit clone https://github.com/openai/codex.git\ncd codex/codex-rs\n\n# Install the Rust toolchain, if necessary.\ncurl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y\nsource \"$HOME/.cargo/env\"\nrustup component add rustfmt\nrustup component add clippy\n# Install helper tools used by the workspace justfile:\ncargo install --locked just\n# DotSlash fetches pinned development tools such as buildifier on first use.\ncargo install --locked dotslash\n# Install nextest for the `just test` helper.\ncargo install --locked cargo-nextest\n\n# Build Codex.\ncargo build\n\n# Launch the TUI with a sample prompt.\ncargo run --bin codex -- \"explain this codebase to me\"\n\n# After making changes, use the root justfile helpers (they default to codex-rs):\njust fmt\njust fix -p <crate-you-touched>\n\n# Run the relevant tests (project-specific is fastest), for example:\njust test -p codex-tui\n# `just test` runs the test suite via nextest:\njust test\n# Avoid `--all-features` for routine local runs because it increases build\n# time and `target/` disk usage by compiling additional feature combinations.\n```\n\n## Tracing / verbose logging\n\nCodex is written in Rust, so it honors the `RUST_LOG` environment variable to configure its logging behavior.\n"
+        }
+      ]
+    },
+    {
+      "key": "app_kernel_pidfs612",
+      "blob": "80675b6bf88459c22787edaa68db360bdc0d0782",
+      "bytes": 11022,
+      "sha256": "fae3fa65abd35998c65d111b73f4acd7aa3b2ecf6bea2a18f573dd93860e3334",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/pidfs.c",
+      "excerpts": [
+        {
+          "start": 80,
+          "end": 120,
+          "text": "\t\t * ns, i.e. the pid namespace associated with the procfs\n\t\t * instance, is in the pid namespace hierarchy of pid.\n\t\t * Start at one below the already printed level.\n\t\t */\n\t\tfor (i = ns->level + 1; i <= pid->level; i++)\n\t\t\tseq_put_decimal_ll(m, \"\\t\", pid->numbers[i].nr);\n\t}\n#endif\n\tseq_putc(m, '\\n');\n}\n#endif\n\n/*\n * Poll support for process exit notification.\n */\nstatic __poll_t pidfd_poll(struct file *file, struct poll_table_struct *pts)\n{\n\tstruct pid *pid = pidfd_pid(file);\n\tbool thread = file->f_flags & PIDFD_THREAD;\n\tstruct task_struct *task;\n\t__poll_t poll_flags = 0;\n\n\tpoll_wait(file, &pid->wait_pidfd, pts);\n\t/*\n\t * Depending on PIDFD_THREAD, inform pollers when the thread\n\t * or the whole thread-group exits.\n\t */\n\tguard(rcu)();\n\ttask = pid_task(pid, PIDTYPE_PID);\n\tif (!task)\n\t\tpoll_flags = EPOLLIN | EPOLLRDNORM | EPOLLHUP;\n\telse if (task->exit_state && (thread || thread_group_empty(task)))\n\t\tpoll_flags = EPOLLIN | EPOLLRDNORM;\n\n\treturn poll_flags;\n}\n\nstatic long pidfd_ioctl(struct file *file, unsigned int cmd, unsigned long arg)\n{\n\tstruct task_struct *task __free(put_task) = NULL;\n\tstruct nsproxy *nsp __free(put_nsproxy) = NULL;"
+        }
+      ]
+    }
+  ]
+}

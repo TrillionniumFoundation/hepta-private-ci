@@ -1,5 +1,17 @@
 # Original r3 product contract repairs — 2026-11-04
 
+## Current continuing audit
+
+Start with [the current Chinese audit](CURRENT_AUDIT_PROGRESS.zh-CN.md),
+[the 23-item blocker ledger](current-blockers.json),
+[the fourth-batch technical qualification](FOURTH_BATCH_QUALIFICATION.md), and
+[the fourth-batch evidence index](fourth-evidence-index.json).
+The candidate remains Draft. Source-bound native results, original hosted platform
+results, static proposals, scientific HOLD and external acceptance are separate.
+The dated sections below preserve earlier batches and their original limitations.
+
+## First repair batch
+
 This candidate starts from `907d4f512819a71bece82e7f89944e9406466e36`
 (tree `36692b4e9c18e1c06e5efc5a8e6ba6b22980cdce`). It repairs six
 specific source/fixture problems observed in the original blocking CI,
@@ -133,3 +145,30 @@ actual normal-caller source gaps from later real authority/operator acceptance.
 
 The candidate remains Draft. Native selected-case passes, static checks and a
 complete report do not establish original platform, main or production acceptance.
+
+## Fourth repair batch
+
+The fourth batch repairs pre-runtime arg0 dispatch, authority-clock timing,
+inherited Unix listener custody, Fleet no-ACK handling, original Core fixtures,
+PTY and supervisor diagnostics, ApplyPatch error causes, musl/lifecycle CI and
+successful-target evidence retention. It preserves all prior failed runs and the
+original exit conditions. Code cohorts and their exact source trees are listed in
+[the qualification record](FOURTH_BATCH_QUALIFICATION.md).
+
+The original owning-seven run exposed twelve failures. Hook, Skill, readonly
+snapshot and repeated child approval were addressed in separate reviewed steps.
+The valid changed-scope snapshot negative and its failed controller continuation
+remain explicit; the later original25 approval scope passed on f825. Current
+owning/full/hygiene outcomes are recorded in the live report, not inferred from
+these selected passes. [Complete literal scope](fourth-literal-approval-original25-native.json).
+
+[Seven original named scopes](FOURTH_SEVEN_ROWS_SCOPE.zh-CN.md) retain missing
+platform and successful-test-body evidence. The [B16 proposals](fourth-b16-proposal-archive-inventory.json)
+are frozen static source/patch archives until separately applied and executed.
+The [registered-custody](fourth-b16-r2e3-manifest.json) and
+[pre-registration investigation](FOURTH_B16_PRE_REGISTRATION_CUSTODY.zh-CN.md)
+keep native connection lifetime, Current and ordinary Root acceptance distinct.
+
+The [scientific refresh](FOURTH_RESEARCH_DELTA.zh-CN.md) preserves HOLD and the
+original cost/quality limits. The [independent report review](fourth-report-independent-review.json)
+binds its checkpoint bytes; later source-bound native updates are recorded separately.

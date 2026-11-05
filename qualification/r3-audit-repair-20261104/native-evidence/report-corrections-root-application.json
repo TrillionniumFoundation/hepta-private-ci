@@ -1,0 +1,72 @@
+{
+  "agent_patch": "133e1f51c7a79418f5ab50c2220677fa4daadfb7",
+  "agent_review": "76e7280d4c330fabb21ce66d4536be813b2ffd02",
+  "application": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-final-consistency-review-20261105/report-corrections.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/fourth-report-final-consistency-review-20261105/report-corrections.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "root_factual_corrections": [
+    {
+      "path": "CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "agent_patch_postimage": {
+        "bytes": 33140,
+        "sha256": "da89022d00020b886748e5f75f7098962e1b3348c85db4d151b96175274da27b",
+        "blob": "630348a4a3257f13ce2002d85376ee64add71c93"
+      },
+      "root_corrected_postimage": {
+        "bytes": 33151,
+        "sha256": "c2571f3843c500bef96da51292ae987baf0717629d6d42d908c2a1a9731f7c08",
+        "blob": "daef0fd3c428718b3bd8948c457ae0e88ae51709"
+      },
+      "root_correction": "Observed inner executable is codex-linux-sandbox helper, not bwrap. The small read-only bwrap receipt establishes executable/version/kernel identity, not process observation."
+    },
+    {
+      "path": "FOURTH_BATCH_QUALIFICATION.md",
+      "agent_patch_postimage": {
+        "bytes": 15439,
+        "sha256": "ca8c01c8b1d67b93eabadaca713c17f344e9f96e9ce85869c6b0eb5079526062",
+        "blob": "a101b22489fef002db08dc0153f3a6ede1290295"
+      },
+      "root_corrected_postimage": {
+        "bytes": 15446,
+        "sha256": "147aaccd59cec7918a3eaac1dfa744699d46236d1dda3a59d40154369332c02f",
+        "blob": "6be53e8b3b41ff8ac027e592ee88aed7d6e3952e"
+      },
+      "root_correction": "Observed inner executable is codex-linux-sandbox helper, not bwrap. The small read-only bwrap receipt establishes executable/version/kernel identity, not process observation."
+    },
+    {
+      "path": "PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "agent_patch_postimage": {
+        "bytes": 16552,
+        "sha256": "9b0cea3cf3ed1a1638bbf88fc801aae3e1632f22bd2d36997f76c0ae4f53126f",
+        "blob": "3156325d42bfe4f4262caa91ce48a2aeb10c3974"
+      },
+      "root_corrected_postimage": {
+        "bytes": 16562,
+        "sha256": "3872d0c9544c3ab5620d216abee083c48fa40e6eec2af7e9ee257ab22d0b8e60",
+        "blob": "22fd1903f627a55261a4c87a2646a114821f79f6"
+      },
+      "root_correction": "Observed inner executable is codex-linux-sandbox helper, not bwrap. The small read-only bwrap receipt establishes executable/version/kernel identity, not process observation."
+    }
+  ],
+  "ledger_not_changed_by_patch": true
+}

@@ -1,0 +1,89 @@
+{
+  "schema": "hepta.app.temporary-observation-static.v1",
+  "changes": [
+    {
+      "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "mode": "100644",
+      "before_blob": "b50f19732bc0a4744c62f7300f955b9f9d17bf08",
+      "after_blob": "c2a2178d7bd290e8a68ac98722e56c5e39e6b1ba",
+      "bytes": 56293,
+      "sha256": "17d0992010ddf7798db83d9a6564e8a770a83b851b748ebe8a8b9c9c2f294406",
+      "additions": 19,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/utils/pty/src/pipe.rs",
+      "mode": "100644",
+      "before_blob": "3715ba72a404c94f8d20a0ae34978baa5694c6b4",
+      "after_blob": "69586ccac9c02e133c36ec07fdca1842c3cc0731",
+      "bytes": 10840,
+      "sha256": "e9005838982937f2b4622289b91100c56be74a28b22b4c069c8c6f9d1f8ec2d7",
+      "additions": 6,
+      "deletions": 1
+    },
+    {
+      "path": "codex-rs/app-server/src/command_exec.rs",
+      "mode": "100644",
+      "before_blob": "53449ac092bf676ce1cfb3f0e125c4ab65e1407c",
+      "after_blob": "b4c353f3d793cfb431d79ec73887d8d7ba6b3fb2",
+      "bytes": 38797,
+      "sha256": "5954d9cec76840c74e425216769ad40106bcd3cf6a367a42a04e7b53124d119d",
+      "additions": 7,
+      "deletions": 0
+    }
+  ],
+  "checks": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/full18-analysis/app-parent-observation/temporary-parent-observation.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/full18-analysis/app-parent-observation/temporary-parent-observation.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "-R",
+        "--check",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/full18-analysis/app-parent-observation/temporary-parent-observation.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "-R",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/full18-analysis/app-parent-observation/temporary-parent-observation.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "three_postimages_exact": true,
+  "exact_f825_restoration": true,
+  "native": false,
+  "tests": false
+}

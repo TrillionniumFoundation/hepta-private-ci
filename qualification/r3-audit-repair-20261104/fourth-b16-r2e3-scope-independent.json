@@ -1,0 +1,98 @@
+{
+  "schema": "hepta.b16.r2e3.scope-independent-review.v1",
+  "observed_at_utc": "2026-11-04 23:51:49 UTC",
+  "status": "STATIC_SCOPE_ACCEPTED_NO_EXECUTION",
+  "inputs": {
+    "manifest": {
+      "blob": "6985c5154f8f6c7ae42f94fd4d569dc6a1dab3b2",
+      "bytes": 32260,
+      "sha256": "4be47d9aed988921e470b86dadec21a5dc6fda65061ce3f2fd4649afb6d37b23"
+    },
+    "patch": {
+      "blob": "5b5a2dee4b33b5946ec21825ed7fc916487a0bf9",
+      "bytes": 17702,
+      "sha256": "123a287b37d37a791208970e2908fc568e8567d86847f8ef1bb0102704aab974"
+    },
+    "base_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "base_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "required_layer": {
+      "required_r2e1_manifest": "3220fc3785f01b45e77a49e71b1d549fd0faea22",
+      "state_preimage": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+      "note": "The exact preimages include R2e1 and its R2c/R2d state predecessors. Apply against guarded exact source, not directly to cabc. R2e2a/b protocol work is independent and is not made into a Current constructor by this patch. A remains the sole native lane; none of B has been applied here."
+    },
+    "prior_primary_source_review": "f332913eacabea8fbc986074f9d0fccc00b803af"
+  },
+  "read_scope": "Complete final manifest and complete six-path patch; bounded scope/lifecycle wording review, with prior independently verified SQLite 3.51.3 source. No compilation, native test, new source mutation, or ref update. Did not rerun all six pre/postimage reconstructions in this review.",
+  "accepted_scope": [
+    {
+      "id": "REGISTERED_CONNECTIONS_ONLY",
+      "finding": "Goal and public method documentation consistently limit retention to successfully registered native connections. Capturing the original acquired custody through the commit predicate and a native collation does not construct a new authority or infer exclusivity from Arc counts."
+    },
+    {
+      "id": "SQLX_HOOK_REMOVAL",
+      "finding": "The patch installs a separate native collation owning another Arc to the same predicate capture. Its lexical comparator does not invoke the predicate. The existing commit hook retains the actual veto decision. The collation specifically spans SQLx's pre-close remove_commit_hook gap."
+    },
+    {
+      "id": "NATIVE_CLOSE_ORDER",
+      "finding": "Manifest matches previously verified SQLite order: private/final Btree owner closes Pager/WAL/database descriptors before collation xDel. It explicitly does not claim xDel after sqlite3_close returns, every connection field, or all other shared-cache owners."
+    },
+    {
+      "id": "REAL_LOCK_CONTROLS_STILL_PREDICTIONS",
+      "finding": "Four controls use independently opened real File handles and actual SQLx connections, but remain unexecuted predictions. Manifest explicitly distinguishes them from a newly executed second-process test; exact failure stage and physical metadata read are required."
+    },
+    {
+      "id": "TEARDOWN_NEGATIVE",
+      "finding": "The proposed anchor-only negative removes only the native anchor. It requires the first exclusive lock attempt to remain blocked, then real hook removal plus a successful live SELECT before the second competing acquisition is allowed to be the intended failure. It is not a licence for production removal of the hook."
+    },
+    {
+      "id": "NO_EXISTING_ORACLE_RELAXATION",
+      "finding": "Patch adds a new four-case module and does not modify prior test assertions or deadlines. The CStore close body is unchanged; its new documentation describes a narrower guarantee than a complete shutdown barrier."
+    }
+  ],
+  "required_open_boundaries": [
+    {
+      "status": "OPEN",
+      "id": "BEFORE_NATIVE_REGISTRATION",
+      "detail": "SQLx establishes its worker/SQLite handle and runs initial PRAGMAs before option collations or after_connect. EstablishParams retains no application guard. Initial open, growth/replacement setup, errors and cancellation before successful anchor registration are NOT proven safe by this patch. The calling initialization fence is still required, and cancelling its owner can still expose this gap. No misleading whole-lifecycle API is introduced."
+    },
+    {
+      "status": "OPEN",
+      "id": "CURRENT_AND_FINAL_USE",
+      "detail": "This patch neither authenticates ReadHead receipts nor issues Current. It does not recheck authority/lease/expiry/exact cut at each commit, close the final-live-check-to-COMMIT time gap, or supply independent peer/caller/Root authority."
+    },
+    {
+      "status": "OPEN",
+      "id": "OTHER_OPENERS_AND_COLD_IMAGE",
+      "detail": "Legacy independent shared opens and other processes do not share this gate. from_read_only_pool has no installed hook; the actual cold-image caller relies on query_only plus SQLITE_DESERIALIZE_READONLY/max1, unchanged here."
+    },
+    {
+      "status": "OPEN",
+      "id": "RAW_HANDLE_REPLACEMENT",
+      "detail": "The physical-lifetime claim requires retaining the native anchor and default private-cache connection ownership. Same-name native replacement/removal or arbitrary raw-handle/extension clients invalidate it. No arbitrary raw pool is authenticated by this mechanism."
+    }
+  ],
+  "additional_limits": [
+    {
+      "id": "OPEN_SETUP_GAP",
+      "detail": "Initial establishment, PRAGMAs, pool growth/replacement, error and cancellation before native anchor registration still require independently held initialization custody. Native success of the new four controls cannot close this gap."
+    },
+    {
+      "id": "RAW_HANDLE_TRUST_PRECONDITION",
+      "detail": "A reserved observable collation name is not a capability. A trusted owner that removes/replaces the collation or commit hook breaks the promise. The manifest makes this an explicit API ownership precondition."
+    },
+    {
+      "id": "NO_FINAL_USE_OR_ROOT_QUALIFICATION",
+      "detail": "Current construction, authenticated ReadHead, exact cut/lease/expiry per-commit checks, final-check-to-COMMIT atomicity and normal Root/operator acceptance remain open."
+    },
+    {
+      "id": "NO_CROSS_POOL_EXTENSION",
+      "detail": "Legacy independent opens, unrelated processes and readonly cold-image constructors are outside the hook/custody proof; readonly cold-image retains its separate physical protection."
+    },
+    {
+      "id": "CURRENT_STATIC_SNAPSHOT_ONLY",
+      "detail": "This review accepts boundary wording for source candidate 6985/5b5a only. It does not mark B16 closed or any new control/runtime accepted."
+    }
+  ],
+  "blocking_findings": [],
+  "recommendation": "Keep the manifest's four OPEN entries verbatim in downstream qualification. Stage only through the sole CI lane with the declared baseline/fix/anchor-only controls and fresh source/runtime receipts."
+}

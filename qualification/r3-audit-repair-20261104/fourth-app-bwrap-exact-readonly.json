@@ -1,0 +1,49 @@
+{
+  "schema": "hepta-app-bwrap-exact-identity-readonly-v1",
+  "observed_at": "2026-11-05T02:15:27.352416+00:00",
+  "host": "rog",
+  "source_intent": "f8251e1d14fa8524ab469281296cd4cf708f173c unchanged; this receipt does not rehash source",
+  "bwrap": {
+    "path": "/usr/bin/bwrap",
+    "bytes": 80424,
+    "sha256": "523da3e7399044be5163aee6f57a77a6bef7454376e28f0a0627920bae1b76b6",
+    "mode": "0o755",
+    "device": 66306,
+    "inode": 17180687,
+    "is_symlink": false
+  },
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/bwrap",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.0010182209953200072,
+      "stdout": "bubblewrap 0.11.1\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/dpkg-query",
+        "-W",
+        "bubblewrap"
+      ],
+      "exit_code": 0,
+      "seconds": 0.022054948000004515,
+      "stdout": "bubblewrap\t0.11.1-1ubuntu0.3\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "uname",
+        "-srm"
+      ],
+      "exit_code": 0,
+      "seconds": 0.0032989809988066554,
+      "stdout": "Linux 7.0.0-42-generic x86_64\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "Exact /usr/bin/bwrap and normal version/package/kernel identity only; no other process or environment reads, no source/target/cache changes."
+}

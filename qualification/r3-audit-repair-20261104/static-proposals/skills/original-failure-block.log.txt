@@ -1,0 +1,34 @@
+        FAIL [   0.008s] codex-skills-extension host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents
+  stdout ───
+
+    running 1 test
+    test host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents ... FAILED
+
+    failures:
+
+    failures:
+        host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 144 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'host_roots::tests::repo_ancestry_without_project_marker_does_not_walk_parents' (351158) panicked at ext/skills/src/host_roots_tests.rs:415:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+     [
+         AbsolutePathBuf(
+    <        "/tmp/.tmpkvHiR0/outer/.agents/skills",
+    <    ),
+    <    AbsolutePathBuf(
+             "/tmp/.tmpkvHiR0/outer/nested/inner/.agents/skills",
+         ),
+     ]
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        PASS [   0.032s] codex-skills-extension dynamic_skill_selector::weighted_lexical::tests::lexical_selector_reports_bounded_inputs
+  stdout ───
+

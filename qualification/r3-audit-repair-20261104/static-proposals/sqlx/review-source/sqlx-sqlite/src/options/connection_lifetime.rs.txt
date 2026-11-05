@@ -1,0 +1,41 @@
+use std::fmt;
+use std::sync::Arc;
+
+use super::SqliteConnectOptions;
+
+/// Opaque resource custody shared by options and each native connection.
+#[derive(Clone)]
+pub(crate) struct ConnectionLifetimeToken {
+    _token: Arc<dyn Send + Sync + 'static>,
+}
+
+impl fmt::Debug for ConnectionLifetimeToken {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str("ConnectionLifetimeToken(..)")
+    }
+}
+
+impl SqliteConnectOptions {
+    /// Retain `token` until each native SQLite connection is actually closed.
+    ///
+    /// A clone enters the worker before it is spawned and remains owned across
+    /// native open, initial PRAGMAs, cancellation and connection teardown.
+    /// Options, their clones and pools also retain a copy, so custody may last
+    /// longer than a particular connection.
+    ///
+    /// If native close fails, the connection's token is intentionally retained:
+    /// releasing the protected resource while SQLite is still live is unsafe.
+    /// The existing close error or panic is not converted into success.
+    ///
+    /// The caller must supply the actual resource owner. This does not verify
+    /// authority, coordinate transactions or authorize any database operation.
+    /// A token must not own these options or their pool, which would form a cycle.
+    pub fn connection_lifetime_token(mut self, token: Arc<dyn Send + Sync + 'static>) -> Self {
+        self.connection_lifetime = Some(ConnectionLifetimeToken { _token: token });
+        self
+    }
+}
+
+#[cfg(test)]
+#[path = "connection_lifetime_tests.rs"]
+mod tests;

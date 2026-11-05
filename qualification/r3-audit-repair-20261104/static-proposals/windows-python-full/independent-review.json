@@ -1,0 +1,167 @@
+{
+  "schema": "hepta-windows-python-full-continuation-independent-static-review-v1",
+  "reviewed_at_utc": "2026-11-05T03:57:22.292760+00:00",
+  "verdict": "STATIC_ACCEPTED_WITH_EXPLICIT_EXECUTION_GUARD_LIMITS",
+  "runner": {
+    "bytes": 27134,
+    "sha256": "6f3e0958b322bff4dc99eac2853d2b6fe7cb90cd6a58b82c995fa9372ffe11d3",
+    "git_blob": "bfce621b167b8afbd762f6a63c9a94dcc451f8d3"
+  },
+  "author_manifest": {
+    "bytes": 9730,
+    "sha256": "388bda8708669e81f3ae7adde3ebe3883034d08a3d2e37bdf21a5e3482e3b755",
+    "git_blob": "d33dea5b2e17b0d2f01f5268bce48827b140156f"
+  },
+  "source_payload": {
+    "bytes": 198629,
+    "sha256": "0d48638ac65a9ec2c0f759d64811fe8b54f11dcb6709c654483e7ed72f1a3fe5",
+    "git_blob": "85f29bdddd1cc2d1a4b171205e80ee40783bc032"
+  },
+  "all_15_claimed_common_functions_byteequal": [
+    {
+      "function": "now",
+      "bytes": 73,
+      "sha256": "d4c9401fe48508973b09b76508527136e24c7d1f6eff9a2293f9c7a869817213",
+      "byteequal": true
+    },
+    {
+      "function": "sha",
+      "bytes": 47,
+      "sha256": "1d2eb6c3aabeb16f2dede34362d38938f2783292bd9bc956c01c3524eccc3b66",
+      "byteequal": true
+    },
+    {
+      "function": "oid",
+      "bytes": 81,
+      "sha256": "6c75145f0671ed15919b1a92b4373943d53e1008eb66e8328db6ef7695d60b17",
+      "byteequal": true
+    },
+    {
+      "function": "rec",
+      "bytes": 191,
+      "sha256": "d71d4fc7ca8cb8faf2ab8fabaef733112b7183e8ad61387f9b45cb83ffa1631f",
+      "byteequal": true
+    },
+    {
+      "function": "save",
+      "bytes": 191,
+      "sha256": "d11cde9b724a4badc82544220f08527168f4c2b2cc7e392815e02b4d774feb13",
+      "byteequal": true
+    },
+    {
+      "function": "git",
+      "bytes": 116,
+      "sha256": "3850f10af7afe0b058ed6f3e504f52786757b65340a0400f4083f1f96f279181",
+      "byteequal": true
+    },
+    {
+      "function": "source_snapshot",
+      "bytes": 1387,
+      "sha256": "41f9948cfff760625811badd6daff7fba2e6fa0ded6845ab22e5d8f1e2ff8d29",
+      "byteequal": true
+    },
+    {
+      "function": "guard",
+      "bytes": 79,
+      "sha256": "9e72521dd2f6aa97154d69916de192455d258fb37f8bfefc851b649cbc417798",
+      "byteequal": true
+    },
+    {
+      "function": "split",
+      "bytes": 445,
+      "sha256": "8675d482ed4edacff803ea23bb2d7347988a016d118e73b34d384f5ef4faa43e",
+      "byteequal": true
+    },
+    {
+      "function": "clean_ansi",
+      "bytes": 132,
+      "sha256": "e117584c666cbc05004664757787dc41f8f68cdde91418c6a271cbe600616c20",
+      "byteequal": true
+    },
+    {
+      "function": "apply_stage",
+      "bytes": 1500,
+      "sha256": "1958af774fddc77022c08d1d131feaa2aa6a220e70b82b6b60b274fa48e474c6",
+      "byteequal": true
+    },
+    {
+      "function": "feature_graph",
+      "bytes": 274,
+      "sha256": "a31a445eb68ec772e17644b315c39d965f3f5ec1941d50ca765a35e7c0edc138",
+      "byteequal": true
+    },
+    {
+      "function": "normal_helpers",
+      "bytes": 1684,
+      "sha256": "7570285144a730c5c4aad3ee375fba3ff5cd8b37056891438ce4b773c83b5f4c",
+      "byteequal": true
+    },
+    {
+      "function": "helper_records",
+      "bytes": 1152,
+      "sha256": "fa7d101a9d34d09e41556d397cda96a23593dd202b835c5b31328fdd808378c0",
+      "byteequal": true
+    },
+    {
+      "function": "export_source",
+      "bytes": 529,
+      "sha256": "fe45d6a42d7171ee504da717180ac45bfff2aa154bf2f569fbdc6e48110da370",
+      "byteequal": true
+    }
+  ],
+  "source_scope": {
+    "cohorts": 4,
+    "source_paths": 9,
+    "postimage_bytes_sha256_git_hash_verified": true,
+    "initial_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+    "final_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "shared_source_modified_by_reviewer": false
+  },
+  "checks": [
+    {
+      "topic": "Python original suite",
+      "finding": "Catalog uses original test_run_bazel*.py discovery, requires57 distinct non-FailedTest IDs. Original unittest discover command then must exit0 and exactly report57 with plain OK, so skipped/error summaries do not count as full PASS. Actual verbose per-case output is not requested; a catalog plus original count is the intended evidence, not invented JUnit."
+    },
+    {
+      "topic": "Full workspace",
+      "finding": "Virtual workspace has no default-members; original metadata and catalog/just argv omit package/expression filters. Normal metadata graph equals the actual7d baseline193members/1501resolved nodes. V2 fails on nonempty unmatched. Current complete catalog vs actual nonSKIP JUnit names is a multiset equality; unexpected skips fail. No fixed historical total is presumed."
+    },
+    {
+      "topic": "Executable provenance",
+      "finding": "Six normal helpers have actual compiler-artifact identities;33catalog/normal helper names are enforced and content hashes are collected after catalog before just and after just. Tests are similarly hashed. Normal-build to catalog feature rebuild is allowed and explicitly not represented as an unchanged initial binary."
+    },
+    {
+      "topic": "Ownership/source guards",
+      "finding": "Separate Git indexes are used. Ordinary HEAD/index/locks and exact staged tree are checked. Incoming9postimages are validated before writes; after each cohort exact full tree is required. Failures stop without arbitrary rollback. Reviewer only parsed/read isolated files."
+    },
+    {
+      "topic": "No broadened native qualification",
+      "finding": "This is a Linux continuation. Windows cfg/nativeACL/token/matrix behavior remains unexecuted by it. Metadata source paths/host are explicit. Full raw, actual ignores and early-return observations remain separately recorded."
+    },
+    {
+      "topic": "No hygiene tail",
+      "finding": "After original full result only exact source guard/export and terminal receipts run; no lint/fmt/retest/publication tail."
+    }
+  ],
+  "limits_requiring_parent_guard": [
+    {
+      "item": "Actual App prerequisite",
+      "details": "The runner itself checks the initial exact source and parent-provided root guard identity, but does not independently parse App3 valid counterfactual/8positive original receipts. Parent must bind and approve those completed outcomes before launch."
+    },
+    {
+      "item": "Frozen roster wording",
+      "details": "The v2 runner does not consume an external expected full eligible/ignored roster field despite the author manifest final sentence. It proves current full catalog→JUnit identity, original no-p/no-E commands and dependency graph identity. If an independently frozen previous catalog equality is intended, that check is not currently implemented; otherwise narrow that wording."
+    },
+    {
+      "item": "Early returns",
+      "details": "full_passed follows the original command/roster/program rules and a known prerequisite marker list. Requires-remote/sandbox early returns also remain in separate exact-case observation fields and may coexist with JUnit PASS. Do not present full_passed as execution of every omitted behavior."
+    }
+  ],
+  "not_done": [
+    "No native/Cargo/test execution",
+    "No shared source/index/target mutation",
+    "No source/ref publication",
+    "No claimed Windows cfg qualification",
+    "No App prerequisite receipt reread or approval substituted for parent"
+  ]
+}

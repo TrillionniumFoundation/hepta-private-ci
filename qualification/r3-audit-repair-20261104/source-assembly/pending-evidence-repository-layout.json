@@ -1,0 +1,121 @@
+{
+  "schema": "hepta-pending-evidence-repository-layout-adjustments-v1",
+  "observed_utc": "2026-11-05T05:27:53.775369+00:00",
+  "proposed_manifest_blob": "1a4a405a7cfdd6b3257f4acd4e4aa8d17d9e9618",
+  "root_proxy_map_create_and_get_verified": "14db944bd93bbad69b8e51b842ed088284051582",
+  "scope": "Byte-preserving repository layout only; all proposed objects retained. Current root reports remain normal Markdown. Immutable postimage snapshots are passive to avoid treating their original relative links as current paths.",
+  "passive_report_postimages": [
+    {
+      "proposed_path": "report-reviews/final-consistency-20261105/minimal-correction/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "repository_relative_path": "report-reviews/final-consistency-20261105/minimal-correction/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md.source.txt",
+      "archived_logical_source_path": "deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "blob": "f13c800f37546793df76edb4fab1fde1b78cdc51",
+      "bytes": 41263,
+      "sha256": "f87fdb3ae97116bda122c78987c9dcfadd18110dc25102fdf5a286a4fa5f7804"
+    },
+    {
+      "proposed_path": "report-reviews/final-consistency-20261105/minimal-correction/deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "repository_relative_path": "report-reviews/final-consistency-20261105/minimal-correction/deliverables/FOURTH_BATCH_QUALIFICATION.md.source.txt",
+      "archived_logical_source_path": "deliverables/FOURTH_BATCH_QUALIFICATION.md",
+      "blob": "206a7a9f0320521d84c0b56f96ae8429d774cada",
+      "bytes": 26136,
+      "sha256": "bb24c02b78b2acb606819fe991aefd4dd1602bc498f1064390d6f71b9369f9c1"
+    },
+    {
+      "proposed_path": "report-reviews/final-consistency-20261105/minimal-correction/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "repository_relative_path": "report-reviews/final-consistency-20261105/minimal-correction/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md.source.txt",
+      "archived_logical_source_path": "deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+      "blob": "87edc4cdd5bb4ff98941cc12c822498ff52feca4",
+      "bytes": 20206,
+      "sha256": "30a393f4b1eb85dfa77710ff2defe1730d7fcc4d80c858275c8b8d2f32f5f18b"
+    }
+  ],
+  "existing_empty_gzip_chunk": {
+    "group": "windows_index_complete",
+    "path": "fourth-f825-compressed/15-000.b64.txt",
+    "repository_path": "qualification/r3-audit-repair-20261104/fourth-f825-compressed/15-000.b64.txt",
+    "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/windows-index-exact-git-chunks/d0fc00c534d80f423592e68cab57bd497463e056.b64.txt",
+    "bytes": 28,
+    "sha256": "8dc73ccdd1e4888c7a99cb1f1908c594d7b5e2f4358f796347ae44af467976fb",
+    "blob": "d0fc00c534d80f423592e68cab57bd497463e056",
+    "mode": "100644",
+    "role": "strict_base64_gzip_chunk",
+    "scope": "Complete frozen fb9 Windows/Python ordinary-index reconciliation evidence, not Windows execution. Original controller exit 1 and unavailable pre-change index bytes remain explicit; no test or closure upgrade.",
+    "registration_action": "reuse_existing",
+    "uploaded": true,
+    "get_verified": true,
+    "remote_evidence": {
+      "method": "previous_create_and_GET_exact_body_recorded_in_verified_archive",
+      "receipt_local_file": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/windows-index-complete-originals-git-archive-v1.json",
+      "receipt_blob": "288c45f95aa442e7c00048c87fcc76cfbfccef36",
+      "json_pointers": [
+        "/assets/4/chunks/0",
+        "/assets/6/chunks/0",
+        "/assets/8/chunks/0",
+        "/assets/11/chunks/0",
+        "/assets/13/chunks/0",
+        "/assets/15/chunks/0",
+        "/assets/16/chunks/0",
+        "/assets/17/chunks/0",
+        "/assets/18/chunks/0",
+        "/assets/19/chunks/0"
+      ],
+      "get_byte_equal": true
+    },
+    "originally_proposed_path": "native-evidence/windows-index-complete-archive/chunks/d0fc00c534d80f423592e68cab57bd497463e056.b64.txt",
+    "reuse_reason": "Identical Git object already registered; no duplicate repository copy needed.",
+    "logical_uses": [
+      {
+        "original": "004-head.stderr",
+        "offset": 0,
+        "archive_pointer": "/assets/4/chunks/0"
+      },
+      {
+        "original": "006-ordinary-ls-files-stage.stderr",
+        "offset": 0,
+        "archive_pointer": "/assets/6/chunks/0"
+      },
+      {
+        "original": "008-ordinary-head-ls-tree.stderr",
+        "offset": 0,
+        "archive_pointer": "/assets/8/chunks/0"
+      },
+      {
+        "original": "011-ordinary-ls-files-flags.stderr",
+        "offset": 0,
+        "archive_pointer": "/assets/11/chunks/0"
+      },
+      {
+        "original": "013-private-candidate-ls-files-stage.stderr",
+        "offset": 0,
+        "archive_pointer": "/assets/13/chunks/0"
+      },
+      {
+        "original": "015-candidate-ls-tree.stderr",
+        "offset": 0,
+        "archive_pointer": "/assets/15/chunks/0"
+      },
+      {
+        "original": "016-candidate-diff-files.stdout",
+        "offset": 0,
+        "archive_pointer": "/assets/16/chunks/0"
+      },
+      {
+        "original": "017-candidate-diff-files.stderr",
+        "offset": 0,
+        "archive_pointer": "/assets/17/chunks/0"
+      },
+      {
+        "original": "018-candidate-untracked.stdout",
+        "offset": 0,
+        "archive_pointer": "/assets/18/chunks/0"
+      },
+      {
+        "original": "019-candidate-untracked.stderr",
+        "offset": 0,
+        "archive_pointer": "/assets/19/chunks/0"
+      }
+    ]
+  },
+  "original_23_status_exit_closure_unchanged": true
+}

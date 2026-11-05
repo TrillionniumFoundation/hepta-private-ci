@@ -1,0 +1,167 @@
+--- a/hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md
++++ b/hepta-audit-fourth/deliverables/CURRENT_AUDIT_PROGRESS.zh-CN.md
+@@ -6,13 +6,13 @@
+ 
+ 近期发展方向依次是：**可重复验证的整合候选 → 普通启动可用的可信任务闭环 → 同信息、等总成本的共享计算与学习验证 → 独立外部接受**。源码存在、局部通过、科学采用和生产发布需要各自的退出证据。
+ 
+-报告更新于2026-11-04美国东部时间；机器收据保留UTC。完整库存终锚为2026-11-04 22:27:38 UTC，各增量和原生执行另有source tree与时间。已发布候选为cabcb40d36e116beaa65750e1f674c52035da785。原生树f8251e1d14fa8524ab469281296cd4cf708f173c上的原25审批控制已通过，原owning7为5,408 JUnit PASS/8FAIL，完整workspace为19,485 JUnit PASS/17FAIL/1TIMEOUT；这些完整门结果仍绑定f825。后续Skills、Migration、V8分别在各自固定源取得原9、166、76例PASS，最终审读源树为7d703610ae4f778ad305ebc139860d276f416e8c，尚未在该树重新取得完整工程门。最终commit、base和实际merge checkout由PR与新CI另行绑定，不能继承旧源绿色。
++本报告完整库存覆盖2026-11-05 03:16–03:24 UTC；旧2026-11-04 22:27:38 UTC快照保留，各增量和原生执行另有source tree与时间。已发布候选为cabcb40d36e116beaa65750e1f674c52035da785。原生树f8251e1d14fa8524ab469281296cd4cf708f173c上的原25审批控制已通过，原owning7为5,408 JUnit PASS/8FAIL，完整workspace为19,485 JUnit PASS/17FAIL/1TIMEOUT；这些完整门结果仍绑定f825。后续Skills、Migration、V8分别在各自固定源取得原9、166、76例PASS，三修复终态审读源树为7d703610ae4f778ad305ebc139860d276f416e8c，尚未在该树重新取得完整工程门。最终commit、base和实际merge checkout由PR与新CI另行绑定，不能继承旧源绿色。
+ 
+ 全局架构权威仍为 [docs/DEVELOPMENT.md](../../docs/DEVELOPMENT.md)。本目录记录特定候选资格；[前一版完整报告](THIRD_AUDIT_PROGRESS.zh-CN.md)、旧失败和原退出条件都保留。
+ 
+ ## 1. 全量盘点与实际开发阶段
+ 
+-完整分页快照覆盖 **1,088个open PR、5,163个分支、0个open issue、0个已发布release**。其中1,064个Draft、24个非Draft；154个直接以main为base、934个为其他base；最长依赖链211层。12页PR与53页分支完整收集。首次收集后出现#4808，已重新执行全部PR分页并核对终锚；没有重复、依赖环或head/branch不一致。185个PR的metadata base SHA不同于当前分支tip，不自动证明冲突。[完整库存及逐字分片](fourth-complete-inventory.json)
++最新完整分页快照覆盖 **1,103个open PR、5,193个分支、0个open非PR issue、0个release**。其中1,079个Draft、24个非Draft；155个直接以main为base、948个为其他base；最长依赖链211层。PR13页到终态空页，branch53页到首个空页并另核两个空页guard；issues13页全部为PR，未以open_issues_count替代计数。没有重复、依赖环或head/branch不一致；185个metadata base SHA不同于当前分支tip，不自动证明冲突。首/尾/空页及latest100终锚一致，但多次API读取不是原子快照。相比旧1088 PR/5163分支，新增15个Draft（#4809–#4823）和30个分支；仅旧#4729的head改变。[新完整库存](fourth-repository-inventory-20261105.json) / [逐字归档](repository-inventory-20261105/archive-manifest.json) / [旧1088历史快照](fourth-complete-inventory.json)
+ 
+ 规范登记为40模块、205契约、58协议、67持久数据域、91工作包。工作包状态为43 planned、25 source_implemented、20 source_implemented_execution_pending、2 source_implemented_semantic_review_pending、1 blocked_external。源码映射为46根、1,408源文件、938 Rust文件、474名称含测试特征的文件。这些分别是登记与源码规模，不是测试执行数或产品完成百分比。[阶段计划与规范映射](PROJECT_DIRECTION_AND_PLAN.zh-CN.md)
+ 
+@@ -33,6 +33,8 @@
+ | #4808 Windows | 7真实scope共91 selected、47非通过；两个fake owner-package selftest行已排除 | 逐真实范围处理，不报93产品用例或整体通过 |
+ 
+ #4808 legacy-delete的新形状是允许目录内文件仍存在、外部文件也存在，不能沿用旧“外部被删”的具体原因。[完整原日志与DAG](fourth-pr-current-delta.json) / [独立根审](fourth-pr-delta-root-review.json)
++
++本次新增donor独立核对了固定源、完整changed-files分页和当前CI。#4810（c2243df）为20路径，当前9个工作流中3成功/4失败/2跳过；#4812（3a8e50）为43路径、当前Actions为0，原native收据绑定更早1993db，交付代码仍HOLD；#4817（379c21）为33个Python/文档/收据及工作流路径，实际386f7a专用job的53个ok/0skip已逐名核对，当前头另有blocking失败。三者均未纳入本候选，不能替代B11原Windows门或B16实际custody/Current/正常caller。后继#4821的277例仅为另一固定源的作者报告，尚未独核原日志。[三donor主源与资格表](FOURTH_DONOR_PROGRESS_20261105.zh-CN.md) / [原23项增量索引](fourth-blocker-external-progress-20261105.json)
+ 
+ ## 3. 第四批实际完成的修复
+ 
+@@ -94,7 +96,7 @@
+ 
+ App首次断连诊断在helper前置检查停止，未启动metadata、catalog或测试。只读复查发现原target/dev-small及33个helper不存在，原因未定；初始f825/index/锁/测试源码检查通过，异常后的最终guard未执行。其后独立只读检查重新确认f825、普通index、双锁及无未审untracked路径，随后在全新目录完成epoch2冷构建（job 1a1a967b3ab-fc05-34f6）。本次绑定自己的程序身份、原193成员依赖图和33 helper名单，原5秒断言及零重试不变；原1例终态为FAIL，耗时5.491秒。该次观测为外层bwrap已消失、内层 sandbox helper与Python仍存活，未确定信号原因。首次前置停止与原完整运行失败继续分别保留。[首次停止](fourth-app-disconnect-preflight-stopped.json) / [epoch2原终态](fourth-app-epoch2-terminal-diagnostic.json) / [独立根审](fourth-app-epoch2-root-terminal-review.json) / [系统 bwrap 身份](fourth-app-bwrap-exact-readonly.json)
+ 
+-随后仅增加观测的临时树1e936b1ca6df807d8928a4cc6c527f40f92808aa再次运行同一原App例，终态为FAIL/5.575秒，原5秒预算不变。inner_entry与inner_after_restrictions的PR_GET_PDEATHSIG均实际返回rc0、signal0，原killpg返回Ok(())；这没有定位信号在哪一步被清除。50件完整原件已独立核验，诊断结束后精确恢复f825源码及原source map。新的父存活修复候选已完成静态审查，尚未编译或执行，不能把观测或静态控制写成修复通过。[完整50件根审及恢复](fourth-app-parent-probe-complete-root-review.json)
++随后仅增加观测的临时树1e936b1ca6df807d8928a4cc6c527f40f92808aa再次运行同一原App例，终态为FAIL/5.575秒，原5秒预算不变。inner_entry与inner_after_restrictions的PR_GET_PDEATHSIG均实际返回rc0、signal0，原killpg返回Ok(())；这没有定位信号在哪一步被清除。50件完整原件已独立核验，诊断结束后精确恢复f825源码及原source map。新的父存活候选首个native反事实已执行，但在5.005秒以INVALID_FIXTURE_BEFORE_CAUSAL_STAGE停止：nested libtest banner与首marker同一行，未到kill/reparent/arm，不能认作有效因果负控。finally精确恢复d8a5e94af06b9555fc8256af1337e9f28f7c7fa8；仅增加一行println!的夹具修正后，正式3个物理控制及8个原关联例仍待后续终态，不能写成修复通过。[完整50件根审及恢复](fourth-app-parent-probe-complete-root-review.json) / [首反事实无效与精确恢复](fourth-app-parent-liveness-invalid-negative-root-review.json)
+ 
+ 所属包与完整workspace失败均未豁免。最终fix/fmt及新head的hosted CI尚未完成。
+ 
+@@ -154,13 +156,15 @@
+ | 3 | +0.003876953 | [−0.0525625, 0.0603164] |
+ | 4 | +0.009311523 | [−0.0451946, 0.0638177] |
+ 
+-这是同模型家族多轮反馈相对单轮，不是解析核D−B；不能推出零效应、普遍伤害或等价。23:49–23:51 UTC刷新无源码/实验/rerun增量，研究blocking仍失败。[研究增量](fourth-research-current-delta.json)
++这是同模型家族多轮反馈相对单轮，不是解析核D−B；不能推出零效应、普遍伤害或等价。旧23:49–23:51 UTC刷新及本次完整终锚/固定head工作流读回均无#4798源码或新原始实验增量；当前头3个工作流为2成功/1blocking失败，与4个科学比较不是同一计数。[研究增量](fourth-research-current-delta.json)
+ 
+ 37归档/30,735成员/25,506,732记录比较未见违规，最大残差4.44e−16；没有重放完整teacher/RNG/decoder/optimizer。CPU下界8,326.229650133秒含55.0725秒中止worker，另3controller成本unknown。[原研究范围](THIRD_AUDIT_PROGRESS.zh-CN.md)
+ 
+ 下一轮采用需事前冻结2×2：A强普通、B同任务价值控制、C解析、D解析+价值控制；主量D−B，另报B−A/D−C/C−A/交互。固定同信息、独立数据/评估者、等总CPU、初始化/驻留/失败成本与充分精度，保留全部尝试。未过时继续强普通默认，不能挑seed、改阈值把HOLD“修绿”。
+ 
+ 内部HeptaBao13关键能力为11partial/2gap/0closed；外部固定eac9/OpenBao2.6.2的60surface中13限域实现/47定义是另一分母，不证明完整替代任意后续版本。真实consumer、独立签名、epoch/revoke/freshness需与本产品caller验收。Chain历史27round的6confirmed/9unconfirmed/12unobserved来自旧17:02记录，本轮未恢复原逐round receipt或重跑；经典Ed25519不构成后量子资格。HIA DENY_ALL与safety_certificate=false保留。[外部闭合计划](EXTERNAL_CLOSURE_PLAN_ZH.md)
++
++新#4823正文报告有限Bellman J−C在其冻结IID/OOD任务过收益线，direct D−C两组为0；本次只核完整固定正文，实验原件和完整成本尚未独审，不能替代本项D−B。另取得Chain固定新continuation README，其不同范围控制与结构核查仍保HOLD_NO_GO，runtime endpoint/真实WAN接受未建立；未借报告中的计数当本产品执行。[新研究与Chain证据限域](FOURTH_DONOR_PROGRESS_20261105.zh-CN.md)
+ 
+ ## 8. 后续执行计划
+ 
+@@ -168,7 +172,7 @@
+ |---|---|---|
+ | P0当前 | literal-deny原25已通过；继续原所属7包和完整workspace、原fix/fmt，统一源码/锁/证据发布 | 原断言/预算/负控不弱化，完整raw/JUnit、程序身份一致，剩余失败如实保留 |
+ | P0原平台 | 最终head与merge原CI；成功正文；真实musl ELF/smoke；Intel/Windows逐因果处理 | 原required均满足；cache/skip/retry/早退分列，审批限制不绕过 |
+-| P1可信普通入口 | 执行R2c/d/e控制，解决注册前取消与逐提交Current，接Root/joint/FinalUse/listener | 普通启动同源authority/sender，任务/拒绝/取消/丢ACK/重启/回滚有独立物理证据 |
++| P1可信普通入口 | 执行R2c/d/e与native token/caller/checkpoint控制；独立审4812/4821净迁移，保Current、Root/joint/FinalUse/listener合同 | 普通启动同源authority/sender，任务/拒绝/取消/丢ACK/重启/回滚有独立物理证据 |
+ | P2共享计算/Memory | 一套Encoder/Cell/worker、单写者域、有界队列、可重建投影 | 64/256/1024/4096 logical Cell与实际并发分别测质量、CPU、RSS、p50/p95/p99、总成本及恢复 |
+ | P3–P4 shadow/C1 | 等预算只读排序因子/消融，proposer/scorer/acceptor分开 | exact-source/freshness/contradiction/cite-before-use/abstain-on-stale，zero Memory/KG/tool/provider effect和独立收益 |
+ | P5未来验证 | 下一snapshot签名加载/回滚、遗忘不复活、未来日历holdout | 实际未来窗口完成，Current/来源/forget frontier一致 |
+@@ -180,7 +184,7 @@
+ 
+ | ID | 工作包 | 当前状态 | 下一验收门 |
+ |---|---|---|---|
+-| B01 | 仓库与证据清单 | 固定全量快照完成；1088 PR / 5163 分支 | 后续发布与新CI继续绑定各自观察时间；不把增量观察冒充全量当前总数。 |
++| B01 | 仓库与证据清单 | 固定全量快照完成；新1103 PR / 5193分支，旧1088快照保留 | 后续发布与新CI继续绑定各自观察时间；不把增量观察冒充全量当前总数。 |
+ | B02 | 单一整合候选 | 单一候选确定；最终源码/CI资格开放 | 保r3 Guardian取消/截止及runtime-scoped Git缓存；最终同一次提交完整源码/锁/证据，验原required CI和合成merge树。 |
+ | B03 | cwd 展示语义 | cwd原始7例范围闭合 | 新整合树保留原语义，若改该代码才触发相应重验。 |
+ | B04 | 认知投影 oracle | 认知投影oracle原目标范围闭合 | 保不可变revision/当前指针、来源/更正/删除/重启等原断言；最终产品资格另归B15。 |
+@@ -212,7 +216,8 @@
+ 
+ - [第四批技术资格与执行树](FOURTH_BATCH_QUALIFICATION.md)
+ - [当前23项机器账本](current-blockers.json)
+-- [完整库存](fourth-complete-inventory.json)
++- [新完整库存](fourth-repository-inventory-20261105.json) / [旧1088历史快照](fourth-complete-inventory.json)
++- [新donor固定源与资格](FOURTH_DONOR_PROGRESS_20261105.zh-CN.md) / [机器索引](fourth-donor-progress-20261105.json)
+ - [第四批证据索引](fourth-evidence-index.json)
+ - [原平台失败全集](fourth-original-platform-failures.json)
+ - [七组原名的平台缺口](FOURTH_SEVEN_ROWS_SCOPE.zh-CN.md)
+--- a/hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md
++++ b/hepta-audit-fourth/deliverables/FOURTH_BATCH_QUALIFICATION.md
+@@ -1,6 +1,6 @@
+ # Fourth batch qualification: source-specific outcomes
+ 
+-This is an audit checkpoint for the continuing repair of PR #4797. The branch remains Draft. The published head is cabcb40d36e116beaa65750e1f674c52035da785; the latest reviewed native source tree is 7d703610ae4f778ad305ebc139860d276f416e8c after three sequential, source-specific repair scopes. The original owning7 and full-workspace results remain bound to f8251e1d14fa8524ab469281296cd4cf708f173c. The fourth-batch source commits below are not yet a published or fully qualified product. No main, release, activation or external acceptance is claimed.
++This is an audit checkpoint for the continuing repair of PR #4797. The branch remains Draft. The published head is cabcb40d36e116beaa65750e1f674c52035da785; the three-repair terminal source tree is 7d703610ae4f778ad305ebc139860d276f416e8c; the subsequent App fixture attempt is separately recorded below. The original owning7 and full-workspace results remain bound to f8251e1d14fa8524ab469281296cd4cf708f173c. The fourth-batch source commits below are not yet a published or fully qualified product. No main, release, activation or external acceptance is claimed.
+ 
+ ## Source and tool contract
+ 
+@@ -94,8 +94,20 @@
+ 
+ A separate epoch2 completed as job1a1a967b3ab-fc05-34f6 after an independent fresh source/index/lock/untracked guard. It rebuilt in a new exclusive target, compared the full original193-member resolved graph, and bound the original33 helper roster to new executable hashes. The original one-case5s oracle and0retry remain. The original single case terminated as FAIL in 5.491s. That observation found the outer bwrap gone while the inner sandbox helper and Python remained alive; it did not establish a signal cause. The stopped attempt and original full failure remain unchanged. [Epoch2 terminal evidence](fourth-app-epoch2-terminal-diagnostic.json) / [Independent root review](fourth-app-epoch2-root-terminal-review.json) / [Exact system bwrap identity](fourth-app-bwrap-exact-readonly.json)
+ 
+-A later observation-only tree1e936b1ca6df807d8928a4cc6c527f40f92808aa ran the same original App case and failed in5.575s with its original5s deadline. PR_GET_PDEATHSIG succeeded with signal0 at both inner_entry and inner_after_restrictions; the original killpg returned Ok(()). These observations do not identify which transition cleared the signal. All50 original files were independently verified and source was restored exactly to f825, including the initial source map. The new parent-liveness repair and physical controls remain statically reviewed, uncompiled and unexecuted. [Complete observation and restoration review](fourth-app-parent-probe-complete-root-review.json)
++A later observation-only tree1e936b1ca6df807d8928a4cc6c527f40f92808aa ran the same original App case and failed in5.575s with its original5s deadline. PR_GET_PDEATHSIG succeeded with signal0 at both inner_entry and inner_after_restrictions; the original killpg returned Ok(()). These observations do not identify which transition cleared the signal. All50 original files were independently verified and source was restored exactly to f825, including the initial source map. The first native parent-liveness negative ran and failed in5.005s before kill/reparent/arm because the nested libtest banner and first marker shared one line. It is INVALID_FIXTURE_BEFORE_CAUSAL_STAGE, not a valid counterfactual. Finally restored exactly to d8a5e94af06b9555fc8256af1337e9f28f7c7fa8. After a one-line println! fixture correction, the formal3 physical controls and8 original related cases still await their continuation results. [Complete observation and restoration review](fourth-app-parent-probe-complete-root-review.json) / [Invalid first negative and exact restore](fourth-app-parent-liveness-invalid-negative-root-review.json)
+ 
+ The Windows narrow ACL, four-cell original-token/legacy controls and target-log retention are still prepared scopes, not Windows execution passes. The original App lifecycle gate, full engineering gates, final fix/fmt and new-head hosted CI remain pending. The original23 ledger remains8 scoped closed/14OPEN/B18HOLD. [Windows matrix V2](static-proposals/b11-delete-matrix/repair-manifest.json)
+ 
+ The B16 two-pool caller binding has a separate static review and three proposed parent controls. The two state controls include runtime shutdown plus opening cancellation. A separate private recovery checkpoint connection is unbound in the current source. Its distinct static proposal now contains two production paths with 15 additions/3 deletions and three control paths with 324 additions; these are source-line counts, not executed cases. It has not been applied, compiled or run, and does not change checkpoint, ACK, publication or Current authorization. Do not generalize pool custody to the whole recovery flow. [Caller review](fourth-b16-native-caller-independent-review.json) / [Checkpoint static proposal](static-proposals/b16-checkpoint/repair-manifest.json)
++
++## New inventory and separate donor qualification
++
++The full API interval03:16–03:24 UTC on2026-11-05 enumerated1103 open PRs (1079Draft/24nonDraft;155main-base/948other-base),5193branches,0non-PR issues and0releases. Complete pagination, terminal empty pages and final anchors were checked; these are not an atomic snapshot. The previous1088/5163 snapshot remains historical. Published4797/cabc and research4798/77b244 are unchanged. [New inventory](fourth-repository-inventory-20261105.json)
++
++| Donor | Independently observed scope | Qualification limit |
++|---|---|---|
++|4810 / c2243df|20changed paths; selected6production postimages reconstructed; current9runs=3success/4failure/2skipped|No current-product Windows closure; separate lock success belongs to44a466|
++|4812 /3a8e50|43changed paths; selected7production postimages reconstructed; current head0Actions|Native record binds1993db, delivered733563 NOT_RUN, explicitHOLD; no Memory/state/SQLx change|
++|4817 /379c21|33Python/evidence/workflow paths; exact386f7a job53ok/0skip read in full;386→379 onlyREADME+4evidence files|Same-host protocol and historical receipt verification; no repeated remote execution, Rust integration or scientific efficacy; current blocking failed|
++
++The23 original exit conditions and status values were copied unchanged into a read-only delta index. Additional4821/4823 test or experiment claims remain fixed-PR-body evidence until their raw source-bound artifacts are independently reviewed. No donor source, earlier-head PASS or different scientific comparison is adopted by this checkpoint. [Donor scope](FOURTH_DONOR_PROGRESS_20261105.zh-CN.md) / [Original23 delta index](fourth-blocker-external-progress-20261105.json)
+--- a/hepta-audit-fourth/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md
++++ b/hepta-audit-fourth/deliverables/PROJECT_DIRECTION_AND_PLAN.zh-CN.md
+@@ -40,7 +40,7 @@
+ 
+ **先完成当前工程修复、更新现有Draft PR，再以新提交的原始跨平台CI验收。** 当前原23项账本为8项范围内闭合、14项开放、1项科学HOLD。既有局部结果与原失败均保留；工程发布候选与后续Memory大改分阶段执行，避免等待尚未编译的方案阻塞已完成修复。
+ 
+-最新完整清点为2026-11-04 22:27:38 UTC：1088个open PR，其中1064 Draft、24非Draft；5163 branches，PR最长依赖链211。此快照与下文18:57历史增量分开；新的零散PR观察不当作全库总数。当前候选仍是PR #4797，目标base为integration/ui-objective-20261103-product，main观察为732e934。没有合入main或改变目标base。[本轮完整进展](CURRENT_AUDIT_PROGRESS.zh-CN.md)
++最新完整清点覆盖2026-11-05 03:16–03:24 UTC：1103个open PR，其中1079 Draft、24非Draft；5193 branches，155 main-base/948 nonmain-base，最长依赖链211；0个open非PR issue/0个release。逐页到空页并核终锚，不把多时点查询称为原子快照。旧22:27的1088 PR/5163分支及下文18:57历史增量分别保留。当前候选仍是PR #4797，目标base为integration/ui-objective-20261103-product，main观察为732e934。没有合入main或改变目标base。[本轮完整进展](CURRENT_AUDIT_PROGRESS.zh-CN.md) / [新完整库存](fourth-repository-inventory-20261105.json)
+ 
+ 此前f825组合源已执行原25项权限回归25/25通过；原七包选中5416项，其中5408 JUnit PASS、8 FAIL；原全工作区19503项为19485 JUnit PASS、17 FAIL、1 TIMEOUT。24项requires-remote早退已逐名绑定原始输出，未当作远端行为执行。完整raw/JUnit/catalog/程序身份已独立重建与核验。[完整原始证据](fourth-f825-full-owning-complete-root-review.json)
+ 
+@@ -48,7 +48,7 @@
+ 
+ 后续队列为：新的App父存活候选接受真实物理控制和断连原例验收；Windows窄ACL与四格DELETE/父DELETE_CHILD控制；原完整工程门与最终fix/fmt；最后将固定候选送入原Windows/macOS Intel/Linux等CI。已通过的局部范围与这些待执行门分别记录，原始断言、5秒/2秒等预算及零重试保持各自原范围。
+ 
+-原helper目录意外缺失的诊断已保留，原因未知；epoch2以f825在全新目录重建并绑定自己的程序身份，原1例FAIL/5.491秒，外层bwrap已消失而inner helper及Python仍存活。之后临时观测树1e936再次执行同一原例，FAIL/5.575秒；PR_GET在inner_entry与inner_after_restrictions均rc0/signal0，原killpg为Ok(())。50件原件及精确恢复f825已经独立核验；观测未定位清除信号的具体步骤，新的父存活修复仍仅静态审查、尚未编译运行。两次失败和首次前置停止各自保留，不把诊断算修复通过。[epoch2原终态](fourth-app-epoch2-terminal-diagnostic.json) / [新观测50件与恢复根审](fourth-app-parent-probe-complete-root-review.json)
++原helper目录意外缺失的诊断已保留，原因未知；epoch2以f825在全新目录重建并绑定自己的程序身份，原1例FAIL/5.491秒，外层bwrap已消失而inner helper及Python仍存活。之后临时观测树1e936再次执行同一原例，FAIL/5.575秒；PR_GET在inner_entry与inner_after_restrictions均rc0/signal0，原killpg为Ok(())。50件原件及精确恢复f825已经独立核验；观测未定位清除信号的具体步骤，新的父存活候选首个native反事实在5.005秒因libtest banner与marker同一行而停于因果阶段前，未到kill/reparent/arm；该无效负控已精确恢复d8a5e94，新增一行println!后正式3+8范围仍待续跑终态。两次失败和首次前置停止各自保留，不把诊断算修复通过。[epoch2原终态](fourth-app-epoch2-terminal-diagnostic.json) / [新观测50件与恢复根审](fourth-app-parent-probe-complete-root-review.json) / [首反事实无效与恢复](fourth-app-parent-liveness-invalid-negative-root-review.json)
+ 
+ 原平台仍有73个ledger名字缺至少一个平台的充分逐例证据，已收敛为10个查询组、7个原目标和33个target/platform配对；最终必须绑定实际发布head与执行merge tree。现有Windows private-state和13-case resume的已满足范围继续闭合，其余strict token、Intel PTY、TUI与正常UI接受分别验收。现有ARM Mac或Linux Intel环境不能代替所需平台。
+ 
+@@ -62,11 +62,15 @@
+ 
+ role sockets、approval-blocked cold recovery 等 PR 可以提供组件。采纳前要对当前精确 base/head 的净 diff、caller、owner 和与本产品树的冲突重新核对；通过同树运行再提高对应声明。不能要求所有 40 模块和研究方向都完成后才交付第一个 bounded 产品路径，也不能让一个路径成功覆盖其他模块的义务。
+ 
++本次#4812普通PQ/FinalUse和后继#4821本地operation事务是可评估组件donor，不能盲合：#4812对cabc ahead771/behind470，当前头没有Actions，原native结果属于更早源且HOLD；#4821仍明确拒绝未具备Cell lifecycle admission的public调用。先核Current/claim/frontier/issuer与当前sender/普通peer gate，再与已准备native token、两个pool caller和private checkpoint的实际resource owner接线逐项组合；这些依赖的真实执行和正常接受仍开放。[固定donor与资格](FOURTH_DONOR_PROGRESS_20261105.zh-CN.md)
++
+ ## 5. P2：共享计算与可靠数据基础
+ 
+ 沿 `INFER-V4-T1…T5`、Fleet allocation、Memory store/read/retrieval、Objective、确定性 NDU、Prompt registry、episode ledger 和 artifact registry 工作。共有类型先稳定，依赖它的 runtime、Memory 和 Objective 源码可以并行准备；activation 顺序仍遵循各自 DAG。
+ 
+ 具体交付是一个经实际 caller 使用的共享 Encoder/Cell/worker 实现，有限队列与 sparse microbatch，以及一致的 snapshot/source/forget frontier。测试真实 **64 / 256 / 1024 / 4096 logical Cells**，同时记录 active concurrency；给出质量、CPU/RSS、p50/p95/p99、队列 age、token 和总成本，避免把配置规模当实际容量。Memory Cell 应是可重建的 source projection，correction/forget 需要跨 reader、KG/index、compact/federation 和 artifact 消费者验证。[P2 与性能合同](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/docs/DEVELOPMENT.md)
++
++#4817的Memory V15可供协议/负控参考：实际53例属于同hostPython与历史设备收据离线核验，33路径没有Rust/native集成。不能用它替代本产品writer custody、Current或新的语言质量/完整成本证明。
+ 
+ 退出标准是：一个 authoritative writer 对应一个 durable domain；跨 owner intent/outbox/dedupe/ack/reconciliation 可恢复；资源基线可复现。这样后续模型与学习实验才有可比账本。
+ 
+@@ -75,6 +79,8 @@
+ P3 固定候选总体、输入、预算和 deterministic / strong-retrieval baselines，比较真实 local model、Neuron、Intuition、Prompt 与 Bellman/NDU shadow 候选。proposer、scorer、selector 分开；unavailable、负例、OOD 和 abstention 保留在原总体。分别报告 answer generation、Reader capacity、retrieval utility、citation entailment 与 parameter-learning benefit。
+ 
+ P4 执行 `C1-PROMPTED-MEMORY-RETRIEVAL-RANK`：从 request 和 Objective receipt 出发，经 bounded retrieval、NDU/Prompt portfolio/timing、Context receipt、报告、outcome/correction 和 attribution，产生下一快照的 shadow candidate。对 no prompt、单 factor、pairs、full portfolio、fixed timing、learned timing 做预声明消融。原 C1 的 zero Memory/KG/tool/provider-effect 合同保持；主要指标为任务与检索收益、引用准确、陈旧/冲突拒绝、abstention、成本/延迟及 calibration/OOD。[P3–P4 与 C1](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ff72d462d74f9eb856aa9edbc368caad9c466708/docs/DEVELOPMENT.md)
++
++#4823报告的有限Bellman J−C新冻结IID/OOD收益值得核原件，但当前仅已读固定PR正文；direct D−C为0、完整成本不明，且比较定义不同。原#4798源77b244和B18的D−B采用门/HOLD不变。
+ 
+ 这里的退出是“因果收益与代价在固定总体和预算下可复核”，并不是把离线 loss 或一次生成成功升级为长期有效学习。current-run objectives/artifacts 保持不可变。
+ 
+@@ -98,7 +104,7 @@
+ 
+ Development、Activation、Evidence 三组前驱分别核对。源码准备和只读审查可并行，当前共享 native lane 保持单一 mutator；报告注明 case、target、cache、retry、unknown 的层级。一个 package 保留一个可审主集成候选，吸收 donor 时逐项比较净变化并保留有用历史。
+ 
+-18:57 UTC 的 root 增量观察另存为 live delta：#4800 更新为 `1b390853e50aa2fdae2e6c68793f94742d2d667c`、10 files；#4803 新增 `83ad164ff05cb34d444d51e23ee286fa0241c783`、3 files、独立旧 base `14e2`。两者均未混入当前候选；本计划没有重复全量抓取或把这些增量当新的分支总数，先前完整 1081 PR / 5146 branches 快照保留。新 head 的 source/执行资格需要重新核对，旧 head 的审查和独立仓库结果不自动继承。
++18:57 UTC 的 root 增量观察另存为 live delta：#4800 更新为 `1b390853e50aa2fdae2e6c68793f94742d2d667c`、10 files；#4803 新增 `83ad164ff05cb34d444d51e23ee286fa0241c783`、3 files、独立旧 base `14e2`。两者均未混入当前候选；该历史增量不是全库快照；先前完整1081 PR/5146 branches及1088 PR/5163 branches快照保留，当前全量以03:16–03:24的新盘点为准。新 head 的 source/执行资格需要重新核对，旧 head 的审查和独立仓库结果不自动继承。
+ 
+ ## 固定源与附录
+ 

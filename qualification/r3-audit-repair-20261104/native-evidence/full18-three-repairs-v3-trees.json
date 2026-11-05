@@ -1,0 +1,91 @@
+{
+  "initial_tree": "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+  "skills_manifest": "a63d8632e8a1524a7bcb214484ac9530b1d5d2d2",
+  "stages": [
+    {
+      "label": "skills-controlled-marker",
+      "before_tree": "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+      "after_tree": "59fa1100c2ad24328e7841611092132ca08942ad",
+      "files": [
+        {
+          "path": "codex-rs/ext/skills/src/host_roots_tests.rs",
+          "before_blob": "3d8412f8eca445b1eba85f26d7975aa7ddfbb524",
+          "after_blob": "0af7f9a6be0f1e6795bd5f7ab9006d0c8ce24a88",
+          "mode": "100644",
+          "bytes": 23687,
+          "sha256": "33d606f5e35b6c8b77a4693a516c376a498c55e40fbdc811fdb7cbfab721daef"
+        }
+      ]
+    },
+    {
+      "label": "skills-restore-absence",
+      "before_tree": "59fa1100c2ad24328e7841611092132ca08942ad",
+      "after_tree": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "files": [
+        {
+          "path": "codex-rs/ext/skills/src/host_roots_tests.rs",
+          "before_blob": "0af7f9a6be0f1e6795bd5f7ab9006d0c8ce24a88",
+          "after_blob": "ffae69d365402929787f9029a15f02d9c328149b",
+          "mode": "100644",
+          "bytes": 23508,
+          "sha256": "1987b4f5b24df98283281f1124f6ab9fa364da41ac1cbf352e4b952058f82f94"
+        }
+      ]
+    },
+    {
+      "label": "migration-remove-inference",
+      "before_tree": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+      "after_tree": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+      "files": [
+        {
+          "path": "codex-rs/external-agent-migration/src/service_tests/plugins/marketplaces.rs",
+          "before_blob": "682000381ac7da7d5c4022a83ee6aaf991aa4df5",
+          "after_blob": "5894278bdfb88d5272180651d1a66123cd105200",
+          "mode": "100644",
+          "bytes": 30695,
+          "sha256": "1900d0dcab3fb4a5bc3c24dd277c2da249d2b917cc6bd10a31bc103f5a37c5d3"
+        },
+        {
+          "path": "codex-rs/external-agent-migration/src/source_cla.rs",
+          "before_blob": "b2620eaf1a3b673d451b3fa7448b26ef286bb03b",
+          "after_blob": "54e2051499f2726bf52436e45c046529210de6b0",
+          "mode": "100644",
+          "bytes": 13202,
+          "sha256": "eae19dcc7d235addac73c9f97ca20592aed80eeb8350d3aa2362cd99386d4335"
+        }
+      ]
+    },
+    {
+      "label": "migration-restore-inference",
+      "before_tree": "f9bfef21d511a3e9ee25fb67802d240c691f62ec",
+      "after_tree": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+      "files": [
+        {
+          "path": "codex-rs/external-agent-migration/src/source_cla.rs",
+          "before_blob": "54e2051499f2726bf52436e45c046529210de6b0",
+          "after_blob": "b2620eaf1a3b673d451b3fa7448b26ef286bb03b",
+          "mode": "100644",
+          "bytes": 13268,
+          "sha256": "a0efc66a1e66d6a3870d4915961bcd708996055bbf0ce89ea8af932e145358ee"
+        }
+      ]
+    },
+    {
+      "label": "v8-default-sandbox",
+      "before_tree": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+      "after_tree": "7d703610ae4f778ad305ebc139860d276f416e8c",
+      "files": [
+        {
+          "path": "codex-rs/v8-poc/Cargo.toml",
+          "before_blob": "9615ab977f9dfdb35467d1eadaf0bc6dfa641625",
+          "after_blob": "a34a1306f1082b3347543749cbfd9a05eee7cb91",
+          "mode": "100644",
+          "bytes": 370,
+          "sha256": "c8fe672a43a8d02afe8ed2822462201bb87d526478c91dc2d2c9fff6dfad7f6a"
+        }
+      ]
+    }
+  ],
+  "source_only_v8_tree_before_actual_generator": "7d703610ae4f778ad305ebc139860d276f416e8c",
+  "qualification": "Immutable source-only Git trees; no ref changes. Actual original generator may produce different MODULE lock; do not overwrite it to force this final tree."
+}

@@ -1,0 +1,453 @@
+{
+  "schema": "b11-current-boundary-readonly-review/v1",
+  "observed_at_utc": "2026-11-05T01:08:59.500167+00:00",
+  "source_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "source_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+  "actual_ci_merge": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+  "parents": [
+    "63652be658ebed8d3052eb789b951793384fd5e4",
+    "cabcb40d36e116beaa65750e1f674c52035da785"
+  ],
+  "run_id": 41902318286,
+  "job_id": 126827931463,
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41902318286/job/126827931463",
+  "raw_job_log": {
+    "bytes": 585442,
+    "sha256": "49981a617c75a7224dc3985ecdde4fcd6c6dfccb36b209d04d15d85ec0f02eba",
+    "blob": "2d10d7f1381c43a0d6e9d1c9da0bab3b44ef7c85"
+  },
+  "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+  "original_target_result": {
+    "passed": 52,
+    "failed": 3,
+    "ignored": 2,
+    "filtered_out": 92,
+    "measured": 0,
+    "seconds": 6.22
+  },
+  "repeated_tail_is_same_log_not_second_attempt": true,
+  "complete_target_excerpt": {
+    "file": "current-strict-target-excerpt.log.txt",
+    "original_line_range": [
+      2953,
+      3321
+    ],
+    "preserves_original_line_bytes": true,
+    "bytes": 53659,
+    "sha256": "82fb91881c4aeaf8bb9967628e0ae80c5b837f54d18c874c8402ef2b08f9f333",
+    "blob": "d5e3e6fb4781a64f81029e76d5c09985159534ff"
+  },
+  "archive_member_identity_reused_from_prior_verified_index": {
+    "index_blob": "36920461da0727915efb9e0735377d3d0021f8d7",
+    "artifact_id": 13358839533,
+    "zip_sha256": "ab0ea89fec39a52394c37248955e6ed0a43c9b5106468e10cf78d7f7960c1c0d",
+    "member": "failed-test-logs/invocation-esqqyejf/targets/0002/test.log",
+    "bytes": 42809,
+    "sha256": "3fe130a4fc9a221f7d06bbd6442f7ba73c275ba8a36a0b1a9f25c9c121f5a172",
+    "this_task_reread_zip": false,
+    "this_task_independently_read_full_job_raw": true
+  },
+  "cases": [
+    {
+      "case": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "failure_log_lines": [
+        3247,
+        3262
+      ],
+      "source": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "panic_line": 338,
+      "actual": "(true, true, true)",
+      "expected": "(false, true, false)",
+      "classification": "PRODUCTION_DENY_IDEMPOTENCY_RECOGNITION_BUG_CONFIRMED",
+      "direct_evidence": [
+        "directory ACE count 11→13 after repeated repair; same 0x00 + 0x0b explicit pair duplicated",
+        "file ACE count 8→9 after repeated direct repair; full explicit 0x00 added again",
+        "earlier write/create denial assertion completed; final content assertions after the panic did not execute"
+      ],
+      "remaining": "static three-path candidate only; original whole case has not passed on changed Windows source",
+      "full_original_failure_section": "2026-11-04T20:14:00.3150016Z ---- token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes stdout ----\r\n2026-11-04T20:14:00.3153966Z \r\n2026-11-04T20:14:00.3162407Z thread 'token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes' (6044) panicked at windows-sandbox-rs/src\\token_tests.rs:338:5:\r\n2026-11-04T20:14:00.3163660Z assertion failed: `(left == right)`\r\n2026-11-04T20:14:00.3164053Z \r\n2026-11-04T20:14:00.3164218Z Diff < left / right > :\r\n2026-11-04T20:14:00.3168376Z  (\r\n2026-11-04T20:14:00.3168765Z >    false,\r\n2026-11-04T20:14:00.3169183Z      true,\r\n2026-11-04T20:14:00.3169564Z <    true,\r\n2026-11-04T20:14:00.3169923Z <    true,\r\n2026-11-04T20:14:00.3170281Z >    false,\r\n2026-11-04T20:14:00.3170946Z  )\r\n2026-11-04T20:14:00.3171182Z \r\n2026-11-04T20:14:00.3171207Z \r\n2026-11-04T20:14:00.3171589Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r\n"
+    },
+    {
+      "case": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "failure_log_lines": [
+        3264,
+        3287
+      ],
+      "source": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "panic_line": 434,
+      "actual": "[PermissionDenied, PermissionDenied, None, None]",
+      "expected": "[PermissionDenied; 4]",
+      "classification": "REAL_OUTSIDE_DELETE_OBSERVED_ENFORCEMENT_CAUSE_NOT_SEPARATED",
+      "direct_evidence": [
+        "overwrite/create OS5; remove_file/remove_dir returned success",
+        "after impersonation ended, outside file and directory metadata returned NotFound OS2",
+        "five selected restricting-SID membership checks are not a complete child/token/privilege audit",
+        "ordinary identity has object DELETE and parent DELETE_CHILD simultaneously"
+      ],
+      "remaining": "four-cell real Windows object/parent grant matrix with valid host controls; no token strategy patch",
+      "full_original_failure_section": "2026-11-04T20:14:00.3172832Z ---- token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces stdout ----\r\n2026-11-04T20:14:00.3173615Z \r\n2026-11-04T20:14:00.3174521Z thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (880) panicked at windows-sandbox-rs/src\\token_tests.rs:434:5:\r\n2026-11-04T20:14:00.3175749Z assertion failed: `(left == right)`\r\n2026-11-04T20:14:00.3176085Z \r\n2026-11-04T20:14:00.3176223Z Diff < left / right > :\r\n2026-11-04T20:14:00.3176596Z  [\r\n2026-11-04T20:14:00.3176961Z      Some(\r\n2026-11-04T20:14:00.3177331Z          PermissionDenied,\r\n2026-11-04T20:14:00.3177739Z      ),\r\n2026-11-04T20:14:00.3178054Z      Some(\r\n2026-11-04T20:14:00.3178403Z          PermissionDenied,\r\n2026-11-04T20:14:00.3178791Z      ),\r\n2026-11-04T20:14:00.3179119Z <    None,\r\n2026-11-04T20:14:00.3179492Z <    None,\r\n2026-11-04T20:14:00.3179822Z >    Some(\r\n2026-11-04T20:14:00.3180160Z >        PermissionDenied,\r\n2026-11-04T20:14:00.3180991Z >    ),\r\n2026-11-04T20:14:00.3181336Z >    Some(\r\n2026-11-04T20:14:00.3181952Z >        PermissionDenied,\r\n2026-11-04T20:14:00.3182386Z >    ),\r\n2026-11-04T20:14:00.3182760Z  ]\r\n2026-11-04T20:14:00.3182924Z \r\n2026-11-04T20:14:00.3182930Z \r\n"
+    },
+    {
+      "case": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+      "failure_log_lines": [
+        3289,
+        3309
+      ],
+      "source": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "panic_line": 801,
+      "actual": "(0, false, false, false, None, false)",
+      "expected": "(0, false, false, false, Some(\"outside\"), true)",
+      "classification": "REAL_LEGACY_CHILD_DELETE_OBSERVED_ENFORCEMENT_CAUSE_NOT_SEPARATED",
+      "direct_evidence": [
+        "real cmd.exe /d /c delete-fixtures.cmd completed exit0",
+        "parent outside-file/protected-.git metadata and file readback returned NotFound OS2",
+        "successful exit alone is not evidence of correct permission denial"
+      ],
+      "remaining": "original physical child contract plus separated-route matrix; child5000ms/collection10s unchanged",
+      "full_original_failure_section": "2026-11-04T20:14:00.3183460Z ---- unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots stdout ----\r\n2026-11-04T20:14:00.3184114Z \r\n2026-11-04T20:14:00.3185009Z thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (8916) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:801:9:\r\n2026-11-04T20:14:00.3186273Z assertion failed: `(left == right)`: stdout=\"\"\r\n2026-11-04T20:14:00.3187827Z [2026-11-04 20:12:09.201 windows-sandbox-rs-unit-tests-bin.exe] START: C:\\Windows\\System32\\cmd.exe /d /c D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpmx028K\\workspace\\delete-fixtures.cmd\r\n2026-11-04T20:14:00.3190337Z [2026-11-04 20:12:09.272 windows-sandbox-rs-unit-tests-bin.exe] SUCCESS: C:\\Windows\\System32\\cmd.exe /d /c D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpmx028K\\workspace\\delete-fixtures.cmd\r\n2026-11-04T20:14:00.3191834Z \r\n2026-11-04T20:14:00.3191875Z \r\n2026-11-04T20:14:00.3192030Z Diff < left / right > :\r\n2026-11-04T20:14:00.3192418Z  (\r\n2026-11-04T20:14:00.3192745Z      0,\r\n2026-11-04T20:14:00.3193101Z      false,\r\n2026-11-04T20:14:00.3193443Z      false,\r\n2026-11-04T20:14:00.3193782Z      false,\r\n2026-11-04T20:14:00.3194106Z <    None,\r\n2026-11-04T20:14:00.3194450Z <    false,\r\n2026-11-04T20:14:00.3194773Z >    Some(\r\n2026-11-04T20:14:00.3195124Z >        \"outside\",\r\n2026-11-04T20:14:00.3195526Z >    ),\r\n2026-11-04T20:14:00.3195880Z >    true,\r\n2026-11-04T20:14:00.3196231Z  )\r\n"
+    }
+  ],
+  "permission_route_matrix": [
+    {
+      "id": "object_delete_0_parent_delete_child_0",
+      "ordinary_identity_object_DELETE": false,
+      "ordinary_identity_parent_FILE_DELETE_CHILD": false,
+      "object_kinds": [
+        "fresh file",
+        "fresh empty directory"
+      ],
+      "host_control_expected_physical_delete": "PermissionDenied and object retained",
+      "existing_capability_only_product_token_outside_expected": "PermissionDenied and original object/content retained",
+      "operations": [
+        "existing std::fs::remove_file/remove_dir with fresh handles",
+        "existing real legacy cmd path on separate fresh objects; parent verifies after completed child"
+      ],
+      "evidence_status": "NOT_EXECUTED_ON_CABC_OR_CANDIDATE",
+      "invalid_fixture_if": [
+        "host control disagrees with its intended cell",
+        "enabled/inherited SID grants reintroduce a removed route",
+        "privileged/deletion handles retained across operation",
+        "object absent before test or denial caused by sharing/attributes instead of intended access boundary"
+      ]
+    },
+    {
+      "id": "object_delete_1_parent_delete_child_0",
+      "ordinary_identity_object_DELETE": true,
+      "ordinary_identity_parent_FILE_DELETE_CHILD": false,
+      "object_kinds": [
+        "fresh file",
+        "fresh empty directory"
+      ],
+      "host_control_expected_physical_delete": "succeed",
+      "existing_capability_only_product_token_outside_expected": "PermissionDenied and original object/content retained",
+      "operations": [
+        "existing std::fs::remove_file/remove_dir with fresh handles",
+        "existing real legacy cmd path on separate fresh objects; parent verifies after completed child"
+      ],
+      "evidence_status": "NOT_EXECUTED_ON_CABC_OR_CANDIDATE",
+      "invalid_fixture_if": [
+        "host control disagrees with its intended cell",
+        "enabled/inherited SID grants reintroduce a removed route",
+        "privileged/deletion handles retained across operation",
+        "object absent before test or denial caused by sharing/attributes instead of intended access boundary"
+      ]
+    },
+    {
+      "id": "object_delete_0_parent_delete_child_1",
+      "ordinary_identity_object_DELETE": false,
+      "ordinary_identity_parent_FILE_DELETE_CHILD": true,
+      "object_kinds": [
+        "fresh file",
+        "fresh empty directory"
+      ],
+      "host_control_expected_physical_delete": "succeed",
+      "existing_capability_only_product_token_outside_expected": "PermissionDenied and original object/content retained",
+      "operations": [
+        "existing std::fs::remove_file/remove_dir with fresh handles",
+        "existing real legacy cmd path on separate fresh objects; parent verifies after completed child"
+      ],
+      "evidence_status": "NOT_EXECUTED_ON_CABC_OR_CANDIDATE",
+      "invalid_fixture_if": [
+        "host control disagrees with its intended cell",
+        "enabled/inherited SID grants reintroduce a removed route",
+        "privileged/deletion handles retained across operation",
+        "object absent before test or denial caused by sharing/attributes instead of intended access boundary"
+      ]
+    },
+    {
+      "id": "object_delete_1_parent_delete_child_1",
+      "ordinary_identity_object_DELETE": true,
+      "ordinary_identity_parent_FILE_DELETE_CHILD": true,
+      "object_kinds": [
+        "fresh file",
+        "fresh empty directory"
+      ],
+      "host_control_expected_physical_delete": "succeed",
+      "existing_capability_only_product_token_outside_expected": "PermissionDenied and original object/content retained",
+      "operations": [
+        "existing std::fs::remove_file/remove_dir with fresh handles",
+        "existing real legacy cmd path on separate fresh objects; parent verifies after completed child"
+      ],
+      "evidence_status": "NOT_EXECUTED_ON_CABC_OR_CANDIDATE",
+      "invalid_fixture_if": [
+        "host control disagrees with its intended cell",
+        "enabled/inherited SID grants reintroduce a removed route",
+        "privileged/deletion handles retained across operation",
+        "object absent before test or denial caused by sharing/attributes instead of intended access boundary"
+      ]
+    }
+  ],
+  "matrix_shared_prerequisites": [
+    "only disposable project-owned fixture DACLs; no global host ACL changes",
+    "read back actual ordinary/enabled/deny-only/restricting SID roster, privileges, token type/integrity and exact object/parent ACL roles",
+    "close delete/data handles before each tested operation; distinct fresh host/restricted objects",
+    "allowed-root positive uses existing product setup in independent fixture, not a fabricated expectation in host-denied cell00",
+    "parent observes outcomes after impersonation RevertToSelf / completed child; preserve operations/assertions/time budgets",
+    "do not count AccessCheck-only answers or child loader failure as a successful deny boundary"
+  ],
+  "historical_authorization_record": {
+    "original_auto_review_receipt_recovered": false,
+    "original_action_and_reason_known": false,
+    "user_windows_prohibition_found": false,
+    "old_design_md_is_frozen_ff72_scope_and_contains_secondary_authorization_wording": true,
+    "oct31_prototype_statement": "secondary historical assistant claim only; host controls reportedly failed; not cabc evidence",
+    "current_task_authorizes": "static isolated idempotency candidate and read-only design; no product apply/ref/native execution"
+  },
+  "unchanged_in_f825_scope": {
+    "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "local_source_cohort_diff_file": "hepta-audit-fourth/source-cohort-diff-checks.json",
+    "meaning": "no windows-sandbox source edits recorded; does not confer cabc whole-tree CI qualification"
+  },
+  "old_acl_controls_actual_cabc_pass": [
+    "acl::tests::complete_denies_compare_mapped_masks_and_require_every_right",
+    "acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows",
+    "acl::tests::partial_read_deny_is_repaired_before_native_file_data_access",
+    "acl::tests::deny_ace_update_failure_is_an_error"
+  ],
+  "host_controls_actual_cabc_pass": [
+    "desktop::tests::desktop_rejects_unrestricted_and_invalid_tokens",
+    "desktop::tests::readonly_preserves_private_and_default_desktop_access",
+    "desktop::tests::workspace_private_desktop_checks_the_exact_capability",
+    "token::tests::elevated_token_includes_network_proxy_restricting_sid",
+    "unified_exec::backend_selection_tests::explicit_elevated_level_always_uses_elevated_broker",
+    "unified_exec::backend_selection_tests::deny_write_override_is_forced_through_elevated_broker",
+    "unified_exec::backend_selection_tests::workspace_write_profile_is_forced_through_elevated_broker",
+    "unified_exec::backend_selection_tests::read_only_profile_without_overrides_keeps_restricted_token_backend",
+    "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+    "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+    "unified_exec::tests::finish_driver_spawn_keeps_stdin_open_when_requested",
+    "unified_exec::tests::finish_driver_spawn_closes_stdin_when_not_requested",
+    "unified_exec::tests::legacy_tty_powershell_emits_output_and_accepts_input",
+    "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+    "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+    "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides"
+  ],
+  "still_ignored_not_qualified": [
+    "unified_exec::tests::legacy_tty_cmd_default_desktop_emits_output_and_accepts_input",
+    "unified_exec::tests::legacy_tty_cmd_emits_output_and_accepts_input"
+  ],
+  "candidate_new_controls_unexecuted": [
+    "acl::tests::normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes",
+    "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+    "acl::tests::existing_native_deny_does_not_require_write_dac"
+  ],
+  "candidate_semantics": {
+    "no_op": "READ_CONTROL handle only; strict original public query unchanged",
+    "type_and_dacl": "same retained handle, FileStandardInfo + GetSecurityInfo",
+    "repair": "ReOpenFile of original object requests WRITE_DAC only when incomplete; original mask/SetEntriesInAcl/recursive inheritance; SetSecurityInfo on that reopened object",
+    "file": "complete explicit effective flags0 or original complete flags3; inherited-only is insufficient",
+    "directory": "original complete flags3 or same-SID independently complete flags0 + flags0xb, before any allow/unknown/inherited entry",
+    "not_changed": [
+      "token flags/identities",
+      "public recursive DACL query",
+      "grant masks",
+      "original cases/assertions",
+      "budgets/retries/skips",
+      "loader/DLL",
+      "normal backend routing"
+    ],
+    "compatibility_and_limits": [
+      "CreateFile/GetFileInformationByHandleEx/ReOpenFile support and sharing requirements now apply; fail as errors, not fake no-op",
+      "WRITE_DAC acquired only for actual repairs; no privilege is enabled, but existing Windows privilege/access rules still apply",
+      "error operation labels change from named security APIs to actual handle APIs; existing generic setter-error contract preserved",
+      "same object does not serialize concurrent DACL writers or guarantee stable path/ancestor custody",
+      "no deletion-enforcement or WRITE_RESTRICTED fix is claimed",
+      "native controls may expose API/filesystem differences; currently none run"
+    ]
+  },
+  "next_qualification": {
+    "platform": "Windows x86_64-pc-windows-msvc; no configured native Windows host",
+    "selected_original_cases": [
+      "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+    ],
+    "additional_original_controls": [
+      "acl::tests::complete_denies_compare_mapped_masks_and_require_every_right",
+      "acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows",
+      "acl::tests::partial_read_deny_is_repaired_before_native_file_data_access",
+      "acl::tests::deny_ace_update_failure_is_an_error",
+      "desktop::tests::desktop_rejects_unrestricted_and_invalid_tokens",
+      "desktop::tests::readonly_preserves_private_and_default_desktop_access",
+      "desktop::tests::workspace_private_desktop_checks_the_exact_capability",
+      "token::tests::elevated_token_includes_network_proxy_restricting_sid",
+      "unified_exec::backend_selection_tests::explicit_elevated_level_always_uses_elevated_broker",
+      "unified_exec::backend_selection_tests::deny_write_override_is_forced_through_elevated_broker",
+      "unified_exec::backend_selection_tests::workspace_write_profile_is_forced_through_elevated_broker",
+      "unified_exec::backend_selection_tests::read_only_profile_without_overrides_keeps_restricted_token_backend",
+      "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+      "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+      "unified_exec::tests::finish_driver_spawn_keeps_stdin_open_when_requested",
+      "unified_exec::tests::finish_driver_spawn_closes_stdin_when_not_requested",
+      "unified_exec::tests::legacy_tty_powershell_emits_output_and_accepts_input",
+      "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+      "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides"
+    ],
+    "new_controls": [
+      "acl::tests::normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes",
+      "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+      "acl::tests::existing_native_deny_does_not_require_write_dac"
+    ],
+    "native_command_design_only": "just test --locked -p codex-windows-sandbox --lib -E 'test(=token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes) | test(=token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces) | test(=unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots) | test(=acl::tests::complete_denies_compare_mapped_masks_and_require_every_right) | test(=acl::tests::complete_denies_require_effective_recursive_scope_and_precede_allows) | test(=acl::tests::partial_read_deny_is_repaired_before_native_file_data_access) | test(=acl::tests::deny_ace_update_failure_is_an_error) | test(=acl::tests::normalized_denies_require_same_sid_complete_masks_and_both_directory_scopes) | test(=acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write) | test(=acl::tests::existing_native_deny_does_not_require_write_dac)' --retries 0",
+    "original_legacy_child_budget_ms": 5000,
+    "original_collection_budget_seconds": 10,
+    "full_gate": "original Windows Bazel target/workflow with unchanged command/filter/cache/retry/ignore policies and complete source-bound logs/XML",
+    "cannot_close_from": [
+      "Linux",
+      "Wine alone",
+      "static review",
+      "target absence",
+      "old ff72 results",
+      "new helper success without originals"
+    ]
+  },
+  "sources": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/WINDOWS_BOUNDARY_REPAIR_DESIGN.md",
+      "blob": "e80dd2795029c89f6a8626f367af30740ec8dcc3",
+      "bytes": 12371,
+      "sha256": "0a3c383374335dee244ec52f32464a9fc5d4c914ce5e97749b135b1e55f44013",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/qualification/r3-audit-repair-20261104/WINDOWS_BOUNDARY_REPAIR_DESIGN.md.txt"
+    },
+    {
+      "path": "evidence/cabc-windows-shard2-original.log",
+      "blob": "2d10d7f1381c43a0d6e9d1c9da0bab3b44ef7c85",
+      "bytes": 585442,
+      "sha256": "49981a617c75a7224dc3985ecdde4fcd6c6dfccb36b209d04d15d85ec0f02eba",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/evidence/cabc-windows-shard2-original.log.txt"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+      "blob": "755083dd97ef25065692028405412326e4e2ac49",
+      "bytes": 27953,
+      "sha256": "58976c6d1594c116dfd108316bb748b5cf2e9f108785605eaa93c96b77145b83",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/codex-rs/windows-sandbox-rs/src/acl.rs.txt"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "blob": "a27ce6bde8a5a8ec68b005d6fc10cc4abf261d59",
+      "bytes": 8717,
+      "sha256": "45c313a55741e798af7efc3ef3d9b3878f6ffa092ad77fe2457dacab777db06b",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/codex-rs/windows-sandbox-rs/src/acl_tests.rs.txt"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "blob": "43d3e5c935db4579809525e58f33718e8a250005",
+      "bytes": 30261,
+      "sha256": "7154ed07604553cd278db04a9e39b337aa2abe12dd8b5df782b3461cd906e124",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/codex-rs/windows-sandbox-rs/src/lib.rs.txt"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/process.rs",
+      "blob": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+      "bytes": 11792,
+      "sha256": "7c7ea19f6fcfa88990cf5582273eede6139a52ccda8212468087276bb50eaca7",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/codex-rs/windows-sandbox-rs/src/process.rs.txt"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "blob": "8945d75fe172679479b738e6266cac99a6f7ed16",
+      "bytes": 18359,
+      "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/codex-rs/windows-sandbox-rs/src/token.rs.txt"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "blob": "140f141bc0a5807856ceb1068c9fbf423d5ce543",
+      "bytes": 18059,
+      "sha256": "17c7398576cebbd83cfc236c0e2788eccff0765e2ff058676aa7a9c334d6a850",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/codex-rs/windows-sandbox-rs/src/token_tests.rs.txt"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backend_selection_tests.rs",
+      "blob": "a1bddbf65927be4bd5f927d9836ae8c4ba0ef320",
+      "bytes": 6980,
+      "sha256": "1e5469c90c0e6343a571078dd9caf4451b0c4cc3431fdbe46eb76356299ffafb",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/codex-rs/windows-sandbox-rs/src/unified_exec/backend_selection_tests.rs.txt"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs",
+      "blob": "6fbf819c921a0097cd306e9de9ba9c965ecf0163",
+      "bytes": 15188,
+      "sha256": "121082fbb179ea82e808201e8478622c07c73ec90cecc9c25ce7b2f8b447f969",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs.txt"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/windows_common.rs",
+      "blob": "f37829e950567b4f0f64217a894f078436f877fb",
+      "bytes": 5968,
+      "sha256": "024abb2d9e2ae31328e73dc9606040c21e94189b4330eea4e7110863c74a87df",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/codex-rs/windows-sandbox-rs/src/unified_exec/backends/windows_common.rs.txt"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+      "blob": "c98f3e5d217ada48732e1686129806d0dd52169e",
+      "bytes": 8588,
+      "sha256": "6de412ae0a3102084a0b28fc57a276dfc58e5113ffbd0e2d39df4931863e3a72",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs.txt"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "blob": "694db339514d08efb54c05d82f2e58026b673998",
+      "bytes": 43037,
+      "sha256": "9dcb0cc508227290437dd6b851496d02b9731bac8e91c087d11a2b57a0e1706d",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs.txt"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/workspace_acl.rs",
+      "blob": "7143212b54c088e317ef5acbc729060e68237e68",
+      "bytes": 943,
+      "sha256": "40c4cfdbc75943e5335811c8524646205ef3af28010c73516a1fdc099d956452",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/codex-rs/windows-sandbox-rs/src/workspace_acl.rs.txt"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/windows-boundary-repair-design.json",
+      "blob": "af00803453b7461a97db4407a8ce7e5c842f7461",
+      "bytes": 20791,
+      "sha256": "dcb1228e25bab43f5f5dbbbfddfb877a1b75c4c717c56e487a367b3c7fa9ec1a",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/qualification/r3-audit-repair-20261104/windows-boundary-repair-design.json.txt"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+      "blob": "2385bdbd3202fd2f14a090174b269791976d04c4",
+      "bytes": 27058,
+      "sha256": "f14b7c8ecbcf7e6b4571d4d1506b3b93844a6327f1f6dffd275be01b09234bea",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/codex-rs/windows-sandbox-rs/src/spawn_prep.rs.txt"
+    },
+    {
+      "path": "AGENTS.md",
+      "blob": "a22ff3bee70261f6061d598c31f0016e785a7a3c",
+      "bytes": 23303,
+      "sha256": "228165a9ff57b98f101917c4c8086ca76a755bec6c726bb29a4ce74408e2d7f8",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/AGENTS.md.txt"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/source/codex-rs/windows-sandbox-rs/Cargo.toml.txt"
+    }
+  ]
+}

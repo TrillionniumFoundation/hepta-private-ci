@@ -1,0 +1,28 @@
+--- runner-draft-v1-014783f0
++++ runner-v2-20b9bb9d
+@@ -294,14 +294,23 @@
+  elif kind == "no_rearm":
+   conditions.update(armed_after_fd_close_and_exec="LIVENESS: armed_with_fd_closed_before_fork_and_exec" in text, exact_own_five_second_oracle="reaper survived original launcher exit" in text, exact_oracle_location="parent_lifecycle_tests.rs:111:" in text, no_launcher_waitid_timeout="original launcher did not exit" not in text)
+  elif kind == "leaked_parent_fd":
+-  diffs = re.findall(r"Diff < left / right >\s*\n(.*?)(?:\n\s*\n|$)", failure, flags=re.S)
++  child_pattern = r"(?m)^[ \t]*thread 'parent_lifecycle::tests::owned_liveness_scenario' panicked at [^\n]*parent_lifecycle_tests\.rs:268:\d+:\n"
++  child_starts = list(re.finditer(child_pattern, text)); child_blocks = []
++  for start in child_starts:
++   following = text[start.end():]
++   boundary = re.search(r"(?m)^[ \t]*(?:thread '[^']+' panicked at|failures:|test result:)", following)
++   end = start.end() + boundary.start() if boundary else len(text)
++   child_blocks.append({"ansi_normalized_character_span": [start.start(), end], "stderr_block": text[start.start():end]})
++  proof["exact_owned_child_panic_blocks"] = child_blocks
++  child_text = child_blocks[0]["stderr_block"] if len(child_blocks) == 1 else ""
++  diffs = re.findall(r"Diff < left / right >\s*\n(.*?)(?:\n\s*\n|$)", child_text, flags=re.S)
+   pairs = []
+   for diff in diffs:
+    left = "\n".join(line for line in diff.splitlines() if not line.lstrip().startswith(">"))
+    right = "\n".join(line for line in diff.splitlines() if not line.lstrip().startswith("<"))
+    pairs.append({"actual_left_numbers": [int(n) for n in re.findall(r"-?\d+", left)], "expected_right_numbers": [int(n) for n in re.findall(r"-?\d+", right)], "original_diff": diff})
+   proof["tuple_diffs"] = pairs
+-  conditions.update(exact_pre_fork_assertion_location="parent_lifecycle_tests.rs:268:" in text, exact_pre_fork_tuple=any(p["expected_right_numbers"] == [-1, errno.EBADF] and len(p["actual_left_numbers"]) == 2 and p["actual_left_numbers"][0] >= 0 for p in pairs))
++  conditions.update(unique_exact_owned_child_pre_fork_panic=len(child_blocks) == 1, exact_pre_fork_tuple=any(p["expected_right_numbers"] == [-1, errno.EBADF] and len(p["actual_left_numbers"]) == 2 and p["actual_left_numbers"][0] >= 0 for p in pairs))
+  else: raise AssertionError("unknown counterfactual")
+  proof["conditions"] = conditions; proof["qualified"] = all(conditions.values()); save(kind + "-causal-negative.json", proof)
+  assert proof["qualified"], "negative did not reach its specific physical causal oracle"

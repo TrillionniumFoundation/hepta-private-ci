@@ -1,0 +1,504 @@
+{
+  "schema": "hepta-b16-runner-v2-unreachable-git-delivery",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "review_manifest_blob": "63c330617fc5bbfffa7b64e4c52ea6571d4d2612",
+  "delta_blob": "c6a4304533f42fdf758dd6d391af0150b4c02b0b",
+  "prior_28_objects_preserved": {
+    "delivery_map": "c4885b9005d85ddf4c1647b8a96538957a7a7ab1",
+    "local_snapshot": "v1-frozen"
+  },
+  "internal_stage_ids_are_not_original_blocker_ids": true,
+  "display_namespace": "B16/phase",
+  "final_A_bound": false,
+  "last_tested_A_bound": false,
+  "native_executed": false,
+  "refs_modified": false,
+  "changed_and_new_objects": [
+    {
+      "path": "b16_capacity.py",
+      "blob": "12d04a630e613c6170d2e1172c3fc988dcfc2965",
+      "bytes": 4796,
+      "sha256": "2879eaf9f1e3c87bc575e33e34880ba3dc6b80a211687a1317533fcfbf8e3168",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "b16_guard.py",
+      "blob": "9d1c5716db2b50ef86a689fe43db18816d06b561",
+      "bytes": 10724,
+      "sha256": "dfaa27e85dd1ee2843893af811484f7bc059583615a4234a716e3472d507bb3d",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "b16_locks.py",
+      "blob": "1a6583b6226af4d20bb336b778476dedb02d59f4",
+      "bytes": 13015,
+      "sha256": "5edb44c7e4a6ce63981adc4681fead1987ddc19389e7d0659c9e4d3e13d8514e",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "b16_native.py",
+      "blob": "eee5c2792fb72b4e73591ebfffcce10c1aeb829f",
+      "bytes": 16306,
+      "sha256": "ce9bdfb7697b74ae8f1189a39c84a9aa928a40be4cd5dee6ce195a9366e1af81",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "b16_oracles.py",
+      "blob": "1a6efff50846f5c04bb5ea6def203ada42342050",
+      "bytes": 7483,
+      "sha256": "5928528add9ecb0f6a1681057a26954d9c607fb14c129293fa4bc6eac4e07e85",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "b16_runner.py",
+      "blob": "f0ecc2359b81d49a5088e51cedbad32a8b54504a",
+      "bytes": 15307,
+      "sha256": "63aac34b3bd16201615b6b3f4391d468fb0dad39c2a6187bfe17d7b627b33e6a",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "test_runner_guards.py",
+      "blob": "f294bc0400619ba7017d85c7c690c70acae41547",
+      "bytes": 13792,
+      "sha256": "a15285bda85d38b774395f989a6d29600a463ec1fd5a42705276cd3bf2163bed",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "binding-template-UNBOUND.json",
+      "blob": "676d731d0059b35d9004e1c23b8a09b26e4927b7",
+      "bytes": 3229,
+      "sha256": "0621cabbb6edd65c90d587f237105c070c02f5026b05e2e515af4eed19807c12",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "README.md",
+      "blob": "5b624ee97a7a71ad9dd673324cde710d7d1cfcad",
+      "bytes": 12373,
+      "sha256": "57d5f493bbb06e249062fcfa11d91286c6bc7bcd95ab976be3d2d461e35eb1bf",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "runner-integrity.json",
+      "blob": "dc7f3855d3b9ee47afd3150d171f3f26712a5fcc",
+      "bytes": 4102,
+      "sha256": "aec4b97e1b12dc4d0875cc57231a4e000280c847ef04bf752b1132ff76054aba",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "capacity-plan-v2.json",
+      "blob": "1850906a2c60abc7926eb93f73f5e16ec1cf868c",
+      "bytes": 4751,
+      "sha256": "8dbabb53d8e199b87bc637c8e1d5d6fd17463bcca64e493c3fee9428a62f3f9f",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "pure-guard-validation-v2.json",
+      "blob": "26ad020c558a9330d7e53fc41cf4117d636c7ab0",
+      "bytes": 2569,
+      "sha256": "005244408c5ed289418be4426239ef8464041e24246d531f6c2bee632ba5e69b",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "pure-guard-validation-v2.log",
+      "blob": "a022840f1fe3511d27cfb3d7f9ecc0dba16148df",
+      "bytes": 2075,
+      "sha256": "cc27410c4a7eff46acc07efa284f0adaf72f60e06d5b01c8725707ab74664c4c",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "unbound-refusal-v2.json",
+      "blob": "6125161985f570034e72e35a3559ee5d8d47eafd",
+      "bytes": 973,
+      "sha256": "98d81fd972a92866d5c09cb92be4c44512930fc1eb56c33df41607d1258e5229",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "unbound-refusal-v2.log",
+      "blob": "2b64caa3c2b979e3a457765151b71f9ec84402f2",
+      "bytes": 868,
+      "sha256": "b03190cbfeaf080d9ef8d5cb04c6228111207d0dda6bbfffb160ce7b541c21ba",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "v2-delta-validation.json",
+      "blob": "42aaa6877cfe6d9275d43fdcb2e57d29c99923f1",
+      "bytes": 7927,
+      "sha256": "c22d778ab2d9e1009062fb170a95fc2790bbab8743b68aa7af36456a0cdf556b",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "runner-v2.delta.patch",
+      "blob": "c6a4304533f42fdf758dd6d391af0150b4c02b0b",
+      "bytes": 49463,
+      "sha256": "5cdee5f87633af8ece538e58044126189c6076703f67e8570ada5aade99cf350",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    },
+    {
+      "path": "review-manifest-v2.json",
+      "blob": "63c330617fc5bbfffa7b64e4c52ea6571d4d2612",
+      "bytes": 16134,
+      "sha256": "612911fe3c00c105ba30c98b6ba04a10430f6eb5702cab13c363a3619aadd806",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V2 create followed by complete byte-equal GET"
+    }
+  ],
+  "unchanged_reused_objects": [
+    {
+      "path": "payload-manifest.json",
+      "bytes": 62667,
+      "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+      "blob": "64db580beabe2642eb8611184dac4fc686fe34e1",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V1 previously created and GET-verified; V2 cloud bytes verified unchanged"
+    },
+    {
+      "path": "build_payload.py",
+      "bytes": 11192,
+      "sha256": "35b05b1ae777ec4f3b6bd94a7fc59145c415702eb65df34f3269c1ae744258fa",
+      "blob": "bf7a3e53781fe4dbc97af905a2d87952d8c9f38c",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V1 previously created and GET-verified; V2 cloud bytes verified unchanged"
+    },
+    {
+      "path": "payload-reconstruction.json",
+      "bytes": 167264,
+      "sha256": "fdc677b722a8459c3b726be102fe47e11f7cd69d334d9dc908fe1314fb5e5426",
+      "blob": "ae55de8214fe54793624034ccbcbbb9221c26b4e",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V1 previously created and GET-verified; V2 cloud bytes verified unchanged"
+    },
+    {
+      "path": "operation-order-validation.json",
+      "bytes": 1826,
+      "sha256": "2064dd3ecbbccc6e7bf5540a185e33880b7c0e68b4b86d211217e3200e8ab789",
+      "blob": "538e344537d745f3c9d8ddd0372d41cf540da3fd",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V1 previously created and GET-verified; V2 cloud bytes verified unchanged"
+    },
+    {
+      "path": "epoch-foundation.json",
+      "bytes": 11472,
+      "sha256": "a8ac8886ec02230d5004dc8b608e0a33c0b89d5fdfabc1032569a13ee812fabd",
+      "blob": "6cc71ef831549fbe54f26c9bbe080e53effc59fa",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V1 previously created and GET-verified; V2 cloud bytes verified unchanged"
+    },
+    {
+      "path": "epoch-driver.json",
+      "bytes": 4348,
+      "sha256": "d28c2e9faa1cc0e3272d6aba88bfc3a49b062a484b6df530cca2ef2cf95a189f",
+      "blob": "5bd1014173766cb3599439e6a202514916286a5e",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V1 previously created and GET-verified; V2 cloud bytes verified unchanged"
+    },
+    {
+      "path": "epoch-pool.json",
+      "bytes": 3807,
+      "sha256": "19e1a06c6c97e20d1f1ef097222f6f7c2877850502223f16ed939848e228bf64",
+      "blob": "6d686ead86ef2c83f3b32f8bbd1b73e662d26093",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V1 previously created and GET-verified; V2 cloud bytes verified unchanged"
+    },
+    {
+      "path": "epoch-checkpoint.json",
+      "bytes": 3938,
+      "sha256": "0a9d2e32fe5aa16ef6dd490383fd4f7cc6ef10400a5a94a7bd5e97719b8780f8",
+      "blob": "7fb7a81cacd734e395f63d93938f9f4c94ba3468",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V1 previously created and GET-verified; V2 cloud bytes verified unchanged"
+    },
+    {
+      "path": "epoch-owning.json",
+      "bytes": 265,
+      "sha256": "87c7e1c517d3d601884a7555a7c677cec7490743dd2b5f7c0f1e2c45131efbe5",
+      "blob": "ce08a93c32f41135139b858d3bc22c6b224fec12",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V1 previously created and GET-verified; V2 cloud bytes verified unchanged"
+    },
+    {
+      "path": "source-payload-00.json",
+      "bytes": 350291,
+      "sha256": "44299f93d8cfc2cd6a264a1df985052d8c7c4eb16e62c9bd8614b70cb9564f78",
+      "blob": "8e5ed16eca037384b17830f3625489ddf69f7d7a",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V1 previously created and GET-verified; V2 cloud bytes verified unchanged"
+    },
+    {
+      "path": "source-payload-01.json",
+      "bytes": 333825,
+      "sha256": "85adc1e88702b4fb8c9d417a936d665519fa56386cb434bbc6ef55d5f9cdf07d",
+      "blob": "e621574b496731997af604b8e4b138851c8be3d0",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V1 previously created and GET-verified; V2 cloud bytes verified unchanged"
+    },
+    {
+      "path": "source-payload-02.json",
+      "bytes": 342693,
+      "sha256": "563074644cce7c3e63f92e5b5e346e09d24ff4ca03e90cea4ca1b001347186ce",
+      "blob": "3bb4615120935560dd4bff326795b68e03cfb31a",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V1 previously created and GET-verified; V2 cloud bytes verified unchanged"
+    },
+    {
+      "path": "source-payload-03.json",
+      "bytes": 345962,
+      "sha256": "8a633ff6916a8b543e8aca196c54a41cc180d8f68c2cd2a26f2fe0e87ca57f55",
+      "blob": "819cfab8bf8a410d944e7d2c8c185d07a1eea886",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V1 previously created and GET-verified; V2 cloud bytes verified unchanged"
+    },
+    {
+      "path": "source-payload-04.json",
+      "bytes": 135857,
+      "sha256": "5d43327e7379cca4e6502973efd7ba6a3f67fb464c3bf41ebbaf1f88c6132bba",
+      "blob": "e5a287d7ae1f8a0c77cec32ce1113a48e94f8daa",
+      "create_verified": true,
+      "GET_byte_equal": true,
+      "proof_origin": "V1 previously created and GET-verified; V2 cloud bytes verified unchanged"
+    }
+  ],
+  "install_files": [
+    {
+      "path": "b16_capacity.py",
+      "blob": "12d04a630e613c6170d2e1172c3fc988dcfc2965",
+      "bytes": 4796,
+      "sha256": "2879eaf9f1e3c87bc575e33e34880ba3dc6b80a211687a1317533fcfbf8e3168"
+    },
+    {
+      "path": "b16_guard.py",
+      "blob": "9d1c5716db2b50ef86a689fe43db18816d06b561",
+      "bytes": 10724,
+      "sha256": "dfaa27e85dd1ee2843893af811484f7bc059583615a4234a716e3472d507bb3d"
+    },
+    {
+      "path": "b16_locks.py",
+      "blob": "1a6583b6226af4d20bb336b778476dedb02d59f4",
+      "bytes": 13015,
+      "sha256": "5edb44c7e4a6ce63981adc4681fead1987ddc19389e7d0659c9e4d3e13d8514e"
+    },
+    {
+      "path": "b16_native.py",
+      "blob": "eee5c2792fb72b4e73591ebfffcce10c1aeb829f",
+      "bytes": 16306,
+      "sha256": "ce9bdfb7697b74ae8f1189a39c84a9aa928a40be4cd5dee6ce195a9366e1af81"
+    },
+    {
+      "path": "b16_oracles.py",
+      "blob": "1a6efff50846f5c04bb5ea6def203ada42342050",
+      "bytes": 7483,
+      "sha256": "5928528add9ecb0f6a1681057a26954d9c607fb14c129293fa4bc6eac4e07e85"
+    },
+    {
+      "path": "b16_runner.py",
+      "blob": "f0ecc2359b81d49a5088e51cedbad32a8b54504a",
+      "bytes": 15307,
+      "sha256": "63aac34b3bd16201615b6b3f4391d468fb0dad39c2a6187bfe17d7b627b33e6a"
+    },
+    {
+      "path": "binding-template-UNBOUND.json",
+      "blob": "676d731d0059b35d9004e1c23b8a09b26e4927b7",
+      "bytes": 3229,
+      "sha256": "0621cabbb6edd65c90d587f237105c070c02f5026b05e2e515af4eed19807c12"
+    },
+    {
+      "path": "build_payload.py",
+      "blob": "bf7a3e53781fe4dbc97af905a2d87952d8c9f38c",
+      "bytes": 11192,
+      "sha256": "35b05b1ae777ec4f3b6bd94a7fc59145c415702eb65df34f3269c1ae744258fa"
+    },
+    {
+      "path": "capacity-plan-v2.json",
+      "blob": "1850906a2c60abc7926eb93f73f5e16ec1cf868c",
+      "bytes": 4751,
+      "sha256": "8dbabb53d8e199b87bc637c8e1d5d6fd17463bcca64e493c3fee9428a62f3f9f"
+    },
+    {
+      "path": "epoch-checkpoint.json",
+      "blob": "7fb7a81cacd734e395f63d93938f9f4c94ba3468",
+      "bytes": 3938,
+      "sha256": "0a9d2e32fe5aa16ef6dd490383fd4f7cc6ef10400a5a94a7bd5e97719b8780f8"
+    },
+    {
+      "path": "epoch-driver.json",
+      "blob": "5bd1014173766cb3599439e6a202514916286a5e",
+      "bytes": 4348,
+      "sha256": "d28c2e9faa1cc0e3272d6aba88bfc3a49b062a484b6df530cca2ef2cf95a189f"
+    },
+    {
+      "path": "epoch-foundation.json",
+      "blob": "6cc71ef831549fbe54f26c9bbe080e53effc59fa",
+      "bytes": 11472,
+      "sha256": "a8ac8886ec02230d5004dc8b608e0a33c0b89d5fdfabc1032569a13ee812fabd"
+    },
+    {
+      "path": "epoch-owning.json",
+      "blob": "ce08a93c32f41135139b858d3bc22c6b224fec12",
+      "bytes": 265,
+      "sha256": "87c7e1c517d3d601884a7555a7c677cec7490743dd2b5f7c0f1e2c45131efbe5"
+    },
+    {
+      "path": "epoch-pool.json",
+      "blob": "6d686ead86ef2c83f3b32f8bbd1b73e662d26093",
+      "bytes": 3807,
+      "sha256": "19e1a06c6c97e20d1f1ef097222f6f7c2877850502223f16ed939848e228bf64"
+    },
+    {
+      "path": "operation-order-validation.json",
+      "blob": "538e344537d745f3c9d8ddd0372d41cf540da3fd",
+      "bytes": 1826,
+      "sha256": "2064dd3ecbbccc6e7bf5540a185e33880b7c0e68b4b86d211217e3200e8ab789"
+    },
+    {
+      "path": "payload-manifest.json",
+      "blob": "64db580beabe2642eb8611184dac4fc686fe34e1",
+      "bytes": 62667,
+      "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237"
+    },
+    {
+      "path": "payload-reconstruction.json",
+      "blob": "ae55de8214fe54793624034ccbcbbb9221c26b4e",
+      "bytes": 167264,
+      "sha256": "fdc677b722a8459c3b726be102fe47e11f7cd69d334d9dc908fe1314fb5e5426"
+    },
+    {
+      "path": "pure-guard-validation-v2.json",
+      "blob": "26ad020c558a9330d7e53fc41cf4117d636c7ab0",
+      "bytes": 2569,
+      "sha256": "005244408c5ed289418be4426239ef8464041e24246d531f6c2bee632ba5e69b"
+    },
+    {
+      "path": "pure-guard-validation-v2.log",
+      "blob": "a022840f1fe3511d27cfb3d7f9ecc0dba16148df",
+      "bytes": 2075,
+      "sha256": "cc27410c4a7eff46acc07efa284f0adaf72f60e06d5b01c8725707ab74664c4c"
+    },
+    {
+      "path": "README.md",
+      "blob": "5b624ee97a7a71ad9dd673324cde710d7d1cfcad",
+      "bytes": 12373,
+      "sha256": "57d5f493bbb06e249062fcfa11d91286c6bc7bcd95ab976be3d2d461e35eb1bf"
+    },
+    {
+      "path": "review-manifest-v2.json",
+      "blob": "63c330617fc5bbfffa7b64e4c52ea6571d4d2612",
+      "bytes": 16134,
+      "sha256": "612911fe3c00c105ba30c98b6ba04a10430f6eb5702cab13c363a3619aadd806"
+    },
+    {
+      "path": "runner-integrity.json",
+      "blob": "dc7f3855d3b9ee47afd3150d171f3f26712a5fcc",
+      "bytes": 4102,
+      "sha256": "aec4b97e1b12dc4d0875cc57231a4e000280c847ef04bf752b1132ff76054aba"
+    },
+    {
+      "path": "runner-v2.delta.patch",
+      "blob": "c6a4304533f42fdf758dd6d391af0150b4c02b0b",
+      "bytes": 49463,
+      "sha256": "5cdee5f87633af8ece538e58044126189c6076703f67e8570ada5aade99cf350"
+    },
+    {
+      "path": "source-payload-00.json",
+      "blob": "8e5ed16eca037384b17830f3625489ddf69f7d7a",
+      "bytes": 350291,
+      "sha256": "44299f93d8cfc2cd6a264a1df985052d8c7c4eb16e62c9bd8614b70cb9564f78"
+    },
+    {
+      "path": "source-payload-01.json",
+      "blob": "e621574b496731997af604b8e4b138851c8be3d0",
+      "bytes": 333825,
+      "sha256": "85adc1e88702b4fb8c9d417a936d665519fa56386cb434bbc6ef55d5f9cdf07d"
+    },
+    {
+      "path": "source-payload-02.json",
+      "blob": "3bb4615120935560dd4bff326795b68e03cfb31a",
+      "bytes": 342693,
+      "sha256": "563074644cce7c3e63f92e5b5e346e09d24ff4ca03e90cea4ca1b001347186ce"
+    },
+    {
+      "path": "source-payload-03.json",
+      "blob": "819cfab8bf8a410d944e7d2c8c185d07a1eea886",
+      "bytes": 345962,
+      "sha256": "8a633ff6916a8b543e8aca196c54a41cc180d8f68c2cd2a26f2fe0e87ca57f55"
+    },
+    {
+      "path": "source-payload-04.json",
+      "blob": "e5a287d7ae1f8a0c77cec32ce1113a48e94f8daa",
+      "bytes": 135857,
+      "sha256": "5d43327e7379cca4e6502973efd7ba6a3f67fb464c3bf41ebbaf1f88c6132bba"
+    },
+    {
+      "path": "test_runner_guards.py",
+      "blob": "f294bc0400619ba7017d85c7c690c70acae41547",
+      "bytes": 13792,
+      "sha256": "a15285bda85d38b774395f989a6d29600a463ec1fd5a42705276cd3bf2163bed"
+    },
+    {
+      "path": "unbound-refusal-v2.json",
+      "blob": "6125161985f570034e72e35a3559ee5d8d47eafd",
+      "bytes": 973,
+      "sha256": "98d81fd972a92866d5c09cb92be4c44512930fc1eb56c33df41607d1258e5229"
+    },
+    {
+      "path": "unbound-refusal-v2.log",
+      "blob": "2b64caa3c2b979e3a457765151b71f9ec84402f2",
+      "bytes": 868,
+      "sha256": "b03190cbfeaf080d9ef8d5cb04c6228111207d0dda6bbfffb160ce7b541c21ba"
+    },
+    {
+      "path": "v2-delta-validation.json",
+      "blob": "42aaa6877cfe6d9275d43fdcb2e57d29c99923f1",
+      "bytes": 7927,
+      "sha256": "c22d778ab2d9e1009062fb170a95fc2790bbab8743b68aa7af36456a0cdf556b"
+    }
+  ],
+  "qualification": "Static execution preparation only. 13 isolated Python/Git controls passed; original payload/physical tests and epochs unchanged. No B native launch and no original blocker closure.",
+  "capacity_condition": "Same final-A dev-small target plus one B-owned Bazel cache. Final A and last-tested A are separate source identities. Actual last-tested full artifact receipt, entire helper basename roster, current metadata, index and reviewed free-space allowances remain unbound."
+}

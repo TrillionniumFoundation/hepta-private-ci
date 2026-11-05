@@ -1,0 +1,111 @@
+{
+  "schema": "hepta.fourth.host-startup-noise.root-static-review.v1",
+  "evidence": "739f32634f2d8b7361e1ea001b344851eed5e1dc",
+  "source": "e84c2f12e39022701c8a942343b3913faa62cf31",
+  "source_checks": [
+    {
+      "path": "/etc/profile",
+      "bytes": 641,
+      "sha256": "e11b4fef7ad303d10cfcc733171713a31183e8b44d8600587e5f72c56a675a5a",
+      "ok": true
+    },
+    {
+      "path": "/etc/profile.d/im-config_wayland.sh",
+      "bytes": 1078,
+      "sha256": "51541d1eb2d4a4cab0be7272e053cff4e31a1ba7b8367a4908183da5f1566101",
+      "ok": true
+    },
+    {
+      "path": "/usr/share/im-config/initializer",
+      "bytes": 4215,
+      "sha256": "e4efe8ab8f7cfc8d15525b5e30d9562abe64fa9a603599bc806d8cc7d263683c",
+      "ok": true
+    },
+    {
+      "path": "/etc/default/im-config",
+      "bytes": 1752,
+      "sha256": "90586c0bdf4a8febbbafacdbc922c5142494b0ca34b77fc4ec2ab5644e981f5a",
+      "ok": true
+    }
+  ],
+  "systemd_primary": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "blob": "d1f4db80308552401d050535c1763861c84b0eba",
+        "bytes": 6751,
+        "sha256": "ed158500b043932261de404ed10e77e2ef2704102b602b76826498411ff0557f",
+        "ok": true,
+        "relevant": [
+          {
+            "line": 142,
+            "text": "        outfd = sd_journal_stream_fd_with_namespace(arg_namespace, arg_identifier, arg_priority, arg_level_prefix);"
+          },
+          {
+            "line": 144,
+            "text": "                return log_error_errno(outfd, \"Failed to create stream fd: %m\");"
+          },
+          {
+            "line": 147,
+            "text": "                errfd = sd_journal_stream_fd_with_namespace(arg_namespace, arg_identifier, arg_stderr_priority, arg_level_prefix);"
+          },
+          {
+            "line": 149,
+            "text": "                        return log_error_errno(errfd, \"Failed to create stream fd: %m\");"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "blob": "d1a8ebdfad01ee7bd80b55c97b203716dc60eed3",
+        "bytes": 16819,
+        "sha256": "b690dbdda11659d41c92e4e547927a2f9a883d4281e48daad91ff6852fb5de3a",
+        "ok": true,
+        "relevant": [
+          {
+            "line": 51,
+            "text": "        fd = socket(AF_UNIX, SOCK_DGRAM|SOCK_CLOEXEC, 0);"
+          },
+          {
+            "line": 377,
+            "text": "_public_ int sd_journal_stream_fd_with_namespace("
+          },
+          {
+            "line": 394,
+            "text": "        fd = socket(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0);"
+          },
+          {
+            "line": 398,
+            "text": "        r = connect_unix_path(fd, AT_FDCWD, path);"
+          },
+          {
+            "line": 402,
+            "text": "        if (shutdown(fd, SHUT_RD) < 0)"
+          },
+          {
+            "line": 429,
+            "text": "        r = loop_write(fd, header, l);"
+          },
+          {
+            "line": 437,
+            "text": "        return sd_journal_stream_fd_with_namespace(NULL, identifier, priority, level_prefix);"
+          }
+        ]
+      }
+    }
+  ],
+  "disposition": "STATIC_HOST_STARTUP_ATTRIBUTION_ORIGINAL_EIGHT_FAILURES_RETAINED",
+  "reasoning": [
+    "The complete actual /etc/profile reads all readable profile.d scripts without an interactive guard. Its im-config script unconditionally sources initializer.",
+    "initializer selects installed systemd-cat, tests verbosity with -n, and fills an empty verbosity with the nonempty string false. Its final two unconditional calls plus one selected branch match three observed messages per failed original case.",
+    "Root independently read both fixed systemd v259 primary files. The literal comes from the stream FD common error branch; the called function can fail in socket/connect/shutdown/write. Static evidence does not distinguish which syscall failed in these executions.",
+    "There is no quiet switch in the full four actual files that could justify setting an existing supported option. Their complete contents and SHA256 match the native bundle.",
+    "This attribution does not explain the separate readonly first-tuple exit41. That new run has no stream-fd noise and remains separately unresolved."
+  ],
+  "limits": [
+    "No host profile, permission, kernel policy, sandbox environment, shell flag or output assertion change is authorized by this review or performed.",
+    "Original clean-platform qualification remains necessary; this root static review closes no product/platform blocker."
+  ]
+}

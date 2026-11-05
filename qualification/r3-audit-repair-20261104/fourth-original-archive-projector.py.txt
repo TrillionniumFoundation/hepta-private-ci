@@ -1,0 +1,165 @@
+import datetime
+import hashlib
+import json
+import re
+import sys
+import zipfile
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+config = json.load(sys.stdin)
+wanted = {}
+for group, tests in config["groups"].items():
+    for entry in tests:
+        wanted.setdefault(entry["test"], []).append(group)
+for name in config["additional_lifecycle_names"]:
+    wanted.setdefault(name, []).append("windows_isolated_lifecycle_context")
+ansi = re.compile(r"\x1b\[[0-9;]*m")
+result_line = re.compile(r"^test (.+?) \.\.\. (ok|FAILED|ignored(?:,.*)?)\s*$")
+outdir = Path(config["output_dir"])
+outdir.mkdir(parents=False, exist_ok=False)
+report = {
+    "schema": config["schema"],
+    "started_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    "scope": "Read only previously downloaded archives; no download, source mutation, build or test. Exact requested result rows from every available final/attempt log and exact-name XML only. Absence is not pass or skip. Source/cache/platform limitations from the original frozen review remain.",
+    "product_head": config["expected_product_head"],
+    "tree": config["expected_tree"],
+    "evidence_map": config["evidence_map"],
+    "requested_names": wanted,
+    "archives": [],
+}
+for spec in config["archives"]:
+    entry = {
+        "platform": spec["platform"], "artifact_id": spec["artifact_id"],
+        "review_blob": spec["review_blob"], "archive_path": spec["path"],
+        "source_from_frozen_review": spec["source"], "members": [], "errors": [],
+    }
+    report["archives"].append(entry)
+    try:
+        path = Path(spec["path"])
+        digest = hashlib.sha256()
+        with path.open("rb") as reader:
+            while chunk := reader.read(1024 * 1024):
+                digest.update(chunk)
+        entry["archive_bytes"] = path.stat().st_size
+        entry["archive_sha256"] = digest.hexdigest()
+        if entry["archive_sha256"] != spec["expected_sha256"]:
+            raise ValueError("archive SHA256 differs from the frozen verified archive")
+        if spec.get("expected_bytes") is not None and entry["archive_bytes"] != spec["expected_bytes"]:
+            raise ValueError("archive byte count differs from the frozen review")
+        entry["archive_identity_matches"] = True
+        with zipfile.ZipFile(path) as archive:
+            names = archive.namelist()
+            if len(names) != len(set(names)):
+                raise ValueError("duplicate ZIP member names")
+            source_docs = []
+            for member in names:
+                if member.endswith("/manifest.json") or member == "source.json":
+                    body = archive.read(member)
+                    value = json.loads(body)
+                    source = value.get("source", value if member == "source.json" else None)
+                    if source is not None:
+                        source_docs.append({
+                            "member": member, "bytes": len(body),
+                            "sha256": hashlib.sha256(body).hexdigest(),
+                            "source": source,
+                            "scope": value.get("scope"),
+                            "complete_for_selected_targets": value.get("complete_for_selected_targets"),
+                        })
+                        tree = source.get("tree", source.get("source_tree"))
+                        if tree != config["expected_tree"]:
+                            raise ValueError("archive manifest source tree differs from cabc")
+            entry["source_documents"] = source_docs
+            if not source_docs:
+                raise ValueError("no frozen source document found")
+            for member_spec in spec["members"]:
+                member = member_spec["member"]
+                if not member.endswith((".log", ".xml")):
+                    continue
+                body = archive.read(member)
+                sha = hashlib.sha256(body).hexdigest()
+                record = {
+                    "member": member, "target": member_spec["target"],
+                    "bytes": len(body), "sha256": sha,
+                    "crc_verified_on_read": True,
+                    "kind": "attempt" if "/test_attempts/" in member else "final_or_isolated_log",
+                    "attempt_filename": Path(member).name if "/test_attempts/" in member else None,
+                    "matches": [],
+                }
+                entry["members"].append(record)
+                if len(body) != member_spec["bytes"] or sha != member_spec["sha256"]:
+                    raise ValueError("member identity differs from frozen index: " + member)
+                if member.endswith(".xml"):
+                    root = ET.fromstring(body)
+                    cases = list(root.iter("testcase"))
+                    record["xml_total_cases"] = len(cases)
+                    for case in cases:
+                        test_name = case.get("name", "")
+                        classname = case.get("classname", "")
+                        candidates = [test_name, classname + "::" + test_name]
+                        for exact in dict.fromkeys(candidates):
+                            if exact not in wanted:
+                                continue
+                            failures = list(case.findall("failure")) + list(case.findall("error"))
+                            skipped = list(case.findall("skipped"))
+                            record["matches"].append({
+                                "test": exact, "groups": wanted[exact],
+                                "result": "FAILED" if failures else ("ignored" if skipped else "ok"),
+                                "xml_attributes": dict(case.attrib),
+                                "failure_tags": [x.tag for x in failures],
+                            })
+                    record["xml_exact_requested_count"] = len(record["matches"])
+                    continue
+                text = body.decode("utf-8", errors="replace")
+                lines = text.splitlines()
+                record["line_count"] = len(lines)
+                summaries = []
+                for number, original in enumerate(lines, 1):
+                    line = ansi.sub("", original)
+                    match = result_line.fullmatch(line)
+                    if match and match[1] in wanted:
+                        record["matches"].append({
+                            "test": match[1], "groups": wanted[match[1]],
+                            "result": match[2], "line": number, "text": original,
+                        })
+                    if line.startswith("test result: ") or re.fullmatch(r"running \d+ tests?", line):
+                        summaries.append({"line": number, "text": original})
+                record["harness_summary_lines"] = summaries
+                matched = {x["test"] for x in record["matches"]}
+                mentions = []
+                for exact in wanted.keys() - matched:
+                    if exact in text:
+                        occurrences = [
+                            {"line": i + 1, "excerpt": line[:1000]}
+                            for i, line in enumerate(lines) if exact in line
+                        ]
+                        mentions.append({
+                            "test": exact, "occurrence_count": len(occurrences),
+                            "first_mentions": occurrences[:2],
+                            "note": "Mention without a complete exact result row; not classified as pass/fail/skip",
+                        })
+                record["unclassified_requested_mentions"] = mentions
+        entry["projection_complete_for_indexed_members"] = True
+    except Exception as error:
+        entry["errors"].append(type(error).__name__ + ": " + str(error))
+        entry["projection_complete_for_indexed_members"] = False
+    print(json.dumps({
+        "platform": entry["platform"], "artifact_id": entry["artifact_id"],
+        "complete": entry["projection_complete_for_indexed_members"],
+        "members": len(entry["members"]),
+        "exact_rows": sum(len(m["matches"]) for m in entry["members"]),
+        "errors": entry["errors"],
+    }), flush=True)
+report["completed_at_utc"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+report["all_requested_archive_projections_completed"] = all(
+    entry["projection_complete_for_indexed_members"] for entry in report["archives"]
+)
+encoded = (json.dumps(report, indent=2, sort_keys=True) + "\n").encode()
+destination = outdir / "exact-case-projection.json"
+with destination.open("xb") as writer:
+    writer.write(encoded)
+print(json.dumps({
+    "report_path": str(destination), "report_bytes": len(encoded),
+    "report_sha256": hashlib.sha256(encoded).hexdigest(),
+    "all_completed": report["all_requested_archive_projections_completed"],
+}), flush=True)

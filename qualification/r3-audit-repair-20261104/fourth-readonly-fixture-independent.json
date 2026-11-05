@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.owning7-readonly-snapshot-fixture-independent-review.v1",
+  "verdict": "STATIC_PASS_EXECUTION_PENDING",
+  "reviewer": "research_audit",
+  "inputs": [
+    {
+      "role": "test pre",
+      "blob": "82fc6590f5174599b5b3b9896920d53cf608510f",
+      "bytes": 62025,
+      "sha256": "40a210ce7d533746d95c184844fe3425c9d52aec6911dddf810200549691ce93"
+    },
+    {
+      "role": "test post",
+      "blob": "7794052d69fa71dcea99dfd9425654e3cc6ceadb",
+      "bytes": 62591,
+      "sha256": "c7e2df70f5c08b88ecc61941fc940b047deea571a70972f42f82b7859cbbc8f2"
+    },
+    {
+      "role": "positive patch",
+      "blob": "3807b516e5818b9ee3f1be98e24a89a97e0c96fe",
+      "bytes": 2378,
+      "sha256": "495fe6939cbf85cec456c30292637ee60b8270f2671b96ab461eea4670701b9b"
+    },
+    {
+      "role": "cache implementation",
+      "blob": "e352d63641c9aba6f201ebb34ebb6d433f24c080",
+      "bytes": 11746,
+      "sha256": "bae797689be9f48fc85572ff9ebd09bc9d6f3e5b171caa4bdd9f8637c695298c"
+    },
+    {
+      "role": "counterfactual",
+      "blob": "7027153a35a377ba9bbea3ddce2b923b01857b49",
+      "bytes": 62745,
+      "sha256": "bbb6c1ad9d59391521350b1dff4c7d01185dfc7b31651190cae9f21700b4f6c6"
+    },
+    {
+      "role": "counterfactual patch",
+      "blob": "1fc23a67ebccd09ac3ac51d60189001d2d4324ea",
+      "bytes": 793,
+      "sha256": "4919447ab8aa419118a7e8fdba944ab4cc2aa81173fc7e04b6d651fccc570152"
+    }
+  ],
+  "author_manifest": "d39e6fc948a1d02916add0542cff24298b760881",
+  "scope": "Complete18+/3- candidate and one-hunk counterfactual, full affected test body, exact cache implementation. No source/ref/native mutation or test execution.",
+  "checks": {
+    "full_patch_rebuild": true,
+    "counterfactual_patch_rebuild": true,
+    "prefix_through_matrix_and_test_signature_unchanged": true,
+    "all_following_tests_byteequal": true,
+    "original_full_result_tuple_exact_in_both": true,
+    "original_no_shell_snapshots_assertion_in_both": true,
+    "no_production_path_in_patch": true,
+    "counterfactual_only_one_hunk": true
+  },
+  "reasoning": [
+    "The profile path is under a new test-owned TempDir (post lines144-155), and HOME/cwd point to that directory. Parent rewriting .bashrc is fixture preparation; no developer home or production profile is read or changed.",
+    "The readonly branch cannot validly count captures by appending to a regular file in a genuinely read-only sandbox. Its initial profile retains every export, helper and shadowed-builtin fixture while removing only that incompatible append. Non-sandbox generated profile and captures=='x' oracle remain.",
+    "Both original requests now use read_only with the same cwd, env_policy and ShellSnapshotRequest. The real cache's comparison at lines92-99 includes request, cwd, env_policy and sandbox; changing Some(read_only) toNone in the old fixture created another key.",
+    "The unchanged first full stdout/stderr/exit/closed tuple must succeed before the test parent writes actual exit42 bytes and emits its phase marker. The second request retains the same restricted key and must pass the same full tuple. No assertion or request budget is reduced.",
+    "The existing actual cache captures the prepared sandbox command and stores one OnceCell per complete key. It restores via Bash -pc, suppressing ordinary automatic startup, so the changed physical .bashrc is a meaningful counterfactual probe of recapture rather than an expected output replacement.",
+    "The negative changes only the second readonly scope identity to attachment-2. The unchanged first result and poison marker must appear before a failure at the second full tuple is usable as evidence. Failure before that phase, an existing early skip or setup failure is not a valid negative.",
+    "The actual capture error path returns to the original command without restoration. Consequently a new-scope negative is not required to report final exit42; requiring the original complete tuple to fail is the accurate oracle.",
+    "The new absence assertion forbids captures file creation in the readonly branch; all other matrix definitions, complete result tuples, no-shell-snapshots assertion and following tests remain unchanged."
+  ],
+  "limits": [
+    "This independently verifies source/contract consistency, not the author's raw native baseline anew.",
+    "The original failure shows a readonly captures write error and final exit41, but this does not locate every internal capture/restore step. This review does not claim either conflict is the sole proved root cause.",
+    "The preexisting system_bwrap_warning early-return remains. Qualification must reject a negative or positive that merely takes that skip path.",
+    "Both the negative phase evidence and the original8 Linux /11 macOS attribute-derived matrix still need exact-source native catalogs and execution by the sole CI owner.",
+    "No Windows token, ACL, loader or DLL production boundary is modified."
+  ]
+}

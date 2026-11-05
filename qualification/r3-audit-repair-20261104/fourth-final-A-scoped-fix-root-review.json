@@ -1,0 +1,138 @@
+{
+  "schema": "hepta-final-A-scoped-fix-root-review-v1",
+  "observed_at_utc": "2026-11-05T05:12:52.793202+00:00",
+  "verdict": "ACCEPT_EXACT_TWO_REDUNDANT_CAST_REMOVALS_FOR_CURRENT_LINUX64_SCOPE_CONTINUE_ORIGINAL_FMT",
+  "original_bundle": {
+    "bytes": 168505,
+    "sha256": "fb8b9bf9d4eeb2b33c26dfc062d913c3c96b4fdeebfbb4588fabe53542af43ea",
+    "blob": "1622cad08973b5fd3221eaf80d5484b5ae90a235"
+  },
+  "all13_originals_independently_reencoded_and_hash_verified": true,
+  "originals": [
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/scoped-fix-changes.json",
+      "bytes": 1043,
+      "sha256": "86863345d62d0c996572a6e53477d177a1e34e79ce2a90a4ce949395ae747948",
+      "blob": "2607e4ed0998d655e93864f586d7b261b1979d88"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/scoped-fix.patch",
+      "bytes": 875,
+      "sha256": "3041dac86b27f1a87eba186ceed5bd165c8fa004a7e44bd5ec693781b214abbb",
+      "blob": "e43c9285b0060eb7b8f6dc9f18692ac3d1167894"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/scoped-fix-status.json",
+      "bytes": 4852,
+      "sha256": "d28aa777b9ae2ab25daac0f78808abba56ee6414e9d6b36a4008f0f18983a2cf",
+      "blob": "663f412a1a1490f6efb10912c095ea1d2ecb5218"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/terminal.json",
+      "bytes": 44565,
+      "sha256": "a6e2660add23bc3ad01392c7c4d98d4be42c3d1cb2042a8d99fbe6a4e25a5bab",
+      "blob": "848d1f33ca1424b230fe4a98c2ff82b56d9fdc7e"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/postimages/scoped-fix/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "bytes": 12754,
+      "sha256": "dc61d2f17ad7131d5c49584f95f332af9cb1ee4776960607e831e6544f727458",
+      "blob": "58eff73120448cb122c3e6d22ea60a7ee1899844"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/scoped-fix-command.json",
+      "bytes": 1402,
+      "sha256": "ffba90f96801563c2f6fbcb0d7925500f95cd934ebc7f23b6a55f12303033a4e",
+      "blob": "679140d92890005e866461bce4e850b4fc5c5571"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/1-initial-source-guard.json",
+      "bytes": 3595,
+      "sha256": "8b8b5989e4d33503fc826c049717c18217ccf0041c63075c544491a6f6b3c787",
+      "blob": "f3ffc2e2441bcb65fd04fbce95ff2b8e4415e341"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/3-scoped-fix-after-source-guard.json",
+      "bytes": 3604,
+      "sha256": "e8a8735ec1f1bdce1cfc1b2384a7b5e39083f8a310053f47ed0ea5652172673b",
+      "blob": "84415f9a9b851caa5aa95e44ec480926bf9d81fd"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/native-host.json",
+      "bytes": 682,
+      "sha256": "afba9f57c901e7684109bbae3deb0a8233c8e62a317b6668eeda1fb4f3902928",
+      "blob": "050960baf7b8deb307e4e28760d336b7cffe7d76"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/2-scoped-fix-before-source-guard.json",
+      "bytes": 3605,
+      "sha256": "0224c5f9a92ed3e1ea06ba4f61e75b0b7d65b2e43570c94fc0fe395ca5fc22fd",
+      "blob": "30b86e47864bbf6ecd2ad1d97cdcb1e2ec9d15fe"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/execution-request.json",
+      "bytes": 5847,
+      "sha256": "71218756dede76454c1203c5f7105718bc57f11ee9a92f0ab3d517b030698ae0",
+      "blob": "ea103ddf98081d88bd50560b65cd8b0736d6f872"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/scoped-fix.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-A-hygiene-after-full-fb9-20261105-v1/scoped-fix.stderr",
+      "bytes": 67762,
+      "sha256": "9e2be20e7223ce2ae88925b5974dd41d8cdf6757019ec8efaf193eb385e9ad7c",
+      "blob": "3346012e79abb0b54dd00a3c56bb810d3fd20ffa"
+    }
+  ],
+  "original_bytes": 150586,
+  "source_before": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "source_after": "b2901e2beb8171f125fe5906d585fbe134802423",
+  "original_fix_exit": 0,
+  "original_command_seconds": 220.94691061100457,
+  "controller_exit_preserved": 3,
+  "controller_exit3_reason": "AUTOMATIC_SOURCE_CHANGES_REQUIRE_ROOT_REVIEW",
+  "original_stdout_bytes": 0,
+  "original_stderr_bytes": 67762,
+  "warnings_preserved": true,
+  "warning_free_claim": false,
+  "changed_path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+  "preimage": {
+    "bytes": 12768,
+    "sha256": "08c1c79aaa41a9ca727ce3e4c77a46781d2b167d0127fbc401fba589e5ce4b9d",
+    "blob": "ed07ba4eed573d659dfdf647b1aab241a28e4b46"
+  },
+  "postimage": {
+    "bytes": 12754,
+    "sha256": "dc61d2f17ad7131d5c49584f95f332af9cb1ee4776960607e831e6544f727458",
+    "blob": "58eff73120448cb122c3e6d22ea60a7ee1899844"
+  },
+  "full_patch": {
+    "bytes": 875,
+    "sha256": "3041dac86b27f1a87eba186ceed5bd165c8fa004a7e44bd5ec693781b214abbb",
+    "blob": "e43c9285b0060eb7b8f6dc9f18692ac3d1167894"
+  },
+  "root_byte_exact_only_change": "The sole tuple expression loses as u64 after actual.st_dev and actual.st_ino. No other byte, assertion, marker, time limit or control flow changed.",
+  "type_scope": "Actual Linux x86_64 compilation succeeded. Both stat identity fields are u64 on the current Linux64 GNU/musl matrix; the linux-only module is not compiled on macOS/Windows. This does not qualify32-bit GNU where ino_t may be narrower.",
+  "all_three_source_index_lock_untracked_guards_preserved": true,
+  "fresh_free_bytes": 27467448320,
+  "resource_consequence": "B16 previous40.123GB foundation estimate no longer fits the measured27.467GB. B launch requires a separately justified current capacity review; no cache deletion is authorized.",
+  "full_tests_remain_bound_to_fb9": true,
+  "A_tests_after_hygiene": false,
+  "fmt_continuation_review": {
+    "all14_original_function_bodies_byte_equal": true,
+    "exact3812_byte_delta_independently_recomputed": true,
+    "executes_only": [
+      "just fmt",
+      "git diff --check",
+      "git diff --check published_tree actual_post_format_tree --"
+    ],
+    "fix_repeated": false,
+    "automatic_fmt_changes_stop_for_review": true
+  },
+  "whole_candidate_qualified": false,
+  "all_blockers_closed": false
+}

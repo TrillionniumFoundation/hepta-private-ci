@@ -1,0 +1,193 @@
+diff --git a/codex-rs/state/src/sqlite.rs b/codex-rs/state/src/sqlite.rs
+--- a/codex-rs/state/src/sqlite.rs
++++ b/codex-rs/state/src/sqlite.rs
+@@ -34,6 +34,7 @@
+ const QUEUE_DB_FILENAME: &str = "queue_1.sqlite";
+ const STATE_DB_FILENAME: &str = "state_5.sqlite";
+ const THREAD_HISTORY_DB_FILENAME: &str = "thread_history_1.sqlite";
++const COMMIT_GUARD_CUSTODY_COLLATION: &str = "__hepta_commit_guard_custody_v1";
+ 
+ #[derive(Clone, Copy)]
+ struct RuntimeDbSpec {
+@@ -327,8 +328,12 @@
+     /// Every physical connection installs `commit_allowed` before owner code
+     /// receives it. Returning false vetoes explicit and implicit SQLite commits.
+     /// The callback must be bounded, nonblocking, and must not call SQLite.
+-    /// Owners must keep the pool private and retain their file/initialization
+-    /// fence while connection setup runs before hook installation.
++    /// The reserved `__hepta_commit_guard_custody_v1` collation retains callback
++    /// captures past SQLx hook teardown until SQLite closes this connection's
++    /// Btrees. Owners must keep the pool private and must not replace or remove
++    /// that collation or the commit hook. The collation name is not a capability.
++    /// Connection setup precedes registration: opening or cancelling during
++    /// that interval still requires an independently retained initialization fence.
+     ///
+     /// This method supplies no checkout coordination, authenticated Current
+     /// receipt, or recovery authority. Owners that require a protected transition
+@@ -376,9 +381,11 @@
+     /// from this pool or retain a lock needed by the commit callback. The SQLite
+     /// handle lock is released before awaiting checkout coordination.
+     ///
+-    /// Connection setup precedes hook installation, so callers must hold their
+-    /// file/initialization fence while opening the pool. This is not a replacement
+-    /// for the descriptor-bound recovery API or the owner's whole-store gate.
++    /// Callback captures use the same reserved collation and registration limits
++    /// as `open_commit_guarded_durable_evidence_pool`. Callers must retain their
++    /// initialization fence before registration and must not replace the hook or
++    /// collation. This is not a replacement for descriptor-bound recovery or the
++    /// owner's whole-store gate.
+     pub async fn open_coordinated_durable_evidence_pool<F, C, Fut>(
+         &self,
+         path: &Path,
+@@ -527,10 +534,16 @@
+ where
+     F: Fn() -> bool + Send + Sync + 'static,
+ {
+-    connection
+-        .lock_handle()
+-        .await?
+-        .set_commit_hook(move || commit_allowed());
++    let mut handle = connection.lock_handle().await?;
++    let custody = Arc::clone(&commit_allowed);
++    // SQLx removes and drops commit hooks before its native handle closes.
++    // SQLite destroys this collation after closing this connection's Btrees.
++    // The comparator never invokes the commit predicate or grants write access.
++    handle.create_collation(COMMIT_GUARD_CUSTODY_COLLATION, move |left, right| {
++        let _retained_custody = &custody;
++        left.cmp(right)
++    })?;
++    handle.set_commit_hook(move || commit_allowed());
+     Ok(())
+ }
+ 
+diff --git a/codex-rs/hepta-memory/src/cognitive_store.rs b/codex-rs/hepta-memory/src/cognitive_store.rs
+--- a/codex-rs/hepta-memory/src/cognitive_store.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store.rs
+@@ -258,6 +258,13 @@
+ 
+ #[derive(Debug)]
+ pub(crate) struct CognitiveStoreOpenGuard {
++    custody: Arc<CognitiveStoreLockCustody>,
++}
++
++// Physical connections retain the original descriptors without retaining a
++// public store handle. Reference counts are not proof of exclusive authority.
++#[derive(Debug)]
++struct CognitiveStoreLockCustody {
+     _file: File,
+     _path: PathBuf,
+     #[cfg(windows)]
+@@ -265,7 +272,7 @@
+ }
+ 
+ impl CognitiveStoreOpenGuard {
+-    fn open_lock_file(root: &Path) -> Result<Self, CognitiveStoreError> {
++    fn open_lock_file(root: &Path) -> Result<CognitiveStoreLockCustody, CognitiveStoreError> {
+         let path = root.join(COGNITIVE_STORE_LOCK_FILENAME);
+         #[cfg(unix)]
+         let file = {
+@@ -301,7 +308,7 @@
+                 ));
+             }
+         }
+-        Ok(Self {
++        Ok(CognitiveStoreLockCustody {
+             _file: file,
+             _path: path,
+             #[cfg(windows)]
+@@ -316,7 +323,9 @@
+                 "cognitive store is fenced by recovery: {error}"
+             ))
+         })?;
+-        Ok(Arc::new(guard))
++        Ok(Arc::new(Self {
++            custody: Arc::new(guard),
++        }))
+     }
+ 
+     pub(crate) fn acquire_exclusive(root: &Path) -> Result<Self, CognitiveStoreError> {
+@@ -326,7 +335,9 @@
+                 "cognitive recovery cannot fence active store handles: {error}"
+             ))
+         })?;
+-        Ok(guard)
++        Ok(Self {
++            custody: Arc::new(guard),
++        })
+     }
+ }
+ 
+@@ -357,7 +368,7 @@
+         windows::prepare_database(&root, &path)?;
+         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
+             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+-        let commit_gate = CognitiveCommitGate::new();
++        let commit_gate = CognitiveCommitGate::for_open_guard(&open_guard);
+         let commit_check = commit_gate.clone();
+         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+             .open_commit_guarded_durable_evidence_pool(&path, move || commit_check.commit_allowed())
+@@ -387,11 +398,13 @@
+     /// On completion, close the shared SQLite pool before releasing this
+     /// handle's store fence.
+     ///
+-    /// Await this to completion before starting recovery. Cancelling this
+-    /// future or dropping a store does not provide a shutdown barrier for
+-    /// SQLx's connection-return tasks or SQLite's final WAL/SHM cleanup. The
+-    /// pool is shared by all clones; other store handles must also be dropped
+-    /// before recovery can obtain the exclusive fence.
++    /// Await this to completion before starting recovery. Cancelling this future
++    /// is not a shutdown barrier. Successfully registered physical connections
++    /// retain the original file and Windows directory custody through native
++    /// Btree closure, including after a connection is detached from the pool.
++    /// Other store handles and detached connections must also be closed/dropped
++    /// before recovery can acquire the fence. This does not cover cancellation
++    /// during connection setup before the custody anchor is installed.
+     pub async fn close(self) {
+         self.pool.close().await;
+         drop(self);
+diff --git a/codex-rs/hepta-memory/src/cognitive_store_gate.rs b/codex-rs/hepta-memory/src/cognitive_store_gate.rs
+--- a/codex-rs/hepta-memory/src/cognitive_store_gate.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store_gate.rs
+@@ -5,18 +5,30 @@
+ use std::sync::atomic::AtomicBool;
+ use std::sync::atomic::Ordering;
+ 
++use super::CognitiveStoreLockCustody;
++use super::CognitiveStoreOpenGuard;
++
+ #[derive(Clone)]
+ pub(crate) struct CognitiveCommitGate {
+     fenced: Arc<AtomicBool>,
++    _custody: Option<Arc<CognitiveStoreLockCustody>>,
+ }
+ 
+ impl CognitiveCommitGate {
+     pub(crate) fn new() -> Self {
+         Self {
+             fenced: Arc::new(AtomicBool::new(false)),
++            _custody: None,
+         }
+     }
+ 
++    pub(crate) fn for_open_guard(guard: &CognitiveStoreOpenGuard) -> Self {
++        Self {
++            fenced: Arc::new(AtomicBool::new(false)),
++            _custody: Some(Arc::clone(&guard.custody)),
++        }
++    }
++
+     pub(crate) fn commit_allowed(&self) -> bool {
+         !self.fenced.load(Ordering::SeqCst)
+     }
+diff --git a/codex-rs/hepta-memory/src/cognitive_store_recovery.rs b/codex-rs/hepta-memory/src/cognitive_store_recovery.rs
+--- a/codex-rs/hepta-memory/src/cognitive_store_recovery.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store_recovery.rs
+@@ -166,7 +166,7 @@
+             .materialize_identity_bound_recovery_copy(&source_guard, &candidate)
+             .map_err(recovery_error)?;
+ 
+-        let commit_gate = CognitiveCommitGate::new();
++        let commit_gate = CognitiveCommitGate::for_open_guard(&exclusive_guard);
+         let result = async {
+             let commit_check = commit_gate.clone();
+             let pool = config

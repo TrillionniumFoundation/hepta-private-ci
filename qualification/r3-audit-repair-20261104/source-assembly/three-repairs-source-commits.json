@@ -1,0 +1,23 @@
+[
+  {
+    "stage": "SkillsFixtureIsolationV2",
+    "tree": "51673d30d34674faeac6bb17e565fc9d04aec8f1",
+    "message": "test(skills): isolate host roots with an explicit project marker",
+    "sha": "1175e9b91528db4ab9426fe0bec92aa34a1013d2",
+    "parent": "7bc267096f23159605c0b6563374e697f8a0bd1f"
+  },
+  {
+    "stage": "MigrationOfflineOfficialFixture",
+    "tree": "b2cee2e56d32199dc67d362ec15b796b2814ee7e",
+    "message": "test(migration): exercise official marketplace import with an isolated local Git fixture",
+    "sha": "d09b54495a364170859a28d1656dc9fe4286c216",
+    "parent": "1175e9b91528db4ab9426fe0bec92aa34a1013d2"
+  },
+  {
+    "stage": "V8DefaultSandboxAlignment",
+    "tree": "7d703610ae4f778ad305ebc139860d276f416e8c",
+    "message": "fix(v8-poc): align the default sandbox feature with the linked runtime",
+    "sha": "bd7631e98f295fefad7654865cea497ceacf7d06",
+    "parent": "d09b54495a364170859a28d1656dc9fe4286c216"
+  }
+]

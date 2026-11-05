@@ -1,0 +1,147 @@
+{
+  "schema": "hepta-A-hygiene-fix1-primary-manifest-v1",
+  "resolved_libc_tag": "0.2.191",
+  "annotated_tag": "db3d70a66eeab1dd9c845d67e2ba5df40d76e7a9",
+  "resolved_commit": "ccc2ff4aaab962f7fde7b8edda7379c045b1ca12",
+  "registry_archive_byte_equivalence_checked": false,
+  "files": [
+    {
+      "path": "preimages/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "bytes": 12768,
+      "sha256": "08c1c79aaa41a9ca727ce3e4c77a46781d2b167d0127fbc401fba589e5ce4b9d",
+      "git_blob": "ed07ba4eed573d659dfdf647b1aab241a28e4b46",
+      "expected_repository_blob": "ed07ba4eed573d659dfdf647b1aab241a28e4b46"
+    },
+    {
+      "path": "postimages/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "bytes": 12754,
+      "sha256": "dc61d2f17ad7131d5c49584f95f332af9cb1ee4776960607e831e6544f727458",
+      "git_blob": "58eff73120448cb122c3e6d22ea60a7ee1899844",
+      "expected_repository_blob": "58eff73120448cb122c3e6d22ea60a7ee1899844"
+    },
+    {
+      "path": "context/codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "bytes": 7437,
+      "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6",
+      "git_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+      "expected_repository_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe"
+    },
+    {
+      "path": "context/codex-rs/linux-sandbox/src/lib.rs",
+      "bytes": 1074,
+      "sha256": "35302eb707a300f974f3fa6873f82a29a4f1c15fb250b10f57c2b4f5ccd99aba",
+      "git_blob": "8f704a3156998d169ceee6bd5e93bf549da9c5c0",
+      "expected_repository_blob": "8f704a3156998d169ceee6bd5e93bf549da9c5c0"
+    },
+    {
+      "path": "primary/libc-0.2.191/tag-ref.json",
+      "bytes": 334,
+      "sha256": "422213abe92af3f425afd3318fa74b494537c3ffe81628d9bbe3af13e94b9918",
+      "git_blob": "0f7e2b8cd13131e3fda9dbee5f0be349eba77645",
+      "source_url": "https://api.github.com/repos/rust-lang/libc/git/ref/tags/0.2.191",
+      "original_had_final_newline": false,
+      "raw_source_sha256": "e0b47778c53c294642a548b4463ff9b8ded92b35725db82d3b30aca1e6ae77ce",
+      "raw_source_bytes": 333
+    },
+    {
+      "path": "primary/libc-0.2.191/annotated-tag.json",
+      "bytes": 728,
+      "sha256": "628025220601f218bf2ae66599d56511ac5b251a299f26f8f5e37ec47e3f58ed",
+      "git_blob": "4fcd2ec99b0709952b3d4d6234e0541aca796021",
+      "source_url": "https://api.github.com/repos/rust-lang/libc/git/tags/db3d70a66eeab1dd9c845d67e2ba5df40d76e7a9",
+      "original_had_final_newline": false,
+      "raw_source_sha256": "b71c717d466e097cf8ea7bc022b517bf63a4e3acfb9b5dd26122683b5be47cd9",
+      "raw_source_bytes": 727
+    },
+    {
+      "path": "primary/libc-0.2.191/gnu-b64-mod.rs",
+      "bytes": 7906,
+      "sha256": "4b6ba534576035f3dd89d6d89c520d4c0a98f3a3e24ece70dff5970d2047d446",
+      "git_blob": "16b7bef085fe098dce25ec38ce43e3d8db3c33ee",
+      "source_url": "https://raw.githubusercontent.com/rust-lang/libc/0.2.191/src/unix/linux_like/linux/gnu/b64/mod.rs",
+      "original_had_final_newline": true,
+      "raw_source_sha256": "4b6ba534576035f3dd89d6d89c520d4c0a98f3a3e24ece70dff5970d2047d446",
+      "raw_source_bytes": 7906
+    },
+    {
+      "path": "primary/libc-0.2.191/gnu-b32-mod.rs",
+      "bytes": 12517,
+      "sha256": "7c279b9705bcf1048562c262cad290f3379cf8e7cf301db64ee7b93215fdfd65",
+      "git_blob": "e86b0c469475ce15b82c9b9c128bd883d73ed6c1",
+      "source_url": "https://raw.githubusercontent.com/rust-lang/libc/0.2.191/src/unix/linux_like/linux/gnu/b32/mod.rs",
+      "original_had_final_newline": true,
+      "raw_source_sha256": "7c279b9705bcf1048562c262cad290f3379cf8e7cf301db64ee7b93215fdfd65",
+      "raw_source_bytes": 12517
+    },
+    {
+      "path": "primary/libc-0.2.191/musl-mod.rs",
+      "bytes": 28006,
+      "sha256": "74a2f066d6de433e55895b8f266c1e548fe6b511e6eff31be29acd9d0b6ca296",
+      "git_blob": "d57fabb431e3bf2e2aedc3137604b9b4e79abd5c",
+      "source_url": "https://raw.githubusercontent.com/rust-lang/libc/0.2.191/src/unix/linux_like/linux/musl/mod.rs",
+      "original_had_final_newline": true,
+      "raw_source_sha256": "74a2f066d6de433e55895b8f266c1e548fe6b511e6eff31be29acd9d0b6ca296",
+      "raw_source_bytes": 28006
+    },
+    {
+      "path": "primary/libc-0.2.191/linux-mod.rs",
+      "bytes": 128116,
+      "sha256": "33e05ddf2bc3f6def630db9507b9a89e88d094e7076b49d40f39a7ee19bb9aeb",
+      "git_blob": "2c9314778d3ca133ef94799ed06bcf63215c4ce1",
+      "source_url": "https://raw.githubusercontent.com/rust-lang/libc/0.2.191/src/unix/linux_like/linux/mod.rs",
+      "original_had_final_newline": true,
+      "raw_source_sha256": "33e05ddf2bc3f6def630db9507b9a89e88d094e7076b49d40f39a7ee19bb9aeb",
+      "raw_source_bytes": 128116
+    },
+    {
+      "path": "primary/libc-0.2.191/build.rs",
+      "bytes": 21693,
+      "sha256": "e70593206df4d2a3138eab463567e0ae8f91c1bea565da4ab5370ea8986840ac",
+      "git_blob": "a0553ddc27fcc59e54416a5005d21ab5ca544c1c",
+      "source_url": "https://raw.githubusercontent.com/rust-lang/libc/0.2.191/build.rs",
+      "original_had_final_newline": true,
+      "raw_source_sha256": "e70593206df4d2a3138eab463567e0ae8f91c1bea565da4ab5370ea8986840ac",
+      "raw_source_bytes": 21693
+    },
+    {
+      "path": "primary/libc-0.2.191/gnu-x86_64-stat.rs",
+      "bytes": 20426,
+      "sha256": "1e7565934b7d0f8f2a7b6ecb4f99684a443adb7974323fcf423e57cf59b2b6aa",
+      "git_blob": "89f84f39590a765b37d8467a893567cfc15e9988",
+      "source_url": "https://raw.githubusercontent.com/rust-lang/libc/ccc2ff4aaab962f7fde7b8edda7379c045b1ca12/src/unix/linux_like/linux/gnu/b64/x86_64/mod.rs",
+      "original_had_final_newline": true,
+      "raw_source_sha256": "1e7565934b7d0f8f2a7b6ecb4f99684a443adb7974323fcf423e57cf59b2b6aa",
+      "raw_source_bytes": 20426
+    },
+    {
+      "path": "primary/libc-0.2.191/gnu-aarch64-stat.rs",
+      "bytes": 30189,
+      "sha256": "c5404f529f4a3de2cd0eda49c71f80e746f5ecc6658465c8af39c3c49413c280",
+      "git_blob": "26ea52c427dd1720e8a59aea0e08b77f80483ac4",
+      "source_url": "https://raw.githubusercontent.com/rust-lang/libc/ccc2ff4aaab962f7fde7b8edda7379c045b1ca12/src/unix/linux_like/linux/gnu/b64/aarch64/mod.rs",
+      "original_had_final_newline": true,
+      "raw_source_sha256": "c5404f529f4a3de2cd0eda49c71f80e746f5ecc6658465c8af39c3c49413c280",
+      "raw_source_bytes": 30189
+    },
+    {
+      "path": "primary/libc-0.2.191/musl-x86_64-stat.rs",
+      "bytes": 28798,
+      "sha256": "03dc353645cc4d6169bd624e445a73d768bf8520ca2f2385a104882a75fe4d12",
+      "git_blob": "48890ff35ae231811e452804687b1ed31bc19265",
+      "source_url": "https://raw.githubusercontent.com/rust-lang/libc/ccc2ff4aaab962f7fde7b8edda7379c045b1ca12/src/unix/linux_like/linux/musl/b64/x86_64/mod.rs",
+      "original_had_final_newline": true,
+      "raw_source_sha256": "03dc353645cc4d6169bd624e445a73d768bf8520ca2f2385a104882a75fe4d12",
+      "raw_source_bytes": 28798
+    },
+    {
+      "path": "primary/libc-0.2.191/musl-aarch64-stat.rs",
+      "bytes": 24471,
+      "sha256": "931ec26fa7829cdc7111f198e4aeb1ca1fca67765a0e6407022df16f48081e14",
+      "git_blob": "85fa1c07350d8a9533a25ce54b9a1af93f9d3b77",
+      "source_url": "https://raw.githubusercontent.com/rust-lang/libc/ccc2ff4aaab962f7fde7b8edda7379c045b1ca12/src/unix/linux_like/linux/musl/b64/aarch64/mod.rs",
+      "original_had_final_newline": true,
+      "raw_source_sha256": "931ec26fa7829cdc7111f198e4aeb1ca1fca67765a0e6407022df16f48081e14",
+      "raw_source_bytes": 24471
+    }
+  ]
+}

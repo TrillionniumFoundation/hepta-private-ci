@@ -1,0 +1,1238 @@
+{
+  "schema": "hepta-donor-progress-index-20261105-v1",
+  "generated_at_utc": "2026-11-05T03:49:15.595653+00:00",
+  "inventory_interval_utc": [
+    "2026-11-05T03:16:46.083Z",
+    "2026-11-05T03:24:00.347Z"
+  ],
+  "donor_observation_range_utc": [
+    "2026-11-05T03:25:03.334Z",
+    "2026-11-05T03:45:29.504Z"
+  ],
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "published_candidate": {
+    "pr": 4797,
+    "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4"
+  },
+  "inventory_blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912",
+  "inventory_archive_manifest_blob": "a4cb25e1bd5a9e161c1ebae494a8cddb3681512b",
+  "new_prs": [
+    {
+      "pr": 4809,
+      "title": "diagnostics(windows): observe recovery stages with original test helpers",
+      "head": "5a74ea9a8e791cff8e539e4c69a1fc3a15489edf",
+      "base": "735b980092e4cca7790037923111322660672059",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4809",
+      "updated_at": "2026-11-04T22:40:04Z",
+      "related_blockers": [
+        "B09",
+        "B14",
+        "B15"
+      ],
+      "finding_zh": "Windows恢复新诊断；正文保留原14全失败与retained7/8，诊断后的原head资格未核。",
+      "verification_level": "PR body/index and fixed head; reported test claims not independently raw-reverified except the separately recorded 4811 run/job API"
+    },
+    {
+      "pr": 4810,
+      "title": "fix(windows): retain trusted OpenSSH verification and private-state inputs",
+      "head": "c2243df72c7648414313519b9dbea16464f2c258",
+      "base": "fbf786803f07e402bcaddbb8fbe3dd387f6b7688",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4810",
+      "updated_at": "2026-11-04T23:47:26Z",
+      "related_blockers": [
+        "B11",
+        "B12",
+        "B16"
+      ],
+      "finding_zh": "上述Windows donor表；当前实际CI失败，不导入或闭合。",
+      "verification_level": "selected donor source/CI separately verified"
+    },
+    {
+      "pr": 4811,
+      "title": "ci: regenerate Bazel lock proposals for Cargo dependency inputs",
+      "head": "44a466ce6592865b7bb2eab6ceb7465edcbfb3ab",
+      "base": "c2243df72c7648414313519b9dbea16464f2c258",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4811",
+      "updated_at": "2026-11-04T22:59:38Z",
+      "related_blockers": [
+        "B02",
+        "B15"
+      ],
+      "finding_zh": "另一head的lock专用run/job API实际success；未独立取ZIP，不继承为4810或当前产品通过。",
+      "verification_level": "PR body/index and fixed head; reported test claims not independently raw-reverified except the separately recorded 4811 run/job API"
+    },
+    {
+      "pr": 4812,
+      "title": "fix(hepta): require PQ at ordinary runtime and revalidate FinalUse effects",
+      "head": "3a8e50ddd79ec3e52ca58157323726c37069202c",
+      "base": "4c93a641945044f904a656cbf1d23e358a074d52",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4812",
+      "updated_at": "2026-11-05T02:10:31Z",
+      "related_blockers": [
+        "B16",
+        "B19"
+      ],
+      "finding_zh": "上述PQ/FinalUse donor表；原qualification HOLD。",
+      "verification_level": "selected donor source/CI separately verified"
+    },
+    {
+      "pr": 4813,
+      "title": "ci(ui): restore proven libpulse native-link input on Windows/Operator integration [HOLD]",
+      "head": "ec5a615dbc35b14fb3426d08d7d11469fc1a2ef5",
+      "base": "c2243df72c7648414313519b9dbea16464f2c258",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4813",
+      "updated_at": "2026-11-05T00:41:15Z",
+      "related_blockers": [
+        "B15",
+        "B17"
+      ],
+      "finding_zh": "libpulse工作流前提候选；不能借旧4692成功转成这个head的renderer/产品资格。",
+      "verification_level": "PR body/index and fixed head; reported test claims not independently raw-reverified except the separately recorded 4811 run/job API"
+    },
+    {
+      "pr": 4814,
+      "title": "research(hcsn): bind multimodal source, encoder and causal prefix identities",
+      "head": "11d5d14d57f1252cd92ffae5e7b344e9b827536e",
+      "base": "3b9a136c56e9e743d7ecba852d621e1ecabf6bba",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4814",
+      "updated_at": "2026-11-05T01:13:12Z",
+      "related_blockers": [
+        "B18"
+      ],
+      "finding_zh": "HCSN V14边界控制；作者报告23个合成控制及python -O，不是新任务收益。",
+      "verification_level": "PR body/index and fixed head; reported test claims not independently raw-reverified except the separately recorded 4811 run/job API"
+    },
+    {
+      "pr": 4815,
+      "title": "research(hcsn): make READ RESET and acquired content recover atomically",
+      "head": "8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5",
+      "base": "11d5d14d57f1252cd92ffae5e7b344e9b827536e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4815",
+      "updated_at": "2026-11-05T01:13:34Z",
+      "related_blockers": [
+        "B18"
+      ],
+      "finding_zh": "durable RESET/read recovery合成与process-kill控制；独立质量/等预算GPU经济性仍HOLD。",
+      "verification_level": "PR body/index and fixed head; reported test claims not independently raw-reverified except the separately recorded 4811 run/job API"
+    },
+    {
+      "pr": 4816,
+      "title": "research(hcsn): execute frozen AV models through durable causal I/O",
+      "head": "8fac2b5f51255902db92c7a8fad9036a2fa3617c",
+      "base": "8b31a2c7ec3c4e6d90b44e66a342f22e271d5ac5",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4816",
+      "updated_at": "2026-11-05T01:39:47Z",
+      "related_blockers": [
+        "B18"
+      ],
+      "finding_zh": "冻结V13的真实AV replay：旧样本重复回放/一致性检查，不是新独立录音或同预算训练增益。",
+      "verification_level": "PR body/index and fixed head; reported test claims not independently raw-reverified except the separately recorded 4811 run/job API"
+    },
+    {
+      "pr": 4817,
+      "title": "research(memory): V15 typed lifecycle and evidence-bound admission",
+      "head": "379c21c2e625c3a3dfbb514e11b9e8fe2213cda8",
+      "base": "6d2551388ed42355f02afbf528472ee2b4d8488b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4817",
+      "updated_at": "2026-11-05T01:44:49Z",
+      "related_blockers": [
+        "B16",
+        "B18"
+      ],
+      "finding_zh": "上述Memory V15；53实际Python控制与旧设备收据离线复核。",
+      "verification_level": "selected donor source/CI separately verified"
+    },
+    {
+      "pr": 4818,
+      "title": "ci: validate the intermediate organ recovery candidate on the original matrix",
+      "head": "34c547eac9a80988a1f35c68d500eba07e369b85",
+      "base": "732e934ba496d90fbe042b8d41d479ef901643e5",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4818",
+      "updated_at": "2026-11-05T02:55:03Z",
+      "related_blockers": [
+        "B02",
+        "B15"
+      ],
+      "finding_zh": "另一Draft整合树2512路径的source-only聚合；原失败仍有，不替换当前单一4797候选。",
+      "verification_level": "PR body/index and fixed head; reported test claims not independently raw-reverified except the separately recorded 4811 run/job API"
+    },
+    {
+      "pr": 4819,
+      "title": "research(v6): continuation-only heads, measured-cost admission and rollback — no-update",
+      "head": "943aa1c69dbfd696763f45ef24c5d3d491f56e19",
+      "base": "18dac3ccd30317893ad922792c12400390522f00",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4819",
+      "updated_at": "2026-11-05T01:30:44Z",
+      "related_blockers": [
+        "B18"
+      ],
+      "finding_zh": "新no-update研究模块及作者35 CPU工程控制；两合成输入、未训练generator/observer、线性头迁移一致性，不是完整2×2/真实OOD收益。",
+      "verification_level": "PR body/index and fixed head; reported test claims not independently raw-reverified except the separately recorded 4811 run/job API"
+    },
+    {
+      "pr": 4820,
+      "title": "test(ci): tolerate Linux procfs ESRCH after child process-group cancellation [HOLD]",
+      "head": "6a5042886572b35de1847347b6c61208b4a191fa",
+      "base": "34c547eac9a80988a1f35c68d500eba07e369b85",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4820",
+      "updated_at": "2026-11-05T01:48:40Z",
+      "related_blockers": [
+        "B15"
+      ],
+      "finding_zh": "procfs ESRCH夹具候选，源于实际架构检查失败；新head执行结果未在本审计复核。",
+      "verification_level": "PR body/index and fixed head; reported test claims not independently raw-reverified except the separately recorded 4811 run/job API"
+    },
+    {
+      "pr": 4821,
+      "title": "fix(hepta): fence final Cell effect entry and retain lifecycle DENY_ALL",
+      "head": "7ed5734a7545e2809f9c8e3014bd14f0eafdd80c",
+      "base": "3a8e50ddd79ec3e52ca58157323726c37069202c",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4821",
+      "updated_at": "2026-11-05T01:55:48Z",
+      "related_blockers": [
+        "B16",
+        "B19"
+      ],
+      "finding_zh": "4812后继的operation/lease/FinalUse本地事务组件；作者报告277PASS，当前源未重验，governed topology仍明确failclosed。",
+      "verification_level": "PR body/index and fixed head; reported test claims not independently raw-reverified except the separately recorded 4811 run/job API"
+    },
+    {
+      "pr": 4822,
+      "title": "test(app-server): fix native resume fixture path normalizer compile [HOLD]",
+      "head": "933280f6b553f3695d7f9f215bd0e25df2784f9b",
+      "base": "6a5042886572b35de1847347b6c61208b4a191fa",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4822",
+      "updated_at": "2026-11-05T02:39:08Z",
+      "related_blockers": [
+        "B15"
+      ],
+      "finding_zh": "另一聚合树AppServer resume编译修复；不等于当前cabc或其后集成源通过。",
+      "verification_level": "PR body/index and fixed head; reported test claims not independently raw-reverified except the separately recorded 4811 run/job API"
+    },
+    {
+      "pr": 4823,
+      "title": "research(wsp): qualify finite Bellman value and bounded head-copy certificates",
+      "head": "9f2d00f79bfe7abc334e51f52a0d16f685656e5d",
+      "base": "2d0120e208ed81515837a7530c9f6943af03e87f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4823",
+      "updated_at": "2026-11-05T03:08:34Z",
+      "related_blockers": [
+        "B18"
+      ],
+      "finding_zh": "新冻结有限Bellman测试中作者报告J−C在IID/OOD过各自收益线；D−C两个0，完整成本仍未知。必须单独审原件，不能称原B18D−B通过。",
+      "verification_level": "PR body/index and fixed head; reported test claims not independently raw-reverified except the separately recorded 4811 run/job API"
+    }
+  ],
+  "donors": [
+    {
+      "pr": 4810,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4810",
+      "title": "fix(windows): retain trusted OpenSSH verification and private-state inputs",
+      "state": "open",
+      "draft": true,
+      "updated_at": "2026-11-04T23:47:26Z",
+      "base": {
+        "ref": "codex/bazel-original-matrix-repairs-20261104",
+        "sha": "fbf786803f07e402bcaddbb8fbe3dd387f6b7688"
+      },
+      "head": {
+        "ref": "codex/windows-operator-trusted-verifier-20261104",
+        "sha": "c2243df72c7648414313519b9dbea16464f2c258",
+        "tree": "c295e85e9ac99301a487ef1599145c9e1e8e8910",
+        "parents": [
+          "889a55162faad360b0ba694a3808df41a0522e64",
+          "2496308dbbe8b2452ea599357fcd9cd63884e2b9"
+        ]
+      },
+      "relative_to_base": {
+        "status": "ahead",
+        "ahead_by": 3,
+        "behind_by": 0,
+        "total_commits": 3
+      },
+      "relative_to_current_cabc": {
+        "sha": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "status": "diverged",
+        "ahead_by": 496,
+        "behind_by": 330,
+        "total_commits": 496,
+        "merge_base": "db91f9ec316ba1472e7adf97f8415949de012469"
+      },
+      "changed_files": 20,
+      "additions": 936,
+      "deletions": 117,
+      "complete_files_pagination": {
+        "pages": 2,
+        "terminal_empty": true,
+        "duplicates": 0,
+        "raw_pages": [
+          "donors/raw/pr-4810-files-1.json",
+          "donors/raw/pr-4810-files-2.json"
+        ]
+      },
+      "omitted_api_patch_paths": [],
+      "head_workflows": [
+        {
+          "id": 41927360172,
+          "name": "Rust UI product foundation",
+          "head_sha": "c2243df72c7648414313519b9dbea16464f2c258",
+          "event": "pull_request",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-11-04T22:40:43Z",
+          "updated_at": "2026-11-04T23:03:45Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41927360172"
+        },
+        {
+          "id": 41927360169,
+          "name": "Windows original CI regressions (declared scope only)",
+          "head_sha": "c2243df72c7648414313519b9dbea16464f2c258",
+          "event": "pull_request",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-11-04T22:40:43Z",
+          "updated_at": "2026-11-04T23:26:49Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41927360169"
+        },
+        {
+          "id": 41927360202,
+          "name": "Keyring synchronous backend lock proposal",
+          "head_sha": "c2243df72c7648414313519b9dbea16464f2c258",
+          "event": "pull_request",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-11-04T22:40:43Z",
+          "updated_at": "2026-11-04T22:49:34Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41927360202"
+        },
+        {
+          "id": 41927360429,
+          "name": "Production HOS2 owner proposal",
+          "head_sha": "c2243df72c7648414313519b9dbea16464f2c258",
+          "event": "pull_request",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "skipped",
+          "created_at": "2026-11-04T22:40:43Z",
+          "updated_at": "2026-11-04T22:40:44Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41927360429"
+        },
+        {
+          "id": 41927360128,
+          "name": "App-server schema refresh",
+          "head_sha": "c2243df72c7648414313519b9dbea16464f2c258",
+          "event": "pull_request",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "skipped",
+          "created_at": "2026-11-04T22:40:43Z",
+          "updated_at": "2026-11-04T22:40:52Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41927360128"
+        },
+        {
+          "id": 41927360359,
+          "name": "v8-canary",
+          "head_sha": "c2243df72c7648414313519b9dbea16464f2c258",
+          "event": "pull_request",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-11-04T22:40:43Z",
+          "updated_at": "2026-11-04T22:42:49Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41927360359"
+        },
+        {
+          "id": 41927360234,
+          "name": "Hepta Windows private-state native (security qualification only)",
+          "head_sha": "c2243df72c7648414313519b9dbea16464f2c258",
+          "event": "pull_request",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-11-04T22:40:43Z",
+          "updated_at": "2026-11-04T23:00:42Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41927360234"
+        },
+        {
+          "id": 41927360834,
+          "name": "Hepta architecture convergence",
+          "head_sha": "c2243df72c7648414313519b9dbea16464f2c258",
+          "event": "pull_request",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-11-04T22:40:43Z",
+          "updated_at": "2026-11-04T23:12:41Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41927360834"
+        },
+        {
+          "id": 41927360539,
+          "name": "blocking-ci",
+          "head_sha": "c2243df72c7648414313519b9dbea16464f2c258",
+          "event": "pull_request",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-11-04T22:40:43Z",
+          "updated_at": "2026-11-05T00:09:26Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41927360539"
+        }
+      ],
+      "head_workflow_counts": {
+        "failure": 4,
+        "success": 3,
+        "skipped": 2
+      },
+      "head_workflow_terminal_page_empty": true,
+      "selected_reconstructed_production_paths": [
+        {
+          "path": "codex-rs/hepta-operator-acceptance/src/trust.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 14394,
+            "sha256": "3072a8b128814ef04834186d4f4a3c490de009e67aef064101100d9d18784a98",
+            "git_blob": "c4fe8f803c93eac6a3ed58c4457989baec6a0057"
+          },
+          "postimage": {
+            "bytes": 14655,
+            "sha256": "78fcf19655bf6754ec3454065d3c8d3b253240692dbd5155f0e88b5bba76eb12",
+            "git_blob": "668b8cd71600329de90aec2ea9411af7469819f0"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-operator-acceptance/src/g5_trust.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 33126,
+            "sha256": "ecc51180c9ef80fac92851992f74482a7e941cb84ef46fcdc9d3ad7a3c18e33f",
+            "git_blob": "cf32c926288c6712523f3179dd00bd4b24d2df01"
+          },
+          "postimage": {
+            "bytes": 33355,
+            "sha256": "f2db388f3bb57be27030ef53d5cb3c0962247c53906bbda6d5dc13f0219f5e28",
+            "git_blob": "694defecd0cf2addd782c80c56196b85c68f7421"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 26201,
+            "sha256": "ab6b480dc11705751f09f25ddf125f6d0ee7a3c42809d9d8867bac4803d5593d",
+            "git_blob": "03a8170a874621c362e1b135df654016207082d5"
+          },
+          "postimage": {
+            "bytes": 27818,
+            "sha256": "7c25eb86e660ff7f4321275ac6c906a004a87c3e134684193b3ef2d90fae87ee",
+            "git_blob": "a3d4040372a3e3ec6a257b385bc9fbcae2c6e9ff"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 5376,
+            "sha256": "05f8abf49d5a0d5f099695d6138e01525ac9b5e0b369e5172e0dd8f342e2f2a6",
+            "git_blob": "b4e85af5ba4f2a92d37bbec2c3fa1d65795ce6c4"
+          },
+          "postimage": {
+            "bytes": 5769,
+            "sha256": "6a4b854b9443ced326733c38631ce2120636b50da511f632790c585c3d3e5b2b",
+            "git_blob": "e4badee66d7b8d6eae6e89f766976ac847e4cd1c"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/state/src/sqlite_recovery_windows.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 11150,
+            "sha256": "5e07069d3f823fdf01387c498c564c16f2e315d678ba70633e3dcce81acf1135",
+            "git_blob": "c050342ecfc2a319ce7cdc3772854081f3e3f5ca"
+          },
+          "postimage": {
+            "bytes": 11232,
+            "sha256": "66bf3e5df3f45a84bb891e6014e91cfe95afa4d0b4e99cb6e864699cdfb5e4c2",
+            "git_blob": "f97d39d6f09797efbb989ce30b8c0e6c3e4c0f53"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-operator-acceptance/src/openssh_windows.rs",
+          "status": "added",
+          "preimage": null,
+          "postimage": {
+            "bytes": 14820,
+            "sha256": "285227b186415307463d50a6b207bdf01ae657ef24574ca3aeb5801f7ff2f86c",
+            "git_blob": "73bea387f84c9ee382f734356917ce7ee8009168"
+          },
+          "exact_postimage_equal": true
+        }
+      ],
+      "in_current_published_product": false,
+      "adoption_or_execution_by_this_audit": false,
+      "source_finding_zh": "新Windows OpenSSH文件使用GetSystemDirectoryW取得系统目录、持有输入和执行文件对象；未知子进程终态保留原pins并拒绝重试。另改private-state目录及恢复文件接口。13个选定生产路径重建中的6个属于本PR；没有将这6路径等同20文件整体兼容审查。",
+      "related_blockers": [
+        "B11",
+        "B12",
+        "B16"
+      ],
+      "qualification_zh": "当前head实际9工作流：3success/4failure/2skipped，四失败含Windows original、private-state、blocking和UI。原正文中的native pending不覆盖这些已出现终态。未读取这些新失败的完整原attempt，不进一步归因。",
+      "separate_lock_run": {
+        "run": 41928528672,
+        "job": 126919210800,
+        "source": "44a466ce6592865b7bb2eab6ceb7465edcbfb3ab",
+        "conclusion": "success",
+        "verification_level": "run/job API only; artifact ZIP and raw log not independently checked in this audit"
+      },
+      "remaining_gates_zh": [
+        "对当前产品的private-state现有边界逐项兼容，保留B12已闭合2正向+2反事实范围",
+        "原Windows严格3例、窄ACL与四格DELETE控制仍须真实Windows同源运行",
+        "不能以另一head的lock工作流成功视为本head完整Windows资格"
+      ],
+      "recommended_disposition": "DONOR_CANDIDATE_REQUIRES_OWNED_REVIEW_AND_WINDOWS_QUALIFICATION"
+    },
+    {
+      "pr": 4812,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4812",
+      "title": "fix(hepta): require PQ at ordinary runtime and revalidate FinalUse effects",
+      "state": "open",
+      "draft": true,
+      "updated_at": "2026-11-05T02:10:31Z",
+      "base": {
+        "ref": "fix/hepta-pn-cell-closure-20261031",
+        "sha": "4c93a641945044f904a656cbf1d23e358a074d52"
+      },
+      "head": {
+        "ref": "fix/hepta-ordinary-pq-effects-20261104",
+        "sha": "3a8e50ddd79ec3e52ca58157323726c37069202c",
+        "tree": "eb83a32c16f3708ec852fd5b6b1f84299213bda4",
+        "parents": [
+          "7335636b2cbde4077e354dcb3156a04b9ee6e8a9"
+        ]
+      },
+      "relative_to_base": {
+        "status": "ahead",
+        "ahead_by": 8,
+        "behind_by": 0,
+        "total_commits": 8
+      },
+      "relative_to_current_cabc": {
+        "sha": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "status": "diverged",
+        "ahead_by": 771,
+        "behind_by": 470,
+        "total_commits": 771,
+        "merge_base": "732e934ba496d90fbe042b8d41d479ef901643e5"
+      },
+      "changed_files": 43,
+      "additions": 2795,
+      "deletions": 237,
+      "complete_files_pagination": {
+        "pages": 2,
+        "terminal_empty": true,
+        "duplicates": 0,
+        "raw_pages": [
+          "donors/raw/pr-4812-files-1.json",
+          "donors/raw/pr-4812-files-2.json"
+        ]
+      },
+      "omitted_api_patch_paths": [],
+      "head_workflows": [],
+      "head_workflow_counts": {},
+      "head_workflow_terminal_page_empty": true,
+      "selected_reconstructed_production_paths": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 41363,
+            "sha256": "ee47a741721a216671ed3728034265714ebd8268bc55fe731bfd21bb263f9bec",
+            "git_blob": "61c7ce18fe06becc5a0a02ce3f75fa51becc9cb6"
+          },
+          "postimage": {
+            "bytes": 41743,
+            "sha256": "b829c56d411d0db2b59c4ccfa01ae8d881fcc0dc86b78db55efe460988d6ff54",
+            "git_blob": "c5c4d81b1be5556e241810fc617037ebdad4ba11"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 1009,
+            "sha256": "750f2902c607cb8bb5663f72ab37785aa1571173b2ae620a93551feffa3ac19f",
+            "git_blob": "e7e44bb748f3de84e7ae6ab0c5cce01027c1d410"
+          },
+          "postimage": {
+            "bytes": 1942,
+            "sha256": "d1e8206836893e8ee145fcea1c0e4d24d778457418acfe4e9c54e0f74a051673",
+            "git_blob": "8a3bd8afc6cdcb88a3176511797849b9c9005214"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 11993,
+            "sha256": "4a563de735e62f826e49f3757e97ad8269ac526524690de7bbdae75d8a5e7099",
+            "git_blob": "047ca3a27968d636f123defdb373a3ac63bd2e92"
+          },
+          "postimage": {
+            "bytes": 12872,
+            "sha256": "0f4b6b1c3508ffc579052a13bc67b5686b1a9327ce28df83ed170081b2bac20c",
+            "git_blob": "77aa43f26579f087c6d15ee981aa7090f368d4a6"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 11430,
+            "sha256": "9c731c9043cc028387090c66509ca135b71a961bdbfd1379d15b79975eba5797",
+            "git_blob": "d0a06b3e72c684f062700a3ad3d1aaa32c4bfa34"
+          },
+          "postimage": {
+            "bytes": 11473,
+            "sha256": "8248dce487954198981a1359d1f4848be140b5230952e0231068dc27c0a87195",
+            "git_blob": "5f7c4e58418af1deb57ebb12a62ef1742f4c75c8"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/smollm_cognitive_host.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 14918,
+            "sha256": "99d51bef7512378ea91b84943b7bbf8102661bfba0a216281549a07df9a24b19",
+            "git_blob": "e6bbc43ae6ef44c6dbbb360788dabd0f2fc8314f"
+          },
+          "postimage": {
+            "bytes": 15124,
+            "sha256": "dfe68305c76ba4a94a4f006679ecad51660c3c2c40ebefa40e80f2345830d863",
+            "git_blob": "b2982a0e83314a67a47b49fbeb0a7c16eef97905"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-learning-artifacts/src/selected_public_initial_smollm.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 3384,
+            "sha256": "d67cd38be604e684cd50e9c783fafcf2251e2401b776e1a019cc332dd4a5c110",
+            "git_blob": "f89100a879108f6df25d6a8a08bb85150de672d2"
+          },
+          "postimage": {
+            "bytes": 3757,
+            "sha256": "e2a48d4e5a9291acfd31885c7512baea24f4b3155df92ce867fa2466b877311d",
+            "git_blob": "837e230c52bf2fe55346ed3d5adddf60aac3da2f"
+          },
+          "exact_postimage_equal": true
+        },
+        {
+          "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+          "status": "modified",
+          "preimage": {
+            "bytes": 32652,
+            "sha256": "a1b41f04fbef983d8776a14ae5b3dae1b5479646615ddd7bb7709545d69c3050",
+            "git_blob": "71f5acb379e844cac522939cdc67a2c2355a604b"
+          },
+          "postimage": {
+            "bytes": 32721,
+            "sha256": "ba325f8b3ad813dbcc61fa95bf7d85706f34356584773c7d1f7896bca17d6a42",
+            "git_blob": "79e2d89a24dffe72ed9d1837f14a4c48950a2527"
+          },
+          "exact_postimage_equal": true
+        }
+      ],
+      "in_current_published_product": false,
+      "adoption_or_execution_by_this_audit": false,
+      "source_finding_zh": "普通UnixFinalUseAuthorizer::open要求显式ml_dsa65_v2；显式classical from_config仍可授权effect。FinalUse入口在持有state lock时重新读取外部完整frontier，错误或漂移会fence；这不是跨owner effect原子性或正常Root/Session完整接线。",
+      "related_blockers": [
+        "B16",
+        "B19"
+      ],
+      "changed_memory_state_or_sqlx_paths": false,
+      "qualification_record": {
+        "blob": "3b0931e95dafd4c4d2664756fb7eaa7c02faac09",
+        "verdict": "HOLD",
+        "production_activation": false,
+        "native_source": "1993db5510afb9764a4a4a60e5bd0f48862411ab",
+        "native_tree": "8a35ef0d95364382cc5df3ca8c944c9320a199ce",
+        "delivery_source": "7335636b2cbde4077e354dcb3156a04b9ee6e8a9",
+        "native_tests_on_delivered_tree": "NOT_RUN",
+        "post_test_changes": [
+          {
+            "commit": "484ce165522026d915c4cf526cd7df2effab632c",
+            "kind": "parallel_production_guard_and_tests",
+            "change": "Reject equal canonical PQ clock/frontier paths before trust clients and local owner open.",
+            "native_tests": "NOT_RUN",
+            "source_review": "No additional blocker observed; canonical path separation does not qualify independent custody or every filesystem alias.",
+            "evidence": "evidence/pq-final-use-endpoint-separation-20261104/README.md"
+          },
+          {
+            "commit": "7335636b2cbde4077e354dcb3156a04b9ee6e8a9",
+            "kind": "comments_only",
+            "change": "Clarify that explicit classical from_config can authorize effects; add two opaque-argument name comments.",
+            "runtime_behavior_changed": false
+          }
+        ]
+      },
+      "reported_native_scopes_not_raw_reverified": {
+        "leaf": {
+          "command": "just test -p codex-hepta-contracts -p codex-hepta-learning-artifacts --locked --retries 0",
+          "exit_code": 100,
+          "run": 333,
+          "passed": 330,
+          "failed": 3,
+          "skipped_existing": 1,
+          "source_commit": "1993db5510afb9764a4a4a60e5bd0f48862411ab",
+          "log_sha256": "efa3769f7f7ff65d90db969c0b44fcbe537d4d1916ae334e8c0a615e854949b3"
+        },
+        "host_diagnostic": {
+          "exit_code": 100,
+          "binaries": 1,
+          "run": 6,
+          "passed": 3,
+          "failed": 3,
+          "skipped_reported": 178,
+          "skip_scope": "Filter exclusions and existing ignored tests as reported by nextest; no new skip added.",
+          "log_bytes": 29171,
+          "log_sha256": "ffb9e6a90b830f11421395e668397035cf87366786bee1abd8cc0d6a7ff721de",
+          "failure_reason": "Unix services returned EPERM / Operation not permitted.",
+          "passed_tests": [
+            "final_use_authorizer::tests::ordinary_open_rejects_missing_or_classic_profile_before_creating_state",
+            "final_use_authorizer::tests::ordinary_open_does_not_reactivate_or_change_existing_classic_state",
+            "smollm_cognitive_host::initial::tests::neural_study::roles::pq_tests::pq_study_role_wire_verifies_signatures_without_installation_activation"
+          ],
+          "failed_tests": [
+            "final_use_authorizer::pq_test_support::tests::ordinary_pq_services_close_on_abort_and_drop",
+            "final_use_authorizer::pq_test_support::tests::ordinary_pq_config_reopens_original_spent_nonce_and_frontier",
+            "smollm_cognitive_host::initial::tests::neural_study::roles::pq_tests::ordinary_study_pq_roles_authenticate_and_reopen_the_original_training_ledger"
+          ]
+        },
+        "default_link_native_tests_executed": 0,
+        "default_link_status": "SIGBUS; zero actual tests; root cause not established",
+        "fix_status": "FAILED_ENOSPC"
+      },
+      "qualification_zh": "当前3a8e50头Actions为0；原qualification明确HOLD。原330/333及诊断链接3/6都绑定1993db，完整交付733563还含后来生产guard，不能借旧结果升为当前通过。",
+      "remaining_gates_zh": [
+        "Pinned real-model ordinary training/install/next-use execution",
+        "Dynamic selector trust and newly issued selector revocation at all use points",
+        "Atomic cross-owner provider admission after external frontier observation",
+        "Other modules explicit classical effect constructors",
+        "Account/payment/debt and Chain settlement integration",
+        "Ordinary AuthBus PQ settlement wiring",
+        "Node/session/resource authority, governance, rotation, recovery and legacy migration",
+        "Independent deployment custody and WAN qualification",
+        "Successful scoped Clippy/fix on the delivered tree",
+        "Native execution of the later clock/frontier endpoint-separation controls"
+      ],
+      "recommended_disposition": "PQ_AND_FINAL_USE_COMPONENT_DONOR_ONLY; KEEP_CURRENT_CUSTODY_AND_NORMAL_CALLER_GATES"
+    },
+    {
+      "pr": 4817,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4817",
+      "title": "research(memory): V15 typed lifecycle and evidence-bound admission",
+      "state": "open",
+      "draft": true,
+      "updated_at": "2026-11-05T01:44:49Z",
+      "base": {
+        "ref": "fix/memory-v14-query-local-fence-20261103",
+        "sha": "6d2551388ed42355f02afbf528472ee2b4d8488b"
+      },
+      "head": {
+        "ref": "research/memory-cell-v15-20261104",
+        "sha": "379c21c2e625c3a3dfbb514e11b9e8fe2213cda8",
+        "tree": "e8a254968ea75743b86dbba43e448e882b5f45a8",
+        "parents": [
+          "386f7a4453b5e59e83db12d8bf958cfb5e4847d0"
+        ]
+      },
+      "relative_to_base": {
+        "status": "ahead",
+        "ahead_by": 11,
+        "behind_by": 0,
+        "total_commits": 11
+      },
+      "relative_to_current_cabc": {
+        "sha": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "status": "diverged",
+        "ahead_by": 449,
+        "behind_by": 471,
+        "total_commits": 449,
+        "merge_base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+      },
+      "changed_files": 33,
+      "additions": 8194,
+      "deletions": 0,
+      "complete_files_pagination": {
+        "pages": 2,
+        "terminal_empty": true,
+        "duplicates": 0,
+        "raw_pages": [
+          "donors/raw/pr-4817-files-1.json",
+          "donors/raw/pr-4817-files-2.json"
+        ]
+      },
+      "omitted_api_patch_paths": [
+        "qualification/memory-cell-v15/device_qualification/receipts.json"
+      ],
+      "head_workflows": [
+        {
+          "id": 41950593617,
+          "name": "v8-canary",
+          "head_sha": "379c21c2e625c3a3dfbb514e11b9e8fe2213cda8",
+          "event": "pull_request",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-11-05T01:44:53Z",
+          "updated_at": "2026-11-05T01:47:44Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41950593617"
+        },
+        {
+          "id": 41950593534,
+          "name": "Hepta architecture convergence",
+          "head_sha": "379c21c2e625c3a3dfbb514e11b9e8fe2213cda8",
+          "event": "pull_request",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-11-05T01:44:53Z",
+          "updated_at": "2026-11-05T02:19:56Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41950593534"
+        },
+        {
+          "id": 41950593588,
+          "name": "blocking-ci",
+          "head_sha": "379c21c2e625c3a3dfbb514e11b9e8fe2213cda8",
+          "event": "pull_request",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-11-05T01:44:53Z",
+          "updated_at": "2026-11-05T02:52:12Z",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41950593588"
+        }
+      ],
+      "head_workflow_counts": {
+        "success": 2,
+        "failure": 1
+      },
+      "head_workflow_terminal_page_empty": true,
+      "selected_reconstructed_production_paths": [],
+      "in_current_published_product": false,
+      "adoption_or_execution_by_this_audit": false,
+      "source_finding_zh": "完整33文件为32个qualification内Python/文档/收据及1个专用工作流，没有Rust或native产品路径变化；集中式SQLite authority的协议参考实现，不能代替Memory当前生产custody。",
+      "related_blockers": [
+        "B16",
+        "B18"
+      ],
+      "actual_log_review": {
+        "run_id": 41950367467,
+        "job_id": 126992613476,
+        "tested_source": "386f7a4453b5e59e83db12d8bf958cfb5e4847d0",
+        "current_donor_head": "379c21c2e625c3a3dfbb514e11b9e8fe2213cda8",
+        "log": {
+          "path": "donors/evidence/memory-v15-job-126992613476.log.txt",
+          "bytes": 35814,
+          "sha256": "51e3f78cf3cc57ca02e55848fb32eb7fe1c115d99ce70e4529b191cf9b8eb7e9",
+          "git_blob": "2e912415e3a1ea14cb9600f20df5f8bb40bd64e9"
+        },
+        "exact_cases": [
+          {
+            "name": "admission_tests.AdmissionTests.test_all_failed_search_cost_can_reverse_admission",
+            "status": "ok"
+          },
+          {
+            "name": "admission_tests.AdmissionTests.test_bad_cost_values_and_rebound_receipts_reject",
+            "status": "ok"
+          },
+          {
+            "name": "admission_tests.AdmissionTests.test_common_resource_cap_is_applied_to_candidate",
+            "status": "ok"
+          },
+          {
+            "name": "admission_tests.AdmissionTests.test_duplicate_queries_and_double_pricing_reject",
+            "status": "ok"
+          },
+          {
+            "name": "admission_tests.AdmissionTests.test_errors_and_deadlines_stay_in_denominator",
+            "status": "ok"
+          },
+          {
+            "name": "admission_tests.AdmissionTests.test_historical_holdout_does_not_authorize_new_growth",
+            "status": "ok"
+          },
+          {
+            "name": "admission_tests.AdmissionTests.test_manifest_and_same_information_are_enforced",
+            "status": "ok"
+          },
+          {
+            "name": "admission_tests.AdmissionTests.test_positive_synthetic_fixture_executes_both_arms",
+            "status": "ok"
+          },
+          {
+            "name": "admission_tests.AdmissionTests.test_regression_on_old_stratum_cannot_hide_behind_average_gain",
+            "status": "ok"
+          },
+          {
+            "name": "admission_tests.AdmissionTests.test_repeated_seeds_are_not_independent_queries",
+            "status": "ok"
+          },
+          {
+            "name": "admission_tests.AdmissionTests.test_unknown_energy_rejects_even_with_zero_energy_price",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_admin_recovers_absent_owner_without_old_owner_abort",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_atomic_split_merge_and_owner_exclusion",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_bad_source_types_rejected_without_mutation",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_bundle_bytes_and_lineage_verified",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_complete_plan_gate_missing_or_misbound_refuses_reshape",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_corrupted_persisted_object_is_rejected",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_failed_reshape_restores_all_addresses",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_kill_before_and_after_commit_then_reconcile_same_request",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_last_reader_revoke_keeps_owner_repair_path",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_migration_cold_restart_and_old_owner_fenced",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_quality_cannot_be_client_approval",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_ready_requires_exact_bytes_and_receiver_identity",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_receipt_replay_never_reapplies_mutation",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_rollback_new_epoch_and_no_permission_or_source_rollback",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_signed_receipt_and_tampered_command",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_signed_rejections_durable_and_cannot_replace_success",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_source_update_after_ready_blocks_commit",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_two_actual_processes_compete_for_same_epoch",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_two_processes_cannot_rebind_rejected_request_id",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_unrelated_source_update_does_not_stale_cell",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_verified_bytes_are_immutable_and_manifest_isolated",
+            "status": "ok"
+          },
+          {
+            "name": "authority_tests.AuthorityTests.test_wrong_service_identity_cannot_reopen_authority",
+            "status": "ok"
+          },
+          {
+            "name": "integration_tests.IntegratedAdmissionTests.test_verified_parameter_bytes_control_activation",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAdmissionReview.test_factory_reusing_one_executor_is_rejected",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAdmissionReview.test_frozen_dataset_survives_callers_nested_mutation",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAdmissionReview.test_identical_predictors_do_not_gain_from_shared_executor_state",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_admin_can_recover_unreachable_owner_without_old_owner_signature",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_commit_fences_former_owner_after_restart",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_evaluator_annotation_cannot_corrupt_signed_candidate_manifest",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_idempotency_key_conflict_cannot_change_owner_or_repeat_effect",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_individual_child_approvals_cannot_replace_joint_structure_admission",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_merge_uses_permission_intersection_and_rejects_union",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_read_request_replay_rechecks_current_permission",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_rejected_request_id_cannot_be_rebound_to_a_successful_payload",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_restriction_survives_restart_and_old_bundle_republication",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_revoke_all_readers_is_local_to_the_cell",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_second_child_gate_failure_rolls_back_the_whole_split",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_source_revoked_after_ready_blocks_commit_and_all_old_model_reads",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_split_cannot_drop_source_lineage_or_duplicate_addresses",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_successful_split_retires_parent_and_prevents_its_reuse",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_transfer_abort_fences_the_preparation_and_original_epochs",
+            "status": "ok"
+          },
+          {
+            "name": "review_tests.IndependentAuthorityReview.test_truthy_non_boolean_gate_and_nonhex_evidence_do_not_publish",
+            "status": "ok"
+          }
+        ],
+        "ordered_roster_matches_fixed_checks_json": true,
+        "actual_pass": 53,
+        "actual_skip": 0,
+        "source_hashes_checked": [
+          {
+            "path": "authority.py",
+            "bytes": 26721,
+            "sha256": "7e5a2016347718e87df147f2ae96f2e56b9813d2c11e705bf88c8649a16bbe68",
+            "git_blob": "8a8791e79f3e1a84c1244271db83886ab1cc72c6",
+            "equals_source_run_report": true
+          },
+          {
+            "path": "admission.py",
+            "bytes": 10959,
+            "sha256": "7e3cf0ae3d6cb12d904d5d2d5e104f93bb8d2677124cfc232fd19818975a9cf0",
+            "git_blob": "23618c4366a71c319640742e5f080021f916f15c",
+            "equals_source_run_report": true
+          }
+        ],
+        "head_after_tested_commit": {
+          "files": [
+            "qualification/memory-cell-v15/README.md",
+            "qualification/memory-cell-v15/evidence/ci_41950367467/acquisition.json",
+            "qualification/memory-cell-v15/evidence/ci_41950367467/checks.json",
+            "qualification/memory-cell-v15/evidence/ci_41950367467/checks.log",
+            "qualification/memory-cell-v15/evidence/ci_41950367467/device_review_checks.json"
+          ],
+          "code_or_workflow_changes": false,
+          "comparison": {
+            "bytes": 36278,
+            "sha256": "b0e55a2dda9a9b6abbe92a726deeef9fdeba4213206a43db4063ff74cc02f053",
+            "git_blob": "369421d37d6f107610f6e25eae7fd6f97750beed"
+          }
+        },
+        "scope": "Actual same-host Python synthetic/control-plane tests and an offline historical-device-receipt verifier. No repeated physical remote run, Rust/native integration, language training or efficacy acceptance.",
+        "artifact_zip_downloaded_in_this_audit": false,
+        "production_activation_allowed": false
+      },
+      "qualification_zh": "原实际386f7a的专用job有53个逐名ok、0skip；386→379仅README和4收据变化。当前379另有3Actions，2success/1blocking failure。原job离线核旧Mac→pocket4收据，未重复远端动作。",
+      "remaining_gates_zh": [
+        "当前Rust/Memory/SQLx实际caller接线与真实资源custody",
+        "独立签发/正常Root+Session+UI/外部执行的真实接受",
+        "新语言质量、同信息2×2/D−B和完整成本证据",
+        "多节点共识、整库回滚及硬件证明不在本53例范围"
+      ],
+      "recommended_disposition": "RESEARCH_PROTOCOL_REFERENCE_WITH_SCOPED_REAL_CI; NO_NATIVE_OR_SCIENTIFIC_ADOPTION"
+    }
+  ],
+  "chain_new_fixed_report": {
+    "repository": "TrillionniumFoundation/Trillionnium-Chain",
+    "commit": "963f2119cfa4f81d3fab225f3cf69c8e8d62b178",
+    "blob": "1f877b542159b75ff8c66a03c0cc9fcef9a84223",
+    "path": "evidence/pq-workflow-continuation-20261104/frozen-d9954903/README.md",
+    "reported_executed_chain": "d9954903ef9239f71aa575ec3e6f4fdaa88f2d35",
+    "reported_runtime": "484ce165522026d915c4cf526cd7df2effab632c",
+    "source_level": "fixed primary README read; raw Chain qualification archives not reverified",
+    "finding_zh": "新原件报告分属47源码/记录器、63clock、57PQ、4native cache范围；464 pins/6 upstream结构检查仍HOLD_NO_GO且tests_executed=false。runtime endpoint原生NOT_RUN，真实WAN/独立接受仍缺。不同分母不合并，也不替代旧历史27/6/9/12范围。"
+  },
+  "additional_body_claims": {
+    "pr_4821": {
+      "head": "7ed5734a7545e2809f9c8e3014bd14f0eafdd80c",
+      "reported_code": "771c221231df80b4cc29fce4b5ec46dc9edebf20",
+      "reported_tree": "11a0d4147f2358d6f96ae7a0601f5b7314591402",
+      "reported_positive_cases": 277,
+      "reported_existing_ignore": 1,
+      "actual_raw_reverified_here": false,
+      "open": "CellLifecycleAdmissionUnavailable / DENY_ALL; real Current+Control+Memory reader capability, independent authority custody and normal AuthBus provider caller remain open"
+    },
+    "pr_4823": {
+      "head": "9f2d00f79bfe7abc334e51f52a0d16f685656e5d",
+      "source_level": "fixed PR body only; original experiment archives not independently read in this delta",
+      "reported_fit_units": 5,
+      "reported_new_validation_worlds": 160,
+      "reported_new_test_worlds": 320,
+      "reported_primary_comparisons": 4,
+      "reported_Bonferroni_95_intervals": {
+        "finite_Bellman_J_minus_C_IID": [
+          0.0477670749,
+          0.1627864517
+        ],
+        "finite_Bellman_J_minus_C_OOD": [
+          0.1203594012,
+          0.2839635367
+        ],
+        "direct_D_minus_C_IID": [
+          0,
+          0
+        ],
+        "direct_D_minus_C_OOD": [
+          0,
+          0
+        ]
+      },
+      "inference_zh": "该有限世界新预冻结结果值得独立审计；比较定义、任务和成本范围不同，不能替代4798四比较或原B18D−B。Rust/MCP对已曝光320 TEST世界的一致性不是新的独立科学样本。"
+    }
+  },
+  "changed_existing_pr_metadata": [
+    {
+      "number": 4680,
+      "title": "fix(test): use signed production ledger in Agentd plasticity process fixture",
+      "changes": {
+        "updated_at": {
+          "before": "2026-11-04T21:38:40Z",
+          "after": "2026-11-05T02:40:27Z"
+        }
+      }
+    },
+    {
+      "number": 4696,
+      "title": "fix(pair): freeze V7 source and verify current PQ owners with binary receipts [HOLD]",
+      "changes": {
+        "updated_at": {
+          "before": "2026-11-04T13:27:11Z",
+          "after": "2026-11-05T01:06:36Z"
+        }
+      }
+    },
+    {
+      "number": 4729,
+      "title": "fix(hepta): bind every final-use entry to its claimed head",
+      "changes": {
+        "updated_at": {
+          "before": "2026-11-04T13:38:01Z",
+          "after": "2026-11-05T01:39:02Z"
+        },
+        "head.sha": {
+          "before": "5cb4ee7b63dc91e3c3023f0687f0ea7d2b0a8497",
+          "after": "a53e6e2a7aacf4784e48c680a5980960a17d8a35"
+        }
+      }
+    },
+    {
+      "number": 4755,
+      "title": "fix(queue): defer idle dispatch through terminalization and diagnose Windows readiness",
+      "changes": {
+        "updated_at": {
+          "before": "2026-11-04T06:03:39Z",
+          "after": "2026-11-05T00:42:01Z"
+        }
+      }
+    },
+    {
+      "number": 4806,
+      "title": "fix(ci): qualify original platform repairs with exact scope trees",
+      "changes": {
+        "updated_at": {
+          "before": "2026-11-04T21:55:31Z",
+          "after": "2026-11-04T22:37:50Z"
+        }
+      }
+    }
+  ],
+  "changed_existing_pr_interpretation_zh": "旧PR只有4729的head发生变化，当前a53e6e2a7aacf4784e48c680a5980960a17d8a35；其正文仍不宣称新continuation已建立native RED/GREEN。其余四项为updated_at变化，不能据此推断源码变化或将历史198+198、Queue33/33等另一source范围借给本候选。",
+  "selected_source_reconstruction": {
+    "path": "selected-donor-static-review.json",
+    "bytes": 20745,
+    "sha256": "31af6a9f9dcfcb62b8bb0edae4a8a70ac553bc2f8a73795970d11e98634cf5e0",
+    "git_blob": "fda8d51ac57bb225620282dc464a6f7286aee85a"
+  },
+  "supplemental_source_count": 86,
+  "supplemental_raw_bytes": 1616337,
+  "original_23_exit_conditions_changed": false,
+  "blocker_status_changes": [],
+  "limits": [
+    "No native execution, build, integration, ref/PR mutation or external message.",
+    "Changed-file enumeration is complete, while postimage reconstruction and source review are selected: 6 Windows and 7 PQ production paths.",
+    "API status is not per-case qualification. Skips, historical sources, changed link options, omitted patches and unread raw artifacts remain explicit.",
+    "A fixed author report is primary evidence of its stated claim, not an independent verification of every reported raw execution.",
+    "None of these separate donor heads equals the published product tree or the unpublished native candidate."
+  ]
+}

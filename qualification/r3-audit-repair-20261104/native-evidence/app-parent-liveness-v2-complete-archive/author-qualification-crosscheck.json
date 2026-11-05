@@ -1,0 +1,149 @@
+{
+  "schema": "hepta-app-parent-liveness-v2-complete-cloud-qualification-crosscheck-v2",
+  "phases": [
+    {
+      "phase": "no_exit_rejection-negative",
+      "source": "8c9b3cab2887ac8512529ff73b90584232ca5a17",
+      "cases": [
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting",
+          "result": "FAIL"
+        }
+      ],
+      "exit_code": 100,
+      "programs_stable": true,
+      "helpers_stable": true,
+      "helper_count": 33,
+      "compiler_messages": 1313,
+      "normal_build_success": true,
+      "full_catalog_eligible": 19506,
+      "full_catalog_ignored": 57,
+      "whole_graph_members": 193,
+      "whole_graph_nodes": 1501,
+      "early_returns": [],
+      "selection_valid": true
+    },
+    {
+      "phase": "no_rearm-negative",
+      "source": "eafff444da46518a66e1d1db8369ec868719de97",
+      "cases": [
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork",
+          "result": "FAIL"
+        }
+      ],
+      "exit_code": 100,
+      "programs_stable": true,
+      "helpers_stable": true,
+      "helper_count": 33,
+      "compiler_messages": 1313,
+      "normal_build_success": true,
+      "full_catalog_eligible": 19506,
+      "full_catalog_ignored": 57,
+      "whole_graph_members": 193,
+      "whole_graph_nodes": 1501,
+      "early_returns": [],
+      "selection_valid": true
+    },
+    {
+      "phase": "leaked_parent_fd-negative",
+      "source": "a1da95cc0a5b18250ffe3957671c11f098265b8e",
+      "cases": [
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork",
+          "result": "FAIL"
+        }
+      ],
+      "exit_code": 100,
+      "programs_stable": true,
+      "helpers_stable": true,
+      "helper_count": 33,
+      "compiler_messages": 1313,
+      "normal_build_success": true,
+      "full_catalog_eligible": 19506,
+      "full_catalog_ignored": 57,
+      "whole_graph_members": 193,
+      "whole_graph_nodes": 1501,
+      "early_returns": [],
+      "selection_valid": true
+    },
+    {
+      "phase": "parent-liveness-final-eight",
+      "source": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+      "cases": [
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::ordinary_file_and_pre_read_proc_descriptor_are_rejected",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-linux-sandbox::all",
+          "name": "suite::managed_proxy::sandboxed_commands_have_a_seccomp_filtered_namespace_reaper",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-linux-sandbox::all",
+          "name": "suite::landlock::sandbox_inner_stage_rejects_retained_capabilities",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-linux-sandbox::all",
+          "name": "suite::managed_proxy::namespace_reaper_collects_orphaned_descendants",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-linux-sandbox::all",
+          "name": "suite::managed_proxy::managed_proxy_commands_have_a_seccomp_filtered_namespace_reaper",
+          "result": "PASS"
+        },
+        {
+          "classname": "codex-app-server::all",
+          "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+          "result": "PASS"
+        }
+      ],
+      "exit_code": 0,
+      "programs_stable": true,
+      "helpers_stable": true,
+      "helper_count": 33,
+      "compiler_messages": 1313,
+      "normal_build_success": true,
+      "full_catalog_eligible": 19506,
+      "full_catalog_ignored": 57,
+      "whole_graph_members": 193,
+      "whole_graph_nodes": 1501,
+      "early_returns": [
+        "    skipping capability test: unprivileged user namespaces are unavailable"
+      ],
+      "selection_valid": false
+    }
+  ],
+  "full_rosters_exact_equal_with_multiplicity": true,
+  "full_feature_graphs_equal": true,
+  "source_guards_verified": 50,
+  "actual_outer_controller_exit_code": 1,
+  "final_original_command_exit_code": 0,
+  "actual_valid_causal_negatives": 3,
+  "final_selected_junit_pass": 8,
+  "final_actual_behavior_pass": 7,
+  "final_original_capability_early_return": 1,
+  "capability_gate_open": true,
+  "limitations": [
+    "This crosscheck validates the stored causal condition booleans and byte-bound raw references; direct causal endpoint interpretation is recorded in the prior independent root reviews of the complete raw.",
+    "Normal helper builds and after-catalog full feature-unified helper identities are distinct receipts. Their equality is not assumed.",
+    "Linux outcomes do not qualify native Windows or macOS behavior."
+  ]
+}

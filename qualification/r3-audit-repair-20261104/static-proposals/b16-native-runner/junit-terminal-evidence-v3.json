@@ -1,0 +1,109 @@
+{
+  "schema": "hepta-b16-junit-terminal-v3-evidence",
+  "runtime_experiment_performed": false,
+  "actual_original_report": {
+    "path": "ci-audit/recovered-20261105/full-owning-compressed-archive/full-junit.original",
+    "bytes": 4149275,
+    "sha256": "afdf124cb8cb44e65808b71f824c880875253378588ccaffc9b4783857fc18ed",
+    "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "test_name": "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
+    "terminal_attributes": {
+      "type": "test timeout"
+    },
+    "terminal_text": null,
+    "captured_contains_uppercase_TIMEOUT": false,
+    "fragment_bytes": 390,
+    "fragment_sha256": "fabd54568dd293a814449bc59027d1f5ecd6ee96a806b68b691ae2bb170a57df"
+  },
+  "official_source": {
+    "repository": "nextest-rs/nextest",
+    "commit": "e636f389aefb9f58fd753f55a394f9099e51ed50",
+    "path": "nextest-runner/src/reporter/aggregator/junit.rs",
+    "blob": "2cddcf28b090d73b33773e823e6afe74ce015285",
+    "bytes": 38012,
+    "sha256": "74013b0c76e646f330ff1634410b602a730a8c32b5ba2aa3031450401dfb8fc1",
+    "source_acquisition": "Research independently fetched the fixed GitHub primary; architecture reread its complete saved bytes and independently verified the full Git blob hash.",
+    "sections": [
+      {
+        "first_line": 184,
+        "last_line": 198,
+        "text": "                        }\n                    },\n                    ExecutionDescription::Failure {\n                        first_status,\n                        retries,\n                        ..\n                    } => {\n                        let (kind, ty) =\n                            non_success_kind_and_type(mode, UnitKind::Test, &first_status.result);\n                        let mut testcase_status = TestCaseStatus::non_success(kind);\n                        testcase_status.set_type(ty);\n                        (testcase_status, first_status, retries)\n                    }\n                };\n"
+      },
+      {
+        "first_line": 397,
+        "last_line": 447,
+        "text": "            format!(\"{} abort\", DisplayUnitKind::new(mode, kind)),\n        ),\n        ExecutionResultDescription::Fail {\n            failure: FailureDescription::ExitCode { code },\n            leaked: true,\n        } => (\n            NonSuccessKind::Failure,\n            format!(\n                \"{} failure with exit code {code} (leaked handles)\",\n                DisplayUnitKind::new(mode, kind),\n            ),\n        ),\n        ExecutionResultDescription::Fail {\n            failure: FailureDescription::ExitCode { code },\n            leaked: false,\n        } => (\n            NonSuccessKind::Failure,\n            format!(\n                \"{} failure with exit code {code}\",\n                DisplayUnitKind::new(mode, kind),\n            ),\n        ),\n        ExecutionResultDescription::Timeout {\n            result: SlowTimeoutResult::Fail,\n        } => (\n            NonSuccessKind::Failure,\n            format!(\"{} timeout\", DisplayUnitKind::new(mode, kind)),\n        ),\n        ExecutionResultDescription::ExecFail => {\n            (NonSuccessKind::Error, \"execution failure\".to_owned())\n        }\n        ExecutionResultDescription::Leak {\n            result: LeakTimeoutResult::Pass,\n        } => (\n            NonSuccessKind::Error,\n            format!(\n                \"{} passed but leaked handles\",\n                DisplayUnitKind::new(mode, kind),\n            ),\n        ),\n        ExecutionResultDescription::Leak {\n            result: LeakTimeoutResult::Fail,\n        } => (\n            NonSuccessKind::Error,\n            format!(\n                \"{} exited with code 0, but leaked handles so was marked failed\",\n                DisplayUnitKind::new(mode, kind),\n            ),\n        ),\n        ExecutionResultDescription::Pass\n        | ExecutionResultDescription::Timeout {"
+      }
+    ],
+    "version_limit": "This primary commit is not asserted to be the native executable build version. Actual prior XML independently establishes the timeout representation in this lane."
+  },
+  "finding": "V1/V2 discarded terminal type/message attributes. A timeout or Fail+leaked-handles report with already emitted physical panic text could reach the physical failure classifier. No historical B native run occurred, and the observed f825 timeout lacked physical markers; do not claim a historical false qualification.",
+  "repair": "Preserve all terminal element attributes. Permit physical negative parsing only for exactly one failure of type test failure with exit code 101; reject missing/unknown/timeout/leak/error/skip first. Existing marker ordering and panic-line oracles remain byte-identical.",
+  "actual_ordinary_failure_format_examples": [
+    {
+      "path": "ci-audit/recovered-20261105/app-parent-liveness-v2-complete-archive/decoded-verified-v1/small/no_exit_rejection-negative.junit.xml",
+      "bytes": 2769,
+      "sha256": "0f2cd050757518e575a0b0cf5387582e55a347cfba9a101d5485bccd6856e81c",
+      "uuid": "8049202b-8855-4137-970a-6ee85a9bee03",
+      "cases": [
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting",
+          "terminal_attributes": [
+            {
+              "tag": "failure",
+              "attributes": {
+                "message": "thread 'parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting' (927737) panicked at linux-sandbox/src/parent_lifecycle_tests.rs:68:18",
+                "type": "test failure with exit code 101"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "ci-audit/recovered-20261105/app-parent-liveness-v2-complete-archive/decoded-verified-v1/small/no_rearm-negative.junit.xml",
+      "bytes": 2612,
+      "sha256": "2bd7deea69a1467079d5dc3781b15ce1a3cc1fd9fd70b96d35b27ab0934869f7",
+      "uuid": "d8fd0fa8-9c91-43c5-9a65-07e604eb6f56",
+      "cases": [
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork",
+          "terminal_attributes": [
+            {
+              "tag": "failure",
+              "attributes": {
+                "message": "thread 'parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork' (940733) panicked at linux-sandbox/src/parent_lifecycle_tests.rs:111:57",
+                "type": "test failure with exit code 101"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": "ci-audit/recovered-20261105/app-parent-liveness-v2-complete-archive/decoded-verified-v1/small/leaked_parent_fd-negative.junit.xml",
+      "bytes": 3490,
+      "sha256": "00643a8d9b9d055bae60e36e8f06065477f69584830fd8fd270f0ecfda68864d",
+      "uuid": "ce798b2d-aad3-49d8-a650-8cf14efb3c4a",
+      "cases": [
+        {
+          "classname": "codex-linux-sandbox",
+          "name": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork",
+          "terminal_attributes": [
+            {
+              "tag": "failure",
+              "attributes": {
+                "message": "thread 'parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork' (953687) panicked at linux-sandbox/src/parent_lifecycle_tests.rs:68:18",
+                "type": "test failure with exit code 101"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "example_scope": "These prior actual XML files establish this lane writes normal Rust failures as type=test failure with exit code 101. They are format evidence only, not a new review of their physical causal outcomes.",
+  "missing_failure_text_or_message": "The V3 pure control explicitly permits ordinary type101 with failure.text=None, and also after removing message; existing physical stdout/stderr marker+panic gates remain mandatory."
+}

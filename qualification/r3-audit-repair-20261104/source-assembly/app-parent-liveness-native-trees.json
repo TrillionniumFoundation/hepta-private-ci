@@ -1,0 +1,27 @@
+{
+  "base": "7d703610ae4f778ad305ebc139860d276f416e8c",
+  "positive": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+  "source_path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+  "positive_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+  "manifest": "014cd58cb83cb04bbf9329486f42cfe22b30182a",
+  "negatives": [
+    {
+      "kind": "no_exit_rejection",
+      "blob": "4b395cc9faa7f10dbd5d4efef8036b0170164ec0",
+      "tree": "7e1bb54a24c240287c7f4f6a2b85fed008509cff",
+      "restore_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8"
+    },
+    {
+      "kind": "no_rearm",
+      "blob": "eab9c5023d6f688bfbda563348490e9bb39a6aee",
+      "tree": "7be28ab9a7389fb869c9700263b6e2d1fc62d2cf",
+      "restore_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8"
+    },
+    {
+      "kind": "leaked_parent_fd",
+      "blob": "63df209d8ebda1776b5526123ff08b3382982804",
+      "tree": "bd8525ee61cf9ef3f687e8ffd6db60b7396de998",
+      "restore_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8"
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "schema": "hepta.historical-cross-candidate-evidence-index.v1",
+  "evidence_kind": "frozen_cross_owner_pr_delta_snapshot",
+  "is_current_workflow_registry": false,
+  "status": "HISTORICAL_OTHER_CANDIDATE_EVIDENCE_ONLY",
+  "raw_evidence": {
+    "path": "fourth-pr-current-delta.original.json.txt",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "bytes": 495624,
+    "sha256": "047268359a985db7ccd7ad37b4fe6c18107b01c76db0491546b3d4781285763e",
+    "blob": "d302cad4ead462c17258c8fce33eac0c21f5ad37",
+    "encoding": "UTF-8",
+    "original_bytes_unchanged": true,
+    "original_logical_path": "fourth-pr-current-delta.json"
+  },
+  "observation": {
+    "observed_start": {
+      "current_time": "2026-11-04 23:16:45 UTC"
+    },
+    "observed_head_closing_interval": {
+      "begin": {
+        "current_time": "2026-11-04 23:24:40 UTC"
+      },
+      "end": {
+        "current_time": "2026-11-04 23:24:41 UTC"
+      }
+    },
+    "final_metadata_reads_at": {
+      "current_time": "2026-11-04 23:29:17 UTC"
+    }
+  },
+  "product_at_original_observation": {
+    "number": 4797,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4797",
+    "state": "open",
+    "draft": true,
+    "head": {
+      "sha": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "ref": "fix/r3-original-product-contracts-20261104",
+      "repository": "TrillionniumFoundation/hepta-private-ci"
+    },
+    "base": {
+      "sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "ref": "integration/ui-objective-20261103-product"
+    },
+    "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "parents": [
+      "ff72d462d74f9eb856aa9edbc368caad9c466708"
+    ]
+  },
+  "other_candidate_pulls": [
+    {
+      "number": 4806,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4806",
+      "state": "open",
+      "draft": true,
+      "title": "fix(ci): qualify original platform repairs with exact scope trees",
+      "updated_at": "2026-11-04T22:37:50Z",
+      "head": {
+        "sha": "fbf786803f07e402bcaddbb8fbe3dd387f6b7688",
+        "ref": "codex/bazel-original-matrix-repairs-20261104",
+        "repository": "TrillionniumFoundation/hepta-private-ci"
+      },
+      "base": {
+        "sha": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3",
+        "ref": "codex/bazel-rama-dns-base-14e-20261104"
+      },
+      "tree": "030f5a4ce442c5b53676176be750ca244b9414d3",
+      "parents": [
+        "1f76688a43f9fddd17155d51f1a54e089f2499fe",
+        "16863082efbe2c175ebb36b4634f4807e0b26664"
+      ],
+      "changed_files": 23,
+      "snapshot_key": "1"
+    },
+    {
+      "number": 4808,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4808",
+      "state": "open",
+      "draft": true,
+      "title": "Windows: preserve original private owner creation and native fixture lifetimes",
+      "updated_at": "2026-11-04T22:24:34Z",
+      "head": {
+        "sha": "2496308dbbe8b2452ea599357fcd9cd63884e2b9",
+        "ref": "codex/windows-private-owner-fixtures-20261104",
+        "repository": "TrillionniumFoundation/hepta-private-ci"
+      },
+      "base": {
+        "sha": "fbf786803f07e402bcaddbb8fbe3dd387f6b7688",
+        "ref": "codex/bazel-original-matrix-repairs-20261104"
+      },
+      "tree": "1bca069d5dfa8cc95e7bf9a6a59d86cefa2f9a1f",
+      "parents": [
+        "735b980092e4cca7790037923111322660672059"
+      ],
+      "changed_files": 12,
+      "snapshot_key": "2"
+    }
+  ],
+  "source_tree_membership_review": {
+    "current_product_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "current_product_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "reviewed_assembled_source_commit": "7bc267096f23159605c0b6563374e697f8a0bd1f",
+    "reviewed_assembled_source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "historical_other_candidate_locations": [
+      {
+        "pr_number": 4806,
+        "original_json_pointer": "/head_workflow_runs/4806/runs/5/path",
+        "original_line": 556,
+        "run_id": 41920240805,
+        "workflow_display_name": "Windows original CI regressions (declared scope only)",
+        "head_sha": "fbf786803f07e402bcaddbb8fbe3dd387f6b7688",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "failure",
+        "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41920240805",
+        "classification": "other_candidate_workflow_path_not_a_current_integrated_tree_reference"
+      },
+      {
+        "pr_number": 4808,
+        "original_json_pointer": "/head_workflow_runs/4808/runs/7/path",
+        "original_line": 683,
+        "run_id": 41925027821,
+        "workflow_display_name": "Keyring synchronous backend lock proposal",
+        "head_sha": "2496308dbbe8b2452ea599357fcd9cd63884e2b9",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41925027821",
+        "classification": "other_candidate_workflow_path_not_a_current_integrated_tree_reference"
+      },
+      {
+        "pr_number": 4808,
+        "original_json_pointer": "/head_workflow_runs/4808/runs/8/path",
+        "original_line": 696,
+        "run_id": 41925028068,
+        "workflow_display_name": "Windows original CI regressions (declared scope only)",
+        "head_sha": "2496308dbbe8b2452ea599357fcd9cd63884e2b9",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "failure",
+        "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41925028068",
+        "classification": "other_candidate_workflow_path_not_a_current_integrated_tree_reference"
+      }
+    ],
+    "claim": "These three recorded paths belong to other fixed PR candidates. They are not claimed to be files or workflows of the current integrated product tree."
+  },
+  "scope": [
+    "Original raw bytes, recorded failures and pending runs remain intact and available via the relative raw artifact",
+    "This index does not import the other candidates, rewrite their workflow paths, or grant their CI status to the current product",
+    "The unchanged exact-reference verifier continues to apply to actual current documentation and source references",
+    "No test, timeout, skip, retry, source, approval boundary or blocker exit condition is changed"
+  ]
+}

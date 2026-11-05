@@ -1,0 +1,78 @@
+{
+  "schema": "hepta-final-A-diffchecks-continuation-manifest-v1",
+  "status": "PREPARED_ONLY_PENDING_ROOT_FORMAT_REVIEW_AND_EXACT_GUARD",
+  "runner": {
+    "blob": "b24aae0acc886d453f07431735b686eae064ebc7",
+    "bytes": 16544,
+    "sha256": "e9c506868f968be7d5bb6d26475d215cfd7169a83b7bd01c1c599460f21100dc"
+  },
+  "parent_runner": {
+    "blob": "655349b2bd6e9035de963e6c355941d00af8acfe",
+    "bytes": 14235,
+    "sha256": "42056aa0ff22d061dfa25e3d71a2857d0ee65af1b222c097a540f5b43156e1c8"
+  },
+  "runner_delta": {
+    "blob": "dcdb67be08cded6e07fe4ec7c3568101ae7427be",
+    "bytes": 6550,
+    "sha256": "a15b84ce3e9f8a54bf73387bfaccc75783c4d79aa021038c1901c24bee10a4fc"
+  },
+  "all_14_function_bodies_byte_equal": true,
+  "source_chain": {
+    "tested": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "successful_original_fix": "b2901e2beb8171f125fe5906d585fbe134802423",
+    "successful_original_fmt": "4a3374e22e16ce5c764288ad018cd9affadf94ea"
+  },
+  "prior_format_originals": {
+    "blob": "27597951472e3b5851a5fcd15a27896fbd719dba",
+    "bytes": 197886,
+    "sha256": "c093fd1ef85882e345a03fced1ec33f39e98ef31ad1f1b9d425798ac044377ac"
+  },
+  "changes": [
+    "Main starts at stage2 and actual reviewed format tree4a337; original successful fix checks are separately bound to b290.",
+    "Main requires root formatting review and hashes25 priorfmt records (8phase originals plus17complete postimages), original fmt0/controller3, exact17path/blob roster and immutable source relationship.",
+    "Loop enumerates only original-diff-check and full-candidate-diff-check. All14 inherited function bodies remain byte-identical."
+  ],
+  "executed_commands": [
+    [
+      "git",
+      "diff",
+      "--check"
+    ],
+    [
+      "git",
+      "diff",
+      "--check",
+      "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+      "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "--"
+    ]
+  ],
+  "no_fix_fmt_or_tests_repeated": true,
+  "original_index": {
+    "bytes": 1222758,
+    "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+  },
+  "original_locks": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 413768,
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1738619,
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    }
+  },
+  "limits": [
+    "Authorized original final hygiene of the reviewed WIP source. Full16FAIL and25early-return omissions remain open; this is not a gate waiver or closure.",
+    "The 14 same-name host-related failures, 25 early-return cases and original full just100/controller1 remain in their original evidence; hygiene cannot change their status.",
+    "Any automatic source change stops before the next hygiene stage for root review, even if the original command succeeded.",
+    "Any original command failure, index byte change, unexpected source path, lock drift or resource guard stops without reset, cleanup, retry or skipped commands.",
+    "Linux scoped lint/format does not establish native Windows security or platform qualification.",
+    "No local A tests or ref changes follow hygiene in this runner.",
+    "This continuation executes only original fmt and two diff checks; the successful original scoped fix is bound from complete prior evidence and is not repeated.",
+    "The full tested tree remains fb9; the reviewed first-fix tree is separately b290, with the exact one-file postimage and original exit3 stop preserved.",
+    "Current nativefree27,467,448,320bytes is separately recorded; no old free-space observation authorizes B16.",
+    "This final continuation executes only the original git diff --check and the separately disclosed complete candidate diff check. Neither scoped fix nor formatter nor tests is repeated.",
+    "The exact prior17 format postimages and original fmt0/controller3 receipt must hash-match before either diff check; tested source fb9, first fix b290 and formatter output4a337 remain separate."
+  ]
+}

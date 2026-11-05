@@ -1,0 +1,99 @@
+{
+  "schema": "hepta-A-first-actual-hygiene-independent-review-v1",
+  "verdict": "STATIC_ACCEPT_FOR_CURRENT_LINUX_64_GNU_MUSL_SCOPE_WITH_EXPLICIT_GNU32_LIMIT",
+  "scope": "Only the actual first just fix delta, not final fmt or whole candidate qualification.",
+  "actual_native_command_as_reported_by_root": {
+    "job": "1a1aa159580-fc05-3cbe",
+    "original_just_fix_exit": 0,
+    "seconds": 220.9469,
+    "controller_exit": 3,
+    "controller_meaning": "Review stop after an automatic source change, not lint failure.",
+    "full_native_command_receipt_independently_read_in_this_review": false
+  },
+  "source_identity": {
+    "base_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "last_tested_A_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "actual_post_fix_tree": "b2901e2beb8171f125fe5906d585fbe134802423",
+    "preimage": {
+      "path": "architecture-audit/a-hygiene-independent-review-20261105/preimages/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "bytes": 12768,
+      "sha256": "08c1c79aaa41a9ca727ce3e4c77a46781d2b167d0127fbc401fba589e5ce4b9d",
+      "blob": "ed07ba4eed573d659dfdf647b1aab241a28e4b46"
+    },
+    "postimage": {
+      "path": "architecture-audit/a-hygiene-independent-review-20261105/postimages/codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "bytes": 12754,
+      "sha256": "dc61d2f17ad7131d5c49584f95f332af9cb1ee4776960607e831e6544f727458",
+      "blob": "58eff73120448cb122c3e6d22ea60a7ee1899844"
+    },
+    "independent_diff": {
+      "path": "architecture-audit/a-hygiene-independent-review-20261105/actual-fix1-independent.diff",
+      "bytes": 627,
+      "sha256": "298ef216a78ac0b25a8ace8c3c09f781813c13442b87015418814df85d0290cb",
+      "blob": "195a76ac5ddb0759a700951529be380a5a711de0"
+    },
+    "complete_base_tree_receipt": {
+      "path": "hepta-audit-fourth/inputs/cabc-tree.json",
+      "bytes": 3703447,
+      "sha256": "25e4f292abeb6e8341e7000e8eac24c7ea281b2163f512f00a53e789ed16fb39",
+      "blob": "df0c8aaf483cd5b9f57d25fcea3bc5693e2b542e"
+    },
+    "complete_54_file_native_source_map": {
+      "path": "ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/small/final-source-map.json",
+      "bytes": 14360,
+      "sha256": "79fc8b5da99da4f89a824d4615a7d470fa43116bdb835016cf6324deae977fa0",
+      "blob": "1c4acd1b81bff76db6c99fda5c98e5c7c3607862"
+    },
+    "whole_tree_recomputed_independently": true,
+    "changed_path_count": 1
+  },
+  "source_proof": {
+    "only_text_change": {
+      "before": "assert_ne!((actual.st_dev as u64, actual.st_ino as u64), (device, inode));",
+      "after": "assert_ne!((actual.st_dev, actual.st_ino), (device, inode));",
+      "occurrences": 1,
+      "line": 224
+    },
+    "all_other_file_bytes_unchanged": true,
+    "line_count_unchanged": true,
+    "original_tuple_assert_preserved": true,
+    "physical_controls_and_budget_preserved": [
+      "fstat success requires different original device/inode tuple",
+      "fstat failure still requires exact EBADF",
+      "closed-standard-FD promotion assertions unchanged",
+      "inherited/armed/exit markers and original parent kill/reparent sequence unchanged",
+      "close-before-user-fork tuple and exec inode checks unchanged",
+      "all original 5-second bounds unchanged"
+    ],
+    "production_source_changed": false,
+    "manifest_or_active_lock_changed": false
+  },
+  "type_and_platform_review": {
+    "actual_metadata_libc_version": "0.2.191",
+    "metadata_receipt": {
+      "path": "ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/workspace-metadata.stdout",
+      "bytes": 8163699,
+      "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+      "blob": "3d2f7bfbd5fb2fc0fd219045444327e929820fdd"
+    },
+    "official_version_tag_commit": "ccc2ff4aaab962f7fde7b8edda7379c045b1ca12",
+    "primary_receipts": {
+      "path": "architecture-audit/a-hygiene-independent-review-20261105/primary-manifest.json",
+      "bytes": 7467,
+      "sha256": "197be1762cbd65fe4138510ff03e6badc0c0082843829b2504de0274f8f061a9",
+      "blob": "04e66684f13285fc24fd10521e8ba65b1a367595"
+    },
+    "registry_archive_equivalence_not_claimed": true,
+    "linux_64_gnu_x86_64_aarch64": "stat.st_dev/dev_t and stat.st_ino/ino_t are u64; removing as u64 is identity-equivalent.",
+    "linux_musl_x86_64_aarch64": "Both aliases are u64 in the official source; the same equality and assertion remain.",
+    "macos_and_windows": "The entire parent_lifecycle module is gated by target_os=linux and is not compiled on these platforms.",
+    "gnu_32_limit": "The module cfg does not exclude GNU32. libc 0.2.191 gnu/b32 uses ino_t=c_ulong in its default 32-bit time configuration; build.rs defaults that setting to 32. Removing the st_ino conversion cannot be called equivalent for all GNU32 builds. This review neither claims GNU32 product support nor verifies a GNU32 build; if that target is required, this automatic change needs a portability-preserving revision."
+  },
+  "qualification_limits": [
+    "No tests or native commands were run by this reviewer.",
+    "The last full run still belongs to fb9; no test hash or outcome is relabeled as b290.",
+    "Original 16 full failures and 25 early-return cases remain unchanged and open.",
+    "This permits root to assess continuation to fmt in the stated current target scope; final A source is still not bound.",
+    "B foundation remains unbound; latest free-space reduction must replace the earlier capacity observation."
+  ]
+}

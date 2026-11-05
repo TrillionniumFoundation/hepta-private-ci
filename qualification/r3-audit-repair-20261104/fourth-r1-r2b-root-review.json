@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.fourth.r1-r2b.root-original-evidence-review.v1",
+  "reviewed_at": "2026-11-04T21:08:00Z",
+  "reviewer": "root",
+  "source_bundles": [
+    "4a14b0187892f2c26a127e8963a5ec919a3002c2",
+    "0248de74537c21f089a1377933b553acad6b2630"
+  ],
+  "R1": {
+    "tested": "5fc8073d849199ad243c6814344a06e846ff358d",
+    "formatted": "a5e96b7e10c6d6f9c5fd3ec6a4cbad47448aa323",
+    "independent_git_tree_reconstruction": true,
+    "original_seven_names_retained": true,
+    "selected": 10,
+    "pass": 10,
+    "retries": 0,
+    "helper_before_after_equal": true,
+    "test_binary_before_after_equal": true,
+    "fresh_JUnit": true,
+    "python54Pass": true,
+    "codespell_clean_exact_tree_pass": true,
+    "format_only_two_test_files": true,
+    "failed_runner_attempts_retained": 4
+  },
+  "R2b": {
+    "baseline": "7d32ba0dba9682e5f0d02baf8fd8ec5a28a28280",
+    "fixed": "6eafed3863a36f9f5a1f28034e098dd195331334",
+    "baseline_exact_qualified_failures": 3,
+    "baseline_causal_observation": "pre_lock_sample=Ok(1000), time_after_release=5000, result=Ok(()), admitted=true",
+    "fixed_exact_passes": 18,
+    "original": 15,
+    "new": 3,
+    "fixed_causal_observation": "pre_lock_sample=Err(Timeout), time_after_release=5000, result=Err(Expired), admitted=false",
+    "retries": 0,
+    "source_unchanged_during_tests": true,
+    "binary_before_after_equal": true,
+    "hygiene_zero_diff": true,
+    "ordinary_index_unchanged": true,
+    "no_tests_after_hygiene": true
+  },
+  "limits": [
+    "Root independently compared complete source postimages and reconstructed tested/final Git trees; original bundle file SHA verification was performed by the native owner and preserved in the receipts.",
+    "Root inspected original embedded JUnit and causal raw observations; native success is scoped, not complete product qualification.",
+    "Original Bazel lock generation failed; its gate remains open pending the separate legitimate cache-recovery stage.",
+    "R1 and R2b are foundations, not B16 normal-entry completion."
+  ]
+}

@@ -1,0 +1,305 @@
+//! Test-owned objects only; this module changes no token or production ACL policy.
+
+use anyhow::Context;
+use anyhow::Result;
+use anyhow::ensure;
+use std::ffi::c_void;
+use std::fs;
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::io::Read;
+use std::io::Seek;
+use std::os::windows::fs::OpenOptionsExt;
+use std::os::windows::io::AsRawHandle;
+use std::path::Path;
+use std::path::PathBuf;
+use windows_sys::Win32::Foundation::GetHandleInformation;
+use windows_sys::Win32::Foundation::HANDLE;
+use windows_sys::Win32::Foundation::HANDLE_FLAG_INHERIT;
+use windows_sys::Win32::Foundation::HLOCAL;
+use windows_sys::Win32::Foundation::LocalFree;
+use windows_sys::Win32::Security::ACL;
+use windows_sys::Win32::Security::Authorization::DENY_ACCESS;
+use windows_sys::Win32::Security::Authorization::EXPLICIT_ACCESS_W;
+use windows_sys::Win32::Security::Authorization::GRANT_ACCESS;
+use windows_sys::Win32::Security::Authorization::GetSecurityInfo;
+use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
+use windows_sys::Win32::Security::Authorization::SetEntriesInAclW;
+use windows_sys::Win32::Security::Authorization::SetSecurityInfo;
+use windows_sys::Win32::Security::Authorization::TRUSTEE_IS_SID;
+use windows_sys::Win32::Security::Authorization::TRUSTEE_IS_UNKNOWN;
+use windows_sys::Win32::Security::Authorization::TRUSTEE_W;
+use windows_sys::Win32::Security::DACL_SECURITY_INFORMATION;
+use windows_sys::Win32::Security::GetSecurityDescriptorControl;
+use windows_sys::Win32::Security::PROTECTED_DACL_SECURITY_INFORMATION;
+use windows_sys::Win32::Security::SE_DACL_PROTECTED;
+use windows_sys::Win32::Security::UNPROTECTED_DACL_SECURITY_INFORMATION;
+use windows_sys::Win32::Storage::FileSystem::BY_HANDLE_FILE_INFORMATION;
+use windows_sys::Win32::Storage::FileSystem::DELETE;
+use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
+use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_READONLY;
+use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
+use windows_sys::Win32::Storage::FileSystem::FILE_DELETE_CHILD;
+use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS;
+use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FILE_STANDARD_INFO;
+use windows_sys::Win32::Storage::FileSystem::FileStandardInfo;
+use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandle;
+use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandleEx;
+use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum DeleteRoute {
+    Neither,
+    TargetOnly,
+    ParentOnly,
+    Both,
+}
+
+#[derive(Clone, Copy)]
+enum Access {
+    Deny,
+    Allow,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub(crate) struct DeleteOutcome {
+    pub(crate) route: DeleteRoute,
+    pub(crate) file_deleted: bool,
+    pub(crate) directory_deleted: bool,
+}
+
+struct LocalMemory(*mut c_void);
+
+impl Drop for LocalMemory {
+    fn drop(&mut self) {
+        if !self.0.is_null() {
+            // SAFETY: this guard owns only allocations returned by the ACL APIs.
+            unsafe { LocalFree(self.0 as HLOCAL) };
+        }
+    }
+}
+
+struct NativeDacl {
+    descriptor: LocalMemory,
+    acl: *mut ACL,
+    protection: u32,
+}
+
+impl NativeDacl {
+    fn read(handle: HANDLE) -> Result<Self> {
+        let mut result = Self { descriptor: LocalMemory(std::ptr::null_mut()), acl: std::ptr::null_mut(), protection: 0 };
+        // SAFETY: handle is borrowed from a live owned fixture file. The result owns its descriptor.
+        let code = unsafe { GetSecurityInfo(handle, SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
+            std::ptr::null_mut(), std::ptr::null_mut(), &mut result.acl,
+            std::ptr::null_mut(), &mut result.descriptor.0) };
+        ensure!(code == 0, "GetSecurityInfo: {code}");
+        ensure!(!result.acl.is_null(), "fixture unexpectedly has a NULL DACL");
+        let (mut control, mut revision) = (0, 0);
+        // SAFETY: the OS descriptor remains owned by result.
+        ensure!(unsafe { GetSecurityDescriptorControl(result.descriptor.0, &mut control, &mut revision) } != 0,
+            "GetSecurityDescriptorControl: {}", std::io::Error::last_os_error());
+        result.protection = if control & SE_DACL_PROTECTED != 0 {
+            PROTECTED_DACL_SECURITY_INFORMATION
+        } else { UNPROTECTED_DACL_SECURITY_INFORMATION };
+        Ok(result)
+    }
+
+    fn bytes(&self) -> Vec<u8> {
+        // SAFETY: this is the complete OS-owned ACL within the live descriptor.
+        unsafe { std::slice::from_raw_parts(self.acl.cast(), (*self.acl).AclSize as usize).to_vec() }
+    }
+
+    fn restore(&self, handle: HANDLE) -> Result<()> {
+        // SAFETY: the original ACL and the retained WRITE_DAC handle are both live.
+        let code = unsafe { SetSecurityInfo(handle, SE_FILE_OBJECT,
+            DACL_SECURITY_INFORMATION | self.protection, std::ptr::null_mut(),
+            std::ptr::null_mut(), self.acl, std::ptr::null_mut()) };
+        ensure!(code == 0, "restore owned fixture DACL: {code}");
+        Ok(())
+    }
+}
+
+fn identity(file: &File) -> Result<(u32, u32, u32)> {
+    // SAFETY: this plain native output structure is initialized by the successful call.
+    let mut info: BY_HANDLE_FILE_INFORMATION = unsafe { std::mem::zeroed() };
+    ensure!(unsafe { GetFileInformationByHandle(file.as_raw_handle() as HANDLE, &mut info) } != 0,
+        "GetFileInformationByHandle: {}", std::io::Error::last_os_error());
+    ensure!(info.dwFileAttributes & (FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_REPARSE_POINT) == 0,
+        "fixture must not be readonly or a reparse point");
+    Ok((info.dwVolumeSerialNumber, info.nFileIndexHigh, info.nFileIndexLow))
+}
+
+struct HeldObject {
+    path: PathBuf,
+    file: File,
+    original: NativeDacl,
+    expected_acl: Vec<u8>,
+    identity: (u32, u32, u32),
+    restore: bool,
+}
+
+impl HeldObject {
+    fn open(path: &Path) -> Result<Self> {
+        // No DELETE right is retained. WRITE_DAC is used only to prepare/restore
+        // these owned fixtures; this noninherited handle never reaches the child.
+        let file = OpenOptions::new().read(true).access_mode(FILE_GENERIC_READ | WRITE_DAC)
+            .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS).open(path)?;
+        let handle = file.as_raw_handle() as HANDLE;
+        let mut flags = 0;
+        // SAFETY: handle belongs to the live File above.
+        ensure!(unsafe { GetHandleInformation(handle, &mut flags) } != 0,
+            "GetHandleInformation: {}", std::io::Error::last_os_error());
+        ensure!(flags & HANDLE_FLAG_INHERIT == 0, "fixture handle must not be inherited");
+        let original = NativeDacl::read(handle)?;
+        Ok(Self { path: path.to_owned(), identity: identity(&file)?, file,
+            expected_acl: original.bytes(), original, restore: true })
+    }
+
+    fn set_access(&mut self, right: u32, access: Access, everyone: *mut c_void) -> Result<()> {
+        let trustee = TRUSTEE_W { pMultipleTrustee: std::ptr::null_mut(), MultipleTrusteeOperation: 0,
+            TrusteeForm: TRUSTEE_IS_SID, TrusteeType: TRUSTEE_IS_UNKNOWN, ptstrName: everyone.cast() };
+        let mut entries = vec![EXPLICIT_ACCESS_W { grfAccessPermissions: FILE_ALL_ACCESS,
+            grfAccessMode: GRANT_ACCESS, grfInheritance: 0, Trustee: trustee }];
+        if matches!(access, Access::Deny) {
+            entries[0].grfAccessPermissions &= !right;
+            entries.insert(0, EXPLICIT_ACCESS_W { grfAccessPermissions: right,
+                grfAccessMode: DENY_ACCESS, grfInheritance: 0, Trustee: trustee });
+        }
+        let mut acl = std::ptr::null_mut();
+        // SAFETY: all entries and the validated Everyone SID remain live. A NULL
+        // old ACL deliberately excludes every inherited or hidden identity grant.
+        let code = unsafe { SetEntriesInAclW(entries.len() as u32, entries.as_ptr(),
+            std::ptr::null_mut(), &mut acl) };
+        let _allocation = LocalMemory(acl.cast());
+        ensure!(code == 0, "SetEntriesInAclW: {code}");
+        // SAFETY: the new ACL remains allocated until SetSecurityInfo copies it.
+        let code = unsafe { SetSecurityInfo(self.file.as_raw_handle() as HANDLE, SE_FILE_OBJECT,
+            DACL_SECURITY_INFORMATION | PROTECTED_DACL_SECURITY_INFORMATION,
+            std::ptr::null_mut(), std::ptr::null_mut(), acl, std::ptr::null_mut()) };
+        ensure!(code == 0, "SetSecurityInfo: {code}");
+        let actual = NativeDacl::read(self.file.as_raw_handle() as HANDLE)?;
+        ensure!(actual.protection == PROTECTED_DACL_SECURITY_INFORMATION, "fixture DACL must be protected");
+        self.expected_acl = actual.bytes();
+        Ok(())
+    }
+
+    fn release(mut self, label: &str) -> Result<(PathBuf, (u32, u32, u32))> {
+        ensure!(identity(&self.file)? == self.identity, "retained object identity changed");
+        let actual = NativeDacl::read(self.file.as_raw_handle() as HANDLE)?;
+        ensure!(actual.bytes() == self.expected_acl, "fixture DACL changed during {label}");
+        // SAFETY: the owned File remains live and the native output buffer has the exact type/size.
+        let mut info: FILE_STANDARD_INFO = unsafe { std::mem::zeroed() };
+        ensure!(unsafe { GetFileInformationByHandleEx(self.file.as_raw_handle() as HANDLE,
+            FileStandardInfo, (&mut info as *mut FILE_STANDARD_INFO).cast(),
+            std::mem::size_of::<FILE_STANDARD_INFO>() as u32) } != 0,
+            "FileStandardInfo: {}", std::io::Error::last_os_error());
+        if info.Directory == 0 {
+            self.file.rewind()?;
+            let mut contents = String::new();
+            self.file.read_to_string(&mut contents)?;
+            ensure!(contents == "matrix-original", "retained file contents changed");
+        }
+        eprintln!("delete_matrix {label} path={:?} identity={:?} directory={} pending={} links={} acl={:02x?}",
+            self.path, self.identity, info.Directory, info.DeletePending, info.NumberOfLinks, self.expected_acl);
+        // Successful Win32 deletion can remain pending while this share-delete
+        // handle is open. POSIX unlink can instead remove the name immediately.
+        if info.DeletePending == 0 && info.NumberOfLinks != 0 {
+            self.original.restore(self.file.as_raw_handle() as HANDLE)?;
+        }
+        self.restore = false;
+        Ok((self.path.clone(), self.identity))
+    }
+}
+
+impl Drop for HeldObject {
+    fn drop(&mut self) {
+        if self.restore {
+            // Best-effort unwind cleanup is not an acceptance result; normal
+            // release above propagates every restoration error before assertions.
+            if let Err(error) = self.original.restore(self.file.as_raw_handle() as HANDLE) {
+                eprintln!("delete_matrix cleanup path={:?} error={error:#}", self.path);
+            }
+        }
+    }
+}
+
+struct DeleteRow {
+    route: DeleteRoute,
+    parent: HeldObject,
+    file: HeldObject,
+    directory: HeldObject,
+}
+
+pub(crate) struct DeleteMatrix(Vec<DeleteRow>);
+
+impl DeleteMatrix {
+    pub(crate) fn new(root: &Path) -> Result<Self> {
+        fs::create_dir(root)?;
+        let everyone = crate::token::LocalSid::from_string("S-1-1-0")?;
+        let mut rows = Vec::new();
+        for route in [DeleteRoute::Neither, DeleteRoute::TargetOnly, DeleteRoute::ParentOnly, DeleteRoute::Both] {
+            let path = root.join(format!("{route:?}"));
+            fs::create_dir(&path)?;
+            fs::write(path.join("file"), "matrix-original")?;
+            fs::create_dir(path.join("directory"))?;
+            let mut parent = HeldObject::open(&path)?;
+            let mut file = HeldObject::open(&path.join("file"))?;
+            let mut directory = HeldObject::open(&path.join("directory"))?;
+            let target_access = match route {
+                DeleteRoute::TargetOnly | DeleteRoute::Both => Access::Allow,
+                DeleteRoute::Neither | DeleteRoute::ParentOnly => Access::Deny,
+            };
+            let parent_access = match route {
+                DeleteRoute::ParentOnly | DeleteRoute::Both => Access::Allow,
+                DeleteRoute::Neither | DeleteRoute::TargetOnly => Access::Deny,
+            };
+            parent.set_access(FILE_DELETE_CHILD, parent_access, everyone.as_ptr())?;
+            file.set_access(DELETE, target_access, everyone.as_ptr())?;
+            directory.set_access(DELETE, target_access, everyone.as_ptr())?;
+            rows.push(DeleteRow { route, parent, file, directory });
+        }
+        Ok(Self(rows))
+    }
+
+    pub(crate) fn paths(&self) -> impl Iterator<Item = (&Path, &Path)> {
+        self.0.iter().map(|row| (row.file.path.as_path(), row.directory.path.as_path()))
+    }
+
+    pub(crate) fn assert_same_acls(&self, other: &Self) {
+        assert_eq!(self.0.len(), other.0.len());
+        for (left, right) in self.0.iter().zip(&other.0) {
+            assert_eq!(left.route, right.route);
+            assert_eq!(left.parent.expected_acl, right.parent.expected_acl);
+            assert_eq!(left.file.expected_acl, right.file.expected_acl);
+            assert_eq!(left.directory.expected_acl, right.directory.expected_acl);
+        }
+    }
+
+    pub(crate) fn finish(self, label: &str) -> Result<Vec<DeleteOutcome>> {
+        let mut outcomes = Vec::new();
+        for row in self.0 {
+            let file = row.file.release(label)?;
+            let directory = row.directory.release(label)?;
+            row.parent.release(label)?;
+            let mut deleted = Vec::new();
+            for (path, original_id) in [file, directory] {
+                match OpenOptions::new().read(true).custom_flags(FILE_FLAG_BACKUP_SEMANTICS).open(&path) {
+                    Ok(file) => {
+                        ensure!(identity(&file)? == original_id, "path was replaced after {label}");
+                        deleted.push(false);
+                    }
+                    Err(error) if error.kind() == std::io::ErrorKind::NotFound => deleted.push(true),
+                    Err(error) => return Err(error).with_context(|| format!("readback after {label}: {}", path.display())),
+                }
+            }
+            outcomes.push(DeleteOutcome { route: row.route, file_deleted: deleted[0], directory_deleted: deleted[1] });
+        }
+        eprintln!("delete_matrix {label} after_release={outcomes:?}");
+        Ok(outcomes)
+    }
+}

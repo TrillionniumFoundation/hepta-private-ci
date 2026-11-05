@@ -1,0 +1,43 @@
+{
+  "schema": "hepta-b16-native-adoption-static-runner-delivery-v1",
+  "status": "STATIC_PLAN_AND_READONLY_VALIDATOR_NOT_NATIVE_EXECUTION",
+  "objects": [
+    {
+      "relative": "execution-plan.json",
+      "blob": "dc12d596172c4f24c1ec4216e05b4662aed590b8",
+      "bytes": 79184,
+      "sha256": "4ce81378d5b6a5a992441f1ac9f7ac5e4b4ea4d743a6f1439ab2629652d0ef45",
+      "readback_byteequal": true
+    },
+    {
+      "relative": "prepare_execution_plan.py",
+      "blob": "4fc7c7e1f5f0a92baefdf7a5ed6c898881387b59",
+      "bytes": 17654,
+      "sha256": "ceb4843d9463563fb26ff5e7f622833ab04d8a6d2242b6a333bbe6b53ef039d1",
+      "readback_byteequal": true
+    },
+    {
+      "relative": "check_native_receipts.py",
+      "blob": "28a24186fd6f52d92cee806bedda83dcbb1260db",
+      "bytes": 5131,
+      "sha256": "40006b8770024a840f96b322055a67565aee27d3e77b2c59c9aff0f6106864ce",
+      "readback_byteequal": true
+    },
+    {
+      "relative": "validator-original-metadata-control.json",
+      "blob": "6d4506b6f7a0aadd0b3cb549b7936c6e2fee04fd",
+      "bytes": 1111,
+      "sha256": "7004d56350376494387cee82c7db922b27224c48259d67f33acfbeb35afd3dea",
+      "readback_byteequal": true
+    },
+    {
+      "relative": "README.md",
+      "blob": "68fcf65ab8780d7a89863274e23054ccd1637949",
+      "bytes": 3714,
+      "sha256": "dd96b5399516fd9d3c5294c529a6dd3ac2ce41953ad12e5115596810ebd256e4",
+      "readback_byteequal": true
+    }
+  ],
+  "source_scope": "81-file partial composition, not a full candidate tree; final A source guard remains mandatory",
+  "executed_here": "Pure local Git/Python composition and old-metadata checker; no Cargo/Bazel/native/ref operations."
+}

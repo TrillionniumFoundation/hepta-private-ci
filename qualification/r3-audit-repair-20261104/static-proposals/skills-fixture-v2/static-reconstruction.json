@@ -1,0 +1,271 @@
+{
+  "schema": "skills-marker-fixture-v2-static-reconstruction",
+  "source_path": "codex-rs/ext/skills/src/host_roots_tests.rs",
+  "variants": {
+    "original": {
+      "bytes": 22485,
+      "sha256": "054070e3f7935d2945b99987e08eff5cbf96c27870d25c466bc31b54b174f00b",
+      "blob": "fee6c1a0398c0f9bacbb60853e20786e804a3271"
+    },
+    "v1_positive": {
+      "bytes": 23392,
+      "sha256": "fa2d78f6fea0018f34d57971ff9defb8b709d1085ba6f2e901b14a2e2ae520c4",
+      "blob": "3d8412f8eca445b1eba85f26d7975aa7ddfbb524"
+    },
+    "v1_negative": {
+      "bytes": 23571,
+      "sha256": "a56d6f5d9e6f592ac9e7cd4dd815bd7a8b2d8c31d8902433639c9ff601236a45",
+      "blob": "9814df0cddc9cf8c02e8e0259ccdac1fa2b117b1"
+    },
+    "v2_positive": {
+      "bytes": 23508,
+      "sha256": "1987b4f5b24df98283281f1124f6ab9fa364da41ac1cbf352e4b952058f82f94",
+      "blob": "ffae69d365402929787f9029a15f02d9c328149b"
+    },
+    "v2_negative": {
+      "bytes": 23687,
+      "sha256": "33d606f5e35b6c8b77a4693a516c376a498c55e40fbdc811fdb7cbfab721daef",
+      "blob": "0af7f9a6be0f1e6795bd5f7ab9006d0c8ce24a88"
+    }
+  },
+  "patches": [
+    {
+      "path": "v1-positive-to-v2-positive.patch",
+      "from": "v1_positive",
+      "to": "v2_positive",
+      "bytes": 636,
+      "sha256": "347018f80b87c45035943c848098f63bd555817d81c21513e77364c410453ae1",
+      "blob": "2d4900f1877cbabae5a78e25636d9f9ccdc9b7ba",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/skills-host-roots-native-preflight-repair-20261105/v1-positive-to-v2-positive.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/skills-host-roots-native-preflight-repair-20261105/v1-positive-to-v2-positive.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "postimage_byte_equal": true
+    },
+    {
+      "path": "v1-negative-to-v2-negative.patch",
+      "from": "v1_negative",
+      "to": "v2_negative",
+      "bytes": 636,
+      "sha256": "347018f80b87c45035943c848098f63bd555817d81c21513e77364c410453ae1",
+      "blob": "2d4900f1877cbabae5a78e25636d9f9ccdc9b7ba",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/skills-host-roots-native-preflight-repair-20261105/v1-negative-to-v2-negative.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/skills-host-roots-native-preflight-repair-20261105/v1-negative-to-v2-negative.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "postimage_byte_equal": true
+    },
+    {
+      "path": "v1-positive-to-v2-negative.patch",
+      "from": "v1_positive",
+      "to": "v2_negative",
+      "bytes": 938,
+      "sha256": "70ccb9fa54c3efb438fd20dae88ef07917b841de6876353be2365f10c7fe916e",
+      "blob": "7fcbe62a48dc4b018dea95e75c2a05e86b4ef406",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/skills-host-roots-native-preflight-repair-20261105/v1-positive-to-v2-negative.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/skills-host-roots-native-preflight-repair-20261105/v1-positive-to-v2-negative.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "postimage_byte_equal": true
+    },
+    {
+      "path": "v2-positive-to-v2-negative.patch",
+      "from": "v2_positive",
+      "to": "v2_negative",
+      "bytes": 460,
+      "sha256": "7c3ab96f43d16d1e9c1c6aa261712c023a98ab50382469880b193a8d2ac8cba8",
+      "blob": "723374d75c6e8831ec02860b0f86c93058742e51",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/skills-host-roots-native-preflight-repair-20261105/v2-positive-to-v2-negative.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/skills-host-roots-native-preflight-repair-20261105/v2-positive-to-v2-negative.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "postimage_byte_equal": true
+    },
+    {
+      "path": "v2-negative-to-v2-positive.patch",
+      "from": "v2_negative",
+      "to": "v2_positive",
+      "bytes": 460,
+      "sha256": "26d2c254be1c04b50f5477defcdbfc8bdcc6a966188d991cf65753873a5d448d",
+      "blob": "bf3b197f7772643caaeb8593c78a8a9fae08d7ec",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/skills-host-roots-native-preflight-repair-20261105/v2-negative-to-v2-positive.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/skills-host-roots-native-preflight-repair-20261105/v2-negative-to-v2-positive.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "postimage_byte_equal": true
+    },
+    {
+      "path": "full-v2-positive-from-original.patch",
+      "from": "original",
+      "to": "v2_positive",
+      "bytes": 1602,
+      "sha256": "34f0bcc9cb79dea49769231e258384f00e785e72b83ae5adb73cd2ae56ac81a5",
+      "blob": "9928af4051e1f78b21156f6a220fcbdbd0958a23",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/skills-host-roots-native-preflight-repair-20261105/full-v2-positive-from-original.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/skills-host-roots-native-preflight-repair-20261105/full-v2-positive-from-original.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "postimage_byte_equal": true
+    },
+    {
+      "path": "full-v2-negative-from-original.patch",
+      "from": "original",
+      "to": "v2_negative",
+      "bytes": 1784,
+      "sha256": "baf7314d78f2a7445a6337366b3565c521f66bc469fb13f6bd3bd9b57b1c65ba",
+      "blob": "3f4b066083613a72bd956a543ed08453b756df51",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "/workspace/scratch/07dd58cc9630/research-audit/skills-host-roots-native-preflight-repair-20261105/full-v2-negative-from-original.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "/workspace/scratch/07dd58cc9630/research-audit/skills-host-roots-native-preflight-repair-20261105/full-v2-negative-from-original.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "postimage_byte_equal": true
+    }
+  ],
+  "original_assertion_lines": {
+    "original": 415,
+    "v1_positive": 438,
+    "v1_negative": 441,
+    "v2_positive": 443,
+    "v2_negative": 446
+  },
+  "original_whole_roots_assertion_byte_equal": true,
+  "all_other_original_test_source_byte_equal": true,
+  "positive_negative_difference_is_only_actual_outer_marker_creation": true,
+  "v1_files_not_modified": true,
+  "new_test_definitions": 0,
+  "native_compilation_or_execution": false,
+  "shared_source_or_ref_changes": false
+}

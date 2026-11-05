@@ -1,0 +1,233 @@
+{
+  "schema": "hepta.sqlx.native-lifetime-token.static-roundtrip.v1",
+  "status": "STATIC_GIT_APPLY_AND_POSTIMAGE_PASS",
+  "actual_vcs_origin": "003b698e99e024f3621b8043a2426fde5b741171",
+  "registry_alignment_receipt": "246b438e9f8026abaa4c48b62dd4d55ffa470cee",
+  "uncompiled_unexecuted": true,
+  "native_worktree_target_or_ref_changed": false,
+  "phases": [
+    {
+      "name": "full",
+      "patch": {
+        "name": "full",
+        "path": "native-lifetime-token.patch",
+        "blob": "abe067bc6f2ca9601eef83b0cd4e0db4811827ac",
+        "bytes": 23537,
+        "sha256": "c733c2eb50ea35aea18981bba478af2f7dbea369acaf563398f9b0e887c5cc75"
+      },
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "native-lifetime-token.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "native-lifetime-token.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "actual_source_map": {
+        "sqlx-sqlite/src/connection/establish.rs": "7bf04f3f06165371bfbe525c61cbaafa0c46667f",
+        "sqlx-sqlite/src/connection/handle.rs": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6",
+        "sqlx-sqlite/src/options/connection_lifetime.rs": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc",
+        "sqlx-sqlite/src/options/connection_lifetime_tests.rs": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+        "sqlx-sqlite/src/options/mod.rs": "a9da93a72c7840f98dd9b53181c28f7fae5807ae"
+      },
+      "exact_expected_map": true
+    },
+    {
+      "name": "no_worker_token",
+      "patch": {
+        "name": "no_worker_token",
+        "path": "negative-no-worker-token.patch",
+        "blob": "916c28d3c54119909342eeebe7beebd1d9ad7e91",
+        "bytes": 637,
+        "sha256": "52efe7fa47035ff5628e6224e4e946c1a99c582c09f3f64ebc580f8d3224c8cc"
+      },
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "negative-no-worker-token.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "negative-no-worker-token.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "actual_source_map": {
+        "sqlx-sqlite/src/connection/establish.rs": "4e31d9fc66df45eab48b24643f87e5cb52258241",
+        "sqlx-sqlite/src/connection/handle.rs": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6",
+        "sqlx-sqlite/src/options/connection_lifetime.rs": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc",
+        "sqlx-sqlite/src/options/connection_lifetime_tests.rs": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+        "sqlx-sqlite/src/options/mod.rs": "a9da93a72c7840f98dd9b53181c28f7fae5807ae"
+      },
+      "exact_expected_map": true
+    },
+    {
+      "name": "restore_worker_token",
+      "patch": {
+        "name": "restore_worker_token",
+        "path": "restore-worker-token.patch",
+        "blob": "cc635a7a55d3737039cc7fa2751fa003a7428b78",
+        "bytes": 637,
+        "sha256": "636877d63d6dd3fb810b19ad45f469b54ea41388f6f23618f5b8b331dcbc5ae0"
+      },
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "restore-worker-token.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "restore-worker-token.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "actual_source_map": {
+        "sqlx-sqlite/src/connection/establish.rs": "7bf04f3f06165371bfbe525c61cbaafa0c46667f",
+        "sqlx-sqlite/src/connection/handle.rs": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6",
+        "sqlx-sqlite/src/options/connection_lifetime.rs": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc",
+        "sqlx-sqlite/src/options/connection_lifetime_tests.rs": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+        "sqlx-sqlite/src/options/mod.rs": "a9da93a72c7840f98dd9b53181c28f7fae5807ae"
+      },
+      "exact_expected_map": true
+    },
+    {
+      "name": "unwind_releases",
+      "patch": {
+        "name": "unwind_releases",
+        "path": "negative-close-unwind-releases.patch",
+        "blob": "5871bdd770ce0c99231a073cc227f320511a5938",
+        "bytes": 633,
+        "sha256": "573c6bf2af160b3b4a6a4af095f0cee6261f63adabd88e02b5ccc894bd114020"
+      },
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "negative-close-unwind-releases.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "negative-close-unwind-releases.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "actual_source_map": {
+        "sqlx-sqlite/src/connection/establish.rs": "7bf04f3f06165371bfbe525c61cbaafa0c46667f",
+        "sqlx-sqlite/src/connection/handle.rs": "e106e9ec8dd3e5b33ccde609ed22449709f1a488",
+        "sqlx-sqlite/src/options/connection_lifetime.rs": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc",
+        "sqlx-sqlite/src/options/connection_lifetime_tests.rs": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+        "sqlx-sqlite/src/options/mod.rs": "a9da93a72c7840f98dd9b53181c28f7fae5807ae"
+      },
+      "exact_expected_map": true
+    },
+    {
+      "name": "restore_close_retention",
+      "patch": {
+        "name": "restore_close_retention",
+        "path": "restore-close-retention.patch",
+        "blob": "1e54da270be0c25b381cf3dcf2cbbab1c1ce4515",
+        "bytes": 633,
+        "sha256": "db2dacacc04e5d67af8dfdecdb9cc138a98bb5802422bb6ef586f6f38cf830b4"
+      },
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "--check",
+            "restore-close-retention.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--whitespace=error-all",
+            "restore-close-retention.patch"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "actual_source_map": {
+        "sqlx-sqlite/src/connection/establish.rs": "7bf04f3f06165371bfbe525c61cbaafa0c46667f",
+        "sqlx-sqlite/src/connection/handle.rs": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6",
+        "sqlx-sqlite/src/options/connection_lifetime.rs": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc",
+        "sqlx-sqlite/src/options/connection_lifetime_tests.rs": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+        "sqlx-sqlite/src/options/mod.rs": "a9da93a72c7840f98dd9b53181c28f7fae5807ae"
+      },
+      "exact_expected_map": true
+    }
+  ],
+  "final_source_map": {
+    "sqlx-sqlite/src/connection/establish.rs": "7bf04f3f06165371bfbe525c61cbaafa0c46667f",
+    "sqlx-sqlite/src/connection/handle.rs": "ed7f2a0798a30f4e3574d0e6e685ac9b41aae1a6",
+    "sqlx-sqlite/src/options/connection_lifetime.rs": "ea1b6007e9ac8ed14328f3cac79fb909183cb5dc",
+    "sqlx-sqlite/src/options/connection_lifetime_tests.rs": "15b4ac44e4f3cee8ddca8731a0af1063e4dafe89",
+    "sqlx-sqlite/src/options/mod.rs": "a9da93a72c7840f98dd9b53181c28f7fae5807ae"
+  },
+  "meaning": "Exact static source reconstruction only; no Rust compile or physical SQLite/lock control has run."
+}

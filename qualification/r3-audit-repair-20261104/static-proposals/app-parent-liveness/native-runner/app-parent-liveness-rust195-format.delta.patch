@@ -1,0 +1,22 @@
+--- runner-v2-20b9bb9d
++++ runner-v3-7b4fce92
+@@ -294,16 +294,16 @@
+  elif kind == "no_rearm":
+   conditions.update(armed_after_fd_close_and_exec="LIVENESS: armed_with_fd_closed_before_fork_and_exec" in text, exact_own_five_second_oracle="reaper survived original launcher exit" in text, exact_oracle_location="parent_lifecycle_tests.rs:111:" in text, no_launcher_waitid_timeout="original launcher did not exit" not in text)
+  elif kind == "leaked_parent_fd":
+-  child_pattern = r"(?m)^[ \t]*thread 'parent_lifecycle::tests::owned_liveness_scenario' panicked at [^\n]*parent_lifecycle_tests\.rs:268:\d+:\n"
++  child_pattern = r"(?m)^[ \t]*thread 'parent_lifecycle::tests::owned_liveness_scenario'(?: \([0-9]+\))? panicked at [^\n]*parent_lifecycle_tests\.rs:268:\d+:\n"
+   child_starts = list(re.finditer(child_pattern, text)); child_blocks = []
+   for start in child_starts:
+    following = text[start.end():]
+-   boundary = re.search(r"(?m)^[ \t]*(?:thread '[^']+' panicked at|failures:|test result:)", following)
++   boundary = re.search(r"(?m)^[ \t]*(?:thread '[^']+'(?: \([0-9]+\))? panicked at|failures:|test result:)", following)
+    end = start.end() + boundary.start() if boundary else len(text)
+    child_blocks.append({"ansi_normalized_character_span": [start.start(), end], "stderr_block": text[start.start():end]})
+   proof["exact_owned_child_panic_blocks"] = child_blocks
+   child_text = child_blocks[0]["stderr_block"] if len(child_blocks) == 1 else ""
+-  diffs = re.findall(r"Diff < left / right >\s*\n(.*?)(?:\n\s*\n|$)", child_text, flags=re.S)
++  diffs = re.findall(r"Diff < left / right >[ \t]*:?[ \t]*\n(.*?)(?:\n\s*\n|$)", child_text, flags=re.S)
+   pairs = []
+   for diff in diffs:
+    left = "\n".join(line for line in diff.splitlines() if not line.lstrip().startswith(">"))

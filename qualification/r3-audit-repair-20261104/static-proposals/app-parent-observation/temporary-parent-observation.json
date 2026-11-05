@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.app.parent-lifecycle-readonly-observation-source.v1",
+  "state": "TEMPORARY_DIAGNOSTIC_NOT_PRODUCTION_REPAIR",
+  "initial_source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+  "changes": [
+    {
+      "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "mode": "100644",
+      "before_blob": "b50f19732bc0a4744c62f7300f955b9f9d17bf08",
+      "after_blob": "c2a2178d7bd290e8a68ac98722e56c5e39e6b1ba",
+      "bytes": 56293,
+      "sha256": "17d0992010ddf7798db83d9a6564e8a770a83b851b748ebe8a8b9c9c2f294406",
+      "additions": 19,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/utils/pty/src/pipe.rs",
+      "mode": "100644",
+      "before_blob": "3715ba72a404c94f8d20a0ae34978baa5694c6b4",
+      "after_blob": "69586ccac9c02e133c36ec07fdca1842c3cc0731",
+      "bytes": 10840,
+      "sha256": "e9005838982937f2b4622289b91100c56be74a28b22b4c069c8c6f9d1f8ec2d7",
+      "additions": 6,
+      "deletions": 1
+    },
+    {
+      "path": "codex-rs/app-server/src/command_exec.rs",
+      "mode": "100644",
+      "before_blob": "53449ac092bf676ce1cfb3f0e125c4ab65e1407c",
+      "after_blob": "b4c353f3d793cfb431d79ec73887d8d7ba6b3fb2",
+      "bytes": 38797,
+      "sha256": "5954d9cec76840c74e425216769ad40106bcd3cf6a367a42a04e7b53124d119d",
+      "additions": 7,
+      "deletions": 0
+    }
+  ],
+  "scope": [
+    "Only read PR_GET_PDEATHSIG plus current process identifiers at two existing inner-helper boundaries.",
+    "Log the result of the original unchanged kill_process_group call; do not add another signal or retry.",
+    "Forward only probe-prefixed lines from the one original shared-process command through App stderr for the existing test capture; its payload/cap/notification and test assertions remain unchanged.",
+    "Original one App case, original five-second exit oracle, fifty-millisecond poll, zero retries, full normal feature context.",
+    "No signal handler, sandbox flag, host configuration, policy, permissions, inherited descriptor or original assertion changed.",
+    "Source stderr observations are diagnostic output only. This temporary source is never a passing product repair.",
+    "After every terminal or failed observation attempt, restore only these three exact owned postimages to their original f825 bytes if full source/index/lock/untracked guard still matches; preserve a mismatch and do not overwrite external drift.",
+    "Complete observed output and original FAIL/PASS are retained; an absent probe is incomplete evidence."
+  ],
+  "expected_observations": [
+    "inner_entry and inner_after_restrictions read results; errno on failure does not imply signal zero.",
+    "original_killpg_return for the actual outer group correlated with observed same-invocation identities.",
+    "The original dynamic marker and native PID/starttime trace; no marker is added to observer argv."
+  ],
+  "native_execution": false,
+  "ref_update": false
+}

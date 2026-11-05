@@ -1,0 +1,22 @@
+--- a/windows-python-full-continuation-runner-v2.py
++++ b/windows-python-full-continuation-runner-v3.py
+@@ -221,6 +221,19 @@
+    actual_packages.add(suite["package-name"]);binaries.append({"binary_id":sid,**rec(pathlib.Path(suite["binary-path"]))})
+  if not expected:raise RuntimeError("empty full-workspace roster")
+  if unmatched:raise RuntimeError("full-workspace catalog has unexpected unmatched cases")
++ reference=request["full_roster_reference"];reference_path=pathlib.Path(reference["path"])
++ assert reference["source"]==approved["initial_tree"], "frozen App roster source mismatch"
++ assert reference_path.resolve().is_relative_to((root/"evidence").resolve()) and reference_path.is_file() and not reference_path.is_symlink()
++ assert all(rec(reference_path)[k]==reference[k] for k in ("bytes","sha256")), "frozen App catalog bytes changed"
++ reference_catalog=json.loads(reference_path.read_text());reference_eligible=[];reference_ignored=[]
++ for sid,suite in reference_catalog["rust-suites"].items():
++  for name,item in suite["testcases"].items():
++   row={"classname":sid,"name":name,"ignored":item["ignored"]}
++   (reference_ignored if item["ignored"] else reference_eligible).append(row)
++ roster_keys=lambda rows:collections.Counter((x["classname"],x["name"],x["ignored"]) for x in rows)
++ assert roster_keys(expected)==roster_keys(reference_eligible), "full eligible roster differs from frozen App catalog"
++ assert roster_keys(ignored)==roster_keys(reference_ignored), "full ignored roster differs from frozen App catalog"
++ save("full-frozen-App-roster-binding.json",{"reference":reference,"actual_reference":rec(reference_path),"full_catalog":rec(out/"full-workspace-catalog.stdout"),"source":source,"eligible_count":len(expected),"ignored_count":len(ignored),"unmatched_count":len(unmatched),"exact_counter_equality":True,"reference_selection_filter_match_ignored":True,"case_keys":"(classname,name,ignored) with multiplicity; no deduplication or count-only acceptance"})
+  if not actual_packages.issubset(workspace_names):raise RuntimeError("non-workspace package in full catalog")
+  empty_packages=sorted(workspace_names-actual_packages)
+  packages=sorted(workspace_names)

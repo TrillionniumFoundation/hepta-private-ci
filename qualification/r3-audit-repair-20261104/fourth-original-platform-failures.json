@@ -1,0 +1,3497 @@
+{
+  "schema": "hepta.cabc.windows.rust-failure-sections.v1",
+  "at": "2026-11-04T20:44:36.502127+00:00",
+  "source_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "source_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+  "scope": "Original ZIP bytes only; Rust log sections and wrapper XML are separate evidence. No test re-execution.",
+  "artifacts": [
+    {
+      "artifact_id": 13358839533,
+      "artifact_sha256": "ab0ea89fec39a52394c37248955e6ed0a43c9b5106468e10cf78d7f7960c1c0d",
+      "json": [
+        {
+          "member": {
+            "name": "failed-test-logs/invocation-esqqyejf/manifest.json",
+            "bytes": 14889,
+            "sha256": "a05b100becc7286b0d02ff661d9e37345a7144525fcba9ba85d05dd593f14c23",
+            "crc32": "f18f13f1"
+          },
+          "value": {
+            "complete_for_selected_targets": true,
+            "errors": [],
+            "schema": "bazel_failed_test_logs_v1",
+            "scope": "Existing test.log/test.xml and test_attempts log/XML files under console-selected failed targets only; not a complete suite inventory.",
+            "selected_targets": [
+              "//codex-rs/app-server:app-server-all-test",
+              "//codex-rs/cli:hepta-bin-unit-tests",
+              "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests"
+            ],
+            "source": {
+              "commit": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+              "tracked_worktree_dirty": false,
+              "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+            }
+          }
+        }
+      ],
+      "logs": [
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_10_of_16/test.log",
+          "bytes": 6273,
+          "sha256": "3b976078e871aa28eb71083e5402896522130f3fa6cce7e94d63641adcb88a06",
+          "results": [
+            {
+              "line": 36,
+              "test": "suite::v2::rate_limits::send_add_credits_nudge_email_surfaces_backend_failure",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 68,
+              "text": "test result: ok. 61 passed; 0 failed; 1 ignored; 0 measured; 890 filtered out; finished in 56.30s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_11_of_16/test.log",
+          "bytes": 6400,
+          "sha256": "dd90c0b2d905b57ce82c0d06fd5847ff8342aee39ce93d0627800c223b0fe146",
+          "results": [
+            {
+              "line": 9,
+              "test": "suite::v2::analytics::unified_plugin_script_emits_measurement_analytics",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 67,
+              "text": "test result: ok. 60 passed; 0 failed; 1 ignored; 0 measured; 891 filtered out; finished in 30.13s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_11_of_16/test_attempts/attempt_1.log",
+          "bytes": 21858,
+          "sha256": "8d136724b392cf0f39724e3a9cdfb75230497c9212c7726ac72de6f2fc8c327d",
+          "results": [
+            {
+              "line": 9,
+              "test": "suite::v2::analytics::unified_plugin_script_emits_measurement_analytics",
+              "outcome": "ignored"
+            },
+            {
+              "line": 51,
+              "test": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_1_inherits_parent_developer_instructions_without_an_override",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "suite::v2::multi_agent_v2_developer_instructions::cold_resume_preserves_effective_developer_instructions_for_worker::test_case_1_inherits_parent_developer_instructions_without_an_override",
+              "stream": "stdout",
+              "start_line": 69,
+              "end_line": 106,
+              "bytes": 15236,
+              "sha256": "1d6b8772f46f8ffa2c170d9e02875e018ee9cc1a2d373fa95182e449fe7dfb59",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13358839533/rust-failure-53cbef6aeeb3c910ef2b3e28728d5595a17475d1ba8c2340259fa197c5f486b7.txt",
+              "excerpts": [
+                {
+                  "line": 101,
+                  "text": "read message from stdout: Notification(JSONRPCNotification { method: \"thread/tokenUsage/updated\", params: Some(Object {\"threadId\": String(\"01a1a835-ab83-7262-9478-ec9d88de3d47\"), \"turnId\": String(\"01a1a835-af9d-7654-b2fc-33a8cc73ba35\"), \"tokenUsage\": Object {\"total\": Object {\"totalTokens\": Number(0), \"inputTokens\": Number(0), \"cachedInputTokens\": Number(0), \"cacheWriteInputTokens\": Number(0), \"outputTokens\": Number(0), \"reasoningOutputTokens\": Number(0)}, \"last\": Object {\"totalTokens\": Number(0), \"inputTokens\": Number(0), \"cachedInputTokens\": Number(0), \"cacheWriteInputTokens\": Number(0), \"outputTokens\": Number(0), \"reasoningOutputTokens\": Number(0)}, \"modelContextWindow\": Number(258400)}}) })"
+                },
+                {
+                  "line": 102,
+                  "text": "read message from stdout: Notification(JSONRPCNotification { method: \"account/rateLimits/updated\", params: Some(Object {\"rateLimits\": Object {\"limitId\": String(\"codex\"), \"limitName\": Null, \"primary\": Null, \"secondary\": Null, \"credits\": Null, \"individualLimit\": Null, \"spendControlReached\": Null, \"planType\": Null, \"rateLimitReachedType\": Null}}) })"
+                },
+                {
+                  "line": 103,
+                  "text": "read message from stdout: Notification(JSONRPCNotification { method: \"item/started\", params: Some(Object {\"item\": Object {\"type\": String(\"collabAgentToolCall\"), \"id\": String(\"wait-for-durable-instruction-worker\"), \"tool\": String(\"wait\"), \"status\": String(\"inProgress\"), \"senderThreadId\": String(\"01a1a835-ab83-7262-9478-ec9d88de3d47\"), \"receiverThreadIds\": Array [], \"prompt\": Null, \"model\": Null, \"reasoningEffort\": Null, \"agentsStates\": Object {}}, \"threadId\": String(\"01a1a835-ab83-7262-9478-ec9d88de3d47\"), \"turnId\": String(\"01a1a835-af9d-7654-b2fc-33a8cc73ba35\"), \"startedAtMs\": Number(1793823455109)}) })"
+                },
+                {
+                  "line": 104,
+                  "text": "Error: deadline has elapsed"
+                },
+                {
+                  "line": 105,
+                  "text": ""
+                },
+                {
+                  "line": 106,
+                  "text": ""
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 110,
+              "text": "test result: FAILED. 59 passed; 1 failed; 1 ignored; 0 measured; 891 filtered out; finished in 63.20s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_12_of_16/test.log",
+          "bytes": 6839,
+          "sha256": "e4d09bf938231ac7a3c3aac3fc39886f3850454a505984a376fdb221c2405548",
+          "results": [],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 72,
+              "text": "test result: ok. 66 passed; 0 failed; 0 ignored; 0 measured; 886 filtered out; finished in 79.91s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_13_of_16/test.log",
+          "bytes": 5662,
+          "sha256": "471a54916687be1466945c845cfdb9d67c3a610bc6effda81b3553aa672f76f7",
+          "results": [
+            {
+              "line": 9,
+              "test": "suite::v2::analytics::remote_unified_background_plugin_script_emits_measurements_after_turn_completion",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 61,
+              "text": "test result: ok. 54 passed; 0 failed; 1 ignored; 0 measured; 897 filtered out; finished in 51.08s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_14_of_16/test.log",
+          "bytes": 5782,
+          "sha256": "e9dcc825ffd995d7eedb26af2aa22f544c4fa3532222791d5753d36fb6d9e39d",
+          "results": [
+            {
+              "line": 39,
+              "test": "suite::v2::review::review_start_exec_approval_item_id_matches_command_execution_item",
+              "outcome": "ignored"
+            },
+            {
+              "line": 54,
+              "test": "suite::v2::turn_start::command_execution_notifications_include_process_id",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 62,
+              "text": "test result: ok. 54 passed; 0 failed; 2 ignored; 0 measured; 896 filtered out; finished in 50.76s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_15_of_16/test.log",
+          "bytes": 6025,
+          "sha256": "76403806c33efba3ea40198432bd249335dcb9d50feb37d760059713f6a1df54",
+          "results": [],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 65,
+              "text": "test result: ok. 59 passed; 0 failed; 0 ignored; 0 measured; 893 filtered out; finished in 53.90s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_16_of_16/test.log",
+          "bytes": 5512,
+          "sha256": "178cb715068072073acf89f47917c3113014ac738e8802486ff0bd1224eeacf0",
+          "results": [
+            {
+              "line": 40,
+              "test": "suite::v2::review::review_start_with_detached_delivery_returns_new_thread_id",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 57,
+              "text": "test result: ok. 50 passed; 0 failed; 1 ignored; 0 measured; 901 filtered out; finished in 45.14s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_1_of_16/test.log",
+          "bytes": 7170,
+          "sha256": "95bacffb17785f3061699bcb225fed0eec6719e50fac050d2f48a40468c4b4c7",
+          "results": [
+            {
+              "line": 47,
+              "test": "suite::v2::rate_limits::send_add_credits_nudge_email_maps_cooldown",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 80,
+              "text": "test result: ok. 73 passed; 0 failed; 1 ignored; 0 measured; 878 filtered out; finished in 74.30s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_2_of_16/test.log",
+          "bytes": 6480,
+          "sha256": "0dc7552f5408b7f7f27ca2b87edac075cf42dda52c3ca3bb85adde7072595d5d",
+          "results": [
+            {
+              "line": 9,
+              "test": "suite::v2::analytics::remote_unified_plugin_script_emits_measurement_analytics",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 68,
+              "text": "test result: ok. 57 passed; 0 failed; 1 ignored; 0 measured; 894 filtered out; finished in 68.70s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_3_of_16/test.log",
+          "bytes": 6018,
+          "sha256": "545bb5ad02cf29af963dda0c1a2d5daeb1ad07900ad3d56dea1cbcc54bc2a7b7",
+          "results": [],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 62,
+              "text": "test result: ok. 56 passed; 0 failed; 0 ignored; 0 measured; 896 filtered out; finished in 43.92s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_3_of_16/test_attempts/attempt_1.log",
+          "bytes": 14500,
+          "sha256": "e62fef1ebe2b80fa8ecc9c02c096a252088df5dedab5f30345afa4b029216f93",
+          "results": [
+            {
+              "line": 57,
+              "test": "suite::v2::plugin_list::app_server_startup_refreshes_cached_remote_catalog_without_blocking_plugin_list",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "suite::v2::plugin_list::app_server_startup_refreshes_cached_remote_catalog_without_blocking_plugin_list",
+              "stream": "stdout",
+              "start_line": 64,
+              "end_line": 89,
+              "bytes": 8344,
+              "sha256": "251349982e1bf8a49fa41d03e90a4aa3413acd25b925701005370bdada4d95ba",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13358839533/rust-failure-46ca4a428d1c39d51f8798374d61054df15c3ef234d5c86984837d2ad0ef8816.txt",
+              "excerpts": [
+                {
+                  "line": 84,
+                  "text": "[mcp stderr] \u001b[2m2026-11-04T20:15:20.470209Z\u001b[0m \u001b[33m WARN\u001b[0m \u001b[2mcodex_app_server::request_processors::plugins\u001b[0m\u001b[2m:\u001b[0m plugin/list featured plugin fetch failed; returning empty featured ids \u001b[3merror\u001b[0m\u001b[2m=\u001b[0mremote featured plugin request to http://127.0.0.1:54045/backend-api/plugins/featured?platform=codex failed with status 404 Not Found: "
+                },
+                {
+                  "line": 85,
+                  "text": "[mcp stderr] \u001b[2m2026-11-04T20:15:20.472969Z\u001b[0m \u001b[33m WARN\u001b[0m \u001b[2mcodex_core_plugins::manager\u001b[0m\u001b[2m:\u001b[0m failed to load recommended plugins \u001b[3merror\u001b[0m\u001b[2m=\u001b[0mremote plugin catalog request to http://127.0.0.1:54045/backend-api/ps/plugins/suggested/codex?scope=GLOBAL failed with status 404 Not Found: "
+                },
+                {
+                  "line": 86,
+                  "text": "[mcp stderr] \u001b[2m2026-11-04T20:15:20.531826Z\u001b[0m \u001b[31mERROR\u001b[0m \u001b[2mcodex_models_manager::manager\u001b[0m\u001b[2m:\u001b[0m failed to refresh available models: unexpected status 401 Unauthorized: {\"detail\":\"Could not parse your authentication token. Please try signing in again.\"}, url: https://chatgpt.com/backend-api/codex/models?client_version=0.0.0, cf-ray: a5564a48cecbeb4b-SJC, request id: req_f15b308bd5734e43b7c54d568bddfe8b"
+                },
+                {
+                  "line": 87,
+                  "text": "Error: deadline has elapsed"
+                },
+                {
+                  "line": 88,
+                  "text": ""
+                },
+                {
+                  "line": 89,
+                  "text": ""
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 93,
+              "text": "test result: FAILED. 55 passed; 1 failed; 0 ignored; 0 measured; 896 filtered out; finished in 71.07s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_4_of_16/test.log",
+          "bytes": 6069,
+          "sha256": "fdadbde04973c80b78dfb5ef3e358134623fa201ac9c4d6dfeb70d1c87eb4c4a",
+          "results": [
+            {
+              "line": 8,
+              "test": "suite::v2::analytics::unified_background_plugin_script_emits_measurements_after_turn_completion",
+              "outcome": "ignored"
+            },
+            {
+              "line": 56,
+              "test": "suite::v2::turn_start::command_execution_notifications_include_trusted_plugin_id",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 64,
+              "text": "test result: ok. 56 passed; 0 failed; 2 ignored; 0 measured; 894 filtered out; finished in 57.62s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_5_of_16/test.log",
+          "bytes": 6163,
+          "sha256": "be3a7088d8e79a9a6e2b3906fd19d9192d631b9649633947d49c8a92b5b2d71d",
+          "results": [
+            {
+              "line": 37,
+              "test": "suite::v2::rate_limits::send_add_credits_nudge_email_posts_expected_body",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 70,
+              "text": "test result: ok. 57 passed; 0 failed; 1 ignored; 0 measured; 894 filtered out; finished in 64.24s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_6_of_16/test.log",
+          "bytes": 7403,
+          "sha256": "9db4f14abc4d8df5c197a9f1946d0143b335e346990ac3554f3ca7542b234377",
+          "results": [],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 75,
+              "text": "test result: ok. 69 passed; 0 failed; 0 ignored; 0 measured; 883 filtered out; finished in 73.20s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_7_of_16/test.log",
+          "bytes": 6685,
+          "sha256": "b09788983c4603ea8fe14fee324df88ef59013c8b15e9460745c2ae292a04e4e",
+          "results": [],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 73,
+              "text": "test result: ok. 67 passed; 0 failed; 0 ignored; 0 measured; 885 filtered out; finished in 67.98s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_8_of_16/test.log",
+          "bytes": 5184,
+          "sha256": "e039fd92e311d83ad4ea9cd45aa98aeb279e7ffddb1b79c470a6048a1d97ea81",
+          "results": [],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 57,
+              "text": "test result: ok. 47 passed; 0 failed; 0 ignored; 0 measured; 905 filtered out; finished in 75.37s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0000/shard_9_of_16/test.log",
+          "bytes": 5726,
+          "sha256": "449dd490e58cf33e113c40b5e156f38a88c7e43870008322312b9a2ace8a713c",
+          "results": [],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 62,
+              "text": "test result: ok. 55 passed; 0 failed; 0 ignored; 0 measured; 897 filtered out; finished in 51.58s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0001/test.log",
+          "bytes": 22021,
+          "sha256": "b50177bb6fc94d632af28fd2c6a3b6575a91a3934b18ff83b523ba906301b116",
+          "results": [
+            {
+              "line": 98,
+              "test": "doctor::tests::mcp_http_probe_falls_back_to_get_when_head_times_out",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "doctor::tests::mcp_http_probe_falls_back_to_get_when_head_times_out",
+              "stream": "stdout",
+              "start_line": 103,
+              "end_line": 118,
+              "bytes": 498,
+              "sha256": "6c09dd19e520c2476aa009058ace45e3eb48aba4296e7c4f90116a9ea9e37b0d",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13358839533/rust-failure-d2ef8aed130936688966940eb32da2aa89d64bf1cdbb4458dcfa0927516b8b8b.txt",
+              "excerpts": [
+                {
+                  "line": 103,
+                  "text": "---- doctor::tests::mcp_http_probe_falls_back_to_get_when_head_times_out stdout ----"
+                },
+                {
+                  "line": 104,
+                  "text": ""
+                },
+                {
+                  "line": 105,
+                  "text": "thread 'doctor::tests::mcp_http_probe_falls_back_to_get_when_head_times_out' (7864) panicked at cli/src\\doctor.rs:4000:9:"
+                },
+                {
+                  "line": 106,
+                  "text": "assertion failed: `(left == right)`"
+                },
+                {
+                  "line": 107,
+                  "text": ""
+                },
+                {
+                  "line": 108,
+                  "text": "\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :"
+                },
+                {
+                  "line": 109,
+                  "text": "\u001b[31m<Err(\u001b[0m"
+                },
+                {
+                  "line": 110,
+                  "text": "\u001b[31m<    \"HEAD request timed out; GET request timed out\",\u001b[0m"
+                },
+                {
+                  "line": 111,
+                  "text": "\u001b[32m>Ok(\u001b[0m"
+                },
+                {
+                  "line": 112,
+                  "text": "\u001b[32m>    \"HTTP 405\",\u001b[0m"
+                },
+                {
+                  "line": 113,
+                  "text": " )"
+                },
+                {
+                  "line": 114,
+                  "text": ""
+                },
+                {
+                  "line": 115,
+                  "text": ""
+                },
+                {
+                  "line": 116,
+                  "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+                },
+                {
+                  "line": 117,
+                  "text": ""
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 122,
+              "text": "test result: FAILED. 94 passed; 1 failed; 0 ignored; 0 measured; 180 filtered out; finished in 5.16s"
+            },
+            {
+              "line": 225,
+              "text": "test result: ok. 98 passed; 0 failed; 0 ignored; 0 measured; 177 filtered out; finished in 9.47s"
+            },
+            {
+              "line": 312,
+              "text": "test result: ok. 82 passed; 0 failed; 0 ignored; 0 measured; 193 filtered out; finished in 0.96s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-esqqyejf/targets/0002/test.log",
+          "bytes": 42809,
+          "sha256": "3fe130a4fc9a221f7d06bbd6442f7ba73c275ba8a36a0b1a9f25c9c121f5a172",
+          "results": [
+            {
+              "line": 259,
+              "test": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+              "outcome": "FAILED"
+            },
+            {
+              "line": 270,
+              "test": "unified_exec::tests::legacy_tty_cmd_default_desktop_emits_output_and_accepts_input",
+              "outcome": "ignored"
+            },
+            {
+              "line": 271,
+              "test": "unified_exec::tests::legacy_tty_cmd_emits_output_and_accepts_input",
+              "outcome": "ignored"
+            },
+            {
+              "line": 292,
+              "test": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+              "stream": "stdout",
+              "start_line": 296,
+              "end_line": 312,
+              "bytes": 512,
+              "sha256": "caf473a51a650d3e005fca72745e0cba9d397a8c65eec2cb1ac7e923fe277838",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13358839533/rust-failure-07b3f5715e7684950e86544aa6fa6a28ef0ad4c386929f282078ec8aa78882ad.txt",
+              "excerpts": [
+                {
+                  "line": 296,
+                  "text": "---- token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes stdout ----"
+                },
+                {
+                  "line": 297,
+                  "text": ""
+                },
+                {
+                  "line": 298,
+                  "text": "thread 'token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes' (6044) panicked at windows-sandbox-rs/src\\token_tests.rs:338:5:"
+                },
+                {
+                  "line": 299,
+                  "text": "assertion failed: `(left == right)`"
+                },
+                {
+                  "line": 300,
+                  "text": ""
+                },
+                {
+                  "line": 301,
+                  "text": "\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :"
+                },
+                {
+                  "line": 302,
+                  "text": " ("
+                },
+                {
+                  "line": 303,
+                  "text": "\u001b[32m>    false,\u001b[0m"
+                },
+                {
+                  "line": 304,
+                  "text": "     true,"
+                },
+                {
+                  "line": 305,
+                  "text": "\u001b[31m<    true,\u001b[0m"
+                },
+                {
+                  "line": 306,
+                  "text": "\u001b[31m<    true,\u001b[0m"
+                },
+                {
+                  "line": 307,
+                  "text": "\u001b[32m>    false,\u001b[0m"
+                },
+                {
+                  "line": 308,
+                  "text": " )"
+                },
+                {
+                  "line": 309,
+                  "text": ""
+                },
+                {
+                  "line": 310,
+                  "text": ""
+                }
+              ]
+            },
+            {
+              "test": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+              "stream": "stdout",
+              "start_line": 313,
+              "end_line": 337,
+              "bytes": 638,
+              "sha256": "468c4c4c93e31e0e8bf1234dc4270a79807f7bb59764e7e25f2c758ab9a9f17d",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13358839533/rust-failure-f5a445f3e16048f85e52e7f16a361d64bf4acb5a4cefa3b76fb741785f837c7b.txt",
+              "excerpts": [
+                {
+                  "line": 313,
+                  "text": "---- token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces stdout ----"
+                },
+                {
+                  "line": 314,
+                  "text": ""
+                },
+                {
+                  "line": 315,
+                  "text": "thread 'token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces' (880) panicked at windows-sandbox-rs/src\\token_tests.rs:434:5:"
+                },
+                {
+                  "line": 316,
+                  "text": "assertion failed: `(left == right)`"
+                },
+                {
+                  "line": 317,
+                  "text": ""
+                },
+                {
+                  "line": 318,
+                  "text": "\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :"
+                },
+                {
+                  "line": 319,
+                  "text": " ["
+                },
+                {
+                  "line": 320,
+                  "text": "     Some("
+                },
+                {
+                  "line": 321,
+                  "text": "         PermissionDenied,"
+                },
+                {
+                  "line": 322,
+                  "text": "     ),"
+                },
+                {
+                  "line": 323,
+                  "text": "     Some("
+                },
+                {
+                  "line": 324,
+                  "text": "         PermissionDenied,"
+                },
+                {
+                  "line": 325,
+                  "text": "     ),"
+                },
+                {
+                  "line": 326,
+                  "text": "\u001b[31m<    None,\u001b[0m"
+                },
+                {
+                  "line": 327,
+                  "text": "\u001b[31m<    None,\u001b[0m"
+                }
+              ]
+            },
+            {
+              "test": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+              "stream": "stdout",
+              "start_line": 338,
+              "end_line": 362,
+              "bytes": 928,
+              "sha256": "162c368502559c5736c06c310a033ffcd7916fb7782effc6786402e44e1c5ba2",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13358839533/rust-failure-455f064f050b52ac4f7b1647f8eb6446dc512d10e57002e251254fb5f7761ac4.txt",
+              "excerpts": [
+                {
+                  "line": 338,
+                  "text": "---- unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots stdout ----"
+                },
+                {
+                  "line": 339,
+                  "text": ""
+                },
+                {
+                  "line": 340,
+                  "text": "thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (8916) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:801:9:"
+                },
+                {
+                  "line": 341,
+                  "text": "assertion failed: `(left == right)`: stdout=\"\""
+                },
+                {
+                  "line": 342,
+                  "text": "[2026-11-04 20:12:09.201 windows-sandbox-rs-unit-tests-bin.exe] START: C:\\Windows\\System32\\cmd.exe /d /c D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpmx028K\\workspace\\delete-fixtures.cmd"
+                },
+                {
+                  "line": 343,
+                  "text": "[2026-11-04 20:12:09.272 windows-sandbox-rs-unit-tests-bin.exe] SUCCESS: C:\\Windows\\System32\\cmd.exe /d /c D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\.tmpmx028K\\workspace\\delete-fixtures.cmd"
+                },
+                {
+                  "line": 344,
+                  "text": ""
+                },
+                {
+                  "line": 345,
+                  "text": ""
+                },
+                {
+                  "line": 346,
+                  "text": "\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :"
+                },
+                {
+                  "line": 347,
+                  "text": " ("
+                },
+                {
+                  "line": 348,
+                  "text": "     0,"
+                },
+                {
+                  "line": 349,
+                  "text": "     false,"
+                },
+                {
+                  "line": 350,
+                  "text": "     false,"
+                },
+                {
+                  "line": 351,
+                  "text": "     false,"
+                },
+                {
+                  "line": 352,
+                  "text": "\u001b[31m<    None,\u001b[0m"
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 98,
+              "text": "test result: ok. 92 passed; 0 failed; 0 ignored; 0 measured; 57 filtered out; finished in 1.35s"
+            },
+            {
+              "line": 123,
+              "text": "windows_boundary_diag dacl=partial_directory_before_repair path=\"D:\\\\tmp\\\\.tmpsgxtXZ\" bytes=272 ace_count=10 truncated=false"
+            },
+            {
+              "line": 124,
+              "text": "windows_boundary_diag dacl=partial_directory_before_repair ace=0 type=1 flags=0x03 size=36 mask=Some(65536) truncated=false raw=[01, 03, 24, 00, 00, 00, 01, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 125,
+              "text": "windows_boundary_diag dacl=partial_directory_before_repair ace=1 type=0 flags=0x03 size=36 mask=Some(1245631) truncated=false raw=[00, 03, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 126,
+              "text": "windows_boundary_diag dacl=partial_directory_before_repair ace=2 type=0 flags=0x03 size=20 mask=Some(2032127) truncated=false raw=[00, 03, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]"
+            },
+            {
+              "line": 127,
+              "text": "windows_boundary_diag dacl=partial_directory_before_repair ace=3 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]"
+            },
+            {
+              "line": 128,
+              "text": "windows_boundary_diag dacl=partial_directory_before_repair ace=4 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]"
+            },
+            {
+              "line": 129,
+              "text": "windows_boundary_diag dacl=partial_directory_before_repair ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]"
+            },
+            {
+              "line": 130,
+              "text": "windows_boundary_diag dacl=partial_directory_before_repair ace=6 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]"
+            },
+            {
+              "line": 131,
+              "text": "windows_boundary_diag dacl=partial_directory_before_repair ace=7 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00test unified_exec::backend_selection_tests::explicit_elevated_level_always_uses_elevated_broker ... ok"
+            },
+            {
+              "line": 134,
+              "text": "windows_boundary_diag dacl=partial_directory_before_repair ace=8 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 135,
+              "text": "windows_boundary_diag dacl=partial_directory_before_repair ace=9 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 136,
+              "text": "windows_boundary_diag dacl=partial_directory_before_repair observation_us=4807"
+            },
+            {
+              "line": 137,
+              "text": "windows_boundary_diag dacl=partial_file_before_repair path=\"D:\\\\tmp\\\\.tmpsgxtXZ\\\\existing.txt\" bytes=204 ace_count=7 truncated=false"
+            },
+            {
+              "line": 138,
+              "text": "windows_boundary_diag dacl=partial_file_before_repair ace=0 type=1 flags=0x10 size=36 mask=Some(65536) truncated=false raw=[01, 10, 24, 00, 00, 00, 01, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 139,
+              "text": "windows_boundary_diag dacl=partial_file_before_repair ace=1 type=0 flags=0x10 size=36 mask=Some(1245631) truncated=false raw=[00, 10, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 140,
+              "text": "windows_boundary_diag dacl=partial_file_before_repair ace=2 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]"
+            },
+            {
+              "line": 141,
+              "text": "windows_boundary_diag dacl=partial_file_before_repair ace=3 type=0 flags=0x10 size=24 mask=Some(2032127) truncated=false raw=[00, 10, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]"
+            },
+            {
+              "line": 142,
+              "text": "windows_boundary_diag dacl=partial_file_before_repair ace=4 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]"
+            },
+            {
+              "line": 143,
+              "text": "windows_boundary_diag dacl=partial_file_before_repair ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]"
+            },
+            {
+              "line": 144,
+              "text": "windows_boundary_diag dacl=partial_file_before_repair ace=6 type=0 flags=0x10 size=24 mask=Some(1179817) truncated=false raw=[00, 10, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 145,
+              "text": "windows_boundary_diag dacl=partial_file_before_repair observation_us=2756"
+            },
+            {
+              "line": 146,
+              "text": "windows_boundary_diag dacl=partial_directory_after_first_repair path=\"D:\\\\tmp\\\\.tmpsgxtXZ\" bytes=308 ace_count=11 truncated=false"
+            },
+            {
+              "line": 147,
+              "text": "windows_boundary_diag dacl=partial_directory_after_first_repair ace=0 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 148,
+              "text": "windows_boundary_diag dacl=partial_directory_after_first_repair ace=1 type=1 flags=0x0b size=36 mask=Some(1074987350) truncated=false raw=[01, 0b, 24, 00, 56, 01, 13, 40, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 149,
+              "text": "windows_boundary_diag dacl=partial_directory_after_first_repair ace=2 type=0 flags=0x03 size=36 mask=Some(1245631) truncated=false raw=[00, 03, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 150,
+              "text": "windows_boundary_diag dacl=partial_directory_after_first_repair ace=3 type=0 flags=0x03 size=20 mask=Some(2032127) truncated=false raw=[00, 03, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]"
+            },
+            {
+              "line": 151,
+              "text": "windows_boundary_diag dacl=partial_directory_after_first_repair ace=4 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]"
+            },
+            {
+              "line": 152,
+              "text": "windows_boundary_diag dacl=partial_directory_after_first_repair ace=5 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]"
+            },
+            {
+              "line": 153,
+              "text": "windows_boundary_diag dacl=partial_directory_after_first_repair ace=6 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]"
+            },
+            {
+              "line": 154,
+              "text": "windows_boundary_diag dacl=partial_directory_after_first_repair ace=7 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]"
+            },
+            {
+              "line": 155,
+              "text": "windows_boundary_diag dacl=partial_directory_after_first_repair ace=8 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 156,
+              "text": "windows_boundary_diag dacl=partial_directory_after_first_repair ace=9 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 157,
+              "text": "windows_boundary_diag dacl=partial_directory_after_first_repair ace=10 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 158,
+              "text": "windows_boundary_diag dacl=partial_directory_after_first_repair observation_us=3853"
+            },
+            {
+              "line": 159,
+              "text": "windows_boundary_diag dacl=partial_file_after_directory_repair path=\"D:\\\\tmp\\\\.tmpsgxtXZ\\\\existing.txt\" bytes=204 ace_count=7 truncated=false"
+            },
+            {
+              "line": 160,
+              "text": "windows_boundary_diag dacl=partial_file_after_directory_repair ace=0 type=1 flags=0x10 size=36 mask=Some(1245526) truncated=false raw=[01, 10, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 161,
+              "text": "windows_boundary_diag dacl=partial_file_after_directory_repair ace=1 type=0 flags=0x10 size=36 mask=Some(1245631) truncated=false raw=[00, 10, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 162,
+              "text": "windows_boundary_diag dacl=partial_file_after_directory_repair ace=2 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]"
+            },
+            {
+              "line": 163,
+              "text": "windows_boundary_diag dacl=partial_file_after_directory_repair ace=3 type=0 flags=0x10 size=24 mask=Some(2032127) truncated=false raw=[00, 10, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]"
+            },
+            {
+              "line": 164,
+              "text": "windows_boundary_diag dacl=partial_file_after_directory_repair ace=4 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]"
+            },
+            {
+              "line": 165,
+              "text": "windows_boundary_diag dacl=partial_file_after_directory_repair ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]"
+            },
+            {
+              "line": 166,
+              "text": "windows_boundary_diag dacl=partial_file_after_directory_repair ace=6 type=0 flags=0x10 size=24 mask=Some(1179817) truncated=false raw=[00, 10, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 167,
+              "text": "windows_boundary_diag dacl=partial_file_after_directory_repair observation_us=2614"
+            },
+            {
+              "line": 168,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat path=\"D:\\\\tmp\\\\.tmpsgxtXZ\" bytes=380 ace_count=13 truncated=false"
+            },
+            {
+              "line": 169,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat ace=0 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 170,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat ace=1 type=1 flags=0x0b size=36 mask=Some(1074987350) truncated=false raw=[01, 0b, 24, 00, 56, 01, 13, 40, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 171,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat ace=2 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 172,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat ace=3 type=1 flags=0x0b size=36 mask=Some(1074987350) truncated=false raw=[01, 0b, 24, 00, 56, 01, 13, 40, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 173,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat ace=4 type=0 flags=0x03 size=36 mask=Some(1245631) truncated=false raw=[00, 03, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 174,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat ace=5 type=0 flags=0x03 size=20 mask=Some(2032127) truncated=false raw=[00, 03, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]"
+            },
+            {
+              "line": 175,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat ace=6 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]"
+            },
+            {
+              "line": 176,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat ace=7 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]"
+            },
+            {
+              "line": 177,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat ace=8 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]"
+            },
+            {
+              "line": 178,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat ace=9 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]"
+            },
+            {
+              "line": 179,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat ace=10 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 180,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat ace=11 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 181,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat ace=12 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 182,
+              "text": "windows_boundary_diag dacl=partial_directory_after_repeat observation_us=4633"
+            },
+            {
+              "line": 183,
+              "text": "windows_boundary_diag dacl=partial_file_after_first_direct_repair path=\"D:\\\\tmp\\\\.tmpsgxtXZ\\\\existing.txt\" bytes=240 ace_count=8 truncated=false"
+            },
+            {
+              "line": 184,
+              "text": "windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=0 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 185,
+              "text": "windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=1 type=1 flags=0x10 size=36 mask=Some(1245526) truncated=false raw=[01, 10, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 186,
+              "text": "windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=2 type=0 flags=0x10 size=36 mask=Some(1245631) truncated=false raw=[00, 10, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 187,
+              "text": "windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=3 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]"
+            },
+            {
+              "line": 188,
+              "text": "windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=4 type=0 flags=0x10 size=24 mask=Some(2032127) truncated=false raw=[00, 10, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]"
+            },
+            {
+              "line": 189,
+              "text": "windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=5 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]"
+            },
+            {
+              "line": 190,
+              "text": "windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=6 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]"
+            },
+            {
+              "line": 191,
+              "text": "windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=7 type=0 flags=0x10 size=24 mask=Some(1179817) truncated=false raw=[00, 10, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 192,
+              "text": "windows_boundary_diag dacl=partial_file_after_first_direct_repair observation_us=2888"
+            },
+            {
+              "line": 193,
+              "text": "windows_boundary_diag dacl=partial_file_after_repeat path=\"D:\\\\tmp\\\\.tmpsgxtXZ\\\\existing.txt\" bytes=276 ace_count=9 truncated=false"
+            },
+            {
+              "line": 194,
+              "text": "windows_boundary_diag dacl=partial_file_after_repeat ace=0 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 195,
+              "text": "windows_boundary_diag dacl=partial_file_after_repeat ace=1 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 196,
+              "text": "windows_boundary_diag dacl=partial_file_after_repeat ace=2 type=1 flags=0x10 size=36 mask=Some(1245526) truncated=false raw=[01, 10, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 197,
+              "text": "windows_boundary_diag dacl=partial_file_after_repeat ace=3 type=0 flags=0x10 size=36 mask=Some(1245631) truncated=false raw=[00, 10, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]"
+            },
+            {
+              "line": 198,
+              "text": "windows_boundary_diag dacl=partial_file_after_repeat ace=4 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]"
+            },
+            {
+              "line": 199,
+              "text": "windows_boundary_diag dacl=partial_file_after_repeat ace=5 type=0 flags=0x10 size=24 mask=Some(2032127) truncated=false raw=[00, 10, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]"
+            },
+            {
+              "line": 200,
+              "text": "windows_boundary_diag dacl=partial_file_after_repeat ace=6 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]"
+            },
+            {
+              "line": 201,
+              "text": "windows_boundary_diag dacl=partial_file_after_repeat ace=7 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]"
+            },
+            {
+              "line": 202,
+              "text": "windows_boundary_diag dacl=partial_file_after_repeat ace=8 type=0 flags=0x10 size=24 mask=Some(1179817) truncated=false raw=[00, 10, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 203,
+              "text": "windows_boundary_diag dacl=partial_file_after_repeat observation_us=3460"
+            },
+            {
+              "line": 204,
+              "text": "windows_boundary_diag restricted_sid=allowed_cap_a member=Ok(true)"
+            },
+            {
+              "line": 205,
+              "text": "windows_boundary_diag restricted_sid=allowed_cap_b member=Ok(true)"
+            },
+            {
+              "line": 206,
+              "text": "windows_boundary_diag restricted_sid=unrelated_cap member=Ok(false)"
+            },
+            {
+              "line": 207,
+              "text": "windows_boundary_diag restricted_sid=logon_identity member=Ok(false)"
+            },
+            {
+              "line": 208,
+              "text": "windows_boundary_diag restricted_sid=everyone_identity member=Ok(false)"
+            },
+            {
+              "line": 209,
+              "text": "windows_boundary_diag dacl=broad_parent path=\"D:\\\\tmp\\\\.tmpbaYUaI\" bytes=228 ace_count=9 truncated=false"
+            },
+            {
+              "line": 210,
+              "text": "windows_boundary_diag dacl=broad_parenttest unified_exec::backend_selection_tests::managed_networking_still_requires_explicit_elevated_configuration ...  ace=0 type=ok"
+            },
+            {
+              "line": 212,
+              "text": "windows_boundary_diag dacl=broad_parent ace=1 type=0 flags=0x03 size=20 mask=Some(2032127) truncated=false raw=[00, 03, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]"
+            },
+            {
+              "line": 213,
+              "text": "windows_boundary_diag dacl=broad_parent ace=2 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]"
+            },
+            {
+              "line": 214,
+              "text": "windows_boundary_diag dacl=broad_parent ace=3 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]"
+            },
+            {
+              "line": 215,
+              "text": "windows_boundary_diag dacl=broad_parent ace=4 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1ftest unified_exec::backend_selection_tests::explicit_write_root_override_is_forced_through_elevated_broker ... , 0ok0"
+            },
+            {
+              "line": 217,
+              "text": "windows_boundary_diag dacl=broad_parent ace=5 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]"
+            },
+            {
+              "line": 218,
+              "text": "windows_boundary_diag dacl=broad_parent ace=6 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 219,
+              "text": "windows_boundary_diag dacl=broad_parent ace=7 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 220,
+              "text": "windows_boundary_diag dacl=broad_parent ace=8 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 221,
+              "text": "windows_boundary_diag dacl=broad_parent observation_us=3473"
+            },
+            {
+              "line": 222,
+              "text": "windows_boundary_diag dacl=outside_parent_before path=\"D:\\\\tmp\\\\.tmpbaYUaI\\\\outside\" bytes=264 ace_count=10 truncated=false"
+            },
+            {
+              "line": 223,
+              "text": "windows_boundary_diag dacl=outside_parent_before ace=0 type=0 flags=0x03 size=36 mask=Some(1245631) truncated=false raw=[00, 03, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 79, 00, 00, 00, e8, 00, 00, 00, 57, 01, 00, 00, c6, 01, 00, 00]"
+            },
+            {
+              "line": 224,
+              "text": "windows_boundary_diag dacl=outside_parent_before ace=1 type=0 flags=0x13 size=28 mask=Some(2032127) truncated=false raw=[00, 13, 1c, 00, ff, 01, 1f, 00, 01, 03, 00, 00, 00, 00, 00, 05, 05, 00, 00, 00, 00, 00, 00, 00, 97, 32, 0b, 00]"
+            },
+            {
+              "line": 225,
+              "text": "windows_boundary_diag dacl=outside_parent_before ace=2 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]"
+            },
+            {
+              "line": 226,
+              "text": "windows_boundary_diag dacl=outside_parent_before ace=3 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]"
+            },
+            {
+              "line": 227,
+              "text": "windows_boundary_diag dacl=outside_parent_before ace=4 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]"
+            },
+            {
+              "line": 228,
+              "text": "windows_boundary_diag dacl=outside_parent_before ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]"
+            },
+            {
+              "line": 229,
+              "text": "windows_boundary_diag dacl=outside_parent_before ace=6 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]"
+            },
+            {
+              "line": 230,
+              "text": "windows_boundary_diag dacl=outside_parent_before ace=7 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 231,
+              "text": "windows_boundary_diag dacl=outside_parent_before ace=8 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 232,
+              "text": "windows_boundary_diag dacl=outside_parent_before ace=9 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 233,
+              "text": "windows_boundary_diag dacl=outside_parent_before observation_us=3461"
+            },
+            {
+              "line": 234,
+              "text": "windows_boundary_diag dacl=outside_file_before path=\"D:\\\\tmp\\\\.tmpbaYUaI\\\\outside\\\\keep.txt\" bytes=196 ace_count=7 truncated=false"
+            },
+            {
+              "line": 235,
+              "text": "windows_boundary_diag dacl=outside_file_before ace=0 type=0 flags=0x10 size=36 mask=Some(1245631) truncated=false raw=[00, 10, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 79, 00, 00, 00, e8, 00, 00, 00, 57, 01, 00, 00, c6, 01, 00, 00]"
+            },
+            {
+              "line": 236,
+              "text": "windows_boundary_diag dacl=outside_file_before ace=1 type=0 flags=0x10 size=28 mask=Some(2032127) truncated=false raw=[00, 10, 1c, 00, ff, 01, 1f, 00, 01, 03, 00, 00, 00, 00, 00, 05, 05, 00, 00, 00, 00, 00, 00, 00, 97, 32, 0b, 00]"
+            },
+            {
+              "line": 237,
+              "text": "windows_boundary_diag dacl=outside_file_before ace=2 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]"
+            },
+            {
+              "line": 238,
+              "text": "windows_boundary_diag dacl=outside_file_before ace=3 type=0 flags=0x10 size=24 mask=Some(2032127) truncated=false raw=[00, 10, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]"
+            },
+            {
+              "line": 239,
+              "text": "windows_boundary_diag dacl=outside_file_beforetest token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes ...  ace=4 type=FAILED0 flags=0x10 size=20 mask=Some("
+            },
+            {
+              "line": 241,
+              "text": "windows_boundary_diag dacl=outside_file_before ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]"
+            },
+            {
+              "line": 242,
+              "text": "windows_boundary_diag dacl=outside_file_before ace=6 type=0 flags=0x10 size=24 mask=Some(1179817) truncated=false raw=[00, 10, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 243,
+              "text": "windows_boundary_diag dacl=outside_file_before observation_us=2352"
+            },
+            {
+              "line": 244,
+              "text": "windows_boundary_diag dacl=outside_directory_before path=\"D:\\\\tmp\\\\.tmpbaYUaI\\\\outside\\\\keep-dir\" bytes=264 ace_count=10 truncated=false"
+            },
+            {
+              "line": 245,
+              "text": "windows_boundary_diag dacl=outside_directory_before ace=0 type=0 flags=0x13 size=36 mask=Some(1245631) truncated=false raw=[00, 13, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 79, 00, 00, 00, e8, 00, 00, 00, 57, 01, 00, 00, c6, 01, 00, 00]"
+            },
+            {
+              "line": 246,
+              "text": "windows_boundary_diag dacl=outside_directory_before ace=1 type=0 flags=0x13 size=28 mask=Some(2032127) truncated=false raw=[00, 13, 1c, 00, ff, 01, 1f, 00, 01, 03, 00, 00, 00, 00, 00, 05, 05, 00, 00, 00, 00, 00, 00, 00, 97, 32, 0b, 00]"
+            },
+            {
+              "line": 247,
+              "text": "windows_boundary_diag dacl=outside_directory_before ace=2 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]"
+            },
+            {
+              "line": 248,
+              "text": "windows_boundary_diag dacl=outside_directory_before ace=3 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]"
+            },
+            {
+              "line": 249,
+              "text": "windows_boundary_diag dacl=outside_directory_before ace=4 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]"
+            },
+            {
+              "line": 250,
+              "text": "windows_boundary_diag dacl=outside_directory_before ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]"
+            },
+            {
+              "line": 251,
+              "text": "windows_boundary_diag dacl=outside_directory_before ace=6 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]"
+            },
+            {
+              "line": 252,
+              "text": "windows_boundary_diag dacl=outside_directory_before ace=7 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 253,
+              "text": "windows_boundary_diag dacl=outside_directory_before ace=8 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 254,
+              "text": "windows_boundary_diag dacl=outside_directory_before ace=9 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]"
+            },
+            {
+              "line": 255,
+              "text": "windows_boundary_diag dacl=outside_directory_before observation_us=2665"
+            },
+            {
+              "line": 256,
+              "text": "windows_boundary_diag outside_operations=[overwrite,create,remove_file,remove_dir] native_errors=[Some((PermissionDenied, Some(5))), Some((PermissionDenied, Some(5))), None, None]"
+            },
+            {
+              "line": 257,
+              "text": "windows_boundary_diag metadata=outside_file_after path=\"D:\\\\tmp\\\\.tmpbaYUaI\\\\outside\\\\keep.txt\" state=Err((NotFound, Some(2)))"
+            },
+            {
+              "line": 258,
+              "text": "windows_boundary_diag metadata=outside_directory_after path=\"D:\\\\tmp\\\\.tmpbaYUaI\\\\outside\\\\keep-dir\" state=Err((NotFound, Some(2)))"
+            },
+            {
+              "line": 289,
+              "text": "windows_boundary_diag legacy_metadata=outside_file path=\"D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpmx028K\\\\outside\\\\outside-delete.txt\" state=Err((NotFound, Some(2)))"
+            },
+            {
+              "line": 290,
+              "text": "windows_boundary_diag legacy_metadata=protected_git_directory path=\"D:\\\\a\\\\hepta-private-ci\\\\hepta-private-ci\\\\codex-rs\\\\.tmpmx028K\\\\workspace\\\\.git\" state=Err((NotFound, Some(2)))"
+            },
+            {
+              "line": 291,
+              "text": "windows_boundary_diag legacy_outside_readback=Err((NotFound, Some(2)))"
+            },
+            {
+              "line": 368,
+              "text": "test result: FAILED. 52 passed; 3 failed; 2 ignored; 0 measured; 92 filtered out; finished in 6.22s"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "artifact_id": 13361670377,
+      "artifact_sha256": "0fb49f9a704c3b1d8ad754d33286bf81c8716ce1353058e866b3bc54cbc85547",
+      "json": [
+        {
+          "member": {
+            "name": "failed-test-logs/invocation-3wf91hzs/manifest.json",
+            "bytes": 17003,
+            "sha256": "a2994571b31f8bd242c3a8fd322ef1bd0de0f8e4ee413a3cb69e23d79eb13494",
+            "crc32": "43e61b7d"
+          },
+          "value": {
+            "complete_for_selected_targets": true,
+            "errors": [],
+            "schema": "bazel_failed_test_logs_v1",
+            "scope": "Existing test.log/test.xml and test_attempts log/XML files under console-selected failed targets only; not a complete suite inventory.",
+            "selected_targets": [
+              "//codex-rs/core:core-all-test"
+            ],
+            "source": {
+              "commit": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+              "tracked_worktree_dirty": false,
+              "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29"
+            }
+          }
+        }
+      ],
+      "logs": [
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_10_of_16/test.log",
+          "bytes": 2920815,
+          "sha256": "38d171729ba4e11ebf0fd7dac764f5c4f839b2ee2bc7d1c8eb61da25994ddbba",
+          "results": [
+            {
+              "line": 18,
+              "test": "suite::code_mode::code_mode_exec_without_nested_limit_preserves_result_variable_before_configured_history_truncation",
+              "outcome": "ignored"
+            },
+            {
+              "line": 19,
+              "test": "suite::code_mode::code_mode_nested_tool_calls_can_run_in_parallel",
+              "outcome": "ignored"
+            },
+            {
+              "line": 20,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_10_cua_manually_enabled_text_only",
+              "outcome": "ignored"
+            },
+            {
+              "line": 21,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_10_cua_manually_enabled_text_only",
+              "outcome": "ignored"
+            },
+            {
+              "line": 31,
+              "test": "suite::compact_remote::remote_compact_trims_function_call_history_to_fit_context_window",
+              "outcome": "ignored"
+            },
+            {
+              "line": 42,
+              "test": "suite::network_approval::guardian_receives_exact_triggers_for_concurrent_network_requests",
+              "outcome": "ignored"
+            },
+            {
+              "line": 47,
+              "test": "suite::pending_input::injected_user_input_triggers_follow_up_request_with_deltas",
+              "outcome": "ignored"
+            },
+            {
+              "line": 73,
+              "test": "suite::shell_snapshot::macos_unified_exec_uses_shell_snapshot",
+              "outcome": "ignored"
+            },
+            {
+              "line": 74,
+              "test": "suite::shell_snapshot::windows_unified_exec_uses_shell_snapshot",
+              "outcome": "ignored"
+            },
+            {
+              "line": 86,
+              "test": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+              "stream": "stdout",
+              "start_line": 90,
+              "end_line": 1051,
+              "bytes": 2911962,
+              "sha256": "1cfb4187b4ebc79f4b994b67f42b80b9f1eb84df71ad22f128e09c8dff98a31d",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13361670377/rust-failure-fbd39e9f0a55f69440a69eec686690c53f68544a9731d37d6c733b1a1a0fb01d.txt",
+              "excerpts": [
+                {
+                  "line": 1035,
+                  "text": "2026-11-04T20:26:48.161716Z  INFO session_loop{thread_id=01a1a83b-eeae-7748-b65b-59dffd7599aa}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a83d-c848-757a-81ce-3b527e958548\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a83b-eeae-7748-b65b-59dffd7599aa turn.id=01a1a83d-c848-757a-81ce-3b527e958548 model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a83d-c848-757a-81ce-3b527e958548 model=gpt-5.5 cwd=D:\\tmp\\.tmp7d9cFi}:try_run_sampling_request{turn_id=01a1a83d-c848-757a-81ce-3b527e958548 model=gpt-5.5}:stream_request:model_client.stream_responses_api{model=gpt-5.5 wire_api=responses transport=\"responses_http\" http.method=\"POST\" api.path=\"responses\" turn.has_metadata_header=true}:responses.stream_request{transport=\"responses_http\" http.method=\"POST\" api.path=\"responses\"}:endpoint_session.stream_encoded_json_with{http.method=POST api.path=\"responses\"}: feedback_tags: endpoint=\"/responses\" auth_header_attached=true auth_header_name=\"authorization\" auth_mode=\"ApiKey\" auth_retry_after_unauthorized=\"false\" auth_recovery_mode=\"\" auth_recovery_phase=\"\" auth_connection_reused=\"\" auth_request_id=\"\" auth_cf_ray=\"\" auth_error=\"\" auth_error_code=\"\" auth_recovery_followup_success=\"\" auth_recovery_followup_status=\"\" auth_env_openai_api_key_present=false auth_env_codex_api_key_present=false auth_env_codex_api_key_enabled=false auth_env_provider_key_name=\"\" auth_env_provider_key_present=\"\" auth_env_refresh_token_url_override_present=false"
+                },
+                {
+                  "line": 1036,
+                  "text": "2026-11-04T20:26:48.161938Z  INFO session_loop{thread_id=01a1a83b-eeae-7748-b65b-59dffd7599aa}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a83d-c848-757a-81ce-3b527e958548\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a83b-eeae-7748-b65b-59dffd7599aa turn.id=01a1a83d-c848-757a-81ce-3b527e958548 model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn: codex_core::session::turn: Turn error: stream disconnected before completion: builder error for url (ws://127.0.0.1:52254/v1/responses)"
+                },
+                {
+                  "line": 1037,
+                  "text": ""
+                },
+                {
+                  "line": 1038,
+                  "text": "thread 'suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after' (10828) panicked at core/tests\\suite\\turn_state.rs:136:5:"
+                },
+                {
+                  "line": 1039,
+                  "text": "assertion failed: `(left == right)`"
+                },
+                {
+                  "line": 1040,
+                  "text": ""
+                },
+                {
+                  "line": 1041,
+                  "text": "\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :"
+                },
+                {
+                  "line": 1042,
+                  "text": "\u001b[31m<\u001b[0m\u001b[1;48;5;52;31m1\u001b[0m"
+                },
+                {
+                  "line": 1043,
+                  "text": "\u001b[32m>\u001b[0m\u001b[1;48;5;22;32m4\u001b[0m"
+                },
+                {
+                  "line": 1044,
+                  "text": ""
+                },
+                {
+                  "line": 1045,
+                  "text": ""
+                },
+                {
+                  "line": 1046,
+                  "text": "2026-11-04T20:26:48.171250Z TRACE mio::poll: deregistering event source from poller"
+                },
+                {
+                  "line": 1047,
+                  "text": "2026-11-04T20:26:48.171845Z TRACE mio::poll: deregistering event source from poller"
+                },
+                {
+                  "line": 1048,
+                  "text": "2026-11-04T20:26:48.171877Z  WARN session_loop{thread_id=01a1a83b-eeae-7748-b65b-59dffd7599aa}: codex_thread_store::local::live_writer: failed to check rollout path after shutdown for 01a1a83b-eeae-7748-b65b-59dffd7599aa; preserving pending metadata: background task failed"
+                },
+                {
+                  "line": 1049,
+                  "text": "2026-11-04T20:26:48.172369Z DEBUG session_loop{thread_id=01a1a83b-eeae-7748-b65b-59dffd7599aa}: codex_core::session::handlers: Agent loop exited"
+                },
+                {
+                  "line": 1050,
+                  "text": ""
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 1055,
+              "text": "test result: FAILED. 70 passed; 1 failed; 9 ignored; 0 measured; 1051 filtered out; finished in 161.44s"
+            },
+            {
+              "line": 1063,
+              "text": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1128 filtered out; finished in 1.43s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_10_of_16/test_attempts/attempt_1.log",
+          "bytes": 2919286,
+          "sha256": "7eda3133210b42e0f2eac40c5ac76c6c706f7eceea89c085e82ddaf940026d4f",
+          "results": [
+            {
+              "line": 18,
+              "test": "suite::code_mode::code_mode_exec_without_nested_limit_preserves_result_variable_before_configured_history_truncation",
+              "outcome": "ignored"
+            },
+            {
+              "line": 19,
+              "test": "suite::code_mode::code_mode_nested_tool_calls_can_run_in_parallel",
+              "outcome": "ignored"
+            },
+            {
+              "line": 20,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_10_cua_manually_enabled_text_only",
+              "outcome": "ignored"
+            },
+            {
+              "line": 21,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_10_cua_manually_enabled_text_only",
+              "outcome": "ignored"
+            },
+            {
+              "line": 31,
+              "test": "suite::compact_remote::remote_compact_trims_function_call_history_to_fit_context_window",
+              "outcome": "ignored"
+            },
+            {
+              "line": 42,
+              "test": "suite::network_approval::guardian_receives_exact_triggers_for_concurrent_network_requests",
+              "outcome": "ignored"
+            },
+            {
+              "line": 47,
+              "test": "suite::pending_input::injected_user_input_triggers_follow_up_request_with_deltas",
+              "outcome": "ignored"
+            },
+            {
+              "line": 73,
+              "test": "suite::shell_snapshot::macos_unified_exec_uses_shell_snapshot",
+              "outcome": "ignored"
+            },
+            {
+              "line": 74,
+              "test": "suite::shell_snapshot::windows_unified_exec_uses_shell_snapshot",
+              "outcome": "ignored"
+            },
+            {
+              "line": 86,
+              "test": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+              "stream": "stdout",
+              "start_line": 90,
+              "end_line": 1042,
+              "bytes": 2910433,
+              "sha256": "22d2238f839268a83ac8c8009cb6886fae7c8f58fd135d94bbfb11bd959ac9b0",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13361670377/rust-failure-ba5c8fb94c7586745871bbb65422ebfeba5ffc778441318c3c59fac4c7b863e2.txt",
+              "excerpts": [
+                {
+                  "line": 1028,
+                  "text": "2026-11-04T20:20:19.614929Z  INFO session_loop{thread_id=01a1a836-020c-7100-ab49-3821e0adff60}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a837-da39-7248-a898-6fd6b43aadf8\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a836-020c-7100-ab49-3821e0adff60 turn.id=01a1a837-da39-7248-a898-6fd6b43aadf8 model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a837-da39-7248-a898-6fd6b43aadf8 model=gpt-5.5 cwd=D:\\tmp\\.tmpUYLJPK}:try_run_sampling_request{turn_id=01a1a837-da39-7248-a898-6fd6b43aadf8 model=gpt-5.5}:stream_request:model_client.stream_responses_api{model=gpt-5.5 wire_api=responses transport=\"responses_http\" http.method=\"POST\" api.path=\"responses\" turn.has_metadata_header=true}:responses.stream_request{transport=\"responses_http\" http.method=\"POST\" api.path=\"responses\"}:endpoint_session.stream_encoded_json_with{http.method=POST api.path=\"responses\"}: feedback_tags: endpoint=\"/responses\" auth_header_attached=true auth_header_name=\"authorization\" auth_mode=\"ApiKey\" auth_retry_after_unauthorized=\"false\" auth_recovery_mode=\"\" auth_recovery_phase=\"\" auth_connection_reused=\"\" auth_request_id=\"\" auth_cf_ray=\"\" auth_error=\"\" auth_error_code=\"\" auth_recovery_followup_success=\"\" auth_recovery_followup_status=\"\" auth_env_openai_api_key_present=false auth_env_codex_api_key_present=false auth_env_codex_api_key_enabled=false auth_env_provider_key_name=\"\" auth_env_provider_key_present=\"\" auth_env_refresh_token_url_override_present=false"
+                },
+                {
+                  "line": 1029,
+                  "text": "2026-11-04T20:20:19.615892Z  INFO session_loop{thread_id=01a1a836-020c-7100-ab49-3821e0adff60}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a837-da39-7248-a898-6fd6b43aadf8\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a836-020c-7100-ab49-3821e0adff60 turn.id=01a1a837-da39-7248-a898-6fd6b43aadf8 model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn: codex_core::session::turn: Turn error: stream disconnected before completion: builder error for url (ws://127.0.0.1:63974/v1/responses)"
+                },
+                {
+                  "line": 1030,
+                  "text": ""
+                },
+                {
+                  "line": 1031,
+                  "text": "thread 'suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after' (1448) panicked at core/tests\\suite\\turn_state.rs:136:5:"
+                },
+                {
+                  "line": 1032,
+                  "text": "assertion failed: `(left == right)`"
+                },
+                {
+                  "line": 1033,
+                  "text": ""
+                },
+                {
+                  "line": 1034,
+                  "text": "\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :"
+                },
+                {
+                  "line": 1035,
+                  "text": "\u001b[31m<\u001b[0m\u001b[1;48;5;52;31m1\u001b[0m"
+                },
+                {
+                  "line": 1036,
+                  "text": "\u001b[32m>\u001b[0m\u001b[1;48;5;22;32m4\u001b[0m"
+                },
+                {
+                  "line": 1037,
+                  "text": ""
+                },
+                {
+                  "line": 1038,
+                  "text": ""
+                },
+                {
+                  "line": 1039,
+                  "text": "2026-11-04T20:20:19.696421Z TRACE mio::poll: deregistering event source from poller"
+                },
+                {
+                  "line": 1040,
+                  "text": "2026-11-04T20:20:19.696529Z TRACE mio::poll: deregistering event source from poller"
+                },
+                {
+                  "line": 1041,
+                  "text": ""
+                },
+                {
+                  "line": 1042,
+                  "text": ""
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 1046,
+              "text": "test result: FAILED. 70 passed; 1 failed; 9 ignored; 0 measured; 1051 filtered out; finished in 198.21s"
+            },
+            {
+              "line": 1054,
+              "text": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1128 filtered out; finished in 3.06s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_10_of_16/test_attempts/attempt_2.log",
+          "bytes": 2918284,
+          "sha256": "704a86af54e67d6843fd656328c0eb9756f977de57e84a2bda291e23951291d7",
+          "results": [
+            {
+              "line": 18,
+              "test": "suite::code_mode::code_mode_exec_without_nested_limit_preserves_result_variable_before_configured_history_truncation",
+              "outcome": "ignored"
+            },
+            {
+              "line": 19,
+              "test": "suite::code_mode::code_mode_nested_tool_calls_can_run_in_parallel",
+              "outcome": "ignored"
+            },
+            {
+              "line": 20,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_10_cua_manually_enabled_text_only",
+              "outcome": "ignored"
+            },
+            {
+              "line": 21,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_10_cua_manually_enabled_text_only",
+              "outcome": "ignored"
+            },
+            {
+              "line": 31,
+              "test": "suite::compact_remote::remote_compact_trims_function_call_history_to_fit_context_window",
+              "outcome": "ignored"
+            },
+            {
+              "line": 42,
+              "test": "suite::network_approval::guardian_receives_exact_triggers_for_concurrent_network_requests",
+              "outcome": "ignored"
+            },
+            {
+              "line": 47,
+              "test": "suite::pending_input::injected_user_input_triggers_follow_up_request_with_deltas",
+              "outcome": "ignored"
+            },
+            {
+              "line": 73,
+              "test": "suite::shell_snapshot::macos_unified_exec_uses_shell_snapshot",
+              "outcome": "ignored"
+            },
+            {
+              "line": 74,
+              "test": "suite::shell_snapshot::windows_unified_exec_uses_shell_snapshot",
+              "outcome": "ignored"
+            },
+            {
+              "line": 86,
+              "test": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+              "stream": "stdout",
+              "start_line": 90,
+              "end_line": 1037,
+              "bytes": 2909431,
+              "sha256": "63078a80102c5e0a0fcf1d9e60b2bdcb00a981a1f673b37b8f497fe1e79d0101",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13361670377/rust-failure-38324374cebd3be0772a846504c39afbb184560eda1bb65c924ce29809081dbc.txt",
+              "excerpts": [
+                {
+                  "line": 1021,
+                  "text": "2026-11-04T20:24:03.062087Z  INFO session_loop{thread_id=01a1a839-6c54-7176-bcbf-24cc7cd70c71}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a83b-44af-7407-be85-f6af38052937\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a839-6c54-7176-bcbf-24cc7cd70c71 turn.id=01a1a83b-44af-7407-be85-f6af38052937 model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a83b-44af-7407-be85-f6af38052937 model=gpt-5.5 cwd=D:\\tmp\\.tmpF7XmGd}:try_run_sampling_request{turn_id=01a1a83b-44af-7407-be85-f6af38052937 model=gpt-5.5}:stream_request:model_client.stream_responses_api{model=gpt-5.5 wire_api=responses transport=\"responses_http\" http.method=\"POST\" api.path=\"responses\" turn.has_metadata_header=true}:responses.stream_request{transport=\"responses_http\" http.method=\"POST\" api.path=\"responses\"}:endpoint_session.stream_encoded_json_with{http.method=POST api.path=\"responses\"}: feedback_tags: endpoint=\"/responses\" auth_header_attached=true auth_header_name=\"authorization\" auth_mode=\"ApiKey\" auth_retry_after_unauthorized=\"false\" auth_recovery_mode=\"\" auth_recovery_phase=\"\" auth_connection_reused=\"\" auth_request_id=\"\" auth_cf_ray=\"\" auth_error=\"\" auth_error_code=\"\" auth_recovery_followup_success=\"\" auth_recovery_followup_status=\"\" auth_env_openai_api_key_present=false auth_env_codex_api_key_present=false auth_env_codex_api_key_enabled=false auth_env_provider_key_name=\"\" auth_env_provider_key_present=\"\" auth_env_refresh_token_url_override_present=false"
+                },
+                {
+                  "line": 1022,
+                  "text": "2026-11-04T20:24:03.062295Z  INFO session_loop{thread_id=01a1a839-6c54-7176-bcbf-24cc7cd70c71}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a83b-44af-7407-be85-f6af38052937\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a839-6c54-7176-bcbf-24cc7cd70c71 turn.id=01a1a83b-44af-7407-be85-f6af38052937 model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn: codex_core::session::turn: Turn error: stream disconnected before completion: builder error for url (ws://127.0.0.1:51390/v1/responses)"
+                },
+                {
+                  "line": 1023,
+                  "text": ""
+                },
+                {
+                  "line": 1024,
+                  "text": "thread 'suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after' (8684) panicked at core/tests\\suite\\turn_state.rs:136:5:"
+                },
+                {
+                  "line": 1025,
+                  "text": "assertion failed: `(left == right)`"
+                },
+                {
+                  "line": 1026,
+                  "text": ""
+                },
+                {
+                  "line": 1027,
+                  "text": "\u001b[1mDiff\u001b[0m \u001b[31m< left\u001b[0m / \u001b[32mright >\u001b[0m :"
+                },
+                {
+                  "line": 1028,
+                  "text": "\u001b[31m<\u001b[0m\u001b[1;48;5;52;31m1\u001b[0m"
+                },
+                {
+                  "line": 1029,
+                  "text": "\u001b[32m>\u001b[0m\u001b[1;48;5;22;32m4\u001b[0m"
+                },
+                {
+                  "line": 1030,
+                  "text": ""
+                },
+                {
+                  "line": 1031,
+                  "text": ""
+                },
+                {
+                  "line": 1032,
+                  "text": "2026-11-04T20:24:03.071386Z TRACE mio::poll: deregistering event source from poller"
+                },
+                {
+                  "line": 1033,
+                  "text": "2026-11-04T20:24:03.071458Z  WARN session_loop{thread_id=01a1a839-6c54-7176-bcbf-24cc7cd70c71}: codex_thread_store::local::live_writer: failed to check rollout path after shutdown for 01a1a839-6c54-7176-bcbf-24cc7cd70c71; preserving pending metadata: background task failed"
+                },
+                {
+                  "line": 1034,
+                  "text": "2026-11-04T20:24:03.072144Z DEBUG session_loop{thread_id=01a1a839-6c54-7176-bcbf-24cc7cd70c71}: codex_core::session::handlers: Agent loop exited"
+                },
+                {
+                  "line": 1035,
+                  "text": "2026-11-04T20:24:03.072244Z TRACE mio::poll: deregistering event source from poller"
+                },
+                {
+                  "line": 1036,
+                  "text": ""
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 1041,
+              "text": "test result: FAILED. 70 passed; 1 failed; 9 ignored; 0 measured; 1051 filtered out; finished in 198.60s"
+            },
+            {
+              "line": 1049,
+              "text": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1128 filtered out; finished in 1.64s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_11_of_16/test.log",
+          "bytes": 46829,
+          "sha256": "5e9410425eaff5f701254a539156bac24707d78ab23f4969dbf2192cdcd50c68",
+          "results": [
+            {
+              "line": 33,
+              "test": "suite::live_cli::live_create_file_hello_txt",
+              "outcome": "ignored"
+            },
+            {
+              "line": 41,
+              "test": "suite::network_approval::allowing_network_policy_amendment_persists_context_and_bypasses_prompt",
+              "outcome": "ignored"
+            },
+            {
+              "line": 43,
+              "test": "suite::network_approval::disconnected_network_request_explains_failure_to_model::test_case_1_plain_http",
+              "outcome": "ignored"
+            },
+            {
+              "line": 44,
+              "test": "suite::network_approval::guardian_network_approval_preserves_action_and_outcome_routing",
+              "outcome": "ignored"
+            },
+            {
+              "line": 45,
+              "test": "suite::network_approval::user_network_approval_once_session_and_denial_semantics",
+              "outcome": "ignored"
+            },
+            {
+              "line": 60,
+              "test": "suite::shell_snapshot::unified_exec_snapshot_still_intercepts_apply_patch",
+              "outcome": "ignored"
+            },
+            {
+              "line": 71,
+              "test": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+              "stream": "stdout",
+              "start_line": 75,
+              "end_line": 144,
+              "bytes": 39886,
+              "sha256": "83c4530ea86ca4364aad5eff1d8624d7c9efc52c4e925956e4929d024ff1f237",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13361670377/rust-failure-b615da0cd4a749e35992394324f950d7429e197d0624b54c95f04c307ce394bc.txt",
+              "excerpts": [
+                {
+                  "line": 131,
+                  "text": "2026-11-04T20:22:11.747634Z  INFO session_loop{thread_id=01a1a839-ef57-77d8-80d4-e36061057a53}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a839-ef98-7631-9d99-050bf0d7c5be\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a839-ef57-77d8-80d4-e36061057a53 turn.id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5 cwd=D:\\tmp\\.tmpCy0bOp}:try_run_sampling_request{turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5}: codex_otel.trace_safe: event.name=\"codex.turn_ttft\" duration_ms=131 event.timestamp=2026-11-04T20:22:11.747Z conversation.id=01a1a839-ef57-77d8-80d4-e36061057a53 app.version=0.0.0 auth_mode=\"ApiKey\" originator=codex_cli_rs terminal.type=unknown model=gpt-5.5 slug=gpt-5.5"
+                },
+                {
+                  "line": 132,
+                  "text": "2026-11-04T20:22:11.747763Z  INFO session_loop{thread_id=01a1a839-ef57-77d8-80d4-e36061057a53}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a839-ef98-7631-9d99-050bf0d7c5be\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a839-ef57-77d8-80d4-e36061057a53 turn.id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5 cwd=D:\\tmp\\.tmpCy0bOp}:try_run_sampling_request{turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5}:receiving_stream:handle_responses{codex.request.reasoning_effort=medium otel.name=\"function_call\" from=\"output_item_done\" tool_name=\"exec_command\"}:handle_output_item_done: codex_core::stream_events_utils: ToolCall: exec_command {\"cmd\":\"echo two\"} thread_id=01a1a839-ef57-77d8-80d4-e36061057a53"
+                },
+                {
+                  "line": 133,
+                  "text": ""
+                },
+                {
+                  "line": 134,
+                  "text": "thread 'suite::turn_state::websocket_turn_state_is_stable_within_turn' (5276) panicked at codex-rs/core/tests/common/lib.rs:353:14:"
+                },
+                {
+                  "line": 135,
+                  "text": "timeout waiting for event: Elapsed(())"
+                },
+                {
+                  "line": 136,
+                  "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+                },
+                {
+                  "line": 137,
+                  "text": "2026-11-04T20:22:41.768637Z TRACE session_loop{thread_id=01a1a839-ef57-77d8-80d4-e36061057a53}: codex_core::tasks: aborting running task task_kind=Regular sub_id=\"01a1a839-ef98-7631-9d99-050bf0d7c5be\""
+                },
+                {
+                  "line": 138,
+                  "text": "2026-11-04T20:22:41.769600Z  INFO session_loop{thread_id=01a1a839-ef57-77d8-80d4-e36061057a53}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a839-ef98-7631-9d99-050bf0d7c5be\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a839-ef57-77d8-80d4-e36061057a53 turn.id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5 cwd=D:\\tmp\\.tmpCy0bOp}:try_run_sampling_request{turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5}:receiving_stream:handle_responses{codex.request.reasoning_effort=medium otel.name=\"function_call\" from=\"output_item_done\" tool_name=\"exec_command\"}:handle_output_item_done:handle_tool_call:handle_tool_call_with_source: codex_core::tools::parallel: tool call completed event.name=\"codex.tool_call\" trace_id= conversation.id=01a1a839-ef57-77d8-80d4-e36061057a53 turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be tool_name=exec_command call_id=ws-shell-2 tool_source=\"direct\" execution_started=true dispatch_duration_ms=0 handler_duration_ms=30020 total_duration_ms=30020"
+                },
+                {
+                  "line": 139,
+                  "text": "2026-11-04T20:22:41.769979Z ERROR session_loop{thread_id=01a1a839-ef57-77d8-80d4-e36061057a53}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a839-ef98-7631-9d99-050bf0d7c5be\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a839-ef57-77d8-80d4-e36061057a53 turn.id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5 cwd=D:\\tmp\\.tmpCy0bOp}:try_run_sampling_request{turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5}:drain_in_flight:record_conversation_items{item_count=1}:persist_rollout_items{item_count=1}: codex_core::session: failed to record rollout items: thread-store internal error: failed to queue rollout items: channel closed"
+                },
+                {
+                  "line": 140,
+                  "text": "2026-11-04T20:22:41.770200Z DEBUG session_loop{thread_id=01a1a839-ef57-77d8-80d4-e36061057a53}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a839-ef98-7631-9d99-050bf0d7c5be\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a839-ef57-77d8-80d4-e36061057a53 turn.id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5 cwd=D:\\tmp\\.tmpCy0bOp}:try_run_sampling_request{turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5}:drain_in_flight:record_conversation_items{item_count=1}:send_raw_response_items{item_count=1}: codex_core::session: dropping event because channel is closed: sending into a closed channel"
+                },
+                {
+                  "line": 141,
+                  "text": "2026-11-04T20:22:41.770385Z ERROR session_loop{thread_id=01a1a839-ef57-77d8-80d4-e36061057a53}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a839-ef98-7631-9d99-050bf0d7c5be\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a839-ef57-77d8-80d4-e36061057a53 turn.id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5 cwd=D:\\tmp\\.tmpCy0bOp}:try_run_sampling_request{turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5}:persist_rollout_items{item_count=1}: codex_core::session: failed to record rollout items: thread-store internal error: failed to queue rollout items: channel closed"
+                },
+                {
+                  "line": 142,
+                  "text": "2026-11-04T20:22:41.770438Z DEBUG session_loop{thread_id=01a1a839-ef57-77d8-80d4-e36061057a53}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a839-ef98-7631-9d99-050bf0d7c5be\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a839-ef57-77d8-80d4-e36061057a53 turn.id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5 cwd=D:\\tmp\\.tmpCy0bOp}:try_run_sampling_request{turn_id=01a1a839-ef98-7631-9d99-050bf0d7c5be model=gpt-5.5}: codex_core::session: dropping event because channel is closed: sending into a closed channel"
+                },
+                {
+                  "line": 143,
+                  "text": ""
+                },
+                {
+                  "line": 144,
+                  "text": ""
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 148,
+              "text": "test result: FAILED. 60 passed; 1 failed; 6 ignored; 0 measured; 1064 filtered out; finished in 48.08s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_11_of_16/test_attempts/attempt_1.log",
+          "bytes": 43498,
+          "sha256": "8e8444978e9ec71e674d9f92107740376185edf29851d44fa5cbacdcf81a0cf0",
+          "results": [
+            {
+              "line": 33,
+              "test": "suite::live_cli::live_create_file_hello_txt",
+              "outcome": "ignored"
+            },
+            {
+              "line": 41,
+              "test": "suite::network_approval::allowing_network_policy_amendment_persists_context_and_bypasses_prompt",
+              "outcome": "ignored"
+            },
+            {
+              "line": 43,
+              "test": "suite::network_approval::disconnected_network_request_explains_failure_to_model::test_case_1_plain_http",
+              "outcome": "ignored"
+            },
+            {
+              "line": 44,
+              "test": "suite::network_approval::guardian_network_approval_preserves_action_and_outcome_routing",
+              "outcome": "ignored"
+            },
+            {
+              "line": 45,
+              "test": "suite::network_approval::user_network_approval_once_session_and_denial_semantics",
+              "outcome": "ignored"
+            },
+            {
+              "line": 60,
+              "test": "suite::shell_snapshot::unified_exec_snapshot_still_intercepts_apply_patch",
+              "outcome": "ignored"
+            },
+            {
+              "line": 71,
+              "test": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+              "stream": "stdout",
+              "start_line": 75,
+              "end_line": 139,
+              "bytes": 36555,
+              "sha256": "9621d86bc19cda86e126443dcee095249adf012180fde2d2d9993594b33a4a2c",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13361670377/rust-failure-bba48ec9a21736da1f6fbb2b1ddbf8390b3cceff36977eaadf906291bea66525.txt",
+              "excerpts": [
+                {
+                  "line": 131,
+                  "text": "2026-11-04T20:18:06.226257Z  INFO session_loop{thread_id=01a1a836-3035-74a8-ac8a-ae41bbda1715}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a836-307d-732b-ab4b-dcb5022cdf93\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a836-3035-74a8-ac8a-ae41bbda1715 turn.id=01a1a836-307d-732b-ab4b-dcb5022cdf93 model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a836-307d-732b-ab4b-dcb5022cdf93 model=gpt-5.5 cwd=D:\\tmp\\.tmpwh9Sdl}:try_run_sampling_request{turn_id=01a1a836-307d-732b-ab4b-dcb5022cdf93 model=gpt-5.5}: codex_otel.trace_safe: event.name=\"codex.turn_ttft\" duration_ms=137 event.timestamp=2026-11-04T20:18:06.226Z conversation.id=01a1a836-3035-74a8-ac8a-ae41bbda1715 app.version=0.0.0 auth_mode=\"ApiKey\" originator=codex_cli_rs terminal.type=unknown model=gpt-5.5 slug=gpt-5.5"
+                },
+                {
+                  "line": 132,
+                  "text": "2026-11-04T20:18:06.226353Z  INFO session_loop{thread_id=01a1a836-3035-74a8-ac8a-ae41bbda1715}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a836-307d-732b-ab4b-dcb5022cdf93\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a836-3035-74a8-ac8a-ae41bbda1715 turn.id=01a1a836-307d-732b-ab4b-dcb5022cdf93 model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a836-307d-732b-ab4b-dcb5022cdf93 model=gpt-5.5 cwd=D:\\tmp\\.tmpwh9Sdl}:try_run_sampling_request{turn_id=01a1a836-307d-732b-ab4b-dcb5022cdf93 model=gpt-5.5}:receiving_stream:handle_responses{codex.request.reasoning_effort=medium otel.name=\"function_call\" from=\"output_item_done\" tool_name=\"exec_command\"}:handle_output_item_done: codex_core::stream_events_utils: ToolCall: exec_command {\"cmd\":\"echo two\"} thread_id=01a1a836-3035-74a8-ac8a-ae41bbda1715"
+                },
+                {
+                  "line": 133,
+                  "text": ""
+                },
+                {
+                  "line": 134,
+                  "text": "thread 'suite::turn_state::websocket_turn_state_is_stable_within_turn' (9116) panicked at codex-rs/core/tests/common/lib.rs:353:14:"
+                },
+                {
+                  "line": 135,
+                  "text": "timeout waiting for event: Elapsed(())"
+                },
+                {
+                  "line": 136,
+                  "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+                },
+                {
+                  "line": 137,
+                  "text": "2026-11-04T20:18:36.298510Z  INFO session_loop{thread_id=01a1a836-3035-74a8-ac8a-ae41bbda1715}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a836-307d-732b-ab4b-dcb5022cdf93\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a836-3035-74a8-ac8a-ae41bbda1715 turn.id=01a1a836-307d-732b-ab4b-dcb5022cdf93 model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a836-307d-732b-ab4b-dcb5022cdf93 model=gpt-5.5 cwd=D:\\tmp\\.tmpwh9Sdl}:try_run_sampling_request{turn_id=01a1a836-307d-732b-ab4b-dcb5022cdf93 model=gpt-5.5}:receiving_stream:handle_responses{codex.request.reasoning_effort=medium otel.name=\"function_call\" from=\"output_item_done\" tool_name=\"exec_command\"}:handle_output_item_done:handle_tool_call:handle_tool_call_with_source: codex_core::tools::parallel: tool call completed event.name=\"codex.tool_call\" trace_id= conversation.id=01a1a836-3035-74a8-ac8a-ae41bbda1715 turn_id=01a1a836-307d-732b-ab4b-dcb5022cdf93 tool_name=exec_command call_id=ws-shell-2 tool_source=\"direct\" execution_started=true dispatch_duration_ms=0 handler_duration_ms=30070 total_duration_ms=30071"
+                },
+                {
+                  "line": 138,
+                  "text": ""
+                },
+                {
+                  "line": 139,
+                  "text": ""
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 143,
+              "text": "test result: FAILED. 60 passed; 1 failed; 6 ignored; 0 measured; 1064 filtered out; finished in 74.08s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_11_of_16/test_attempts/attempt_2.log",
+          "bytes": 43703,
+          "sha256": "37a1851ca83dbae6c84e2a1c08b648ccb3bceb51e21b7f0289c8cfb32f3b73d5",
+          "results": [
+            {
+              "line": 33,
+              "test": "suite::live_cli::live_create_file_hello_txt",
+              "outcome": "ignored"
+            },
+            {
+              "line": 41,
+              "test": "suite::network_approval::allowing_network_policy_amendment_persists_context_and_bypasses_prompt",
+              "outcome": "ignored"
+            },
+            {
+              "line": 43,
+              "test": "suite::network_approval::disconnected_network_request_explains_failure_to_model::test_case_1_plain_http",
+              "outcome": "ignored"
+            },
+            {
+              "line": 44,
+              "test": "suite::network_approval::guardian_network_approval_preserves_action_and_outcome_routing",
+              "outcome": "ignored"
+            },
+            {
+              "line": 45,
+              "test": "suite::network_approval::user_network_approval_once_session_and_denial_semantics",
+              "outcome": "ignored"
+            },
+            {
+              "line": 60,
+              "test": "suite::shell_snapshot::unified_exec_snapshot_still_intercepts_apply_patch",
+              "outcome": "ignored"
+            },
+            {
+              "line": 71,
+              "test": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+              "stream": "stdout",
+              "start_line": 75,
+              "end_line": 140,
+              "bytes": 36760,
+              "sha256": "03486fd948da9d6c38c2f7728490bd06a8c8cfffbfe984cb1495c67b0faf3fe3",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13361670377/rust-failure-e7d5dbe5bbbcb85515d12098584f8e7af4d2c204aab14af5823e246b7f743e05.txt",
+              "excerpts": [
+                {
+                  "line": 131,
+                  "text": "2026-11-04T20:21:21.565412Z  INFO session_loop{thread_id=01a1a839-2a4b-76e6-8d6b-9b073aec0ef9}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a839-2b75-759d-940c-c9a1b84a02dc\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a839-2a4b-76e6-8d6b-9b073aec0ef9 turn.id=01a1a839-2b75-759d-940c-c9a1b84a02dc model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a839-2b75-759d-940c-c9a1b84a02dc model=gpt-5.5 cwd=D:\\tmp\\.tmpPRkh1q}:try_run_sampling_request{turn_id=01a1a839-2b75-759d-940c-c9a1b84a02dc model=gpt-5.5}: codex_otel.trace_safe: event.name=\"codex.turn_ttft\" duration_ms=161 event.timestamp=2026-11-04T20:21:21.565Z conversation.id=01a1a839-2a4b-76e6-8d6b-9b073aec0ef9 app.version=0.0.0 auth_mode=\"ApiKey\" originator=codex_cli_rs terminal.type=unknown model=gpt-5.5 slug=gpt-5.5"
+                },
+                {
+                  "line": 132,
+                  "text": "2026-11-04T20:21:21.565653Z  INFO session_loop{thread_id=01a1a839-2a4b-76e6-8d6b-9b073aec0ef9}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a839-2b75-759d-940c-c9a1b84a02dc\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a839-2a4b-76e6-8d6b-9b073aec0ef9 turn.id=01a1a839-2b75-759d-940c-c9a1b84a02dc model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a839-2b75-759d-940c-c9a1b84a02dc model=gpt-5.5 cwd=D:\\tmp\\.tmpPRkh1q}:try_run_sampling_request{turn_id=01a1a839-2b75-759d-940c-c9a1b84a02dc model=gpt-5.5}:receiving_stream:handle_responses{codex.request.reasoning_effort=medium otel.name=\"function_call\" from=\"output_item_done\" tool_name=\"exec_command\"}:handle_output_item_done: codex_core::stream_events_utils: ToolCall: exec_command {\"cmd\":\"echo two\"} thread_id=01a1a839-2a4b-76e6-8d6b-9b073aec0ef9"
+                },
+                {
+                  "line": 133,
+                  "text": ""
+                },
+                {
+                  "line": 134,
+                  "text": "thread 'suite::turn_state::websocket_turn_state_is_stable_within_turn' (7516) panicked at codex-rs/core/tests/common/lib.rs:353:14:"
+                },
+                {
+                  "line": 135,
+                  "text": "timeout waiting for event: Elapsed(())"
+                },
+                {
+                  "line": 136,
+                  "text": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+                },
+                {
+                  "line": 137,
+                  "text": "2026-11-04T20:21:51.581171Z TRACE session_loop{thread_id=01a1a839-2a4b-76e6-8d6b-9b073aec0ef9}: codex_core::tasks: aborting running task task_kind=Regular sub_id=\"01a1a839-2b75-759d-940c-c9a1b84a02dc\""
+                },
+                {
+                  "line": 138,
+                  "text": "2026-11-04T20:21:51.581988Z  INFO session_loop{thread_id=01a1a839-2a4b-76e6-8d6b-9b073aec0ef9}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a839-2b75-759d-940c-c9a1b84a02dc\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a839-2a4b-76e6-8d6b-9b073aec0ef9 turn.id=01a1a839-2b75-759d-940c-c9a1b84a02dc model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a839-2b75-759d-940c-c9a1b84a02dc model=gpt-5.5 cwd=D:\\tmp\\.tmpPRkh1q}:try_run_sampling_request{turn_id=01a1a839-2b75-759d-940c-c9a1b84a02dc model=gpt-5.5}:receiving_stream:handle_responses{codex.request.reasoning_effort=medium otel.name=\"function_call\" from=\"output_item_done\" tool_name=\"exec_command\"}:handle_output_item_done:handle_tool_call:handle_tool_call_with_source: codex_core::tools::parallel: tool call completed event.name=\"codex.tool_call\" trace_id= conversation.id=01a1a839-2a4b-76e6-8d6b-9b073aec0ef9 turn_id=01a1a839-2b75-759d-940c-c9a1b84a02dc tool_name=exec_command call_id=ws-shell-2 tool_source=\"direct\" execution_started=true dispatch_duration_ms=0 handler_duration_ms=30014 total_duration_ms=30015"
+                },
+                {
+                  "line": 139,
+                  "text": ""
+                },
+                {
+                  "line": 140,
+                  "text": ""
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 144,
+              "text": "test result: FAILED. 60 passed; 1 failed; 6 ignored; 0 measured; 1064 filtered out; finished in 81.95s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_12_of_16/test.log",
+          "bytes": 7521,
+          "sha256": "4059d777f7436eff559d51ff1f2ccbacedd6e117493364cf4bd3408f30f23e4a",
+          "results": [
+            {
+              "line": 15,
+              "test": "suite::code_mode::code_mode_concurrent_cells_merge_only_the_stored_values_they_write",
+              "outcome": "ignored"
+            },
+            {
+              "line": 17,
+              "test": "suite::code_mode::code_mode_node_repl_image_flag_without_enhanced_stays_disabled::test_case_2_cua_repl",
+              "outcome": "ignored"
+            },
+            {
+              "line": 18,
+              "test": "suite::code_mode::code_mode_node_repl_image_flag_without_enhanced_stays_disabled::test_case_2_cua_repl",
+              "outcome": "ignored"
+            },
+            {
+              "line": 19,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_14_cua_text_fallback_without_context_bound",
+              "outcome": "ignored"
+            },
+            {
+              "line": 20,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_14_cua_text_fallback_without_context_bound",
+              "outcome": "ignored"
+            },
+            {
+              "line": 26,
+              "test": "suite::compact_remote::auto_remote_compact_trims_function_call_history_to_fit_context_window",
+              "outcome": "ignored"
+            },
+            {
+              "line": 35,
+              "test": "suite::network_approval::timed_out_guardian_network_review_uses_timeout_outcome_without_user_fallback",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 79,
+              "text": "test result: ok. 65 passed; 0 failed; 7 ignored; 0 measured; 1059 filtered out; finished in 34.84s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_13_of_16/test.log",
+          "bytes": 6874,
+          "sha256": "c77689c0a3ae67001e8dfa3b1527006cf82a195e44d93cc0392ea22c7471ef8b",
+          "results": [
+            {
+              "line": 37,
+              "test": "suite::network_approval::unattributed_network_request_uses_active_turn_environment_fallback",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 74,
+              "text": "test result: ok. 67 passed; 0 failed; 1 ignored; 0 measured; 1063 filtered out; finished in 40.12s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_14_of_16/test.log",
+          "bytes": 6674,
+          "sha256": "a96e817155fe4bd1cfa64768a1a78cc6196914df2a25508d14438046dff24bce",
+          "results": [
+            {
+              "line": 11,
+              "test": "suite::code_mode::code_mode_exec_nested_limit_truncates_result_variable_when_exceeded",
+              "outcome": "ignored"
+            },
+            {
+              "line": 12,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_3_manually_enabled_multimodal",
+              "outcome": "ignored"
+            },
+            {
+              "line": 13,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_3_manually_enabled_multimodal",
+              "outcome": "ignored"
+            },
+            {
+              "line": 14,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_4_required_model_forces_multimodal",
+              "outcome": "ignored"
+            },
+            {
+              "line": 15,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_4_required_model_forces_multimodal",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 70,
+              "text": "test result: ok. 58 passed; 0 failed; 5 ignored; 0 measured; 1068 filtered out; finished in 109.90s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_15_of_16/test.log",
+          "bytes": 7688,
+          "sha256": "c9091b6aeaccdbc1ce2757c9ba8e3c91a5d18228615d46b56acb6f96f43503ab",
+          "results": [
+            {
+              "line": 9,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_12_cua_required_model_forces_multimodal",
+              "outcome": "ignored"
+            },
+            {
+              "line": 10,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_12_cua_required_model_forces_multimodal",
+              "outcome": "ignored"
+            },
+            {
+              "line": 11,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_5_text_fallback_without_image_support",
+              "outcome": "ignored"
+            },
+            {
+              "line": 12,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_5_text_fallback_without_image_support",
+              "outcome": "ignored"
+            },
+            {
+              "line": 13,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_6_text_fallback_without_context_bound",
+              "outcome": "ignored"
+            },
+            {
+              "line": 14,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_6_text_fallback_without_context_bound",
+              "outcome": "ignored"
+            },
+            {
+              "line": 16,
+              "test": "suite::code_mode::code_mode_wait_uses_its_own_max_tokens_budget",
+              "outcome": "ignored"
+            },
+            {
+              "line": 17,
+              "test": "suite::code_mode::code_mode_yield_and_termination_are_not_starved_by_runtime_output",
+              "outcome": "ignored"
+            },
+            {
+              "line": 33,
+              "test": "suite::network_approval::disconnected_network_request_explains_failure_to_model::test_case_2_connect",
+              "outcome": "ignored"
+            },
+            {
+              "line": 34,
+              "test": "suite::network_approval::guardian_receives_exact_trigger_for_single_network_request",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 76,
+              "text": "test result: ok. 59 passed; 0 failed; 10 ignored; 0 measured; 1062 filtered out; finished in 56.15s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_16_of_16/test.log",
+          "bytes": 9471,
+          "sha256": "36d0ceb5b25c584f6a08b0b0f5387f999d7af02374e65d259bca67e889dd2e43",
+          "results": [
+            {
+              "line": 17,
+              "test": "suite::code_mode::code_mode_exec_nested_limit_formats_truncated_result_with_warning",
+              "outcome": "ignored"
+            },
+            {
+              "line": 18,
+              "test": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+              "outcome": "ignored"
+            },
+            {
+              "line": 21,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_13_cua_text_fallback_without_image_support",
+              "outcome": "ignored"
+            },
+            {
+              "line": 22,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_13_cua_text_fallback_without_image_support",
+              "outcome": "ignored"
+            },
+            {
+              "line": 23,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_1_disabled",
+              "outcome": "ignored"
+            },
+            {
+              "line": 24,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_1_disabled",
+              "outcome": "ignored"
+            },
+            {
+              "line": 28,
+              "test": "suite::code_mode_elicitation::code_mode_holds_yielded_result_during_command_approval",
+              "outcome": "ignored"
+            },
+            {
+              "line": 30,
+              "test": "suite::codex_delegate::codex_delegate_rejects_escalation_requests_when_parent_can_prompt",
+              "outcome": "ignored"
+            },
+            {
+              "line": 35,
+              "test": "suite::compact_remote::remote_compact_persists_replacement_history_in_rollout",
+              "outcome": "ignored"
+            },
+            {
+              "line": 49,
+              "test": "suite::network_approval::ambiguous_unattributed_network_request_is_not_assigned_to_active_calls",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 85,
+              "text": "test result: ok. 69 passed; 0 failed; 10 ignored; 0 measured; 1052 filtered out; finished in 35.31s"
+            },
+            {
+              "line": 103,
+              "text": "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 1118 filtered out; finished in 7.80s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_1_of_16/test.log",
+          "bytes": 261006,
+          "sha256": "9ee87877729695b0bb3a4c3204f6a2d8c79574740f648bddacac9d75b2f1ba78",
+          "results": [
+            {
+              "line": 19,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_8_images_resume_after_prompt_pressure",
+              "outcome": "ignored"
+            },
+            {
+              "line": 20,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_8_images_resume_after_prompt_pressure",
+              "outcome": "ignored"
+            },
+            {
+              "line": 26,
+              "test": "suite::compact_remote::remote_compact_rewrites_multiple_trailing_function_call_outputs",
+              "outcome": "ignored"
+            },
+            {
+              "line": 68,
+              "test": "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents",
+              "stream": "stdout",
+              "start_line": 73,
+              "end_line": 233,
+              "bytes": 254375,
+              "sha256": "3b0d275fee9573a4e96ba0b76f9b619112e4416d9f234515137fab96f80ce3f7",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13361670377/rust-failure-461813d4c332110663e8d2897480dce8c92ead1fae1c63193c6b0a89646cbb6b.txt",
+              "excerpts": [
+                {
+                  "line": 228,
+                  "text": "2026-11-04T20:21:40.554548Z TRACE session_loop{thread_id=01a1a839-6a43-777d-a13d-2ab5e07902ef}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a839-6a68-74ea-a0b3-9a9729695190\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a839-6a43-777d-a13d-2ab5e07902ef turn.id=01a1a839-6a68-74ea-a0b3-9a9729695190 model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn: codex_core::post_sampling_token_estimate: post sampling token estimate turn_id=01a1a839-6a68-74ea-a0b3-9a9729695190 estimated_token_count=Some(6072)"
+                },
+                {
+                  "line": 229,
+                  "text": "2026-11-04T20:21:40.797811Z TRACE session_loop{thread_id=01a1a839-6a43-777d-a13d-2ab5e07902ef}: codex_core::tasks: aborting running task task_kind=Regular sub_id=\"01a1a839-6a68-74ea-a0b3-9a9729695190\""
+                },
+                {
+                  "line": 230,
+                  "text": "2026-11-04T20:21:40.799598Z DEBUG session_loop{thread_id=01a1a839-6234-76c2-b9b2-0478183aeed1}: codex_core::session::handlers: Agent loop exited"
+                },
+                {
+                  "line": 231,
+                  "text": "Error: expected at least 2 entries in subagent_stop_hook_log.jsonl, got 1"
+                },
+                {
+                  "line": 232,
+                  "text": ""
+                },
+                {
+                  "line": 233,
+                  "text": ""
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 237,
+              "text": "test result: FAILED. 61 passed; 1 failed; 3 ignored; 0 measured; 1066 filtered out; finished in 71.28s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_1_of_16/test_attempts/attempt_1.log",
+          "bytes": 261657,
+          "sha256": "71b42603830d5a6da34d686e4892b24dd0ba2f0589b8377c0d5fd6e2cbf2ed67",
+          "results": [
+            {
+              "line": 19,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_8_images_resume_after_prompt_pressure",
+              "outcome": "ignored"
+            },
+            {
+              "line": 20,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_8_images_resume_after_prompt_pressure",
+              "outcome": "ignored"
+            },
+            {
+              "line": 26,
+              "test": "suite::compact_remote::remote_compact_rewrites_multiple_trailing_function_call_outputs",
+              "outcome": "ignored"
+            },
+            {
+              "line": 69,
+              "test": "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents",
+              "stream": "stdout",
+              "start_line": 73,
+              "end_line": 236,
+              "bytes": 255026,
+              "sha256": "8c38e4c2876b5eb95859e55df9d37c1d0448e8022bf9e3bc32d6510c472a7619",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13361670377/rust-failure-9b0137612a2fd57625b3bafe1e27bbee66d05d41e23144553ce9d7907c555c42.txt",
+              "excerpts": [
+                {
+                  "line": 231,
+                  "text": "2026-11-04T20:15:23.419221Z  WARN session_loop{thread_id=01a1a833-9c79-77cd-862f-f4a0e568ac5e}: codex_rollout::recorder: failed to send rollout shutdown command: channel closed"
+                },
+                {
+                  "line": 232,
+                  "text": "2026-11-04T20:15:23.419282Z  WARN session_loop{thread_id=01a1a833-9c79-77cd-862f-f4a0e568ac5e}: codex_core::session::handlers: failed to shutdown thread persistence after submission channel closed: thread-store internal error: failed to send rollout shutdown command: channel closed"
+                },
+                {
+                  "line": 233,
+                  "text": "2026-11-04T20:15:23.419314Z DEBUG session_loop{thread_id=01a1a833-9c79-77cd-862f-f4a0e568ac5e}: codex_core::session::handlers: Agent loop exited"
+                },
+                {
+                  "line": 234,
+                  "text": "Error: expected at least 2 entries in subagent_stop_hook_log.jsonl, got 1"
+                },
+                {
+                  "line": 235,
+                  "text": ""
+                },
+                {
+                  "line": 236,
+                  "text": ""
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 240,
+              "text": "test result: FAILED. 61 passed; 1 failed; 3 ignored; 0 measured; 1066 filtered out; finished in 56.60s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_1_of_16/test_attempts/attempt_2.log",
+          "bytes": 203205,
+          "sha256": "6220b0ba6b612e10a7f4b81af03fa3036a50558ca7bffabf40f61c7256ffc91d",
+          "results": [
+            {
+              "line": 19,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_8_images_resume_after_prompt_pressure",
+              "outcome": "ignored"
+            },
+            {
+              "line": 20,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_8_images_resume_after_prompt_pressure",
+              "outcome": "ignored"
+            },
+            {
+              "line": 26,
+              "test": "suite::compact_remote::remote_compact_rewrites_multiple_trailing_function_call_outputs",
+              "outcome": "ignored"
+            },
+            {
+              "line": 69,
+              "test": "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents",
+              "stream": "stdout",
+              "start_line": 73,
+              "end_line": 200,
+              "bytes": 196574,
+              "sha256": "c2f614510ed3a05e407d03fc78106ceb17449e947a6cf4b7dfa62c27577d201f",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13361670377/rust-failure-a8c5962849a86f07c535a9e3b625ad9cc026b08b3fd00b05771e654f2ba2df28.txt",
+              "excerpts": [
+                {
+                  "line": 195,
+                  "text": "2026-11-04T20:20:27.246597Z DEBUG session_loop{thread_id=01a1a838-4f8a-70c9-8488-5ee132cdfe14}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a838-4ffc-74b7-b53b-4142fb68c928\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a838-4f8a-70c9-8488-5ee132cdfe14 turn.id=01a1a838-4ffc-74b7-b53b-4142fb68c928 model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn:run_sampling_request{turn_id=01a1a838-4ffc-74b7-b53b-4142fb68c928 model=gpt-5.5 cwd=D:\\tmp\\.tmpmhpRcO}:try_run_sampling_request{turn_id=01a1a838-4ffc-74b7-b53b-4142fb68c928 model=gpt-5.5}:receiving_stream:handle_responses{codex.request.reasoning_effort=medium otel.name=\"message_from_assistant\" from=\"output_item_done\"}:handle_output_item_done: codex_core::stream_events_utils: Output item item_type=\"message\" item_id=\"msg-child-1\""
+                },
+                {
+                  "line": 196,
+                  "text": "2026-11-04T20:20:27.257512Z TRACE session_loop{thread_id=01a1a838-4f8a-70c9-8488-5ee132cdfe14}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a838-4ffc-74b7-b53b-4142fb68c928\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a838-4f8a-70c9-8488-5ee132cdfe14 turn.id=01a1a838-4ffc-74b7-b53b-4142fb68c928 model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn: codex_core::session::turn: post sampling token usage turn_id=01a1a838-4ffc-74b7-b53b-4142fb68c928 total_usage_tokens=0 auto_compact_scope_tokens=0 auto_compact_scope_limit=Some(244800) auto_compact_limit_scope=Total auto_compact_window_prefill_tokens=None full_context_window_limit=Some(258400) full_context_window_limit_reached=false token_limit_reached=false model_needs_follow_up=false has_pending_input=false needs_follow_up=false"
+                },
+                {
+                  "line": 197,
+                  "text": "2026-11-04T20:20:27.258085Z TRACE session_loop{thread_id=01a1a838-4f8a-70c9-8488-5ee132cdfe14}:submission_dispatch{otel.name=\"op.dispatch.turn_input\" submission.id=\"01a1a838-4ffc-74b7-b53b-4142fb68c928\" codex.op=\"turn_input\"}:turn{otel.name=\"session_task.turn\" thread.id=01a1a838-4f8a-70c9-8488-5ee132cdfe14 turn.id=01a1a838-4ffc-74b7-b53b-4142fb68c928 model=gpt-5.5 codex.turn.reasoning_effort=medium}:session_task.run:run_turn: codex_core::post_sampling_token_estimate: post sampling token estimate turn_id=01a1a838-4ffc-74b7-b53b-4142fb68c928 estimated_token_count=Some(5910)"
+                },
+                {
+                  "line": 198,
+                  "text": "Error: expected at least 2 entries in subagent_stop_hook_log.jsonl, got 0"
+                },
+                {
+                  "line": 199,
+                  "text": ""
+                },
+                {
+                  "line": 200,
+                  "text": ""
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 204,
+              "text": "test result: FAILED. 61 passed; 1 failed; 3 ignored; 0 measured; 1066 filtered out; finished in 39.99s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_2_of_16/test.log",
+          "bytes": 8413,
+          "sha256": "12501c5f82690c7b3739e1b489bf050f0b1b7997b8af727f1bc464d9b9c06d03",
+          "results": [
+            {
+              "line": 15,
+              "test": "suite::code_mode::code_mode_can_yield_and_resume_with_wait",
+              "outcome": "ignored"
+            },
+            {
+              "line": 16,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_15_cua_text_fallback_with_insufficient_context",
+              "outcome": "ignored"
+            },
+            {
+              "line": 17,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_15_cua_text_fallback_with_insufficient_context",
+              "outcome": "ignored"
+            },
+            {
+              "line": 18,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_16_cua_images_resume_after_prompt_pressure",
+              "outcome": "ignored"
+            },
+            {
+              "line": 19,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_16_cua_images_resume_after_prompt_pressure",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 81,
+              "text": "test result: ok. 70 passed; 0 failed; 5 ignored; 0 measured; 1056 filtered out; finished in 53.16s"
+            },
+            {
+              "line": 89,
+              "text": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1128 filtered out; finished in 2.26s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_3_of_16/test.log",
+          "bytes": 6595,
+          "sha256": "56bf5db1460daf7b07b2e4364c0c5b15b67ebaaa2ad3fde60ee0b8aeee32034b",
+          "results": [
+            {
+              "line": 17,
+              "test": "suite::code_mode::code_mode_exec_nested_limit_preserves_result_variable_before_configured_history_truncation",
+              "outcome": "ignored"
+            },
+            {
+              "line": 18,
+              "test": "suite::code_mode::code_mode_exec_without_nested_limit_preserves_result_variable_before_default_history_truncation",
+              "outcome": "ignored"
+            },
+            {
+              "line": 20,
+              "test": "suite::code_mode::code_mode_wait_terminate_returns_completed_session_if_it_finished_after_yield_control",
+              "outcome": "ignored"
+            },
+            {
+              "line": 24,
+              "test": "suite::compact::manual_compact_non_context_failure_retries_then_emits_task_error",
+              "outcome": "ignored"
+            },
+            {
+              "line": 35,
+              "test": "suite::live_cli::live_print_working_directory",
+              "outcome": "ignored"
+            },
+            {
+              "line": 39,
+              "test": "suite::network_approval::failed_network_policy_amendment_denies_request_and_does_not_approve_host",
+              "outcome": "ignored"
+            },
+            {
+              "line": 53,
+              "test": "suite::shell_snapshot::unified_exec_snapshot_preserves_shell_environment_policy_set",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 67,
+              "text": "test result: ok. 54 passed; 0 failed; 7 ignored; 0 measured; 1070 filtered out; finished in 59.97s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_4_of_16/test.log",
+          "bytes": 8362,
+          "sha256": "e2b6897ff46672503f48a3219e19838f89478275d029523a49f3fb80c99e00c5",
+          "results": [
+            {
+              "line": 16,
+              "test": "suite::code_mode::code_mode_exec_nested_limit_preserves_result_variable_before_default_history_truncation",
+              "outcome": "ignored"
+            },
+            {
+              "line": 17,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_9_cua_disabled",
+              "outcome": "ignored"
+            },
+            {
+              "line": 18,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_9_cua_disabled",
+              "outcome": "ignored"
+            },
+            {
+              "line": 24,
+              "test": "suite::code_mode_elicitation::code_mode_holds_yielded_result_during_permission_request",
+              "outcome": "ok"
+            },
+            {
+              "line": 39,
+              "test": "suite::network_approval::strict_auto_review_routes_network_approval_to_guardian_when_user_reviewer_is_selected",
+              "outcome": "ignored"
+            },
+            {
+              "line": 68,
+              "test": "suite::shell_snapshot::shell_snapshot_deleted_after_shutdown_with_skills",
+              "outcome": "ignored"
+            },
+            {
+              "line": 88,
+              "test": "suite::workspace_roots::workspace_roots_allow_file_and_command_writes",
+              "outcome": "ok"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 84,
+              "text": "test result: ok. 72 passed; 0 failed; 5 ignored; 0 measured; 1054 filtered out; finished in 35.88s"
+            },
+            {
+              "line": 91,
+              "text": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1129 filtered out; finished in 11.12s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_4_of_16/test_attempts/attempt_1.log",
+          "bytes": 8617,
+          "sha256": "a3186ceb483c19a6d66507235efbf799b62943ebd069eee809e9974999106227",
+          "results": [
+            {
+              "line": 16,
+              "test": "suite::code_mode::code_mode_exec_nested_limit_preserves_result_variable_before_default_history_truncation",
+              "outcome": "ignored"
+            },
+            {
+              "line": 17,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_9_cua_disabled",
+              "outcome": "ignored"
+            },
+            {
+              "line": 18,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_9_cua_disabled",
+              "outcome": "ignored"
+            },
+            {
+              "line": 26,
+              "test": "suite::code_mode_elicitation::code_mode_holds_yielded_result_during_permission_request",
+              "outcome": "ok"
+            },
+            {
+              "line": 39,
+              "test": "suite::network_approval::strict_auto_review_routes_network_approval_to_guardian_when_user_reviewer_is_selected",
+              "outcome": "ignored"
+            },
+            {
+              "line": 68,
+              "test": "suite::shell_snapshot::shell_snapshot_deleted_after_shutdown_with_skills",
+              "outcome": "ignored"
+            },
+            {
+              "line": 88,
+              "test": "suite::workspace_roots::workspace_roots_allow_file_and_command_writes",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "suite::workspace_roots::workspace_roots_allow_file_and_command_writes",
+              "stream": "stdout",
+              "start_line": 93,
+              "end_line": 96,
+              "bytes": 152,
+              "sha256": "e257a4323fa86a93ff07dbca467c2ce2a787e860fd1888accbc986d9aa8fee64",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13361670377/rust-failure-a26b29b6ea374e6b5d9de95f4e79c27ba1ffc48fac675d72a16cfc7279d355fb.txt",
+              "excerpts": [
+                {
+                  "line": 93,
+                  "text": "---- suite::workspace_roots::workspace_roots_allow_file_and_command_writes stdout ----"
+                },
+                {
+                  "line": 94,
+                  "text": "Error: The system cannot find the file specified. (os error 2)"
+                },
+                {
+                  "line": 95,
+                  "text": ""
+                },
+                {
+                  "line": 96,
+                  "text": ""
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 84,
+              "text": "test result: ok. 72 passed; 0 failed; 5 ignored; 0 measured; 1054 filtered out; finished in 62.75s"
+            },
+            {
+              "line": 100,
+              "text": "test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 1129 filtered out; finished in 8.92s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_5_of_16/test.log",
+          "bytes": 6119,
+          "sha256": "f160f200ae2f4996a64d2163928339a6a7341d7c8bbb89824b448abdb65ec5bc",
+          "results": [
+            {
+              "line": 9,
+              "test": "suite::code_mode::code_mode_can_run_multiple_yielded_sessions",
+              "outcome": "ignored"
+            },
+            {
+              "line": 10,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_7_text_fallback_with_insufficient_context",
+              "outcome": "ignored"
+            },
+            {
+              "line": 11,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_7_text_fallback_with_insufficient_context",
+              "outcome": "ignored"
+            },
+            {
+              "line": 26,
+              "test": "suite::network_approval::background_network_approval_uses_active_turn_after_original_turn_completes",
+              "outcome": "ignored"
+            },
+            {
+              "line": 48,
+              "test": "suite::shell_snapshot::linux_unified_exec_uses_shell_snapshot",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 62,
+              "text": "test result: ok. 51 passed; 0 failed; 5 ignored; 0 measured; 1075 filtered out; finished in 58.63s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_6_of_16/test.log",
+          "bytes": 6424,
+          "sha256": "39bef08744f0f645535f4730760c8bbe90be15991c5f335a134a02a9099a27c5",
+          "results": [
+            {
+              "line": 12,
+              "test": "suite::code_mode::code_mode_can_return_exec_command_output",
+              "outcome": "ignored"
+            },
+            {
+              "line": 17,
+              "test": "suite::codex_delegate::guardian_delegate_rejects_escalation_requests_without_prompting",
+              "outcome": "ignored"
+            },
+            {
+              "line": 66,
+              "test": "suite::workspace_roots::workspace_roots_allow_apply_patch_in_secondary_root",
+              "outcome": "ok"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 70,
+              "text": "test result: ok. 61 passed; 0 failed; 2 ignored; 0 measured; 1068 filtered out; finished in 85.34s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_6_of_16/test_attempts/attempt_1.log",
+          "bytes": 156006,
+          "sha256": "26548c9702ef3c861230741da86bf2a0de82e52df4010629b01c6af3a0a72847",
+          "results": [
+            {
+              "line": 12,
+              "test": "suite::code_mode::code_mode_can_return_exec_command_output",
+              "outcome": "ignored"
+            },
+            {
+              "line": 17,
+              "test": "suite::codex_delegate::guardian_delegate_rejects_escalation_requests_without_prompting",
+              "outcome": "ignored"
+            },
+            {
+              "line": 67,
+              "test": "suite::workspace_roots::workspace_roots_allow_apply_patch_in_secondary_root",
+              "outcome": "FAILED"
+            }
+          ],
+          "failure_sections": [
+            {
+              "test": "suite::workspace_roots::workspace_roots_allow_apply_patch_in_secondary_root",
+              "stream": "stdout",
+              "start_line": 72,
+              "end_line": 204,
+              "bytes": 149471,
+              "sha256": "6fa82e6ef3ab68ec53dba64776559b5ce8b6c50084380cec73f639828a214a74",
+              "path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/cabc-windows-artifacts-v1/13361670377/rust-failure-b312a2fe1b0428c43fee26d5c971359bdb293487c69eec4521f7dafea75f40d0.txt",
+              "excerpts": [
+                {
+                  "line": 199,
+                  "text": "2026-11-04T20:16:56.658096Z  INFO wiremock::mock_server::hyper: Mock server shutting down"
+                },
+                {
+                  "line": 200,
+                  "text": "2026-11-04T20:16:56.658215Z TRACE mio::poll: deregistering event source from poller"
+                },
+                {
+                  "line": 201,
+                  "text": "2026-11-04T20:16:56.658266Z DEBUG session_loop{thread_id=01a1a834-f273-724b-8f7f-d78f9b3b7e3f}: codex_core::session::handlers: Agent loop exited"
+                },
+                {
+                  "line": 202,
+                  "text": "Error: The system cannot find the file specified. (os error 2)"
+                },
+                {
+                  "line": 203,
+                  "text": ""
+                },
+                {
+                  "line": 204,
+                  "text": ""
+                }
+              ]
+            }
+          ],
+          "diagnostic_lines": [
+            {
+              "line": 208,
+              "text": "test result: FAILED. 60 passed; 1 failed; 2 ignored; 0 measured; 1068 filtered out; finished in 173.97s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_7_of_16/test.log",
+          "bytes": 12531,
+          "sha256": "59cea6da7e0799aa9bf98153842588e6c14963c67833b00943591dfa554b79e1",
+          "results": [
+            {
+              "line": 19,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_2_manually_enabled_text_only",
+              "outcome": "ignored"
+            },
+            {
+              "line": 20,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_2_manually_enabled_text_only",
+              "outcome": "ignored"
+            },
+            {
+              "line": 44,
+              "test": "suite::code_mode_elicitation::code_mode_holds_yielded_result_during_patch_approval",
+              "outcome": "ok"
+            },
+            {
+              "line": 57,
+              "test": "suite::network_approval::cancelled_guardian_network_review_fails_closed_without_rewriting_turn_state",
+              "outcome": "ignored"
+            },
+            {
+              "line": 58,
+              "test": "suite::network_approval::denying_network_policy_amendment_persists_and_blocks_request",
+              "outcome": "ignored"
+            },
+            {
+              "line": 59,
+              "test": "suite::network_approval::latest_network_rejection_wins_for_multiple_reviews_of_one_execution",
+              "outcome": "ignored"
+            },
+            {
+              "line": 101,
+              "test": "suite::workspace_roots::workspace_roots_deny_file_and_command_writes_outside_roots",
+              "outcome": "ok"
+            },
+            {
+              "line": 102,
+              "test": "suite::workspace_roots::workspace_roots_allow_patches_but_protect_metadata_directories",
+              "outcome": "ok"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 23,
+              "text": "patch_approval_diag elapsed_ms=1861 phase=turn_started phase_elapsed_ms=0 turn_id=01a1a834-4266-7314-bd92-a54226022986 pid=4272"
+            },
+            {
+              "line": 24,
+              "text": "patch_approval_diag elapsed_ms=1861 phase=turn_started phase_elapsed_ms=0 turn_id=01a1a834-4266-7314-bd92-a54226022986 fixture_home=\"D:\\\\tmp\\\\.tmpUBygRb\" executor_cwd=AbsolutePathBuf(\"D:\\\\tmp\\\\.tmpN9GWnU\") host_fixture_cwd=\"D:\\\\tmp\\\\.tmpN9GWnU\""
+            },
+            {
+              "line": 25,
+              "text": "patch_approval_diag elapsed_ms=1861 phase=turn_started phase_elapsed_ms=0 turn_id=01a1a834-4266-7314-bd92-a54226022986 metadata=current_exe path=\"D:\\\\o\\\\execroot\\\\_main\\\\bazel-out\\\\windows_x86_64_msvc-fastbuild\\\\bin\\\\codex-rs\\\\core\\\\core-all-test-bin.exe\" state=Ok((true, 236182528, Ok(SystemTime { intervals: 134382965643683713 })))"
+            },
+            {
+              "line": 26,
+              "text": "patch_approval_diag elapsed_ms=1862 phase=turn_started phase_elapsed_ms=1 turn_id=01a1a834-4266-7314-bd92-a54226022986 metadata=expected_materialized_exe path=\"C:\\\\Users\\\\runneradmin\\\\.codex\\\\.sandbox-bin\\\\core-all-test-bin.exe\" state=Ok((true, 236182528, Ok(SystemTime { intervals: 134382969276027262 })))"
+            },
+            {
+              "line": 27,
+              "text": "patch_approval_diag elapsed_ms=1862 phase=turn_started phase_elapsed_ms=1 turn_id=01a1a834-4266-7314-bd92-a54226022986 metadata=host_fixture_target path=\"D:\\\\tmp\\\\.tmpN9GWnU\\\\code_mode_patch_approval.txt\" state=Err(Os { code: 2, kind: NotFound, message: \"The system cannot find the file specified.\" })"
+            },
+            {
+              "line": 28,
+              "text": "patch_approval_diag elapsed_ms=1863 phase=turn_started phase_elapsed_ms=1 turn_id=01a1a834-4266-7314-bd92-a54226022986 metadata_observation_ms=1"
+            },
+            {
+              "line": 29,
+              "text": "patch_approval_diag elapsed_ms=1863 phase=approval_wait phase_elapsed_ms=0 turn_id=01a1a834-4266-7314-bd92-a54226022986 phase_entered"
+            },
+            {
+              "line": 30,
+              "text": "patch_approval_diag elapsed_ms=2140 phase=approval_wait phase_elapsed_ms=277 turn_id=01a1a834-4266-7314-bd92-a54226022986 event=PatchApplyBegin call_id=exec-acbc2d4d-0f62-4f20-99a7-14ed680e5d22 event_turn_id=01a1a834-4266-7314-bd92-a54226022986 auto_approved=false"
+            },
+            {
+              "line": 31,
+              "text": "patch_approval_diag elapsed_ms=2141 phase=approval_wait phase_elapsed_ms=278 turn_id=01a1a834-4266-7314-bd92-a54226022986 approval_received call_id=exec-acbc2d4d-0f62-4f20-99a7-14ed680e5d22"
+            },
+            {
+              "line": 32,
+              "text": "patch_approval_diag elapsed_ms=2141 phase=result_hold phase_elapsed_ms=0 turn_id=01a1a834-4266-7314-bd92-a54226022986 phase_entered"
+            },
+            {
+              "line": 33,
+              "text": "patch_approval_diag elapsed_ms=3395 phase=approval_submit phase_elapsed_ms=0 turn_id=01a1a834-4266-7314-bd92-a54226022986 phase_entered"
+            },
+            {
+              "line": 34,
+              "text": "patch_approval_diag elapsed_ms=3395 phase=approval_submit phase_elapsed_ms=0 turn_id=01a1a834-4266-7314-bd92-a54226022986 approval_submit_accepted"
+            },
+            {
+              "line": 35,
+              "text": "patch_approval_diag elapsed_ms=3396 phase=finish_wait phase_elapsed_ms=0 turn_id=01a1a834-4266-7314-bd92-a54226022986 phase_entered"
+            },
+            {
+              "line": 36,
+              "text": "patch_approval_diag elapsed_ms=3526 phase=matching_turn_complete phase_elapsed_ms=0 turn_id=01a1a834-4266-7314-bd92-a54226022986 phase_entered"
+            },
+            {
+              "line": 37,
+              "text": "patch_approval_diag elapsed_ms=3526 phase=follow_up_assertion_passed phase_elapsed_ms=0 turn_id=01a1a834-4266-7314-bd92-a54226022986 phase_entered"
+            },
+            {
+              "line": 38,
+              "text": "patch_approval_diag elapsed_ms=3526 phase=follow_up_assertion_passed phase_elapsed_ms=0 turn_id=01a1a834-4266-7314-bd92-a54226022986 observer_drop panicking=false"
+            },
+            {
+              "line": 39,
+              "text": "patch_approval_diag elapsed_ms=3526 phase=follow_up_assertion_passed phase_elapsed_ms=0 turn_id=01a1a834-4266-7314-bd92-a54226022986 fixture_home=\"D:\\\\tmp\\\\.tmpUBygRb\" executor_cwd=AbsolutePathBuf(\"D:\\\\tmp\\\\.tmpN9GWnU\") host_fixture_cwd=\"D:\\\\tmp\\\\.tmpN9GWnU\""
+            },
+            {
+              "line": 40,
+              "text": "patch_approval_diag elapsed_ms=3527 phase=follow_up_assertion_passed phase_elapsed_ms=0 turn_id=01a1a834-4266-7314-bd92-a54226022986 metadata=current_exe path=\"D:\\\\o\\\\execroot\\\\_main\\\\bazel-out\\\\windows_x86_64_msvc-fastbuild\\\\bin\\\\codex-rs\\\\core\\\\core-all-test-bin.exe\" state=Ok((true, 236182528, Ok(SystemTime { intervals: 134382965643683713 })))"
+            },
+            {
+              "line": 41,
+              "text": "patch_approval_diag elapsed_ms=3527 phase=follow_up_assertion_passed phase_elapsed_ms=1 turn_id=01a1a834-4266-7314-bd92-a54226022986 metadata=expected_materialized_exe path=\"C:\\\\Users\\\\runneradmin\\\\.codex\\\\.sandbox-bin\\\\core-all-test-bin.exe\" state=Ok((true, 236182528, Ok(SystemTime { intervals: 134382969276027262 })))"
+            },
+            {
+              "line": 42,
+              "text": "patch_approval_diag elapsed_ms=3528 phase=follow_up_assertion_passed phase_elapsed_ms=2 turn_id=01a1a834-4266-7314-bd92-a54226022986 metadata=host_fixture_target path=\"D:\\\\tmp\\\\.tmpN9GWnU\\\\code_mode_patch_approval.txt\" state=Err(Os { code: 2, kind: NotFound, message: \"The system cannot find the file specified.\" })"
+            },
+            {
+              "line": 43,
+              "text": "patch_approval_diag elapsed_ms=3528 phase=follow_up_assertion_passed phase_elapsed_ms=2 turn_id=01a1a834-4266-7314-bd92-a54226022986 metadata_observation_ms=2"
+            },
+            {
+              "line": 105,
+              "text": "test result: ok. 73 passed; 0 failed; 5 ignored; 0 measured; 1053 filtered out; finished in 76.67s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_8_of_16/test.log",
+          "bytes": 6644,
+          "sha256": "20fb47a380dd9963fa436136ceb0bd6bb828c860180918e58d1ea0c8ef81a412",
+          "results": [
+            {
+              "line": 11,
+              "test": "suite::code_mode::code_mode_background_keeps_running_on_later_turn_without_wait",
+              "outcome": "ignored"
+            },
+            {
+              "line": 12,
+              "test": "suite::code_mode::code_mode_node_repl_image_flag_without_enhanced_stays_disabled::test_case_1_node_repl",
+              "outcome": "ignored"
+            },
+            {
+              "line": 13,
+              "test": "suite::code_mode::code_mode_node_repl_image_flag_without_enhanced_stays_disabled::test_case_1_node_repl",
+              "outcome": "ignored"
+            },
+            {
+              "line": 18,
+              "test": "suite::compact_remote::remote_compact_trim_estimate_uses_session_base_instructions",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 67,
+              "text": "test result: ok. 57 passed; 0 failed; 4 ignored; 0 measured; 1070 filtered out; finished in 45.69s"
+            }
+          ]
+        },
+        {
+          "member": "failed-test-logs/invocation-3wf91hzs/targets/0000/shard_9_of_16/test.log",
+          "bytes": 7910,
+          "sha256": "b826b83b1047d771b6e081dc6d499d9e2e8cc1baa7b7e5b0e39d00983cbf941b",
+          "results": [
+            {
+              "line": 21,
+              "test": "suite::code_mode::code_mode_exec_outer_limit_truncates_emitted_output",
+              "outcome": "ignored"
+            },
+            {
+              "line": 25,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_11_cua_manually_enabled_multimodal",
+              "outcome": "ignored"
+            },
+            {
+              "line": 26,
+              "test": "suite::code_mode::code_mode_node_repl_text_evidence_is_visible_only_to_guardian::test_case_11_cua_manually_enabled_multimodal",
+              "outcome": "ignored"
+            },
+            {
+              "line": 27,
+              "test": "suite::code_mode::code_mode_only_can_call_nested_tools",
+              "outcome": "ignored"
+            },
+            {
+              "line": 28,
+              "test": "suite::code_mode::code_mode_wait_can_terminate_and_continue",
+              "outcome": "ignored"
+            },
+            {
+              "line": 29,
+              "test": "suite::code_mode::code_mode_write_stdin_calls_run_in_parallel_across_sessions",
+              "outcome": "ignored"
+            },
+            {
+              "line": 77,
+              "test": "suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after",
+              "outcome": "ok"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 81,
+              "text": "test result: ok. 69 passed; 0 failed; 6 ignored; 0 measured; 1056 filtered out; finished in 66.73s"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "artifact_id": 13359089737,
+      "artifact_sha256": "4af4e868138885f5e04ceaade75b2310ca934fad6b7919d5cf3dbb13a3b45ceb",
+      "json": [
+        {
+          "member": {
+            "name": "source.json",
+            "bytes": 294,
+            "sha256": "8c620090076943f155b6fc7f2e9f676e8ebd647dc594b3d9f4ef6d2b831eeec9",
+            "crc32": "0835d48f"
+          },
+          "value": {
+            "source_head": "cabcb40d36e116beaa65750e1f674c52035da785",
+            "source_tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+            "run_id": "41902308860",
+            "run_attempt": "1",
+            "scope": "Original isolated controls and complete Core native target; full repository CI remains independent"
+          }
+        },
+        {
+          "member": {
+            "name": "native-test-logs.json",
+            "bytes": 1644,
+            "sha256": "37e502066aab17ca20dcc7ab7a1766b27accdbe461b08534b281c04a15443f72",
+            "crc32": "937c6faa"
+          },
+          "value": [
+            {
+              "path": "codex-rs/core/core-unit-tests/shard_1_of_8/test.log",
+              "bytes": 9292965,
+              "sha256": "dd6fab05f4ee9debbf9da646633b230ad4e7e3f8f89b5002a3a8052fda3b40f8"
+            },
+            {
+              "path": "codex-rs/core/core-unit-tests/shard_2_of_8/test.log",
+              "bytes": 9311409,
+              "sha256": "16e8f893d6f78ad5d995732b52a11a1610486589c8113995dc194f2ced97d497"
+            },
+            {
+              "path": "codex-rs/core/core-unit-tests/shard_3_of_8/test.log",
+              "bytes": 9370553,
+              "sha256": "6dd59186195ba8301023163a855e965317f6f69f39d6f30ac93463f42fb7a10c"
+            },
+            {
+              "path": "codex-rs/core/core-unit-tests/shard_4_of_8/test.log",
+              "bytes": 9221152,
+              "sha256": "ed1345e15cc1f1e22cd5665c4661804fcc3349dc3b94814998379d60f49d7299"
+            },
+            {
+              "path": "codex-rs/core/core-unit-tests/shard_5_of_8/test.log",
+              "bytes": 9174156,
+              "sha256": "3b29aacf5207d92a90d0882ff418b224ae0c2d4d544bf515fb0f0177a417ba61"
+            },
+            {
+              "path": "codex-rs/core/core-unit-tests/shard_6_of_8/test.log",
+              "bytes": 9057518,
+              "sha256": "db95f2c5c893aadae31b5a53de386f07b5ac3613082e7fd43c459eacfed602f1"
+            },
+            {
+              "path": "codex-rs/core/core-unit-tests/shard_7_of_8/test.log",
+              "bytes": 9162458,
+              "sha256": "3fe116580a9d90995717d637c322bd48fb95016f7c2f5e8b2081959fbe965c5d"
+            },
+            {
+              "path": "codex-rs/core/core-unit-tests/shard_8_of_8/test.log",
+              "bytes": 9008844,
+              "sha256": "4c2420277e4e56e5e7e8bc599b2eabdeb73a17cd2584ef39ebe4c1a67581af6c"
+            },
+            {
+              "path": "codex-rs/core/core-unit-tests/test.log",
+              "bytes": 576,
+              "sha256": "77fff3d78cbe5e2a65575cf8c1a5ac1c4513f6c91d632e05f488ada83d30fd69"
+            }
+          ]
+        }
+      ],
+      "logs": [
+        {
+          "member": "core-fork.log",
+          "bytes": 2255,
+          "sha256": "f986935cb11e89368a11e6874d27e19721f38987bf1d2c7fa572979dec00ff06",
+          "results": [],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 24,
+              "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2342 filtered out; finished in 1.42s"
+            }
+          ]
+        },
+        {
+          "member": "core-resume.log",
+          "bytes": 87603,
+          "sha256": "ff4bfa52f7d3f19361369892de4a79374c51f98511fdeb4b5f1c27ef07947ade",
+          "results": [],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 1383,
+              "text": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 2339 filtered out; finished in 2.36s"
+            }
+          ]
+        },
+        {
+          "member": "core-ownership.log",
+          "bytes": 2405,
+          "sha256": "5fe6a3c1026da54519588c4044635242ac759993a7e13238e7a730abab3a61ed",
+          "results": [],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 24,
+              "text": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 2340 filtered out; finished in 1.13s"
+            }
+          ]
+        },
+        {
+          "member": "core-unit-target.log",
+          "bytes": 34170,
+          "sha256": "a0a72c8dfa024cdaef26d6fc47ebff9ce777f7ab2a965e1e5002ab337605e32d",
+          "results": [],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 275,
+              "text": "test result: FAILED. 2339 passed; 1 failed; 3 ignored; 0 measured; 0 filtered out; finished in 453.95s"
+            }
+          ]
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_1_of_8/test.log",
+          "bytes": 9292965,
+          "sha256": "dd6fab05f4ee9debbf9da646633b230ad4e7e3f8f89b5002a3a8052fda3b40f8",
+          "results": [
+            {
+              "line": 97,
+              "test": "agent::role::tests::apply_role_skills_config_disables_skill_for_spawned_agent",
+              "outcome": "ignored"
+            },
+            {
+              "line": 3132,
+              "test": "session::tests::configuration_tests::new_default_turn_uses_config_aware_skills_for_role_overrides",
+              "outcome": "ignored"
+            },
+            {
+              "line": 6109,
+              "test": "shell_snapshot::tests::windows_powershell_snapshot_includes_sections",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 27317,
+              "text": "test result: ok. 2340 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 459.66s"
+            }
+          ]
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_2_of_8/test.log",
+          "bytes": 9311409,
+          "sha256": "16e8f893d6f78ad5d995732b52a11a1610486589c8113995dc194f2ced97d497",
+          "results": [
+            {
+              "line": 97,
+              "test": "agent::role::tests::apply_role_skills_config_disables_skill_for_spawned_agent",
+              "outcome": "ignored"
+            },
+            {
+              "line": 2814,
+              "test": "session::tests::configuration_tests::new_default_turn_uses_config_aware_skills_for_role_overrides",
+              "outcome": "ignored"
+            },
+            {
+              "line": 5756,
+              "test": "shell_snapshot::tests::windows_powershell_snapshot_includes_sections",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 27444,
+              "text": "test result: ok. 2340 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 455.02s"
+            }
+          ]
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_3_of_8/test.log",
+          "bytes": 9370553,
+          "sha256": "6dd59186195ba8301023163a855e965317f6f69f39d6f30ac93463f42fb7a10c",
+          "results": [
+            {
+              "line": 97,
+              "test": "agent::role::tests::apply_role_skills_config_disables_skill_for_spawned_agent",
+              "outcome": "ignored"
+            },
+            {
+              "line": 3392,
+              "test": "session::tests::configuration_tests::new_default_turn_uses_config_aware_skills_for_role_overrides",
+              "outcome": "ignored"
+            },
+            {
+              "line": 6322,
+              "test": "shell_snapshot::tests::windows_powershell_snapshot_includes_sections",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 27802,
+              "text": "test result: ok. 2340 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 455.07s"
+            }
+          ]
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_4_of_8/test.log",
+          "bytes": 9221152,
+          "sha256": "ed1345e15cc1f1e22cd5665c4661804fcc3349dc3b94814998379d60f49d7299",
+          "results": [
+            {
+              "line": 56,
+              "test": "agent::control::tests::spawn_agent_fork_last_n_turns_keeps_only_recent_turns",
+              "outcome": "FAILED"
+            },
+            {
+              "line": 101,
+              "test": "agent::role::tests::apply_role_skills_config_disables_skill_for_spawned_agent",
+              "outcome": "ignored"
+            },
+            {
+              "line": 2983,
+              "test": "session::tests::configuration_tests::new_default_turn_uses_config_aware_skills_for_role_overrides",
+              "outcome": "ignored"
+            },
+            {
+              "line": 5907,
+              "test": "shell_snapshot::tests::windows_powershell_snapshot_includes_sections",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 27096,
+              "text": "test result: FAILED. 2339 passed; 1 failed; 3 ignored; 0 measured; 0 filtered out; finished in 453.95s"
+            }
+          ]
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_5_of_8/test.log",
+          "bytes": 9174156,
+          "sha256": "3b29aacf5207d92a90d0882ff418b224ae0c2d4d544bf515fb0f0177a417ba61",
+          "results": [
+            {
+              "line": 97,
+              "test": "agent::role::tests::apply_role_skills_config_disables_skill_for_spawned_agent",
+              "outcome": "ignored"
+            },
+            {
+              "line": 2552,
+              "test": "session::tests::configuration_tests::new_default_turn_uses_config_aware_skills_for_role_overrides",
+              "outcome": "ignored"
+            },
+            {
+              "line": 5521,
+              "test": "shell_snapshot::tests::windows_powershell_snapshot_includes_sections",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 26834,
+              "text": "test result: ok. 2340 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 428.37s"
+            }
+          ]
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_6_of_8/test.log",
+          "bytes": 9057518,
+          "sha256": "db95f2c5c893aadae31b5a53de386f07b5ac3613082e7fd43c459eacfed602f1",
+          "results": [
+            {
+              "line": 97,
+              "test": "agent::role::tests::apply_role_skills_config_disables_skill_for_spawned_agent",
+              "outcome": "ignored"
+            },
+            {
+              "line": 2540,
+              "test": "session::tests::configuration_tests::new_default_turn_uses_config_aware_skills_for_role_overrides",
+              "outcome": "ignored"
+            },
+            {
+              "line": 5496,
+              "test": "shell_snapshot::tests::windows_powershell_snapshot_includes_sections",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 26570,
+              "text": "test result: ok. 2340 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 426.32s"
+            }
+          ]
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_7_of_8/test.log",
+          "bytes": 9162458,
+          "sha256": "3fe116580a9d90995717d637c322bd48fb95016f7c2f5e8b2081959fbe965c5d",
+          "results": [
+            {
+              "line": 97,
+              "test": "agent::role::tests::apply_role_skills_config_disables_skill_for_spawned_agent",
+              "outcome": "ignored"
+            },
+            {
+              "line": 3057,
+              "test": "session::tests::configuration_tests::new_default_turn_uses_config_aware_skills_for_role_overrides",
+              "outcome": "ignored"
+            },
+            {
+              "line": 5998,
+              "test": "shell_snapshot::tests::windows_powershell_snapshot_includes_sections",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 27232,
+              "text": "test result: ok. 2340 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 425.63s"
+            }
+          ]
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/shard_8_of_8/test.log",
+          "bytes": 9008844,
+          "sha256": "4c2420277e4e56e5e7e8bc599b2eabdeb73a17cd2584ef39ebe4c1a67581af6c",
+          "results": [
+            {
+              "line": 97,
+              "test": "agent::role::tests::apply_role_skills_config_disables_skill_for_spawned_agent",
+              "outcome": "ignored"
+            },
+            {
+              "line": 2454,
+              "test": "session::tests::configuration_tests::new_default_turn_uses_config_aware_skills_for_role_overrides",
+              "outcome": "ignored"
+            },
+            {
+              "line": 5402,
+              "test": "shell_snapshot::tests::windows_powershell_snapshot_includes_sections",
+              "outcome": "ignored"
+            }
+          ],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 26459,
+              "text": "test result: ok. 2340 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 423.59s"
+            }
+          ]
+        },
+        {
+          "member": "native-test-logs/codex-rs/core/core-unit-tests/test.log",
+          "bytes": 576,
+          "sha256": "77fff3d78cbe5e2a65575cf8c1a5ac1c4513f6c91d632e05f488ada83d30fd69",
+          "results": [],
+          "failure_sections": [],
+          "diagnostic_lines": [
+            {
+              "line": 9,
+              "text": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 2340 filtered out; finished in 1.13s"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+[
+  {
+    "stage": "AppParentLiveness",
+    "commit": "b141e287b7c1c581b7e57bf7f3a5722f8bd42b79",
+    "parent": "bd7631e98f295fefad7654865cea497ceacf7d06",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "files": [
+      {
+        "path": "codex-rs/linux-sandbox/src/launcher.rs",
+        "sha": "a1d761fba56d6b1653598e82f5d5d81207719ef5",
+        "status": "modified",
+        "additions": 30,
+        "deletions": 2,
+        "changes": 32
+      },
+      {
+        "path": "codex-rs/linux-sandbox/src/lib.rs",
+        "sha": "8f704a3156998d169ceee6bd5e93bf549da9c5c0",
+        "status": "modified",
+        "additions": 2,
+        "deletions": 0,
+        "changes": 2
+      },
+      {
+        "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+        "sha": "e8eab2ed1b8221c75a366e0cc93851cf98d6f490",
+        "status": "modified",
+        "additions": 23,
+        "deletions": 3,
+        "changes": 26
+      },
+      {
+        "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+        "sha": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+        "status": "added",
+        "additions": 153,
+        "deletions": 0,
+        "changes": 153
+      },
+      {
+        "path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+        "sha": "ed07ba4eed573d659dfdf647b1aab241a28e4b46",
+        "status": "added",
+        "additions": 284,
+        "deletions": 0,
+        "changes": 284
+      }
+    ],
+    "non_lock_changed_lines": 497
+  },
+  {
+    "stage": "WindowsAclIdempotency",
+    "commit": "bb5d1316a84a710898156ffcb862ba07267c7af7",
+    "parent": "b141e287b7c1c581b7e57bf7f3a5722f8bd42b79",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "files": [
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+        "sha": "53c7053c5880da13640f3bd777998b6998da6d47",
+        "status": "modified",
+        "additions": 3,
+        "deletions": 63,
+        "changes": 66
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+        "sha": "3aeb65179f1a8bc77f0314974efdcf8940e5a1f6",
+        "status": "added",
+        "additions": 196,
+        "deletions": 0,
+        "changes": 196
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+        "sha": "31db071d8a2fe2de3e9e9f37cb245a0757ecb973",
+        "status": "modified",
+        "additions": 150,
+        "deletions": 0,
+        "changes": 150
+      }
+    ],
+    "non_lock_changed_lines": 412
+  },
+  {
+    "stage": "WindowsTokenDeleteMatrix",
+    "commit": "fec05bab68c2de0472f6d9bd73727b4a48dc8a96",
+    "parent": "bb5d1316a84a710898156ffcb862ba07267c7af7",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "files": [
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+        "sha": "e3c999e68382837bde16e2621de94bcb83509bc8",
+        "status": "added",
+        "additions": 306,
+        "deletions": 0,
+        "changes": 306
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+        "sha": "f7b90d6f2d3ecad07f487e05932431c979450c77",
+        "status": "modified",
+        "additions": 4,
+        "deletions": 0,
+        "changes": 4
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "sha": "d406532fd3b69bc4a3635963022365aaec93280e",
+        "status": "modified",
+        "additions": 67,
+        "deletions": 0,
+        "changes": 67
+      }
+    ],
+    "non_lock_changed_lines": 377
+  },
+  {
+    "stage": "WindowsLegacyDeleteMatrix",
+    "commit": "104d2b187457897f595aab7a70559a85b499339f",
+    "parent": "fec05bab68c2de0472f6d9bd73727b4a48dc8a96",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "files": [
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+        "sha": "4727675e9b85d75bfbe1de175571bcc481906353",
+        "status": "added",
+        "additions": 106,
+        "deletions": 0,
+        "changes": 106
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+        "sha": "aea1ff8476ab8ce33642677a36b1609054888a4e",
+        "status": "modified",
+        "additions": 3,
+        "deletions": 0,
+        "changes": 3
+      }
+    ],
+    "non_lock_changed_lines": 109
+  },
+  {
+    "stage": "WindowsSuccessRetention",
+    "commit": "ccf0f78ce84caf5dde40e639d45a91a737096df6",
+    "parent": "104d2b187457897f595aab7a70559a85b499339f",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "files": [
+      {
+        "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+        "sha": "5427be6c1f37bd7c302d808c2e4f194727abe700",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1
+      }
+    ],
+    "non_lock_changed_lines": 1
+  }
+]

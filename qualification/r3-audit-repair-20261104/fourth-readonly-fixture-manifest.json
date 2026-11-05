@@ -1,0 +1,191 @@
+{
+  "schema": "hepta.owning7-readonly-snapshot-fixture-repair.v1",
+  "status": "STATIC_CANDIDATE_NOT_APPLIED_NOT_EXECUTED",
+  "source_base_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "observed_native_tree": "e84c2f12e39022701c8a942343b3913faa62cf31",
+  "path": "codex-rs/exec-server/tests/exec_process.rs",
+  "preimage": {
+    "blob": "82fc6590f5174599b5b3b9896920d53cf608510f",
+    "bytes": 62025,
+    "sha256": "40a210ce7d533746d95c184844fe3425c9d52aec6911dddf810200549691ce93"
+  },
+  "postimage": {
+    "path": "codex-rs/exec-server/tests/exec_process.rs",
+    "blob": "7794052d69fa71dcea99dfd9425654e3cc6ceadb",
+    "bytes": 62591,
+    "sha256": "c7e2df70f5c08b88ecc61941fc940b047deea571a70972f42f82b7859cbbc8f2"
+  },
+  "patch": {
+    "blob": "3807b516e5818b9ee3f1be98e24a89a97e0c96fe",
+    "bytes": 2378,
+    "sha256": "495fe6939cbf85cec456c30292637ee60b8270f2671b96ab461eea4670701b9b"
+  },
+  "line_changes": {
+    "added": 18,
+    "removed": 3
+  },
+  "reconstruction": [
+    {
+      "path": "codex-rs/exec-server/tests/exec_process.rs",
+      "hunks": 3,
+      "exact_reconstructed": true
+    }
+  ],
+  "source_anchors": [
+    {
+      "path": "codex-rs/exec-server/tests/exec_process.rs",
+      "blob": "82fc6590f5174599b5b3b9896920d53cf608510f",
+      "bytes": 62025,
+      "sha256": "40a210ce7d533746d95c184844fe3425c9d52aec6911dddf810200549691ce93",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785"
+    },
+    {
+      "path": "codex-rs/exec-server/src/shell_snapshot.rs",
+      "blob": "e352d63641c9aba6f201ebb34ebb6d433f24c080",
+      "bytes": 11746,
+      "sha256": "bae797689be9f48fc85572ff9ebd09bc9d6f3e5b171caa4bdd9f8637c695298c",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785"
+    },
+    {
+      "path": "codex-rs/exec-server/src/local_process.rs",
+      "blob": "927276f36e75669c7b44384075d8c0d1e98a634e",
+      "bytes": 72783,
+      "sha256": "b31c2b41edcf71a8f6abebfb078d5a036b01ee24efc0fcd266da5709958bc96b",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785"
+    },
+    {
+      "path": "codex-rs/exec-server/src/process_sandbox.rs",
+      "blob": "0bf5853a1d82df037d406fdffbe31d6bada1b2b4",
+      "bytes": 14720,
+      "sha256": "0bfa0326269aafbd3578e17d3f56eb0c19e73653cd89142a288fc1d45677cd04",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785"
+    },
+    {
+      "path": "codex-rs/shell-command/src/shell_snapshot.rs",
+      "blob": "d0cf01c3b3a36cbc2560f6c4da735e5c1884bd6a",
+      "bytes": 6529,
+      "sha256": "d02c6c2ec5c8a6f7e8bbdcdf99d05faa6168b6d9e468c546d3cb32f585b139f8",
+      "ref": "cabcb40d36e116beaa65750e1f674c52035da785"
+    }
+  ],
+  "baseline": {
+    "projection_blob": "023d6a14b4e8ad37157dc9162d820dc3d6cd6473",
+    "source_tree": "e84c2f12e39022701c8a942343b3913faa62cf31",
+    "case": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox",
+    "classname": "codex-exec-server::exec_process",
+    "elapsed_seconds": 0.278,
+    "retries": 0,
+    "junit_member": {
+      "name": "10.testcase.xml",
+      "bytes": 2187,
+      "sha256": "514c65303bff11a1db0c7bdca16effa1260b5eafb90ccc9c4be68743ff02ca4b"
+    },
+    "raw_member": {
+      "name": "10-raw-0.log",
+      "bytes": 1195,
+      "sha256": "cc332f86c8819f8288c9e587435601724d1316b932b7d38d2c24c185cefff01d"
+    },
+    "observed": "The returned process result has empty stdout, a .bashrc captures redirection read-only filesystem error, exit 41 and closed=true, rather than the full expected tuple.",
+    "limit": "This raw result does not identify the internal capture-versus-restore step that produced exit 41. This proposal corrects two independently established fixture conflicts; it does not claim to have demonstrated every internal cause."
+  },
+  "primary_chain": [
+    {
+      "source": "exec-server/src/local_process.rs",
+      "lines": "345-359",
+      "fact": "prepare_exec_request completes first; ShellSnapshotCache::prepare then receives that actual prepared sandbox command."
+    },
+    {
+      "source": "exec-server/src/shell_snapshot.rs",
+      "lines": "92-99 and 119-124",
+      "fact": "Cache identity includes the complete request (scope_id and shell), cwd, env_policy and sandbox. process_id and profile file contents are not cache-key fields."
+    },
+    {
+      "source": "exec-server/src/shell_snapshot.rs",
+      "lines": "207-230",
+      "fact": "Capture clones the prepared command and environment, replacing only its script argument; it runs within the requested sandbox, with capture stderr discarded."
+    },
+    {
+      "source": "exec-server/src/shell_snapshot.rs",
+      "lines": "135-147 and 253-260",
+      "fact": "Nonzero capture status yields an error and the cache preparation falls back without rewriting the original command. The final user process is not guaranteed to report the capture's exit 42."
+    },
+    {
+      "source": "shell-command/src/shell_snapshot.rs",
+      "lines": "90-112",
+      "fact": "The Bash capture script explicitly sources the real HOME/.bashrc when BASH_ENV is empty, then emits actual restorable state."
+    }
+  ],
+  "changes": [
+    {
+      "scope": "Readonly branch only",
+      "change": "Remove the regular-file capture counter from its initial profile; preserve all profile functions, secret/denied export fixtures and shadowed builtins."
+    },
+    {
+      "scope": "Same restricted cache identity",
+      "change": "Keep read_only for both original requests. The old first-Some/second-None sandbox transition represented two distinct cache keys."
+    },
+    {
+      "scope": "Physical poison after first result",
+      "change": "Only after the unchanged first complete tuple passes, the test parent writes exit 42 to the real profile and prints a fixed phase marker. The second original tuple must still pass under the same scope, cwd, environment policy and read_only sandbox."
+    },
+    {
+      "scope": "Physical absence",
+      "change": "Readonly branch requires the captures path not to exist; all non-sandbox branches retain the exact original read_to_string(captures)==x assertion. The original no shell_snapshots assertion is unchanged."
+    }
+  ],
+  "preservation": {
+    "original_complete_tuple_assertion_byte_equal": true,
+    "original_expected_stdout_and_command_unchanged": true,
+    "non_sandbox_generated_profile_line_byte_equal": true,
+    "other_test_functions_byte_equal": true,
+    "same_initial_shadowed_builtin_controls": true,
+    "all_original_test_case_annotations": true,
+    "production_unmodified": true,
+    "no_added_writable_roots": true,
+    "no_capture_outside_requested_sandbox": true,
+    "no_new_dependency_or_lock": true,
+    "no_retry_skip_timeout_filter_change": true
+  },
+  "counterfactual": {
+    "status": "UNEXECUTED_SINGLE_KEY_DIFFERENCE_CONTROL",
+    "postimage": {
+      "path": "codex-rs/exec-server/tests/exec_process.rs",
+      "blob": "7027153a35a377ba9bbea3ddce2b923b01857b49",
+      "bytes": 62745,
+      "sha256": "bbb6c1ad9d59391521350b1dff4c7d01185dfc7b31651190cae9f21700b4f6c6"
+    },
+    "increment_from_candidate": {
+      "blob": "1fc23a67ebccd09ac3ac51d60189001d2d4324ea",
+      "bytes": 793,
+      "sha256": "4919447ab8aa419118a7e8fdba944ab4cc2aa81173fc7e04b6d651fccc570152"
+    },
+    "reconstruction": [
+      {
+        "path": "codex-rs/exec-server/tests/exec_process.rs",
+        "hunks": 1,
+        "exact_reconstructed": true
+      }
+    ],
+    "only_change": "For the readonly branch, first scope remains attachment-1 and second becomes attachment-2; every other request/cache field, profile poison and assertion is unchanged.",
+    "valid_negative": "The first original complete tuple must pass and shell_snapshot_readonly_phase: first_result_verified_profile_poisoned must appear. Then the second original tuple must fail after the real new scope triggers a fresh capture of the poisoned profile.",
+    "invalid_negative": "A failure before that marker, an early skip, a setup error, or a mere aggregate FAIL without the targeted second tuple is not causal evidence.",
+    "no_assumed_exit_code": "Do not require final exit 42: capture failures deliberately fall back to the original /bin/bash -lc command. The original full tuple is the real oracle."
+  },
+  "qualification": {
+    "executed": false,
+    "fmt_executed": false,
+    "exact_case_command": "just test -p codex-exec-server --test exec_process -E 'test(=shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox)' --retries 0",
+    "original_matrix_command": "just test -p codex-exec-server --test exec_process -E 'test(shell_snapshot_v2_filters_profile_exports_and_stays_in_memory)' --retries 0",
+    "declared_matrix": {
+      "linux": 8,
+      "macos": 11,
+      "limit": "Derived from unchanged test_case attributes only; sole native catalog and full JUnit determine actual execution."
+    },
+    "expected_sequence": "The sole mutator verifies preimage; executes the one-field counterfactual with original selector; restores candidate; runs the unchanged matrix. Preserve original e84 failure and every new result separately. A remaining positive failure requires further diagnosis, not a relaxed assertion."
+  },
+  "limits": [
+    "The proposal is test-only. It does not move profile execution outside read_only enforcement or bypass production fallback/caching.",
+    "The original readonly regular-file counter cannot measure capture count under a genuine read_only policy. The physical poison and unchanged complete result supply a compatible cache-reuse oracle.",
+    "No claim that native, Linux, macOS or final combined qualification has passed; no source/ref/native mutation was performed."
+  ]
+}

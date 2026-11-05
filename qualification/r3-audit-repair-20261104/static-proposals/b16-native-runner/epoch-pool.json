@@ -1,0 +1,117 @@
+{
+  "epoch": "pool",
+  "operations": [
+    {
+      "kind": "apply",
+      "delta": "pool-binding"
+    },
+    {
+      "kind": "negative",
+      "id": "B16_pool_binding_negative",
+      "before": [
+        "pool-patch"
+      ],
+      "restore": "pool-restore",
+      "scopes": [
+        {
+          "label": "B16_pool_binding_negative-codex-state",
+          "package": "codex-state",
+          "exact_names": [
+            "sqlite::native_custody_tests::guarded_pool_retains_custody_when_native_open_is_cancelled",
+            "sqlite::native_custody_tests::coordinated_pool_retains_custody_when_initial_pragma_is_cancelled"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-state",
+            "--lib",
+            "--locked",
+            "--retries",
+            "0",
+            "-E",
+            "test(=sqlite::native_custody_tests::guarded_pool_retains_custody_when_native_open_is_cancelled) | test(=sqlite::native_custody_tests::coordinated_pool_retains_custody_when_initial_pragma_is_cancelled)"
+          ],
+          "oracle": "pool",
+          "supports": [
+            "sqlite::native_custody_tests::owned_state_scenario"
+          ]
+        },
+        {
+          "label": "B16_pool_binding_negative-codex-hepta-memory",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "production_writer::objective_sender::connection_custody_tests::native_custody_survives_removal_of_both_registered_anchors"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "--locked",
+            "--retries",
+            "0",
+            "-E",
+            "test(=production_writer::objective_sender::connection_custody_tests::native_custody_survives_removal_of_both_registered_anchors)"
+          ],
+          "oracle": "pool",
+          "supports": []
+        }
+      ]
+    },
+    {
+      "kind": "scopes",
+      "id": "B16_pool_binding_fixed",
+      "before": [],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B16_pool_binding_fixed-codex-state",
+          "package": "codex-state",
+          "exact_names": [
+            "sqlite::native_custody_tests::guarded_pool_retains_custody_when_native_open_is_cancelled",
+            "sqlite::native_custody_tests::coordinated_pool_retains_custody_when_initial_pragma_is_cancelled"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-state",
+            "--lib",
+            "--locked",
+            "--retries",
+            "0",
+            "-E",
+            "test(=sqlite::native_custody_tests::guarded_pool_retains_custody_when_native_open_is_cancelled) | test(=sqlite::native_custody_tests::coordinated_pool_retains_custody_when_initial_pragma_is_cancelled)"
+          ],
+          "oracle": null,
+          "supports": [
+            "sqlite::native_custody_tests::owned_state_scenario"
+          ]
+        },
+        {
+          "label": "B16_pool_binding_fixed-codex-hepta-memory",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "production_writer::objective_sender::connection_custody_tests::native_custody_survives_removal_of_both_registered_anchors"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "--locked",
+            "--retries",
+            "0",
+            "-E",
+            "test(=production_writer::objective_sender::connection_custody_tests::native_custody_survives_removal_of_both_registered_anchors)"
+          ],
+          "oracle": null,
+          "supports": []
+        }
+      ]
+    }
+  ]
+}

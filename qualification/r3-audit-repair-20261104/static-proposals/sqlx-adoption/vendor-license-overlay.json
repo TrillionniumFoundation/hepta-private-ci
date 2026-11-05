@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.sqlx.vendor-license-overlay.v1",
+  "status": "SOURCE_ONLY_MECHANICAL_OVERLAY",
+  "files": [
+    {
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/LICENSE-APACHE",
+      "original_archive": {
+        "mode": "100755",
+        "blob": "965b606f331b51d566b46025f9ff311a7aad0c12",
+        "bytes": 17,
+        "sha256": "154397a08d0cb342110281129971868cd562542d0780b0d10722788cd11a1399"
+      },
+      "vendor_overlay": {
+        "mode": "100644",
+        "blob": "e14699fb149e0b5cd2f2aa206d7bc4d5f8828fc3",
+        "bytes": 10297,
+        "sha256": "c8f5453612253e8ea8bad241617fe74c4a6d5d592ba64ff881668c211b50ac99"
+      },
+      "full_text_source": {
+        "repository": "transact-rs/sqlx",
+        "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+        "path": "LICENSE-APACHE"
+      }
+    },
+    {
+      "path": "codex-rs/third_party/sqlx-sqlite-0.9.0/LICENSE-MIT",
+      "original_archive": {
+        "mode": "100755",
+        "blob": "76219eb72e8524f15c21ec93b9b2592da49b5460",
+        "bytes": 14,
+        "sha256": "72af89a828df52a9dcc42512ed64663b3b8d7961dd7a5586d44478eede82bc7a"
+      },
+      "vendor_overlay": {
+        "mode": "100644",
+        "blob": "6fe828e8eab3262db2dd59e567e3b35d8aea0f66",
+        "bytes": 1109,
+        "sha256": "5abbdd842310c8f1650fcde3a5a51a3e09412b9e5a6eea87519e0db9e32b339d"
+      },
+      "full_text_source": {
+        "repository": "transact-rs/sqlx",
+        "ref": "003b698e99e024f3621b8043a2426fde5b741171",
+        "path": "LICENSE-MIT"
+      }
+    }
+  ],
+  "patch": {
+    "blob": "f62e4cefff604511dec34d1e2edd103863eb2b90",
+    "bytes": 12230,
+    "sha256": "e9d3c088a3166ad60667d173136f9f5169b5acedb8a819b3039652a3100ea8c4"
+  },
+  "scope": "Original archive bytes/modes remain independently preserved. These two full upstream license texts replace the original package reference-text bytes only in the product vendor copy; no claim of original package byte equality. Source/license regular files are mechanically normalized to mode100644. No native build or lock generation."
+}

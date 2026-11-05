@@ -1,0 +1,529 @@
+{
+  "schema": "hepta.app_parent_liveness.independent_static_reconstruction.v1",
+  "verified_at_utc": "2026-11-05T03:05:05.173959+00:00",
+  "production_patch": {
+    "blob": "e2b969abb65142171c003fea64399c7c61363a3a",
+    "bytes": 14407,
+    "sha256": "b14f75492815dfdbbecd8b1ac28e990d51628eb31b9acb7615f1e73f514f794e"
+  },
+  "full_patch": {
+    "path": "full.patch",
+    "blob": "5847179e988ea0719766cd25be293e09efd882c3",
+    "bytes": 27742,
+    "sha256": "85edd8c88956ed3d27f7a90a5793cdf38f3c61c1c78043fa14ece1028542dd73",
+    "additions": 492,
+    "deletions": 6
+  },
+  "source_files": [
+    {
+      "path": "codex-rs/linux-sandbox/src/launcher.rs",
+      "before": {
+        "blob": "d4e9b521bf93f0861cf497c3153a9efdc6e3c67b",
+        "bytes": 16007,
+        "sha256": "bf1d23f8020d4e73f7a3e235165f0953154170256a92cf0c8254e5ab32578f91"
+      },
+      "after": {
+        "blob": "a1d761fba56d6b1653598e82f5d5d81207719ef5",
+        "bytes": 17189,
+        "sha256": "4c8c80c86477b6bbfdc002eee06c3d70ea09829a92eb079f8d309a13d22ea8bf"
+      }
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/lib.rs",
+      "before": {
+        "blob": "ad442168227e5d52c440f5fc740bbd8cb2746fe7",
+        "bytes": 1024,
+        "sha256": "8735433ac001ab723a01cb21ab27ed085c9c0a89dd28941b7d086cd65e8f3905"
+      },
+      "after": {
+        "blob": "8f704a3156998d169ceee6bd5e93bf549da9c5c0",
+        "bytes": 1074,
+        "sha256": "35302eb707a300f974f3fa6873f82a29a4f1c15fb250b10f57c2b4f5ccd99aba"
+      }
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "before": {
+        "blob": "b50f19732bc0a4744c62f7300f955b9f9d17bf08",
+        "bytes": 55308,
+        "sha256": "3be631c566fbd4cbd08eea042cf425164d01002951b0dcad927c674beb571134"
+      },
+      "after": {
+        "blob": "e8eab2ed1b8221c75a366e0cc93851cf98d6f490",
+        "bytes": 56541,
+        "sha256": "c62b0014d1a539bb0343048fffa5283816f66dd17abcfb089ba3bce60eb247ca"
+      }
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "before": null,
+      "after": {
+        "blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+        "bytes": 7437,
+        "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6"
+      }
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "before": null,
+      "after": {
+        "blob": "0293bce3c08720952fd3413c92c4e9a033da3d03",
+        "bytes": 12752,
+        "sha256": "cbd431000c30fa687422dbed660235edb16c4ce50b6f62c87def5e2957b2487e"
+      }
+    }
+  ],
+  "commands": [
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/production.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/production.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/controls.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/controls.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/no_exit_rejection-negative.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/no_exit_rejection-negative.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/no_exit_rejection-restore.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/no_exit_rejection-restore.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/no_rearm-negative.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/no_rearm-negative.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/no_rearm-restore.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/no_rearm-restore.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/leaked_parent_fd-negative.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/leaked_parent_fd-negative.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/leaked_parent_fd-restore.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/serial",
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/leaked_parent_fd-restore.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/full",
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/full",
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "directory": "final-reconstruction/full",
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/frozen-final/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "negative_and_restore": [
+    {
+      "control": "no_exit_rejection",
+      "negative_exact": true,
+      "restore_exact_all_five": true
+    },
+    {
+      "control": "no_rearm",
+      "negative_exact": true,
+      "restore_exact_all_five": true
+    },
+    {
+      "control": "leaked_parent_fd",
+      "negative_exact": true,
+      "restore_exact_all_five": true
+    }
+  ],
+  "verified_primary_sources": [
+    {
+      "key": "base419",
+      "repository": "torvalds/linux",
+      "ref": "v4.19",
+      "path": "fs/proc/base.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/proc/base.c",
+      "blob": "7e9f07bf260d20bb0a0cd4cd6b6b4abe82b23e20",
+      "bytes": 88166,
+      "sha256": "b7ad40f8b47c782ff758dc815fe1d247bbeb848b240477f802f02f91351cf382",
+      "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/proc/base.c",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "key": "array419",
+      "repository": "torvalds/linux",
+      "ref": "v4.19",
+      "path": "fs/proc/array.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/proc/array.c",
+      "blob": "0ceb3b6b37e7310ed12d8d7f4215efe3b4c8a0a8",
+      "bytes": 21289,
+      "sha256": "17920836962650cc030fd3e0a62053e614fd4b58e78262975455c94421648b32",
+      "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/proc/array.c",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "key": "inode419",
+      "repository": "torvalds/linux",
+      "ref": "v4.19",
+      "path": "fs/proc/inode.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/proc/inode.c",
+      "blob": "fc5306a31a1d8b489dc16483d79cf83b6445f387",
+      "bytes": 13428,
+      "sha256": "1d1d8bd5788df1005480f30d2692d0998c09debd006bbcd0f4e5917f45eea425",
+      "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/proc/inode.c",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "key": "internal419",
+      "repository": "torvalds/linux",
+      "ref": "v4.19",
+      "path": "fs/proc/internal.h",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/proc/internal.h",
+      "blob": "5185d7f6a51ee845fc12c6d49d4497d766af6c23",
+      "bytes": 9030,
+      "sha256": "0cb1f72252809eab0fc08f48623d735b53e69a3901822d10aa4fbcf21fba1bc3",
+      "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/proc/internal.h",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "key": "exit419",
+      "repository": "torvalds/linux",
+      "ref": "v4.19",
+      "path": "kernel/exit.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/kernel/exit.c",
+      "blob": "0e21e6d21f35f884f5b89b4237bd0be4f2b8a085",
+      "bytes": 45270,
+      "sha256": "02c927d08dc611f49b3daea70b5439b2737865a0cf3345588d901bd78c466258",
+      "source_url": "https://github.com/torvalds/linux/blob/v4.19/kernel/exit.c",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "key": "sched419",
+      "repository": "torvalds/linux",
+      "ref": "v4.19",
+      "path": "include/linux/sched.h",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/include/linux/sched.h",
+      "blob": "977cb57d7bc9e7183e6ca628e4f75d236ddf3951",
+      "bytes": 53091,
+      "sha256": "77f38328d63059101794ddd304bd734419a5da088bd769ab9bb4462291dac960",
+      "source_url": "https://github.com/torvalds/linux/blob/v4.19/include/linux/sched.h",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "key": "seq419",
+      "repository": "torvalds/linux",
+      "ref": "v4.19",
+      "path": "fs/seq_file.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/seq_file.c",
+      "blob": "1dea7a8a52550e234ce3c05565ad8cfa56eeb1f2",
+      "bytes": 24974,
+      "sha256": "886c5d712fc10aff2e495a3611163e8f88725d098656d0531440d4622f89731f",
+      "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/seq_file.c",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "key": "base612",
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "fs/proc/base.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/proc/base.c",
+      "blob": "b31283d81c52ea2a984519dac166d9bcbb7c99a8",
+      "bytes": 98525,
+      "sha256": "3cd005fa6ce3bd17f10acf67d6e4344013da11b4814a269d239d9c1182ad0c68",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/proc/base.c",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "key": "array612",
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "fs/proc/array.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/proc/array.c",
+      "blob": "34a47fb0c57f2570a4f7cb1f45373ddaf2afa883",
+      "bytes": 23234,
+      "sha256": "23fa35a9e22158c2bee2bf183c748b82438e4919571eac9c04a4028d24764549",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/proc/array.c",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "key": "inode612",
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "fs/proc/inode.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/proc/inode.c",
+      "blob": "626ad7bd94f244e7e1bd25365e5a31908cb4d72a",
+      "bytes": 17075,
+      "sha256": "78b824230254ddee8739303b602162dcbd07ec5ded91b07d8959724aad404e8b",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/proc/inode.c",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "key": "internal612",
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "fs/proc/internal.h",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/proc/internal.h",
+      "blob": "87e4d62820252016bdff5e00c34229d8848902b9",
+      "bytes": 10661,
+      "sha256": "4614df01bc2ccc7b77b90e74e83d085d52fde7f92413499aff3792f87037141a",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/proc/internal.h",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "key": "exit612",
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "kernel/exit.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/kernel/exit.c",
+      "blob": "619f0014c33be4c88f7d110622124cb5a489e532",
+      "bytes": 49803,
+      "sha256": "7c28bfc644117470b9cbe6d46c84580de98225755bbb227e61d638ea7104025d",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/kernel/exit.c",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "key": "sched612",
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "include/linux/sched.h",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/include/linux/sched.h",
+      "blob": "bb343136ddd05d178f9ca03d797c1da1ef5496d3",
+      "bytes": 64069,
+      "sha256": "a0b8b99bb7608ab3d0b4f86b2ac416ce233b7f03821d26d4cd2f191bd29e489c",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/include/linux/sched.h",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "key": "seq612",
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "fs/seq_file.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/seq_file.c",
+      "blob": "e676c8b0cf5d8af861724222c006c67d908c2849",
+      "bytes": 26177,
+      "sha256": "51611d69c6eb1526c9c1365a08bf0d5fa66957ddf4904a8e843da6525e6977b5",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/seq_file.c",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/primary/bubblewrap-v0.11.1.c.txt",
+      "bytes": 116430,
+      "sha256": "e81e833751d3d247d72dff1ad1792ca72939fa6956974dde2cb86f9f1b0a2bb3",
+      "blob": "687ed71f7044ca997a100eef847a5de71164581b",
+      "independently_verified_bytes_sha256_git_blob": true
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/app-parent-liveness-independent-review-20261105/primary/bundled_bwrap.rs.txt",
+      "bytes": 11001,
+      "sha256": "6d57a035029048db8aeabed4a56c18f7fc72017dafb9ce61a53bd1b384e49566",
+      "blob": "61d10547d3b3eb499f8b8a06d6444845c4ff7f93",
+      "independently_verified_bytes_sha256_git_blob": true
+    }
+  ],
+  "checks": {
+    "serial_production_and_controls_exact_five_postimages": true,
+    "full_patch_exact_five_postimages": true,
+    "original_legacy_launcher_tail_byte_equal": true,
+    "original_inner_command_builder_byte_equal": true,
+    "original_command_fork_signal_wait_block_byte_equal": true,
+    "original_capability_check_block_byte_equal_and_precedes_new_custody_check": true,
+    "new_guard_arm_then_first_read_then_consuming_return_before_user_fork": true,
+    "low_standard_descriptor_promotion_present": true
+  },
+  "prior_verifier_failure_preserved": {
+    "path": "patch-format-diagnostic.json",
+    "bytes": 737,
+    "sha256": "22a17bd77b4c564843a8d4902a97d17f11e88542ae49caf86fdb2722e53bdc4b",
+    "blob": "e3af04e8e4ab2160dd0706deb12a5e7eeef18353"
+  },
+  "limits": [
+    "Only Git apply and source/body verification ran in isolated cloud directories.",
+    "No Rust formatting, compilation, Cargo/Bazel/native process, or product test executed by this reviewer.",
+    "No shared source/index/target or external ref changed."
+  ]
+}

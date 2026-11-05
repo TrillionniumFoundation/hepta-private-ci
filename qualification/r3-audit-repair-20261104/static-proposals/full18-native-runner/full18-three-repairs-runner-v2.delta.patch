@@ -1,0 +1,61 @@
+--- bd0e2174-approved-review-input.py
++++ full18-three-repairs-runner-v2.py
+@@ -160,8 +160,16 @@
+  assert review["exit_code"]==100 and len(review["cases"])==1 and review["cases"][0]["result"]=="FAIL"
+  failure=clean_ansi(review["cases"][0]["failure"]);proof={"kind":kind,"source":source,"case":review["cases"][0],"original_exit":review["exit_code"],"raw_sha256":review["raw"]["sha256"]}
+  if kind=="skills":
+-  outer=re.search(r'"([^"\n]+/outer)/\.agents/skills"',failure)
+-  conditions={"original_assertion_location":"ext/skills/src/host_roots_tests.rs:441:" in failure,"exact_vector_assertion":"assertion failed:" in failure and "Diff < left / right >" in failure,"controlled_outer_root":outer is not None,"original_cwd_root":bool(outer and outer.group(1)+"/nested/inner/.agents/skills" in failure),"not_timeout":"TIMEOUT" not in raw}
++  diff=failure.split("Diff < left / right >",1)[1] if "Diff < left / right >" in failure else ""
++  diff=diff.split("\n\n",1)[0]
++  left_lines=[line for line in diff.splitlines() if not line.lstrip().startswith(">")]
++  added_lines=[line for line in left_lines if line.lstrip().startswith("<")]
++  left_paths=re.findall(r'"([^"\n]+/\.agents/skills)"',"\n".join(left_lines))
++  added_paths=re.findall(r'"([^"\n]+/\.agents/skills)"',"\n".join(added_lines))
++  outer=left_paths[0][:-len("/.agents/skills")] if left_paths and left_paths[0].endswith("/outer/.agents/skills") else None
++  expected_paths=[outer+"/.agents/skills",outer+"/nested/inner/.agents/skills"] if outer else []
++  proof["actual_left_vector_paths"]=left_paths;proof["added_left_paths"]=added_paths
++  conditions={"original_assertion_location":"ext/skills/src/host_roots_tests.rs:441:" in failure,"exact_vector_assertion":"assertion failed:" in failure and "Diff < left / right >" in failure,"controlled_outer_added":bool(outer and expected_paths[0] in added_paths),"exact_actual_ordered_outer_and_cwd":bool(outer and left_paths==expected_paths),"not_timeout":"TIMEOUT" not in raw}
+  elif kind=="migration":
+   conditions={"child_original_assertion_location":"external-agent-migration/src/service_tests/plugins/marketplaces.rs:588:" in raw,"child_original_equality":"assertion failed:" in raw and "Diff < left / right >" in raw,"original_inferred_name":'"claude-plugins-official"' in raw,"child_one_failed":"test result: FAILED. 0 passed; 1 failed; 0 ignored;" in raw,"parent_reports_child_failure":"isolated import assertions failed" in raw,"not_timeout":"TIMEOUT" not in raw}
+  else:raise AssertionError("unexpected negative kind")
+@@ -170,6 +178,24 @@
+  return proof
+ def require_pass(review):
+  assert review["exit_code"]==0 and all(x["result"]=="PASS" for x in review["cases"]),"positive scope failed"
++def run_negative_and_restore(kind,scope,restore_stage):
++ primary=None;proof=None;restored=False;original_exception=None;restore_exception=None
++ try:
++  review,raw=run_scope(scope);proof=qualify_negative(kind,review,raw)
++ except BaseException as e:
++  primary=e;original_exception={"type":type(e).__name__,"message":str(e),"traceback":"".join(traceback.format_exception(type(e),e,e.__traceback__))}
++ finally:
++  try:
++   assert source==restore_stage["before_tree"],"not the owned negative tree; refusing restoration"
++   guard(kind+"-negative-finally-restore-eligible")
++   apply_stage(restore_stage);restored=True
++  except BaseException as e:
++   restore_exception={"type":type(e).__name__,"message":str(e),"traceback":"".join(traceback.format_exception(type(e),e,e.__traceback__))}
++   if primary is None:primary=e
++  save(kind+"-negative-finally-restore.json",{"negative_tree":restore_stage["before_tree"],"positive_tree":restore_stage["after_tree"],"actual_source_at_return":source,"restored_exact_positive":restored,"original_exception":original_exception,"restoration_exception":restore_exception,"negative_qualified":bool(proof and proof["qualified"]),"positive_tests_allowed":bool(restored and primary is None and proof and proof["qualified"]),"contract":"Restore only after exact owned-negative source, ordinary index, locks and untracked-input guards pass. An invalid negative remains invalid and stops after restoration; external drift is never overwritten."})
++ if primary is not None:raise primary
++ assert restored and proof and proof["qualified"]
++ return proof
+ def install_bazel():
+  pin=approved["bazel_bootstrap"];directory=out/"official-bazel";directory.mkdir(exist_ok=False)
+  assert (tree/".bazelversion").read_text()=="9.3.0\n"
+@@ -236,10 +262,10 @@
+  guard("initial")
+  git_program=pathlib.Path(shutil.which("git",path=env["PATH"]));save("native-host-and-tools.json",{"observed_at":now(),"uname":subprocess.run(["uname","-srm"],capture_output=True,text=True,check=True).stdout,"rustc_vv":subprocess.run(["rustc","-vV"],env=env,capture_output=True,text=True,check=True).stdout,"git_program":rec(git_program),"target":str(target),"old_target_untouched":str(root/"target"),"disk":dict(zip(("total","used","free"),shutil.disk_usage(tree)))})
+  stages=approved["stages"];scopes=approved["scopes"]
+- apply_stage(stages[0]);r,raw=run_scope(scopes[0]);skills_proof=qualify_negative("skills",r,raw)
+- apply_stage(stages[1]);r,raw=run_scope(scopes[1]);require_pass(r)
+- apply_stage(stages[2]);r,raw=run_scope(scopes[2]);migration_proof=qualify_negative("migration",r,raw)
+- apply_stage(stages[3]);r,raw=run_scope(scopes[3]);require_pass(r)
++ apply_stage(stages[0]);skills_proof=run_negative_and_restore("skills",scopes[0],stages[1])
++ r,raw=run_scope(scopes[1]);require_pass(r)
++ apply_stage(stages[2]);migration_proof=run_negative_and_restore("migration",scopes[2],stages[3])
++ r,raw=run_scope(scopes[3]);require_pass(r)
+  assert "test result: ok. 1 passed; 0 failed; 0 ignored;" in raw,"original migration child output missing"
+  apply_stage(stages[4])
+  install_bazel();generate_module_lock()

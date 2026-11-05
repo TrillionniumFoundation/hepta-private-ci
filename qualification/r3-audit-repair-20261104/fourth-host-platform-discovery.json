@@ -1,0 +1,188 @@
+{
+  "schema": "hepta.configured-host-original-platform-discovery.v1",
+  "observed_at": "2026-11-05T00:41:33.191466+00:00",
+  "scope": "Read-only configured capabilities and typed hardware snapshots; no process_start/shell_start, build, test, native job or configuration change",
+  "configured_host_count": 7,
+  "configured_windows_aliases": [],
+  "configured_but_not_probed": [
+    "rog"
+  ],
+  "probed_alias_count": 6,
+  "typed_hardware_snapshots_successful": 6,
+  "actual_intel_macos_aliases": [],
+  "actual_windows_aliases": [],
+  "actual_arm_macos_aliases": [
+    "mac",
+    "main"
+  ],
+  "config_original": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/host-platform-discovery/host-list-and-effective-config-20261105.json",
+    "bytes": 7747,
+    "sha256": "f2ae8ace7c853c7d18d00cae3857ae0c4a9780a84cedb9f3fe5fbb3b3a925d81",
+    "blob": "7af1d6398da5e26ef921d57d86bb0df2c9406334"
+  },
+  "hosts": [
+    {
+      "alias": "mac",
+      "configured_platform": "macos",
+      "observed_platform": "darwin",
+      "machine": "arm64",
+      "cpu": "Apple M5",
+      "kernel": "25.6.0",
+      "memory_report": {
+        "exit_code": 0,
+        "stderr": "",
+        "stdout": "34359738368"
+      },
+      "sampled_at_unix_ms": 1793838787228,
+      "sampled_at_utc": "2026-11-05T00:33:07.228000+00:00",
+      "original_sdk_payload": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/host-platform-discovery/mac-hardware-original-sdk-payload.json",
+        "bytes": 732,
+        "sha256": "4c344b8b2c5a266d36f3e65b5b0356f00258651370007d6f4efdda05e404e0e3",
+        "blob": "6ba910d0137d4de203bf7cd62532f01cad396c2f"
+      },
+      "original_payload_transport_sha256_verified": true,
+      "operation_result_eof_and_total_bytes_verified": true,
+      "is_intel_macos": false,
+      "is_native_windows": false
+    },
+    {
+      "alias": "main",
+      "configured_platform": "macos",
+      "observed_platform": "darwin",
+      "machine": "arm64",
+      "cpu": "Apple M5",
+      "kernel": "25.6.0",
+      "memory_report": {
+        "exit_code": 0,
+        "stderr": "",
+        "stdout": "34359738368"
+      },
+      "sampled_at_unix_ms": 1793838783407,
+      "sampled_at_utc": "2026-11-05T00:33:03.407000+00:00",
+      "original_sdk_payload": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/host-platform-discovery/main-hardware-original-sdk-payload.json",
+        "bytes": 732,
+        "sha256": "82bc3b1c9577baceb08d287f5367405d4b9a236c7098ada5800986c4ffdaaaa8",
+        "blob": "955a0e4f952098990f49a63c7da1adff27539f99"
+      },
+      "original_payload_transport_sha256_verified": true,
+      "operation_result_eof_and_total_bytes_verified": true,
+      "is_intel_macos": false,
+      "is_native_windows": false
+    },
+    {
+      "alias": "ai395",
+      "configured_platform": "linux",
+      "observed_platform": "linux",
+      "machine": "x86_64",
+      "cpu": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+      "kernel": "7.0.0-38-generic",
+      "memory_report": {
+        "MemAvailable": "36568612 kB",
+        "MemTotal": "128650956 kB",
+        "SwapFree": "4194880 kB",
+        "SwapTotal": "8388604 kB"
+      },
+      "sampled_at_unix_ms": 1793838904325,
+      "sampled_at_utc": "2026-11-05T00:35:04.325000+00:00",
+      "original_sdk_payload": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/host-platform-discovery/ai395-hardware-original-sdk-payload.json",
+        "bytes": 5664,
+        "sha256": "3db2a965315584f32c8456cfc2975ed6ecf4bb5523def038de10d8cf3ec4155f",
+        "blob": "60170c1662bc437b84c3160afa614dd18cb2feaf"
+      },
+      "original_payload_transport_sha256_verified": true,
+      "operation_result_eof_and_total_bytes_verified": true,
+      "is_intel_macos": false,
+      "is_native_windows": false
+    },
+    {
+      "alias": "pocket4",
+      "configured_platform": "linux",
+      "observed_platform": "linux",
+      "machine": "x86_64",
+      "cpu": "AMD Ryzen AI 9 HX 370 w/ Radeon 890M",
+      "kernel": "7.0.0-38-generic",
+      "memory_report": {
+        "MemAvailable": "15604224 kB",
+        "MemTotal": "25739556 kB",
+        "SwapFree": "2021744 kB",
+        "SwapTotal": "16777208 kB"
+      },
+      "sampled_at_unix_ms": 1793838902903,
+      "sampled_at_utc": "2026-11-05T00:35:02.903000+00:00",
+      "original_sdk_payload": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/host-platform-discovery/pocket4-hardware-original-sdk-payload.json",
+        "bytes": 6500,
+        "sha256": "3deed87d27fbadb0831b528c370d3f995d81bd3399379d861024ae2d63068b4a",
+        "blob": "dbc4e04c82febeda609ab8d2ac65c35d74c8e097"
+      },
+      "original_payload_transport_sha256_verified": true,
+      "operation_result_eof_and_total_bytes_verified": true,
+      "is_intel_macos": false,
+      "is_native_windows": false
+    },
+    {
+      "alias": "desktop",
+      "configured_platform": "linux",
+      "observed_platform": "linux",
+      "machine": "x86_64",
+      "cpu": "Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz",
+      "kernel": "7.0.0-38-generic",
+      "memory_report": {
+        "MemAvailable": "90069844 kB",
+        "MemTotal": "131760804 kB",
+        "SwapFree": "42492 kB",
+        "SwapTotal": "8388604 kB"
+      },
+      "sampled_at_unix_ms": 1793838991859,
+      "sampled_at_utc": "2026-11-05T00:36:31.859000+00:00",
+      "original_sdk_payload": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/host-platform-discovery/desktop-hardware-original-sdk-payload.json",
+        "bytes": 7170,
+        "sha256": "8499ac4f497b44ccd08abf7a467232729a5c46d8a195aa3dd8e8efb113f46389",
+        "blob": "4fd48f0ad65a3ef858c5c96ba385d5cc41788983"
+      },
+      "original_payload_transport_sha256_verified": true,
+      "operation_result_eof_and_total_bytes_verified": true,
+      "is_intel_macos": false,
+      "is_native_windows": false
+    },
+    {
+      "alias": "x230",
+      "configured_platform": "linux",
+      "observed_platform": "linux",
+      "machine": "x86_64",
+      "cpu": "Intel(R) Core(TM) i5-3230M CPU @ 2.60GHz",
+      "kernel": "6.8.0-142-generic",
+      "memory_report": {
+        "MemAvailable": "3489068 kB",
+        "MemTotal": "7824912 kB",
+        "SwapFree": "7237768 kB",
+        "SwapTotal": "10485752 kB"
+      },
+      "sampled_at_unix_ms": 1793838992877,
+      "sampled_at_utc": "2026-11-05T00:36:32.877000+00:00",
+      "original_sdk_payload": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/host-platform-discovery/x230-hardware-original-sdk-payload.json",
+        "bytes": 4941,
+        "sha256": "2ab2d459b6cc91bd051fb8ac12e9dd7d59baef045a0c32379255caccec530b86",
+        "blob": "0ef1e230de2d31c4a64d0d9b7560cd6586ea8cf0"
+      },
+      "original_payload_transport_sha256_verified": true,
+      "operation_result_eof_and_total_bytes_verified": true,
+      "is_intel_macos": false,
+      "is_native_windows": false
+    }
+  ],
+  "conclusion": "No configured/probed alias currently supplies native Intel macOS or Windows. The two macOS aliases report Apple M5 arm64. Linux Intel hosts do not qualify either target OS.",
+  "limitations": [
+    "Configuration flags alone do not prove reachability, build prerequisites, workspace/SDK/toolchain readiness or original tests passing",
+    "mac/main report the same hostname/hardware; separate independent machines are not established",
+    "No Windows host outside the configured list is inferred absent; no unconfigured endpoint was probed",
+    "No Rosetta/crosscompile/Wine/VM substitutes were used to claim original Intel macOS or Windows qualification",
+    "The rog alias and ongoing native build target were not queried or altered"
+  ]
+}

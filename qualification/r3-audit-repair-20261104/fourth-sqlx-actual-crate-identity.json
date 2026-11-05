@@ -1,0 +1,1113 @@
+{
+  "schema": "hepta.sqlx.actual-crate-vcs-and-registry-verification.addendum.v2",
+  "status": "ACTUAL_REQUESTED_REGISTRY_FILES_MATCH_FIXED_VCS_AND_RECORDED_ARCHIVE_MEMBERS",
+  "created_at_utc": "2026-11-05 00:54:25 UTC",
+  "repository": "transact-rs/sqlx",
+  "prior_primary_report": {
+    "blob": "da59ec79283bd997502cd57590ce416ca4e4851c",
+    "source_manifest": "cbd90475e362945032b3ad94046f8bc3220550c7",
+    "preserved": true,
+    "original_limit": "The report expressly had not verified the registry archive or extracted native cache. It used the version tag as a fixed primary reference, not a proven installed-package origin."
+  },
+  "observed_registry_report": {
+    "source": "Complete immutable receipt read independently; all 17 embedded file bytes and hashes rechecked.",
+    "packages": [
+      {
+        "name": "sqlx-sqlite",
+        "version": "0.9.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "vcs_info": {
+          "git": {
+            "sha1": "003b698e99e024f3621b8043a2426fde5b741171"
+          },
+          "path_in_vcs": "sqlx-sqlite"
+        },
+        "checksum_json_exists": false,
+        "archive": {
+          "bytes": 93440,
+          "sha256": "488e99c397a62007e4229aec669a179816339afc6d2620ca6fa420dbee2e982c",
+          "lock_package_checksum": "488e99c397a62007e4229aec669a179816339afc6d2620ca6fa420dbee2e982c",
+          "equal": true
+        },
+        "manifests": [
+          {
+            "relative_path": "Cargo.toml",
+            "bytes": 3782,
+            "sha256": "d659405cf1a18299845d699b4ab681a3d341805556c4a837d70f5f1c3589bb9a",
+            "git_blob": "8a8dafdc79c9811494e3b03faca2af0df4515f3c"
+          },
+          {
+            "relative_path": "Cargo.toml.orig",
+            "bytes": 2829,
+            "sha256": "af4193e1d9d8e9f63c85bf2468cdb24f4e9b7c217bd0745082fecf1a7369b0c6",
+            "git_blob": "ffac1b9d149abd5252fd616ffb714a3b1cd3e68d"
+          }
+        ]
+      },
+      {
+        "name": "sqlx-core",
+        "version": "0.9.0",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "vcs_info": {
+          "git": {
+            "sha1": "003b698e99e024f3621b8043a2426fde5b741171"
+          },
+          "path_in_vcs": "sqlx-core"
+        },
+        "checksum_json_exists": false,
+        "archive": {
+          "bytes": 154984,
+          "sha256": "05b44e85bf579a8eeb4ceaa77a3a523baf2bf0e9bac7e40f405d537b5d2d5ccb",
+          "lock_package_checksum": "05b44e85bf579a8eeb4ceaa77a3a523baf2bf0e9bac7e40f405d537b5d2d5ccb",
+          "equal": true
+        },
+        "manifests": [
+          {
+            "relative_path": "Cargo.toml",
+            "bytes": 5594,
+            "sha256": "d62bb81e87b97948b8a24c75d5c17519fb183f1a837085d76ddf30f0ab9b65be",
+            "git_blob": "3090e17c76b027b16047ee1f92a8c91ed0e7f7a6"
+          },
+          {
+            "relative_path": "Cargo.toml.orig",
+            "bytes": 4283,
+            "sha256": "4830c40ed9af5bc41b3a316eb4347d15941213966a16f4e5e938a5b6e5d74ee3",
+            "git_blob": "5c20bad0503d2b975a40249e00dda1703e896eb9"
+          }
+        ]
+      }
+    ],
+    "cargo_lock": {
+      "blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+      "bytes": 413768,
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a",
+      "full_fixed_content_independently_matches": true
+    },
+    "file_checks": [
+      {
+        "package": "sqlx-sqlite",
+        "relative_path": "Cargo.toml",
+        "bytes": 3782,
+        "sha256": "d659405cf1a18299845d699b4ab681a3d341805556c4a837d70f5f1c3589bb9a",
+        "git_blob": "8a8dafdc79c9811494e3b03faca2af0df4515f3c",
+        "archive_member": {
+          "path": "sqlx-sqlite-0.9.0/Cargo.toml",
+          "bytes": 3782,
+          "sha256": "d659405cf1a18299845d699b4ab681a3d341805556c4a837d70f5f1c3589bb9a",
+          "matches_registry_file": true
+        },
+        "primary_match": null
+      },
+      {
+        "package": "sqlx-sqlite",
+        "relative_path": "Cargo.toml.orig",
+        "bytes": 2829,
+        "sha256": "af4193e1d9d8e9f63c85bf2468cdb24f4e9b7c217bd0745082fecf1a7369b0c6",
+        "git_blob": "ffac1b9d149abd5252fd616ffb714a3b1cd3e68d",
+        "archive_member": {
+          "path": "sqlx-sqlite-0.9.0/Cargo.toml.orig",
+          "bytes": 2829,
+          "sha256": "af4193e1d9d8e9f63c85bf2468cdb24f4e9b7c217bd0745082fecf1a7369b0c6",
+          "matches_registry_file": true
+        },
+        "primary_match": null
+      },
+      {
+        "package": "sqlx-sqlite",
+        "relative_path": ".cargo_vcs_info.json",
+        "bytes": 105,
+        "sha256": "34f4ec6fd11a78aa8ef5214c49a5c2d5dffd80079196c13797887f36a88b9cab",
+        "git_blob": "f133fd70dbc3de37c8faaf09d928ca4e51f42c02",
+        "archive_member": {
+          "path": "sqlx-sqlite-0.9.0/.cargo_vcs_info.json",
+          "bytes": 105,
+          "sha256": "34f4ec6fd11a78aa8ef5214c49a5c2d5dffd80079196c13797887f36a88b9cab",
+          "matches_registry_file": true
+        },
+        "primary_match": null
+      },
+      {
+        "package": "sqlx-sqlite",
+        "relative_path": "src/options/mod.rs",
+        "bytes": 28010,
+        "sha256": "ff5005abc6408f2df073d95bf3440c2a3ee96c1a312d73468bf66123f8ab2f1e",
+        "git_blob": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1",
+        "archive_member": {
+          "path": "sqlx-sqlite-0.9.0/src/options/mod.rs",
+          "bytes": 28010,
+          "sha256": "ff5005abc6408f2df073d95bf3440c2a3ee96c1a312d73468bf66123f8ab2f1e",
+          "matches_registry_file": true
+        },
+        "primary_match": {
+          "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+          "blob": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1",
+          "byteequal": true
+        }
+      },
+      {
+        "package": "sqlx-sqlite",
+        "relative_path": "src/options/connect.rs",
+        "bytes": 2305,
+        "sha256": "6eab2d3914a2c9f35c60bd8b324e46790eca39a23c30a0d4101e35be52b04253",
+        "git_blob": "cfa25872b2c118cc955ac4e2f9cfb64e19e4a0ee",
+        "archive_member": {
+          "path": "sqlx-sqlite-0.9.0/src/options/connect.rs",
+          "bytes": 2305,
+          "sha256": "6eab2d3914a2c9f35c60bd8b324e46790eca39a23c30a0d4101e35be52b04253",
+          "matches_registry_file": true
+        },
+        "primary_match": {
+          "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+          "blob": "cfa25872b2c118cc955ac4e2f9cfb64e19e4a0ee",
+          "byteequal": true
+        }
+      },
+      {
+        "package": "sqlx-sqlite",
+        "relative_path": "src/connection/establish.rs",
+        "bytes": 10033,
+        "sha256": "447d5067838ec05c713a53b381df4b8ae16652917b4206c553cdea6d3a1fe92a",
+        "git_blob": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+        "archive_member": {
+          "path": "sqlx-sqlite-0.9.0/src/connection/establish.rs",
+          "bytes": 10033,
+          "sha256": "447d5067838ec05c713a53b381df4b8ae16652917b4206c553cdea6d3a1fe92a",
+          "matches_registry_file": true
+        },
+        "primary_match": {
+          "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+          "blob": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+          "byteequal": true
+        }
+      },
+      {
+        "package": "sqlx-sqlite",
+        "relative_path": "src/connection/worker.rs",
+        "bytes": 22317,
+        "sha256": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4",
+        "git_blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+        "archive_member": {
+          "path": "sqlx-sqlite-0.9.0/src/connection/worker.rs",
+          "bytes": 22317,
+          "sha256": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4",
+          "matches_registry_file": true
+        },
+        "primary_match": {
+          "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+          "blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+          "byteequal": true
+        }
+      },
+      {
+        "package": "sqlx-sqlite",
+        "relative_path": "src/connection/mod.rs",
+        "bytes": 20337,
+        "sha256": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd",
+        "git_blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+        "archive_member": {
+          "path": "sqlx-sqlite-0.9.0/src/connection/mod.rs",
+          "bytes": 20337,
+          "sha256": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd",
+          "matches_registry_file": true
+        },
+        "primary_match": {
+          "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+          "blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+          "byteequal": true
+        }
+      },
+      {
+        "package": "sqlx-sqlite",
+        "relative_path": "src/connection/handle.rs",
+        "bytes": 5320,
+        "sha256": "63d9b11374ebd453f3f7d0be95a728030f05997d5ccdc756fd8057ee0d31dc6f",
+        "git_blob": "e89179b30ed489bf831e56575d1269f223a368ac",
+        "archive_member": {
+          "path": "sqlx-sqlite-0.9.0/src/connection/handle.rs",
+          "bytes": 5320,
+          "sha256": "63d9b11374ebd453f3f7d0be95a728030f05997d5ccdc756fd8057ee0d31dc6f",
+          "matches_registry_file": true
+        },
+        "primary_match": {
+          "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+          "blob": "e89179b30ed489bf831e56575d1269f223a368ac",
+          "byteequal": true
+        }
+      },
+      {
+        "package": "sqlx-sqlite",
+        "relative_path": "src/connection/collation.rs",
+        "bytes": 4730,
+        "sha256": "d863421fe2f377315ca75c2912e702b13cbb4b978ec3940989ae08c9acf2f752",
+        "git_blob": "229e780adfbdb34ac117cf279e11b70a79a491fc",
+        "archive_member": {
+          "path": "sqlx-sqlite-0.9.0/src/connection/collation.rs",
+          "bytes": 4730,
+          "sha256": "d863421fe2f377315ca75c2912e702b13cbb4b978ec3940989ae08c9acf2f752",
+          "matches_registry_file": true
+        },
+        "primary_match": {
+          "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+          "blob": "229e780adfbdb34ac117cf279e11b70a79a491fc",
+          "byteequal": true
+        }
+      },
+      {
+        "package": "sqlx-sqlite",
+        "relative_path": "src/lib.rs",
+        "bytes": 6797,
+        "sha256": "6e19e45ffc8e018912798e2290527a2a332ecc775b70bd86223efffc06d6e57b",
+        "git_blob": "17b4bed1ca40f112690011dbc3f38b4585ed1001",
+        "archive_member": {
+          "path": "sqlx-sqlite-0.9.0/src/lib.rs",
+          "bytes": 6797,
+          "sha256": "6e19e45ffc8e018912798e2290527a2a332ecc775b70bd86223efffc06d6e57b",
+          "matches_registry_file": true
+        },
+        "primary_match": {
+          "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+          "blob": "17b4bed1ca40f112690011dbc3f38b4585ed1001",
+          "byteequal": true
+        }
+      },
+      {
+        "package": "sqlx-core",
+        "relative_path": "Cargo.toml",
+        "bytes": 5594,
+        "sha256": "d62bb81e87b97948b8a24c75d5c17519fb183f1a837085d76ddf30f0ab9b65be",
+        "git_blob": "3090e17c76b027b16047ee1f92a8c91ed0e7f7a6",
+        "archive_member": {
+          "path": "sqlx-core-0.9.0/Cargo.toml",
+          "bytes": 5594,
+          "sha256": "d62bb81e87b97948b8a24c75d5c17519fb183f1a837085d76ddf30f0ab9b65be",
+          "matches_registry_file": true
+        },
+        "primary_match": null
+      },
+      {
+        "package": "sqlx-core",
+        "relative_path": "Cargo.toml.orig",
+        "bytes": 4283,
+        "sha256": "4830c40ed9af5bc41b3a316eb4347d15941213966a16f4e5e938a5b6e5d74ee3",
+        "git_blob": "5c20bad0503d2b975a40249e00dda1703e896eb9",
+        "archive_member": {
+          "path": "sqlx-core-0.9.0/Cargo.toml.orig",
+          "bytes": 4283,
+          "sha256": "4830c40ed9af5bc41b3a316eb4347d15941213966a16f4e5e938a5b6e5d74ee3",
+          "matches_registry_file": true
+        },
+        "primary_match": null
+      },
+      {
+        "package": "sqlx-core",
+        "relative_path": ".cargo_vcs_info.json",
+        "bytes": 103,
+        "sha256": "a3851597386fb151b4b1ba12343e6945134fe378f77ca6dfdb6f34b3a7b9d96c",
+        "git_blob": "94853d379cfdcc69bbbf39816c6545cdcd6af61f",
+        "archive_member": {
+          "path": "sqlx-core-0.9.0/.cargo_vcs_info.json",
+          "bytes": 103,
+          "sha256": "a3851597386fb151b4b1ba12343e6945134fe378f77ca6dfdb6f34b3a7b9d96c",
+          "matches_registry_file": true
+        },
+        "primary_match": null
+      },
+      {
+        "package": "sqlx-core",
+        "relative_path": "src/pool/inner.rs",
+        "bytes": 23376,
+        "sha256": "cba56628f259270dccb2f4a0d7a351dcff34d9239f6e6e1aee187ebe0e39c539",
+        "git_blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+        "archive_member": {
+          "path": "sqlx-core-0.9.0/src/pool/inner.rs",
+          "bytes": 23376,
+          "sha256": "cba56628f259270dccb2f4a0d7a351dcff34d9239f6e6e1aee187ebe0e39c539",
+          "matches_registry_file": true
+        },
+        "primary_match": {
+          "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+          "blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+          "byteequal": true
+        }
+      },
+      {
+        "package": "sqlx-core",
+        "relative_path": "src/pool/options.rs",
+        "bytes": 25108,
+        "sha256": "924cd57a062328b2e7c6ac55242eabb1706893d80ce1e8cb02fe643a592f4f83",
+        "git_blob": "3d048f179514e992f478f0f854563fad7c0e41dd",
+        "archive_member": {
+          "path": "sqlx-core-0.9.0/src/pool/options.rs",
+          "bytes": 25108,
+          "sha256": "924cd57a062328b2e7c6ac55242eabb1706893d80ce1e8cb02fe643a592f4f83",
+          "matches_registry_file": true
+        },
+        "primary_match": {
+          "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+          "blob": "3d048f179514e992f478f0f854563fad7c0e41dd",
+          "byteequal": true
+        }
+      },
+      {
+        "package": "sqlx-core",
+        "relative_path": "src/connection.rs",
+        "bytes": 10046,
+        "sha256": "a0ea974fb1bfe6ec7891e594333098b3d2fac3b3e27737e733dea461e8dee737",
+        "git_blob": "b5f8138b2bc1b2a9a82a21b4aa8c65fe0e42934f",
+        "archive_member": {
+          "path": "sqlx-core-0.9.0/src/connection.rs",
+          "bytes": 10046,
+          "sha256": "a0ea974fb1bfe6ec7891e594333098b3d2fac3b3e27737e733dea461e8dee737",
+          "matches_registry_file": true
+        },
+        "primary_match": {
+          "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+          "blob": "b5f8138b2bc1b2a9a82a21b4aa8c65fe0e42934f",
+          "byteequal": true
+        }
+      }
+    ],
+    "archive_scope": "The sole native executor recorded extraction from existing .crate archives. This author rehashed all 17 embedded files, matched their bytes/SHA to every recorded archive member, and matched both recorded archive hashes against the exact current Cargo.lock entries. This author did not independently download/re-extract the binary tar archives."
+  },
+  "commits": [
+    {
+      "sha": "003b698e99e024f3621b8043a2426fde5b741171",
+      "tree": "67490ea20a61000a47e74e591b075e1e02e8fb87",
+      "parents": [
+        "54b0d8b6fccaacb0df7761e3f58df61a691ebb77"
+      ],
+      "subject": "chore: update copyright"
+    },
+    {
+      "sha": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "tree": "f2d8d0148472a0f13eb2c3abaf0c7ea5a3c5ee56",
+      "parents": [
+        "6956cef0bf3cea81bc0a543a53d550b4dd8d56db"
+      ],
+      "subject": "Release 0.9.0 (#4256)"
+    }
+  ],
+  "root_trees_untruncated": true,
+  "equal_subtrees": [
+    {
+      "path": "sqlx-sqlite",
+      "tree": "f3379091c121e3c58af39fb949ee32947d184caa",
+      "other_tree": "f3379091c121e3c58af39fb949ee32947d184caa",
+      "equal": true
+    },
+    {
+      "path": "sqlx-core",
+      "tree": "a90e456f5916327d62b8a8d9f6511d9bde3167cb",
+      "other_tree": "a90e456f5916327d62b8a8d9f6511d9bde3167cb",
+      "equal": true
+    },
+    {
+      "path": "sqlx-macros-core",
+      "tree": "bd56e7a23ae296a1f7223e26befa0a0a0722509d",
+      "other_tree": "bd56e7a23ae296a1f7223e26befa0a0a0722509d",
+      "equal": true
+    },
+    {
+      "path": "tests",
+      "tree": "9838d2c340c84eb83eee5cd8b4161c4a4fb8197e",
+      "other_tree": "9838d2c340c84eb83eee5cd8b4161c4a4fb8197e",
+      "equal": true
+    }
+  ],
+  "top_level_differences": [
+    {
+      "path": "README.md",
+      "before": {
+        "path": "README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "be976e4cd93ef7576a02c15034aca7bce5c558f2",
+        "size": 18794,
+        "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/be976e4cd93ef7576a02c15034aca7bce5c558f2"
+      },
+      "after": {
+        "path": "README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ff98f453503e50331967d6f3f9fd1a86f9e7ac69",
+        "size": 18824,
+        "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/ff98f453503e50331967d6f3f9fd1a86f9e7ac69"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "name": "options_mod",
+      "path": "sqlx-sqlite/src/options/mod.rs",
+      "prior_commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "prior_blob": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1",
+      "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+      "actual_vcs_blob": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1",
+      "bytes": 28010,
+      "sha256": "ff5005abc6408f2df073d95bf3440c2a3ee96c1a312d73468bf66123f8ab2f1e",
+      "exact_text_equal": true,
+      "git_hash_verified": true
+    },
+    {
+      "name": "options_connect",
+      "path": "sqlx-sqlite/src/options/connect.rs",
+      "prior_commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "prior_blob": "cfa25872b2c118cc955ac4e2f9cfb64e19e4a0ee",
+      "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+      "actual_vcs_blob": "cfa25872b2c118cc955ac4e2f9cfb64e19e4a0ee",
+      "bytes": 2305,
+      "sha256": "6eab2d3914a2c9f35c60bd8b324e46790eca39a23c30a0d4101e35be52b04253",
+      "exact_text_equal": true,
+      "git_hash_verified": true
+    },
+    {
+      "name": "establish",
+      "path": "sqlx-sqlite/src/connection/establish.rs",
+      "prior_commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "prior_blob": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+      "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+      "actual_vcs_blob": "cedf752e6adef404b6f7d537f521045cb8342b5a",
+      "bytes": 10033,
+      "sha256": "447d5067838ec05c713a53b381df4b8ae16652917b4206c553cdea6d3a1fe92a",
+      "exact_text_equal": true,
+      "git_hash_verified": true
+    },
+    {
+      "name": "worker",
+      "path": "sqlx-sqlite/src/connection/worker.rs",
+      "prior_commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "prior_blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+      "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+      "actual_vcs_blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c",
+      "bytes": 22317,
+      "sha256": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4",
+      "exact_text_equal": true,
+      "git_hash_verified": true
+    },
+    {
+      "name": "connection",
+      "path": "sqlx-sqlite/src/connection/mod.rs",
+      "prior_commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "prior_blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+      "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+      "actual_vcs_blob": "218c747143fe80b344bca3405d4b0b38da2bd932",
+      "bytes": 20337,
+      "sha256": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd",
+      "exact_text_equal": true,
+      "git_hash_verified": true
+    },
+    {
+      "name": "handle",
+      "path": "sqlx-sqlite/src/connection/handle.rs",
+      "prior_commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "prior_blob": "e89179b30ed489bf831e56575d1269f223a368ac",
+      "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+      "actual_vcs_blob": "e89179b30ed489bf831e56575d1269f223a368ac",
+      "bytes": 5320,
+      "sha256": "63d9b11374ebd453f3f7d0be95a728030f05997d5ccdc756fd8057ee0d31dc6f",
+      "exact_text_equal": true,
+      "git_hash_verified": true
+    },
+    {
+      "name": "pool_inner",
+      "path": "sqlx-core/src/pool/inner.rs",
+      "prior_commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "prior_blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+      "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+      "actual_vcs_blob": "b698dc9df07fdd763f6b15a171b7b545c6898696",
+      "bytes": 23376,
+      "sha256": "cba56628f259270dccb2f4a0d7a351dcff34d9239f6e6e1aee187ebe0e39c539",
+      "exact_text_equal": true,
+      "git_hash_verified": true
+    },
+    {
+      "name": "pool_options",
+      "path": "sqlx-core/src/pool/options.rs",
+      "prior_commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "prior_blob": "3d048f179514e992f478f0f854563fad7c0e41dd",
+      "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+      "actual_vcs_blob": "3d048f179514e992f478f0f854563fad7c0e41dd",
+      "bytes": 25108,
+      "sha256": "924cd57a062328b2e7c6ac55242eabb1706893d80ce1e8cb02fe643a592f4f83",
+      "exact_text_equal": true,
+      "git_hash_verified": true
+    },
+    {
+      "name": "lib",
+      "path": "sqlx-sqlite/src/lib.rs",
+      "prior_commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "prior_blob": "17b4bed1ca40f112690011dbc3f38b4585ed1001",
+      "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+      "actual_vcs_blob": "17b4bed1ca40f112690011dbc3f38b4585ed1001",
+      "bytes": 6797,
+      "sha256": "6e19e45ffc8e018912798e2290527a2a332ecc775b70bd86223efffc06d6e57b",
+      "exact_text_equal": true,
+      "git_hash_verified": true
+    },
+    {
+      "name": "core_connection",
+      "path": "sqlx-core/src/connection.rs",
+      "prior_commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "prior_blob": "b5f8138b2bc1b2a9a82a21b4aa8c65fe0e42934f",
+      "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+      "actual_vcs_blob": "b5f8138b2bc1b2a9a82a21b4aa8c65fe0e42934f",
+      "bytes": 10046,
+      "sha256": "a0ea974fb1bfe6ec7891e594333098b3d2fac3b3e27737e733dea461e8dee737",
+      "exact_text_equal": true,
+      "git_hash_verified": true
+    },
+    {
+      "name": "collation",
+      "path": "sqlx-sqlite/src/connection/collation.rs",
+      "prior_commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "prior_blob": "229e780adfbdb34ac117cf279e11b70a79a491fc",
+      "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+      "actual_vcs_blob": "229e780adfbdb34ac117cf279e11b70a79a491fc",
+      "bytes": 4730,
+      "sha256": "d863421fe2f377315ca75c2912e702b13cbb4b978ec3940989ae08c9acf2f752",
+      "exact_text_equal": true,
+      "git_hash_verified": true
+    },
+    {
+      "name": "release_cargo",
+      "path": "Cargo.toml",
+      "prior_commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "prior_blob": "3738b814ca07636ec652be18d95de0559f279182",
+      "actual_vcs_commit": "003b698e99e024f3621b8043a2426fde5b741171",
+      "actual_vcs_blob": "3738b814ca07636ec652be18d95de0559f279182",
+      "bytes": 14370,
+      "sha256": "77c3ab21aa396a7dad0daf09210d9c517cd98ca084c39f59e8db28ba1b9221fe",
+      "exact_text_equal": true,
+      "git_hash_verified": true
+    }
+  ],
+  "conclusion": {
+    "actual_source": "All 11 requested Rust source files from the real installed SQLite/Core packages match both fixed Git commits byte-for-byte. The prior 12th primary file is the upstream root Cargo.toml, which is common to both commits but is not an installed member of either subcrate.",
+    "original_manifests": "Both actual Cargo.toml.orig files equal their corresponding Git package manifests at 003b698e. Registry Cargo.toml files are normalized and differ by design; they are retained separately.",
+    "relevant_git_trees": "sqlx-sqlite, sqlx-core, sqlx-macros-core and tests subtree IDs match at 003b698e and 75bc0487. Only README.md differs at the full root-tree entry level.",
+    "package_origin": "Actual two-package .cargo_vcs_info records 003b698e99e024f3621b8043a2426fde5b741171. Future dependency patch manifests use this origin plus actual normalized Cargo manifests and archive SHA, rather than substituting the release tag.",
+    "impact": "No changed runtime source/API premise was found for R2c/d/e or the draft native lifetime token. Their compilation and actual causal tests remain unexecuted and separately gated.",
+    "normalized_manifest_boundary": "The actual sqlite normalized Cargo.toml has empty dev-dependencies; upstream git Cargo.toml's path-only sqlx dev dependency was not published. Any eventual standalone driver tests must use actual available dependencies/features, not assume that unpublished edge exists.",
+    "no_authority_claim": "Source/package equivalence does not establish native SQLite runtime version, native lifecycle correctness, Current authority or B16 completion."
+  },
+  "execution": {
+    "rust": false,
+    "sqlite": false,
+    "cargo": false,
+    "native_worktree_or_target": false,
+    "registry_modified": false,
+    "external_ref_or_pr": false,
+    "registry_files_hashed_from_complete_receipt": true,
+    "archive_binary_reextracted_by_this_author": false
+  },
+  "remaining": [
+    "Apply/compile/execute only after root approves the actual normalized dependency adoption and original Cargo/Bazel lock generation.",
+    "Run the real B/native token controls; code equality is not execution evidence.",
+    "Keep actual runtime SQLite version separate from source version or host Python SQLite."
+  ],
+  "fixed_api_responses": {
+    "actual_commit": {
+      "sha": "003b698e99e024f3621b8043a2426fde5b741171",
+      "node_id": "C_kwDODb6dM9oAKDAwM2I2OThlOTllMDI0ZjM2MjFiODA0M2EyNDI2ZmRlNWI3NDExNzE",
+      "url": "https://api.github.com/repos/transact-rs/sqlx/git/commits/003b698e99e024f3621b8043a2426fde5b741171",
+      "html_url": "https://github.com/transact-rs/sqlx/commit/003b698e99e024f3621b8043a2426fde5b741171",
+      "author": {
+        "name": "Austin Bonander",
+        "email": "austin.bonander@gmail.com",
+        "date": "2026-05-12T20:00:35Z"
+      },
+      "committer": {
+        "name": "Austin Bonander",
+        "email": "austin.bonander@gmail.com",
+        "date": "2026-05-12T20:00:35Z"
+      },
+      "tree": {
+        "sha": "67490ea20a61000a47e74e591b075e1e02e8fb87",
+        "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/67490ea20a61000a47e74e591b075e1e02e8fb87"
+      },
+      "message": "chore: update copyright",
+      "parents": [
+        {
+          "sha": "54b0d8b6fccaacb0df7761e3f58df61a691ebb77",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/commits/54b0d8b6fccaacb0df7761e3f58df61a691ebb77",
+          "html_url": "https://github.com/transact-rs/sqlx/commit/54b0d8b6fccaacb0df7761e3f58df61a691ebb77"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "prior_commit": {
+      "sha": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "node_id": "C_kwDODb6dM9oAKDc1YmMwNDg3ZWI2NjFkYTgxMWJiN2EzYzVkMTU4ZjFiZDQ2M2ZlZjQ",
+      "url": "https://api.github.com/repos/transact-rs/sqlx/git/commits/75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "html_url": "https://github.com/transact-rs/sqlx/commit/75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+      "author": {
+        "name": "Austin Bonander",
+        "email": "austin.bonander@gmail.com",
+        "date": "2026-05-21T17:30:35Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-05-21T17:30:35Z"
+      },
+      "tree": {
+        "sha": "f2d8d0148472a0f13eb2c3abaf0c7ea5a3c5ee56",
+        "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/f2d8d0148472a0f13eb2c3abaf0c7ea5a3c5ee56"
+      },
+      "message": "Release 0.9.0 (#4256)\n\n* refactor: un-track `Cargo.lock`\n\n* chore: prepare release `0.9.0`\n\n* chore: update `rand`, crypto crates\n\n* chore: update `rand`, crypto crates (2)\n\n* chore: revert `-Z direct-minimal-versions`\n\nFor context: https://github.com/launchbadge/sqlx/pull/4173#issuecomment-4376742796\n\n* chore: fix new clippy warnings\n\n* fix: compiler errors in tests/sqlite\n\n* fix: compiler errors in tests/postgres\n\n* fix: errors in `axum-social-with-tests`\n\n* fix: errors in Postgres examples, update `examples/x.py`\n\n* fix(sqlite): don't panic if `call_with_result` didn't set an error message\n\n* chore: update CHANGELOG for 0.9.0\n\n* chore: upgrade `etcetera` to `0.11.0`\n\n* chore: document release PR changes\n\n* chore: document `Executor` methods not for general use\n\n* chore: update copyright",
+      "parents": [
+        {
+          "sha": "6956cef0bf3cea81bc0a543a53d550b4dd8d56db",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/commits/6956cef0bf3cea81bc0a543a53d550b4dd8d56db",
+          "html_url": "https://github.com/transact-rs/sqlx/commit/6956cef0bf3cea81bc0a543a53d550b4dd8d56db"
+        }
+      ],
+      "verification": {
+        "verified": true,
+        "reason": "valid",
+        "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqD0E7CRC1aQ7uu5UhlAAAWK4QACcVZnh5lOzPxvSO6w5TfJ7q\npkIV2cMocaBvvEqjqmlPFMgNUeycWiPsnGfGEeFdt380SmGrMOLQhIW4E5C+tADq\nvkLEn9U1Y0THSy/D1kPfz/1Hqex45eMltjE+1fs766sOzsZwRwldiQA7r4H+cPSD\nW6TWya8j9SniL8/K+Oie+sJ2ZLUEtVU2ZIp8qE95ucekI4e6e4BY6ymy0dKGi33n\nISy9iWWdFA/BFRza0Qz/+sqr2nVZXcaxL4uX73IR1LYHCnbgoS3vyIchFSmQc+kw\nBK2RS8pkJtshqWUo7i03VPVzKDg/vnXl9vVLZZJb2TvQ8cGZTZTqKDO0oWpGHlPe\nqGMblINisrKC/wTKUQZs6YKVVwkRkVV/C//Y+kBEFbzMpJughSWdBRx87q/Hb0cB\nwq4dSmmh1/HWsbcylN/k5VYsjKSy7Qkx83RAJsy7GVnH35w/avoaHAIbcve4d4u+\nnaHuu8C0xWDPSeKuqqEW4h9CgMCGEl3MzDu0ezrLWmS4t32PQCEXMWt7ki3QA6NW\nT9pKMA6cgrwDK+iW29naXDB9t3OZ0kd9uQj3pHhWt6VwTJ3EZafTys/wnpxiYLiY\nZp87lQ1EBSl5bl3mSTUWoAoEG9e5qCJ04vr1Kj0mG2H4WfObQssCXtiyz8tEoKUu\nrmZZFyOmTHwNJT5vLUEt\n=abuL\n-----END PGP SIGNATURE-----\n",
+        "payload": "tree f2d8d0148472a0f13eb2c3abaf0c7ea5a3c5ee56\nparent 6956cef0bf3cea81bc0a543a53d550b4dd8d56db\nauthor Austin Bonander <austin.bonander@gmail.com> 1779384635 -0700\ncommitter GitHub <noreply@github.com> 1779384635 -0700\n\nRelease 0.9.0 (#4256)\n\n* refactor: un-track `Cargo.lock`\n\n* chore: prepare release `0.9.0`\n\n* chore: update `rand`, crypto crates\n\n* chore: update `rand`, crypto crates (2)\n\n* chore: revert `-Z direct-minimal-versions`\n\nFor context: https://github.com/launchbadge/sqlx/pull/4173#issuecomment-4376742796\n\n* chore: fix new clippy warnings\n\n* fix: compiler errors in tests/sqlite\n\n* fix: compiler errors in tests/postgres\n\n* fix: errors in `axum-social-with-tests`\n\n* fix: errors in Postgres examples, update `examples/x.py`\n\n* fix(sqlite): don't panic if `call_with_result` didn't set an error message\n\n* chore: update CHANGELOG for 0.9.0\n\n* chore: upgrade `etcetera` to `0.11.0`\n\n* chore: document release PR changes\n\n* chore: document `Executor` methods not for general use\n\n* chore: update copyright",
+        "verified_at": "2026-05-21T17:30:36Z"
+      }
+    },
+    "actual_root_tree": {
+      "sha": "67490ea20a61000a47e74e591b075e1e02e8fb87",
+      "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/67490ea20a61000a47e74e591b075e1e02e8fb87",
+      "tree": [
+        {
+          "path": ".editorconfig",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4dc104bd85a9d4581c6789ef2be327e8081c31eb",
+          "size": 140,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/4dc104bd85a9d4581c6789ef2be327e8081c31eb"
+        },
+        {
+          "path": ".gitattributes",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6313b56c57848efce05faa7aa7e901ccfc2886ea",
+          "size": 19,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/6313b56c57848efce05faa7aa7e901ccfc2886ea"
+        },
+        {
+          "path": ".github",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "53aaafa69898697462406e3db32fc6f6f4384838",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/53aaafa69898697462406e3db32fc6f6f4384838"
+        },
+        {
+          "path": ".gitignore",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f83ef5b77425557c35b24fb2002928f5cc2a7ead",
+          "size": 784,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/f83ef5b77425557c35b24fb2002928f5cc2a7ead"
+        },
+        {
+          "path": "CHANGELOG.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "237c1d6a352668ccfe57ae89a7384256c31816ce",
+          "size": 173435,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/237c1d6a352668ccfe57ae89a7384256c31816ce"
+        },
+        {
+          "path": "CONTRIBUTING.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e0fdfe88900df2e6f85b813f32b165d1da5f8e42",
+          "size": 1775,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/e0fdfe88900df2e6f85b813f32b165d1da5f8e42"
+        },
+        {
+          "path": "Cargo.toml",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3738b814ca07636ec652be18d95de0559f279182",
+          "size": 14370,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/3738b814ca07636ec652be18d95de0559f279182"
+        },
+        {
+          "path": "FAQ.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4b9a4ac59de4c191214cf213740915e086495b09",
+          "size": 29644,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/4b9a4ac59de4c191214cf213740915e086495b09"
+        },
+        {
+          "path": "LICENSE-APACHE",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e14699fb149e0b5cd2f2aa206d7bc4d5f8828fc3",
+          "size": 10297,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/e14699fb149e0b5cd2f2aa206d7bc4d5f8828fc3"
+        },
+        {
+          "path": "LICENSE-MIT",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6fe828e8eab3262db2dd59e567e3b35d8aea0f66",
+          "size": 1109,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/6fe828e8eab3262db2dd59e567e3b35d8aea0f66"
+        },
+        {
+          "path": "README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "be976e4cd93ef7576a02c15034aca7bce5c558f2",
+          "size": 18794,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/be976e4cd93ef7576a02c15034aca7bce5c558f2"
+        },
+        {
+          "path": "benches",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "3a2752f76077c2ab90c3a1751e88e23fe00bc712",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/3a2752f76077c2ab90c3a1751e88e23fe00bc712"
+        },
+        {
+          "path": "clippy.toml",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c24a03b6f754e021baf9372cfff0311c29a8d31a",
+          "size": 458,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/c24a03b6f754e021baf9372cfff0311c29a8d31a"
+        },
+        {
+          "path": "contrib",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "4008c4d3ce91bb2d9f7929ccfdb1dd0145032722",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/4008c4d3ce91bb2d9f7929ccfdb1dd0145032722"
+        },
+        {
+          "path": "examples",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "80294d9adb49e7ea8c86d3d27c4bed3761c2ab14",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/80294d9adb49e7ea8c86d3d27c4bed3761c2ab14"
+        },
+        {
+          "path": "gen-changelog.sh",
+          "mode": "100755",
+          "type": "blob",
+          "sha": "d0b9ba71f5a93281d0c3ab28416c0f56db7b90e2",
+          "size": 3170,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/d0b9ba71f5a93281d0c3ab28416c0f56db7b90e2"
+        },
+        {
+          "path": "rust-toolchain.toml",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "38c71d18e0c48056cc4c4fbe685f08ce61d05905",
+          "size": 112,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/38c71d18e0c48056cc4c4fbe685f08ce61d05905"
+        },
+        {
+          "path": "sqlx-cli",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "a05ef5166e4672fbc155420fcd4926ff0c1dfee8",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/a05ef5166e4672fbc155420fcd4926ff0c1dfee8"
+        },
+        {
+          "path": "sqlx-core",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "a90e456f5916327d62b8a8d9f6511d9bde3167cb",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/a90e456f5916327d62b8a8d9f6511d9bde3167cb"
+        },
+        {
+          "path": "sqlx-macros-core",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "bd56e7a23ae296a1f7223e26befa0a0a0722509d",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/bd56e7a23ae296a1f7223e26befa0a0a0722509d"
+        },
+        {
+          "path": "sqlx-macros",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "450d23e81c58dca23987cccbfff43f84ca56d8d4",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/450d23e81c58dca23987cccbfff43f84ca56d8d4"
+        },
+        {
+          "path": "sqlx-mysql",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "2461b96febc4b74924074ab962bf5cfff540f926",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/2461b96febc4b74924074ab962bf5cfff540f926"
+        },
+        {
+          "path": "sqlx-postgres",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "5c4103aabd9f8c9a12d9360f073ad7697826ec69",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/5c4103aabd9f8c9a12d9360f073ad7697826ec69"
+        },
+        {
+          "path": "sqlx-sqlite",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f3379091c121e3c58af39fb949ee32947d184caa",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/f3379091c121e3c58af39fb949ee32947d184caa"
+        },
+        {
+          "path": "sqlx-test",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "a2aa7e40a9e12bbe45104c5d29f40396c34cf217",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/a2aa7e40a9e12bbe45104c5d29f40396c34cf217"
+        },
+        {
+          "path": "src",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f0babf52f0ee4f498a681e083e886a215d5a4ff0",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/f0babf52f0ee4f498a681e083e886a215d5a4ff0"
+        },
+        {
+          "path": "tests",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "9838d2c340c84eb83eee5cd8b4161c4a4fb8197e",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/9838d2c340c84eb83eee5cd8b4161c4a4fb8197e"
+        }
+      ],
+      "truncated": false
+    },
+    "prior_root_tree": {
+      "sha": "f2d8d0148472a0f13eb2c3abaf0c7ea5a3c5ee56",
+      "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/f2d8d0148472a0f13eb2c3abaf0c7ea5a3c5ee56",
+      "tree": [
+        {
+          "path": ".editorconfig",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4dc104bd85a9d4581c6789ef2be327e8081c31eb",
+          "size": 140,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/4dc104bd85a9d4581c6789ef2be327e8081c31eb"
+        },
+        {
+          "path": ".gitattributes",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6313b56c57848efce05faa7aa7e901ccfc2886ea",
+          "size": 19,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/6313b56c57848efce05faa7aa7e901ccfc2886ea"
+        },
+        {
+          "path": ".github",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "53aaafa69898697462406e3db32fc6f6f4384838",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/53aaafa69898697462406e3db32fc6f6f4384838"
+        },
+        {
+          "path": ".gitignore",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "f83ef5b77425557c35b24fb2002928f5cc2a7ead",
+          "size": 784,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/f83ef5b77425557c35b24fb2002928f5cc2a7ead"
+        },
+        {
+          "path": "CHANGELOG.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "237c1d6a352668ccfe57ae89a7384256c31816ce",
+          "size": 173435,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/237c1d6a352668ccfe57ae89a7384256c31816ce"
+        },
+        {
+          "path": "CONTRIBUTING.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e0fdfe88900df2e6f85b813f32b165d1da5f8e42",
+          "size": 1775,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/e0fdfe88900df2e6f85b813f32b165d1da5f8e42"
+        },
+        {
+          "path": "Cargo.toml",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3738b814ca07636ec652be18d95de0559f279182",
+          "size": 14370,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/3738b814ca07636ec652be18d95de0559f279182"
+        },
+        {
+          "path": "FAQ.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4b9a4ac59de4c191214cf213740915e086495b09",
+          "size": 29644,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/4b9a4ac59de4c191214cf213740915e086495b09"
+        },
+        {
+          "path": "LICENSE-APACHE",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e14699fb149e0b5cd2f2aa206d7bc4d5f8828fc3",
+          "size": 10297,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/e14699fb149e0b5cd2f2aa206d7bc4d5f8828fc3"
+        },
+        {
+          "path": "LICENSE-MIT",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "6fe828e8eab3262db2dd59e567e3b35d8aea0f66",
+          "size": 1109,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/6fe828e8eab3262db2dd59e567e3b35d8aea0f66"
+        },
+        {
+          "path": "README.md",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "ff98f453503e50331967d6f3f9fd1a86f9e7ac69",
+          "size": 18824,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/ff98f453503e50331967d6f3f9fd1a86f9e7ac69"
+        },
+        {
+          "path": "benches",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "3a2752f76077c2ab90c3a1751e88e23fe00bc712",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/3a2752f76077c2ab90c3a1751e88e23fe00bc712"
+        },
+        {
+          "path": "clippy.toml",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "c24a03b6f754e021baf9372cfff0311c29a8d31a",
+          "size": 458,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/c24a03b6f754e021baf9372cfff0311c29a8d31a"
+        },
+        {
+          "path": "contrib",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "4008c4d3ce91bb2d9f7929ccfdb1dd0145032722",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/4008c4d3ce91bb2d9f7929ccfdb1dd0145032722"
+        },
+        {
+          "path": "examples",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "80294d9adb49e7ea8c86d3d27c4bed3761c2ab14",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/80294d9adb49e7ea8c86d3d27c4bed3761c2ab14"
+        },
+        {
+          "path": "gen-changelog.sh",
+          "mode": "100755",
+          "type": "blob",
+          "sha": "d0b9ba71f5a93281d0c3ab28416c0f56db7b90e2",
+          "size": 3170,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/d0b9ba71f5a93281d0c3ab28416c0f56db7b90e2"
+        },
+        {
+          "path": "rust-toolchain.toml",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "38c71d18e0c48056cc4c4fbe685f08ce61d05905",
+          "size": 112,
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/blobs/38c71d18e0c48056cc4c4fbe685f08ce61d05905"
+        },
+        {
+          "path": "sqlx-cli",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "a05ef5166e4672fbc155420fcd4926ff0c1dfee8",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/a05ef5166e4672fbc155420fcd4926ff0c1dfee8"
+        },
+        {
+          "path": "sqlx-core",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "a90e456f5916327d62b8a8d9f6511d9bde3167cb",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/a90e456f5916327d62b8a8d9f6511d9bde3167cb"
+        },
+        {
+          "path": "sqlx-macros-core",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "bd56e7a23ae296a1f7223e26befa0a0a0722509d",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/bd56e7a23ae296a1f7223e26befa0a0a0722509d"
+        },
+        {
+          "path": "sqlx-macros",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "450d23e81c58dca23987cccbfff43f84ca56d8d4",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/450d23e81c58dca23987cccbfff43f84ca56d8d4"
+        },
+        {
+          "path": "sqlx-mysql",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "2461b96febc4b74924074ab962bf5cfff540f926",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/2461b96febc4b74924074ab962bf5cfff540f926"
+        },
+        {
+          "path": "sqlx-postgres",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "5c4103aabd9f8c9a12d9360f073ad7697826ec69",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/5c4103aabd9f8c9a12d9360f073ad7697826ec69"
+        },
+        {
+          "path": "sqlx-sqlite",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f3379091c121e3c58af39fb949ee32947d184caa",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/f3379091c121e3c58af39fb949ee32947d184caa"
+        },
+        {
+          "path": "sqlx-test",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "a2aa7e40a9e12bbe45104c5d29f40396c34cf217",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/a2aa7e40a9e12bbe45104c5d29f40396c34cf217"
+        },
+        {
+          "path": "src",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "f0babf52f0ee4f498a681e083e886a215d5a4ff0",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/f0babf52f0ee4f498a681e083e886a215d5a4ff0"
+        },
+        {
+          "path": "tests",
+          "mode": "040000",
+          "type": "tree",
+          "sha": "9838d2c340c84eb83eee5cd8b4161c4a4fb8197e",
+          "url": "https://api.github.com/repos/transact-rs/sqlx/git/trees/9838d2c340c84eb83eee5cd8b4161c4a4fb8197e"
+        }
+      ],
+      "truncated": false
+    }
+  },
+  "supersedes_pending_addendum_only": {
+    "blob": "589117b75844c5af229cc2e7a14cf3267510a7af",
+    "preserved": true
+  },
+  "native_receipt": {
+    "blob": "93b99eb2fc88c5b8fd4b48f7efc0db8057e24d47",
+    "bytes": 196031,
+    "sha256": "13cff3b686052b69aa26e20c30500ac45765b2e9565a6649d01ea3b6f2057647",
+    "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "observed_at": "2026-11-05T00:51:36.282159+00:00",
+    "natural_metadata": {
+      "bytes": 8163618,
+      "sha256": "959b827393fc6830e8fd6c55a83a519217ab0debb7c033b42e64306bc373fece"
+    }
+  }
+}

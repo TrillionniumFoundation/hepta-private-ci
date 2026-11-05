@@ -1,0 +1,36 @@
+--- reviewed-hygiene-v2.py
++++ fmt-continuation-v1.py
+@@ -107,12 +107,31 @@
+  assert approved["owners"]==owners and approved["commands"][0]==fix_argv and approved["commands"][1]==["just","fmt"] and approved["commands"][2]==["git","diff","--check"]
+  assert approved["ordinary_head"]=="cabcb40d36e116beaa65750e1f674c52035da785" and approved["allowed_untracked_source_paths"]==[]
+  assert target.is_dir() and not target.is_symlink()
+- assert approved["start_stage"]==0 and source==approved["tested_tree"], "first hygiene run must bind the actual complete-test source"
++ assert approved["start_stage"]==1 and source==approved["reviewed_fix_tree"], "continuation must start at the reviewed actual fix tree"
++ assert isinstance(approved["root_automatic_source_change_review"],str) and len(approved["root_automatic_source_change_review"])==40
++ prior={}
++ for name,expected in approved["completed_fix_files"].items():
++  p=pathlib.Path(expected["path"]);assert p.resolve().is_relative_to((root/"evidence").resolve()) and p.is_file() and not p.is_symlink()
++  actual=rec(p);assert all(actual[k]==expected[k] for k in ("bytes","sha256")), "completed fix evidence changed: "+name
++  prior[name]=actual
++ fixed=json.loads(pathlib.Path(prior["status"]["path"]).read_text())
++ fixed_terminal=json.loads(pathlib.Path(prior["terminal"]["path"]).read_text())
++ fixed_guard=json.loads(pathlib.Path(prior["source_guard"]["path"]).read_text())
++ fixed_changes=json.loads(pathlib.Path(prior["changes"]["path"]).read_text())
++ assert fixed["name"]=="scoped-fix" and fixed["argv"]==fix_argv and fixed["exit_code"]==0 and fixed["after_guard_failures"]==[]
++ assert fixed["source_before"]==approved["tested_tree"] and fixed["source_after"]==source
++ assert fixed_terminal["state"]=="AUTOMATIC_SOURCE_CHANGES_REQUIRE_ROOT_REVIEW" and fixed_terminal["source"]==source and fixed_terminal["phases"]==[fixed] and fixed_terminal["remaining_stage"]==1
++ assert fixed_terminal["root_execution_guard"]==approved["completed_fix_root_guard"]
++ assert fixed_guard["actual_tree"]==source and fixed_guard["guard_failures"]==[]
++ assert fixed_changes["before_tree"]==approved["tested_tree"] and fixed_changes["after_tree"]==source
++ assert [(p["path"],p["git_blob"]) for p in fixed_changes["changed_paths"]]==[("codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",approved["reviewed_fix_postimage_blob"])]
++ assert oid(pathlib.Path(prior["postimage"]["path"]).read_bytes())==approved["reviewed_fix_postimage_blob"]
++ save("prior-scoped-fix-reference.json",{"root_review":approved["root_automatic_source_change_review"],"root_previous_guard":approved["completed_fix_root_guard"],"source_before":approved["tested_tree"],"source_after":source,"original_files":prior,"original_fix_exit_code":0,"original_controller_exit_code":3,"fix_not_repeated":True})
+  for item in approved["recipe_files"]:
+   p=tree/item["relative_path"];assert all(rec(p)[k]==item[k] for k in ("bytes","sha256")),"original recipe identity changed"
+  initial=snapshot("initial",source);require(initial);assert initial["actual_tree"]==source
+  save("native-host.json",{"host_alias":"rog","uname":list(os.uname()),"rustc":subprocess.run(["rustc","-vV"],env=env,capture_output=True,text=True,check=True).stdout,"target":str(target),"source":source,"cargo_profile":"dev-small","initial_free_bytes":shutil.disk_usage(tree).free,"no_environment_policy_change":True})
+- for index,label in enumerate(("scoped-fix","original-fmt","original-diff-check","full-candidate-diff-check")):
++ for index,label in enumerate(("original-fmt","original-diff-check","full-candidate-diff-check"),start=1):
+   argv=approved["commands"][index] if index<3 else ["git","diff","--check",approved["publication_base_tree"],source,"--"]
+   cwd=tree/"codex-rs" if index<2 else tree
+   result=phase(label,argv,cwd)

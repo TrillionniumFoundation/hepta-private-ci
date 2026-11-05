@@ -1,0 +1,730 @@
+{
+  "schema": "hepta-app-parent-liveness-repair-v2",
+  "status": "STATIC_REVIEWED_GIT_RECONSTRUCTED_UNFORMATTED_UNCOMPILED_UNEXECUTED",
+  "base": {
+    "fixed_repo_commit": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "original_observed_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "parent_selected_next_tree_prefix": "7d703610",
+    "application_rule": "Root supplies full exact next tree; require all three preimage blobs and absent new paths before application. Do not infer whole-tree equivalence from these files."
+  },
+  "source_files": [
+    {
+      "path": "codex-rs/linux-sandbox/src/launcher.rs",
+      "before": {
+        "blob": "d4e9b521bf93f0861cf497c3153a9efdc6e3c67b",
+        "bytes": 16007,
+        "sha256": "bf1d23f8020d4e73f7a3e235165f0953154170256a92cf0c8254e5ab32578f91"
+      },
+      "after": {
+        "blob": "a1d761fba56d6b1653598e82f5d5d81207719ef5",
+        "bytes": 17189,
+        "sha256": "4c8c80c86477b6bbfdc002eee06c3d70ea09829a92eb079f8d309a13d22ea8bf"
+      }
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/lib.rs",
+      "before": {
+        "blob": "ad442168227e5d52c440f5fc740bbd8cb2746fe7",
+        "bytes": 1024,
+        "sha256": "8735433ac001ab723a01cb21ab27ed085c9c0a89dd28941b7d086cd65e8f3905"
+      },
+      "after": {
+        "blob": "8f704a3156998d169ceee6bd5e93bf549da9c5c0",
+        "bytes": 1074,
+        "sha256": "35302eb707a300f974f3fa6873f82a29a4f1c15fb250b10f57c2b4f5ccd99aba"
+      }
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/linux_run_main.rs",
+      "before": {
+        "blob": "b50f19732bc0a4744c62f7300f955b9f9d17bf08",
+        "bytes": 55308,
+        "sha256": "3be631c566fbd4cbd08eea042cf425164d01002951b0dcad927c674beb571134"
+      },
+      "after": {
+        "blob": "e8eab2ed1b8221c75a366e0cc93851cf98d6f490",
+        "bytes": 56541,
+        "sha256": "c62b0014d1a539bb0343048fffa5283816f66dd17abcfb089ba3bce60eb247ca"
+      }
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "before": null,
+      "after": {
+        "blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+        "bytes": 7437,
+        "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6"
+      }
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "before": null,
+      "after": {
+        "blob": "0293bce3c08720952fd3413c92c4e9a033da3d03",
+        "bytes": 12752,
+        "sha256": "cbd431000c30fa687422dbed660235edb16c4ce50b6f62c87def5e2957b2487e"
+      }
+    }
+  ],
+  "production_patch": {
+    "path": "production.patch",
+    "blob": "e2b969abb65142171c003fea64399c7c61363a3a",
+    "bytes": 14407,
+    "sha256": "b14f75492815dfdbbecd8b1ac28e990d51628eb31b9acb7615f1e73f514f794e",
+    "additions": 205,
+    "deletions": 6
+  },
+  "controls_patch": {
+    "path": "controls.patch",
+    "blob": "55be7761bbd60171155aa1c60448aa6478ab8e01",
+    "bytes": 13596,
+    "sha256": "d7a89afa5205457194fc42b15f5e80046d30ea3b29a367c1e7e60ca43f7a4d06",
+    "additions": 287,
+    "deletions": 0
+  },
+  "full_patch": {
+    "path": "full.patch",
+    "blob": "5847179e988ea0719766cd25be293e09efd882c3",
+    "bytes": 27742,
+    "sha256": "85edd8c88956ed3d27f7a90a5793cdf38f3c61c1c78043fa14ece1028542dd73",
+    "additions": 492,
+    "deletions": 6
+  },
+  "production_v1_to_v2": {
+    "path": "production-v1-to-v2.patch",
+    "blob": "27da1daae65ec0355a1c35a4d32d8a10025dfd66",
+    "bytes": 1208,
+    "sha256": "089b017fa18f7900208489e6abe17e3722252af1e6a511549cb79d5bcd26c1ab",
+    "additions": 12,
+    "deletions": 1
+  },
+  "static_reconstruction": {
+    "path": "static-reconstruction.json",
+    "blob": "981bf4d9e4e413ae3e9b2fce15063fbe71fd4b7d",
+    "bytes": 12942,
+    "sha256": "d499d73e7d333463e16b219e99117c9857b5d6c38e5d84632f87150b61bbe066",
+    "guards": {
+      "serial_production_then_controls_exact": true,
+      "combined_exact": true,
+      "three_counterfactual_and_restore_exact": true,
+      "legacy_launcher_tail_byteequal": true,
+      "original_inner_argv_builder_byteequal": true,
+      "original_reaper_fork_wait_signal_block_byteequal": true,
+      "retained_capability_error_precedes_new_custody_validation": true,
+      "new_guard_consumed_before_user_fork": true,
+      "no_cargo_or_build_manifest_changes": true
+    }
+  },
+  "observed_failure": {
+    "original_bundle": "106cf2684ee66709db063d714c5d31f86d42fd45",
+    "original_case_seconds": 5.491,
+    "diagnostic_job": "1a1a98a00bb-fc05-35d8",
+    "diagnostic_case_seconds": 5.575,
+    "diagnostic_tree": "1e936b1ca6df807d8928a4cc6c527f40f92808aa",
+    "restored_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "review": {
+      "path": "diagnostic-evidence-review.json",
+      "blob": "3b7008ad56714672ec4771c4bff7b655d3e0ece4",
+      "bytes": 4305,
+      "sha256": "aff19d31f589fc1b9ee2f098669e07bb0055d4fdd7b0fc06db12d4b92fc365cb"
+    },
+    "direct_findings": [
+      "inner_entry and inner_after_restrictions PR_GET returned 0 and signal 0, namespace PID1/PPID0/PGID1/SID1",
+      "original host killpg returned Ok(())",
+      "owned outer died while inner/Python remained alive"
+    ],
+    "unproven": [
+      "Specific LSM/credential transition that cleared inherited signal",
+      "Candidate outcome under original failing App test"
+    ]
+  },
+  "implementation": [
+    "Explicit SandboxReaper role captures only final exec process after optional cleanup fork and launcher capability probe; ProcMountProbe does not receive metadata.",
+    "Open original /proc/self/stat without reading; low standard FD is promoted with F_DUPFD_CLOEXEC(min3) and original standard FD closed again.",
+    "Owned File enters existing preserved-files path; explicit private argument carries FD/device/inode. User argv after separator is not reinterpreted for a role.",
+    "Original inner capability guard precedes descriptor adoption. Validate identity/proc filesystem/read-only descriptor/zero offset, restore CLOEXEC without reading.",
+    "After original proxy/restriction steps, arm SIGKILL parent-death then first bounded read of stable original proc inode. Reject dead or PF_EXITING original parent, malformed/read errors fail closed.",
+    "Consume/drop descriptor before original user-command fork; preserve original namespace PID1, signal forwarding, waitpid, policy and exit behavior."
+  ],
+  "security_boundaries": [
+    "FD/device/inode is a private ownership handoff, not authentication of arbitrary caller data. Normal outer rejects caller-supplied parent-liveness and creates its own FD; CLI hidden option is not an authorization boundary.",
+    "No arbitrary process scan, user-provided parent PID, signal-policy bypass, host mutation, or new sandbox permission.",
+    "Original --as-pid-1, --new-session, --die-with-parent, capability drop/check, seccomp/no_new_privs and filesystem/network policy remain.",
+    "No parent-death setting is applied to the nextest parent; all calls to arm_and_check in controls are in owned helper processes.",
+    "Process group cleanup is limited to a dedicated group with owned unreaped leader, preserving PID identity until kill-group then wait."
+  ],
+  "compatibility": {
+    "installation_doc_blob": "4f63765b5e72a5085585cb6c5b01eecb04200807",
+    "declared_linux": "Ubuntu20.04+/Debian10+",
+    "kernel_primary_checked": [
+      "v4.19",
+      "v6.12"
+    ],
+    "new_linux_5_3_requirement": false,
+    "policy": "Uses existing Linux prctl/procfs/fcntl/read facilities; a host denial or unavailable proc file fails closed. No claim of executing Debian10 or exact host kernel source.",
+    "actual_bwrap_receipt": "92e337c9814e0dd761fda33b277a68387cd7fa4f",
+    "bwrap_limit": "Installed system binary0.11.1 and package version observed. Upstream tag is not independently proven byte-identical to Ubuntu package build; real original gate must validate the installed launcher."
+  },
+  "rejected_designs": [
+    {
+      "name": "single_zero_time_pidfd_poll",
+      "reason": "Kernel reparents child before publishing parent exit_state; arm after reparent then poll before exit_state can miss death. Also pidfd_open requires Linux5.3 and conflicts with declared Debian10 baseline."
+    },
+    {
+      "name": "bwrap_sync_fd",
+      "reason": "Inspected source does not preserve sync-fd in monitor whitelist and intentionally leaves it inside as-pid-1 sandbox path; wrong lifetime owner."
+    },
+    {
+      "name": "simple_rearm_or_PPID0",
+      "reason": "Namespace PPID0 cannot distinguish original parent from already-reparented state; late rearm is not retroactive."
+    },
+    {
+      "name": "remove_as_pid_1",
+      "reason": "Violates original seccomp-filtered reaper and orphan-reaping tests."
+    }
+  ],
+  "new_controls": {
+    "binary": "codex-linux-sandbox library",
+    "selected_exact": [
+      "parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting",
+      "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork",
+      "parent_lifecycle::tests::ordinary_file_and_pre_read_proc_descriptor_are_rejected"
+    ],
+    "selected_count": 3,
+    "ignored_support_not_a_pass": "parent_lifecycle::tests::owned_liveness_scenario",
+    "new_bound_seconds": 5,
+    "early_case_limit": "waitid observes real launcher terminal state before releasing probe; this tests already-dead/reparented original parent. The earlier PF_EXITING-before-zombie window is source reasoning, not a claimed physical runtime reproduction.",
+    "live_case": "Parent remains alive through arm/read, pre-fork EBADF and real exec inode control; a second owned child closes stdin and verifies low-FD promotion. Holding stdin writer excludes EOF as a false death signal."
+  },
+  "counterfactuals": [
+    {
+      "name": "no_exit_rejection",
+      "exact_test": "parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting",
+      "required_actual_evidence": [
+        "inherited_unread_parent reached",
+        "owned original launcher killed and waitid WNOWAIT observed its exit",
+        "probe getppid differs from original launcher",
+        "actual reparented liveness result=Ok(())",
+        "owned child assertion: exited original parent was admitted"
+      ],
+      "invalid_evidence": [
+        "parent RecvError alone",
+        "setup failure",
+        "generic timeout"
+      ],
+      "negative": {
+        "path": "no_exit_rejection-negative.patch",
+        "blob": "19275624147c737e527fbcbff3f2999aecf06535",
+        "bytes": 622,
+        "sha256": "6c73e825c9001cb124676527dde91c934ba9b540a5b0e2e3d29d943edfa97686",
+        "additions": 0,
+        "deletions": 3
+      },
+      "restore": {
+        "path": "no_exit_rejection-restore.patch",
+        "blob": "2a01dc378463c1b7795ca5ef85b0ace877315ef1",
+        "bytes": 622,
+        "sha256": "6188380ae96d1e394f8fb05fb4d3292f57c7272300bffce56228c4749e6e2932",
+        "additions": 3,
+        "deletions": 0
+      },
+      "only_changed_path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "negative_postimage": {
+        "blob": "4b395cc9faa7f10dbd5d4efef8036b0170164ec0",
+        "bytes": 7234,
+        "sha256": "eb552931c2cb8515d577df020196ace5ce5b7e4970775b7b54e8e170539382f1"
+      }
+    },
+    {
+      "name": "no_rearm",
+      "exact_test": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork",
+      "required_actual_evidence": [
+        "inherited_unread_parent reached",
+        "armed_with_fd_closed_before_fork_and_exec reached",
+        "owned original launcher killed and waitid WNOWAIT observed its exit",
+        "test's own five-second reaper survived original launcher exit assertion while stdin writer is still held"
+      ],
+      "invalid_evidence": [
+        "nextest timeout",
+        "missing stage marker",
+        "setup or early child failure"
+      ],
+      "negative": {
+        "path": "no_rearm-negative.patch",
+        "blob": "c1caf99376a90eef2e51d6fea5b5f0e2cca649da",
+        "bytes": 1023,
+        "sha256": "cb36816e2bc3878ea3378193702ca38537a1f9c29516a8d786c6c55f70b8f01f",
+        "additions": 0,
+        "deletions": 7
+      },
+      "restore": {
+        "path": "no_rearm-restore.patch",
+        "blob": "f2370e215698b733338e55bf69f3d7a0bba3cc87",
+        "bytes": 1023,
+        "sha256": "88ec60f03ce018aadd48095a5707ae24dd375a2cd83d40b11ba96d5e3560815f",
+        "additions": 7,
+        "deletions": 0
+      },
+      "only_changed_path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "negative_postimage": {
+        "blob": "eab9c5023d6f688bfbda563348490e9bb39a6aee",
+        "bytes": 7102,
+        "sha256": "a83ed718ca4171673e56eb9c6421b5abb158ab9ff2ea10cdc98670d5cec199a8"
+      }
+    },
+    {
+      "name": "leaked_parent_fd",
+      "exact_test": "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork",
+      "required_actual_evidence": [
+        "inherited_unread_parent reached",
+        "arm_and_check returned success in owned probe",
+        "original descriptor F_GETFD is still open and original pre-fork EBADF assertion fails"
+      ],
+      "invalid_evidence": [
+        "post-exec-only result",
+        "setup failure",
+        "generic timeout"
+      ],
+      "negative": {
+        "path": "leaked_parent_fd-negative.patch",
+        "blob": "39fafc378c26b4dd2f40e04091db0e480ae95357",
+        "bytes": 500,
+        "sha256": "be18550a11dc1cef87db724c15220c3d4950c3cbc8d6c69ee3f757f6e2dc17d9",
+        "additions": 1,
+        "deletions": 0
+      },
+      "restore": {
+        "path": "leaked_parent_fd-restore.patch",
+        "blob": "0c6ce826e8267d8ca3a5d0fe812bd92fda0fe2db",
+        "bytes": 500,
+        "sha256": "c86e2d5155aabde973c618dd52bf4e06ce3ed2222a7ea7408a99475d5b85adcd",
+        "additions": 0,
+        "deletions": 1
+      },
+      "only_changed_path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "negative_postimage": {
+        "blob": "63df209d8ebda1776b5526123ff08b3382982804",
+        "bytes": 7469,
+        "sha256": "e339d9e553715f27655c5386fcc1d386e8d84477ff92cb325966889cf03a409b"
+      }
+    }
+  ],
+  "required_original_cases": {
+    "codex-app-server::all": [
+      "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process"
+    ],
+    "codex-linux-sandbox::all": [
+      "suite::managed_proxy::sandboxed_commands_have_a_seccomp_filtered_namespace_reaper",
+      "suite::managed_proxy::managed_proxy_commands_have_a_seccomp_filtered_namespace_reaper",
+      "suite::managed_proxy::namespace_reaper_collects_orphaned_descendants"
+    ],
+    "capability_cases_preserved_for_owning_gate": [
+      "suite::landlock::sandbox_inner_stage_rejects_retained_capabilities",
+      "suite::landlock::sandboxed_command_has_no_effective_or_permitted_capabilities"
+    ]
+  },
+  "native_execution_gates": [
+    "Root and independent source review then exact fixed next tree guard; only ci_audit applies/runs.",
+    "Retain complete full-workspace feature graph and actual helper identities. New library controls have no new dependencies or binaries.",
+    "For each requested counterfactual verify exact selection, required causal markers, zero retries, original helper/binary hashes; restore to exact five-file fixed source afterward, including failure finally path.",
+    "Fixed 3 parent controls plus original App disconnect and 3 original namespace cases must really reach their assertions. Original budgets remain unchanged.",
+    "Owning crate original just test gates and scoped original just fix/fmt follow parent approval. No early-return prerequisites or ignored support may masquerade as passing physical controls.",
+    "No Cargo.toml, Cargo.lock, BUILD.bazel or MODULE changes in this candidate; full test catalogue and existing src glob still need actual native build verification."
+  ],
+  "complete_fixed_tree_callsite_scan": {
+    "blob": "cca20dc45499462ce3fbf4cf2316569c012caf39",
+    "identity": {
+      "blob": "cca20dc45499462ce3fbf4cf2316569c012caf39",
+      "bytes": 3634,
+      "sha256": "500398ea2d04645464dc48036f2f788c24757627c0bbda4c24fd2ce2ddf456e2"
+    },
+    "source_tree": "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+    "commands": [
+      {
+        "argv": [
+          "git",
+          "rev-parse",
+          "1125d197cf798176bea6dcc2c0b0c499eb22cf44^{tree}"
+        ],
+        "exit_code": 0,
+        "stdout": "1125d197cf798176bea6dcc2c0b0c499eb22cf44\n",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "git",
+          "grep",
+          "-n",
+          "-F",
+          "-e",
+          "--apply-seccomp-then-exec",
+          "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+          "--"
+        ],
+        "exit_code": 0,
+        "stdout": "1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/launcher.rs:118:        .any(|argument| argument == \"--apply-seccomp-then-exec\")\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/launcher.rs:332:            \"--apply-seccomp-then-exec\".to_string(),\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/launcher.rs:351:                \"--apply-seccomp-then-exec\".to_string(),\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/launcher.rs:371:            \"--apply-seccomp-then-exec\".to_string(),\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/launcher.rs:394:                \"--apply-seccomp-then-exec\".to_string(),\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/launcher.rs:431:            \"--apply-seccomp-then-exec\".to_string(),\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/linux_run_main.rs:377:        panic!(\"--apply-seccomp-then-exec is incompatible with --use-legacy-landlock\");\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/linux_run_main.rs:1544:        \"--apply-seccomp-then-exec\".to_string(),\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/tests/suite/landlock.rs:478:            \"--apply-seccomp-then-exec\",\n",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "git",
+          "grep",
+          "-n",
+          "-E",
+          "LandlockCommand[[:space:]]*\\{",
+          "1125d197cf798176bea6dcc2c0b0c499eb22cf44",
+          "--"
+        ],
+        "exit_code": 0,
+        "stdout": "1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/cli/src/debug_sandbox.rs:100:    let LandlockCommand {\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/cli/src/lib.rs:109:pub struct LandlockCommand {\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/linux_run_main.rs:88:pub struct LandlockCommand {\n1125d197cf798176bea6dcc2c0b0c499eb22cf44:codex-rs/linux-sandbox/src/linux_run_main.rs:160:    let LandlockCommand {\n",
+        "stderr": ""
+      }
+    ],
+    "analysis": "Nine flag hits are six launcher helper/test hits, two inner-source hits, one direct retained-capability rejection. Four LandlockCommand hits are two distinct CLI/internal types and their destructuring, not an unmodified external construction of the internal type."
+  },
+  "primary_sources": [
+    {
+      "key": "base419",
+      "repository": "torvalds/linux",
+      "ref": "v4.19",
+      "path": "fs/proc/base.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/proc/base.c",
+      "blob": "7e9f07bf260d20bb0a0cd4cd6b6b4abe82b23e20",
+      "bytes": 88166,
+      "sha256": "b7ad40f8b47c782ff758dc815fe1d247bbeb848b240477f802f02f91351cf382",
+      "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/proc/base.c"
+    },
+    {
+      "key": "array419",
+      "repository": "torvalds/linux",
+      "ref": "v4.19",
+      "path": "fs/proc/array.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/proc/array.c",
+      "blob": "0ceb3b6b37e7310ed12d8d7f4215efe3b4c8a0a8",
+      "bytes": 21289,
+      "sha256": "17920836962650cc030fd3e0a62053e614fd4b58e78262975455c94421648b32",
+      "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/proc/array.c"
+    },
+    {
+      "key": "inode419",
+      "repository": "torvalds/linux",
+      "ref": "v4.19",
+      "path": "fs/proc/inode.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/proc/inode.c",
+      "blob": "fc5306a31a1d8b489dc16483d79cf83b6445f387",
+      "bytes": 13428,
+      "sha256": "1d1d8bd5788df1005480f30d2692d0998c09debd006bbcd0f4e5917f45eea425",
+      "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/proc/inode.c"
+    },
+    {
+      "key": "internal419",
+      "repository": "torvalds/linux",
+      "ref": "v4.19",
+      "path": "fs/proc/internal.h",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/proc/internal.h",
+      "blob": "5185d7f6a51ee845fc12c6d49d4497d766af6c23",
+      "bytes": 9030,
+      "sha256": "0cb1f72252809eab0fc08f48623d735b53e69a3901822d10aa4fbcf21fba1bc3",
+      "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/proc/internal.h"
+    },
+    {
+      "key": "exit419",
+      "repository": "torvalds/linux",
+      "ref": "v4.19",
+      "path": "kernel/exit.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/kernel/exit.c",
+      "blob": "0e21e6d21f35f884f5b89b4237bd0be4f2b8a085",
+      "bytes": 45270,
+      "sha256": "02c927d08dc611f49b3daea70b5439b2737865a0cf3345588d901bd78c466258",
+      "source_url": "https://github.com/torvalds/linux/blob/v4.19/kernel/exit.c"
+    },
+    {
+      "key": "sched419",
+      "repository": "torvalds/linux",
+      "ref": "v4.19",
+      "path": "include/linux/sched.h",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/include/linux/sched.h",
+      "blob": "977cb57d7bc9e7183e6ca628e4f75d236ddf3951",
+      "bytes": 53091,
+      "sha256": "77f38328d63059101794ddd304bd734419a5da088bd769ab9bb4462291dac960",
+      "source_url": "https://github.com/torvalds/linux/blob/v4.19/include/linux/sched.h"
+    },
+    {
+      "key": "seq419",
+      "repository": "torvalds/linux",
+      "ref": "v4.19",
+      "path": "fs/seq_file.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v4.19/fs/seq_file.c",
+      "blob": "1dea7a8a52550e234ce3c05565ad8cfa56eeb1f2",
+      "bytes": 24974,
+      "sha256": "886c5d712fc10aff2e495a3611163e8f88725d098656d0531440d4622f89731f",
+      "source_url": "https://github.com/torvalds/linux/blob/v4.19/fs/seq_file.c"
+    },
+    {
+      "key": "base612",
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "fs/proc/base.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/proc/base.c",
+      "blob": "b31283d81c52ea2a984519dac166d9bcbb7c99a8",
+      "bytes": 98525,
+      "sha256": "3cd005fa6ce3bd17f10acf67d6e4344013da11b4814a269d239d9c1182ad0c68",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/proc/base.c"
+    },
+    {
+      "key": "array612",
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "fs/proc/array.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/proc/array.c",
+      "blob": "34a47fb0c57f2570a4f7cb1f45373ddaf2afa883",
+      "bytes": 23234,
+      "sha256": "23fa35a9e22158c2bee2bf183c748b82438e4919571eac9c04a4028d24764549",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/proc/array.c"
+    },
+    {
+      "key": "inode612",
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "fs/proc/inode.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/proc/inode.c",
+      "blob": "626ad7bd94f244e7e1bd25365e5a31908cb4d72a",
+      "bytes": 17075,
+      "sha256": "78b824230254ddee8739303b602162dcbd07ec5ded91b07d8959724aad404e8b",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/proc/inode.c"
+    },
+    {
+      "key": "internal612",
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "fs/proc/internal.h",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/proc/internal.h",
+      "blob": "87e4d62820252016bdff5e00c34229d8848902b9",
+      "bytes": 10661,
+      "sha256": "4614df01bc2ccc7b77b90e74e83d085d52fde7f92413499aff3792f87037141a",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/proc/internal.h"
+    },
+    {
+      "key": "exit612",
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "kernel/exit.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/kernel/exit.c",
+      "blob": "619f0014c33be4c88f7d110622124cb5a489e532",
+      "bytes": 49803,
+      "sha256": "7c28bfc644117470b9cbe6d46c84580de98225755bbb227e61d638ea7104025d",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/kernel/exit.c"
+    },
+    {
+      "key": "sched612",
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "include/linux/sched.h",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/include/linux/sched.h",
+      "blob": "bb343136ddd05d178f9ca03d797c1da1ef5496d3",
+      "bytes": 64069,
+      "sha256": "a0b8b99bb7608ab3d0b4f86b2ac416ce233b7f03821d26d4cd2f191bd29e489c",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/include/linux/sched.h"
+    },
+    {
+      "key": "seq612",
+      "repository": "torvalds/linux",
+      "ref": "v6.12",
+      "path": "fs/seq_file.c",
+      "local_path": "architecture-audit/app-parent-liveness-candidate-20261105/primary/linux-v6.12/fs/seq_file.c",
+      "blob": "e676c8b0cf5d8af861724222c006c67d908c2849",
+      "bytes": 26177,
+      "sha256": "51611d69c6eb1526c9c1365a08bf0d5fa66957ddf4904a8e843da6525e6977b5",
+      "source_url": "https://github.com/torvalds/linux/blob/v6.12/fs/seq_file.c"
+    }
+  ],
+  "primary_excerpts": [
+    {
+      "claim": "old_pid_object_not_reparsed_numeric_pid",
+      "source_key": "base419",
+      "blob": "7e9f07bf260d20bb0a0cd4cd6b6b4abe82b23e20",
+      "excerpts": [
+        {
+          "start": 725,
+          "end": 745,
+          "text": "static int proc_single_show(struct seq_file *m, void *v)\n{\n\tstruct inode *inode = m->private;\n\tstruct pid_namespace *ns = proc_pid_ns(inode);\n\tstruct pid *pid = proc_pid(inode);\n\tstruct task_struct *task;\n\tint ret;\n\n\ttask = get_pid_task(pid, PIDTYPE_PID);\n\tif (!task)\n\t\treturn -ESRCH;\n\n\tret = PROC_I(inode)->op.proc_show(m, ns, pid, task);\n\n\tput_task_struct(task);\n\treturn ret;\n}\n\nstatic int proc_single_open(struct inode *inode, struct file *filp)\n{\n\treturn single_open(filp, proc_single_show, inode);"
+        },
+        {
+          "start": 1731,
+          "end": 1755,
+          "text": "struct inode *proc_pid_make_inode(struct super_block * sb,\n\t\t\t\t  struct task_struct *task, umode_t mode)\n{\n\tstruct inode * inode;\n\tstruct proc_inode *ei;\n\n\t/* We need a new inode */\n\n\tinode = new_inode(sb);\n\tif (!inode)\n\t\tgoto out;\n\n\t/* Common stuff */\n\tei = PROC_I(inode);\n\tinode->i_mode = mode;\n\tinode->i_ino = get_next_ino();\n\tinode->i_mtime = inode->i_atime = inode->i_ctime = current_time(inode);\n\tinode->i_op = &proc_def_inode_operations;\n\n\t/*\n\t * grab the reference to task.\n\t */\n\tei->pid = get_task_pid(task, PIDTYPE_PID);\n\tif (!ei->pid)\n\t\tgoto out_unlock;"
+        }
+      ]
+    },
+    {
+      "claim": "old_pid_object_not_reparsed_numeric_pid",
+      "source_key": "base612",
+      "blob": "b31283d81c52ea2a984519dac166d9bcbb7c99a8",
+      "excerpts": [
+        {
+          "start": 801,
+          "end": 821,
+          "text": "static int proc_single_show(struct seq_file *m, void *v)\n{\n\tstruct inode *inode = m->private;\n\tstruct pid_namespace *ns = proc_pid_ns(inode->i_sb);\n\tstruct pid *pid = proc_pid(inode);\n\tstruct task_struct *task;\n\tint ret;\n\n\ttask = get_pid_task(pid, PIDTYPE_PID);\n\tif (!task)\n\t\treturn -ESRCH;\n\n\tret = PROC_I(inode)->op.proc_show(m, ns, pid, task);\n\n\tput_task_struct(task);\n\treturn ret;\n}\n\nstatic int proc_single_open(struct inode *inode, struct file *filp)\n{\n\treturn single_open(filp, proc_single_show, inode);"
+        },
+        {
+          "start": 1945,
+          "end": 1970,
+          "text": "\tstruct pid *pid;\n\n\t/* We need a new inode */\n\n\tinode = new_inode(sb);\n\tif (!inode)\n\t\tgoto out;\n\n\t/* Common stuff */\n\tei = PROC_I(inode);\n\tinode->i_mode = mode;\n\tinode->i_ino = get_next_ino();\n\tsimple_inode_init_ts(inode);\n\tinode->i_op = &proc_def_inode_operations;\n\n\t/*\n\t * grab the reference to task.\n\t */\n\tpid = get_task_pid(task, PIDTYPE_PID);\n\tif (!pid)\n\t\tgoto out_unlock;\n\n\t/* Let the pid remember us for quick removal */\n\tei->pid = pid;\n\n\ttask_dump_owner(task, 0, &inode->i_uid, &inode->i_gid);"
+        }
+      ]
+    },
+    {
+      "claim": "unconditional_flags_not_ptrace_zero",
+      "source_key": "array419",
+      "blob": "0ceb3b6b37e7310ed12d8d7f4215efe3b4c8a0a8",
+      "excerpts": [
+        {
+          "start": 528,
+          "end": 551,
+          "text": "\tseq_put_decimal_ull(m, \"\", pid_nr_ns(pid, ns));\n\tseq_puts(m, \" (\");\n\tproc_task_name(m, task, false);\n\tseq_puts(m, \") \");\n\tseq_putc(m, state);\n\tseq_put_decimal_ll(m, \" \", ppid);\n\tseq_put_decimal_ll(m, \" \", pgid);\n\tseq_put_decimal_ll(m, \" \", sid);\n\tseq_put_decimal_ll(m, \" \", tty_nr);\n\tseq_put_decimal_ll(m, \" \", tty_pgrp);\n\tseq_put_decimal_ull(m, \" \", task->flags);\n\tseq_put_decimal_ull(m, \" \", min_flt);\n\tseq_put_decimal_ull(m, \" \", cmin_flt);\n\tseq_put_decimal_ull(m, \" \", maj_flt);\n\tseq_put_decimal_ull(m, \" \", cmaj_flt);\n\tseq_put_decimal_ull(m, \" \", nsec_to_clock_t(utime));\n\tseq_put_decimal_ull(m, \" \", nsec_to_clock_t(stime));\n\tseq_put_decimal_ll(m, \" \", nsec_to_clock_t(cutime));\n\tseq_put_decimal_ll(m, \" \", nsec_to_clock_t(cstime));\n\tseq_put_decimal_ll(m, \" \", priority);\n\tseq_put_decimal_ll(m, \" \", nice);\n\tseq_put_decimal_ll(m, \" \", num_threads);\n\tseq_put_decimal_ull(m, \" \", 0);\n\tseq_put_decimal_ull(m, \" \", start_time);"
+        }
+      ]
+    },
+    {
+      "claim": "unconditional_flags_not_ptrace_zero",
+      "source_key": "array612",
+      "blob": "34a47fb0c57f2570a4f7cb1f45373ddaf2afa883",
+      "excerpts": [
+        {
+          "start": 589,
+          "end": 610,
+          "text": "\tseq_put_decimal_ull(m, \"\", pid_nr_ns(pid, ns));\n\tseq_puts(m, \" (\");\n\tproc_task_name(m, task, false);\n\tseq_puts(m, \") \");\n\tseq_putc(m, state);\n\tseq_put_decimal_ll(m, \" \", ppid);\n\tseq_put_decimal_ll(m, \" \", pgid);\n\tseq_put_decimal_ll(m, \" \", sid);\n\tseq_put_decimal_ll(m, \" \", tty_nr);\n\tseq_put_decimal_ll(m, \" \", tty_pgrp);\n\tseq_put_decimal_ull(m, \" \", task->flags);\n\tseq_put_decimal_ull(m, \" \", min_flt);\n\tseq_put_decimal_ull(m, \" \", cmin_flt);\n\tseq_put_decimal_ull(m, \" \", maj_flt);\n\tseq_put_decimal_ull(m, \" \", cmaj_flt);\n\tseq_put_decimal_ull(m, \" \", nsec_to_clock_t(utime));\n\tseq_put_decimal_ull(m, \" \", nsec_to_clock_t(stime));\n\tseq_put_decimal_ll(m, \" \", nsec_to_clock_t(cutime));\n\tseq_put_decimal_ll(m, \" \", nsec_to_clock_t(cstime));\n\tseq_put_decimal_ll(m, \" \", priority);\n\tseq_put_decimal_ll(m, \" \", nice);\n\tseq_put_decimal_ll(m, \" \", num_threads);"
+        }
+      ]
+    },
+    {
+      "claim": "PF_EXITING_value",
+      "source_key": "sched419",
+      "blob": "977cb57d7bc9e7183e6ca628e4f75d236ddf3951",
+      "excerpts": [
+        {
+          "start": 1365,
+          "end": 1374,
+          "text": "\n/*\n * Per process flags\n */\n#define PF_IDLE\t\t\t0x00000002\t/* I am an IDLE thread */\n#define PF_EXITING\t\t0x00000004\t/* Getting shut down */\n#define PF_EXITPIDONE\t\t0x00000008\t/* PI exit done on shut down */\n#define PF_VCPU\t\t\t0x00000010\t/* I'm a virtual CPU */\n#define PF_WQ_WORKER\t\t0x00000020\t/* I'm a workqueue worker */\n#define PF_FORKNOEXEC\t\t0x00000040\t/* Forked but didn't exec */"
+        }
+      ]
+    },
+    {
+      "claim": "PF_EXITING_value",
+      "source_key": "sched612",
+      "blob": "bb343136ddd05d178f9ca03d797c1da1ef5496d3",
+      "excerpts": [
+        {
+          "start": 1657,
+          "end": 1666,
+          "text": "/*\n * Per process flags\n */\n#define PF_VCPU\t\t\t0x00000001\t/* I'm a virtual CPU */\n#define PF_IDLE\t\t\t0x00000002\t/* I am an IDLE thread */\n#define PF_EXITING\t\t0x00000004\t/* Getting shut down */\n#define PF_POSTCOREDUMP\t\t0x00000008\t/* Coredumps should ignore this task */\n#define PF_IO_WORKER\t\t0x00000010\t/* Task is an IO worker */\n#define PF_WQ_WORKER\t\t0x00000020\t/* I'm a workqueue worker */\n#define PF_FORKNOEXEC\t\t0x00000040\t/* Forked but didn't exec */"
+        }
+      ]
+    },
+    {
+      "claim": "PF_EXITING_before_reparent_before_exit_state",
+      "source_key": "exit419",
+      "blob": "0e21e6d21f35f884f5b89b4237bd0be4f2b8a085",
+      "excerpts": [
+        {
+          "start": 678,
+          "end": 685,
+          "text": "\t\t\tt->real_parent = reaper;\n\t\t\tBUG_ON((!t->ptrace) != (t->parent == father));\n\t\t\tif (likely(!t->ptrace))\n\t\t\t\tt->parent = t->real_parent;\n\t\t\tif (t->pdeath_signal)\n\t\t\t\tgroup_send_sig_info(t->pdeath_signal,\n\t\t\t\t\t\t    SEND_SIG_NOINFO, t,\n\t\t\t\t\t\t    PIDTYPE_TGID);"
+        },
+        {
+          "start": 701,
+          "end": 728,
+          "text": "static void exit_notify(struct task_struct *tsk, int group_dead)\n{\n\tbool autoreap;\n\tstruct task_struct *p, *n;\n\tLIST_HEAD(dead);\n\n\twrite_lock_irq(&tasklist_lock);\n\tforget_original_parent(tsk, &dead);\n\n\tif (group_dead)\n\t\tkill_orphaned_pgrp(tsk->group_leader, NULL);\n\n\tif (unlikely(tsk->ptrace)) {\n\t\tint sig = thread_group_leader(tsk) &&\n\t\t\t\tthread_group_empty(tsk) &&\n\t\t\t\t!ptrace_reparented(tsk) ?\n\t\t\ttsk->exit_signal : SIGCHLD;\n\t\tautoreap = do_notify_parent(tsk, sig);\n\t} else if (thread_group_leader(tsk)) {\n\t\tautoreap = thread_group_empty(tsk) &&\n\t\t\tdo_notify_parent(tsk, tsk->exit_signal);\n\t} else {\n\t\tautoreap = true;\n\t}\n\n\ttsk->exit_state = autoreap ? EXIT_DEAD : EXIT_ZOMBIE;\n\tif (tsk->exit_state == EXIT_DEAD)\n\t\tlist_add(&tsk->ptrace_entry, &dead);"
+        },
+        {
+          "start": 813,
+          "end": 824,
+          "text": "\texit_signals(tsk);  /* sets PF_EXITING */\n\t/*\n\t * Ensure that all new tsk->pi_lock acquisitions must observe\n\t * PF_EXITING. Serializes against futex.c:attach_to_pi_owner().\n\t */\n\tsmp_mb();\n\t/*\n\t * Ensure that we must observe the pi_state in exit_mm() ->\n\t * mm_release() -> exit_pi_state_list().\n\t */\n\traw_spin_lock_irq(&tsk->pi_lock);\n\traw_spin_unlock_irq(&tsk->pi_lock);"
+        }
+      ]
+    },
+    {
+      "claim": "PF_EXITING_before_reparent_before_exit_state",
+      "source_key": "exit612",
+      "blob": "619f0014c33be4c88f7d110622124cb5a489e532",
+      "excerpts": [
+        {
+          "start": 708,
+          "end": 715,
+          "text": "\t\t\tRCU_INIT_POINTER(t->real_parent, reaper);\n\t\t\tBUG_ON((!t->ptrace) != (rcu_access_pointer(t->parent) == father));\n\t\t\tif (likely(!t->ptrace))\n\t\t\t\tt->parent = t->real_parent;\n\t\t\tif (t->pdeath_signal)\n\t\t\t\tgroup_send_sig_info(t->pdeath_signal,\n\t\t\t\t\t\t    SEND_SIG_NOINFO, t,\n\t\t\t\t\t\t    PIDTYPE_TGID);"
+        },
+        {
+          "start": 732,
+          "end": 747,
+          "text": "{\n\tbool autoreap;\n\tstruct task_struct *p, *n;\n\tLIST_HEAD(dead);\n\n\twrite_lock_irq(&tasklist_lock);\n\tforget_original_parent(tsk, &dead);\n\n\tif (group_dead)\n\t\tkill_orphaned_pgrp(tsk->group_leader, NULL);\n\n\ttsk->exit_state = EXIT_ZOMBIE;\n\t/*\n\t * sub-thread or delay_group_leader(), wake up the\n\t * PIDFD_THREAD waiters.\n\t */"
+        },
+        {
+          "start": 892,
+          "end": 901,
+          "text": "\tptrace_event(PTRACE_EVENT_EXIT, code);\n\tuser_events_exit(tsk);\n\n\tio_uring_files_cancel();\n\texit_signals(tsk);  /* sets PF_EXITING */\n\n\tseccomp_filter_release(tsk);\n\n\tacct_update_integrals(tsk);\n\tgroup_dead = atomic_dec_and_test(&tsk->signal->live);"
+        }
+      ]
+    },
+    {
+      "claim": "open_and_seek_current_zero_do_not_render_record",
+      "source_key": "seq419",
+      "blob": "1dea7a8a52550e234ce3c05565ad8cfa56eeb1f2",
+      "excerpts": [
+        {
+          "start": 51,
+          "end": 68,
+          "text": "int seq_open(struct file *file, const struct seq_operations *op)\n{\n\tstruct seq_file *p;\n\n\tWARN_ON(file->private_data);\n\n\tp = kmem_cache_zalloc(seq_file_cache, GFP_KERNEL);\n\tif (!p)\n\t\treturn -ENOMEM;\n\n\tfile->private_data = p;\n\n\tmutex_init(&p->lock);\n\tp->op = op;\n\n\t// No refcounting: the lifetime of 'p' is constrained\n\t// to the lifetime of the file.\n\tp->file = file;"
+        },
+        {
+          "start": 310,
+          "end": 340,
+          "text": "loff_t seq_lseek(struct file *file, loff_t offset, int whence)\n{\n\tstruct seq_file *m = file->private_data;\n\tloff_t retval = -EINVAL;\n\n\tmutex_lock(&m->lock);\n\tm->version = file->f_version;\n\tswitch (whence) {\n\tcase SEEK_CUR:\n\t\toffset += file->f_pos;\n\tcase SEEK_SET:\n\t\tif (offset < 0)\n\t\t\tbreak;\n\t\tretval = offset;\n\t\tif (offset != m->read_pos) {\n\t\t\twhile ((retval = traverse(m, offset)) == -EAGAIN)\n\t\t\t\t;\n\t\t\tif (retval) {\n\t\t\t\t/* with extreme prejudice... */\n\t\t\t\tfile->f_pos = 0;\n\t\t\t\tm->read_pos = 0;\n\t\t\t\tm->version = 0;\n\t\t\t\tm->index = 0;\n\t\t\t\tm->count = 0;\n\t\t\t} else {\n\t\t\t\tm->read_pos = offset;\n\t\t\t\tretval = file->f_pos = offset;\n\t\t\t}\n\t\t} else {\n\t\t\tfile->f_pos = offset;\n\t\t}"
+        },
+        {
+          "start": 554,
+          "end": 571,
+          "text": "int single_open(struct file *file, int (*show)(struct seq_file *, void *),\n\t\tvoid *data)\n{\n\tstruct seq_operations *op = kmalloc(sizeof(*op), GFP_KERNEL_ACCOUNT);\n\tint res = -ENOMEM;\n\n\tif (op) {\n\t\top->start = single_start;\n\t\top->next = single_next;\n\t\top->stop = single_stop;\n\t\top->show = show;\n\t\tres = seq_open(file, op);\n\t\tif (!res)\n\t\t\t((struct seq_file *)file->private_data)->private = data;\n\t\telse\n\t\t\tkfree(op);\n\t}\n\treturn res;"
+        }
+      ]
+    },
+    {
+      "claim": "open_and_seek_current_zero_do_not_render_record",
+      "source_key": "seq612",
+      "blob": "e676c8b0cf5d8af861724222c006c67d908c2849",
+      "excerpts": [
+        {
+          "start": 57,
+          "end": 74,
+          "text": "int seq_open(struct file *file, const struct seq_operations *op)\n{\n\tstruct seq_file *p;\n\n\tWARN_ON(file->private_data);\n\n\tp = kmem_cache_zalloc(seq_file_cache, GFP_KERNEL);\n\tif (!p)\n\t\treturn -ENOMEM;\n\n\tfile->private_data = p;\n\n\tmutex_init(&p->lock);\n\tp->op = op;\n\n\t// No refcounting: the lifetime of 'p' is constrained\n\t// to the lifetime of the file.\n\tp->file = file;"
+        },
+        {
+          "start": 308,
+          "end": 338,
+          "text": "loff_t seq_lseek(struct file *file, loff_t offset, int whence)\n{\n\tstruct seq_file *m = file->private_data;\n\tloff_t retval = -EINVAL;\n\n\tmutex_lock(&m->lock);\n\tswitch (whence) {\n\tcase SEEK_CUR:\n\t\toffset += file->f_pos;\n\t\tfallthrough;\n\tcase SEEK_SET:\n\t\tif (offset < 0)\n\t\t\tbreak;\n\t\tretval = offset;\n\t\tif (offset != m->read_pos) {\n\t\t\twhile ((retval = traverse(m, offset)) == -EAGAIN)\n\t\t\t\t;\n\t\t\tif (retval) {\n\t\t\t\t/* with extreme prejudice... */\n\t\t\t\tfile->f_pos = 0;\n\t\t\t\tm->read_pos = 0;\n\t\t\t\tm->index = 0;\n\t\t\t\tm->count = 0;\n\t\t\t} else {\n\t\t\t\tm->read_pos = offset;\n\t\t\t\tretval = file->f_pos = offset;\n\t\t\t}\n\t\t} else {\n\t\t\tfile->f_pos = offset;\n\t\t}\n\t}"
+        },
+        {
+          "start": 572,
+          "end": 589,
+          "text": "int single_open(struct file *file, int (*show)(struct seq_file *, void *),\n\t\tvoid *data)\n{\n\tstruct seq_operations *op = kmalloc(sizeof(*op), GFP_KERNEL_ACCOUNT);\n\tint res = -ENOMEM;\n\n\tif (op) {\n\t\top->start = single_start;\n\t\top->next = single_next;\n\t\top->stop = single_stop;\n\t\top->show = show;\n\t\tres = seq_open(file, op);\n\t\tif (!res)\n\t\t\t((struct seq_file *)file->private_data)->private = data;\n\t\telse\n\t\t\tkfree(op);\n\t}\n\treturn res;"
+        }
+      ]
+    }
+  ],
+  "auxiliary_primary": {
+    "path": "primary/auxiliary-sources.json",
+    "blob": "3d630f1f177c77e0bd7931bb4eb58cb5fdfdb052",
+    "bytes": 11587,
+    "sha256": "d9e6a23bfd03a6876539d690542f2055a9d649c183928912cadebc43269e46a7"
+  },
+  "preserved_history": [
+    "V1 production b7953afe44cfdf787d661e02275c094be3721315 remains in v1-frozen; low FD self-rejection was found by independent review, not native failure.",
+    "V1/V2 pre-header patches omitted new-file-mode. Independent actual git apply --check failed dev/null; fixed metadata-only header and genuine serial/full reconstruction now pass. Old artifacts remain in v1-frozen/v2-pre-header-frozen.",
+    "Earlier pidfd static design10ca8ed521692754dc9dc6f8394e61e7b11d7599 remains historical; rejected compatibility/race assumptions are recorded above."
+  ],
+  "unclosed": [
+    "No candidate compiler/formatter/Clippy/native test or original App success yet.",
+    "No measured actual reparent-before-exit_state scheduling window.",
+    "No Debian10 runtime qualification; checked primary implementation compatibility only.",
+    "No inference that all process lifetimes, platforms, or B16 are closed from this App-only source repair."
+  ]
+}

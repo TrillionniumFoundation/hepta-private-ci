@@ -1,0 +1,84 @@
+{
+  "schema": "hepta-b16-native-runner-v3-root-static-review-v1",
+  "observed_at_utc": "2026-11-05T04:54:06.536897+00:00",
+  "verdict": "STATIC_PREPARATION_ACCEPTED_UNBOUND_NOT_EXECUTED",
+  "version_maps_and_local_identity_review": [
+    {
+      "version": "/v1-frozen",
+      "files": 28,
+      "map": {
+        "path": "static-proposals/b16-native-runner/v1-frozen/git-delivery-map.json",
+        "mode": "100644",
+        "bytes": 12560,
+        "sha256": "480870916da1be22957b94898c7ec33dd2c9c5505ab3055d3c6dc58d12a70eea",
+        "blob": "c4885b9005d85ddf4c1647b8a96538957a7a7ab1",
+        "scope": "Immutable version-specific create/GET installation map; native final-A binding is deliberately absent."
+      }
+    },
+    {
+      "version": "/v2-frozen",
+      "files": 32,
+      "map": {
+        "path": "static-proposals/b16-native-runner/v2-frozen/git-delivery-map-v2.json",
+        "mode": "100644",
+        "bytes": 19488,
+        "sha256": "bea4d4d656a61c6d879504a50af6761b867c8fe675023ee384fb4e166dfdbd4f",
+        "blob": "fb3357a64d69a5d276f103cd41ec7585f7803fac",
+        "scope": "Immutable version-specific create/GET installation map; native final-A binding is deliberately absent."
+      }
+    },
+    {
+      "version": "/v3-current",
+      "files": 42,
+      "map": {
+        "path": "static-proposals/b16-native-runner/git-delivery-map-v3.json",
+        "mode": "100644",
+        "bytes": 25879,
+        "sha256": "954be56807b93872b947f8550ec934669ffd60b351d769da965d143ba9683a61",
+        "blob": "240122fa2895525e8f95e6b3490a23e9bc5bd105",
+        "scope": "Immutable version-specific create/GET installation map; native final-A binding is deliberately absent."
+      }
+    }
+  ],
+  "all102_versioned_install_file_entries_reopened_and_git_sha_bytes_sha256_equal": true,
+  "runtime_integrity": {
+    "bytes": 4331,
+    "sha256": "dacf3296af381bee42fcf7bafb7796aac8cb558ea8a0df078d325e919344780a",
+    "blob": "135a66c21f78053accbd450a275847d2825e6178"
+  },
+  "all19_current_runtime_integrity_entries_verified": true,
+  "independent_review": {
+    "path": "static-proposals/b16-native-runner/independent-static-review-v3.json",
+    "mode": "100644",
+    "bytes": 33761,
+    "sha256": "22bcd0f3464262cfd8ad7f08fe6070c577e269a4f1d8e6a96a7032913ac1dc85",
+    "blob": "1dc4b57dc1b8ef6b9b66d9c9739358efbe2f797d",
+    "scope": "Independent STATIC PASS of V3 guards, 112 source objects and 24 transitions; actual native qualification and original B16 remain open."
+  },
+  "root_read_scope": [
+    "Previously read all five V1 runtime source files in full.",
+    "Read V2 executable changes: target/capacity binding, helper multiset, same-owned Bazel cache, exact source/metadata distinction, locked dev-small hygiene and phase names.",
+    "Read V3 full executable JUnit classifier delta and the independent fixed-source/actual-XML evidence. Physical marker/panic qualification remains an additional requirement after exact ordinary101.",
+    "Read independent V3 scope findings and remaining gates; static source-payload reconstruction is attributed to that independent review, not to an additional root native run."
+  ],
+  "accepted_guard_requirements": [
+    "final_A_tree is the actual post-hygiene source; last_tested_A_tree and its full artifact receipt retain their true earlier source identity.",
+    "Every B scope builds/catalogues its actual source and records its own program/helper bytes; last-tested A supplies only an explicitly pinned full helper name roster and conditional capacity basis.",
+    "Reuse one final-A Cargo target and one task-owned B Bazel cache. No cache deletion or reduced scope is authorized.",
+    "Only a sole failure element with exact type test failure with exit code 101 may reach a negative physical oracle. Timeout, leak, error, unknown or missing terminal types stop.",
+    "Original23 status/exit conditions remain distinct from internal B16/phase identifiers."
+  ],
+  "capacity": {
+    "historical_executable_bytes": 18121368592,
+    "illustrative_required_free_bytes": 48121368592,
+    "actual_current_free_bytes_bound": null,
+    "reported_after_A": "47.05 GB; display unit and exact bytes not yet bound",
+    "limit": "Planning allowances are not a measured peak. Launch requires current integer bytes, actual last-tested artifact sizes and separately reviewed remaining-growth assumptions."
+  },
+  "final_A_bound": false,
+  "last_tested_A_bound": false,
+  "native_or_cargo_bazel_run_by_this_review": false,
+  "original_physical_test_or_oracle_modified": false,
+  "original_B16_status": "OPEN",
+  "all_blockers_closed": false
+}

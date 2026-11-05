@@ -1,0 +1,1787 @@
+{
+  "schema": "hepta.b16.proposal-body-verification.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "started_at": "2026-11-05T00:31:41.934225+00:00",
+  "completed_at": "2026-11-05T00:31:42.053212+00:00",
+  "status": "ALL_BODIES_VERIFIED_AND_READ_BACK",
+  "scope": "Frozen static proposals; archival integrity only, not compile/test/runtime qualification",
+  "counts": {
+    "planned": 54,
+    "verified": 54,
+    "mismatches": 0,
+    "github_gets": 44,
+    "reused_exact_bodies": 10,
+    "buckets": {
+      "active": 43,
+      "historical": 9,
+      "supporting": 2
+    },
+    "stage_and_bucket": {
+      "r2c/active": 4,
+      "r2d/active": 8,
+      "r2e1/active": 11,
+      "r2e2a/active": 5,
+      "r2e2b/active": 3,
+      "r2e3/active": 12,
+      "r2c/historical": 5,
+      "r2e1/historical": 2,
+      "r2e2a/historical": 1,
+      "r2e3/historical": 1,
+      "r2e1/supporting": 1,
+      "r2e2a/supporting": 1
+    },
+    "roles": {
+      "source_postimage": 25,
+      "full_patch": 6,
+      "revision_delta_patch": 1,
+      "negative_source_postimage": 3,
+      "negative_patch": 2,
+      "restore_patch": 2,
+      "negative_test_only_patch": 2,
+      "repair_after_negative_patch": 2,
+      "superseded_source_postimage": 2,
+      "superseded_full_patch": 6,
+      "superseded_revision_delta_patch": 1,
+      "interface_contract": 1,
+      "superseded_manifest": 1
+    },
+    "payload_bytes": 803491,
+    "active_payload_bytes": 654416,
+    "rust_sources_archived_as_txt": 30,
+    "patches_preserving_extension": 22
+  },
+  "plan": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/body-acquisition-plan.json",
+    "bytes": 26009,
+    "sha256": "573fd75256a582e00b6edb1d445dcddcf485461cd24f380c876ba1a42e4d193a",
+    "blob": "661d5efa604dc5f8265be2fa491ab7b7b391fc0f"
+  },
+  "mapping": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/b16-proposal-verified-archive-rows.json",
+    "bytes": 31955,
+    "sha256": "2603fc08c9b990bb19ac99f64d653bee10b4447993906a68766d1dc576a78a16",
+    "blob": "36a3b3ca37db0431233fe81c8592babb32908952"
+  },
+  "manifest_inputs": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/r2c-manifest.json",
+      "bytes": 18526,
+      "sha256": "270829e249f71389e6a1c60c2e0e4e0735a685da9c1ce88e77ffd87ffe270b68",
+      "blob": "a33a305d001eed9b2aa2a3d3c916dfd5a9924a47"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/r2d-manifest.json",
+      "bytes": 21208,
+      "sha256": "523b51882e7e108fbb5a17b6f4f51c3c8891de2dacc6df82b0e23deb4f188a2c",
+      "blob": "526fa18835b0502fd388660ded3884a61fb5a456"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/r2e1-manifest.json",
+      "bytes": 20429,
+      "sha256": "379e4905b171cb1b2f95ee593971ac080a3fbcf2e189e2c27ff0e04e13167958",
+      "blob": "3220fc3785f01b45e77a49e71b1d549fd0faea22"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/r2e2a-manifest.json",
+      "bytes": 11542,
+      "sha256": "1f93de7cea300e1daf41b3bf4ed2dfc7ba21c4ce20bc762545fa38129616f3be",
+      "blob": "2fccd651a28b485348aeb8073079663870b4c771"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/r2e2b-manifest.json",
+      "bytes": 11347,
+      "sha256": "af2b89c8e6c5e6927a05ee471f40a117d1890bb75c9062cfb6b074c0022eac2b",
+      "blob": "ba53d728a0b893e990fead60055707f84821fc7b"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/r2e3-manifest.json",
+      "bytes": 32260,
+      "sha256": "4be47d9aed988921e470b86dadec21a5dc6fda65061ce3f2fd4649afb6d37b23",
+      "blob": "6985c5154f8f6c7ae42f94fd4d569dc6a1dab3b2"
+    }
+  ],
+  "acquisition_caches": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/supplemental-fetched-blobs.json",
+      "bytes": 153359,
+      "sha256": "b76afdc4090dbac64887f60496925a2c8b35bb36993b1b2c324d7a47a4917f34",
+      "blob": "4808ea154d12cd255b61b83c00ee128e6f7b3933"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-01.json",
+      "bytes": 99093,
+      "sha256": "a4ab82aa6e70ba3a7b9642be4bae8a6c3f945f4b4c7f5b3329e5c738cfe07591",
+      "blob": "143821441253f6aa04f07b050082cbfa97d0798f"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-02.json",
+      "bytes": 191065,
+      "sha256": "d651ce5147062f3cbbfed84ab216119217807b50a03298ebed111e4d7ce9e88e",
+      "blob": "adf0b20948fde5b8b56489c4aa7b80b06581d016"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-03.json",
+      "bytes": 129152,
+      "sha256": "a60294d237415f089051575f1a23a3a193907158080220bbdc2b561e21df65c1",
+      "blob": "aa991de32b3756222d4efa9f896dd14e426558e7"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-04.json",
+      "bytes": 178557,
+      "sha256": "cc2cebe0e10a4f38ef787e4f9fa420d04382bccc3bd7fcb86a4e788acae9d60b",
+      "blob": "21d074a1bb69fb17de8e7e110e29155d063abb3c"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-05.json",
+      "bytes": 68551,
+      "sha256": "8a1ca63ba337c2c305f9ace6d5174883ff3094a2361090535c4ff25ccc239709",
+      "blob": "ca4bd9a32539d955586b4b4e837be40d1c271547"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-06.json",
+      "bytes": 26127,
+      "sha256": "1a5b871a2d92cdda757eb83321d1116fe213fb459d1c6a0de2fed9c4e1bb3374",
+      "blob": "7d2679b1d96a8d1b58086991f06835322db2e016"
+    }
+  ],
+  "archive_root": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies",
+  "checks": [
+    "exact requested identity set; no duplicate Git blobs or archive paths",
+    "all decoded UTF-8 bytes match expected byte length, SHA256 and Git blob SHA1",
+    "write_bytes preserves each original body including original end-of-file bytes",
+    "each archived file re-read and independently rehashed",
+    "original manifest paths preserved; Rust archive suffix changed only to .rs.txt",
+    "patch extensions unchanged; zero .rs files beneath the inert archive root",
+    "archive directory contains exactly the planned 54 payloads"
+  ],
+  "limitations": [
+    "No patches applied, no product/native source changed, no refs changed, no builds/tests run",
+    "All static proposals remain unexecuted; no unified tested proposal tree is claimed",
+    "External dependency source payloads excluded; this is not a dependency source mirror",
+    "Historical coverage is direct references in the six frozen manifests, not recursive historical expansion",
+    "R2d's frozen predecessor note references R2c V2 tests; supplied R2c V3 test bytes remain distinct and manifests are not rewritten",
+    "Source body byte identities prove retrieval integrity, not proposal correctness or permission-boundary qualification"
+  ],
+  "entries": [
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/source/codex-rs/state/src/sqlite.rs",
+      "blob": "4a147f593ef580de5d79b1dd47b0234437c629ca",
+      "bytes": 15999,
+      "sha256": "27c9c58c8a8d1426a2bd026cbdacebd0083243dd4023f117e698149d25eaf057",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2c/source/codex-rs/state/src/sqlite.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2c/source/codex-rs/state/src/sqlite.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 15999,
+        "sha256": "27c9c58c8a8d1426a2bd026cbdacebd0083243dd4023f117e698149d25eaf057",
+        "blob": "4a147f593ef580de5d79b1dd47b0234437c629ca"
+      },
+      "readback": {
+        "bytes": 15999,
+        "sha256": "27c9c58c8a8d1426a2bd026cbdacebd0083243dd4023f117e698149d25eaf057",
+        "blob": "4a147f593ef580de5d79b1dd47b0234437c629ca"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-01.json",
+        "started_at": "2026-11-05T00:29:57.125Z",
+        "completed_at": "2026-11-05T00:29:57.657Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/source/codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "blob": "31b26a78bffe40815aa8a5b55e61b5139e7bca96",
+      "bytes": 10046,
+      "sha256": "07e66e695078f06768aa951dd5c4f2419fe99657cc90e2e263d111eeafa7ca90",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2c/source/codex-rs/state/src/sqlite_commit_gate_tests.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2c/source/codex-rs/state/src/sqlite_commit_gate_tests.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 10046,
+        "sha256": "07e66e695078f06768aa951dd5c4f2419fe99657cc90e2e263d111eeafa7ca90",
+        "blob": "31b26a78bffe40815aa8a5b55e61b5139e7bca96"
+      },
+      "readback": {
+        "bytes": 10046,
+        "sha256": "07e66e695078f06768aa951dd5c4f2419fe99657cc90e2e263d111eeafa7ca90",
+        "blob": "31b26a78bffe40815aa8a5b55e61b5139e7bca96"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-01.json",
+        "started_at": "2026-11-05T00:30:11.957Z",
+        "completed_at": "2026-11-05T00:30:12.465Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/patches/full.patch",
+      "blob": "62a94bf93569570daace6cf80972f8909b3f8736",
+      "bytes": 14383,
+      "sha256": "9cea5e6b67c466177c722069b8e66541b14c34147889914c08e34de1a5a5184b",
+      "role": "full_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2c/patches/full.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2c/patches/full.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 14383,
+        "sha256": "9cea5e6b67c466177c722069b8e66541b14c34147889914c08e34de1a5a5184b",
+        "blob": "62a94bf93569570daace6cf80972f8909b3f8736"
+      },
+      "readback": {
+        "bytes": 14383,
+        "sha256": "9cea5e6b67c466177c722069b8e66541b14c34147889914c08e34de1a5a5184b",
+        "blob": "62a94bf93569570daace6cf80972f8909b3f8736"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-01.json",
+        "started_at": "2026-11-05T00:30:11.957Z",
+        "completed_at": "2026-11-05T00:30:12.690Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/source/codex-rs/state/src/sqlite.rs",
+      "blob": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe",
+      "bytes": 17110,
+      "sha256": "9a7a44d0d6c4564683f6f62f8efbe3dfb6633d40c22bb940e3f78418360fe468",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2d/source/codex-rs/state/src/sqlite.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2d/source/codex-rs/state/src/sqlite.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 17110,
+        "sha256": "9a7a44d0d6c4564683f6f62f8efbe3dfb6633d40c22bb940e3f78418360fe468",
+        "blob": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe"
+      },
+      "readback": {
+        "bytes": 17110,
+        "sha256": "9a7a44d0d6c4564683f6f62f8efbe3dfb6633d40c22bb940e3f78418360fe468",
+        "blob": "eb73bc3c24ae6bd64a35be1187f83d5655350bbe"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-01.json",
+        "started_at": "2026-11-05T00:30:11.957Z",
+        "completed_at": "2026-11-05T00:30:12.972Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/source/codex-rs/state/src/lib.rs",
+      "blob": "50775acff67c99b80c779c8b94f9c2f0db07b175",
+      "bytes": 5199,
+      "sha256": "5c48fe243f95f66e3814a48506b6b163020d8ee275283979dc5ffa3fb4c16013",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2d/source/codex-rs/state/src/lib.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2d/source/codex-rs/state/src/lib.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 5199,
+        "sha256": "5c48fe243f95f66e3814a48506b6b163020d8ee275283979dc5ffa3fb4c16013",
+        "blob": "50775acff67c99b80c779c8b94f9c2f0db07b175"
+      },
+      "readback": {
+        "bytes": 5199,
+        "sha256": "5c48fe243f95f66e3814a48506b6b163020d8ee275283979dc5ffa3fb4c16013",
+        "blob": "50775acff67c99b80c779c8b94f9c2f0db07b175"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-01.json",
+        "started_at": "2026-11-05T00:30:11.957Z",
+        "completed_at": "2026-11-05T00:30:12.369Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/source/codex-rs/state/src/sqlite_read_barrier.rs",
+      "blob": "98ed5528e76b948c965def714994d67ecb3e0457",
+      "bytes": 3693,
+      "sha256": "c91ee20f033dec15e84ad0cad32619b54d37212a9156ae6fe4fba5077bf70fcc",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2d/source/codex-rs/state/src/sqlite_read_barrier.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2d/source/codex-rs/state/src/sqlite_read_barrier.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 3693,
+        "sha256": "c91ee20f033dec15e84ad0cad32619b54d37212a9156ae6fe4fba5077bf70fcc",
+        "blob": "98ed5528e76b948c965def714994d67ecb3e0457"
+      },
+      "readback": {
+        "bytes": 3693,
+        "sha256": "c91ee20f033dec15e84ad0cad32619b54d37212a9156ae6fe4fba5077bf70fcc",
+        "blob": "98ed5528e76b948c965def714994d67ecb3e0457"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-01.json",
+        "started_at": "2026-11-05T00:30:11.957Z",
+        "completed_at": "2026-11-05T00:30:12.392Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/source/codex-rs/state/src/sqlite_read_barrier_tests.rs",
+      "blob": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd",
+      "bytes": 10249,
+      "sha256": "ae8a7af902d4e6c848e90221ab2dc190b4fe7060bb582dae83452dc2f61d17e7",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2d/source/codex-rs/state/src/sqlite_read_barrier_tests.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2d/source/codex-rs/state/src/sqlite_read_barrier_tests.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 10249,
+        "sha256": "ae8a7af902d4e6c848e90221ab2dc190b4fe7060bb582dae83452dc2f61d17e7",
+        "blob": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "readback": {
+        "bytes": 10249,
+        "sha256": "ae8a7af902d4e6c848e90221ab2dc190b4fe7060bb582dae83452dc2f61d17e7",
+        "blob": "dc73d453b2bc5b34fca584c31fbdd56db9b165fd"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-01.json",
+        "started_at": "2026-11-05T00:30:11.957Z",
+        "completed_at": "2026-11-05T00:30:12.459Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/patches/full.patch",
+      "blob": "4582d6909dd0eb18e0f8f8a12d71c791a14c95a2",
+      "bytes": 16827,
+      "sha256": "2fc72480a7c7ff5b5d6d241818b6df0f84e85ec1653973672a754636498dafbf",
+      "role": "full_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2d/patches/full.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2d/patches/full.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 16827,
+        "sha256": "2fc72480a7c7ff5b5d6d241818b6df0f84e85ec1653973672a754636498dafbf",
+        "blob": "4582d6909dd0eb18e0f8f8a12d71c791a14c95a2"
+      },
+      "readback": {
+        "bytes": 16827,
+        "sha256": "2fc72480a7c7ff5b5d6d241818b6df0f84e85ec1653973672a754636498dafbf",
+        "blob": "4582d6909dd0eb18e0f8f8a12d71c791a14c95a2"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-01.json",
+        "started_at": "2026-11-05T00:30:11.957Z",
+        "completed_at": "2026-11-05T00:30:12.402Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/source/codex-rs/state/src/sqlite.rs",
+      "blob": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea",
+      "bytes": 18971,
+      "sha256": "110d0be7ae0eb1f6c62e23363c281338109115ddffc04e6ab67da6a6dff74a73",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e1/source/codex-rs/state/src/sqlite.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e1/source/codex-rs/state/src/sqlite.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 18971,
+        "sha256": "110d0be7ae0eb1f6c62e23363c281338109115ddffc04e6ab67da6a6dff74a73",
+        "blob": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea"
+      },
+      "readback": {
+        "bytes": 18971,
+        "sha256": "110d0be7ae0eb1f6c62e23363c281338109115ddffc04e6ab67da6a6dff74a73",
+        "blob": "7b9ee0117d7425e20e4f08255aa0fe3e319f26ea"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-02.json",
+        "started_at": "2026-11-05T00:30:21.168Z",
+        "completed_at": "2026-11-05T00:30:21.672Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store.rs",
+      "blob": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c",
+      "bytes": 73694,
+      "sha256": "41f6496d0176ddf8243e46593ea049b2f48531bbd711f86484811814a9e7f33f",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 73694,
+        "sha256": "41f6496d0176ddf8243e46593ea049b2f48531bbd711f86484811814a9e7f33f",
+        "blob": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c"
+      },
+      "readback": {
+        "bytes": 73694,
+        "sha256": "41f6496d0176ddf8243e46593ea049b2f48531bbd711f86484811814a9e7f33f",
+        "blob": "f670ec69480bc8960c7a3f90a9dc80e4ebd9763c"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-02.json",
+        "started_at": "2026-11-05T00:30:21.168Z",
+        "completed_at": "2026-11-05T00:30:21.628Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "blob": "994230252cf0992b811c0aba08f5e4d97565c923",
+      "bytes": 27525,
+      "sha256": "109e7d9e6b46b6e48f203276fbbc1acd6032b89fa21c0c1002b31b438e7ac0bd",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store_recovery.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store_recovery.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 27525,
+        "sha256": "109e7d9e6b46b6e48f203276fbbc1acd6032b89fa21c0c1002b31b438e7ac0bd",
+        "blob": "994230252cf0992b811c0aba08f5e4d97565c923"
+      },
+      "readback": {
+        "bytes": 27525,
+        "sha256": "109e7d9e6b46b6e48f203276fbbc1acd6032b89fa21c0c1002b31b438e7ac0bd",
+        "blob": "994230252cf0992b811c0aba08f5e4d97565c923"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-02.json",
+        "started_at": "2026-11-05T00:30:21.168Z",
+        "completed_at": "2026-11-05T00:30:21.587Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "blob": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7",
+      "bytes": 1383,
+      "sha256": "ae68d821c85b454dd6f66447d63996baf9192ac9a25d531a73624b9350135139",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store_gate.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e1/source/codex-rs/hepta-memory/src/cognitive_store_gate.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 1383,
+        "sha256": "ae68d821c85b454dd6f66447d63996baf9192ac9a25d531a73624b9350135139",
+        "blob": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7"
+      },
+      "readback": {
+        "bytes": 1383,
+        "sha256": "ae68d821c85b454dd6f66447d63996baf9192ac9a25d531a73624b9350135139",
+        "blob": "f69a43e09aa1864dda3e208ffb7a53b41e05d9d7"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-02.json",
+        "started_at": "2026-11-05T00:30:21.168Z",
+        "completed_at": "2026-11-05T00:30:21.561Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender.rs",
+      "blob": "6b3102c0ec4422b3658415df2372a7480990c6e2",
+      "bytes": 20024,
+      "sha256": "63a7d654926630ef8849e4691df6578bce32d2801e0c9391cbbbb9c55fd86295",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 20024,
+        "sha256": "63a7d654926630ef8849e4691df6578bce32d2801e0c9391cbbbb9c55fd86295",
+        "blob": "6b3102c0ec4422b3658415df2372a7480990c6e2"
+      },
+      "readback": {
+        "bytes": 20024,
+        "sha256": "63a7d654926630ef8849e4691df6578bce32d2801e0c9391cbbbb9c55fd86295",
+        "blob": "6b3102c0ec4422b3658415df2372a7480990c6e2"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-02.json",
+        "started_at": "2026-11-05T00:30:21.168Z",
+        "completed_at": "2026-11-05T00:30:21.570Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender_store.rs",
+      "blob": "378243e46d48df099d69b494b8879381221b3964",
+      "bytes": 10954,
+      "sha256": "e461757c0b44422001c70799c73c97049498d72880ef5cd59f80ff686b044333",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender_store.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender_store.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 10954,
+        "sha256": "e461757c0b44422001c70799c73c97049498d72880ef5cd59f80ff686b044333",
+        "blob": "378243e46d48df099d69b494b8879381221b3964"
+      },
+      "readback": {
+        "bytes": 10954,
+        "sha256": "e461757c0b44422001c70799c73c97049498d72880ef5cd59f80ff686b044333",
+        "blob": "378243e46d48df099d69b494b8879381221b3964"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-02.json",
+        "started_at": "2026-11-05T00:30:21.168Z",
+        "completed_at": "2026-11-05T00:30:21.631Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs",
+      "blob": "62d85c330446b7b5059016d7501bcd85af2e556a",
+      "bytes": 8168,
+      "sha256": "a15602e8946499da789282a2fcd1b26909b34a8c86f5fadd8187aa86c3490bda",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e1/source/codex-rs/hepta-memory/src/objective_sender_commit_interlock_tests.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 8168,
+        "sha256": "a15602e8946499da789282a2fcd1b26909b34a8c86f5fadd8187aa86c3490bda",
+        "blob": "62d85c330446b7b5059016d7501bcd85af2e556a"
+      },
+      "readback": {
+        "bytes": 8168,
+        "sha256": "a15602e8946499da789282a2fcd1b26909b34a8c86f5fadd8187aa86c3490bda",
+        "blob": "62d85c330446b7b5059016d7501bcd85af2e556a"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-02.json",
+        "started_at": "2026-11-05T00:30:21.168Z",
+        "completed_at": "2026-11-05T00:30:21.643Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/patches/full.patch",
+      "blob": "6ddf11215e309b3fcb7e19d521c8d2651a3a0726",
+      "bytes": 21826,
+      "sha256": "bfed033c82b2590eaf42415739c7349cee9dd5d6ab0ac3e6227add57a073605b",
+      "role": "full_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e1/patches/full.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e1/patches/full.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 21826,
+        "sha256": "bfed033c82b2590eaf42415739c7349cee9dd5d6ab0ac3e6227add57a073605b",
+        "blob": "6ddf11215e309b3fcb7e19d521c8d2651a3a0726"
+      },
+      "readback": {
+        "bytes": 21826,
+        "sha256": "bfed033c82b2590eaf42415739c7349cee9dd5d6ab0ac3e6227add57a073605b",
+        "blob": "6ddf11215e309b3fcb7e19d521c8d2651a3a0726"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-02.json",
+        "started_at": "2026-11-05T00:30:21.168Z",
+        "completed_at": "2026-11-05T00:30:21.602Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e2a",
+      "path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/lib.rs",
+      "blob": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33",
+      "bytes": 26608,
+      "sha256": "bdaafbdfc78a8ded68676729d401d0b8a74fbeb65bcfd296014a3fa08dae7c86",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/lib.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/lib.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 26608,
+        "sha256": "bdaafbdfc78a8ded68676729d401d0b8a74fbeb65bcfd296014a3fa08dae7c86",
+        "blob": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33"
+      },
+      "readback": {
+        "bytes": 26608,
+        "sha256": "bdaafbdfc78a8ded68676729d401d0b8a74fbeb65bcfd296014a3fa08dae7c86",
+        "blob": "d8c5fd3d36bf3fbca4ba33ecf80ba6ae46756f33"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-03.json",
+        "started_at": "2026-11-05T00:30:30.903Z",
+        "completed_at": "2026-11-05T00:30:31.320Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e2a",
+      "path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs",
+      "blob": "c6bada509bf9108a2dffad91288b1432c136ef20",
+      "bytes": 5040,
+      "sha256": "7d88111a6ee92e91af1317f6e00fe5e6cd45b86571853dbeb39777a75df7dd40",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_wire.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 5040,
+        "sha256": "7d88111a6ee92e91af1317f6e00fe5e6cd45b86571853dbeb39777a75df7dd40",
+        "blob": "c6bada509bf9108a2dffad91288b1432c136ef20"
+      },
+      "readback": {
+        "bytes": 5040,
+        "sha256": "7d88111a6ee92e91af1317f6e00fe5e6cd45b86571853dbeb39777a75df7dd40",
+        "blob": "c6bada509bf9108a2dffad91288b1432c136ef20"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-03.json",
+        "started_at": "2026-11-05T00:30:30.903Z",
+        "completed_at": "2026-11-05T00:30:31.261Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e2a",
+      "path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "blob": "ea998b49788062dea8d9d93d786e771a76a8e937",
+      "bytes": 6187,
+      "sha256": "6605e4ba63809117700e93d343e6e4ebe532c7809edb96a230031420e5656aaa",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 6187,
+        "sha256": "6605e4ba63809117700e93d343e6e4ebe532c7809edb96a230031420e5656aaa",
+        "blob": "ea998b49788062dea8d9d93d786e771a76a8e937"
+      },
+      "readback": {
+        "bytes": 6187,
+        "sha256": "6605e4ba63809117700e93d343e6e4ebe532c7809edb96a230031420e5656aaa",
+        "blob": "ea998b49788062dea8d9d93d786e771a76a8e937"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-03.json",
+        "started_at": "2026-11-05T00:30:30.903Z",
+        "completed_at": "2026-11-05T00:30:31.268Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e2a",
+      "path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "blob": "04647377829ad94baddc8fef1e92538902e60385",
+      "bytes": 6755,
+      "sha256": "c2fb0dd3dcc42adf47c082a462ab391920c6fcd9e0d28a8d05f61ebc968ca631",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e2a/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 6755,
+        "sha256": "c2fb0dd3dcc42adf47c082a462ab391920c6fcd9e0d28a8d05f61ebc968ca631",
+        "blob": "04647377829ad94baddc8fef1e92538902e60385"
+      },
+      "readback": {
+        "bytes": 6755,
+        "sha256": "c2fb0dd3dcc42adf47c082a462ab391920c6fcd9e0d28a8d05f61ebc968ca631",
+        "blob": "04647377829ad94baddc8fef1e92538902e60385"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-03.json",
+        "started_at": "2026-11-05T00:30:30.903Z",
+        "completed_at": "2026-11-05T00:30:31.268Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e2a",
+      "path": "b16-proposals/r2e2a/patches/full.patch",
+      "blob": "9743a504dc5993a5d7b47dac49e94e64e158a252",
+      "bytes": 20834,
+      "sha256": "835df1d767cb4f95e4d577072c66c0034978db2d0ce8c51f90163482ecec4d91",
+      "role": "full_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e2a/patches/full.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e2a/patches/full.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 20834,
+        "sha256": "835df1d767cb4f95e4d577072c66c0034978db2d0ce8c51f90163482ecec4d91",
+        "blob": "9743a504dc5993a5d7b47dac49e94e64e158a252"
+      },
+      "readback": {
+        "bytes": 20834,
+        "sha256": "835df1d767cb4f95e4d577072c66c0034978db2d0ce8c51f90163482ecec4d91",
+        "blob": "9743a504dc5993a5d7b47dac49e94e64e158a252"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-03.json",
+        "started_at": "2026-11-05T00:30:30.903Z",
+        "completed_at": "2026-11-05T00:30:31.278Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e2b",
+      "path": "b16-proposals/r2e2b/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs",
+      "blob": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f",
+      "bytes": 11437,
+      "sha256": "bea6cd9ed80d5a04e5cfc7d47707b9313d216509449e0360cbcd4f6ac566b3ae",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e2b/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e2b/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 11437,
+        "sha256": "bea6cd9ed80d5a04e5cfc7d47707b9313d216509449e0360cbcd4f6ac566b3ae",
+        "blob": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f"
+      },
+      "readback": {
+        "bytes": 11437,
+        "sha256": "bea6cd9ed80d5a04e5cfc7d47707b9313d216509449e0360cbcd4f6ac566b3ae",
+        "blob": "3a6b75875c7e265ba71e7948b70e7e3fcd608c0f"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-03.json",
+        "started_at": "2026-11-05T00:30:30.903Z",
+        "completed_at": "2026-11-05T00:30:31.306Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e2b",
+      "path": "b16-proposals/r2e2b/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs",
+      "blob": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1",
+      "bytes": 20212,
+      "sha256": "9e19b65bc67a3b43c87611006b363c5e65a089a6061bfd6bcce01a1819e2b931",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e2b/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e2b/source/codex-rs/hepta-memory/src/cognitive_checkpoint_codec_tests.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 20212,
+        "sha256": "9e19b65bc67a3b43c87611006b363c5e65a089a6061bfd6bcce01a1819e2b931",
+        "blob": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1"
+      },
+      "readback": {
+        "bytes": 20212,
+        "sha256": "9e19b65bc67a3b43c87611006b363c5e65a089a6061bfd6bcce01a1819e2b931",
+        "blob": "60a9fafef10f77d2ae85f3d8f8c1c22d60e27eb1"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-03.json",
+        "started_at": "2026-11-05T00:30:30.903Z",
+        "completed_at": "2026-11-05T00:30:31.317Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e2b",
+      "path": "b16-proposals/r2e2b/patches/full.patch",
+      "blob": "cbeca259e8fe571e8926c6331df6fa67dfbffa0b",
+      "bytes": 24918,
+      "sha256": "d97257906289e2556fcfd72bb6118ab764a8181303237bac94d62ede910f189c",
+      "role": "full_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e2b/patches/full.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e2b/patches/full.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 24918,
+        "sha256": "d97257906289e2556fcfd72bb6118ab764a8181303237bac94d62ede910f189c",
+        "blob": "cbeca259e8fe571e8926c6331df6fa67dfbffa0b"
+      },
+      "readback": {
+        "bytes": 24918,
+        "sha256": "d97257906289e2556fcfd72bb6118ab764a8181303237bac94d62ede910f189c",
+        "blob": "cbeca259e8fe571e8926c6331df6fa67dfbffa0b"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-03.json",
+        "started_at": "2026-11-05T00:30:30.903Z",
+        "completed_at": "2026-11-05T00:30:31.268Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/source/codex-rs/state/src/sqlite.rs",
+      "blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+      "bytes": 19950,
+      "sha256": "19d676843c5eda7570d88c5ffed08d9428a3527b1048fd3d1ec4ed40fb2a90e1",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e3/source/codex-rs/state/src/sqlite.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e3/source/codex-rs/state/src/sqlite.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 19950,
+        "sha256": "19d676843c5eda7570d88c5ffed08d9428a3527b1048fd3d1ec4ed40fb2a90e1",
+        "blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad"
+      },
+      "readback": {
+        "bytes": 19950,
+        "sha256": "19d676843c5eda7570d88c5ffed08d9428a3527b1048fd3d1ec4ed40fb2a90e1",
+        "blob": "b9fb565cadd14f6541bfc8421164897e2907e2ad"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-04.json",
+        "started_at": "2026-11-05T00:30:38.552Z",
+        "completed_at": "2026-11-05T00:30:39.365Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store.rs",
+      "blob": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006",
+      "bytes": 74300,
+      "sha256": "6c978e972615db308542b53d361edfc68bd77f8e2eac6afb5bde6b40286d7440",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 74300,
+        "sha256": "6c978e972615db308542b53d361edfc68bd77f8e2eac6afb5bde6b40286d7440",
+        "blob": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006"
+      },
+      "readback": {
+        "bytes": 74300,
+        "sha256": "6c978e972615db308542b53d361edfc68bd77f8e2eac6afb5bde6b40286d7440",
+        "blob": "5c0704c4e70ffdf2f65864a42da5e6e48bf79006"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-04.json",
+        "started_at": "2026-11-05T00:30:38.552Z",
+        "completed_at": "2026-11-05T00:30:38.940Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store_gate.rs",
+      "blob": "f351700e3a7f382217db9f11f164871e7b2a09e4",
+      "bytes": 1758,
+      "sha256": "216612cbe1d27e3ec75e80e3a54cb54768b3d438667fa69968627cd4d9a9f597",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store_gate.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store_gate.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 1758,
+        "sha256": "216612cbe1d27e3ec75e80e3a54cb54768b3d438667fa69968627cd4d9a9f597",
+        "blob": "f351700e3a7f382217db9f11f164871e7b2a09e4"
+      },
+      "readback": {
+        "bytes": 1758,
+        "sha256": "216612cbe1d27e3ec75e80e3a54cb54768b3d438667fa69968627cd4d9a9f597",
+        "blob": "f351700e3a7f382217db9f11f164871e7b2a09e4"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-04.json",
+        "started_at": "2026-11-05T00:30:38.552Z",
+        "completed_at": "2026-11-05T00:30:38.964Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "blob": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c",
+      "bytes": 27552,
+      "sha256": "7271ec690ac9bd1ef7242f44d127c74dd6232fca107ac89548da285466648599",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store_recovery.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e3/source/codex-rs/hepta-memory/src/cognitive_store_recovery.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 27552,
+        "sha256": "7271ec690ac9bd1ef7242f44d127c74dd6232fca107ac89548da285466648599",
+        "blob": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c"
+      },
+      "readback": {
+        "bytes": 27552,
+        "sha256": "7271ec690ac9bd1ef7242f44d127c74dd6232fca107ac89548da285466648599",
+        "blob": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-04.json",
+        "started_at": "2026-11-05T00:30:38.552Z",
+        "completed_at": "2026-11-05T00:30:39.011Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/objective_sender.rs",
+      "blob": "e3789436918efae898ecaac96d49e6ac73b37f76",
+      "bytes": 20125,
+      "sha256": "556f82d57e3a3d28ea741fa64423f4bb0ac42176daf82eaada1d983fb18795f8",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/objective_sender.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e3/source/codex-rs/hepta-memory/src/objective_sender.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 20125,
+        "sha256": "556f82d57e3a3d28ea741fa64423f4bb0ac42176daf82eaada1d983fb18795f8",
+        "blob": "e3789436918efae898ecaac96d49e6ac73b37f76"
+      },
+      "readback": {
+        "bytes": 20125,
+        "sha256": "556f82d57e3a3d28ea741fa64423f4bb0ac42176daf82eaada1d983fb18795f8",
+        "blob": "e3789436918efae898ecaac96d49e6ac73b37f76"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-04.json",
+        "started_at": "2026-11-05T00:30:38.552Z",
+        "completed_at": "2026-11-05T00:30:38.920Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs",
+      "blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380",
+      "bytes": 8421,
+      "sha256": "6056776c17d1d4f0649ae2936dfad893a16aa52cba175d9859a0e5a8d86f2682",
+      "role": "source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e3/source/codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e3/source/codex-rs/hepta-memory/src/objective_sender_connection_custody_tests.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 8421,
+        "sha256": "6056776c17d1d4f0649ae2936dfad893a16aa52cba175d9859a0e5a8d86f2682",
+        "blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380"
+      },
+      "readback": {
+        "bytes": 8421,
+        "sha256": "6056776c17d1d4f0649ae2936dfad893a16aa52cba175d9859a0e5a8d86f2682",
+        "blob": "09a61b69e8cd34f27a0c968433b2b29df9c95380"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-04.json",
+        "started_at": "2026-11-05T00:30:38.552Z",
+        "completed_at": "2026-11-05T00:30:38.888Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/patches/full.patch",
+      "blob": "5b5a2dee4b33b5946ec21825ed7fc916487a0bf9",
+      "bytes": 17702,
+      "sha256": "123a287b37d37a791208970e2908fc568e8567d86847f8ef1bb0102704aab974",
+      "role": "full_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e3/patches/full.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e3/patches/full.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 17702,
+        "sha256": "123a287b37d37a791208970e2908fc568e8567d86847f8ef1bb0102704aab974",
+        "blob": "5b5a2dee4b33b5946ec21825ed7fc916487a0bf9"
+      },
+      "readback": {
+        "bytes": 17702,
+        "sha256": "123a287b37d37a791208970e2908fc568e8567d86847f8ef1bb0102704aab974",
+        "blob": "5b5a2dee4b33b5946ec21825ed7fc916487a0bf9"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-04.json",
+        "started_at": "2026-11-05T00:30:38.552Z",
+        "completed_at": "2026-11-05T00:30:39.043Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/patches/revision-v2-to-v3.patch",
+      "blob": "ccd3ff82ae33fd44b4f1ca625d853a4a5f5061ec",
+      "bytes": 682,
+      "sha256": "e9922dfdd59475d89ffa327cde87621b0cd713102d24fd39af8e71d6779fda60",
+      "role": "revision_delta_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2c/patches/revision-v2-to-v3.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2c/patches/revision-v2-to-v3.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 682,
+        "sha256": "e9922dfdd59475d89ffa327cde87621b0cd713102d24fd39af8e71d6779fda60",
+        "blob": "ccd3ff82ae33fd44b4f1ca625d853a4a5f5061ec"
+      },
+      "readback": {
+        "bytes": 682,
+        "sha256": "e9922dfdd59475d89ffa327cde87621b0cd713102d24fd39af8e71d6779fda60",
+        "blob": "ccd3ff82ae33fd44b4f1ca625d853a4a5f5061ec"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-04.json",
+        "started_at": "2026-11-05T00:30:38.552Z",
+        "completed_at": "2026-11-05T00:30:38.952Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/negative/cancel-close-on-drop/codex-rs/state/src/sqlite_read_barrier.rs",
+      "blob": "6b0909f7909eb323d7ecf11fc292598aee8f2405",
+      "bytes": 3657,
+      "sha256": "0e7c28fad15f1bbe591f0deaa2a6aa8d1336520e35c20e6c6b5444413fef6cd9",
+      "role": "negative_source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2d/negative/cancel-close-on-drop/codex-rs/state/src/sqlite_read_barrier.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2d/negative/cancel-close-on-drop/codex-rs/state/src/sqlite_read_barrier.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 3657,
+        "sha256": "0e7c28fad15f1bbe591f0deaa2a6aa8d1336520e35c20e6c6b5444413fef6cd9",
+        "blob": "6b0909f7909eb323d7ecf11fc292598aee8f2405"
+      },
+      "readback": {
+        "bytes": 3657,
+        "sha256": "0e7c28fad15f1bbe591f0deaa2a6aa8d1336520e35c20e6c6b5444413fef6cd9",
+        "blob": "6b0909f7909eb323d7ecf11fc292598aee8f2405"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-05.json",
+        "started_at": "2026-11-05T00:30:46.369Z",
+        "completed_at": "2026-11-05T00:30:49.033Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/patches/final-to-cancel-counterfactual.patch",
+      "blob": "4f6b0999e4a38e60c97fdbe60d47d85de928b797",
+      "bytes": 629,
+      "sha256": "9735a81e65d88aeab3f2dc0ae6cbc88560e4e199ce8f349de59bd53174244666",
+      "role": "negative_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2d/patches/final-to-cancel-counterfactual.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2d/patches/final-to-cancel-counterfactual.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 629,
+        "sha256": "9735a81e65d88aeab3f2dc0ae6cbc88560e4e199ce8f349de59bd53174244666",
+        "blob": "4f6b0999e4a38e60c97fdbe60d47d85de928b797"
+      },
+      "readback": {
+        "bytes": 629,
+        "sha256": "9735a81e65d88aeab3f2dc0ae6cbc88560e4e199ce8f349de59bd53174244666",
+        "blob": "4f6b0999e4a38e60c97fdbe60d47d85de928b797"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-05.json",
+        "started_at": "2026-11-05T00:30:46.369Z",
+        "completed_at": "2026-11-05T00:30:46.777Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2d",
+      "path": "b16-proposals/r2d/patches/cancel-counterfactual-to-final.patch",
+      "blob": "1a2fefb5e147a6beec23104ac45eb881a3ca0f42",
+      "bytes": 629,
+      "sha256": "20321f0e1189c5189ffc82aa6295bbc087087883b961f7fe7c0c16ebadd1628d",
+      "role": "restore_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2d/patches/cancel-counterfactual-to-final.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2d/patches/cancel-counterfactual-to-final.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 629,
+        "sha256": "20321f0e1189c5189ffc82aa6295bbc087087883b961f7fe7c0c16ebadd1628d",
+        "blob": "1a2fefb5e147a6beec23104ac45eb881a3ca0f42"
+      },
+      "readback": {
+        "bytes": 629,
+        "sha256": "20321f0e1189c5189ffc82aa6295bbc087087883b961f7fe7c0c16ebadd1628d",
+        "blob": "1a2fefb5e147a6beec23104ac45eb881a3ca0f42"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-05.json",
+        "started_at": "2026-11-05T00:30:46.369Z",
+        "completed_at": "2026-11-05T00:30:47.135Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/patches/test-only-negative.patch",
+      "blob": "2909207b49983944e5b5c1e021975b64b1d0ff6a",
+      "bytes": 9099,
+      "sha256": "54594950c557578fd3ff64fcc0979a1ff991d58d35febd766c18172bdc8ae10e",
+      "role": "negative_test_only_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e1/patches/test-only-negative.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e1/patches/test-only-negative.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 9099,
+        "sha256": "54594950c557578fd3ff64fcc0979a1ff991d58d35febd766c18172bdc8ae10e",
+        "blob": "2909207b49983944e5b5c1e021975b64b1d0ff6a"
+      },
+      "readback": {
+        "bytes": 9099,
+        "sha256": "54594950c557578fd3ff64fcc0979a1ff991d58d35febd766c18172bdc8ae10e",
+        "blob": "2909207b49983944e5b5c1e021975b64b1d0ff6a"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-05.json",
+        "started_at": "2026-11-05T00:30:46.369Z",
+        "completed_at": "2026-11-05T00:30:46.745Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/negative/test-only/codex-rs/hepta-memory/src/objective_sender.rs",
+      "blob": "36105804909ecccfb02e039a10dfa43a5a6f5ba7",
+      "bytes": 19590,
+      "sha256": "c11c050f86ec4e1c42bfd809a7da5b79877d5173272e0d85a8daade6687f61e5",
+      "role": "negative_source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e1/negative/test-only/codex-rs/hepta-memory/src/objective_sender.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e1/negative/test-only/codex-rs/hepta-memory/src/objective_sender.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 19590,
+        "sha256": "c11c050f86ec4e1c42bfd809a7da5b79877d5173272e0d85a8daade6687f61e5",
+        "blob": "36105804909ecccfb02e039a10dfa43a5a6f5ba7"
+      },
+      "readback": {
+        "bytes": 19590,
+        "sha256": "c11c050f86ec4e1c42bfd809a7da5b79877d5173272e0d85a8daade6687f61e5",
+        "blob": "36105804909ecccfb02e039a10dfa43a5a6f5ba7"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-05.json",
+        "started_at": "2026-11-05T00:30:46.369Z",
+        "completed_at": "2026-11-05T00:30:46.775Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/patches/repair-after-negative.patch",
+      "blob": "69c4991b024b0db7e0e49b65fdf685864a12c64c",
+      "bytes": 12938,
+      "sha256": "6ebed99ab45c4913970fc6816fa64a7c1081a5d0a299c48a547572f5fc63c5e1",
+      "role": "repair_after_negative_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e1/patches/repair-after-negative.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e1/patches/repair-after-negative.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 12938,
+        "sha256": "6ebed99ab45c4913970fc6816fa64a7c1081a5d0a299c48a547572f5fc63c5e1",
+        "blob": "69c4991b024b0db7e0e49b65fdf685864a12c64c"
+      },
+      "readback": {
+        "bytes": 12938,
+        "sha256": "6ebed99ab45c4913970fc6816fa64a7c1081a5d0a299c48a547572f5fc63c5e1",
+        "blob": "69c4991b024b0db7e0e49b65fdf685864a12c64c"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-05.json",
+        "started_at": "2026-11-05T00:30:46.369Z",
+        "completed_at": "2026-11-05T00:30:46.796Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/patches/test-only-negative.patch",
+      "blob": "d6d9de20165a61736ae033f3e5fd65c14e3170e1",
+      "bytes": 9372,
+      "sha256": "834f9e30e760f48bbbd5a8930c7a74e7ddd89f38af7e143bbaf713f10d8e23e6",
+      "role": "negative_test_only_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e3/patches/test-only-negative.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e3/patches/test-only-negative.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 9372,
+        "sha256": "834f9e30e760f48bbbd5a8930c7a74e7ddd89f38af7e143bbaf713f10d8e23e6",
+        "blob": "d6d9de20165a61736ae033f3e5fd65c14e3170e1"
+      },
+      "readback": {
+        "bytes": 9372,
+        "sha256": "834f9e30e760f48bbbd5a8930c7a74e7ddd89f38af7e143bbaf713f10d8e23e6",
+        "blob": "d6d9de20165a61736ae033f3e5fd65c14e3170e1"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-05.json",
+        "started_at": "2026-11-05T00:30:46.369Z",
+        "completed_at": "2026-11-05T00:30:46.800Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/patches/repair-after-negative.patch",
+      "blob": "e9653333486372ba9d949ca26052af66873ecd34",
+      "bytes": 8330,
+      "sha256": "c95310545e5d763965b99891005da844d2b06b3645c6b404ac7eaa9d21f8de22",
+      "role": "repair_after_negative_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e3/patches/repair-after-negative.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e3/patches/repair-after-negative.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 8330,
+        "sha256": "c95310545e5d763965b99891005da844d2b06b3645c6b404ac7eaa9d21f8de22",
+        "blob": "e9653333486372ba9d949ca26052af66873ecd34"
+      },
+      "readback": {
+        "bytes": 8330,
+        "sha256": "c95310545e5d763965b99891005da844d2b06b3645c6b404ac7eaa9d21f8de22",
+        "blob": "e9653333486372ba9d949ca26052af66873ecd34"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-05.json",
+        "started_at": "2026-11-05T00:30:46.369Z",
+        "completed_at": "2026-11-05T00:30:46.781Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/negative/no-native-anchor/codex-rs/state/src/sqlite.rs",
+      "blob": "3c2278650ac27398a24c893465090f5cea57ca3d",
+      "bytes": 19432,
+      "sha256": "662ee1d4eaaaa92244edb7ea635c0514bf0263c3228592f3576534c79ccfbc9b",
+      "role": "negative_source_postimage",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e3/negative/no-native-anchor/codex-rs/state/src/sqlite.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e3/negative/no-native-anchor/codex-rs/state/src/sqlite.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 19432,
+        "sha256": "662ee1d4eaaaa92244edb7ea635c0514bf0263c3228592f3576534c79ccfbc9b",
+        "blob": "3c2278650ac27398a24c893465090f5cea57ca3d"
+      },
+      "readback": {
+        "bytes": 19432,
+        "sha256": "662ee1d4eaaaa92244edb7ea635c0514bf0263c3228592f3576534c79ccfbc9b",
+        "blob": "3c2278650ac27398a24c893465090f5cea57ca3d"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-06.json",
+        "started_at": "2026-11-05T00:30:56.861Z",
+        "completed_at": "2026-11-05T00:30:57.269Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/patches/final-to-no-native-anchor.patch",
+      "blob": "7b931b638dce1e8a8496b1898f9ff0a0fb9abe61",
+      "bytes": 1104,
+      "sha256": "c8b3234ac01c1fa4a66430729201b8c237ad15fc8dd88797737a64d27bcb7cf0",
+      "role": "negative_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e3/patches/final-to-no-native-anchor.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e3/patches/final-to-no-native-anchor.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 1104,
+        "sha256": "c8b3234ac01c1fa4a66430729201b8c237ad15fc8dd88797737a64d27bcb7cf0",
+        "blob": "7b931b638dce1e8a8496b1898f9ff0a0fb9abe61"
+      },
+      "readback": {
+        "bytes": 1104,
+        "sha256": "c8b3234ac01c1fa4a66430729201b8c237ad15fc8dd88797737a64d27bcb7cf0",
+        "blob": "7b931b638dce1e8a8496b1898f9ff0a0fb9abe61"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-06.json",
+        "started_at": "2026-11-05T00:30:56.861Z",
+        "completed_at": "2026-11-05T00:30:57.291Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/patches/no-native-anchor-to-final.patch",
+      "blob": "e14e90930772b7a75580f55e7975439f6750d58f",
+      "bytes": 1104,
+      "sha256": "ba7d339e3059488f68637e72759b93a2ab8ca75448d2d8263c58f6b250ea0c6d",
+      "role": "restore_patch",
+      "bucket": "active",
+      "archive_path": "b16-proposals/r2e3/patches/no-native-anchor-to-final.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e3/patches/no-native-anchor-to-final.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 1104,
+        "sha256": "ba7d339e3059488f68637e72759b93a2ab8ca75448d2d8263c58f6b250ea0c6d",
+        "blob": "e14e90930772b7a75580f55e7975439f6750d58f"
+      },
+      "readback": {
+        "bytes": 1104,
+        "sha256": "ba7d339e3059488f68637e72759b93a2ab8ca75448d2d8263c58f6b250ea0c6d",
+        "blob": "e14e90930772b7a75580f55e7975439f6750d58f"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-06.json",
+        "started_at": "2026-11-05T00:30:56.861Z",
+        "completed_at": "2026-11-05T00:30:57.264Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/superseded/source-v2/codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "blob": "e1ea6dcb1c7911d42e0e892c2697dedf4a56f665",
+      "bytes": 9853,
+      "sha256": "d4a1b642be1a6048cd78dce080e833ce0796e7530f2f7fecd3e9d03b277438b5",
+      "role": "superseded_source_postimage",
+      "bucket": "historical",
+      "archive_path": "b16-proposals/r2c/superseded/source-v2/codex-rs/state/src/sqlite_commit_gate_tests.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2c/superseded/source-v2/codex-rs/state/src/sqlite_commit_gate_tests.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 9853,
+        "sha256": "d4a1b642be1a6048cd78dce080e833ce0796e7530f2f7fecd3e9d03b277438b5",
+        "blob": "e1ea6dcb1c7911d42e0e892c2697dedf4a56f665"
+      },
+      "readback": {
+        "bytes": 9853,
+        "sha256": "d4a1b642be1a6048cd78dce080e833ce0796e7530f2f7fecd3e9d03b277438b5",
+        "blob": "e1ea6dcb1c7911d42e0e892c2697dedf4a56f665"
+      },
+      "acquisition": {
+        "mode": "reused_previously_fetched_exact_body",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/supplemental-fetched-blobs.json",
+        "started_at": null,
+        "completed_at": null,
+        "earlier_fetch_time_note": "No new GET; earlier time not reconstructed"
+      }
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/superseded/full-v2.patch",
+      "blob": "d432cbd726a15200ae332b3c9be47a8aa7f69643",
+      "bytes": 14186,
+      "sha256": "add08bf6793829ec628bee2a710086a4201f87d660ad4f203d087bdaf849974e",
+      "role": "superseded_full_patch",
+      "bucket": "historical",
+      "archive_path": "b16-proposals/r2c/superseded/full-v2.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2c/superseded/full-v2.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 14186,
+        "sha256": "add08bf6793829ec628bee2a710086a4201f87d660ad4f203d087bdaf849974e",
+        "blob": "d432cbd726a15200ae332b3c9be47a8aa7f69643"
+      },
+      "readback": {
+        "bytes": 14186,
+        "sha256": "add08bf6793829ec628bee2a710086a4201f87d660ad4f203d087bdaf849974e",
+        "blob": "d432cbd726a15200ae332b3c9be47a8aa7f69643"
+      },
+      "acquisition": {
+        "mode": "reused_previously_fetched_exact_body",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/supplemental-fetched-blobs.json",
+        "started_at": null,
+        "completed_at": null,
+        "earlier_fetch_time_note": "No new GET; earlier time not reconstructed"
+      }
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/superseded/source-v1/codex-rs/state/src/sqlite_commit_gate_tests.rs",
+      "blob": "e7ef9d3ff668bdce5fda4dd5317f4d4f5513a110",
+      "bytes": 9742,
+      "sha256": "16eb795d998461cd50b2ec0e42f9f92b1a15b6411d6b4811235145b94a4c8654",
+      "role": "superseded_source_postimage",
+      "bucket": "historical",
+      "archive_path": "b16-proposals/r2c/superseded/source-v1/codex-rs/state/src/sqlite_commit_gate_tests.rs.txt",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2c/superseded/source-v1/codex-rs/state/src/sqlite_commit_gate_tests.rs.txt",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 9742,
+        "sha256": "16eb795d998461cd50b2ec0e42f9f92b1a15b6411d6b4811235145b94a4c8654",
+        "blob": "e7ef9d3ff668bdce5fda4dd5317f4d4f5513a110"
+      },
+      "readback": {
+        "bytes": 9742,
+        "sha256": "16eb795d998461cd50b2ec0e42f9f92b1a15b6411d6b4811235145b94a4c8654",
+        "blob": "e7ef9d3ff668bdce5fda4dd5317f4d4f5513a110"
+      },
+      "acquisition": {
+        "mode": "reused_previously_fetched_exact_body",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/supplemental-fetched-blobs.json",
+        "started_at": null,
+        "completed_at": null,
+        "earlier_fetch_time_note": "No new GET; earlier time not reconstructed"
+      }
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/superseded/full-v1.patch",
+      "blob": "cce89886bad5d7f947bb6ab0d529c4e584d9b85b",
+      "bytes": 14069,
+      "sha256": "6a0886980b0cde62ad77578ac10905de7263a54f339ddecf29771c13db175536",
+      "role": "superseded_full_patch",
+      "bucket": "historical",
+      "archive_path": "b16-proposals/r2c/superseded/full-v1.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2c/superseded/full-v1.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 14069,
+        "sha256": "6a0886980b0cde62ad77578ac10905de7263a54f339ddecf29771c13db175536",
+        "blob": "cce89886bad5d7f947bb6ab0d529c4e584d9b85b"
+      },
+      "readback": {
+        "bytes": 14069,
+        "sha256": "6a0886980b0cde62ad77578ac10905de7263a54f339ddecf29771c13db175536",
+        "blob": "cce89886bad5d7f947bb6ab0d529c4e584d9b85b"
+      },
+      "acquisition": {
+        "mode": "reused_previously_fetched_exact_body",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/supplemental-fetched-blobs.json",
+        "started_at": null,
+        "completed_at": null,
+        "earlier_fetch_time_note": "No new GET; earlier time not reconstructed"
+      }
+    },
+    {
+      "stage": "r2c",
+      "path": "b16-proposals/r2c/superseded/revision-v1-to-v2.patch",
+      "blob": "9b7b8c942dce05a37454a7595918b037d7d6ec6a",
+      "bytes": 2450,
+      "sha256": "dedb512d891b5c7b53593ed71c65bd575bbb0ff3e8fd5db89a0106c600f14587",
+      "role": "superseded_revision_delta_patch",
+      "bucket": "historical",
+      "archive_path": "b16-proposals/r2c/superseded/revision-v1-to-v2.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2c/superseded/revision-v1-to-v2.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 2450,
+        "sha256": "dedb512d891b5c7b53593ed71c65bd575bbb0ff3e8fd5db89a0106c600f14587",
+        "blob": "9b7b8c942dce05a37454a7595918b037d7d6ec6a"
+      },
+      "readback": {
+        "bytes": 2450,
+        "sha256": "dedb512d891b5c7b53593ed71c65bd575bbb0ff3e8fd5db89a0106c600f14587",
+        "blob": "9b7b8c942dce05a37454a7595918b037d7d6ec6a"
+      },
+      "acquisition": {
+        "mode": "github_fetch_blob",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/fetched-body-batch-06.json",
+        "started_at": "2026-11-05T00:30:56.861Z",
+        "completed_at": "2026-11-05T00:30:57.425Z",
+        "earlier_fetch_time_note": null
+      }
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/superseded/full-v1.patch",
+      "blob": "b3738c2aafb6847616060bd93c27a5da64ce2f21",
+      "bytes": 19874,
+      "sha256": "61f1d4fc4894fe213d61368ec90d8606bf400d24cd7af35f3919eb0d2ccc1427",
+      "role": "superseded_full_patch",
+      "bucket": "historical",
+      "archive_path": "b16-proposals/r2e1/superseded/full-v1.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e1/superseded/full-v1.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 19874,
+        "sha256": "61f1d4fc4894fe213d61368ec90d8606bf400d24cd7af35f3919eb0d2ccc1427",
+        "blob": "b3738c2aafb6847616060bd93c27a5da64ce2f21"
+      },
+      "readback": {
+        "bytes": 19874,
+        "sha256": "61f1d4fc4894fe213d61368ec90d8606bf400d24cd7af35f3919eb0d2ccc1427",
+        "blob": "b3738c2aafb6847616060bd93c27a5da64ce2f21"
+      },
+      "acquisition": {
+        "mode": "reused_previously_fetched_exact_body",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/supplemental-fetched-blobs.json",
+        "started_at": null,
+        "completed_at": null,
+        "earlier_fetch_time_note": "No new GET; earlier time not reconstructed"
+      }
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/superseded/full-v2.patch",
+      "blob": "928b4d71366cb17eba5cc82d611ed6de75af0de6",
+      "bytes": 21487,
+      "sha256": "e8c4a0f2dc9a9f840f9d5eb0f8fc29a601d293f76dcb83df4e4844009c63338a",
+      "role": "superseded_full_patch",
+      "bucket": "historical",
+      "archive_path": "b16-proposals/r2e1/superseded/full-v2.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e1/superseded/full-v2.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 21487,
+        "sha256": "e8c4a0f2dc9a9f840f9d5eb0f8fc29a601d293f76dcb83df4e4844009c63338a",
+        "blob": "928b4d71366cb17eba5cc82d611ed6de75af0de6"
+      },
+      "readback": {
+        "bytes": 21487,
+        "sha256": "e8c4a0f2dc9a9f840f9d5eb0f8fc29a601d293f76dcb83df4e4844009c63338a",
+        "blob": "928b4d71366cb17eba5cc82d611ed6de75af0de6"
+      },
+      "acquisition": {
+        "mode": "reused_previously_fetched_exact_body",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/supplemental-fetched-blobs.json",
+        "started_at": null,
+        "completed_at": null,
+        "earlier_fetch_time_note": "No new GET; earlier time not reconstructed"
+      }
+    },
+    {
+      "stage": "r2e2a",
+      "path": "b16-proposals/r2e2a/superseded/full-draft.patch",
+      "blob": "d2284d4c2c7e878e082c21ea1bcd8fd0c748372e",
+      "bytes": 20906,
+      "sha256": "8bb37dcf7b4c82621ad31e92be32c841877c5bc64e697d4665a8f7f8a6d4e3b1",
+      "role": "superseded_full_patch",
+      "bucket": "historical",
+      "archive_path": "b16-proposals/r2e2a/superseded/full-draft.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e2a/superseded/full-draft.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 20906,
+        "sha256": "8bb37dcf7b4c82621ad31e92be32c841877c5bc64e697d4665a8f7f8a6d4e3b1",
+        "blob": "d2284d4c2c7e878e082c21ea1bcd8fd0c748372e"
+      },
+      "readback": {
+        "bytes": 20906,
+        "sha256": "8bb37dcf7b4c82621ad31e92be32c841877c5bc64e697d4665a8f7f8a6d4e3b1",
+        "blob": "d2284d4c2c7e878e082c21ea1bcd8fd0c748372e"
+      },
+      "acquisition": {
+        "mode": "reused_previously_fetched_exact_body",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/supplemental-fetched-blobs.json",
+        "started_at": null,
+        "completed_at": null,
+        "earlier_fetch_time_note": "No new GET; earlier time not reconstructed"
+      }
+    },
+    {
+      "stage": "r2e3",
+      "path": "b16-proposals/r2e3/superseded/full-draft.patch",
+      "blob": "42b678d466f81a396fb757703e0c9128b3a4b665",
+      "bytes": 17274,
+      "sha256": "eeda25143e8a45377305edb1a9b402ccda362aaedca600539413cebe0dadb59d",
+      "role": "superseded_full_patch",
+      "bucket": "historical",
+      "archive_path": "b16-proposals/r2e3/superseded/full-draft.patch",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e3/superseded/full-draft.patch",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 17274,
+        "sha256": "eeda25143e8a45377305edb1a9b402ccda362aaedca600539413cebe0dadb59d",
+        "blob": "42b678d466f81a396fb757703e0c9128b3a4b665"
+      },
+      "readback": {
+        "bytes": 17274,
+        "sha256": "eeda25143e8a45377305edb1a9b402ccda362aaedca600539413cebe0dadb59d",
+        "blob": "42b678d466f81a396fb757703e0c9128b3a4b665"
+      },
+      "acquisition": {
+        "mode": "reused_previously_fetched_exact_body",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/supplemental-fetched-blobs.json",
+        "started_at": null,
+        "completed_at": null,
+        "earlier_fetch_time_note": "No new GET; earlier time not reconstructed"
+      }
+    },
+    {
+      "stage": "r2e1",
+      "path": "b16-proposals/r2e1/interface-contract.json",
+      "blob": "5b901bc677cea3b3af687bc709f10349ad604372",
+      "bytes": 8001,
+      "sha256": "569617248028b93e28ad31eb34d0581327771433a3ac1736eb11c0522bfb1823",
+      "role": "interface_contract",
+      "bucket": "supporting",
+      "archive_path": "b16-proposals/r2e1/interface-contract.json",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e1/interface-contract.json",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 8001,
+        "sha256": "569617248028b93e28ad31eb34d0581327771433a3ac1736eb11c0522bfb1823",
+        "blob": "5b901bc677cea3b3af687bc709f10349ad604372"
+      },
+      "readback": {
+        "bytes": 8001,
+        "sha256": "569617248028b93e28ad31eb34d0581327771433a3ac1736eb11c0522bfb1823",
+        "blob": "5b901bc677cea3b3af687bc709f10349ad604372"
+      },
+      "acquisition": {
+        "mode": "reused_previously_fetched_exact_body",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/supplemental-fetched-blobs.json",
+        "started_at": null,
+        "completed_at": null,
+        "earlier_fetch_time_note": "No new GET; earlier time not reconstructed"
+      }
+    },
+    {
+      "stage": "r2e2a",
+      "path": "b16-proposals/r2e2a/superseded/manifest-draft.json",
+      "blob": "18e884793c669f4a533aea76bfdf0c28806b39be",
+      "bytes": 11233,
+      "sha256": "5c44961a8b9411873fe33cab754c94cb7c63a2d41f5ed125ef1cd2da55ef5d65",
+      "role": "superseded_manifest",
+      "bucket": "supporting",
+      "archive_path": "b16-proposals/r2e2a/superseded/manifest-draft.json",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/verified-bodies/b16-proposals/r2e2a/superseded/manifest-draft.json",
+      "verification": "PASS",
+      "actual": {
+        "bytes": 11233,
+        "sha256": "5c44961a8b9411873fe33cab754c94cb7c63a2d41f5ed125ef1cd2da55ef5d65",
+        "blob": "18e884793c669f4a533aea76bfdf0c28806b39be"
+      },
+      "readback": {
+        "bytes": 11233,
+        "sha256": "5c44961a8b9411873fe33cab754c94cb7c63a2d41f5ed125ef1cd2da55ef5d65",
+        "blob": "18e884793c669f4a533aea76bfdf0c28806b39be"
+      },
+      "acquisition": {
+        "mode": "reused_previously_fetched_exact_body",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "cache_path": "/workspace/scratch/07dd58cc9630/research-audit/b16-proposal-archive-inventory/supplemental-fetched-blobs.json",
+        "started_at": null,
+        "completed_at": null,
+        "earlier_fetch_time_note": "No new GET; earlier time not reconstructed"
+      }
+    }
+  ]
+}

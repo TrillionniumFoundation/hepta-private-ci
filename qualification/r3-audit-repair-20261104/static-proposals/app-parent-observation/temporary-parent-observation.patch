@@ -1,0 +1,77 @@
+diff --git a/codex-rs/linux-sandbox/src/linux_run_main.rs b/codex-rs/linux-sandbox/src/linux_run_main.rs
+--- a/codex-rs/linux-sandbox/src/linux_run_main.rs
++++ b/codex-rs/linux-sandbox/src/linux_run_main.rs
+@@ -149,6 +149,23 @@
+     pub command: Vec<String>,
+ }
+ 
++// Temporary observation of this invocation's own process; removed after diagnosis.
++fn record_parent_lifecycle_probe(phase: &str) {
++    let mut parent_death_signal: libc::c_int = 0;
++    // SAFETY: the output pointer addresses a live c_int; this operation only reads state.
++    let result = unsafe {
++        libc::prctl(libc::PR_GET_PDEATHSIG, &mut parent_death_signal as *mut libc::c_int, 0, 0, 0)
++    };
++    let error = (result < 0).then(std::io::Error::last_os_error);
++    // SAFETY: these calls only read the current process's own identifiers.
++    let (pid, ppid, pgid, sid) = unsafe {
++        (libc::getpid(), libc::getppid(), libc::getpgrp(), libc::getsid(0))
++    };
++    eprintln!(
++        "hepta_owned_lifecycle_probe phase={phase} pid={pid} ppid={ppid} pgid={pgid} sid={sid} pdeath_rc={result} pdeath_signal={parent_death_signal} error={error:?}"
++    );
++}
++
+ /// Entry point for the Linux sandbox helper.
+ ///
+ /// The sequence is:
+@@ -192,6 +209,7 @@
+     // Inner stage: apply seccomp/no_new_privs after bubblewrap has already
+     // established the filesystem view.
+     if apply_seccomp_then_exec {
++        record_parent_lifecycle_probe("inner_entry");
+         if let Err(err) = crate::fd_mount::verify_fd_mounts(&verify_fd_mounts) {
+             panic!("failed to verify descriptor-backed bubblewrap mount: {err}");
+         }
+@@ -239,6 +257,7 @@
+             panic!("error applying Linux sandbox restrictions: {e:?}");
+         }
+ 
++        record_parent_lifecycle_probe("inner_after_restrictions");
+         let signal_mask = ForwardedSignalMask::block();
+         let command_pid = unsafe { libc::fork() };
+         if command_pid < 0 {
+diff --git a/codex-rs/utils/pty/src/pipe.rs b/codex-rs/utils/pty/src/pipe.rs
+--- a/codex-rs/utils/pty/src/pipe.rs
++++ b/codex-rs/utils/pty/src/pipe.rs
+@@ -64,7 +64,12 @@
+     fn kill(&mut self) -> io::Result<()> {
+         #[cfg(all(unix, not(target_os = "macos")))]
+         {
+-            crate::process_group::kill_process_group(self.process_group_id)
++            let result = crate::process_group::kill_process_group(self.process_group_id);
++            eprintln!(
++                "hepta_owned_lifecycle_probe phase=original_killpg_return pgid={} result={result:?}",
++                self.process_group_id
++            );
++            result
+         }
+ 
+         #[cfg(target_os = "macos")]
+diff --git a/codex-rs/app-server/src/command_exec.rs b/codex-rs/app-server/src/command_exec.rs
+--- a/codex-rs/app-server/src/command_exec.rs
++++ b/codex-rs/app-server/src/command_exec.rs
+@@ -594,6 +594,13 @@
+             {
+                 chunk.extend_from_slice(&next_chunk);
+             }
++            if process_id.as_deref() == Some("shared-process") {
++                for line in String::from_utf8_lossy(&chunk).lines() {
++                    if line.starts_with("hepta_owned_lifecycle_probe ") {
++                        eprintln!("{line}");
++                    }
++                }
++            }
+             let capped_chunk = match output_bytes_cap {
+                 Some(output_bytes_cap) => {
+                     let capped_chunk_len = output_bytes_cap

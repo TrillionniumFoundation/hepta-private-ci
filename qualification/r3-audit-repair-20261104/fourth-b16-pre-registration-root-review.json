@@ -1,0 +1,152 @@
+{
+  "schema": "hepta.sqlx-pre-registration-root-source-review.v1",
+  "reviewed_at_utc": "2026-11-05T00:30:16.040154+00:00",
+  "status": "PUBLIC_API_GAP_CONFIRMED_STATIC",
+  "manifest": "da59ec79283bd997502cd57590ce416ca4e4851c",
+  "fixed_dependency_commit": "75bc0487eb661da811bb7a3c5d158f1bd463fef4",
+  "complete_source_checks": [
+    {
+      "path": "sqlx-sqlite/src/options/mod.rs",
+      "bytes": 28010,
+      "sha256": "ff5005abc6408f2df073d95bf3440c2a3ee96c1a312d73468bf66123f8ab2f1e",
+      "git_blob": "0cafc4d08c4c63c342685fedbcc43222dd38d2f1"
+    },
+    {
+      "path": "sqlx-sqlite/src/options/connect.rs",
+      "bytes": 2305,
+      "sha256": "6eab2d3914a2c9f35c60bd8b324e46790eca39a23c30a0d4101e35be52b04253",
+      "git_blob": "cfa25872b2c118cc955ac4e2f9cfb64e19e4a0ee"
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/establish.rs",
+      "bytes": 10033,
+      "sha256": "447d5067838ec05c713a53b381df4b8ae16652917b4206c553cdea6d3a1fe92a",
+      "git_blob": "cedf752e6adef404b6f7d537f521045cb8342b5a"
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/worker.rs",
+      "bytes": 22317,
+      "sha256": "b66aafc56f0e287eac3b09111c5d4997d350ab61294c5cc576ce359bc18cebe4",
+      "git_blob": "2585dc1312210d9eb18c15f6df1158656d3c6b2c"
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/mod.rs",
+      "bytes": 20337,
+      "sha256": "a20c2e51a1505e298fd897b378f9032c89b82850838aa6e5d9409f612fb1e7fd",
+      "git_blob": "218c747143fe80b344bca3405d4b0b38da2bd932"
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/handle.rs",
+      "bytes": 5320,
+      "sha256": "63d9b11374ebd453f3f7d0be95a728030f05997d5ccdc756fd8057ee0d31dc6f",
+      "git_blob": "e89179b30ed489bf831e56575d1269f223a368ac"
+    },
+    {
+      "path": "sqlx-core/src/pool/inner.rs",
+      "bytes": 23376,
+      "sha256": "cba56628f259270dccb2f4a0d7a351dcff34d9239f6e6e1aee187ebe0e39c539",
+      "git_blob": "b698dc9df07fdd763f6b15a171b7b545c6898696"
+    },
+    {
+      "path": "sqlx-core/src/pool/options.rs",
+      "bytes": 25108,
+      "sha256": "924cd57a062328b2e7c6ac55242eabb1706893d80ce1e8cb02fe643a592f4f83",
+      "git_blob": "3d048f179514e992f478f0f854563fad7c0e41dd"
+    },
+    {
+      "path": "sqlx-sqlite/src/lib.rs",
+      "bytes": 6797,
+      "sha256": "6e19e45ffc8e018912798e2290527a2a332ecc775b70bd86223efffc06d6e57b",
+      "git_blob": "17b4bed1ca40f112690011dbc3f38b4585ed1001"
+    },
+    {
+      "path": "sqlx-core/src/connection.rs",
+      "bytes": 10046,
+      "sha256": "a0ea974fb1bfe6ec7891e594333098b3d2fac3b3e27737e733dea461e8dee737",
+      "git_blob": "b5f8138b2bc1b2a9a82a21b4aa8c65fe0e42934f"
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/collation.rs",
+      "bytes": 4730,
+      "sha256": "d863421fe2f377315ca75c2912e702b13cbb4b978ec3940989ae08c9acf2f752",
+      "git_blob": "229e780adfbdb34ac117cf279e11b70a79a491fc"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 14370,
+      "sha256": "77c3ab21aa396a7dad0daf09210d9c517cd98ca084c39f59e8db28ba1b9221fe",
+      "git_blob": "3738b814ca07636ec652be18d95de0559f279182"
+    }
+  ],
+  "root_read_sections": [
+    {
+      "path": "sqlx-sqlite/src/options/connect.rs",
+      "lines": [
+        32,
+        49
+      ],
+      "fact": "Native establish and initial PRAGMA precede option collation registration."
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/establish.rs",
+      "lines": [
+        26,
+        38
+      ],
+      "fact": "Current params have no lifetime token."
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/establish.rs",
+      "lines": [
+        144,
+        196
+      ],
+      "fact": "Thread-name closure is evaluated to String, then native open receives only filename and flags."
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/worker.rs",
+      "lines": [
+        105,
+        139
+      ],
+      "fact": "The actual thread owns params and establishes the native connection before sending the async wrapper."
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/handle.rs",
+      "lines": [
+        28,
+        59
+      ],
+      "fact": "Native open can return a non-null handle on error and handle Drop is still responsible for close."
+    },
+    {
+      "path": "sqlx-core/src/pool/inner.rs",
+      "lines": [
+        340,
+        370
+      ],
+      "fact": "The pool owns an independent timeout around connect, and after_connect runs only after driver connect succeeds."
+    },
+    {
+      "path": "sqlx-sqlite/src/connection/mod.rs",
+      "lines": [
+        228,
+        239
+      ],
+      "fact": "Normal close awaits worker shutdown; close_hard only drops wrapper and immediately returns."
+    }
+  ],
+  "inference": "In the fixed normal public API, caller/Store/Pool lifetime or post-registration callback custody alone cannot prove ownership through every native opening/initialization/cleanup interval. The gap requires a separately reviewed native lifecycle capability or an independently qualified alternate architecture.",
+  "scope_constraints": {
+    "earlier_no_fork": "Only the parent-directed public-API research phase; not a permanent user prohibition or automatic approval rejection.",
+    "subsequent_work": "Separate minimal dependency lifetime-token patch/control design now authorized; no dependency patch or native test is represented by this receipt."
+  },
+  "not_closed": [
+    "B16",
+    "pre-registration cancellation",
+    "pool internal timeout cleanup",
+    "growth/replacement initialization",
+    "Current/expiry/final-use authentication",
+    "normal Root/Agentd/Desktop actual acceptance"
+  ]
+}

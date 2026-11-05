@@ -1,0 +1,209 @@
+diff --git a/b16_native.py b/b16_native.py
+index eee5c2792fb72b4e73591ebfffcce10c1aeb829f..8accb86a14acaa88305575da13dd49692db11757 100644
+--- a/b16_native.py
++++ b/b16_native.py
+@@ -32,6 +32,16 @@
+     actual = [Path(row["path"]).name for row in rows]
+     need(collections.Counter(actual) == collections.Counter(expected), "complete approved A helper basename roster differs")
+     return actual
++
++
++def junit_terminal(case):
++    terminals = [{"tag": child.tag, "attributes": dict(child.attrib)} for child in case
++                 if child.tag in ("failure", "error", "skipped")]
++    result = "FAIL" if case.find("failure") is not None else "ERROR" if case.find("error") is not None else "SKIP" if case.find("skipped") is not None else "PASS"
++    ordinary_assertion = (len(terminals) == 1 and terminals[0]["tag"] == "failure" and
++                          terminals[0]["attributes"].get("type") == "test failure with exit code 101")
++    return {"result": result, "terminal_elements": terminals,
++            "terminal_status_accepted": result == "PASS" or ordinary_assertion}
+ 
+ 
+ def graph(metadata):
+@@ -226,17 +236,17 @@
+         self.run_ids.add(run_id)
+         cases = []
+         for case in xml.iter("testcase"):
+-            result = "FAIL" if case.find("failure") is not None else "ERROR" if case.find("error") is not None else "SKIP" if case.find("skipped") is not None else "PASS"
++            terminal = junit_terminal(case)
+             need(not any("rerun" in child.tag.lower() or "flaky" in child.tag.lower() for child in case), "unexpected retry entry")
+             cases.append({"classname": case.attrib.get("classname"), "name": case.attrib.get("name"),
+-                          "result": result, "seconds": case.attrib.get("time"),
++                          **terminal, "seconds": case.attrib.get("time"),
+                           "captured": "\n".join(child.text or "" for child in case if child.tag in ("system-out", "system-err", "failure", "error"))})
+         keys = lambda rows: collections.Counter((x["classname"], x["name"]) for x in rows)
+         program_after = [{"binary_id": p["binary_id"], **record(p["path"])} for p in programs]
+         helper_after = [{"origins": p["origins"], **record(p["path"])} for p in helpers]
+         raw = Path(tested["stdout"]["path"]).read_text()
+         early = early_notices(raw, cases)
+-        valid = keys(cases) == keys(selected) and programs == program_after and helpers == helper_after and not early and all(c["result"] not in ("SKIP", "ERROR") for c in cases)
++        valid = keys(cases) == keys(selected) and programs == program_after and helpers == helper_after and not early and all(c["terminal_status_accepted"] for c in cases)
+         review = {"source": self.g.source, "scope": scope, "cases": cases, "counts": dict(collections.Counter(x["result"] for x in cases)),
+                   "display_phase": "B16/phase/" + label, "internal_stage_ids_are_not_original_blocker_ids": True,
+                   "exit_code": tested["exit_code"], "run_id": run_id, "selection_valid": valid, "retries": 0,
+diff --git a/test_runner_guards.py b/test_runner_guards.py
+index f294bc0400619ba7017d85c7c690c70acae41547..378fe4b966d86cced0c89303c34c6ad7bf3b0d57 100644
+--- a/test_runner_guards.py
++++ b/test_runner_guards.py
+@@ -8,10 +8,11 @@
+ import types
+ import unittest
+ from unittest import mock
++import xml.etree.ElementTree as ET
+ 
+ from b16_capacity import cache_and_capacity
+ from b16_guard import SourceGuard, identity, record, validate_binding
+-from b16_native import HELPERS, check_helper_roster
++from b16_native import HELPERS, check_helper_roster, junit_terminal
+ from b16_oracles import early_notices, ordered, qualify
+ from b16_runner import negative_with_finally
+ 
+@@ -227,5 +228,30 @@
+             self.assertFalse(Path(binding["evidence_directory"]).exists())
+ 
+ 
++class JunitTerminalTests(unittest.TestCase):
++    def test_actual_timeout_and_leak_types_cannot_satisfy_assertion_failure(self):
++        actual = ET.parse(HERE / "observed-nextest-timeout-testcase.xml").getroot()
++        self.assertFalse(any("TIMEOUT" in (child.text or "") for child in actual))
++        observed = junit_terminal(actual)
++        self.assertEqual(observed["result"], "FAIL")
++        self.assertEqual(observed["terminal_elements"][0]["attributes"], {"type": "test timeout"})
++        self.assertFalse(observed["terminal_status_accepted"])
++        for terminal_type in (None, "test failure with exit code 101 (leaked handles)",
++                              "test timeout", "test failure with exit code 1", "unknown failure type"):
++            case = ET.fromstring('<testcase><failure/><system-err>physical markers and panic may be present</system-err></testcase>')
++            if terminal_type is not None:
++                case.find("failure").set("type", terminal_type)
++            with self.subTest(terminal_type=terminal_type):
++                self.assertFalse(junit_terminal(case)["terminal_status_accepted"])
++        ordinary = ET.fromstring('<testcase><failure type="test failure with exit code 101" message="assertion failed"/></testcase>')
++        self.assertIsNone(ordinary.find("failure").text)
++        self.assertTrue(junit_terminal(ordinary)["terminal_status_accepted"])
++        self.assertEqual(junit_terminal(ordinary)["terminal_elements"][0]["attributes"]["message"], "assertion failed")
++        del ordinary.find("failure").attrib["message"]
++        self.assertTrue(junit_terminal(ordinary)["terminal_status_accepted"])
++        ET.SubElement(ordinary, "error", {"type": "test passed but leaked handles"})
++        self.assertFalse(junit_terminal(ordinary)["terminal_status_accepted"])
++
++
+ if __name__ == "__main__":
+     unittest.main(verbosity=2)
+diff --git a/observed-nextest-timeout-testcase.xml b/observed-nextest-timeout-testcase.xml
+new file mode 100644
+index 0000000000000000000000000000000000000000..e3cd2d7df83b2d5abebd96840722edcdd34d32f8
+--- /dev/null
++++ b/observed-nextest-timeout-testcase.xml
+@@ -0,0 +1,7 @@
++<testcase name="service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings" classname="codex-external-agent-migration" timestamp="2026-11-04T19:52:52.515-05:00" time="60.004">
++            <failure type="test timeout"/>
++            <system-out>
++running 1 test
++</system-out>
++            <system-err></system-err>
++        </testcase>
+diff --git a/runner-integrity.json b/runner-integrity.json
+index dc7f3855d3b9ee47afd3150d171f3f26712a5fcc..135a66c21f78053accbd450a275847d2825e6178 100644
+--- a/runner-integrity.json
++++ b/runner-integrity.json
+@@ -1,5 +1,5 @@
+ {
+-  "schema": "hepta-b16-reviewed-runtime-files-v2",
++  "schema": "hepta-b16-reviewed-runtime-files-v3",
+   "files": [
+     {
+       "path": "b16_capacity.py",
+@@ -21,9 +21,9 @@
+     },
+     {
+       "path": "b16_native.py",
+-      "bytes": 16306,
+-      "sha256": "ce9bdfb7697b74ae8f1189a39c84a9aa928a40be4cd5dee6ce195a9366e1af81",
+-      "blob": "eee5c2792fb72b4e73591ebfffcce10c1aeb829f"
++      "bytes": 16843,
++      "sha256": "1955c298c3ae120ad1e7a3fb8bb1302d20aedc392a2a13c278ad9e988d915ea7",
++      "blob": "8accb86a14acaa88305575da13dd49692db11757"
+     },
+     {
+       "path": "b16_oracles.py",
+@@ -68,6 +68,12 @@
+       "blob": "6d686ead86ef2c83f3b32f8bbd1b73e662d26093"
+     },
+     {
++      "path": "observed-nextest-timeout-testcase.xml",
++      "bytes": 390,
++      "sha256": "fabd54568dd293a814449bc59027d1f5ecd6ee96a806b68b691ae2bb170a57df",
++      "blob": "e3cd2d7df83b2d5abebd96840722edcdd34d32f8"
++    },
++    {
+       "path": "payload-manifest.json",
+       "bytes": 62667,
+       "sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+@@ -105,14 +111,14 @@
+     },
+     {
+       "path": "test_runner_guards.py",
+-      "bytes": 13792,
+-      "sha256": "a15285bda85d38b774395f989a6d29600a463ec1fd5a42705276cd3bf2163bed",
+-      "blob": "f294bc0400619ba7017d85c7c690c70acae41547"
++      "bytes": 15658,
++      "sha256": "d83e8391dc64aacd2daa1bddb2ec104796f6e30f7054796ef5144b7265b67128",
++      "blob": "378fe4b966d86cced0c89303c34c6ad7bf3b0d57"
+     }
+   ],
+   "final_A_bound": false,
+   "native_executed": false,
+   "internal_stage_ids_are_not_original_blocker_ids": true,
+   "display_namespace": "B16/phase",
+-  "prior_integrity_blob": "7db21a0086cb3ebe5c7e1b83f9de7ecb3bc66075"
++  "prior_integrity_blob": "dc7f3855d3b9ee47afd3150d171f3f26712a5fcc"
+ }
+diff --git a/binding-template-UNBOUND.json b/binding-template-UNBOUND.json
+index 676d731d0059b35d9004e1c23b8a09b26e4927b7..615ea4dcae2f5c4a212bf5a05040d8cd625326fd 100644
+--- a/binding-template-UNBOUND.json
++++ b/binding-template-UNBOUND.json
+@@ -1,5 +1,5 @@
+ {
+-  "schema": "hepta-b16-explicit-native-binding-v2",
++  "schema": "hepta-b16-explicit-native-binding-v3",
+   "internal_stage_ids_are_not_original_blocker_ids": true,
+   "execute": false,
+   "approval_reference": null,
+@@ -14,7 +14,7 @@
+     "sha256": null
+   },
+   "approved_payload_sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+-  "approved_runner_integrity_sha256": "aec4b97e1b12dc4d0875cc57231a4e000280c847ef04bf752b1132ff76054aba",
++  "approved_runner_integrity_sha256": "dacf3296af381bee42fcf7bafb7796aac8cb558ea8a0df078d325e919344780a",
+   "source_directory": null,
+   "target_directory": null,
+   "target_reuse_mode": "reuse_final_A",
+diff --git a/README.md b/README.md
+index 5b624ee97a7a71ad9dd673324cde710d7d1cfcad..7a87ef71eda402b9117949142555fe655285c3f6 100644
+--- a/README.md
++++ b/README.md
+@@ -1,6 +1,6 @@
+ # B16 guarded native execution bundle
+ 
+-This is V2. The complete V1 bundle and its 28 Git objects remain preserved under `v1-frozen/` and delivery map `c4885b9005d85ddf4c1647b8a96538957a7a7ab1`. V2 changes executor safeguards and documentation only; the source payloads, physical tests, original test budgets and frozen phase definitions remain byte-identical.
++This is V3, a narrow JUnit terminal-status correction on V2. The complete V1 bundle and its 28 Git objects remain preserved under `v1-frozen/` and delivery map `c4885b9005d85ddf4c1647b8a96538957a7a7ab1`; V2 is preserved under `v2-frozen/` and map `fb3357a64d69a5d276f103cd41ec7585f7803fac`. Executor safeguards and documentation changed; the source payloads, physical tests, original test budgets and frozen phase definitions remain byte-identical.
+ 
+ This bundle is executable preparation, **not an executed native qualification**. Its binding template deliberately has no `final_A_tree`, ordinary-index identity, actual lock identities, tool identities or native paths. The runner rejects that template before it starts a subprocess, creates an evidence directory or changes source.
+ 
+@@ -42,6 +42,8 @@
+ 
+ JUnit must be fresh, have a new run UUID and match the exact catalogue names. Complete raw output and XML remain intact. Early-return notices, including the actually observed `skipping capability test:` prefix, are associated with case blocks where possible; an unbound notice remains a qualification failure. Counterfactuals require the approved physical marker order and the exact unchanged assertion's source line. Compile errors, setup failures, missing child checkpoints, released/timed-out callbacks, generic timeout, no tests, earlier assertions or a passing counterfactual cannot satisfy a negative gate.
+ 
++V3 also retains every JUnit failure/error/skipped element's complete attributes. A negative can reach its physical oracle only when its terminal element is exactly one ordinary Rust assertion failure, `type="test failure with exit code 101"`. Missing or unknown types, timeout, error, skip and leaked-handle variants fail the prerequisite gate even if panic text is already present. The original f825 full report contains a real `<failure type="test timeout"/>` with no text and no `TIMEOUT` in captured output, which exposed the previous text-only classification gap. This does not assert that that historical case was incorrectly qualified: its physical markers were absent. The new pure control covers the actual XML representation and the strict type boundary without changing a physical test.
++
+ Every negative has an exact-source `finally` transition. A bad causal result is saved, the known owned negative is restored to the approved positive, and execution stops. If source/index/HEAD/lock drift prevents proving ownership, restoration is refused rather than overwriting another change. The original and cleanup errors are retained separately.
+ 
+ ## Real lock and Bazel gates
+@@ -52,6 +54,8 @@
+ 
+ The capacity plan is conditional. The saved earlier f825 full-workspace receipt measures 321 test programs plus 33 helpers totaling 18,121,368,592 bytes; that is an executable-file observation, not total target size or a measured build peak. An illustrative allowance for one additional executable family, 12 GB of other Cargo growth, 8 GB of B Bazel growth, 2 GB of evidence and the unchanged 8 GB reserve requires 48,121,368,592 free bytes using that older observation. The reported approximately 49 GB therefore warrants a fresh check, not a guarantee. The launch binding must instead pin A's actual last-full-test receipt under its true source identity and explicitly review the remaining allowances. The runner verifies all four locations share the measured filesystem and reads actual free bytes before starting. Later epochs may use newly reviewed remaining-growth estimates while preserving the same target/cache/receipt identities. If space is insufficient, execution stops; it does not delete caches, reduce the test scope or alter the profile. `capacity-plan-v2.json` records the complete provenance and unmeasured limits.
+ 
++A later root update reported 47.05 GB after A's full run. Its exact byte count and decimal/binary display unit are not bound here; it is not evidence that the illustrative allowance fits. The actual byte check and reviewed remaining-growth plan are prerequisites, and no cache deletion is authorized to satisfy them.
++
+ The default A host/toolchain values are not embedded. Binding requires actual tool files, Rust 1.95.0, the repository's Bazel version, original recipe file hashes, the actual final source and both lock receipts. The current concrete runner is Linux x86_64 only.
+ 
+ ## Review and preservation

@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.state-native-token-binding.scope-addendum.v1",
+  "status": "ADDITIVE_STATIC_SCOPE_CLARIFICATION_NO_SOURCE_CHANGE",
+  "date_utc": "2026-11-05",
+  "original_manifest": "781d9153910147841372cf60ab4919033668c5cd",
+  "original_patch": "223ce97fbdeec446f8baf1f44831954041026321",
+  "independent_review": "d657b13823b526833a038f6ff0b790a52204d263",
+  "source_unchanged": true,
+  "native_tests_run": false,
+  "clarifications": [
+    {
+      "topic": "Child output retention",
+      "fact": "The owned-child fixture records its checkpoint protocol lines and inherits stderr, while discarding non-checkpoint child stdout. Existing source does not retain a complete child stdout transcript. Do not describe parent raw/JUnit as such a complete transcript."
+    },
+    {
+      "topic": "Cancellation runtime lifetime",
+      "fact": "The two state controls finish the temporary Tokio runtime before dropping the opening future. They test runtime shutdown plus cancellation with an entered native callback and a real cross-process file-lock probe. They do not add a separate runtime-alive cancellation qualification."
+    },
+    {
+      "topic": "Direct recovery checkpoint connection",
+      "fact": "Memory recovery 54e917f invokes checkpoint_private_recovery_database after closing the candidate pool. The current state b9fb/27b123 implementation creates a direct options.connect connection without the new token. This named gap remains OPEN outside the two-pool binding; research owns a separate subsequent cohort.",
+      "path": "codex-rs/state/src/sqlite.rs",
+      "source_pre": "b9fb565cadd14f6541bfc8421164897e2907e2ad",
+      "source_after": "27b123f6862ca4355da74ed4d1b21c7047b3b2df",
+      "caller_blob": "54e917f45520f6b0e31fcd6a2f57ac3a00d8ae6c"
+    },
+    {
+      "topic": "Existing state dependency and test discovery",
+      "fact": "State already declares normal libsqlite3-sys/sqlx and Tokio fs/io-util/macros/rt-multi-thread/sync/time. Its original codex_rust_crate source glob includes the new module. No extra state dependency or BUILD edit is proposed. Actual compile/catalog/owning tests and dependency adoption are still required.",
+      "cargo_blob": "02cb82d778fc02859a42c0658597799ad00f5559",
+      "build_blob": "8f27a6255fa88e40a93db65e110a4b3c934b6958",
+      "defs_blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+    },
+    {
+      "topic": "Count and authority boundary",
+      "fact": "The caller cohort has 2 state parent controls and 1 Memory parent control; its ignored owned child is not another PASS. These are separate from 12 driver unit cases and frozen 24 B controls. The token carries resource custody, not authenticated Current/Root authority, final-use lease validation or universal shared-open coverage."
+    }
+  ]
+}

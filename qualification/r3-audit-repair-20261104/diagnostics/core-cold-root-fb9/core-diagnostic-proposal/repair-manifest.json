@@ -1,0 +1,80 @@
+{
+  "schema": "hepta.core-cold-root-stage-diagnostic.v1",
+  "status": "DIAGNOSTIC_ONLY_STATIC_NOT_APPLIED_OR_EXECUTED",
+  "source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "path": "codex-rs/core/tests/suite/multi_agent_resume.rs",
+  "preimage": {
+    "bytes": 24016,
+    "sha256": "9bba749625fae2e012ec0e5f03e1c60a6a93b11e5dc581782358748168665ddc",
+    "git_blob": "5cffeb3a7683c6654bbfe5474296b5458659aeec"
+  },
+  "postimage": {
+    "bytes": 25159,
+    "sha256": "3439c978dfcdfd177dbc08b3bedf21986997f49c47d6fead159b0b95229d09f4",
+    "git_blob": "e2b3daac03d9e15b1641e11f23377bf56bf397db"
+  },
+  "patch": {
+    "path": "core-cold-root-stage-diagnostic.patch",
+    "bytes": 3098,
+    "sha256": "24c67f040eb76ca087dcf4dd754536ee213c72cb34d7505229139911b2cbcefe",
+    "git_blob": "525c4702fe3d2f8193e45d37fde977402cb7180b"
+  },
+  "sites": [
+    {
+      "stage": "lookup_worker",
+      "old_line": 288,
+      "preimage": "    let worker_thread = initial.thread_manager.get_thread(worker_thread_id).await?;",
+      "postimage": "    let worker_thread = initial\n        .thread_manager\n        .get_thread(worker_thread_id)\n        .await\n        .inspect_err(|error| {\n            eprintln!(\n                \"COLD_ROOT_RESUME_STAGE_ERROR stage=lookup_worker thread_id={worker_thread_id} error={error:?}\"\n            );\n        })?;"
+    },
+    {
+      "stage": "lookup_sibling",
+      "old_line": 360,
+      "preimage": "    let sibling_thread = initial.thread_manager.get_thread(sibling_thread_id).await?;",
+      "postimage": "    let sibling_thread = initial\n        .thread_manager\n        .get_thread(sibling_thread_id)\n        .await\n        .inspect_err(|error| {\n            eprintln!(\n                \"COLD_ROOT_RESUME_STAGE_ERROR stage=lookup_sibling thread_id={sibling_thread_id} error={error:?}\"\n            );\n        })?;"
+    },
+    {
+      "stage": "flush_sibling",
+      "old_line": 365,
+      "preimage": "    sibling_thread.flush_rollout().await?;",
+      "postimage": "    sibling_thread.flush_rollout().await.inspect_err(|error| {\n        eprintln!(\n            \"COLD_ROOT_RESUME_STAGE_ERROR stage=flush_sibling thread_id={sibling_thread_id} error={error:?}\"\n        );\n    })?;"
+    },
+    {
+      "stage": "flush_worker",
+      "old_line": 366,
+      "preimage": "    worker_thread.flush_rollout().await?;",
+      "postimage": "    worker_thread.flush_rollout().await.inspect_err(|error| {\n        eprintln!(\n            \"COLD_ROOT_RESUME_STAGE_ERROR stage=flush_worker thread_id={worker_thread_id} error={error:?}\"\n        );\n    })?;"
+    },
+    {
+      "stage": "flush_root",
+      "old_line": 367,
+      "preimage": "    initial.codex.flush_rollout().await?;",
+      "postimage": "    initial.codex.flush_rollout().await.inspect_err(|error| {\n        eprintln!(\n            \"COLD_ROOT_RESUME_STAGE_ERROR stage=flush_root thread_id={root_thread_id} error={error:?}\"\n        );\n    })?;"
+    },
+    {
+      "stage": "restart_root",
+      "old_line": 424,
+      "preimage": "    let resumed = resume_builder.restart(&server, &initial).await?;",
+      "postimage": "    let resumed = resume_builder\n        .restart(&server, &initial)\n        .await\n        .inspect_err(|error| {\n            eprintln!(\n                \"COLD_ROOT_RESUME_STAGE_ERROR stage=restart_root thread_id={root_thread_id} error={error:?}\"\n            );\n        })?;"
+    }
+  ],
+  "mechanism": "Result::inspect_err adds only an error-path stderr line; the same original Err is propagated by the same ?; no error conversion/context replacement.",
+  "unchanged_token_counts": {
+    ".await": 56,
+    "assert!(": 9,
+    "assert_eq!(": 6,
+    "Duration::": 2,
+    "sleep(": 1,
+    ".expect(": 13,
+    "shutdown_and_wait(": 3
+  },
+  "original_source_exactly_restored_by_reversing_six_insertions": true,
+  "isolated_git_apply_check_apply_reverse_check_reverse_exact": true,
+  "original_case": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup",
+  "gate": "Run only on a future root-approved exact source through the existing codex-core integration target, original timeout/profile/retries unchanged; require exact selected case and raw stderr/XML. This proposal itself is not a fix or a test result.",
+  "limits": [
+    "No production source, runtime settings, persistence semantics, request filters, capacity, assertion, wait, retry or timeout is changed.",
+    "No extra HTTP, thread-store or manager request is made. No shared logs, credentials, home contents or process state are inspected.",
+    "The six sites cover the source-supported persistence/error hypotheses, not every possible ? in external dependencies. Absence of the new marker would leave that broader propagation path open.",
+    "Static apply/reverse checks do not prove Rust compilation, formatting or native behavior. No native lane was started."
+  ]
+}

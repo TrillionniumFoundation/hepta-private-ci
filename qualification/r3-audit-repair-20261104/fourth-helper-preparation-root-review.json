@@ -1,0 +1,482 @@
+{
+  "schema": "hepta.fourth.helper-preparation-root-review.v1",
+  "observed_at_utc": "2026-11-04 22:50:07 UTC",
+  "reviewer": "root",
+  "source": "e84c2f12e39022701c8a942343b3913faa62cf31",
+  "bundle": {
+    "git_blob": "69e22fb16b97eb15d42ddeb80b32c2255d810e22",
+    "bytes": 107938,
+    "sha256": "d2941e5540e6dfe2022eb13103642b22e1f25550a1105eade127a71dc6226a39"
+  },
+  "embedded_checks": [
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/tool-bootstrap/uv-pip-report.json",
+      "bytes": 13668,
+      "sha256": "28a66107abbbac6acbfcedbc68665d17881235361ac5ca7219602800f37e7ee5",
+      "match": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/dotslash-official-install-20261104-2236/receipt.json",
+      "bytes": 1804,
+      "sha256": "809a51310f6b8089c06ccfab3600391cdfc709a762840ff1f8b507db0d5c697c",
+      "match": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/dotslash-zsh-prerequisite-20261104-2243/receipt.json",
+      "bytes": 2094,
+      "sha256": "7650b870feb267c6c7357a43c001436cf1f67251b0b7a185b9e7e79bce5e8c8a",
+      "match": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/final-tool-primary-read/receipt.json",
+      "bytes": 37318,
+      "sha256": "d2c514d826e6e952e46ef3eb5e3dcf8275158354ab5a4247251bca6ac0b64f48",
+      "match": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/terminal.json",
+      "bytes": 13263,
+      "sha256": "83e28f8aab8b47a38521c1dca489f365d04746aa10d87ab2a839c234534c1f5f",
+      "match": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/command.json",
+      "bytes": 994,
+      "sha256": "8daa2a6f4814defcc67c06b46a4885e87b149603ed8a47e505b839c66e5e9fe0",
+      "match": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/runner.py",
+      "bytes": 5483,
+      "sha256": "f35a505d5fe1196cf6018860c61ecec445753ba199dc129c074c9665ca8e778a",
+      "match": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/build.stderr",
+      "bytes": 18514,
+      "sha256": "4bd228f5b78b1788390560c75036045fa7a6af86dc20728a9c3423252a5ff532",
+      "match": true
+    }
+  ],
+  "primary_nested_checks": [
+    {
+      "name": "action.yml",
+      "bytes": 1691,
+      "sha256": "adbd82111bafe09ab5baff9fa7ec55445f05b5379b27905e1888dfdb693c44c6",
+      "match": true
+    },
+    {
+      "name": "release.json",
+      "bytes": 31698,
+      "sha256": "86cf9b95da07cbef0112ef085b2818404bb6c17701152a0f5110adf7ff6fee73",
+      "match": true
+    }
+  ],
+  "official_dotslash_asset": {
+    "name": "dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz",
+    "id": 392789328,
+    "size": 777657,
+    "digest": "sha256:ba6b6908c69db8264efdb8ee32f4906284ea3b77247c611339b5f60160cc5691",
+    "release": "v0.5.9"
+  },
+  "compiler_stdout": {
+    "git_blob": "288f7abff332e6038be3bfe795767ff8be0c5006",
+    "identity": {
+      "bytes": 785036,
+      "sha256": "1fde210c9cb94c7399bc4077a8945fec0ed58d3e3ad736bcb5037453e3f26ff2"
+    },
+    "parts": [
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0000.txt",
+        "bytes": 44000,
+        "sha256": "07f05c86e5aaf3bc43b4cee814eb14de4107fb638200bb73fcb288535d29cc30",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0001.txt",
+        "bytes": 44000,
+        "sha256": "264dde18384a43b32ed2ee9dd46be258ddbd0cb1e3ba9c72936fb033e56813b5",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0002.txt",
+        "bytes": 44000,
+        "sha256": "39fcc8e9c2658c26363b51ae966acc362d901d1e713ae56384a671b66060b6a8",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0003.txt",
+        "bytes": 44000,
+        "sha256": "410c89796b1043bdb2ac78c0c22b430286c68750d000d8b4a03bdcfe5b6beda2",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0004.txt",
+        "bytes": 44000,
+        "sha256": "701ec0258be3c9c9458f2cf7a0b480d753e44fe3529672c4bb4d89e5d1a2a99e",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0005.txt",
+        "bytes": 44000,
+        "sha256": "cb507a2da0ca9a5ee1acc51d49e115d050e2a8a36a4c23caa6be4364060f9d57",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0006.txt",
+        "bytes": 44000,
+        "sha256": "56f8d90fee692cb7b84244de562eef64bf979e55309c791d002327be2e581362",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0007.txt",
+        "bytes": 44000,
+        "sha256": "85b7286fd74a0560194102793a216dc8138134cc906e79d8665e10309a2da8f5",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0008.txt",
+        "bytes": 44000,
+        "sha256": "1ea10c1bbafde6f6baec5c99b95f8531dc8f119a1f1ae2335b17d68f9d363486",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0009.txt",
+        "bytes": 44000,
+        "sha256": "a6fe2d3944ca960d9394d2ba53da76ff356598ed59ce06edd28ea4c98325a689",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0010.txt",
+        "bytes": 44000,
+        "sha256": "b24f0fe8bb8af2aeb2e27b863ebb2f29d7cbf46f6e10fa4d19a66f4c673922c7",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0011.txt",
+        "bytes": 44000,
+        "sha256": "11857e832cde1ab86843f72f356eddf478fc9130ec83884d48f3cf29aa70c21c",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0012.txt",
+        "bytes": 44000,
+        "sha256": "0265aa1aa738648c73b4b83ead8594afc92b33a7b8c92408df8fd9b456b5a25a",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0013.txt",
+        "bytes": 44000,
+        "sha256": "f6f8ba233476c6d4d4f47df399122ca037ffb33d6f35cfa49411eea0389d4e41",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0014.txt",
+        "bytes": 44000,
+        "sha256": "5e2aa0dcadc97a0e01351d18d5ca2c7c4e764d8df655b91e5c54bd5ccdef59ad",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0015.txt",
+        "bytes": 44000,
+        "sha256": "a08e024e74c792481775669a40d64356cc5971a713ed5fd59a4b00c807add556",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0016.txt",
+        "bytes": 44000,
+        "sha256": "9c5be1cfb66c5abc3d72ef4e2d465466130a3d67da47c6a9f4b58f656ab870b2",
+        "match": true
+      },
+      {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-helper-build-e84-20261104-2252/parts/stdout/0017.txt",
+        "bytes": 37036,
+        "sha256": "726aaea4fa4d735576ab63fa8a2ca5392bd578eedebbb7cc82653c3b7ce8d4d6",
+        "match": true
+      }
+    ],
+    "json_records": 964,
+    "artifacts": [
+      {
+        "name": "codex-execve-wrapper",
+        "package_id": "path+file:///home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/shell-escalation#codex-shell-escalation@0.0.0",
+        "executable": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-execve-wrapper",
+        "features": [],
+        "profile": {
+          "opt_level": "0",
+          "debuginfo": 0,
+          "debug_assertions": true,
+          "overflow_checks": true,
+          "test": false
+        },
+        "fresh": false,
+        "bytes": 26103616,
+        "sha256": "5529974e631d716d30a424e49cec1beada259386227a2d0b1f2e71e652417500",
+        "raw_matches_receipt": true
+      },
+      {
+        "name": "codex-code-mode-host",
+        "package_id": "path+file:///home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/code-mode-host#codex-code-mode-host@0.0.0",
+        "executable": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-code-mode-host",
+        "features": [],
+        "profile": {
+          "opt_level": "0",
+          "debuginfo": 0,
+          "debug_assertions": true,
+          "overflow_checks": true,
+          "test": false
+        },
+        "fresh": false,
+        "bytes": 82166456,
+        "sha256": "5b6e7c745b0af4538fee7e246ea00675c433a6273c9349ac3c415867856c9859",
+        "raw_matches_receipt": true
+      },
+      {
+        "name": "test_arg0_preflight",
+        "package_id": "path+file:///home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/arg0#codex-arg0@0.0.0",
+        "executable": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_arg0_preflight",
+        "features": [],
+        "profile": {
+          "opt_level": "0",
+          "debuginfo": 0,
+          "debug_assertions": true,
+          "overflow_checks": true,
+          "test": false
+        },
+        "fresh": false,
+        "bytes": 35724016,
+        "sha256": "6c8582aba6129188f6a2986d098ae65fd3328c3903fac567ab214908f303e3c4",
+        "raw_matches_receipt": true
+      },
+      {
+        "name": "test_stdio_server",
+        "package_id": "path+file:///home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/rmcp-client#codex-rmcp-client@0.0.0",
+        "executable": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_stdio_server",
+        "features": [],
+        "profile": {
+          "opt_level": "0",
+          "debuginfo": 0,
+          "debug_assertions": true,
+          "overflow_checks": true,
+          "test": false
+        },
+        "fresh": false,
+        "bytes": 6903600,
+        "sha256": "aa9392d4c41ff2ee7f3545d48ac58739d33ac6d30624c775afee81b4e08cb744",
+        "raw_matches_receipt": true
+      },
+      {
+        "name": "test_streamable_http_server",
+        "package_id": "path+file:///home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/rmcp-client#codex-rmcp-client@0.0.0",
+        "executable": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_streamable_http_server",
+        "features": [],
+        "profile": {
+          "opt_level": "0",
+          "debuginfo": 0,
+          "debug_assertions": true,
+          "overflow_checks": true,
+          "test": false
+        },
+        "fresh": false,
+        "bytes": 12311208,
+        "sha256": "6aca12454b3e30750c6ad2c6e62cc4d85b0974ed359e035c284dc3ea6f6a6c72",
+        "raw_matches_receipt": true
+      }
+    ],
+    "build_finished_success": true
+  },
+  "controllers": {
+    "helper": {
+      "at_unix_ms": 1793832092912,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a8b898db-fc05-2f8f",
+      "launch_nonce": "6f5ff1dfd49ec4824162d2f9b66f2dbd",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 4464,
+          "stored": 4464
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "dotslash": {
+      "at_unix_ms": 1793831388172,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a8aeb06b-fc05-2f75",
+      "launch_nonce": "faed208ebfc15a09a3d48d74256650b5",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 1634,
+          "stored": 1634
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "zsh": {
+      "at_unix_ms": 1793831703618,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a8b31481-fc05-2f80",
+      "launch_nonce": "1671aea730a516af1188189363a01a50",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 1930,
+          "stored": 1930
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "primary": {
+      "at_unix_ms": 1793831055150,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a8a99932-fc05-2f62",
+      "launch_nonce": "d09575fcc721a512dd59a2b1bd58af80",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 7987,
+          "stored": 7987
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  },
+  "build_command": [
+    "cargo",
+    "build",
+    "--locked",
+    "--profile",
+    "dev-small",
+    "--message-format=json-render-diagnostics",
+    "-p",
+    "codex-arg0",
+    "--bin",
+    "test_arg0_preflight",
+    "-p",
+    "codex-code-mode-host",
+    "--bin",
+    "codex-code-mode-host",
+    "-p",
+    "codex-shell-escalation",
+    "--bin",
+    "codex-execve-wrapper",
+    "-p",
+    "codex-rmcp-client",
+    "--bin",
+    "test_stdio_server",
+    "--bin",
+    "test_streamable_http_server"
+  ],
+  "build_duration_seconds": 58.70104021899169,
+  "build_exit_code": 0,
+  "source_unchanged": true,
+  "ordinary_index_unchanged": true,
+  "caller_review_blob": "cb8f4821c526cab974b8d0f477a1f5e7d226cd40",
+  "root_assertions": [
+    "All eight embedded records and two nested official source records hash-match.",
+    "Independently read all 18 original stdout chunks from the native read-only file API; their reconstructed 785036 bytes match the original full SHA256. Parsed all 964 original compiler JSON records.",
+    "Each of the five required normal executable compiler-artifact records matches its receipt's exact source package, target, features, profile and executable path; fresh=false for all five and build-finished.success=true.",
+    "Official pinned install action's latest-release policy is recorded; the captured v0.5.9 release asset published SHA256 and size equal the downloaded archive receipt. Actual tool and zsh executable versions/hashes remain in the bundle.",
+    "Existing early-return risks explain why these real helpers were built; later owning/full catalog compilation must independently identify and hash any rebuilt helper."
+  ],
+  "limits": [
+    "Preparation executes no tests and closes no product blocker.",
+    "Native executable bytes were hashed by the recorded native executor; root independently checked original compiler records and receipts, without claiming a second read of every executable byte.",
+    "Read-only source caller audit is bounded to the seven owning packages and declared helpers, not proof of every full-workspace runtime prerequisite.",
+    "The later 5416-case owning test run reported 12 failures; this successful helper build must not be used to relabel that run."
+  ]
+}

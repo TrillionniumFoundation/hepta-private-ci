@@ -1,0 +1,346 @@
+diff --git a/codex-rs/state/src/sqlite.rs b/codex-rs/state/src/sqlite.rs
+--- a/codex-rs/state/src/sqlite.rs
++++ b/codex-rs/state/src/sqlite.rs
+@@ -322,6 +322,44 @@
+             .await
+     }
+ 
++    /// Open an evidence pool with an explicit synchronous commit guard.
++    ///
++    /// Every physical connection installs `commit_allowed` before owner code
++    /// receives it. Returning false vetoes explicit and implicit SQLite commits.
++    /// The callback must be bounded, nonblocking, and must not call SQLite.
++    /// Owners must keep the pool private and retain their file/initialization
++    /// fence while connection setup runs before hook installation.
++    ///
++    /// This method supplies no checkout coordination, authenticated Current
++    /// receipt, or recovery authority. Owners that require a protected transition
++    /// before checkout must use `open_coordinated_durable_evidence_pool`.
++    pub async fn open_commit_guarded_durable_evidence_pool<F>(
++        &self,
++        path: &Path,
++        commit_allowed: F,
++    ) -> Result<SqlitePool, Error>
++    where
++        F: Fn() -> bool + Send + Sync + 'static,
++    {
++        let commit_allowed = Arc::new(commit_allowed);
++        let options = SqliteConnectOptions::new()
++            .filename(path)
++            .create_if_missing(true)
++            .journal_mode(SqliteJournalMode::Wal)
++            .synchronous(SqliteSynchronous::Full)
++            .foreign_keys(true)
++            .busy_timeout(Duration::from_secs(5))
++            .log_statements(LevelFilter::Off);
++        SqlitePoolOptions::new()
++            .max_connections(5)
++            .after_connect(move |connection, _metadata| {
++                let commit_allowed = Arc::clone(&commit_allowed);
++                Box::pin(install_commit_guard(connection, commit_allowed))
++            })
++            .connect_with(options)
++            .await
++    }
++
+     /// Open an evidence writer whose explicit and implicit commits use `commit_allowed`.
+     ///
+     /// The owner must keep the returned pool private and retain the independently
+@@ -369,10 +407,7 @@
+                 let commit_allowed = Arc::clone(&commit_allowed);
+                 let before_checkout = Arc::clone(&before_checkout);
+                 Box::pin(async move {
+-                    {
+-                        let mut handle = connection.lock_handle().await?;
+-                        handle.set_commit_hook(move || commit_allowed());
+-                    }
++                    install_commit_guard(connection, commit_allowed).await?;
+                     before_checkout().await;
+                     Ok(())
+                 })
+@@ -485,6 +520,20 @@
+     }
+ }
+ 
++async fn install_commit_guard<F>(
++    connection: &mut sqlx::SqliteConnection,
++    commit_allowed: Arc<F>,
++) -> Result<(), Error>
++where
++    F: Fn() -> bool + Send + Sync + 'static,
++{
++    connection
++        .lock_handle()
++        .await?
++        .set_commit_hook(move || commit_allowed());
++    Ok(())
++}
++
+ #[cfg(test)]
+ #[path = "sqlite_commit_gate_tests.rs"]
+ mod commit_gate_tests;
+diff --git a/codex-rs/hepta-memory/src/cognitive_store.rs b/codex-rs/hepta-memory/src/cognitive_store.rs
+--- a/codex-rs/hepta-memory/src/cognitive_store.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store.rs
+@@ -56,6 +56,10 @@
+ mod sync;
+ use sync::sync_cognitive_directory;
+ 
++#[path = "cognitive_store_gate.rs"]
++mod gate;
++pub(crate) use gate::CognitiveCommitGate;
++
+ #[path = "cognitive_store_recovery.rs"]
+ mod recovery;
+ pub use recovery::CognitiveRecoveryAnchor;
+@@ -246,6 +250,7 @@
+ #[derive(Clone)]
+ pub struct CognitiveStore {
+     pub(crate) pool: SqlitePool,
++    pub(crate) commit_gate: CognitiveCommitGate,
+     pub(crate) owner_agent_id: AgentId,
+     path: PathBuf,
+     _open_guard: Option<Arc<CognitiveStoreOpenGuard>>,
+@@ -333,6 +338,7 @@
+     ) -> Self {
+         Self {
+             pool,
++            commit_gate: CognitiveCommitGate::new(),
+             owner_agent_id,
+             path,
+             _open_guard: None,
+@@ -351,8 +357,10 @@
+         windows::prepare_database(&root, &path)?;
+         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
+             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
++        let commit_gate = CognitiveCommitGate::new();
++        let commit_check = commit_gate.clone();
+         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+-            .open_durable_evidence_pool(&path)
++            .open_commit_guarded_durable_evidence_pool(&path, move || commit_check.commit_allowed())
+             .await
+             .map_err(unavailable)?;
+         MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;
+@@ -369,6 +377,7 @@
+         verify_store(&pool, layout.agent_id()).await?;
+         Ok(Self {
+             pool,
++            commit_gate,
+             owner_agent_id: layout.agent_id().clone(),
+             path,
+             _open_guard: Some(open_guard),
+diff --git a/codex-rs/hepta-memory/src/cognitive_store_recovery.rs b/codex-rs/hepta-memory/src/cognitive_store_recovery.rs
+--- a/codex-rs/hepta-memory/src/cognitive_store_recovery.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store_recovery.rs
+@@ -25,6 +25,7 @@
+ use sqlx::TypeInfo;
+ use sqlx::ValueRef;
+ 
++use super::CognitiveCommitGate;
+ use super::CognitiveStore;
+ use super::CognitiveStoreError;
+ use super::CognitiveStoreOpenGuard;
+@@ -103,7 +104,7 @@
+             .await
+             .map_err(unavailable)?;
+         let anchor = capture(&mut transaction, &self.owner_agent_id).await?;
+-        transaction.commit().await.map_err(unavailable)?;
++        transaction.rollback().await.map_err(unavailable)?;
+         Ok(anchor)
+     }
+ 
+@@ -165,9 +166,13 @@
+             .materialize_identity_bound_recovery_copy(&source_guard, &candidate)
+             .map_err(recovery_error)?;
+ 
++        let commit_gate = CognitiveCommitGate::new();
+         let result = async {
++            let commit_check = commit_gate.clone();
+             let pool = config
+-                .open_durable_evidence_pool(&candidate)
++                .open_commit_guarded_durable_evidence_pool(&candidate, move || {
++                    commit_check.commit_allowed()
++                })
+                 .await
+                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+             let authenticated = async {
+@@ -237,8 +242,11 @@
+             sync_cognitive_directory(&canonical_root)
+                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+ 
++            let commit_check = commit_gate.clone();
+             let pool = config
+-                .open_durable_evidence_pool(&candidate)
++                .open_commit_guarded_durable_evidence_pool(&candidate, move || {
++                    commit_check.commit_allowed()
++                })
+                 .await
+                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+             let final_check = async {
+@@ -277,6 +285,7 @@
+             // immediately after a security-sensitive recovery.
+             Ok(CognitiveStore {
+                 pool,
++                commit_gate,
+                 owner_agent_id: layout.agent_id().clone(),
+                 path: candidate.clone(),
+                 _open_guard: Some(std::sync::Arc::new(exclusive_guard)),
+diff --git a/codex-rs/hepta-memory/src/cognitive_store_gate.rs b/codex-rs/hepta-memory/src/cognitive_store_gate.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/cognitive_store_gate.rs
+@@ -0,0 +1,52 @@
++//! A monotonic commit interlock for one original store pool and its clones.
++//! This is not an independent Current witness or a cross-process publisher fence.
++
++use std::sync::Arc;
++use std::sync::atomic::AtomicBool;
++use std::sync::atomic::Ordering;
++
++#[derive(Clone)]
++pub(crate) struct CognitiveCommitGate {
++    fenced: Arc<AtomicBool>,
++}
++
++impl CognitiveCommitGate {
++    pub(crate) fn new() -> Self {
++        Self {
++            fenced: Arc::new(AtomicBool::new(false)),
++        }
++    }
++
++    pub(crate) fn commit_allowed(&self) -> bool {
++        !self.fenced.load(Ordering::SeqCst)
++    }
++
++    /// The caller must hold this pool's original SQLite writer lock from before
++    /// capturing the cut until after this attempt has completed or been dropped.
++    pub(crate) fn checkpoint_attempt(&self) -> CheckpointAttempt {
++        CheckpointAttempt {
++            gate: self.clone(),
++            acknowledged: false,
++        }
++    }
++}
++
++pub(crate) struct CheckpointAttempt {
++    gate: CognitiveCommitGate,
++    acknowledged: bool,
++}
++
++impl CheckpointAttempt {
++    pub(crate) fn acknowledge(mut self) {
++        // A later read ACK never reopens a gate closed by an earlier attempt.
++        self.acknowledged = true;
++    }
++}
++
++impl Drop for CheckpointAttempt {
++    fn drop(&mut self) {
++        if !self.acknowledged {
++            self.gate.fenced.store(true, Ordering::SeqCst);
++        }
++    }
++}
+diff --git a/codex-rs/hepta-memory/src/objective_sender.rs b/codex-rs/hepta-memory/src/objective_sender.rs
+--- a/codex-rs/hepta-memory/src/objective_sender.rs
++++ b/codex-rs/hepta-memory/src/objective_sender.rs
+@@ -49,7 +49,9 @@
+ /// original BEGIN IMMEDIATE write lock is held. Cancellation must release all
+ /// external resources and must not later publish a stale cut in the background.
+ /// Each future poll must be bounded and nonblocking. The Tokio deadline is
+-/// cooperative, not a preemptive wall-clock limit.
++/// cooperative, not a preemptive wall-clock limit. An uncertain started exchange
++/// also permanently vetoes commits through this store pool before its original
++/// writer lock is released; this does not replace the provider's obligations.
+ pub trait ObjectiveSenderCheckpoint: Send + Sync {
+     fn acknowledge_current<'a>(
+         &'a self,
+@@ -216,6 +218,7 @@
+         let writer = self.current_fence(transaction).await?;
+         let current = capture_recovery_anchor(transaction, self.owner_agent_id()).await?;
+         self.sender_live_check()?;
++        let attempt = self.store.commit_gate.checkpoint_attempt();
+         let acknowledged =
+             tokio::time::timeout(deadline, checkpoint.acknowledge_current(&current, &writer))
+                 .await
+@@ -225,6 +228,7 @@
+             return Err(ObjectiveSenderError::AcknowledgementUnknown);
+         }
+         self.sender_live_check()?;
++        attempt.acknowledge();
+         Ok(current)
+     }
+ }
+@@ -455,12 +459,14 @@
+             let snapshot = store::snapshot(&mut transaction, &ticket.request).await?;
+             check(&snapshot)?;
+         }
+-        store::append(&mut transaction, &ticket.request, &fence, kind, observation).await?;
++        let appended =
++            store::append(&mut transaction, &ticket.request, &fence, kind, observation).await?;
+         self.writer.sender_live_check()?;
+-        transaction
+-            .commit()
+-            .await
+-            .map_err(|_| ObjectiveSenderError::AcknowledgementUnknown)?;
++        match appended {
++            store::AppendOutcome::Existing => transaction.rollback().await,
++            store::AppendOutcome::Inserted => transaction.commit().await,
++        }
++        .map_err(|_| ObjectiveSenderError::AcknowledgementUnknown)?;
+         self.acknowledge_committed()
+             .await
+             .map_err(|_| ObjectiveSenderError::AcknowledgementUnknown)
+diff --git a/codex-rs/hepta-memory/src/objective_sender_store.rs b/codex-rs/hepta-memory/src/objective_sender_store.rs
+--- a/codex-rs/hepta-memory/src/objective_sender_store.rs
++++ b/codex-rs/hepta-memory/src/objective_sender_store.rs
+@@ -142,7 +142,9 @@
+     .execute(&mut **tx)
+     .await
+     .map_err(unavailable)?;
+-    append(tx, request, fence, EventKind::PermitIssued, "null").await
++    append(tx, request, fence, EventKind::PermitIssued, "null")
++        .await
++        .map(|_| ())
+ }
+ 
+ pub(super) async fn require_request(
+@@ -190,13 +192,18 @@
+     Ok(requests)
+ }
+ 
++pub(super) enum AppendOutcome {
++    Existing,
++    Inserted,
++}
++
+ pub(super) async fn append(
+     tx: &mut Transaction<'_, Sqlite>,
+     request: &ObjectiveSenderRequest,
+     fence: &OwnerFence,
+     kind: EventKind,
+     observation: &str,
+-) -> Result<(), ObjectiveSenderError> {
++) -> Result<AppendOutcome, ObjectiveSenderError> {
+     let permit = match kind {
+         EventKind::PermitIssued => ExistingPermit::Fresh,
+         EventKind::SubmissionObserved | EventKind::HistoryObserved | EventKind::LocalCancelled => {
+@@ -208,7 +215,7 @@
+         .iter()
+         .any(|event| event.kind == kind && event.observation == observation)
+     {
+-        return Ok(());
++        return Ok(AppendOutcome::Existing);
+     }
+     if events
+         .iter()
+@@ -261,7 +268,7 @@
+     .execute(&mut **tx)
+     .await
+     .map_err(unavailable)?;
+-    Ok(())
++    Ok(AppendOutcome::Inserted)
+ }
+ 
+ pub(super) async fn snapshot(

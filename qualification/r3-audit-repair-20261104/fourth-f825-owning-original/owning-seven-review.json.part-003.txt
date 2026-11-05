@@ -1,0 +1,5193 @@
+t": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "remote_process_keeps_sandbox_helper_visible_with_restricted_reads",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.153",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_process_pushes_events::test_case_2_remote",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.263",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "remote_sandboxed_process_preserves_custom_arg0",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.156",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_process_write_then_read::test_case_1_local",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.210",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_process_write_then_read_without_tty::test_case_1_local",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.209",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "remote_tty_process_uses_configured_sandbox_helper_with_hostile_path",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.153",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_1_local_pipe",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.069",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_2_local_tty",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.063",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_process_rejects_write_without_pipe_stdin::test_case_1_local",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.310",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_6_local_sh_pipe",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.060",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_7_local_bash_env",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.066",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_process_write_then_read::test_case_2_remote",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.302",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_process_rejects_write_without_pipe_stdin::test_case_2_remote",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.364",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_process_write_then_read_without_tty::test_case_2_remote",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.304",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_3_remote_pipe",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.205",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "remote_process_preserves_empty_workspace_roots",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.360",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_4_remote_tty",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.212",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.299",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (4117508) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.304",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (4117556) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    \"Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal\",\n>    \"original\",\n     \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_8_remote_bash_env",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.216",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shell_snapshot_v2_remote_managed_proxy_uses_prepared_execution_context",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.225",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.324",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (4117693) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "remote_exec_process_recovers_after_transport_disconnect",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.495",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.346",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_1_local_pipe_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "1.265",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_2_local_tty_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "1.269",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_5_local_retry_budget_exhausted",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "3.789",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "environment_config_read_rejects_empty_selectors",
+      "classname": "codex-exec-server::environment_config",
+      "seconds": "0.062",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "remote_environment_reads_projected_executor_config",
+      "classname": "codex-exec-server::environment_config",
+      "seconds": "0.064",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_replays_only_chatgpt_cloudflare_cookies",
+      "classname": "codex-exec-server::chatgpt_cloudflare_affinity",
+      "seconds": "0.131",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_reads_reject_fifo_without_waiting_for_a_writer",
+      "classname": "codex-exec-server::file_stream",
+      "seconds": "0.065",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "open_rejects_handle_ids_longer_than_32_bytes",
+      "classname": "codex-exec-server::file_stream",
+      "seconds": "0.058",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "read_block_supports_non_sequential_offsets_and_lengths",
+      "classname": "codex-exec-server::file_stream",
+      "seconds": "0.064",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "open_enforces_the_per_connection_limit_and_close_releases_capacity",
+      "classname": "codex-exec-server::file_stream",
+      "seconds": "0.134",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "stream_stops_after_an_exact_block_boundary",
+      "classname": "codex-exec-server::file_stream",
+      "seconds": "0.132",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "completed_streams_release_handle_capacity",
+      "classname": "codex-exec-server::file_stream",
+      "seconds": "0.197",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "stream_keeps_reading_the_open_file_after_path_replacement",
+      "classname": "codex-exec-server::file_stream",
+      "seconds": "0.147",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_canonicalize_resolves_directory_symlink::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_copy_ignores_unknown_special_files_in_recursive_copy::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_bounded_authorized_read_enforces_limit_without_prefix::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.089",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_canonicalize_resolves_directory_symlink::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.061",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_bounded_authorized_read_rejects_symlink_and_parent_escape::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.094",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_copy_preserves_symlinks_in_recursive_copy::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_copy_rejects_standalone_fifo_source::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_copy_ignores_unknown_special_files_in_recursive_copy::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.067",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_metadata_and_directory_listing_follow_symlinks::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_copy_preserves_symlink_source::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.058",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_no_follow_metadata_preserves_linux_birthtime::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_no_follow_non_recursive_root_creation_fails::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_no_follow_operations_support_search_only_ancestors::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_copy_rejects_symlink_escape_destination::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.052",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_copy_preserves_symlinks_in_recursive_copy::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.059",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_no_follow_recursive_mkdir_handles_concurrent_creators::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_no_follow_write_rejects_fifo_without_blocking::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_create_directory_rejects_symlink_escape::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.049",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_copy_rejects_symlink_escape_source::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.059",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_copy_rejects_standalone_fifo_source::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.065",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_copy_preserves_symlink_source::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.096",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_metadata_and_directory_listing_follow_symlinks::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.066",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_no_follow_metadata_preserves_linux_birthtime::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.064",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_no_follow_non_recursive_root_creation_fails::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.059",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_no_follow_operations_support_search_only_ancestors::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.065",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_no_follow_write_rejects_fifo_without_blocking::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.060",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_copy_rejects_symlink_escape_destination::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.116",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_copy_rejects_symlink_escape_source::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.119",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_read_directory_rejects_symlink_escape::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.069",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_read_stream_remains_bound_after_path_replacement::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.065",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_create_directory_rejects_symlink_escape::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.121",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_sandboxed_write_allows_explicit_alias_roots::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_remove_rejects_symlink_escape::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.058",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_sandboxed_write_allows_explicit_alias_roots::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_no_follow_recursive_mkdir_handles_concurrent_creators::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.105",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_remove_removes_symlink_not_target::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.056",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_walk_handles_directory_symlinks::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_walk_prunes_hidden_directories_without_claiming_visible_aliases::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_sandboxed_canonicalize_resolves_directory_symlink::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.075",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_read_directory_rejects_symlink_escape::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.130",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_read_stream_remains_bound_after_path_replacement::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.129",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_walk_reports_non_utf8_names::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_sandboxed_read_rejects_symlink_parent_dotdot_escape::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.074",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_sandboxed_write_rejects_unwritable_path::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.066",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "remote_authorized_read_rejects_all_paths_without_stable_handle_capability",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.018",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_sandboxed_write_preserves_existing_hard_link::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.081",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_walk_handles_directory_symlinks::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.062",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_copy_copies_directory_recursively::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_copy_copies_file::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_sandboxed_write_rejects_symlink_escape::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.092",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_copy_rejects_copying_directory_into_descendant::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_walk_prunes_hidden_directories_without_claiming_visible_aliases::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.062",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_remove_rejects_symlink_escape::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.141",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_copy_rejects_directory_without_recursive::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_sandboxed_canonicalize_resolves_directory_symlink::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.129",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_create_directory_creates_nested_directories::test_case_1_local_follow",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_create_directory_creates_nested_directories::test_case_2_local_no_follow",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_remove_removes_symlink_not_target::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.148",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_sandboxed_read_rejects_symlink_escape::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.135",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_walk_reports_non_utf8_names::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.061",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_get_metadata_reports_files_and_directories::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_read_directory_lists_entries::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_sandboxed_read_rejects_symlink_parent_dotdot_escape::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.136",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_sandboxed_write_preserves_existing_hard_link::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.131",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_sandboxed_write_rejects_symlink_escape::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.129",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_sandboxed_write_rejects_unwritable_path::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.126",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_read_file_returns_bytes::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_copy_copies_directory_recursively::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.062",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_read_file_text_returns_string::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_copy_copies_file::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.065",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "sandboxed_file_system_helper_finds_bwrap_on_preserved_path",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.082",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_copy_rejects_copying_directory_into_descendant::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.059",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_copy_rejects_directory_without_recursive::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.059",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_remove_removes_directory::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_create_directory_creates_nested_directories::test_case_4_remote_no_follow",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.059",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_create_directory_creates_nested_directories::test_case_3_remote_follow",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.060",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_create_directory_creates_nested_directories::test_case_5_local_sandboxed_no_follow",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.060",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "remote_read_file_preserves_empty_workspace_roots",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.107",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_sandboxed_read_rejects_symlink_escape::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.191",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_walk_handles_invalid_roots_and_limits::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_get_metadata_reports_files_and_directories::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.064",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_read_directory_lists_entries::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.061",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_read_file_returns_bytes::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.063",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_walk_returns_a_bounded_tree::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.010",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_write_file_reports_missing_parent::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_read_file_text_returns_string::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.063",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.063",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_remove_removes_directory::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.058",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_write_file_writes_bytes::test_case_1_local_follow",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.010",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_write_file_writes_bytes::test_case_2_local_no_follow",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "remote_read_file_materializes_environment_workspace_roots",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.163",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_sandboxed_write_allows_additional_write_root::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.068",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_create_directory_creates_nested_directories::test_case_6_remote_sandboxed_no_follow",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.124",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_walk_honors_read_sandbox::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.063",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_walk_handles_invalid_roots_and_limits::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.067",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::path_uri_join_and_parent_preserve_lexical_paths",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::sandbox_context_from_profile_preserves_workspace_write_read_only_subpaths",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_walk_returns_a_bounded_tree::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.063",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_read_file_stream_returns_bounded_chunks::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.125",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_write_file_reports_missing_parent::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.064",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_write_file_writes_bytes::test_case_3_remote_follow",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.061",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_3_local_sandboxed",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.130",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_write_file_writes_bytes::test_case_4_remote_no_follow",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.067",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_sandboxed_write_allows_additional_write_root::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.127",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_walk_honors_read_sandbox::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.120",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_sandboxed_metadata_and_read_allow_readable_root::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.175",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_4_remote_sandboxed",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.187",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_write_file_writes_bytes::test_case_5_local_sandboxed_no_follow",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.123",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_write_file_writes_bytes::test_case_6_remote_sandboxed_no_follow",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.156",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_sandboxed_metadata_and_read_allow_readable_root::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.227",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_operations_can_reject_symlinks_in_any_path_component::test_case_1_local",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.516",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::file_system_read_file_stream_returns_bounded_chunks::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.325",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "file_system_operations_can_reject_symlinks_in_any_path_component::test_case_2_remote",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.555",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "shared::sandboxed_file_operations_cannot_read_helper_siblings",
+      "classname": "codex-exec-server::file_system_unix",
+      "seconds": "0.289",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "remote_environment_fetches_info_from_exec_server",
+      "classname": "codex-exec-server::health",
+      "seconds": "0.021",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_serves_readyz_alongside_websocket_endpoint",
+      "classname": "codex-exec-server::health",
+      "seconds": "0.039",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_reports_environment_status_over_websocket",
+      "classname": "codex-exec-server::health",
+      "seconds": "0.060",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "http_request_forces_buffered_request_params",
+      "classname": "codex-exec-server::http_client",
+      "seconds": "0.048",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "http_response_body_stream_fails_when_transport_disconnects",
+      "classname": "codex-exec-server::http_client",
+      "seconds": "0.049",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "http_response_body_stream_ignores_late_deltas_after_cancelled_request",
+      "classname": "codex-exec-server::http_client",
+      "seconds": "0.052",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "http_response_body_stream_ignores_late_deltas_after_drop",
+      "classname": "codex-exec-server::http_client",
+      "seconds": "0.047",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "http_response_body_stream_reports_disconnect_when_queue_is_full",
+      "classname": "codex-exec-server::http_client",
+      "seconds": "0.056",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "http_response_body_stream_reports_backpressure_truncation",
+      "classname": "codex-exec-server::http_client",
+      "seconds": "0.074",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "http_response_body_stream_drops_queued_terminal_before_next_generated_id",
+      "classname": "codex-exec-server::http_client",
+      "seconds": "0.090",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "http_response_body_stream_rejects_oversized_delta",
+      "classname": "codex-exec-server::http_client",
+      "seconds": "0.078",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "http_response_body_stream_uses_generated_ids_and_receives_ordered_deltas",
+      "classname": "codex-exec-server::http_client",
+      "seconds": "0.089",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "http_response_body_stream_enforces_queued_byte_budget",
+      "classname": "codex-exec-server::http_client",
+      "seconds": "0.649",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "http_response_body_streams_share_queued_byte_budget",
+      "classname": "codex-exec-server::http_client",
+      "seconds": "0.685",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "delegated_http_failure_warning_redacts_request_url",
+      "classname": "codex-exec-server::http_request_logging",
+      "seconds": "0.024",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "delegated_http_success_logs_do_not_expose_sensitive_request_or_response_data",
+      "classname": "codex-exec-server::http_request_logging",
+      "seconds": "0.048",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_http_request_buffers_response_body",
+      "classname": "codex-exec-server::http_request",
+      "seconds": "0.083",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_http_request_can_follow_redirects",
+      "classname": "codex-exec-server::http_request",
+      "seconds": "0.084",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_http_request_normalizes_unicode_hostname",
+      "classname": "codex-exec-server::http_request",
+      "seconds": "0.081",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_http_request_omits_url_fragment",
+      "classname": "codex-exec-server::http_request",
+      "seconds": "0.084",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_http_request_uses_configured_system_proxy",
+      "classname": "codex-exec-server::http_request",
+      "seconds": "0.082",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_http_request_rejects_protected_environment_headers",
+      "classname": "codex-exec-server::http_request",
+      "seconds": "0.120",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_http_request_rejects_duplicate_stream_request_ids",
+      "classname": "codex-exec-server::http_request",
+      "seconds": "0.129",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_http_request_streams_response_body_notifications",
+      "classname": "codex-exec-server::http_request",
+      "seconds": "0.129",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_http_request_can_stop_at_redirects",
+      "classname": "codex-exec-server::http_request",
+      "seconds": "0.180",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_http_request_honors_optional_timeout",
+      "classname": "codex-exec-server::http_request",
+      "seconds": "0.293",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_accepts_initialize",
+      "classname": "codex-exec-server::initialize",
+      "seconds": "0.020",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_rejects_pipelined_requests_before_initialized",
+      "classname": "codex-exec-server::initialize",
+      "seconds": "0.019",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "version_skew::current_app_server_runs_commands_on_released_exec_server_over_noise",
+      "classname": "codex-exec-server::relay",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "version_skew::released_app_server_runs_commands_on_current_exec_server_over_noise",
+      "classname": "codex-exec-server::relay",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "remote_environment_routes_encrypted_exec_server_rpc",
+      "classname": "codex-exec-server::relay",
+      "seconds": "0.168",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "pending_noise_environment_connects_and_reconnects_after_ready_report",
+      "classname": "codex-exec-server::relay",
+      "seconds": "1.171",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_accepts_binary_websocket_json",
+      "classname": "codex-exec-server::websocket",
+      "seconds": "0.017",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_rejects_browser_origin_websocket_handshake",
+      "classname": "codex-exec-server::websocket",
+      "seconds": "0.014",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_reports_malformed_websocket_json_and_keeps_running",
+      "classname": "codex-exec-server::websocket",
+      "seconds": "0.020",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_defaults_omitted_pipe_stdin_to_closed_stdin",
+      "classname": "codex-exec-server::process",
+      "seconds": "0.068",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_starts_process_over_websocket",
+      "classname": "codex-exec-server::process",
+      "seconds": "0.064",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_resumes_detached_session_without_killing_processes",
+      "classname": "codex-exec-server::process",
+      "seconds": "0.109",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_dedupes_retried_process_write_ids",
+      "classname": "codex-exec-server::process",
+      "seconds": "0.148",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_keeps_control_requests_live_during_long_reads_and_queued_requests",
+      "classname": "codex-exec-server::process",
+      "seconds": "0.198",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "exec_server_runs_ordinary_requests_serially_by_default",
+      "classname": "codex-exec-server::process",
+      "seconds": "0.400",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "selected_capability_roots_use_captured_handle_after_replacement",
+      "classname": "codex-exec-server::selected_capability_roots",
+      "seconds": "0.020",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "app_runtime::tests::agentd_forces_explicit_cognitive_write_profile_state",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "app_runtime::tests::agentd_forces_hepta_turn_recovery_on",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "app_runtime::tests::manifest_queue_capacity_reaches_app_server_runtime_options_exactly",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.033",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "automation::service_tests::production_constructor_never_resumes_a_draining_owner",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.036",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.032",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "automation::tests::automation_reconcile_payload_uses_stable_client_identity",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "automation::tests::queue_failures_after_admission_seam_are_never_dispatch_retries",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "automation::tests::dispatch_retry_budget_is_bounded_and_progress_resets_it",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "browser_servo::tests::non_effect_calls_never_enter_final_use_authority",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.032",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.065",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_context::tests::encoded_read_budget_unavailability_is_local_not_store_failure",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "automation_effect_host::tests::host_dispatches_exact_wire_payload_once",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.085",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.145",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.153",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.151",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.169",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_context::tests::budget::learned_ranker_can_select_a_candidate_outside_legacy_top_four",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.101",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_context::tests::budget::byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstention",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.108",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_ranker::tests::missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.029",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.014",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_context::tests::budget::oversized_learned_winner_does_not_consume_the_only_result_slot",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.102",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_ranker::tests::current_loaded_model_changes_read_order_and_abstains_on_unseen_or_corrected_records",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.036",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.193",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "config::tests::cognitive_retrieval_process_profile_is_explicit_and_fail_closed",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.014",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.015",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_ranker::tests::new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.044",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.014",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_context::tests::budget::learned_winner_survives_legacy_byte_cut_and_response_stays_bounded",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.132",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_context::tests::context_reads_real_owner_content_and_removes_committed_tombstones",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.081",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.020",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "config::tests::config_binds_exact_registered_agent_roots_and_workspace",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "control::peer_auth_tests::accept_path_authenticates_before_consuming_a_permit",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "event_buffer::tests::bounded_buffer_reports_cursor_gap_and_resumes",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "control::peer_auth_tests::control_peer_check_runs_before_control_frames",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "control::native_tests::saturated_ordinary_control_returns_original_overload_and_recovers",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "control::native_tests::ordinary_control_preserves_server_identity_and_launch_generation",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "final_use_issuer::tests::concurrent_requests_do_not_interleave_and_complete_denial_can_be_observed",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_context::tests::final_use_binds_complete_owner_cut_not_only_memory_snapshot",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.076",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "final_use_issuer::tests::oversized_and_empty_frames_are_rejected_without_reading_a_body",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "final_use_issuer::tests::malformed_or_wrong_binding_responses_fence_the_channel_without_retry",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "final_use_issuer::tests::truncated_response_closes_the_channel_and_oversized_binding_writes_nothing",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "final_use_issuer::tests::wrong_peer_and_unbounded_timeouts_fail_before_any_request",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_context::tests::hnmf::current_hnmf_context_filters_owner_candidates_before_delivery",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.078",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "grant_provider_worker::tests::cancelled_waiter_does_not_release_capacity_held_by_the_original_worker",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_context::tests::hnmf::changed_hnmf_context_before_publication_fails_closed",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.079",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "hos2_device::tests::changed_boot_and_inaccessible_history_remain_unavailable",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "hos2_device::tests::conflict_does_not_query_or_commit_the_previous_request_using_the_same_d",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "hos2_device::tests::known_request_refusals_cannot_query_an_older_applied_delivery",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "hos2_device::tests::malformed_success_is_a_contradiction_and_lost_transport_reply_remains_unknown",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "hos2_device::tests::native_usage_requires_an_existing_manager_or_recovery_observe_handle",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "hos2_device::tests::read_usage_accepts_boot_origin_and_full_unsigned_observation_range",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "hos2_device::tests::read_usage_correlates_observer_handle_without_consuming_delivery_sequence",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "hos2_device::tests::recovery_observes_original_manager_namespace_without_reinstalling_it",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "hos2_device::tests::production_owner_request_and_a02_wire_vectors_match",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "hos2_device::tests::read_usage_refusal_or_lost_reply_never_becomes_a_snapshot_or_retry",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "hos2_device::tests::read_usage_rejects_impossible_single_cpu_snapshots",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "hos2_device::tests::read_usage_rejects_foreign_or_malformed_response_headers",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "hos2_device::tests::successful_acknowledgement_matches_all_four_shared_history_values",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "final_use_issuer::tests::original_authority_verifies_grants_without_trusting_the_provider_head",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.021",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_context::tests::hnmf::final_use_revalidation_rejects_changed_hnmf_context",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.076",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "intelligence_product::tests::aborted_owner_work_retains_its_budget_until_computation_finishes",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "intuition_policy::tests::host_identity_and_owner_pins_fail_closed_before_policy_admission",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "lane_b_runtime::tests::active_run_capacity_is_bound_by_runtime_composition",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "lane_b_runtime::tests::cancellation_preserves_the_dispatch_boundary_and_reason",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "intelligence_product::tests::total_budget_timeout_never_creates_a_dispatch_or_ledger_capability",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.015",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "lane_b_runtime::tests::drain_closes_admission_and_preserves_dispatch_uncertainty",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "lane_b_runtime::tests::freezes_the_complete_run_tuple_before_context_attachment",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "intelligence_product::tests::unsigned_currentness_substitution_fails_before_owner_use",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.015",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "lane_b_runtime::tests::lifecycle_deadline_is_enforced_after_admission",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "lane_b_runtime::tests::revalidated_durable_explicit_abstain_never_enters_runtime_admission",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "lane_b_runtime::tests::recovery_rehydrates_only_an_indeterminate_non_redispatchable_run",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "lane_b_runtime::tests::operation_identity_is_idempotent_only_for_equal_semantics",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "lane_b_runtime::tests::revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "neuron_runtime::tests::agentd_neuron_owner_is_a_compiled_product_surface",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "lane_b_runtime::tests::terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "notes_bootstrap::tests::absent_multiple_and_truncated_descriptor_sets_are_rejected_and_closed",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "notes_bootstrap::tests::bootstrap_golden_transfers_two_ordered_cloexec_endpoints_and_correlates_only_registration",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "notes_bootstrap::tests::expired_deadline_cannot_receive_an_offer_or_emit_an_ack",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "notes_bootstrap::tests::datagram_or_named_effect_descriptor_cannot_be_attached",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "notes_bootstrap::tests::duplicate_unknown_wrong_identity_and_oversized_offers_close_received_descriptor",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "intelligence_product::tests::missing_current_owner_fails_before_product_use",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.030",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "notes_channel::tests::invalid_bound_does_not_write_and_explicit_invalidation_is_permanent",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "notes_channel::tests::inherited_socketpair_preserves_exact_frame_bytes",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "notes_channel::tests::independent_recovery_survives_effect_loss_and_filters_late_datagrams",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "intelligence_product::evaluation_tests::signed_candidate_passes_only_with_bound_owner_run_context_and_root_trust",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.035",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "notes_channel::tests::lost_reply_permanently_disables_further_effect_entry",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "lane_b_runtime::tests::indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.023",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "notes_channel::tests::named_socket_is_not_a_bootstrap_channel",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "objective_runtime::tests::history::expired_historical_request_matches_after_reopen_without_changing_journal",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "objective_runtime::tests::durable_authentication_frontier_allows_only_exact_replay",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "objective_runtime::tests::history::abstention_and_conflict_remain_distinct_historical_publications",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "notes_channel::tests::malformed_reply_prefix_closes_stream_without_accepting_a_later_reply",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "objective_runtime::tests::history::history_requires_every_retained_authentication_and_body_field",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "objective_runtime::tests::legacy_record_without_protocol_identity_is_rejected_at_final_use",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "objective_runtime::tests::runtime_consumes_compiled_record_but_not_explicit_abstain",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "objective_runtime::tests::history::trusted_anchor_must_exist_match_and_cover_publication",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_anchor_journal::tests::journal_never_discards_a_complete_invalid_frame",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_anchor_journal::tests::journal_preserves_committed_anchor_across_reopen_and_generation_rollover",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_host::tests::anchor_store_fence_is_monotonic_and_reopen_preserves_acknowledged_state",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_host::tests::owner_evidence_policy_rejects_authenticated_wrong_owner",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_anchor_journal::tests::journal_repairs_only_an_incomplete_crash_tail",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_host::tests::owner_evidence_receipt_is_context_bound",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_host::tests::owner_evidence_rejects_context_substitution",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "final_use_issuer::tests::total_deadline_is_not_extended_by_partial_response_progress",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.066",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_host::tests::owner_evidence_rejects_parameter_signal_value_substitution",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_host::tests::retained_external_anchor_blocks_rolled_back_registry_reopen",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_host::tests::owner_evidence_set_includes_mutation_policy_and_canonical_kinds",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "intelligence_product::evaluation_tests::signed_use_rejects_context_snapshot_candidate_set_and_run_substitution",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.055",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_host::tests::real_append_ack_crash_then_registry_rollback_is_rejected_on_restart",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_owner_evidence::tests::concrete_adapters_reject_rollback_frontiers_and_missing_dynamic_owner",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_owner_evidence::tests::concrete_dataset_and_policy_adapters_bind_live_frontiers",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_process_bootstrap::tests::mutable_owner_hardlink_alias_is_rejected",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_process_bootstrap::tests::descriptor_digest_rejects_byte_substitution",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_owner_evidence::tests::dynamic_owner_adapters_bind_ndu_neuron_broadcast_and_exact_signal_values",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_owner_evidence::tests::dynamic_owner_adapters_reject_stale_wrong_owner_and_value_substitution",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "objective_runtime::tests::recovered_authentication_rejects_revoked_and_stale_owner_trust",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.020",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_owner_evidence::tests::dynamic_owner_adapters_reject_ndu_rollback_and_unavailable_neuron_owner",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_runtime::tests::runtime_queue_capacity_is_bounded",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_authority::tests::external_frontier_mismatch_is_not_repaired_from_the_local_directory",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_authority::tests::missing_clock_keyring_or_external_frontier_has_no_compatibility_fallback",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "intelligence_product::evaluation_tests::evaluator_key_epoch_expiry_and_signed_metrics_are_not_self_asserted",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.072",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_ranker::tests::sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deletion",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.133",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_authority::tests::original_authority_uses_the_injected_clock_keyring_and_external_cas",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.021",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_authority::tests::rejected_keyring_drift_preserves_original_durable_claims",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.020",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_authority::tests::expired_revoked_and_wrong_epoch_grants_never_reach_nonce_admission",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.028",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "intelligence_product::tests::signed::signed_input_cannot_install_host_trust_or_change_actual_context",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.128",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.186",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.102",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "intelligence_product::tests::signed::signed_evaluation_completes_existing_owner_preparation_and_run_admission",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.250",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::objective_sender_tests::retained_signed_body_hash_matches_original_agentd_wire_projection",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.135",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::notes_tests::notes_independent_frontier_refusal_does_not_publish_or_read_handoff",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.301",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::objective_sender_tests::uninstalled_original_objective_sender_refuses_without_a_new_owner",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.231",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::notes_tests::unavailable_original_notes_ack_does_not_publish_or_return_identity",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.316",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::notes_tests::original_notes_offer_ack_returns_identity_only_after_both_handles_install",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.412",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::objective_control_tests::a_multiline_original_is_rejected_before_retention_in_the_line_framed_profile",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.409",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::objective_control_tests::closing_original_window_retires_callbacks_before_retention_or_transport",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.410",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "prompt_runtime::tests::dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "prompt_runtime::tests::final_delivered_terminal_releases_staged_turn",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "prompt_runtime::tests::indeterminate_terminal_reopens_blocked_and_reconciles_monotonically",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "prompt_runtime::tests::non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::tests::issuer_peer_refusal_leaves_neither_host_registered",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.133",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "prompt_runtime::tests::owner_remains_send_sync_with_fault_injection",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "prompt_runtime::tests::not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "prompt_runtime::tests::post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.026",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "prompt_runtime::tests::staged_attachment_is_bound_to_exact_thread_and_turn",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::objective_control_tests::actual_kernel_peer_mismatch_cannot_write_a_control_frame",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.463",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::automation_generation_change_during_open_remains_fail_closed",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::automation_owner_mismatch_remains_fail_closed",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::compatibility_retrieval_mode_does_not_require_hnmf_context",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::compatibility_retrieval_mode_rejects_hnmf_context_without_explicit_profile",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.037",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::objective_sender_tests::installed_original_objective_sender_reuses_same_writer_and_live_verifier",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.486",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::tests::invalid_checkpoint_deadline_refuses_before_consulting_external_inputs",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.256",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::generation_change_during_open_is_fenced_before_serving",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.010",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::hnmf_required_retrieval_mode_fails_closed_without_current_context",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::stale_generation_is_fenced_before_cognitive_store_open",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::unavailable_automation_store_degrades_without_startup_failure",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::failure_latch_tests::observed_required_failure_latches_stop_even_when_caller_handles_error",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::notes_tests::malformed_notes_descriptors_or_identity_publish_neither_host",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.608",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::objective_control_tests::original_checkpoint_refusal_prevents_transport_and_recovery_keeps_unknown",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.554",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::failure_latch_tests::rejected_or_panicking_retirement_callback_latches_host_failure",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::failure_latch_tests::retirement_writer_fence_cancels_siblings_and_blocks_fresh_names",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::objective_control_tests::local_cancel_recovers_permanent_fence_without_a_network_request",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.588",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::failure_latch_tests::successful_optional_quarantine_does_not_latch_host_failure",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.028",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::objective_control_tests::real_control_lost_ack_recovers_exact_admission_without_replaying_submission",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.575",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::outcome_tests::observed_required_failure_cannot_become_cancelled_success",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.117",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::outcome_tests::rejected_quarantine_cannot_be_reclassified_as_normal_shutdown",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::failure_latch_tests::retirement_timeout_does_not_masquerade_as_a_shared_fence",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.049",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::outcome_tests::rejected_retirement_remains_failed_after_cleanup",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::tests::revoked_cut_and_initial_expiry_do_not_open_the_protected_owner",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.248",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.179",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::outcome_tests::dropped_retirement_wait_does_not_erase_an_unacknowledged_abort",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.057",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::retirement_tests::a_writer_fence_during_retirement_still_propagates",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::retirement_tests::failed_drain_is_quarantine_not_retirement",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::tests::installed_original_writer_keeps_the_protected_clock_and_original_verifier_live",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.448",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::retirement_tests::owner_retirement_rejection_or_panic_never_publishes_success",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::retirement_tests::forty_first_running_service_retires_without_stopping_other_services",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::outcome_tests::isolated_optional_failure_does_not_poison_healthy_host",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.059",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::tests::original_live_verifier_and_protected_clock_failures_during_recovery_do_not_install",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.367",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::outcome_tests::late_owner_acknowledgement_after_timeout_preserves_clean_shutdown",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.059",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::tests::frontier_and_current_cut_refusals_leave_neither_host_registered",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.490",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::service_generations::abi_tests::incompatible_abi_never_starts_factory_or_consumes_a_slot",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::outcome_tests::ordinary_host_abort_does_not_invent_a_retirement_request",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.057",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::service_generations::tests::failed_retirement_callback_fences_host_without_releasing_identity",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::service_generations::tests::quarantined_failure_is_not_an_acknowledged_retirement",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::retirement_tests::retirement_cannot_stop_required_or_legacy_uncontracted_tasks",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.026",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::retirement_tests::rejected_service_factory_is_never_invoked",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.027",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::service_generations::abi_tests::abi_bound_replacements_reuse_one_slot_and_reject_stale_retirement",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.015",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::service_generations::tests::rejected_registration_never_invokes_factory_or_advances_fence",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::outcome_tests::shutdown_listener_failure_is_latched_across_reentry",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.057",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::service_generations::tests::a_drain_timeout_does_not_free_the_slot_or_acknowledge_retirement",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.017",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::outcome_tests::successful_optional_retirement_preserves_clean_host_outcome",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.057",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::service_generations::tests::stale_and_unversioned_requests_cannot_stop_or_resurrect_a_successor",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::service_generations::tests::retired_legacy_name_cannot_bypass_its_single_use_contract",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::tests::cooperative_shutdown_precedes_forced_abort",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::tests::cancelled_observation_keeps_completion_identity",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::tests::forty_first_service_executes_and_failure_preserves_required_services",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::retirement_tests::retirement_timeout_never_acknowledges_unfinished_drain",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.028",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::tests::required_clean_exit_is_not_misreported_as_success",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::tests::shutdown_grace_cannot_be_zero_or_unbounded",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::service_generations::tests::replacements_reuse_one_slot_even_at_full_identity_capacity",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.025",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::tests::admission_is_bounded_and_rejects_duplicate_or_invalid_names",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.028",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::tests::generation_fence_cannot_be_downgraded_to_optional_availability",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.027",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::tests::optional_panic_preserves_registered_identity_and_quarantines_once",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.027",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::tests::quarantine_panic_is_fatal_and_still_drains",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.027",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::tests::quarantine_rejection_is_fatal_and_reaps_other_tasks",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.026",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "topology_plasticity_host::tests::topology_anchor_store_preserves_fence_and_anchor",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "topology_plasticity_host::tests::topology_real_append_ack_crash_then_registry_rollback_is_rejected_on_restart",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::tests::shutdown_listener_error_does_not_detach_live_tasks",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.027",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::outcome_tests::timed_out_retirement_aborted_by_shutdown_remains_failed",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.108",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::tests::success_keeps_one_original_writer_and_repeat_assembly_touches_no_inputs",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.349",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::tests::final_metadata_callback_cannot_expire_authority_before_atomic_install",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.644",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "state::isolation_tests::current_durable_run_start_requires_live_owner_trust",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.143",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::objective_control_tests::original_sender_reaches_real_control_admission_history_and_cancellation_once",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.868",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::notes_tests::attached_ack_followed_by_live_refusal_returns_no_identity_and_closes_target",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.997",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::notes_tests::attached_notes_ack_then_checkpoint_refusal_publishes_no_host_and_closes_target",
+      "classname": "codex-hepta-agentd",
+      "seconds": "1.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+      "classname": "codex-hepta-agentd",
+      "seconds": "1.314",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane",
+      "classname": "codex-hepta-agentd",
+      "seconds": "0.629",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen",
+      "classname": "codex-hepta-agentd",
+      "seconds": "2.047",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation",
+      "classname": "codex-hepta-agentd",
+      "seconds": "2.046",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen",
+      "classname": "codex-hepta-agentd",
+      "seconds": "2.071",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "notes_channel::tests::lost_retirement_ack_can_retry_the_exact_datagram_and_cannot_send_effects",
+      "classname": "codex-hepta-agentd",
+      "seconds": "2.030",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "production_composition::tests::checkpoint_failures_and_post_ack_live_refusals_never_install_recovered_hosts",
+      "classname": "codex-hepta-agentd",
+      "seconds": "2.140",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::retirement_tests::retirement_keeps_observing_unrelated_failures",
+      "classname": "codex-hepta-agentd",
+      "seconds": "2.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::hos2_recovery_tests::notes_tests::notes_recovered_writer_persists_lost_reply_and_retires_without_replay",
+      "classname": "codex-hepta-agentd",
+      "seconds": "2.369",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_tasks::service_generations::writer_tests::sqlite_writer_rotates_256_times_without_consuming_new_service_identities",
+      "classname": "codex-hepta-agentd",
+      "seconds": "3.548",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime::hos2_recovery_tests::actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown",
+      "classname": "codex-hepta-agentd",
+      "seconds": "5.400",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "cognitive_store_unavailable_fails_closed_before_provider",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "0.037",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_agentd_final_use_revalidation_rejects_concurrent_tombstone",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "0.547",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_automation_store_failure_does_not_end_real_agentd_or_normal_turns",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "0.637",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "unavailable_automation_store_keeps_real_agentd_and_app_server_ready",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "0.621",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_agentd_local_memory_review_is_read_only_and_replayable",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "2.648",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "running_consumer_observes_owner_control_grant_and_revoke_without_restart",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "2.737",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "five_real_agents_survive_one_automation_store_failure_without_peer_stall",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "2.808",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "five_running_agents_share_only_with_the_explicit_consumer",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "2.830",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_agentd_local_memory_review_hides_host_tombstone_after_reopen",
+      "classname": "codex-hepta-agentd::cognitive_product_e2e",
+      "seconds": "3.285",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "agentd_calls_authenticated_current_intuition_policy_with_owner_pins",
+      "classname": "codex-hepta-agentd::intuition_policy_product",
+      "seconds": "0.025",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "readiness_reports_exited_child_with_bounded_decoded_output",
+      "classname": "codex-hepta-agentd::fleet_harness_diagnostics",
+      "seconds": "0.048",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "signed_recovery_frontier_rejects_valid_older_database_image",
+      "classname": "codex-hepta-agentd::kernel_evidence_product",
+      "seconds": "0.123",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "signed_recovery_frontier_allows_exact_current_database",
+      "classname": "codex-hepta-agentd::kernel_evidence_product",
+      "seconds": "0.522",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+      "classname": "codex-hepta-agentd::kernel_evidence_product",
+      "seconds": "0.562",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_agentd_without_explicit_trust_rejects_signed_text",
+      "classname": "codex-hepta-agentd::authbus_text_product",
+      "seconds": "0.465",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+      "classname": "codex-hepta-agentd::authbus_text_product",
+      "seconds": "2.076",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "already_ready_shutdown_cannot_hide_unobserved_required_failure",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "normal_host_stop_is_not_permanent_module_retirement",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "optional_failure_during_shutdown_is_quarantined_exactly_once",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "optional_shared_fence_during_shutdown_still_stops_the_host",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "owner_failure_after_cancellation_is_not_a_successful_shutdown",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "quarantine_rejection_during_shutdown_is_latched",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "required_panic_during_cleanup_is_not_discarded",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "forced_abort_never_publishes_retirement_acknowledgement",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.108",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "unfinished_retirement_callback_is_checked_during_final_cleanup",
+      "classname": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "seconds": "0.106",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "supervisord_child_entry",
+      "classname": "codex-hepta-agentd::supervisord_product_e2e",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes",
+      "classname": "codex-hepta-agentd::supervisord_product_e2e",
+      "seconds": "4.951",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descriptor",
+      "classname": "codex-hepta-agentd::plasticity_process_e2e",
+      "seconds": "0.417",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "agentd_product_host_recovers_exact_cut_into_fenced_writer_generation",
+      "classname": "codex-hepta-agentd::cognitive_store_product_writer",
+      "seconds": "0.786",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "poisoned_request_capture_is_reported_without_counting_a_send",
+      "classname": "codex-hepta-agentd::two_agent_turn_recovery",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "killed_agent_recovers_same_turn_then_dispatches_queue_once_while_peer_stays_live",
+      "classname": "codex-hepta-agentd::two_agent_turn_recovery",
+      "seconds": "17.198",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::driver_backed_process_can_expose_split_stdout_and_stderr",
+      "classname": "codex-utils-pty",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::driver_backed_process_can_resize_via_resizer_hook",
+      "classname": "codex-utils-pty",
+      "seconds": "0.003",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::output_collector_waits_for_exit_after_output_closes",
+      "classname": "codex-utils-pty",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::driver_backed_process_drains_output_that_arrives_after_exit_signal",
+      "classname": "codex-utils-pty",
+      "seconds": "0.054",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_drains_stderr_without_stdout_activity",
+      "classname": "codex-utils-pty",
+      "seconds": "0.021",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_and_pty_share_interface",
+      "classname": "codex-utils-pty",
+      "seconds": "0.062",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_drop_reaps_child",
+      "classname": "codex-utils-pty",
+      "seconds": "0.004",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_process_can_expose_split_stdout_and_stderr",
+      "classname": "codex-utils-pty",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_process_round_trips_stdin",
+      "classname": "codex-utils-pty",
+      "seconds": "0.016",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_spawn_no_stdin_can_preserve_inherited_fds",
+      "classname": "codex-utils-pty",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_terminate_aborts_detached_readers",
+      "classname": "codex-utils-pty",
+      "seconds": "0.012",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_terminate_reaps_child",
+      "classname": "codex-utils-pty",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_drop_allows_runtime_shutdown_with_detached_child",
+      "classname": "codex-utils-pty",
+      "seconds": "0.020",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_preserving_fds_drop_allows_runtime_shutdown_with_detached_child",
+      "classname": "codex-utils-pty",
+      "seconds": "0.018",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_preserving_fds_terminate_allows_runtime_shutdown_with_detached_child",
+      "classname": "codex-utils-pty",
+      "seconds": "0.019",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_spawn_can_preserve_inherited_fds",
+      "classname": "codex-utils-pty",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_dropped_output_receiver_keeps_draining_child",
+      "classname": "codex-utils-pty",
+      "seconds": "0.095",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_spawn_with_inherited_fds_reports_exec_failures",
+      "classname": "codex-utils-pty",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_spawn_without_io_driver_returns_error",
+      "classname": "codex-utils-pty",
+      "seconds": "0.003",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_spawn_with_inherited_fds_supports_resize",
+      "classname": "codex-utils-pty",
+      "seconds": "0.015",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_preserving_inherited_fds_keeps_python_repl_running",
+      "classname": "codex-utils-pty",
+      "seconds": "0.083",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_python_repl_emits_output_and_exits",
+      "classname": "codex-utils-pty",
+      "seconds": "0.082",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_terminate_allows_runtime_shutdown_with_detached_child",
+      "classname": "codex-utils-pty",
+      "seconds": "0.021",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pipe_process_detaches_from_parent_session",
+      "classname": "codex-utils-pty",
+      "seconds": "0.208",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_terminate_reaps_child_when_waiter_is_queued",
+      "classname": "codex-utils-pty",
+      "seconds": "0.017",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_terminate_kills_background_children_in_same_process_group",
+      "classname": "codex-utils-pty",
+      "seconds": "0.028",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_terminate_allows_runtime_shutdown_with_full_output_channel",
+      "classname": "codex-utils-pty",
+      "seconds": "0.096",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_close_stdin_preserves_large_input_and_delivers_eof",
+      "classname": "codex-utils-pty",
+      "seconds": "0.244",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "tests::pty_python_repl_readiness_waits_for_execution_after_input_echo",
+      "classname": "codex-utils-pty",
+      "seconds": "0.325",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_agentd_rejects_redirected_sqlite_and_in_memory_thread_stores",
+      "classname": "codex-hepta-agentd::queue_capacity_product",
+      "seconds": "0.349",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_agentd_manifest_capacity_bounds_its_private_app_server_queue",
+      "classname": "codex-hepta-agentd::queue_capacity_product",
+      "seconds": "0.813",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "clean_agent_recall_replay_training_load_and_source_withdrawal",
+      "classname": "codex-hepta-agentd::terminal_cell_owner",
+      "seconds": "0.248",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "real_owner_decision_outcome_freeze_fit_registry_reload_and_withdrawal",
+      "classname": "codex-hepta-agentd::terminal_cell_owner",
+      "seconds": "0.288",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::full_text_mode_normalizes_crlf_line_endings",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::full_text_mode_preserves_unredacted_text",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::image_only_message_is_rendered_as_non_text_span",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::mixed_text_and_image_message_keeps_image_span",
+      "classname": "core_test_support",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::kind_with_text_prefix_mode_normalizes_crlf_line_endings",
+      "classname": "core_test_support",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::redacted_text_mode_keeps_canonical_placeholders",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::redacted_text_mode_keeps_capability_instruction_placeholders",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::redacted_text_mode_normalizes_environment_context_with_subagents",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::redacted_text_mode_normalizes_system_skill_temp_paths",
+      "classname": "core_test_support",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::redacted_text_mode_normalizes_turn_metadata_dynamic_json_strings",
+      "classname": "core_test_support",
+      "seconds": "0.005",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::strip_agents_md_user_context_omits_agents_fragment_from_user_messages",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::strip_capability_instructions_omits_capability_parts_from_developer_messages",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "context_snapshot::tests::tools_context_uses_readable_multiline_snapshot_text",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "responses::tests::call_output_content_and_success_returns_only_single_text_content_item",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::get_models_returns_empty_list",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::malformed_request_returns_400",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::multiple_responses_are_fifo_and_completion_timestamps_monotonic",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::none_gate_streams_immediately",
+      "classname": "core_test_support",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::parse_request_line_handles_valid_and_invalid",
+      "classname": "core_test_support",
+      "seconds": "0.008",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::post_responses_streams_in_order_and_closes",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::read_http_request_returns_after_header_terminator",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::post_responses_with_no_queue_returns_500",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::take_next_stream_consumes_in_lockstep",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::shutdown_terminates_accept_loop",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_codex::tests::custom_tool_call_output_text_panics_when_output_is_missing",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::unknown_route_returns_404",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_environment::tests::defaults_to_local",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_environment::tests::derives_target_operating_system_and_placement",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_codex::tests::custom_tool_call_output_text_returns_output_text",
+      "classname": "core_test_support",
+      "seconds": "0.009",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::responses_post_drains_request_body",
+      "classname": "core_test_support",
+      "seconds": "0.033",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_environment::tests::explicit_docker_accepts_the_legacy_container_value",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_environment::tests::explicit_local_ignores_stale_remote_metadata",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_environment::tests::parses_each_explicit_environment",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_environment::tests::rejects_invalid_or_incomplete_configuration",
+      "classname": "core_test_support",
+      "seconds": "0.006",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "test_environment::tests::treats_the_legacy_remote_value_as_a_docker_container",
+      "classname": "core_test_support",
+      "seconds": "0.007",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "streaming_sse::tests::gated_chunks_wait_for_signal_and_preserve_order",
+      "classname": "core_test_support",
+      "seconds": "0.411",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "forty_first_service_survives_faults_replacement_retirement_and_real_process_restart",
+      "classname": "codex-hepta-agentd::optional_module_restart",
+      "seconds": "0.822",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "runtime_codex_product_caller_commits_one_authorized_terminal_turn",
+      "classname": "codex-hepta-agentd::runtime_codex_product_e2e",
+      "seconds": "0.666",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "two_supervised_real_agentd_processes_are_fault_isolated",
+      "classname": "codex-hepta-agentd::supervised_two_agents",
+      "seconds": "1.207",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "five_real_agentd_processes_roll_one_agent_without_stopping_peers",
+      "classname": "codex-hepta-agentd::five_agent_rolling_upgrade",
+      "seconds": "4.309",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated",
+      "classname": "codex-hepta-agentd::five_agent_rolling_upgrade",
+      "seconds": "4.524",
+      "result": "PASS",
+      "failure": ""
+    },
+    {
+      "name": "forwarder_runs_commands_and_transfers_files",
+      "classname": "codex-exec-server::forward",
+      "seconds": "7.132",
+      "result": "PASS",
+      "failure": ""
+    }
+  ],
+  "counts": {
+    "PASS": 5408,
+    "FAIL": 8
+  },
+  "selected_catalog_count": 5416,
+  "existing_ignored_catalog_count": 19,
+  "existing_unmatched_catalog_count": 0,
+  "exact_executed_roster": true,
+  "missing_roster": [],
+  "unexpected_roster": [],
+  "unexpected_skips": [],
+  "known_missing_prerequisite_early_returns": [],
+  "all_skip_observations": [
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    Skipping test because it requires a remote test environment.",
+    "    2026-11-05T00:24:21.315593Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+    "    2026-11-05T00:24:21.321054Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+    "    2026-11-05T00:24:21.333090Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+    "    2026-11-05T00:24:21.335981Z  WARN codex_core::session: skipping subagent thread analytics: missing inherited client metadata",
+    "    Skipping test because it requires a remote test environment."
+  ],
+  "early_return_case_observations": [],
+  "binary_before": [
+    {
+      "binary_id": "codex-apply-patch",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_apply_patch-d4dcee4a2750355f",
+      "bytes": 33198288,
+      "sha256": "eeb039368778f28c7aed8d2839979ff7d86538bcdfac9f8a7e3fd4bb7c10b268"
+    },
+    {
+      "binary_id": "codex-apply-patch::all",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/all-e840b69b9eeac839",
+      "bytes": 31928808,
+      "sha256": "bebe09a515a1007e7da64f352bd0c361d179ccd5669d4846dcfbae25fb0f3b73"
+    },
+    {
+      "binary_id": "codex-cli",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_cli-eeacd51710c1ed25",
+      "bytes": 98598736,
+      "sha256": "6f030bb8319dde61e494fb38cb3965a66823a0527eff43e11bdfa1276c5d2d07"
+    },
+    {
+      "binary_id": "codex-cli::app_server",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/app_server-d793911087817118",
+      "bytes": 43030672,
+      "sha256": "408635f79b2eeb2a3dd579575127dd0940a15c1c1fc7cff7abc3999762f48c10"
+    },
+    {
+      "binary_id": "codex-cli::debug_clear_memories",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/debug_clear_memories-ee4a6c3ca3c11849",
+      "bytes": 29107808,
+      "sha256": "37f1ffdcc8638f5a6458068f755d5a4f049de7a5b5cf537d44a18a1b6bf36377"
+    },
+    {
+      "binary_id": "codex-cli::debug_models",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/debug_models-bccbd2099ba86c3b",
+      "bytes": 1750472,
+      "sha256": "9b0597f20f4e5590c78237d999ef20eb3f16892a46a0e2b579f714412a874557"
+    },
+    {
+      "binary_id": "codex-cli::delete",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/delete-15f138a3c271d922",
+      "bytes": 1635672,
+      "sha256": "2e28142b28bdd462d293cbcdb800c87e13cde59ce6facd18c4218228f228acf4"
+    },
+    {
+      "binary_id": "codex-cli::doctor_enterprise_network",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/doctor_enterprise_network-1aecfbc9f0922992",
+      "bytes": 6419576,
+      "sha256": "6c0eae1a23368edb93ddcaf1636cb7e6fca0c7ab2568285a4300638053276026"
+    },
+    {
+      "binary_id": "codex-cli::exec_server",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/exec_server-482337c579e61307",
+      "bytes": 42782152,
+      "sha256": "7904c9a9d1c46de690214ce3817fca5031cc660caba47bf40dc01ca6c27c40ad"
+    },
+    {
+      "binary_id": "codex-cli::execpolicy",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/execpolicy-23dad1c5f6ddb5c8",
+      "bytes": 1897912,
+      "sha256": "3976891a65e0589da8a842c1d4187deac44cf07736ac87c9e1cfacca525fca20"
+    },
+    {
+      "binary_id": "codex-cli::features",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/features-73306539f958a0bb",
+      "bytes": 80572992,
+      "sha256": "2b6457f392174084ff8ade16a70735519a242c298e3285e7384eb1820f86189a"
+    },
+    {
+      "binary_id": "codex-cli::login",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/login-fd60f0998d6ed1b3",
+      "bytes": 51633744,
+      "sha256": "390ed64fed063dc3c82c4396ef09b9e1f7eaa86612f78f6bb7a76bbb03526c35"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_add",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/marketplace_add-bfdb8e7d80432f96",
+      "bytes": 31619336,
+      "sha256": "c2a4143fb6747803ba55f198e084eb7340fe7684ca7311372175a3bea9c1b113"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_remove",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/marketplace_remove-1f2eb2af3294aa48",
+      "bytes": 31705064,
+      "sha256": "c34a9f8fe77e805238f8698b2380e40c92b81f81d5a7b9c4f7f2d16781510150"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_upgrade",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/marketplace_upgrade-a1163d1e154c5870",
+      "bytes": 3021576,
+      "sha256": "6b8708efbe6202d3c1efd17d7ad5c7558804f53a54484cf510fd925883b94595"
+    },
+    {
+      "binary_id": "codex-cli::mcp_add_remove",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/mcp_add_remove-19a31e027405f553",
+      "bytes": 70413104,
+      "sha256": "dc3e8524fb034a10bd9a3daeb4cea1a1c596468ed2933b53001439db2a14b56f"
+    },
+    {
+      "binary_id": "codex-cli::mcp_cloud_config",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/mcp_cloud_config-8d94c21f7743b8db",
+      "bytes": 80611216,
+      "sha256": "def8426bc18b84a17098ae7471f68cf073a794cc76792144f5704decf8ac03db"
+    },
+    {
+      "binary_id": "codex-cli::mcp_list",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/mcp_list-71050001ace9b3cd",
+      "bytes": 71270112,
+      "sha256": "04cdbc76673c5da7130228f7c6ffa66e11e2849f7ce72136dffb3affa9f869ca"
+    },
+    {
+      "binary_id": "codex-cli::plugin_cli",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/plugin_cli-f224dbc6749b3755",
+      "bytes": 27494104,
+      "sha256": "764dd95dc033238797bf07cf2c985d539ab4012e9bb81ceb1b329a9097319de7"
+    },
+    {
+      "binary_id": "codex-cli::queue",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/queue-48b7ed7623016f07",
+      "bytes": 37188416,
+      "sha256": "b096b18c6b370f1e74ef5cee649d7c9cc735b1ea7a0ea6161c6164e06329a9f7"
+    },
+    {
+      "binary_id": "codex-cli::sandbox_cloud_config",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/sandbox_cloud_config-36b2800407e9e0d1",
+      "bytes": 80306528,
+      "sha256": "76bd064a0c72559ad4e75412fdf56e4c2dd9b890b531f6354fc147279a62cdca"
+    },
+    {
+      "binary_id": "codex-cli::sandbox_network_proxy",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/sandbox_network_proxy-5d6751d9e4490e52",
+      "bytes": 1262408,
+      "sha256": "4fda2bacea6dad34cad09a2fea21bbbfbdbeef4290f00c0392970cc66827f6e1"
+    },
+    {
+      "binary_id": "codex-cli::update",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/update-8778a13db0250294",
+      "bytes": 2497304,
+      "sha256": "431fb18dec9ddac79ef59a407b39d6da94ad3040eceb94deff56b42670adb193"
+    },
+    {
+      "binary_id": "codex-cli::bin/codex",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex-2774e4caf7b5fc80",
+      "bytes": 117856696,
+      "sha256": "7fcef7575a44870e9be6cc0bd504314f3e2f4ecc8a3c2b60fe5b6e9335c62054"
+    },
+    {
+      "binary_id": "codex-cli::bin/hepta",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/hepta-8be90a5aa8a36802",
+      "bytes": 117856824,
+      "sha256": "bf8a7d1aa3c424255983ce15051790a508f45a43f8b9ef2868815f24bd782027"
+    },
+    {
+      "binary_id": "codex-cli::bin/logs_client",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/logs_client-4495938adb3dae37",
+      "bytes": 72744144,
+      "sha256": "739f31eb4a347c0d19501943fc5a8aa577639562841c8fb10147e8614bebeda1"
+    },
+    {
+      "binary_id": "codex-core",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_core-3dec403ac3aab761",
+      "bytes": 308564752,
+      "sha256": "81b867e11479f65ededf6dab91aaefd564de4c57323fff471863ba3035437bca"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/all-1345d2bd9be9e06a",
+      "bytes": 284116912,
+      "sha256": "5ed685ff1fe649955723c0f7fe4a201faa3405107940a348e4a5fc8677803fc5"
+    },
+    {
+      "binary_id": "codex-core::responses_headers",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/responses_headers-87f21db6090e23d7",
+      "bytes": 231194544,
+      "sha256": "9e21389236e0135846b83e4b990354d1234a18b5cb235cb19cc5a30c8dde5fc6"
+    },
+    {
+      "binary_id": "codex-exec-server",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_exec_server-bf13ec590e8a0dc4",
+      "bytes": 101212400,
+      "sha256": "3651c8681f9732d33b1b722bb72900a6852cfd69731d9baa9f40413d3c7c2437"
+    },
+    {
+      "binary_id": "codex-exec-server::accepted_websocket",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/accepted_websocket-0bdbe9aaa7140c8f",
+      "bytes": 45533528,
+      "sha256": "d9b38987373a079189dfcaf55bf8561c56bf587474eacfd51ccfd8fdb344e13e"
+    },
+    {
+      "binary_id": "codex-exec-server::authorized_read_rpc",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/authorized_read_rpc-56e30d800965a9cf",
+      "bytes": 88666960,
+      "sha256": "d86ad4790abae04b8d6ae945f47ccf6814ebe1cb0d61817e7e30a9091489e053"
+    },
+    {
+      "binary_id": "codex-exec-server::capability_discovery",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/capability_discovery-bca6a38e649686d6",
+      "bytes": 86444240,
+      "sha256": "69a146c0b65f580ccf93756d1dfbd26c9e4ab90c00a84099700a3619b0b26de7"
+    },
+    {
+      "binary_id": "codex-exec-server::chatgpt_cloudflare_affinity",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/chatgpt_cloudflare_affinity-52ae6148641dcb43",
+      "bytes": 86295968,
+      "sha256": "5fba76732fe74118986b5ad44c2cfccd3a410c8141b93935d6439cca0a7e1327"
+    },
+    {
+      "binary_id": "codex-exec-server::deferred_environment",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/deferred_environment-a5dad61172373a6d",
+      "bytes": 41015192,
+      "sha256": "5de1dcf277f22f985e472f135513a9acdf90828f95159dba0ceab6c2fee2cde4"
+    },
+    {
+      "binary_id": "codex-exec-server::environment",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/environment-0b48047e0b015ab0",
+      "bytes": 92688816,
+      "sha256": "55126f6efa774de7f661e63128d92bc68a751f6323068fa925d4344ba8aef296"
+    },
+    {
+      "binary_id": "codex-exec-server::environment_config",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/environment_config-c2075751d25bb1b6",
+      "bytes": 90925968,
+      "sha256": "756d020e7fdaee3bfe24d1ea313061d03e6e544af63d7e2c9c4306b9afd67afd"
+    },
+    {
+      "binary_id": "codex-exec-server::exec_process",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/exec_process-5dd59dc85852de58",
+      "bytes": 91871552,
+      "sha256": "a6b00bac699a7b350332e3f06c4d4c8db65ab163d36468405fdcad14da1319de"
+    },
+    {
+      "binary_id": "codex-exec-server::file_stream",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/file_stream-d0939a0f1d53255e",
+      "bytes": 90888960,
+      "sha256": "26569b77d22d91a708a9f69e54a316e83cbbe7a670f63181c8f92e4baad8eb17"
+    },
+    {
+      "binary_id": "codex-exec-server::file_system_unix",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/file_system_unix-73f944ec2ad16184",
+      "bytes": 91816448,
+      "sha256": "777d0444d7abdcf24b23819bfd301bb3f7087b46f3c0cd5cf423e2d9a3b940f8"
+    },
+    {
+      "binary_id": "codex-exec-server::forward",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/forward-0e9ccd55ddaecd8f",
+      "bytes": 91419312,
+      "sha256": "a11d965ef0076ee66cfb470876dfc75a8eee10d57f20b46b6099b2e324008869"
+    },
+    {
+      "binary_id": "codex-exec-server::health",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/health-8e09482d4380bef8",
+      "bytes": 90908624,
+      "sha256": "21aacd1bc19600828ff1f1ca04594ef93705299fa39c86f4135932cf65f7d90f"
+    },
+    {
+      "binary_id": "codex-exec-server::http_client",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/http_client-a17dbe915f0064e5",
+      "bytes": 40075320,
+      "sha256": "1d90c3e7fa7ce1ddba82d3a75d97b1cb733e6b3b9cbd4dbec3a5a173e1e520eb"
+    },
+    {
+      "binary_id": "codex-exec-server::http_request",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/http_request-80ab48aae1586d58",
+      "bytes": 86584928,
+      "sha256": "0be8ed3133dc0a6fe237dfd5ce9498a5231202a406b41e66f691d73814de2fe5"
+    },
+    {
+      "binary_id": "codex-exec-server::http_request_logging",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/http_request_logging-f4f2d6ddd54402ab",
+      "bytes": 40004848,
+      "sha256": "03e0153740c2852eedbfb5ad4818cc79634048412597e77e7d8e2b43e05107cc"
+    },
+    {
+      "binary_id": "codex-exec-server::initialize",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/initialize-31757d4183ea03f5",
+      "bytes": 86160368,
+      "sha256": "2c01ae11446228546db151ef9cded9cd5ae87656177e03fc7c7e6bc5a90f6ba9"
+    },
+    {
+      "binary_id": "codex-exec-server::process",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/process-9a6b1ec6f05c892c",
+      "bytes": 86474864,
+      "sha256": "70554041cd81196cb386256ffbcec5c191923676dae9993dd0b69917b4d51996"
+    },
+    {
+      "binary_id": "codex-exec-server::relay",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/relay-b3ad0a399f2e599a",
+      "bytes": 93778688,
+      "sha256": "30164560d70c3e650da216c378cb34671f3aaad49d60c5a4c39aec0748229fb6"
+    },
+    {
+      "binary_id": "codex-exec-server::selected_capability_roots",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/selected_capability_roots-0f1cccf280644aec",
+      "bytes": 90925520,
+      "sha256": "32b527c18762334fcbcf56acde678716bcfe94c4eccc0841c8c962d097d9b699"
+    },
+    {
+      "binary_id": "codex-exec-server::websocket",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/websocket-5d2b0b44df708e83",
+      "bytes": 86160944,
+      "sha256": "ebe8623c22d1123331498a2db0e06a9a90a277ff51451e593b9561d240c9c9ac"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_hepta_agentd-41647a392e8fb46f",
+      "bytes": 101033960,
+      "sha256": "6caab275f5195b255b12dac3d64f172a375bd39b1e5ef3c4ee6c3a5a8d3bae6a"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::authbus_text_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/authbus_text_product-ec87ba354e565c72",
+      "bytes": 76915776,
+      "sha256": "0ffd84fd0ecda1b5e635fa9c477fbee11c55dff9d2471818b2a4bbe9597e30d7"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/cognitive_product_e2e-9ae24615f801c8a1",
+      "bytes": 79238720,
+      "sha256": "f8df0f507e521de6ff3247fafbf99b1897458a125d81498503dac471387c1cac"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_store_product_writer",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/cognitive_store_product_writer-9c52fad82b36d1a9",
+      "bytes": 44691720,
+      "sha256": "824ddcc9c586fcc9ca68eb9c385c7e68e2331ff28db130ef98ce3fe3a6c43a80"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::five_agent_rolling_upgrade",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/five_agent_rolling_upgrade-ef5a745c9ff97375",
+      "bytes": 72741056,
+      "sha256": "1af8789aa479778a768495d230aa8951802e542d54e8e0d0a871613800a1bc5a"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::fleet_harness_diagnostics",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/fleet_harness_diagnostics-e3cddfbc3dd731dc",
+      "bytes": 41873392,
+      "sha256": "45e2297498590e9ea1dc6291095cbea812ea5348015b4455b3d32696e78f194f"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::intuition_policy_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/intuition_policy_product-8365f275d595ebc7",
+      "bytes": 35106256,
+      "sha256": "c7ceb8a80b17d980c0b2dbac13c018123aefbbbfa449d05bdcb93d20911145c4"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::kernel_evidence_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/kernel_evidence_product-16b7402cfdc0ef57",
+      "bytes": 59637840,
+      "sha256": "cb17e275bf28f0e342de65afd2dafbb82fe1373aad4508eb8fcb288549f1ab66"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::optional_module_restart",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/optional_module_restart-22348ccca27d9499",
+      "bytes": 42205224,
+      "sha256": "5592047a549ae3c2545bbdbe7f951d5947a543c87d6b282a69a28e01c3839f88"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::plasticity_process_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/plasticity_process_e2e-03965cf05c700a5b",
+      "bytes": 43894008,
+      "sha256": "457d9f3e095a7a0883c48795d9d45b03e8b3ffe9244f710c12604c797a2a7144"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::queue_capacity_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/queue_capacity_product-d089c082067af006",
+      "bytes": 71787696,
+      "sha256": "ad0bab574812adf318b806ae6413670bd1034f32898673f1ee84455821de19ef"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::runtime_codex_product_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/runtime_codex_product_e2e-6eee10bbfdacb931",
+      "bytes": 73983152,
+      "sha256": "127b72d1c552c00c769044cceb2570478d2e22bcb8d72ec1b5bb2b9d3cefd1be"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/runtime_shutdown_outcomes-e4adf62d0945ccf6",
+      "bytes": 36119696,
+      "sha256": "7e69a8c45f7869906ea60180bf6bb5b4cc5807b52dd45fb00f97c68f368a2257"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::supervised_two_agents",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/supervised_two_agents-a969554ac18097ac",
+      "bytes": 66558248,
+      "sha256": "0fb1a36ed4efcd837a3b5774d03cddb237d2838c5a0b85dc5ff2e12179f58261"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::supervisord_product_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/supervisord_product_e2e-a206405b8e456b7d",
+      "bytes": 56606528,
+      "sha256": "c48b220ac8551524b7cf68666418b25ed4ebea74c4c4d547cd2010f74ef0d003"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::terminal_cell_owner",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/terminal_cell_owner-171aacf8225fe677",
+      "bytes": 43942800,
+      "sha256": "c0d45f35bdb6375c4cb09861d35ab9318cbadd4bd921d15fd06f905e92d6339b"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::two_agent_turn_recovery",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/two_agent_turn_recovery-e3bfc7c82793bcef",
+      "bytes": 72231312,
+      "sha256": "25a083a384b01ee83abb2fb99647f14757d2ab7cfc5ea6558d4b14fd774958b2"
+    },
+    {
+      "binary_id": "codex-utils-pty",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_utils_pty-e3b68e979f6e961a",
+      "bytes": 4489336,
+      "sha256": "02a3e39441ac163bc9da0413d5c160b8f18a7c991bca2e5ec44bd0842ee1e358"
+    },
+    {
+      "binary_id": "core_test_support",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/core_test_support-66fe2cad6f23b100",
+      "bytes": 55483024,
+      "sha256": "95b71ffc4d0502feb2eb31db5d21e35269350baaa7a7561fa3e6cf8e9bbe2935"
+    }
+  ],
+  "binary_after": [
+    {
+      "binary_id": "codex-apply-patch",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_apply_patch-d4dcee4a2750355f",
+      "bytes": 33198288,
+      "sha256": "eeb039368778f28c7aed8d2839979ff7d86538bcdfac9f8a7e3fd4bb7c10b268"
+    },
+    {
+      "binary_id": "codex-apply-patch::all",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/all-e840b69b9eeac839",
+      "bytes": 31928808,
+      "sha256": "bebe09a515a1007e7da64f352bd0c361d179ccd5669d4846dcfbae25fb0f3b73"
+    },
+    {
+      "binary_id": "codex-cli",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_cli-eeacd51710c1ed25",
+      "bytes": 98598736,
+      "sha256": "6f030bb8319dde61e494fb38cb3965a66823a0527eff43e11bdfa1276c5d2d07"
+    },
+    {
+      "binary_id": "codex-cli::app_server",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/app_server-d793911087817118",
+      "bytes": 43030672,
+      "sha256": "408635f79b2eeb2a3dd579575127dd0940a15c1c1fc7cff7abc3999762f48c10"
+    },
+    {
+      "binary_id": "codex-cli::debug_clear_memories",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/debug_clear_memories-ee4a6c3ca3c11849",
+      "bytes": 29107808,
+      "sha256": "37f1ffdcc8638f5a6458068f755d5a4f049de7a5b5cf537d44a18a1b6bf36377"
+    },
+    {
+      "binary_id": "codex-cli::debug_models",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/debug_models-bccbd2099ba86c3b",
+      "bytes": 1750472,
+      "sha256": "9b0597f20f4e5590c78237d999ef20eb3f16892a46a0e2b579f714412a874557"
+    },
+    {
+      "binary_id": "codex-cli::delete",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/delete-15f138a3c271d922",
+      "bytes": 1635672,
+      "sha256": "2e28142b28bdd462d293cbcdb800c87e13cde59ce6facd18c4218228f228acf4"
+    },
+    {
+      "binary_id": "codex-cli::doctor_enterprise_network",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/doctor_enterprise_network-1aecfbc9f0922992",
+      "bytes": 6419576,
+      "sha256": "6c0eae1a23368edb93ddcaf1636cb7e6fca0c7ab2568285a4300638053276026"
+    },
+    {
+      "binary_id": "codex-cli::exec_server",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/exec_server-482337c579e61307",
+      "bytes": 42782152,
+      "sha256": "7904c9a9d1c46de690214ce3817fca5031cc660caba47bf40dc01ca6c27c40ad"
+    },
+    {
+      "binary_id": "codex-cli::execpolicy",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/execpolicy-23dad1c5f6ddb5c8",
+      "bytes": 1897912,
+      "sha256": "3976891a65e0589da8a842c1d4187deac44cf07736ac87c9e1cfacca525fca20"
+    },
+    {
+      "binary_id": "codex-cli::features",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/features-73306539f958a0bb",
+      "bytes": 80572992,
+      "sha256": "2b6457f392174084ff8ade16a70735519a242c298e3285e7384eb1820f86189a"
+    },
+    {
+      "binary_id": "codex-cli::login",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/login-fd60f0998d6ed1b3",
+      "bytes": 51633744,
+      "sha256": "390ed64fed063dc3c82c4396ef09b9e1f7eaa86612f78f6bb7a76bbb03526c35"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_add",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/marketplace_add-bfdb8e7d80432f96",
+      "bytes": 31619336,
+      "sha256": "c2a4143fb6747803ba55f198e084eb7340fe7684ca7311372175a3bea9c1b113"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_remove",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/marketplace_remove-1f2eb2af3294aa48",
+      "bytes": 31705064,
+      "sha256": "c34a9f8fe77e805238f8698b2380e40c92b81f81d5a7b9c4f7f2d16781510150"
+    },
+    {
+      "binary_id": "codex-cli::marketplace_upgrade",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/marketplace_upgrade-a1163d1e154c5870",
+      "bytes": 3021576,
+      "sha256": "6b8708efbe6202d3c1efd17d7ad5c7558804f53a54484cf510fd925883b94595"
+    },
+    {
+      "binary_id": "codex-cli::mcp_add_remove",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/mcp_add_remove-19a31e027405f553",
+      "bytes": 70413104,
+      "sha256": "dc3e8524fb034a10bd9a3daeb4cea1a1c596468ed2933b53001439db2a14b56f"
+    },
+    {
+      "binary_id": "codex-cli::mcp_cloud_config",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/mcp_cloud_config-8d94c21f7743b8db",
+      "bytes": 80611216,
+      "sha256": "def8426bc18b84a17098ae7471f68cf073a794cc76792144f5704decf8ac03db"
+    },
+    {
+      "binary_id": "codex-cli::mcp_list",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/mcp_list-71050001ace9b3cd",
+      "bytes": 71270112,
+      "sha256": "04cdbc76673c5da7130228f7c6ffa66e11e2849f7ce72136dffb3affa9f869ca"
+    },
+    {
+      "binary_id": "codex-cli::plugin_cli",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/plugin_cli-f224dbc6749b3755",
+      "bytes": 27494104,
+      "sha256": "764dd95dc033238797bf07cf2c985d539ab4012e9bb81ceb1b329a9097319de7"
+    },
+    {
+      "binary_id": "codex-cli::queue",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/queue-48b7ed7623016f07",
+      "bytes": 37188416,
+      "sha256": "b096b18c6b370f1e74ef5cee649d7c9cc735b1ea7a0ea6161c6164e06329a9f7"
+    },
+    {
+      "binary_id": "codex-cli::sandbox_cloud_config",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/sandbox_cloud_config-36b2800407e9e0d1",
+      "bytes": 80306528,
+      "sha256": "76bd064a0c72559ad4e75412fdf56e4c2dd9b890b531f6354fc147279a62cdca"
+    },
+    {
+      "binary_id": "codex-cli::sandbox_network_proxy",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/sandbox_network_proxy-5d6751d9e4490e52",
+      "bytes": 1262408,
+      "sha256": "4fda2bacea6dad34cad09a2fea21bbbfbdbeef4290f00c0392970cc66827f6e1"
+    },
+    {
+      "binary_id": "codex-cli::update",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/update-8778a13db0250294",
+      "bytes": 2497304,
+      "sha256": "431fb18dec9ddac79ef59a407b39d6da94ad3040eceb94deff56b42670adb193"
+    },
+    {
+      "binary_id": "codex-cli::bin/codex",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex-2774e4caf7b5fc80",
+      "bytes": 117856696,
+      "sha256": "7fcef7575a44870e9be6cc0bd504314f3e2f4ecc8a3c2b60fe5b6e9335c62054"
+    },
+    {
+      "binary_id": "codex-cli::bin/hepta",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/hepta-8be90a5aa8a36802",
+      "bytes": 117856824,
+      "sha256": "bf8a7d1aa3c424255983ce15051790a508f45a43f8b9ef2868815f24bd782027"
+    },
+    {
+      "binary_id": "codex-cli::bin/logs_client",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/logs_client-4495938adb3dae37",
+      "bytes": 72744144,
+      "sha256": "739f31eb4a347c0d19501943fc5a8aa577639562841c8fb10147e8614bebeda1"
+    },
+    {
+      "binary_id": "codex-core",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_core-3dec403ac3aab761",
+      "bytes": 308564752,
+      "sha256": "81b867e11479f65ededf6dab91aaefd564de4c57323fff471863ba3035437bca"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/all-1345d2bd9be9e06a",
+      "bytes": 284116912,
+      "sha256": "5ed685ff1fe649955723c0f7fe4a201faa3405107940a348e4a5fc8677803fc5"
+    },
+    {
+      "binary_id": "codex-core::responses_headers",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/responses_headers-87f21db6090e23d7",
+      "bytes": 231194544,
+      "sha256": "9e21389236e0135846b83e4b990354d1234a18b5cb235cb19cc5a30c8dde5fc6"
+    },
+    {
+      "binary_id": "codex-exec-server",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_exec_server-bf13ec590e8a0dc4",
+      "bytes": 101212400,
+      "sha256": "3651c8681f9732d33b1b722bb72900a6852cfd69731d9baa9f40413d3c7c2437"
+    },
+    {
+      "binary_id": "codex-exec-server::accepted_websocket",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/accepted_websocket-0bdbe9aaa7140c8f",
+      "bytes": 45533528,
+      "sha256": "d9b38987373a079189dfcaf55bf8561c56bf587474eacfd51ccfd8fdb344e13e"
+    },
+    {
+      "binary_id": "codex-exec-server::authorized_read_rpc",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/authorized_read_rpc-56e30d800965a9cf",
+      "bytes": 88666960,
+      "sha256": "d86ad4790abae04b8d6ae945f47ccf6814ebe1cb0d61817e7e30a9091489e053"
+    },
+    {
+      "binary_id": "codex-exec-server::capability_discovery",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/capability_discovery-bca6a38e649686d6",
+      "bytes": 86444240,
+      "sha256": "69a146c0b65f580ccf93756d1dfbd26c9e4ab90c00a84099700a3619b0b26de7"
+    },
+    {
+      "binary_id": "codex-exec-server::chatgpt_cloudflare_affinity",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/chatgpt_cloudflare_affinity-52ae6148641dcb43",
+      "bytes": 86295968,
+      "sha256": "5fba76732fe74118986b5ad44c2cfccd3a410c8141b93935d6439cca0a7e1327"
+    },
+    {
+      "binary_id": "codex-exec-server::deferred_environment",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/deferred_environment-a5dad61172373a6d",
+      "bytes": 41015192,
+      "sha256": "5de1dcf277f22f985e472f135513a9acdf90828f95159dba0ceab6c2fee2cde4"
+    },
+    {
+      "binary_id": "codex-exec-server::environment",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/environment-0b48047e0b015ab0",
+      "bytes": 92688816,
+      "sha256": "55126f6efa774de7f661e63128d92bc68a751f6323068fa925d4344ba8aef296"
+    },
+    {
+      "binary_id": "codex-exec-server::environment_config",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/environment_config-c2075751d25bb1b6",
+      "bytes": 90925968,
+      "sha256": "756d020e7fdaee3bfe24d1ea313061d03e6e544af63d7e2c9c4306b9afd67afd"
+    },
+    {
+      "binary_id": "codex-exec-server::exec_process",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/exec_process-5dd59dc85852de58",
+      "bytes": 91871552,
+      "sha256": "a6b00bac699a7b350332e3f06c4d4c8db65ab163d36468405fdcad14da1319de"
+    },
+    {
+      "binary_id": "codex-exec-server::file_stream",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/file_stream-d0939a0f1d53255e",
+      "bytes": 90888960,
+      "sha256": "26569b77d22d91a708a9f69e54a316e83cbbe7a670f63181c8f92e4baad8eb17"
+    },
+    {
+      "binary_id": "codex-exec-server::file_system_unix",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/file_system_unix-73f944ec2ad16184",
+      "bytes": 91816448,
+      "sha256": "777d0444d7abdcf24b23819bfd301bb3f7087b46f3c0cd5cf423e2d9a3b940f8"
+    },
+    {
+      "binary_id": "codex-exec-server::forward",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/forward-0e9ccd55ddaecd8f",
+      "bytes": 91419312,
+      "sha256": "a11d965ef0076ee66cfb470876dfc75a8eee10d57f20b46b6099b2e324008869"
+    },
+    {
+      "binary_id": "codex-exec-server::health",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/health-8e09482d4380bef8",
+      "bytes": 90908624,
+      "sha256": "21aacd1bc19600828ff1f1ca04594ef93705299fa39c86f4135932cf65f7d90f"
+    },
+    {
+      "binary_id": "codex-exec-server::http_client",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/http_client-a17dbe915f0064e5",
+      "bytes": 40075320,
+      "sha256": "1d90c3e7fa7ce1ddba82d3a75d97b1cb733e6b3b9cbd4dbec3a5a173e1e520eb"
+    },
+    {
+      "binary_id": "codex-exec-server::http_request",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/http_request-80ab48aae1586d58",
+      "bytes": 86584928,
+      "sha256": "0be8ed3133dc0a6fe237dfd5ce9498a5231202a406b41e66f691d73814de2fe5"
+    },
+    {
+      "binary_id": "codex-exec-server::http_request_logging",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/http_request_logging-f4f2d6ddd54402ab",
+      "bytes": 40004848,
+      "sha256": "03e0153740c2852eedbfb5ad4818cc79634048412597e77e7d8e2b43e05107cc"
+    },
+    {
+      "binary_id": "codex-exec-server::initialize",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/initialize-31757d4183ea03f5",
+      "bytes": 86160368,
+      "sha256": "2c01ae11446228546db151ef9cded9cd5ae87656177e03fc7c7e6bc5a90f6ba9"
+    },
+    {
+      "binary_id": "codex-exec-server::process",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/process-9a6b1ec6f05c892c",
+      "bytes": 86474864,
+      "sha256": "70554041cd81196cb386256ffbcec5c191923676dae9993dd0b69917b4d51996"
+    },
+    {
+      "binary_id": "codex-exec-server::relay",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/relay-b3ad0a399f2e599a",
+      "bytes": 93778688,
+      "sha256": "30164560d70c3e650da216c378cb34671f3aaad49d60c5a4c39aec0748229fb6"
+    },
+    {
+      "binary_id": "codex-exec-server::selected_capability_roots",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/selected_capability_roots-0f1cccf280644aec",
+      "bytes": 90925520,
+      "sha256": "32b527c18762334fcbcf56acde678716bcfe94c4eccc0841c8c962d097d9b699"
+    },
+    {
+      "binary_id": "codex-exec-server::websocket",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/websocket-5d2b0b44df708e83",
+      "bytes": 86160944,
+      "sha256": "ebe8623c22d1123331498a2db0e06a9a90a277ff51451e593b9561d240c9c9ac"
+    },
+    {
+      "binary_id": "codex-hepta-agentd",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_hepta_agentd-41647a392e8fb46f",
+      "bytes": 101033960,
+      "sha256": "6caab275f5195b255b12dac3d64f172a375bd39b1e5ef3c4ee6c3a5a8d3bae6a"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::authbus_text_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/authbus_text_product-ec87ba354e565c72",
+      "bytes": 76915776,
+      "sha256": "0ffd84fd0ecda1b5e635fa9c477fbee11c55dff9d2471818b2a4bbe9597e30d7"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_product_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/cognitive_product_e2e-9ae24615f801c8a1",
+      "bytes": 79238720,
+      "sha256": "f8df0f507e521de6ff3247fafbf99b1897458a125d81498503dac471387c1cac"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::cognitive_store_product_writer",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/cognitive_store_product_writer-9c52fad82b36d1a9",
+      "bytes": 44691720,
+      "sha256": "824ddcc9c586fcc9ca68eb9c385c7e68e2331ff28db130ef98ce3fe3a6c43a80"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::five_agent_rolling_upgrade",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/five_agent_rolling_upgrade-ef5a745c9ff97375",
+      "bytes": 72741056,
+      "sha256": "1af8789aa479778a768495d230aa8951802e542d54e8e0d0a871613800a1bc5a"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::fleet_harness_diagnostics",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/fleet_harness_diagnostics-e3cddfbc3dd731dc",
+      "bytes": 41873392,
+      "sha256": "45e2297498590e9ea1dc6291095cbea812ea5348015b4455b3d32696e78f194f"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::intuition_policy_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/intuition_policy_product-8365f275d595ebc7",
+      "bytes": 35106256,
+      "sha256": "c7ceb8a80b17d980c0b2dbac13c018123aefbbbfa449d05bdcb93d20911145c4"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::kernel_evidence_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/kernel_evidence_product-16b7402cfdc0ef57",
+      "bytes": 59637840,
+      "sha256": "cb17e275bf28f0e342de65afd2dafbb82fe1373aad4508eb8fcb288549f1ab66"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::optional_module_restart",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/optional_module_restart-22348ccca27d9499",
+      "bytes": 42205224,
+      "sha256": "5592047a549ae3c2545bbdbe7f951d5947a543c87d6b282a69a28e01c3839f88"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::plasticity_process_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/plasticity_process_e2e-03965cf05c700a5b",
+      "bytes": 43894008,
+      "sha256": "457d9f3e095a7a0883c48795d9d45b03e8b3ffe9244f710c12604c797a2a7144"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::queue_capacity_product",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/queue_capacity_product-d089c082067af006",
+      "bytes": 71787696,
+      "sha256": "ad0bab574812adf318b806ae6413670bd1034f32898673f1ee84455821de19ef"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::runtime_codex_product_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/runtime_codex_product_e2e-6eee10bbfdacb931",
+      "bytes": 73983152,
+      "sha256": "127b72d1c552c00c769044cceb2570478d2e22bcb8d72ec1b5bb2b9d3cefd1be"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/runtime_shutdown_outcomes-e4adf62d0945ccf6",
+      "bytes": 36119696,
+      "sha256": "7e69a8c45f7869906ea60180bf6bb5b4cc5807b52dd45fb00f97c68f368a2257"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::supervised_two_agents",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/supervised_two_agents-a969554ac18097ac",
+      "bytes": 66558248,
+      "sha256": "0fb1a36ed4efcd837a3b5774d03cddb237d2838c5a0b85dc5ff2e12179f58261"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::supervisord_product_e2e",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/supervisord_product_e2e-a206405b8e456b7d",
+      "bytes": 56606528,
+      "sha256": "c48b220ac8551524b7cf68666418b25ed4ebea74c4c4d547cd2010f74ef0d003"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::terminal_cell_owner",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/terminal_cell_owner-171aacf8225fe677",
+      "bytes": 43942800,
+      "sha256": "c0d45f35bdb6375c4cb09861d35ab9318cbadd4bd921d15fd06f905e92d6339b"
+    },
+    {
+      "binary_id": "codex-hepta-agentd::two_agent_turn_recovery",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/two_agent_turn_recovery-e3bfc7c82793bcef",
+      "bytes": 72231312,
+      "sha256": "25a083a384b01ee83abb2fb99647f14757d2ab7cfc5ea6558d4b14fd774958b2"
+    },
+    {
+      "binary_id": "codex-utils-pty",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/codex_utils_pty-e3b68e979f6e961a",
+      "bytes": 4489336,
+      "sha256": "02a3e39441ac163bc9da0413d5c160b8f18a7c991bca2e5ec44bd0842ee1e358"
+    },
+    {
+      "binary_id": "core_test_support",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/deps/core_test_support-66fe2cad6f23b100",
+      "bytes": 55483024,
+      "sha256": "95b71ffc4d0502feb2eb31db5d21e35269350baaa7a7561fa3e6cf8e9bbe2935"
+    }
+  ],
+  "binary_stable": true,
+  "helpers_before": [
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "apply_patch",
+            "kind": "bin-exe",
+            "path": "dev-small/apply_patch"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/apply_patch",
+      "bytes": 30094056,
+      "sha256": "bf2abc340d80be55134f243244b21d26eef7bf0b8d4d2ebfe3dfb8043e9b5324"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "codex",
+            "kind": "bin-exe",
+            "path": "dev-small/codex"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex",
+      "bytes": 377714400,
+      "sha256": "6726b0d642772320a418154a2e7ac75d4d0542c3f25a88714bf8814f12a2feca"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "codex-code-mode-host",
+          "build_receipt_sha256": "ad36b64a0ff6184f0ba6b894f708a0cf75bcc2ea9afa3b9108a04af010c4e4cc"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-code-mode-host",
+      "bytes": 82166456,
+      "sha256": "5b6e7c745b0af4538fee7e246ea00675c433a6273c9349ac3c415867856c9859"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "codex-execve-wrapper",
+          "build_receipt_sha256": "ad36b64a0ff6184f0ba6b894f708a0cf75bcc2ea9afa3b9108a04af010c4e4cc"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-execve-wrapper",
+      "bytes": 26103616,
+      "sha256": "5529974e631d716d30a424e49cec1beada259386227a2d0b1f2e71e652417500"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "codex-hepta-agentd",
+            "kind": "bin-exe",
+            "path": "dev-small/codex-hepta-agentd"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-hepta-agentd",
+      "bytes": 329460256,
+      "sha256": "c513d22141ad88a4a2a1849755a05e8b4593ddff69bc3cc2df11228d1a08dca1"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "codex-write-config-schema",
+            "kind": "bin-exe",
+            "path": "dev-small/codex-write-config-schema"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-write-config-schema",
+      "bytes": 29513512,
+      "sha256": "6d706de83d063dbe864040894f38388dcc9a70f6da9086cca0e530b6fdd15510"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "hepta",
+            "kind": "bin-exe",
+            "path": "dev-small/hepta"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/hepta",
+      "bytes": 377714400,
+      "sha256": "0fdf24ddb56b8a53e216053af0e9ad7b47df69f2c9f37dfcc6b4c87d5d9f2ccd"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "hepta-agentd-browser",
+            "kind": "bin-exe",
+            "path": "dev-small/hepta-agentd-browser"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/hepta-agentd-browser",
+      "bytes": 35434176,
+      "sha256": "71ee6c17c9b3e7f6741017958d9a63ed620a9197d84fc4266836a279cd4004a4"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "logs_client",
+            "kind": "bin-exe",
+            "path": "dev-small/logs_client"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/logs_client",
+      "bytes": 76277384,
+      "sha256": "8ac3e1020c049663ac289f63c54e7b460cc550e3274772d1b223d0869f0c5849"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "test_arg0_preflight",
+          "build_receipt_sha256": "ad36b64a0ff6184f0ba6b894f708a0cf75bcc2ea9afa3b9108a04af010c4e4cc"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_arg0_preflight",
+      "bytes": 35724016,
+      "sha256": "8e92a097e7f5144d7b2d507685086aa61eecd61bd1c0496fac9eb979d64a9eab"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "test_stdio_server",
+          "build_receipt_sha256": "ad36b64a0ff6184f0ba6b894f708a0cf75bcc2ea9afa3b9108a04af010c4e4cc"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_stdio_server",
+      "bytes": 6903600,
+      "sha256": "aa9392d4c41ff2ee7f3545d48ac58739d33ac6d30624c775afee81b4e08cb744"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "test_streamable_http_server",
+          "build_receipt_sha256": "ad36b64a0ff6184f0ba6b894f708a0cf75bcc2ea9afa3b9108a04af010c4e4cc"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_streamable_http_server",
+      "bytes": 12311208,
+      "sha256": "6aca12454b3e30750c6ad2c6e62cc4d85b0974ed359e035c284dc3ea6f6a6c72"
+    }
+  ],
+  "helpers_after": [
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "apply_patch",
+            "kind": "bin-exe",
+            "path": "dev-small/apply_patch"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/apply_patch",
+      "bytes": 30094056,
+      "sha256": "bf2abc340d80be55134f243244b21d26eef7bf0b8d4d2ebfe3dfb8043e9b5324"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "codex",
+            "kind": "bin-exe",
+            "path": "dev-small/codex"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex",
+      "bytes": 377714400,
+      "sha256": "6726b0d642772320a418154a2e7ac75d4d0542c3f25a88714bf8814f12a2feca"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "codex-code-mode-host",
+          "build_receipt_sha256": "ad36b64a0ff6184f0ba6b894f708a0cf75bcc2ea9afa3b9108a04af010c4e4cc"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-code-mode-host",
+      "bytes": 82166456,
+      "sha256": "5b6e7c745b0af4538fee7e246ea00675c433a6273c9349ac3c415867856c9859"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "codex-execve-wrapper",
+          "build_receipt_sha256": "ad36b64a0ff6184f0ba6b894f708a0cf75bcc2ea9afa3b9108a04af010c4e4cc"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-execve-wrapper",
+      "bytes": 26103616,
+      "sha256": "5529974e631d716d30a424e49cec1beada259386227a2d0b1f2e71e652417500"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "codex-hepta-agentd",
+            "kind": "bin-exe",
+            "path": "dev-small/codex-hepta-agentd"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-hepta-agentd",
+      "bytes": 329460256,
+      "sha256": "c513d22141ad88a4a2a1849755a05e8b4593ddff69bc3cc2df11228d1a08dca1"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "codex-write-config-schema",
+            "kind": "bin-exe",
+            "path": "dev-small/codex-write-config-schema"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/codex-write-config-schema",
+      "bytes": 29513512,
+      "sha256": "6d706de83d063dbe864040894f38388dcc9a70f6da9086cca0e530b6fdd15510"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "hepta",
+            "kind": "bin-exe",
+            "path": "dev-small/hepta"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/hepta",
+      "bytes": 377714400,
+      "sha256": "0fdf24ddb56b8a53e216053af0e9ad7b47df69f2c9f37dfcc6b4c87d5d9f2ccd"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "hepta-agentd-browser",
+            "kind": "bin-exe",
+            "path": "dev-small/hepta-agentd-browser"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/hepta-agentd-browser",
+      "bytes": 35434176,
+      "sha256": "71ee6c17c9b3e7f6741017958d9a63ed620a9197d84fc4266836a279cd4004a4"
+    },
+    {
+      "origins": [
+        {
+          "origin": "nextest-catalog",
+          "catalog_entry": {
+            "name": "logs_client",
+            "kind": "bin-exe",
+            "path": "dev-small/logs_client"
+          }
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/logs_client",
+      "bytes": 76277384,
+      "sha256": "8ac3e1020c049663ac289f63c54e7b460cc550e3274772d1b223d0869f0c5849"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "test_arg0_preflight",
+          "build_receipt_sha256": "ad36b64a0ff6184f0ba6b894f708a0cf75bcc2ea9afa3b9108a04af010c4e4cc"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_arg0_preflight",
+      "bytes": 35724016,
+      "sha256": "8e92a097e7f5144d7b2d507685086aa61eecd61bd1c0496fac9eb979d64a9eab"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "test_stdio_server",
+          "build_receipt_sha256": "ad36b64a0ff6184f0ba6b894f708a0cf75bcc2ea9afa3b9108a04af010c4e4cc"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_stdio_server",
+      "bytes": 6903600,
+      "sha256": "aa9392d4c41ff2ee7f3545d48ac58739d33ac6d30624c775afee81b4e08cb744"
+    },
+    {
+      "origins": [
+        {
+          "origin": "source-bound-helper-build",
+          "target_name": "test_streamable_http_server",
+          "build_receipt_sha256": "ad36b64a0ff6184f0ba6b894f708a0cf75bcc2ea9afa3b9108a04af010c4e4cc"
+        }
+      ],
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target/dev-small/test_streamable_http_server",
+      "bytes": 12311208,
+      "sha256": "6aca12454b3e30750c6ad2c6e62cc4d85b0974ed359e035c284dc3ea6f6a6c72"
+    }
+  ],
+  "helpers_stable": true,
+  "source_unchanged": true,
+  "junit": {
+    "full": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/owning-seven.junit.xml",
+      "bytes": 1149890,
+      "sha256": "956ffd45997a1d77093187e1f212b4634d1d5a55d17893a19e1b8390a02ed65c"
+    },
+    "parts": [
+      {
+        "offset": 0,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0000.txt",
+        "bytes": 44000,
+        "sha256": "4389736fb93341d6af4fee9e6fcefd6190c21e6031e1b311cc3bf7802db25822"
+      },
+      {
+        "offset": 44000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0001.txt",
+        "bytes": 44000,
+        "sha256": "338342bb1ca96a119f56eaed944f8253a72ee394aa78058868a24645f97abcb6"
+      },
+      {
+        "offset": 88000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0002.txt",
+        "bytes": 44000,
+        "sha256": "a612a9d7bc68b78f4759490664de21caf95c785ae3ff8a7390d7d3a359393630"
+      },
+      {
+        "offset": 132000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0003.txt",
+        "bytes": 44000,
+        "sha256": "847979a18ad771307ed74e45fa0652dc837c3f39ba4604662f55366ade9869ed"
+      },
+      {
+        "offset": 176000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0004.txt",
+        "bytes": 44000,
+        "sha256": "c16f6163ae5ccf89780090d0a4a361f5eb3ec2f045eda7879d222b5a6cd02131"
+      },
+      {
+        "offset": 220000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0005.txt",
+        "bytes": 44000,
+        "sha256": "e6072340cdd16cf59c1b16959bb7089a88b96bfa7638fbfd9a5c19e1ac73a1ff"
+      },
+      {
+        "offset": 264000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0006.txt",
+        "bytes": 44000,
+        "sha256": "c2f30da0c42de1d4f9e7916f1f5da473cc1320aa909fecc4b218a75d09349a16"
+      },
+      {
+        "offset": 308000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0007.txt",
+        "bytes": 44000,
+        "sha256": "77e03b0eb569214bbd626b879538a0b8720a0900dbaaf071208b7d5482691f95"
+      },
+      {
+        "offset": 352000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0008.txt",
+        "bytes": 44000,
+        "sha256": "c0562e696d48ebb838bcda97d791e4e756abc246f7b2fe7bcf914226548d5ce0"
+      },
+      {
+        "offset": 396000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0009.txt",
+        "bytes": 44000,
+        "sha256": "637327191e65805676f08975733576512e3550bd4881f149c06a2adfd8ad5dc4"
+      },
+      {
+        "offset": 440000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0010.txt",
+        "bytes": 44000,
+        "sha256": "ef043642cbee68abe9f22fc4ccc588a841257af7c621ce5a45378a7022acf786"
+      },
+      {
+        "offset": 484000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0011.txt",
+        "bytes": 44000,
+        "sha256": "81ac910fc7bc9e70aa7b74f58e20aed56ab881bab7647694043b2c9ccd049330"
+      },
+      {
+        "offset": 528000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0012.txt",
+        "bytes": 44000,
+        "sha256": "36b758d3c43eaa5fa419560fc2a0e351704befc76b46661d464f5341b9f1edfa"
+      },
+      {
+        "offset": 572000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0013.txt",
+        "bytes": 44000,
+        "sha256": "fd3e7ec070372ba0d29990acbab1650fb47bcfbe359e9d7e6f8ebf0844e08f54"
+      },
+      {
+        "offset": 616000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0014.txt",
+        "bytes": 44000,
+        "sha256": "0aa8e6c65a6bf314afd8ab8203119505e3aba3fba95272f497b77c05d8969867"
+      },
+      {
+        "offset": 660000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0015.txt",
+        "bytes": 44000,
+        "sha256": "1ef5801f727f898a65173c8e556aca50223a6823a8f757aaf60062d6018144df"
+      },
+      {
+        "offset": 704000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0016.txt",
+        "bytes": 44000,
+        "sha256": "381cb86eb3a8f2670bdaade89489843d7a26e9d67fe4fc6154c48fcb5321ccf2"
+      },
+      {
+        "offset": 748000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0017.txt",
+        "bytes": 44000,
+        "sha256": "6df782706204897f406f2f231ab31791383f2043070510c8a315bfa63879edb4"
+      },
+      {
+        "offset": 792000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0018.txt",
+        "bytes": 44000,
+        "sha256": "d03cc45d0947f37db4e4f98e5ccbb2ce46af23df2d19037d39dd2f07e86e60b4"
+      },
+      {
+        "offset": 836000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0019.txt",
+        "bytes": 44000,
+        "sha256": "02b28e1f3d616003cd3b20d43dbb22baba9a2b23fa11d4a106bea1ce508a47c1"
+      },
+      {
+        "offset": 880000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0020.txt",
+        "bytes": 44000,
+        "sha256": "6610bcbf7a7f00f8c28b6a39fa20d193e4e0357accef7e8983d3bc1901e461a8"
+      },
+      {
+        "offset": 924000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0021.txt",
+        "bytes": 44000,
+        "sha256": "ba93ef1eca72da97193a44b87fc0cf8cd6bb1d06f8e2c54762b41fa590bfb509"
+      },
+      {
+        "offset": 968000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0022.txt",
+        "bytes": 44000,
+        "sha256": "0000fd4c5bece042d14d973dc6436e9c75b8fa9b7e4ed6fbc94e959adb0ae074"
+      },
+      {
+        "offset": 1012000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0023.txt",
+        "bytes": 44000,
+        "sha256": "6ce443a37bd5ed014178b66ca4e88d4d7af3c583f7b84cfff20ef1b93c2a7ad5"
+      },
+      {
+        "offset": 1056000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0024.txt",
+        "bytes": 44000,
+        "sha256": "04ffea9fb6b0ec9b1c9a0b118894eac4dc87ca441b96397fa2609d52c9453af4"
+      },
+      {
+        "offset": 1100000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0025.txt",
+        "bytes": 44000,
+        "sha256": "68b3832b0b27ae9ed776eee032e940bfaa9a058b1dffac79f68fd4ba2da949b0"
+      },
+      {
+        "offset": 1144000,
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/owning-seven-f825-20261105-0025/parts/junit/0026.txt",
+        "bytes": 5890,
+        "sha256": "6bf0a82e5460872675225161b9fdc2bd9f1568b842f8952e473ffbdc46a7f6ca"
+      }
+    ]
+  },
+  "prior_junit": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/target/nextest/local/junit.xml",
+    "bytes": 6324,
+    "sha256": "be72be58506780fc0bbce5275008192295d9ebde0960b8bf92d2d2ea604af397"
+  },
+  "exit_code": 100,
+  "nextest_summaries": [
+    "    Starting 5416 tests across 73 binaries (19 tests skipped)",
+    "     Summary [  53.695s] 5416 tests run: 5408 passed, 8 failed, 19 skipped"
+  ],
+  "passed": false
+}

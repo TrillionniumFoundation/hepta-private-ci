@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.fourth.readonly-counterfactual.root-invalid-result.v1",
+  "evidence_blob": "bcc3c856c6029bc03db15355c2705dd864f6fb4c",
+  "evidence_identity": {
+    "bytes": 56989,
+    "sha256": "4ca5ad304bd320706df7efd52877a1a043b647721820944e317c94280b15a955"
+  },
+  "source": "d64d090142508bbb00449b151ba63e62be57bd87",
+  "file_checks": [
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/four-fixtures-d64-a0e8-20261104-2340/readonly-key-counterfactual-review.json",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/four-fixtures-d64-a0e8-20261104-2340/readonly-key-counterfactual.log",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/four-fixtures-d64-a0e8-20261104-2340/readonly-key-counterfactual.junit.xml",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/four-fixtures-d64-a0e8-20261104-2340/counterfactual-causality.json",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/four-fixtures-d64-a0e8-20261104-2340/terminal-index.json",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/four-fixtures-d64-a0e8-20261104-2340/source-map.json",
+      "ok": true
+    },
+    {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/four-fixtures-d64-a0e8-20261104-2340/counterfactual-apply.json",
+      "ok": true
+    }
+  ],
+  "actual_case": "shell_snapshot_v2_filters_profile_exports_and_stays_in_memory::test_case_5_remote_sandbox",
+  "actual_class": "codex-exec-server::exec_process",
+  "actual_seconds": 0.214,
+  "actual_result": {
+    "stdout": "",
+    "stderr": "",
+    "exit_code": 41,
+    "closed": true
+  },
+  "profile_poison_marker_present": false,
+  "qualified_counterfactual": false,
+  "actual_just_exit": 100,
+  "controller": {
+    "job_id": "1a1a8dbda45-fc05-2fe3",
+    "state": "failed",
+    "exit_code": 1
+  },
+  "decision": "The original first full tuple failed before any poison or second request. Preserve d64 and do not count this as a valid cache-key negative. Subsequent source change is bounded test-only unset caller diagnostics, not a relaxed oracle.",
+  "limits": [
+    "No im-config stream-fd noise is in this result; prior host attribution is not its demonstrated cause.",
+    "No positive restoration,13-case test, owning rerun, full-workspace or final hygiene occurred in this attempt."
+  ]
+}

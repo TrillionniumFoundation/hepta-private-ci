@@ -1,0 +1,12 @@
+--- a/codex-rs/ext/skills/src/host_roots_tests.rs
++++ b/codex-rs/ext/skills/src/host_roots_tests.rs
+@@ -434,9 +434,6 @@
+         config,
+     )]);
+ 
+-    // Controlled counterfactual: discovery must now include the real outer root.
+-    fs::write(outer.join(&marker), "project marker\n").expect("write controlled outer marker");
+-
+     let roots = repo_agents_skill_roots(Some(Arc::clone(&LOCAL_FS)), &config_stack, &cwd)
+         .await
+         .into_iter()

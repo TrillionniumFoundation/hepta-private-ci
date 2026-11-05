@@ -1,0 +1,675 @@
+{
+  "schema": "hepta.science.pr4798.incremental-refresh.v1",
+  "status": "NO_NEW_PR_SOURCE_OR_EXPERIMENT_RESULT_HOLD_UNCHANGED",
+  "observed_from_utc": "2026-11-04 23:49:13 UTC",
+  "observed_through_utc": "2026-11-04 23:51:49 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": {
+    "number": 4798,
+    "title": "research: complete frozen digital feedback confirmation and retain failed gates",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4798",
+    "state": "open",
+    "draft": true,
+    "head_sha": "77b24407b9898aa44769502fbb22c24fb7193a58",
+    "head_ref": "audit/digital-feedback-confirmation-20261104",
+    "head_tree": "0f431f6a7c5f31a19f21563cae8e5221f5d03582",
+    "head_parents": [
+      "298400b38fba9c7b07f1a42b37729098cb375f0c"
+    ],
+    "base_sha": "903946f15dd79bc53a39a479230e366df04a371f",
+    "base_ref": "research/digital-feedback-20261101",
+    "updated_at": "2026-11-04T13:58:49Z",
+    "commits": 2,
+    "changed_files": 9,
+    "comments": 0,
+    "review_comments": 0
+  },
+  "closing_guard": {
+    "head_unchanged": true,
+    "base_unchanged": true,
+    "updated_unchanged": true,
+    "files_unchanged": true,
+    "comments_unchanged": true
+  },
+  "historical_anchor": {
+    "completion_head": "77b24407b9898aa44769502fbb22c24fb7193a58",
+    "frozen_input_head": "903946f15dd79bc53a39a479230e366df04a371f",
+    "registered_fits": 32,
+    "completed_fits": 32,
+    "primary_contrasts": 4,
+    "primary_familywise_intervals_crossing_zero": 4,
+    "primary_benefit_gates_passed": 0,
+    "required_fit_domain_candidate_entries": 256,
+    "entries_passing_all_eight_quality_criteria": 0,
+    "acceptance": false,
+    "decision": "HOLD",
+    "clarification": "The four intervals are statistical confidence intervals, not four GitHub CI workflows. This refresh did not revisit the 37 archives or recompute training/statistics."
+  },
+  "delta": {
+    "head_changed": false,
+    "base_changed": false,
+    "new_commits_since_77b244": 0,
+    "new_committed_experimental_results_in_this_pr": false,
+    "comment_counts": 0,
+    "review_comment_counts": 0,
+    "all_returned_workflow_run_attempts": 1,
+    "latest_run_update": "2026-11-04T15:03:57Z",
+    "new_run_after_historical_afternoon_runs": false,
+    "scope": "Same nine report/reproduction/derived-evidence files. No altered frozen training, protocol, sealed model or original archive in this PR. Other research branches and unpublished local experiments were not searched."
+  },
+  "workflows": [
+    {
+      "run_id": 41843067463,
+      "name": "Hepta architecture convergence",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41843067463",
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "event": "pull_request",
+      "api_head_sha": "77b24407b9898aa44769502fbb22c24fb7193a58",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "created_at": "2026-11-04T13:58:55Z",
+      "updated_at": "2026-11-04T14:32:33Z",
+      "jobs_total": 3,
+      "job_counts": {
+        "success": 3
+      },
+      "jobs": [
+        {
+          "id": 126619438742,
+          "name": "Architecture convergence (base-merge)",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        },
+        {
+          "id": 126619438854,
+          "name": "Architecture convergence (source-head)",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        },
+        {
+          "id": 126638446579,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        }
+      ],
+      "job_raw_response_key": "jobs:41843067463:1",
+      "pagination": {
+        "page_size": 100,
+        "pages_read": [
+          1,
+          2
+        ],
+        "terminal_empty": true,
+        "reported_count": 3,
+        "duplicate_ids": 0
+      }
+    },
+    {
+      "run_id": 41843067204,
+      "name": "blocking-ci",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41843067204",
+      "path": ".github/workflows/blocking-ci.yml",
+      "event": "pull_request",
+      "api_head_sha": "77b24407b9898aa44769502fbb22c24fb7193a58",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "created_at": "2026-11-04T13:58:55Z",
+      "updated_at": "2026-11-04T15:03:57Z",
+      "jobs_total": 37,
+      "job_counts": {
+        "success": 11,
+        "failure": 14,
+        "cancelled": 4,
+        "skipped": 8
+      },
+      "jobs": [
+        {
+          "id": 126619438966,
+          "name": "Select blocking CI scope",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        },
+        {
+          "id": 126619439429,
+          "name": "Blob size policy / Blob size policy",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        },
+        {
+          "id": 126619439444,
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620672917,
+          "name": "repo-checks / build-test",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673030,
+          "name": "sdk / python-sdk",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673033,
+          "name": "repo-checks / Native Hepta paths on macos-15",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673071,
+          "name": "sdk / sdks",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673074,
+          "name": "repo-checks / Native Hepta paths on windows-latest",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673107,
+          "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673149,
+          "name": "rust-ci / Detect changed areas",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673206,
+          "name": "cargo-deny / cargo-deny",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673476,
+          "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673557,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673606,
+          "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673684,
+          "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673712,
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673751,
+          "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673822,
+          "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673838,
+          "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673887,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673907,
+          "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620673923,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620674042,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620674095,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620674151,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620674255,
+          "name": "Lightweight prose and derived checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620674945,
+          "name": "Hepta scoped native checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620676531,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620761554,
+          "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_attempt": 1
+        },
+        {
+          "id": 126621233453,
+          "name": "rust-ci / CI results (required)",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        },
+        {
+          "id": 126621233952,
+          "name": "rust-ci / Argument comment lint package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "run_attempt": 1
+        },
+        {
+          "id": 126621233976,
+          "name": "rust-ci / cargo shear",
+          "status": "completed",
+          "conclusion": "skipped",
+          "run_attempt": 1
+        },
+        {
+          "id": 126621234494,
+          "name": "rust-ci / Cargo manifest preflight",
+          "status": "completed",
+          "conclusion": "skipped",
+          "run_attempt": 1
+        },
+        {
+          "id": 126621234836,
+          "name": "rust-ci / Rust format",
+          "status": "completed",
+          "conclusion": "skipped",
+          "run_attempt": 1
+        },
+        {
+          "id": 126621235515,
+          "name": "rust-ci / Rust benchmark smoke",
+          "status": "completed",
+          "conclusion": "skipped",
+          "run_attempt": 1
+        },
+        {
+          "id": 126626658648,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_attempt": 1
+        },
+        {
+          "id": 126656425530,
+          "name": "CI required",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_attempt": 1
+        }
+      ],
+      "job_raw_response_key": "jobs:41843067204:1",
+      "pagination": {
+        "page_size": 100,
+        "pages_read": [
+          1,
+          2
+        ],
+        "terminal_empty": true,
+        "reported_count": 37,
+        "duplicate_ids": 0
+      }
+    },
+    {
+      "run_id": 41843067199,
+      "name": "v8-canary",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41843067199",
+      "path": ".github/workflows/v8-canary.yml",
+      "event": "pull_request",
+      "api_head_sha": "77b24407b9898aa44769502fbb22c24fb7193a58",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "created_at": "2026-11-04T13:58:55Z",
+      "updated_at": "2026-11-04T14:01:15Z",
+      "jobs_total": 3,
+      "job_counts": {
+        "success": 1,
+        "skipped": 2
+      },
+      "jobs": [
+        {
+          "id": 126619438119,
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620677599,
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "run_attempt": 1
+        },
+        {
+          "id": 126620763517,
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped",
+          "run_attempt": 1
+        }
+      ],
+      "job_raw_response_key": "jobs:41843067199:1",
+      "pagination": {
+        "page_size": 100,
+        "pages_read": [
+          1,
+          2
+        ],
+        "terminal_empty": true,
+        "reported_count": 3,
+        "duplicate_ids": 0
+      }
+    }
+  ],
+  "pagination": {
+    "runs": {
+      "reported_total": 3,
+      "received": 3,
+      "unique_ids": 3,
+      "terminal_empty_page": 2,
+      "terminal_count": 0
+    },
+    "files": {
+      "reported_total": 9,
+      "received": 9,
+      "unique_paths": 9,
+      "terminal_empty_page": 2,
+      "terminal_count": 0
+    },
+    "all_jobs_read": 43,
+    "duplicates": 0,
+    "cycles": 0
+  },
+  "files": [
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/README.md",
+      "blob": "02396619f8031158a092f0b9ddaaca1904eb9b49",
+      "status": "modified",
+      "additions": 20,
+      "deletions": 2
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/REPORT_ZH.md",
+      "blob": "7261cae919c01871977214136df50c0400948c53",
+      "status": "added",
+      "additions": 135,
+      "deletions": 0
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/audit/COMPLETION_REPRODUCE.md",
+      "blob": "643e13c259763bb3b3a1d99ee94eda3b1ce2ecca",
+      "status": "added",
+      "additions": 125,
+      "deletions": 0
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/audit/acquire_confirmation.py",
+      "blob": "bcfb55c42c7df72ea63778836e07773dc436337f",
+      "status": "added",
+      "additions": 89,
+      "deletions": 0
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/audit/complete_confirmation.py",
+      "blob": "ecdd05dc5e33b90978abd45b505c9c86986d586a",
+      "status": "added",
+      "additions": 291,
+      "deletions": 0
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/audit/verify_completion.py",
+      "blob": "b91a808aa3cc363d01f46e3d92880b2b34fdedb5",
+      "status": "added",
+      "additions": 50,
+      "deletions": 0
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/evidence/ANALYSIS.json",
+      "blob": "975c3e9d9b078c09fa08575c3d95937ebde5d187",
+      "status": "added",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/evidence/COMPLETION_FINALIZATION_CHECK.json",
+      "blob": "7506202102981c81be2cccfc58647c747689b832",
+      "status": "added",
+      "additions": 52,
+      "deletions": 0
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/evidence/CONFIRMATION_COMPLETION_AUDIT.json",
+      "blob": "b07fbda43c7a7937d387c25b896754455bfc527a",
+      "status": "added",
+      "additions": 1,
+      "deletions": 0
+    }
+  ],
+  "re_read_fixed_objects": [
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/REPORT_ZH.md",
+      "blob": "7261cae919c01871977214136df50c0400948c53",
+      "bytes": 16624,
+      "sha256": "993b34028c9acc81a15a4f3fc4206a26c72136f6eb70b5f2e817a563154e93bd"
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/README.md",
+      "blob": "02396619f8031158a092f0b9ddaaca1904eb9b49",
+      "bytes": 5698,
+      "sha256": "f97c181d57797c431ae5b3f917f2c92e3ca4b423b0797ad0121d491331634784"
+    },
+    {
+      "path": "tools/hcsn/digital_feedback_20261101/evidence/COMPLETION_FINALIZATION_CHECK.json",
+      "blob": "7506202102981c81be2cccfc58647c747689b832",
+      "bytes": 1591,
+      "sha256": "3c73a08cef43412cc396d2f1ae6266e23387cbbccc4c713090cefde3fa30a8fc"
+    }
+  ],
+  "hold_relationship": {
+    "unchanged": true,
+    "why": "No new confirmation input or results in the observed PR delta. Four primary feedback contrasts still fail benefit gates, and zero required candidate/fit/domain entries pass all eight criteria.",
+    "comparison_boundary": "fpt_feedback and ordinary_feedback compare multi-round against single-round feedback within their respective model families. They are not the analytic-kernel replacement D-minus-B primary experiment. Uncorrected descriptive analytic_increment is not promoted.",
+    "quality_boundary": "0/256 is the joint all-eight-criteria pass count, not zero passes for every individual metric.",
+    "statistical_boundary": "Unmet benefit gates and intervals crossing zero do not establish equivalence, zero effect or general harm.",
+    "cost_boundary": "Historical measured CPU remains a lower bound of 8326.229650133 seconds. Controller self-CPU for development_001, development_002 and aborted training_001 remains missing; no new receipt was found in this PR.",
+    "engineering_vs_science": "The nine files address the missing report/analysis delivery gap. GitHub workflow failure remains separate from scientific HOLD. Architecture/metadata success is neither new experiment evidence nor product acceptance.",
+    "future_work": "Any future trial must use a newly frozen protocol/input/cohort manifest, development-only quality improvement, same-information/full-cost comparison and new confirmation identities. No new experiment was launched."
+  },
+  "api_originals": {
+    "bundle": {
+      "blob": "24e7a368a0614410aa3618f5dcbc7afbfac89710",
+      "bytes": 288339,
+      "sha256": "03ea0c46a985f45ccdbb7e944bd48f117ee9df32ad91dede7d0cbb46517dbfd5"
+    },
+    "identity_semantics": "Exact connector-returned decoded UTF-8 JSON bodies are preserved as body_utf8 in the bundle. Hashes are not HTTP wire/compressed hashes. Body Git hashes in the bundle are identities only, not claims that each body was separately materialized.",
+    "responses": [
+      {
+        "key": "pr",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/4798",
+        "decoded_utf8_bytes": 21128,
+        "decoded_utf8_sha256": "4f3acb93a09fbeb58199d16e61594d7f2b80dcc1de8c7120391f3070184b3af0"
+      },
+      {
+        "key": "pr-closing",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/4798",
+        "decoded_utf8_bytes": 21128,
+        "decoded_utf8_sha256": "54190da3a12c9401b47d78b8a4c1acbb4772ca4740ec5ae27a98c7c03ba9ed4d"
+      },
+      {
+        "key": "headcommit",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/77b24407b9898aa44769502fbb22c24fb7193a58",
+        "decoded_utf8_bytes": 1308,
+        "decoded_utf8_sha256": "39aee72af89269fb0f1218d7c1ae66fd48d8ca3376ee1ccfd6a83bb5ab30ad91"
+      },
+      {
+        "key": "runs1",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=77b24407b9898aa44769502fbb22c24fb7193a58&per_page=100&page=1",
+        "decoded_utf8_bytes": 46743,
+        "decoded_utf8_sha256": "fd994a1569cb615dba2ed3235e3bf85854f2114e66a0c692975ec5e511d16f64"
+      },
+      {
+        "key": "runs2",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=77b24407b9898aa44769502fbb22c24fb7193a58&per_page=100&page=2",
+        "decoded_utf8_bytes": 36,
+        "decoded_utf8_sha256": "45fc1fcbbe2f981550d672cbc39c20d129adc398ea7c3850d9627d2c708ad32e"
+      },
+      {
+        "key": "files1",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/4798/files?per_page=100&page=1",
+        "decoded_utf8_bytes": 66956,
+        "decoded_utf8_sha256": "31053bf0d1674acacc9f9468498592beb179c97f183c2d4472ce076721898db1"
+      },
+      {
+        "key": "files2",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/4798/files?per_page=100&page=2",
+        "decoded_utf8_bytes": 2,
+        "decoded_utf8_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "key": "jobs:41843067463:1",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41843067463/jobs?filter=all&per_page=100&page=1",
+        "decoded_utf8_bytes": 14638,
+        "decoded_utf8_sha256": "6ef3e8c07f49ed2c5136718e8158fc2f65a45555e6a3e015cfc4583774d28fe4"
+      },
+      {
+        "key": "jobs:41843067463:2",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41843067463/jobs?filter=all&per_page=100&page=2",
+        "decoded_utf8_bytes": 27,
+        "decoded_utf8_sha256": "bcad4a09d3a8b3fbfcba9d75bb897db9d5d597bc524acd8c29f0c7b2c63e54d1"
+      },
+      {
+        "key": "jobs:41843067204:1",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41843067204/jobs?filter=all&per_page=100&page=1",
+        "decoded_utf8_bytes": 88189,
+        "decoded_utf8_sha256": "a478410f0b253f71814fe6f581723d4bba49aca2165c0f5c372c9ef1bd1c9939"
+      },
+      {
+        "key": "jobs:41843067204:2",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41843067204/jobs?filter=all&per_page=100&page=2",
+        "decoded_utf8_bytes": 28,
+        "decoded_utf8_sha256": "f61d3f7824de7a95e1d28da6dcdf4833036e63e7f5d2cc6aca18faaa3b5d6b78"
+      },
+      {
+        "key": "jobs:41843067199:1",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41843067199/jobs?filter=all&per_page=100&page=1",
+        "decoded_utf8_bytes": 4539,
+        "decoded_utf8_sha256": "cd6425634667354518b9d24f2141a8403238924cc69501fc9a12a4becfb3c157"
+      },
+      {
+        "key": "jobs:41843067199:2",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41843067199/jobs?filter=all&per_page=100&page=2",
+        "decoded_utf8_bytes": 27,
+        "decoded_utf8_sha256": "bcad4a09d3a8b3fbfcba9d75bb897db9d5d597bc524acd8c29f0c7b2c63e54d1"
+      }
+    ]
+  },
+  "limits": [
+    "PR/head delta only; no global absence claim for other research branches.",
+    "No archive traversal, statistical recalculation, teacher/model replay or training.",
+    "Latest head-run and all-job pages were read to terminal empty pages; full job logs/artifacts were not downloaded in this refresh.",
+    "Actions API head_sha is not claimed as every job's actual source or synthetic-merge checkout. No cross-head or product qualification is transferred.",
+    "Job states do not count tests. v8-canary is one metadata success plus two skipped builds.",
+    "Individual failures were not freshly classified as inherited or report-induced solely from the report-only diff.",
+    "No ref, source, PR metadata or native mutation; only unreachable evidence blobs."
+  ],
+  "related_r2e3_review": {
+    "blob": "2cc31c4e2e812294ef1523ebd8d96edfe63ca8ed",
+    "bytes": 6768,
+    "sha256": "df1c5531853a3b9fc1f78dd882d759ee5c10e030e6f06626c0895ee6d7fc2985",
+    "status": "STATIC_SCOPE_ACCEPTED_NO_EXECUTION",
+    "not_scientific_evidence": true
+  }
+}

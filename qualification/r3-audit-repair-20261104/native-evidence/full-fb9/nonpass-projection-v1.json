@@ -1,0 +1,743 @@
+{
+  "schema": "hepta-full-fb9-nonpass-original-projection-v1",
+  "source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "original_job": "1a1a9f68261-fc05-3a71",
+  "source_review": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace-review.json",
+    "bytes": 4625796,
+    "sha256": "8ba22d57c10ea80ac35603cdafeac538f1c13b83a83afd3cb03f792ee5b052bb"
+  },
+  "terminal": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/terminal.json",
+    "bytes": 369147,
+    "sha256": "b02cfd1fd44fc0aad5cd759608e663bc2917ce95cf3de429f7f24697d4fa7e82"
+  },
+  "junit": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/windows-full-after-index-continuation-20261105-v1/full-workspace.junit.xml",
+    "bytes": 4147101,
+    "sha256": "a64ad0f88d187caa6dd0fa7c2dedd2f816a8366bedb1a93d026c169a16cf7ac8"
+  },
+  "actual_counts": {
+    "PASS": 19490,
+    "FAIL": 16
+  },
+  "selected": 19506,
+  "existing_ignored": 57,
+  "unmatched": 0,
+  "exact_executed_roster": true,
+  "original_exit_code": 100,
+  "retries": 0,
+  "programs_stable": true,
+  "helpers_stable": true,
+  "nonpass_cases": [
+    {
+      "name": "suite::v2::command_exec::command_exec_accepts_permission_profile",
+      "classname": "codex-app-server::all",
+      "seconds": "0.530",
+      "result": "FAIL",
+      "failure": "thread 'suite::v2::command_exec::command_exec_accepts_permission_profile' (1182049) panicked at app-server/tests/suite/v2/command_exec.rs:321:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"profile\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset",
+      "classname": "codex-app-server::all",
+      "seconds": "0.579",
+      "result": "FAIL",
+      "failure": "thread 'suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset' (1184430) panicked at app-server/tests/suite/v2/command_exec.rs:190:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"request|added|unset|/tmp/.tmpt0QjYi||\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::v2::command_exec::command_exec_non_streaming_respects_output_cap",
+      "classname": "codex-app-server::all",
+      "seconds": "0.557",
+      "result": "FAIL",
+      "failure": "thread 'suite::v2::command_exec::command_exec_non_streaming_respects_output_cap' (1185757) panicked at app-server/tests/suite/v2/command_exec.rs:886:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"abcde\",\n<    stderr: \"Faile\",\n>    stderr: \"uvwxy\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy",
+      "classname": "codex-app-server::all",
+      "seconds": "0.611",
+      "result": "FAIL",
+      "failure": "thread 'suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy' (1186116) panicked at app-server/tests/suite/v2/command_exec.rs:533:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"unset\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy",
+      "classname": "codex-app-server::all",
+      "seconds": "0.689",
+      "result": "FAIL",
+      "failure": "thread 'suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy' (1188037) panicked at app-server/tests/suite/v2/command_exec.rs:485:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"1\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility",
+      "classname": "codex-app-server::all",
+      "seconds": "0.613",
+      "result": "FAIL",
+      "failure": "thread 'suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility' (1196652) panicked at app-server/tests/suite/v2/command_exec.rs:126:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"legacy-out\",\n<    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nlegacy-err\",\n>    stderr: \"legacy-err\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+      "classname": "codex-core::all",
+      "seconds": "0.677",
+      "result": "FAIL",
+      "failure": "thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (1116655) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+      "classname": "codex-core::all",
+      "seconds": "0.633",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (1243109) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+      "classname": "codex-core::all",
+      "seconds": "0.604",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (1243353) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+      "classname": "codex-core::all",
+      "seconds": "0.739",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (1243269) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+      "classname": "codex-core::all",
+      "seconds": "0.721",
+      "result": "FAIL",
+      "failure": "thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (1243845) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup",
+      "classname": "codex-core::all",
+      "seconds": "8.209",
+      "result": "FAIL",
+      "failure": "Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found"
+    },
+    {
+      "name": "process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform",
+      "classname": "codex-exec-server",
+      "seconds": "10.514",
+      "result": "FAIL",
+      "failure": "thread 'process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform' (1312423) panicked at exec-server/src/process_sandbox_tests.rs:338:10:\nproxy response timeout: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.470",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (1316040) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.458",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (1316080) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    \"Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal\",\n>    \"original\",\n     \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+      "classname": "codex-exec-server::exec_process",
+      "seconds": "0.455",
+      "result": "FAIL",
+      "failure": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (1316466) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    }
+  ],
+  "nonpass_testcase_xml_serializations": [
+    "<testcase name=\"suite::v2::command_exec::command_exec_accepts_permission_profile\" classname=\"codex-app-server::all\" timestamp=\"2026-11-04T23:36:25.819-05:00\" time=\"0.530\">\n            <failure message=\"thread 'suite::v2::command_exec::command_exec_accepts_permission_profile' (1182049) panicked at app-server/tests/suite/v2/command_exec.rs:321:5\" type=\"test failure with exit code 101\">thread 'suite::v2::command_exec::command_exec_accepts_permission_profile' (1182049) panicked at app-server/tests/suite/v2/command_exec.rs:321:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"profile\",\n&lt;    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n&gt;    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::v2::command_exec::command_exec_accepts_permission_profile ... FAILED\n\nfailures:\n\nfailures:\n    suite::v2::command_exec::command_exec_accepts_permission_profile\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1018 filtered out; finished in 0.51s\n\n</system-out>\n            <system-err>writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })\nread message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Ubuntu 26.4.0; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"/tmp/.tmp08QBxX\"), \"platformFamily\": String(\"unix\"), \"platformOs\": String(\"linux\")} })\nwriting message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })\nwriting message to stdin: Request(JSONRPCRequest { id: Integer(1), method: \"command/exec\", params: Some(Object {\"command\": Array [String(\"sh\"), String(\"-lc\"), String(\"printf 'profile'\")], \"processId\": Null, \"outputBytesCap\": Null, \"timeoutMs\": Null, \"cwd\": Null, \"env\": Null, \"size\": Null, \"sandboxPolicy\": Null, \"permissionProfile\": String(\":read-only\")}), trace: None })\nin read_stream_until_response_message(Integer(1))\nread message from stdout: Notification(JSONRPCNotification { method: \"remoteControl/status/changed\", params: Some(Object {\"status\": String(\"disabled\"), \"serverName\": String(\"qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA\"), \"installationId\": String(\"352f2c08-bcad-4f08-b17a-31a823395666\"), \"environmentId\": Null}) })\nread message from stdout: Response(JSONRPCResponse { id: Integer(1), result: Object {\"exitCode\": Number(0), \"stdout\": String(\"profile\"), \"stderr\": String(\"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\")} })\n\nthread 'suite::v2::command_exec::command_exec_accepts_permission_profile' (1182049) panicked at app-server/tests/suite/v2/command_exec.rs:321:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"profile\",\n&lt;    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n&gt;    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n        ",
+    "<testcase name=\"suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset\" classname=\"codex-app-server::all\" timestamp=\"2026-11-04T23:36:26.534-05:00\" time=\"0.579\">\n            <failure message=\"thread 'suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset' (1184430) panicked at app-server/tests/suite/v2/command_exec.rs:190:5\" type=\"test failure with exit code 101\">thread 'suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset' (1184430) panicked at app-server/tests/suite/v2/command_exec.rs:190:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"request|added|unset|/tmp/.tmpt0QjYi||\",\n&lt;    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n&gt;    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset ... FAILED\n\nfailures:\n\nfailures:\n    suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1018 filtered out; finished in 0.56s\n\n</system-out>\n            <system-err>writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })\nread message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Ubuntu 26.4.0; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"/tmp/.tmpt0QjYi\"), \"platformFamily\": String(\"unix\"), \"platformOs\": String(\"linux\")} })\nwriting message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })\nwriting message to stdin: Request(JSONRPCRequest { id: Integer(1), method: \"command/exec\", params: Some(Object {\"command\": Array [String(\"/bin/sh\"), String(\"-lc\"), String(\"printf '%s|%s|%s|%s|%s|%s' \\\"$COMMAND_EXEC_BASELINE\\\" \\\"$COMMAND_EXEC_EXTRA\\\" \\\"${RUST_LOG-unset}\\\" \\\"$CODEX_HOME\\\" \\\"$OPENAI_FEDERATION_RULE_ID\\\" \\\"$openai_identity_token_file\\\"\")], \"processId\": Null, \"outputBytesCap\": Null, \"timeoutMs\": Null, \"cwd\": Null, \"env\": Object {\"OPENAI_FEDERATION_RULE_ID\": String(\"rule\"), \"RUST_LOG\": Null, \"COMMAND_EXEC_EXTRA\": String(\"added\"), \"COMMAND_EXEC_BASELINE\": String(\"request\"), \"openai_identity_token_file\": String(\"/run/identity-token\")}, \"size\": Null, \"sandboxPolicy\": Null, \"permissionProfile\": Null}), trace: None })\nin read_stream_until_response_message(Integer(1))\nread message from stdout: Notification(JSONRPCNotification { method: \"remoteControl/status/changed\", params: Some(Object {\"status\": String(\"disabled\"), \"serverName\": String(\"qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA\"), \"installationId\": String(\"b6039e74-4824-4887-a7be-f2891bc09678\"), \"environmentId\": Null}) })\nread message from stdout: Response(JSONRPCResponse { id: Integer(1), result: Object {\"exitCode\": Number(0), \"stdout\": String(\"request|added|unset|/tmp/.tmpt0QjYi||\"), \"stderr\": String(\"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\")} })\n\nthread 'suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset' (1184430) panicked at app-server/tests/suite/v2/command_exec.rs:190:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"request|added|unset|/tmp/.tmpt0QjYi||\",\n&lt;    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n&gt;    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n        ",
+    "<testcase name=\"suite::v2::command_exec::command_exec_non_streaming_respects_output_cap\" classname=\"codex-app-server::all\" timestamp=\"2026-11-04T23:36:26.919-05:00\" time=\"0.557\">\n            <failure message=\"thread 'suite::v2::command_exec::command_exec_non_streaming_respects_output_cap' (1185757) panicked at app-server/tests/suite/v2/command_exec.rs:886:5\" type=\"test failure with exit code 101\">thread 'suite::v2::command_exec::command_exec_non_streaming_respects_output_cap' (1185757) panicked at app-server/tests/suite/v2/command_exec.rs:886:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"abcde\",\n&lt;    stderr: \"Faile\",\n&gt;    stderr: \"uvwxy\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::v2::command_exec::command_exec_non_streaming_respects_output_cap ... FAILED\n\nfailures:\n\nfailures:\n    suite::v2::command_exec::command_exec_non_streaming_respects_output_cap\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1018 filtered out; finished in 0.52s\n\n</system-out>\n            <system-err>writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })\nread message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Ubuntu 26.4.0; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"/tmp/.tmpXO5n1U\"), \"platformFamily\": String(\"unix\"), \"platformOs\": String(\"linux\")} })\nwriting message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })\nwriting message to stdin: Request(JSONRPCRequest { id: Integer(1), method: \"command/exec\", params: Some(Object {\"command\": Array [String(\"sh\"), String(\"-lc\"), String(\"printf 'abcdef'; printf 'uvwxyz' &gt;&amp;2\")], \"processId\": String(\"cap-1\"), \"outputBytesCap\": Number(5), \"timeoutMs\": Null, \"cwd\": Null, \"env\": Null, \"size\": Null, \"sandboxPolicy\": Null, \"permissionProfile\": Null}), trace: None })\nin read_stream_until_response_message(Integer(1))\nread message from stdout: Notification(JSONRPCNotification { method: \"remoteControl/status/changed\", params: Some(Object {\"status\": String(\"disabled\"), \"serverName\": String(\"qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA\"), \"installationId\": String(\"ca650b49-2c7d-4659-9e25-50201138c403\"), \"environmentId\": Null}) })\nread message from stdout: Response(JSONRPCResponse { id: Integer(1), result: Object {\"exitCode\": Number(0), \"stdout\": String(\"abcde\"), \"stderr\": String(\"Faile\")} })\n\nthread 'suite::v2::command_exec::command_exec_non_streaming_respects_output_cap' (1185757) panicked at app-server/tests/suite/v2/command_exec.rs:886:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"abcde\",\n&lt;    stderr: \"Faile\",\n&gt;    stderr: \"uvwxy\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n        ",
+    "<testcase name=\"suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy\" classname=\"codex-app-server::all\" timestamp=\"2026-11-04T23:36:27.012-05:00\" time=\"0.611\">\n            <failure message=\"thread 'suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy' (1186116) panicked at app-server/tests/suite/v2/command_exec.rs:533:5\" type=\"test failure with exit code 101\">thread 'suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy' (1186116) panicked at app-server/tests/suite/v2/command_exec.rs:533:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"unset\",\n&lt;    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n&gt;    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy ... FAILED\n\nfailures:\n\nfailures:\n    suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1018 filtered out; finished in 0.58s\n\n</system-out>\n            <system-err>writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })\nread message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Ubuntu 26.4.0; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"/tmp/.tmpK6N1zp\"), \"platformFamily\": String(\"unix\"), \"platformOs\": String(\"linux\")} })\nwriting message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })\nwriting message to stdin: Request(JSONRPCRequest { id: Integer(1), method: \"command/exec\", params: Some(Object {\"command\": Array [String(\"sh\"), String(\"-lc\"), String(\"printf '%s' \\\"${CODEX_NETWORK_PROXY_ACTIVE-unset}\\\"\")], \"processId\": Null, \"outputBytesCap\": Null, \"timeoutMs\": Null, \"cwd\": Null, \"env\": Null, \"size\": Null, \"sandboxPolicy\": Null, \"permissionProfile\": String(\":read-only\")}), trace: None })\nin read_stream_until_response_message(Integer(1))\nread message from stdout: Notification(JSONRPCNotification { method: \"remoteControl/status/changed\", params: Some(Object {\"status\": String(\"disabled\"), \"serverName\": String(\"qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA\"), \"installationId\": String(\"e83df068-ea2e-4aea-b18b-28ce1fb78e3c\"), \"environmentId\": Null}) })\nread message from stdout: Response(JSONRPCResponse { id: Integer(1), result: Object {\"exitCode\": Number(0), \"stdout\": String(\"unset\"), \"stderr\": String(\"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\")} })\n\nthread 'suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy' (1186116) panicked at app-server/tests/suite/v2/command_exec.rs:533:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"unset\",\n&lt;    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n&gt;    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n        ",
+    "<testcase name=\"suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy\" classname=\"codex-app-server::all\" timestamp=\"2026-11-04T23:36:27.476-05:00\" time=\"0.689\">\n            <failure message=\"thread 'suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy' (1188037) panicked at app-server/tests/suite/v2/command_exec.rs:485:5\" type=\"test failure with exit code 101\">thread 'suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy' (1188037) panicked at app-server/tests/suite/v2/command_exec.rs:485:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"1\",\n&lt;    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n&gt;    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy ... FAILED\n\nfailures:\n\nfailures:\n    suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1018 filtered out; finished in 0.63s\n\n</system-out>\n            <system-err>writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })\nread message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Ubuntu 26.4.0; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"/tmp/.tmp6TvyeM\"), \"platformFamily\": String(\"unix\"), \"platformOs\": String(\"linux\")} })\nwriting message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })\nwriting message to stdin: Request(JSONRPCRequest { id: Integer(1), method: \"command/exec\", params: Some(Object {\"command\": Array [String(\"sh\"), String(\"-lc\"), String(\"printf '%s' \\\"${CODEX_NETWORK_PROXY_ACTIVE-unset}\\\"\")], \"processId\": Null, \"outputBytesCap\": Null, \"timeoutMs\": Null, \"cwd\": Null, \"env\": Null, \"size\": Null, \"sandboxPolicy\": Null, \"permissionProfile\": String(\"networked\")}), trace: None })\nin read_stream_until_response_message(Integer(1))\nread message from stdout: Notification(JSONRPCNotification { method: \"remoteControl/status/changed\", params: Some(Object {\"status\": String(\"disabled\"), \"serverName\": String(\"qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA\"), \"installationId\": String(\"b6b341ec-c867-4c2b-a43f-8f7ddc627ec7\"), \"environmentId\": Null}) })\n[mcp stderr] 2026-11-05T04:36:27.799183Z  WARN codex_network_proxy::proxy: allowUnixSockets and dangerouslyAllowAllUnixSockets are macOS-only; requests will be rejected on this platform\nread message from stdout: Response(JSONRPCResponse { id: Integer(1), result: Object {\"exitCode\": Number(0), \"stdout\": String(\"1\"), \"stderr\": String(\"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\")} })\n\nthread 'suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy' (1188037) panicked at app-server/tests/suite/v2/command_exec.rs:485:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"1\",\n&lt;    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n&gt;    stderr: \"\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n        ",
+    "<testcase name=\"suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility\" classname=\"codex-app-server::all\" timestamp=\"2026-11-04T23:36:29.829-05:00\" time=\"0.613\">\n            <failure message=\"thread 'suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility' (1196652) panicked at app-server/tests/suite/v2/command_exec.rs:126:5\" type=\"test failure with exit code 101\">thread 'suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility' (1196652) panicked at app-server/tests/suite/v2/command_exec.rs:126:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"legacy-out\",\n&lt;    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nlegacy-err\",\n&gt;    stderr: \"legacy-err\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility ... FAILED\n\nfailures:\n\nfailures:\n    suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1018 filtered out; finished in 0.60s\n\n</system-out>\n            <system-err>writing message to stdin: Request(JSONRPCRequest { id: Integer(0), method: \"initialize\", params: Some(Object {\"clientInfo\": Object {\"name\": String(\"codex-app-server-tests\"), \"title\": Null, \"version\": String(\"0.1.0\")}, \"capabilities\": Object {\"experimentalApi\": Bool(true), \"requestAttestation\": Bool(false), \"optOutNotificationMethods\": Null}}), trace: None })\nread message from stdout: Response(JSONRPCResponse { id: Integer(0), result: Object {\"userAgent\": String(\"codex-app-server-tests/0.0.0 (Ubuntu 26.4.0; x86_64) unknown (codex-app-server-tests; 0.1.0)\"), \"codexHome\": String(\"/tmp/.tmpVDuCJK\"), \"platformFamily\": String(\"unix\"), \"platformOs\": String(\"linux\")} })\nwriting message to stdin: Notification(JSONRPCNotification { method: \"initialized\", params: None })\nwriting message to stdin: Request(JSONRPCRequest { id: Integer(1), method: \"command/exec\", params: Some(Object {\"command\": Array [String(\"sh\"), String(\"-lc\"), String(\"printf 'legacy-out'; printf 'legacy-err' &gt;&amp;2\")], \"processId\": Null, \"outputBytesCap\": Null, \"timeoutMs\": Null, \"cwd\": Null, \"env\": Null, \"size\": Null, \"sandboxPolicy\": Null, \"permissionProfile\": Null}), trace: None })\nin read_stream_until_response_message(Integer(1))\nread message from stdout: Notification(JSONRPCNotification { method: \"remoteControl/status/changed\", params: Some(Object {\"status\": String(\"disabled\"), \"serverName\": String(\"qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA\"), \"installationId\": String(\"9cdb0795-cde6-4c73-b132-af169348440e\"), \"environmentId\": Null}) })\nread message from stdout: Response(JSONRPCResponse { id: Integer(1), result: Object {\"exitCode\": Number(0), \"stdout\": String(\"legacy-out\"), \"stderr\": String(\"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nlegacy-err\")} })\n\nthread 'suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility' (1196652) panicked at app-server/tests/suite/v2/command_exec.rs:126:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n CommandExecResponse {\n     exit_code: 0,\n     stdout: \"legacy-out\",\n&lt;    stderr: \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nlegacy-err\",\n&gt;    stderr: \"legacy-err\",\n }\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n        ",
+    "<testcase name=\"suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts\" classname=\"codex-core::all\" timestamp=\"2026-11-04T23:36:10.701-05:00\" time=\"0.677\">\n            <failure message=\"thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (1116655) panicked at core/tests/suite/approvals.rs:2540:5\" type=\"test failure with exit code 101\">thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (1116655) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts ... FAILED\n\nfailures:\n\nfailures:\n    suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.65s\n\n</system-out>\n            <system-err>\nthread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (1116655) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n        ",
+    "<testcase name=\"suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions\" classname=\"codex-core::all\" timestamp=\"2026-11-04T23:36:42.126-05:00\" time=\"0.633\">\n            <failure message=\"thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (1243109) panicked at core/tests/suite/request_permissions.rs:1802:5\" type=\"test failure with exit code 101\">thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (1243109) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.62s\n\n</system-out>\n            <system-err>\nthread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (1243109) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n        ",
+    "<testcase name=\"suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature\" classname=\"codex-core::all\" timestamp=\"2026-11-04T23:36:42.200-05:00\" time=\"0.604\">\n            <failure message=\"thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (1243353) panicked at core/tests/suite/request_permissions.rs:1626:5\" type=\"test failure with exit code 101\">thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (1243353) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.58s\n\n</system-out>\n            <system-err>\nthread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (1243353) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n        ",
+    "<testcase name=\"suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls\" classname=\"codex-core::all\" timestamp=\"2026-11-04T23:36:42.181-05:00\" time=\"0.739\">\n            <failure message=\"thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (1243269) panicked at core/tests/suite/request_permissions.rs:1391:5\" type=\"test failure with exit code 101\">thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (1243269) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.72s\n\n</system-out>\n            <system-err>\nthread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (1243269) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n        ",
+    "<testcase name=\"suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request\" classname=\"codex-core::all\" timestamp=\"2026-11-04T23:36:42.334-05:00\" time=\"0.721\">\n            <failure message=\"thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (1243845) panicked at core/tests/suite/request_permissions.rs:1510:5\" type=\"test failure with exit code 101\">thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (1243845) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request ... FAILED\n\nfailures:\n\nfailures:\n    suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.70s\n\n</system-out>\n            <system-err>\nthread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (1243845) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n&lt;Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n        ",
+    "<testcase name=\"suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup\" classname=\"codex-core::all\" timestamp=\"2026-11-04T23:36:35.632-05:00\" time=\"8.209\">\n            <failure message=\"Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found\" type=\"test failure with exit code 101\">Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found</failure>\n            <system-out>\nrunning 1 test\ntest suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup ... FAILED\n\nfailures:\n\nfailures:\n    suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 8.19s\n\n</system-out>\n            <system-err>Error: thread 01a1a9fe-9432-7365-982c-7a0f11490eee not found\n</system-err>\n        </testcase>\n        ",
+    "<testcase name=\"process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform\" classname=\"codex-exec-server\" timestamp=\"2026-11-04T23:37:03.447-05:00\" time=\"10.514\">\n            <failure message=\"thread 'process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform' (1312423) panicked at exec-server/src/process_sandbox_tests.rs:338:10\" type=\"test failure with exit code 101\">thread 'process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform' (1312423) panicked at exec-server/src/process_sandbox_tests.rs:338:10:\nproxy response timeout: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform ... FAILED\n\nfailures:\n\nfailures:\n    process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 262 filtered out; finished in 10.51s\n\n</system-out>\n            <system-err>\nthread 'process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform' (1312423) panicked at exec-server/src/process_sandbox_tests.rs:338:10:\nproxy response timeout: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n    ",
+    "<testcase name=\"shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery\" classname=\"codex-exec-server::exec_process\" timestamp=\"2026-11-04T23:37:04.487-05:00\" time=\"0.470\">\n            <failure message=\"thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (1316040) panicked at exec-server/tests/exec_process.rs:449:9\" type=\"test failure with exit code 101\">thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (1316040) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n (\n     \"original\",\n&lt;    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n&gt;    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery ... FAILED\n\nfailures:\n\nfailures:\n    shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.46s\n\n</system-out>\n            <system-err>\nthread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (1316040) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n (\n     \"original\",\n&lt;    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n&gt;    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n        ",
+    "<testcase name=\"shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery\" classname=\"codex-exec-server::exec_process\" timestamp=\"2026-11-04T23:37:04.505-05:00\" time=\"0.458\">\n            <failure message=\"thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (1316080) panicked at exec-server/tests/exec_process.rs:449:9\" type=\"test failure with exit code 101\">thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (1316080) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n (\n&lt;    \"Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal\",\n&gt;    \"original\",\n     \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery ... FAILED\n\nfailures:\n\nfailures:\n    shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.45s\n\n</system-out>\n            <system-err>\nthread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (1316080) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n (\n&lt;    \"Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal\",\n&gt;    \"original\",\n     \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n        ",
+    "<testcase name=\"shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted\" classname=\"codex-exec-server::exec_process\" timestamp=\"2026-11-04T23:37:04.567-05:00\" time=\"0.455\">\n            <failure message=\"thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (1316466) panicked at exec-server/tests/exec_process.rs:449:9\" type=\"test failure with exit code 101\">thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (1316466) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n (\n     \"original\",\n&lt;    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n&gt;    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>\n            <system-out>\nrunning 1 test\ntest shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted ... FAILED\n\nfailures:\n\nfailures:\n    shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 42 filtered out; finished in 0.44s\n\n</system-out>\n            <system-err>\nthread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (1316466) panicked at exec-server/tests/exec_process.rs:449:9:\nassertion failed: `(left == right)`\n\nDiff &lt; left / right &gt; :\n (\n     \"original\",\n&lt;    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n&gt;    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n</system-err>\n        </testcase>\n        "
+  ],
+  "early_return_case_observations": [
+    {
+      "classname": "codex-core",
+      "name": "unified_exec::tests::remote_exec_server_rejects_inherited_fd_launches",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 47726,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 47717,
+        "end_line": 47727,
+        "byte_offset": 2227401,
+        "bytes": 419,
+        "sha256": "a4e8054fc8f4ceae3e5ddd4f39d59a39512c530c009ac20f3b00cff5bb9d4601",
+        "content": "        PASS [   0.015s] codex-core unified_exec::tests::remote_exec_server_rejects_inherited_fd_launches\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test unified_exec::tests::remote_exec_server_rejects_inherited_fd_launches ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2433 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core",
+      "name": "unified_exec::tests::unified_exec_uses_remote_exec_server_when_configured",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 47824,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 47815,
+        "end_line": 47825,
+        "byte_offset": 2233266,
+        "bytes": 427,
+        "sha256": "c1fb88e51056cb7c088efa5e9e06d8532425dba32ee0dd190d2764aa7df17c23",
+        "content": "        PASS [   0.015s] codex-core unified_exec::tests::unified_exec_uses_remote_exec_server_when_configured\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test unified_exec::tests::unified_exec_uses_remote_exec_server_when_configured ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2433 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::agents_md::multi_environment_project_instructions_share_one_byte_budget",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 48609,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 48600,
+        "end_line": 48610,
+        "byte_offset": 2286209,
+        "bytes": 442,
+        "sha256": "31adec331b78f4f8ae992b6d6c8b1c9721c8c52029c4fe5c2131248226d18d23",
+        "content": "        PASS [   0.056s] codex-core::all suite::agents_md::multi_environment_project_instructions_share_one_byte_budget\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::agents_md::multi_environment_project_instructions_share_one_byte_budget ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.01s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::agents_md::multi_environment_thread_loads_every_project_and_keeps_creation_snapshot",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 48659,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 48650,
+        "end_line": 48660,
+        "byte_offset": 2290827,
+        "bytes": 466,
+        "sha256": "340fe5b4e4d7d67e91b3e6850780a89113db5e6a3d8bec70f06662a590148b83",
+        "content": "        PASS [   0.020s] codex-core::all suite::agents_md::multi_environment_thread_loads_every_project_and_keeps_creation_snapshot\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::agents_md::multi_environment_thread_loads_every_project_and_keeps_creation_snapshot ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::apply_patch_cli::apply_patch_turn_diff_emits_portable_paths_for_remote_cwd",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 56030,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 56021,
+        "end_line": 56031,
+        "byte_offset": 2989611,
+        "bytes": 448,
+        "sha256": "d9ea7620b6060081a9419f6ba4f2f1fcf24082126bc2346f251a739d179e5046",
+        "content": "        PASS [   0.014s] codex-core::all suite::apply_patch_cli::apply_patch_turn_diff_emits_portable_paths_for_remote_cwd\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::apply_patch_cli::apply_patch_turn_diff_emits_portable_paths_for_remote_cwd ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::network_approval::approved_network_host_for_one_environment_still_prompts_in_another",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 58217,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 58208,
+        "end_line": 58218,
+        "byte_offset": 3307323,
+        "bytes": 468,
+        "sha256": "9a67f7b9526ed8145c0fccd6cac81dcb192203439ec20999ceda3fffe12d505e",
+        "content": "        PASS [   0.014s] codex-core::all suite::network_approval::approved_network_host_for_one_environment_still_prompts_in_another\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::network_approval::approved_network_host_for_one_environment_still_prompts_in_another ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::network_approval::owner_network_policy_follows_the_selected_remote_command",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 58362,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 58353,
+        "end_line": 58363,
+        "byte_offset": 3315396,
+        "bytes": 448,
+        "sha256": "97e40a4adc0798c8768e2e82701233768a5645309d91c33762d873355b352050",
+        "content": "        PASS [   0.015s] codex-core::all suite::network_approval::owner_network_policy_follows_the_selected_remote_command\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::network_approval::owner_network_policy_follows_the_selected_remote_command ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::network_approval::remote_guardian_network_decisions_are_scoped_to_each_request_and_environment",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 58382,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 58373,
+        "end_line": 58383,
+        "byte_offset": 3316212,
+        "bytes": 488,
+        "sha256": "ab2bcc7e76d1472d4981991e92ea9178dc274d0779969ea745f089879625454c",
+        "content": "        PASS [   0.033s] codex-core::all suite::network_approval::remote_guardian_network_decisions_are_scoped_to_each_request_and_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::network_approval::remote_guardian_network_decisions_are_scoped_to_each_request_and_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::apply_patch_cli::apply_patch_turn_diff_tracks_local_and_remote_environment_paths",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 58438,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 58429,
+        "end_line": 58439,
+        "byte_offset": 3318694,
+        "bytes": 460,
+        "sha256": "cfe88d558bbec9617ef763e78cbd67f20935f5365dc63b11598efaca27c5ab8b",
+        "content": "        PASS [   0.015s] codex-core::all suite::apply_patch_cli::apply_patch_turn_diff_tracks_local_and_remote_environment_paths\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::apply_patch_cli::apply_patch_turn_diff_tracks_local_and_remote_environment_paths ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::apply_patch_approvals_are_remembered_per_environment",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 71425,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 71416,
+        "end_line": 71426,
+        "byte_offset": 10876379,
+        "bytes": 428,
+        "sha256": "e500e81723ce869d91da9c41bdc2a5aecc41a085ecb6a552391a3a1b1eaa16c7",
+        "content": "        PASS [   0.024s] codex-core::all suite::remote_env::apply_patch_approvals_are_remembered_per_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::apply_patch_approvals_are_remembered_per_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::apply_patch_freeform_routes_to_selected_remote_environment",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 71459,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 71450,
+        "end_line": 71460,
+        "byte_offset": 10878902,
+        "bytes": 440,
+        "sha256": "073e919cedd25c8486b0fa0ce3a961fd3604afcc9d78af72fa4be7793129389d",
+        "content": "        PASS [   0.032s] codex-core::all suite::remote_env::apply_patch_freeform_routes_to_selected_remote_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::apply_patch_freeform_routes_to_selected_remote_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::apply_patch_intercepted_exec_command_routes_to_selected_remote_environment",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 71491,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 71482,
+        "end_line": 71492,
+        "byte_offset": 10880295,
+        "bytes": 472,
+        "sha256": "3ffdfdbae40d5b924d5af211bf829682c6b63105f2ae6925248585d9d22218f2",
+        "content": "        PASS [   0.037s] codex-core::all suite::remote_env::apply_patch_intercepted_exec_command_routes_to_selected_remote_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::apply_patch_intercepted_exec_command_routes_to_selected_remote_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.01s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::exec_command_routes_to_selected_remote_environment",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 71573,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 71564,
+        "end_line": 71574,
+        "byte_offset": 10910721,
+        "bytes": 424,
+        "sha256": "9b90a654ea011f85c4662273611667b1a24e3d735fe90b6c900fffab1920ee54",
+        "content": "        PASS [   0.028s] codex-core::all suite::remote_env::exec_command_routes_to_selected_remote_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::exec_command_routes_to_selected_remote_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::explicit_remote_shell_runs_in_remote_cwd",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 71593,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 71584,
+        "end_line": 71594,
+        "byte_offset": 10911503,
+        "bytes": 404,
+        "sha256": "dc65b13a7fe45b397630802d5c08683e549c41bb217ec1838e399e37a2215d16",
+        "content": "        PASS [   0.022s] codex-core::all suite::remote_env::explicit_remote_shell_runs_in_remote_cwd\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::explicit_remote_shell_runs_in_remote_cwd ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_exec_materializes_target_roots_before_sandbox_selection",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 71634,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 71625,
+        "end_line": 71635,
+        "byte_offset": 10914129,
+        "bytes": 448,
+        "sha256": "c166a73bf59233b14aefdff4d98b2dd728709d5a0a488e8973e1c55345c3a441",
+        "content": "        PASS [   0.015s] codex-core::all suite::remote_env::remote_exec_materializes_target_roots_before_sandbox_selection\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_exec_materializes_target_roots_before_sandbox_selection ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_request_permissions_grant_unblocks_later_remote_exec",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 71645,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 71636,
+        "end_line": 71646,
+        "byte_offset": 10914577,
+        "bytes": 442,
+        "sha256": "5b4a1508c05891fac22b1acde908702b54035688f85261891eb152aa88385318",
+        "content": "        PASS [   0.019s] codex-core::all suite::remote_env::remote_request_permissions_grant_unblocks_later_remote_exec\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_request_permissions_grant_unblocks_later_remote_exec ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_can_connect_and_use_filesystem",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 71656,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 71647,
+        "end_line": 71657,
+        "byte_offset": 10915019,
+        "bytes": 416,
+        "sha256": "c24a51ce33139ca91e51f8c556fee802b2aa38a5ff670a5fe67dd81e30da7639",
+        "content": "        PASS [   0.025s] codex-core::all suite::remote_env::remote_test_env_can_connect_and_use_filesystem\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_can_connect_and_use_filesystem ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_copy_preserves_symlink_source",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 71667,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 71658,
+        "end_line": 71668,
+        "byte_offset": 10915435,
+        "bytes": 414,
+        "sha256": "86fa0b732cdb08247f5161c0592781f3c95edc6353259786562d4ce009a5c78d",
+        "content": "        PASS [   0.026s] codex-core::all suite::remote_env::remote_test_env_copy_preserves_symlink_source\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_copy_preserves_symlink_source ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_exposes_target_shell_to_model",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 71678,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 71669,
+        "end_line": 71679,
+        "byte_offset": 10915849,
+        "bytes": 414,
+        "sha256": "013bbc549a14b772c424c819f7fb4dacbdabede52a0f040125c216c23bca8d38",
+        "content": "        PASS [   0.022s] codex-core::all suite::remote_env::remote_test_env_exposes_target_shell_to_model\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_exposes_target_shell_to_model ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_remove_removes_symlink_not_target",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 71689,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 71680,
+        "end_line": 71690,
+        "byte_offset": 10916263,
+        "bytes": 422,
+        "sha256": "2b8e83ffd6cbfcb1da1aa3c0e35ac559e92359dc65041aac5174e3504dd69184",
+        "content": "        PASS [   0.022s] codex-core::all suite::remote_env::remote_test_env_remove_removes_symlink_not_target\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_remove_removes_symlink_not_target ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_sandboxed_read_allows_readable_root",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 71700,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 71691,
+        "end_line": 71701,
+        "byte_offset": 10916685,
+        "bytes": 426,
+        "sha256": "143c97c3dd49ef5599ee4035adb7bc5f2e105e040f19e873f52d15f842431a3b",
+        "content": "        PASS [   0.022s] codex-core::all suite::remote_env::remote_test_env_sandboxed_read_allows_readable_root\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_sandboxed_read_allows_readable_root ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::remote_env::remote_test_env_sandboxed_read_rejects_symlink_parent_dotdot_escape",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 71725,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 71716,
+        "end_line": 71726,
+        "byte_offset": 10918025,
+        "bytes": 458,
+        "sha256": "9c4c1bad07b567d0480581b3d0418da7f1274b3068b5e0917140d508ea2316e5",
+        "content": "        PASS [   0.014s] codex-core::all suite::remote_env::remote_test_env_sandboxed_read_rejects_symlink_parent_dotdot_escape\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::remote_env::remote_test_env_sandboxed_read_rejects_symlink_parent_dotdot_escape ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::rmcp_client::remote_stdio_env_var_source_does_not_copy_local_env",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 73807,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 73798,
+        "end_line": 73808,
+        "byte_offset": 12162709,
+        "bytes": 428,
+        "sha256": "e79f6d672e76908801ad511b4bd75d7128a86f8c62b3863f45b4bb1eb5a4fb25",
+        "content": "        PASS [   0.029s] codex-core::all suite::rmcp_client::remote_stdio_env_var_source_does_not_copy_local_env\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::rmcp_client::remote_stdio_env_var_source_does_not_copy_local_env ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.01s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-core::all",
+      "name": "suite::view_image::view_image_routes_to_selected_remote_environment",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 78365,
+          "original_line": "    Skipping test because it requires a remote test environment.\n",
+          "plain_line": "    Skipping test because it requires a remote test environment.\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 78356,
+        "end_line": 78366,
+        "byte_offset": 12945281,
+        "bytes": 420,
+        "sha256": "55fd78f6aa2c76fcb3b380ac1732f1eac89b6efdd7babd6765a69f3defe7aec4",
+        "content": "        PASS [   0.017s] codex-core::all suite::view_image::view_image_routes_to_selected_remote_environment\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::view_image::view_image_routes_to_selected_remote_environment ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1432 filtered out; finished in 0.00s\n\n  stderr \u2500\u2500\u2500\n    Skipping test because it requires a remote test environment.\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    },
+    {
+      "classname": "codex-linux-sandbox::all",
+      "name": "suite::landlock::sandbox_inner_stage_rejects_retained_capabilities",
+      "nextest_header_result": "PASS",
+      "junit_result": "PASS",
+      "exact_junit_key_bound": true,
+      "messages": [
+        {
+          "line": 125986,
+          "original_line": "    skipping capability test: unprivileged user namespaces are unavailable\n",
+          "plain_line": "    skipping capability test: unprivileged user namespaces are unavailable\n"
+        }
+      ],
+      "original_raw_block": {
+        "start_line": 125977,
+        "end_line": 125987,
+        "byte_offset": 15271816,
+        "bytes": 435,
+        "sha256": "fa2a9ebc33365aa39f3970e1ace4511fb458d1f5f7310d84a0b6eb435abb3e94",
+        "content": "        PASS [   0.209s] codex-linux-sandbox::all suite::landlock::sandbox_inner_stage_rejects_retained_capabilities\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::landlock::sandbox_inner_stage_rejects_retained_capabilities ... ok\n\n    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 37 filtered out; finished in 0.20s\n\n  stderr \u2500\u2500\u2500\n    skipping capability test: unprivileged user namespaces are unavailable\n\n"
+      },
+      "limit": "Original explicit early-return notice is preserved. JUnit PASS does not establish execution of the omitted remote or prerequisite-dependent behavior."
+    }
+  ],
+  "unbound_early_return_notices": [],
+  "scope": "This projection carries complete stored failure text and serialized original failing XML nodes; full original XML/raw remain byte-unchanged. No rerun, source modification or cause waiver."
+}

@@ -1,0 +1,26 @@
+diff --git a/codex-rs/state/src/sqlite.rs b/codex-rs/state/src/sqlite.rs
+--- a/codex-rs/state/src/sqlite.rs
++++ b/codex-rs/state/src/sqlite.rs
+@@ -34,6 +34,7 @@
+ const QUEUE_DB_FILENAME: &str = "queue_1.sqlite";
+ const STATE_DB_FILENAME: &str = "state_5.sqlite";
+ const THREAD_HISTORY_DB_FILENAME: &str = "thread_history_1.sqlite";
++const COMMIT_GUARD_CUSTODY_COLLATION: &str = "__hepta_commit_guard_custody_v1";
+ 
+ #[derive(Clone, Copy)]
+ struct RuntimeDbSpec {
+@@ -534,6 +535,14 @@
+     F: Fn() -> bool + Send + Sync + 'static,
+ {
+     let mut handle = connection.lock_handle().await?;
++    let custody = Arc::clone(&commit_allowed);
++    // SQLx removes and drops commit hooks before its native handle closes.
++    // SQLite destroys this collation after closing this connection's Btrees.
++    // The comparator never invokes the commit predicate or grants write access.
++    handle.create_collation(COMMIT_GUARD_CUSTODY_COLLATION, move |left, right| {
++        let _retained_custody = &custody;
++        left.cmp(right)
++    })?;
+     handle.set_commit_hook(move || commit_allowed());
+     Ok(())
+ }

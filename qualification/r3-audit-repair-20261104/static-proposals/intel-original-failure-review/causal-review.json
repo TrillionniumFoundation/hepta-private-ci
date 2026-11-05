@@ -1,0 +1,643 @@
+{
+  "schema": "intel_original_failures_static_causal_review_v1",
+  "reviewed_at_utc": "2026-11-05T03:46:25.126080+00:00",
+  "verdict": "ONE_SOURCE_PROVEN_FIXTURE_CONTRACT_REPAIR; THREE_ORIGINAL_FAILURE_CAUSES_REMAIN_OPEN; NO_NEW_PRODUCTION_PATCH_PROPOSED",
+  "review_scope": "Four original cabc Intel failures only. Read-only fixed-source review, exact saved artifact member reads and isolated artifact generation; no native test/build, host modification, ref mutation or changes to CI budgets/assertions.",
+  "original": {
+    "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+    "actual_merge_commit": "28af7f705fa1024b9a6d2ef751fec116002260eb",
+    "tree": "b2d7f038d6d88156bc6a4cb29c8703f69b808f29",
+    "artifact_id": 13361109041,
+    "collector_review_blob": "493bceae8e704b162d85e8169d6c99f3763fa7f4"
+  },
+  "candidate": {
+    "head": "bd7631e98f295fefad7654865cea497ceacf7d06",
+    "tree": "7d703610ae4f778ad305ebc139860d276f416e8c",
+    "scope": "Current A before the separately pending App parent-liveness candidate. Later unrelated A changes do not constitute new evidence for these Intel cases."
+  },
+  "raw_evidence": {
+    "pty": {
+      "file": "original-pty-test.log",
+      "bytes": 3403,
+      "sha256": "7cd3de653d7acecc41a960c406ee931b972413f70d79389f2c2a816f641df47e",
+      "git_blob": "d731ba56af443484d42dc264cdb06c1b9c4508fc",
+      "complete_bytes_read": true
+    },
+    "pty_xml": {
+      "file": "original-pty-test.xml",
+      "bytes": 3870,
+      "sha256": "98b329a05810064e9e9a5ef6e7d8f5b7e82b743e90e11499330c6d24c27fba66",
+      "git_blob": "93267bc27a69a40e7976b512c0118187ec03d6e5",
+      "complete_bytes_read": true
+    },
+    "forward": {
+      "file": "original-forward-test.log",
+      "bytes": 632,
+      "sha256": "228e852e65905d64c1f0861f704b467b2da62247507a9eefbb2265a5702cda68",
+      "git_blob": "5fbb96d6092d425c1d1484a9eae0e37cbce38dec",
+      "complete_bytes_read": true
+    },
+    "core_shard10_final": {
+      "file": "original-core-shard10-test.log",
+      "bytes": 2914739,
+      "sha256": "1cfd18fd46a30e38e0f1022e9c8108e385a8edc44aa06e75501a3328b2c0c053",
+      "git_blob": "01b5c9e1df64315ed18c365813d35f230cb7e0db",
+      "complete_bytes_read": true
+    }
+  },
+  "core_final_trace_projection": {
+    "successful_server_handshake_lines": [
+      191
+    ],
+    "successful_client_handshake_lines": [
+      204
+    ],
+    "fixture_requests": [
+      {
+        "line": 275,
+        "text": "[ws test server +629ms] connection=0 received request=0 type=Some(\"response.create\") role=None text=None data=None"
+      },
+      {
+        "line": 276,
+        "text": "[ws test server +629ms] connection=0 sending batch_size=2 event_types=[Some(\"response.created\"), Some(\"response.completed\")] audio_data=None"
+      }
+    ],
+    "initial_readonly_config_lines": [
+      127,
+      128
+    ],
+    "submitted_disabled_profile_lines": [
+      130,
+      865
+    ],
+    "assertion_line": 1095,
+    "assertion": "actual request count 1; expected 4",
+    "final_shard_summary": "test result: FAILED. 100 passed; 1 failed; 4 ignored; 0 measured; 1340 filtered out; finished in 240.86s"
+  },
+  "pty_exact_roster": [
+    {
+      "case": "process_group::tests::denied_group_signal_rejects_unsafe_process_group_ids",
+      "result": "ok",
+      "line": 6
+    },
+    {
+      "case": "tests::driver_backed_process_drains_output_that_arrives_after_exit_signal",
+      "result": "ok",
+      "line": 7
+    },
+    {
+      "case": "process_group::tests::denied_group_signal_terminates_owned_descendants_and_preserves_escalation",
+      "result": "ok",
+      "line": 8
+    },
+    {
+      "case": "tests::driver_backed_process_can_resize_via_resizer_hook",
+      "result": "ok",
+      "line": 9
+    },
+    {
+      "case": "tests::driver_backed_process_can_expose_split_stdout_and_stderr",
+      "result": "ok",
+      "line": 10
+    },
+    {
+      "case": "tests::pipe_drop_reaps_child",
+      "result": "ok",
+      "line": 11
+    },
+    {
+      "case": "tests::pipe_process_can_expose_split_stdout_and_stderr",
+      "result": "ok",
+      "line": 12
+    },
+    {
+      "case": "tests::pipe_and_pty_share_interface",
+      "result": "ok",
+      "line": 13
+    },
+    {
+      "case": "tests::pipe_process_detaches_from_parent_session",
+      "result": "ok",
+      "line": 14
+    },
+    {
+      "case": "tests::pipe_spawn_no_stdin_can_preserve_inherited_fds",
+      "result": "ok",
+      "line": 15
+    },
+    {
+      "case": "tests::pipe_terminate_aborts_detached_readers",
+      "result": "ok",
+      "line": 16
+    },
+    {
+      "case": "tests::pipe_terminate_reaps_child",
+      "result": "ok",
+      "line": 17
+    },
+    {
+      "case": "tests::pipe_process_round_trips_stdin",
+      "result": "ok",
+      "line": 18
+    },
+    {
+      "case": "tests::pty_drop_allows_runtime_shutdown_with_detached_child",
+      "result": "ok",
+      "line": 19
+    },
+    {
+      "case": "tests::pty_preserving_fds_drop_allows_runtime_shutdown_with_detached_child",
+      "result": "ok",
+      "line": 20
+    },
+    {
+      "case": "tests::pipe_drains_stderr_without_stdout_activity",
+      "result": "ok",
+      "line": 21
+    },
+    {
+      "case": "tests::pty_preserving_fds_terminate_allows_runtime_shutdown_with_detached_child",
+      "result": "ok",
+      "line": 22
+    },
+    {
+      "case": "tests::pty_dropped_output_receiver_keeps_draining_child",
+      "result": "FAILED",
+      "line": 23
+    },
+    {
+      "case": "tests::pty_close_stdin_preserves_large_input_and_delivers_eof",
+      "result": "FAILED",
+      "line": 24
+    },
+    {
+      "case": "tests::pty_spawn_can_preserve_inherited_fds",
+      "result": "ok",
+      "line": 25
+    },
+    {
+      "case": "tests::pty_spawn_with_inherited_fds_reports_exec_failures",
+      "result": "ok",
+      "line": 26
+    },
+    {
+      "case": "tests::pty_python_repl_emits_output_and_exits",
+      "result": "ok",
+      "line": 27
+    },
+    {
+      "case": "tests::pty_spawn_without_io_driver_returns_error",
+      "result": "ok",
+      "line": 28
+    },
+    {
+      "case": "tests::pty_spawn_with_inherited_fds_supports_resize",
+      "result": "ok",
+      "line": 29
+    },
+    {
+      "case": "tests::pty_terminate_allows_runtime_shutdown_with_detached_child",
+      "result": "ok",
+      "line": 30
+    },
+    {
+      "case": "tests::pty_terminate_kills_background_children_in_same_process_group",
+      "result": "ok",
+      "line": 31
+    },
+    {
+      "case": "tests::pty_terminate_reaps_child_when_waiter_is_queued",
+      "result": "ok",
+      "line": 32
+    },
+    {
+      "case": "tests::pty_python_repl_readiness_waits_for_execution_after_input_echo",
+      "result": "ok",
+      "line": 33
+    },
+    {
+      "case": "tests::pty_preserving_inherited_fds_keeps_python_repl_running",
+      "result": "ok",
+      "line": 34
+    },
+    {
+      "case": "tests::pty_terminate_allows_runtime_shutdown_with_full_output_channel",
+      "result": "ok",
+      "line": 35
+    }
+  ],
+  "already_passed_at_original_intel_head": [
+    {
+      "case": "tests::pty_python_repl_readiness_waits_for_execution_after_input_echo",
+      "result": "ok",
+      "line": 33
+    },
+    {
+      "case": "tests::pty_preserving_inherited_fds_keeps_python_repl_running",
+      "result": "ok",
+      "line": 34
+    }
+  ],
+  "pty_xml_scope": "The original XML contains one Bazel target error wrapper; the complete libtest stdout supplies 30 cases, 28 PASS and 2 FAIL. Do not count the XML wrapper as one unit test.",
+  "unchanged_production": [
+    {
+      "path": "codex-rs/utils/pty/src/pty.rs",
+      "old_blob": "1b848b33b716e952d4c96202e763faabd1692cb3",
+      "candidate_blob": "1b848b33b716e952d4c96202e763faabd1692cb3",
+      "byteequal": true
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io.rs",
+      "old_blob": "9cb344021e40e43c7b3a6c3d76189d6b69508e37",
+      "candidate_blob": "9cb344021e40e43c7b3a6c3d76189d6b69508e37",
+      "byteequal": true
+    },
+    {
+      "path": "codex-rs/utils/pty/src/process.rs",
+      "old_blob": "5593450b89d0578d59f3ab74cb5cfcf625c908f6",
+      "candidate_blob": "5593450b89d0578d59f3ab74cb5cfcf625c908f6",
+      "byteequal": true
+    },
+    {
+      "path": "codex-rs/exec-server/src/forward.rs",
+      "old_blob": "09ccc5d586fbe05e582dbbed24d39907671cb579",
+      "candidate_blob": "09ccc5d586fbe05e582dbbed24d39907671cb579",
+      "byteequal": true
+    },
+    {
+      "path": "codex-rs/exec-server/src/noise_relay/executor_stream.rs",
+      "old_blob": "32c7c0c1d713e0c66c2df73e7913b628b389ac16",
+      "candidate_blob": "32c7c0c1d713e0c66c2df73e7913b628b389ac16",
+      "byteequal": true
+    },
+    {
+      "path": "codex-rs/exec-server/src/noise_relay/message_framing.rs",
+      "old_blob": "af9fbd49986f0e23da32acf44ecee4ac377f536c",
+      "candidate_blob": "af9fbd49986f0e23da32acf44ecee4ac377f536c",
+      "byteequal": true
+    },
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "old_blob": "4f16e0eec07d7d95ad3fc206140d260500592277",
+      "candidate_blob": "4f16e0eec07d7d95ad3fc206140d260500592277",
+      "byteequal": true
+    }
+  ],
+  "cases": [
+    {
+      "case": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+      "target": "//codex-rs/core:core-all-test",
+      "original_result": "FAIL",
+      "classification": "FIXTURE_CONTRACT_MISMATCH_SOURCE_PROVEN; CURRENT_A_FIXTURE_REPAIR; FRESH_INTEL_GATE_PENDING",
+      "original_observation": "Read-only startup prewarm completed; the submitted turn explicitly changes to Disabled/DangerFullAccess. One server/client handshake and only connection 0 request 0 were recorded. Final assertion is 1 versus 4. The complete collector also records two earlier failed attempts of this exact case; those are retries of this job, not independent platforms.",
+      "causal_source_chain": [
+        "Old test expects a single physical connection while its asserted sandbox vector changes read-only to danger-full-access.",
+        "TestCodex::submit_turn sends a Disabled permission profile. WebsocketConnectionIdentity keeps sandbox and sandbox_mode in the serialized compatibility projection.",
+        "On changed identity, websocket_connection awaits a new connection before replacing the retained old one.",
+        "The old fixture handles each accepted connection's full script serially, waiting for request 1 on the retained old connection. It cannot accept the policy-driven second handshake during that wait."
+      ],
+      "candidate_effect": "The same-permission case now configures Disabled before startup and submits default overrides, preserving 1 handshake/4 requests and state/reset/turn-ID assertions. A separate concurrent-server control preserves the original read-only to Disabled vector and requires 2 handshakes, physical request counts [1,3], actual tool output and unchanged state/reset assertions. No production permission-isolation guard is weakened.",
+      "limits": [
+        "This review proves the fixture/source contract conflict and its consistency with the original full trace, not a new Intel pass.",
+        "The added reconnect control must execute its assertions; a no-network early return is not qualification.",
+        "The two other failed attempts are recorded by original collector verification, not re-read as full bytes in this narrow review."
+      ],
+      "sources": [
+        {
+          "path": "codex-rs/core/tests/suite/turn_state.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "cafb5b4bdea1b05faa0fb8380e538a7d4b6d850f",
+          "lines": [
+            95,
+            195
+          ]
+        },
+        {
+          "path": "codex-rs/core/tests/common/test_codex.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "efaaf61844b49a1e42e9d630b306733d06647094",
+          "lines": [
+            926,
+            980
+          ]
+        },
+        {
+          "path": "codex-rs/core/src/client.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "4f16e0eec07d7d95ad3fc206140d260500592277",
+          "lines": [
+            377,
+            431
+          ]
+        },
+        {
+          "path": "codex-rs/core/src/client.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "4f16e0eec07d7d95ad3fc206140d260500592277",
+          "lines": [
+            1797,
+            1857
+          ]
+        },
+        {
+          "path": "codex-rs/core/src/responses_metadata.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "b42ab50cc071737e3ed287fcb757b4d006800386",
+          "lines": [
+            357,
+            383
+          ]
+        },
+        {
+          "path": "codex-rs/core/tests/common/responses.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "4786f1956b23fcf21cbb5e0dfbbb1cd530a5050f",
+          "lines": [
+            1488,
+            1664
+          ]
+        },
+        {
+          "path": "codex-rs/core/tests/suite/turn_state.rs",
+          "ref": "bd7631e98f295fefad7654865cea497ceacf7d06",
+          "blob": "7744c37e11b596d53db1e716de4e7adeff213936",
+          "lines": [
+            98,
+            244
+          ]
+        },
+        {
+          "path": "codex-rs/core/tests/suite/turn_state.rs",
+          "ref": "bd7631e98f295fefad7654865cea497ceacf7d06",
+          "blob": "7744c37e11b596d53db1e716de4e7adeff213936",
+          "lines": [
+            338,
+            435
+          ]
+        },
+        {
+          "path": "codex-rs/core/tests/common/responses_websocket_concurrent.rs",
+          "ref": "bd7631e98f295fefad7654865cea497ceacf7d06",
+          "blob": "44d7b14f91480807d60ace3d1bfdb72b5eaedafe",
+          "lines": [
+            48,
+            174
+          ]
+        }
+      ],
+      "fresh_intel_observations": [
+        "Exact original case passes with 1 actual handshake, 4 requests and the original null/null/ts-1/null turn-state vector.",
+        "The already-added permission-change control passes with the actual read-only prewarm, 2 handshakes and [1,3] requests; it must not be rescued by server-forced Close/EOF.",
+        "Retain the existing stable-within-turn companion and its actual tool output checks; use exact case results, not a target-only pass."
+      ]
+    },
+    {
+      "case": "forwarder_runs_commands_and_transfers_files",
+      "target": "//codex-rs/exec-server:exec-server-forward-test",
+      "original_result": "FAIL",
+      "classification": "OPEN_WRITE_PHASE_TIMEOUT; CURRENT_A_DIAGNOSTIC_ONLY",
+      "original_observation": {
+        "phase": "13 MiB fs_write_file RPC",
+        "payload_bytes": 13631488,
+        "elapsed_seconds": "30.603316921",
+        "original_budget_seconds": 30,
+        "whole_case_seconds": "35.07"
+      },
+      "causal_source_chain": [
+        "The complete 632-byte log explicitly identifies forward large-file write phase timed out.",
+        "Read-back byte equality, encryption assertion, connection.close and forwarder shutdown follow this write and were not reached after its timeout.",
+        "Current A only adds fixture relay received-frame/byte/task-state totals and owned destination metadata in this timeout context. The actual forwarding/framing implementation is byteequal to cabc."
+      ],
+      "candidate_effect": "Diagnostic only. No identified production root cause is repaired by the added counters.",
+      "limits": [
+        "Do not call this a forward-close failure.",
+        "Received opaque encrypted bytes are counted before the relay forwarding send and in both directions. They do not prove delivery, reassembly, decryption, disk completion or an RPC ACK.",
+        "Destination metadata equal to the payload size would still not prove RPC completion; missing or partial data only narrows the stage.",
+        "No causal production bug was proven by this static review; host throughput, scheduling and transport progress remain unresolved."
+      ],
+      "sources": [
+        {
+          "path": "codex-rs/exec-server/tests/forward.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "ad40d691f753c5effaeadc3e7721371a8c23a48e",
+          "lines": [
+            121,
+            169
+          ]
+        },
+        {
+          "path": "codex-rs/exec-server/tests/forward.rs",
+          "ref": "bd7631e98f295fefad7654865cea497ceacf7d06",
+          "blob": "9b29d4dbebde727008ece6772f652b1ac7b9aac3",
+          "lines": [
+            121,
+            175
+          ]
+        },
+        {
+          "path": "codex-rs/exec-server/tests/common/relay.rs",
+          "ref": "bd7631e98f295fefad7654865cea497ceacf7d06",
+          "blob": "50f53629d52a5e5f1347665b4f3de6e6b8ef05ee",
+          "lines": [
+            155,
+            174
+          ]
+        },
+        {
+          "path": "codex-rs/exec-server/src/forward.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "09ccc5d586fbe05e582dbbed24d39907671cb579",
+          "lines": [
+            1,
+            195
+          ]
+        },
+        {
+          "path": "codex-rs/exec-server/src/noise_relay/executor_stream.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "32c7c0c1d713e0c66c2df73e7913b628b389ac16",
+          "lines": [
+            1,
+            192
+          ]
+        },
+        {
+          "path": "codex-rs/exec-server/src/noise_relay/message_framing.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "af9fbd49986f0e23da32acf44ecee4ac377f536c",
+          "lines": [
+            1,
+            114
+          ]
+        }
+      ],
+      "fresh_intel_observations": [
+        "On the original exact case, distinguish successful write/read-back/encryption/close completion from another write timeout.",
+        "If it times out, preserve the before/after received totals, relay task finished flag and destination metadata from the current A error context.",
+        "Keep 30 s and the full 13 MiB byte equality. A pass on another host or an ARM job does not close the Intel gate."
+      ]
+    },
+    {
+      "case": "tests::pty_dropped_output_receiver_keeps_draining_child",
+      "target": "//codex-rs/utils/pty:pty-unit-tests",
+      "original_result": "FAIL",
+      "classification": "OPEN_PORTABLE_PTY_DRAIN; CURRENT_A_HAS_NO_REPAIR_TO_THIS_CASE_OR_PRODUCTION",
+      "original_observation": {
+        "backend": "portable",
+        "spawn_elapsed_seconds": "0.013942087",
+        "wait_elapsed_seconds": "2.028399059",
+        "outcome": "deadline_elapsed",
+        "has_exited": false,
+        "exit_code": null,
+        "child_phase": "python_started",
+        "missing_phase": "output_write_returned",
+        "original_budget_seconds": 2
+      },
+      "causal_source_chain": [
+        "The Python side channel proves the child started. At the deadline the 4 MiB stdout write had not produced its after-write marker and the session had not observed exit.",
+        "The test loops portable first and preserved-FD second. The first result?? exits on this timeout, so the preserved-FD branch was not executed in this failed attempt.",
+        "The production Unix reader ignores closed output-channel send errors and continues reading, so the simple claim that dropping the output receiver stops the read loop contradicts the source.",
+        "Current A leaves this entire test body and the PTY production files unchanged; its output collector changes are not used by this test's direct exit_rx timeout."
+      ],
+      "candidate_effect": "Existing phase diagnostics remain available. No new production repair or causal closure for this Intel drain failure.",
+      "limits": [
+        "The trace does not measure actual kernel read progress or the reader's terminal I/O result.",
+        "A blocked writer, scheduler pressure, an I/O error and other native lifecycle causes cannot be separated from these two phase markers alone.",
+        "The 10 s child alarm is cleanup protection and is not permission to increase the 2 s acceptance bound."
+      ],
+      "sources": [
+        {
+          "path": "codex-rs/utils/pty/src/tests.rs",
+          "ref": "bd7631e98f295fefad7654865cea497ceacf7d06",
+          "blob": "42fc028d6e710dab9f9390ad7ee1b711ba1927d6",
+          "lines": [
+            1152,
+            1234
+          ]
+        },
+        {
+          "path": "codex-rs/utils/pty/src/pty.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "1b848b33b716e952d4c96202e763faabd1692cb3",
+          "lines": [
+            153,
+            288
+          ]
+        },
+        {
+          "path": "codex-rs/utils/pty/src/unix_io.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "9cb344021e40e43c7b3a6c3d76189d6b69508e37",
+          "lines": [
+            46,
+            114
+          ]
+        }
+      ],
+      "fresh_intel_observations": [
+        "Require the exact original case to pass its original 2 s window for both portable and preserved-FD backends.",
+        "On any failure retain backend, spawn/wait elapsed, outcome, has_exited, stored exit_code and the side-channel phase; do not infer the second backend ran if the first returned Err.",
+        "A repeated python_started-only failure remains open. If another source change is then needed, the next narrow evidence would be the owned reader's real byte/error result and real waiter error; that is not present in current A and is not claimed here."
+      ]
+    },
+    {
+      "case": "tests::pty_close_stdin_preserves_large_input_and_delivers_eof",
+      "target": "//codex-rs/utils/pty:pty-unit-tests",
+      "original_result": "FAIL",
+      "classification": "OPEN_EXIT_RESULT_CAUSE; CURRENT_A_FIXES_CLOSED_OUTPUT_POLLING_AND_SEPARATES_DIAGNOSTICS",
+      "original_observation": {
+        "actual": [
+          -1,
+          "__complete__"
+        ],
+        "expected": [
+          0,
+          "__complete__"
+        ],
+        "original_collector_budget_seconds": 5,
+        "original_ready_budget_seconds": 2
+      },
+      "causal_source_chain": [
+        "The completion marker is printed after Python receives EOF and checks the entire input byte sequence. It does not itself prove successful process reaping or delivery of exit code zero.",
+        "The old collector returns -1 both on its deadline and on a closed exit channel; it also forwards an actual -1 exit message. The old failure cannot distinguish these paths.",
+        "A permanently closed broadcast receiver was left enabled in the old select loop. Current A disables that ready output branch while still waiting for the real exit signal and the original deadline.",
+        "The portable PTY waiter still maps a child.wait error to -1. That production code is unchanged and its concrete error cause is not recorded in current A."
+      ],
+      "candidate_effect": "A valid test-helper behavior correction plus outcome-specific diagnostics. The added closed-output/delayed-real-exit control checks that EOF does not fabricate an exit result, but is not a physical Intel PTY causal counterfactual.",
+      "limits": [
+        "Do not infer the old -1 was an OS process exit code.",
+        "Do not infer the old -1 was caused by the always-ready closed-output branch; the old log is insufficient and select scheduling is not a causal proof.",
+        "Even actual exit_code_received=-1 would identify the waiter result branch but not expose the underlying child.wait error.",
+        "The strict (0, __complete__) assertion, input bytes, 2 s ready and 5 s exit budgets are unchanged."
+      ],
+      "sources": [
+        {
+          "path": "codex-rs/utils/pty/src/tests.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "e66a6e7c519ad28d5657e17b0221be0147c51972",
+          "lines": [
+            102,
+            143
+          ]
+        },
+        {
+          "path": "codex-rs/utils/pty/src/tests.rs",
+          "ref": "bd7631e98f295fefad7654865cea497ceacf7d06",
+          "blob": "42fc028d6e710dab9f9390ad7ee1b711ba1927d6",
+          "lines": [
+            102,
+            193
+          ]
+        },
+        {
+          "path": "codex-rs/utils/pty/src/tests.rs",
+          "ref": "bd7631e98f295fefad7654865cea497ceacf7d06",
+          "blob": "42fc028d6e710dab9f9390ad7ee1b711ba1927d6",
+          "lines": [
+            1239,
+            1288
+          ]
+        },
+        {
+          "path": "codex-rs/utils/pty/src/pty.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "1b848b33b716e952d4c96202e763faabd1692cb3",
+          "lines": [
+            240,
+            254
+          ]
+        },
+        {
+          "path": "codex-rs/utils/pty/src/process.rs",
+          "ref": "cabcb40d36e116beaa65750e1f674c52035da785",
+          "blob": "5593450b89d0578d59f3ab74cb5cfcf625c908f6",
+          "lines": [
+            208,
+            217
+          ]
+        }
+      ],
+      "fresh_intel_observations": [
+        "Preserve the collector outcome: exit_code_received, exit_channel_closed or deadline_elapsed, plus code, elapsed, output-branch-disabled flag and output bytes.",
+        "Preserve the case's collected_code, has_exited and session_exit_code observation, and require the original strict result.",
+        "Run the already-added closed-output control within the ordinary target; its passing result is helper coverage, not a substitute for this physical PTY case."
+      ]
+    }
+  ],
+  "fresh_hosted_acceptance": {
+    "platform": "original macOS Intel x86_64-apple-darwin lane",
+    "requirements": [
+      "Bind actual tested merge/tree and the reviewed source blobs.",
+      "Use complete exact-case original stdout/XML at the same source; record cached target status and retries separately.",
+      "Do not convert a network/Python/helper early return, target-only PASS or omitted success line into exact-case qualification.",
+      "Preserve all original budgets, input sizes, byte comparisons and assertions; no new broad test group is requested.",
+      "A rerun PASS is evidence for that exact source/platform attempt. It does not retroactively establish the cause of an earlier timeout."
+    ]
+  },
+  "original_platform_gate_closed_by_this_review": 0,
+  "counts_do_not_update": "The original 48-name ledger and whole-project blocker totals are not modified by this review.",
+  "source_manifest": "source-manifest.json",
+  "source_rows_verified": 27,
+  "archive_extraction_receipt": "core-raw-extraction-receipt.json",
+  "read_failure_preserved": "Initial exact path read on rog returned FileNotFoundError. CI identified the original owner as desktop. Subsequent authorized reads used desktop and pinned the original file version; no archive was moved or downloaded."
+}

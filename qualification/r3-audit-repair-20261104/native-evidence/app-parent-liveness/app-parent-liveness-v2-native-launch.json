@@ -1,0 +1,33 @@
+{
+  "schema": "hepta-app-parent-liveness-continuation-launch-receipt-v1",
+  "host": "rog",
+  "job_id": "1a1a9cf9300-fc05-3823",
+  "idempotency_key": "hepta-rog-app-parent-liveness-three-causal-eight-exact-20261105-v2",
+  "root_guard_blob": "a8c1ed05af9d75795d5c78806680e90ec8d5ac9b",
+  "runner": {
+    "sha": "6fd0636bdc81848f757893192021aede12129915",
+    "bytes": 29385,
+    "sha256": "2d2ba32e6b4d5347495847750d254759f9c1d96da980af60ff9e84a58aa40043"
+  },
+  "manifest": {
+    "sha": "a81ab520b6b0327d2da9e4c862a141c25480563f",
+    "bytes": 17500,
+    "sha256": "779830b7cf1afc13be8a97af26c96a14bc9cfd03dc75005519da400973fc67f9"
+  },
+  "source_payload": {
+    "sha": "d14b2539196c30aa9b3b112d6547293331ffec3f",
+    "bytes": 59867,
+    "sha256": "07c4187784c38075777145f1386e697aedf46b126d10b4ac75671830429e178e"
+  },
+  "initial_tree": "d8a5e94af06b9555fc8256af1337e9f28f7c7fa8",
+  "positive_tree": "c6fbcfa0d1ba3b1556f601dc4ca3a7734328b9f7",
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1a9cf9300-fc05-3823"
+  },
+  "reused": false,
+  "evidence_directory": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/app-parent-liveness-three-causal-eight-exact-20261105-v2",
+  "scope": "Three exact causal negatives and eight exact positive cases; full workspace metadata/feature context, original budgets, zero retries. No Windows/full/fix/fmt inside runner."
+}

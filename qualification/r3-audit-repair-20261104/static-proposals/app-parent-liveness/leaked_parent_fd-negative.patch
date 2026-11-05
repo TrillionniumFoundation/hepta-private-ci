@@ -1,0 +1,11 @@
+diff --git a/codex-rs/linux-sandbox/src/parent_lifecycle.rs b/codex-rs/linux-sandbox/src/parent_lifecycle.rs
+--- a/codex-rs/linux-sandbox/src/parent_lifecycle.rs
++++ b/codex-rs/linux-sandbox/src/parent_lifecycle.rs
+@@ -144,6 +144,7 @@
+         if flags & PF_EXITING != 0 || matches!(state, b"Z" | b"X" | b"x") {
+             return Err(io::Error::new(io::ErrorKind::BrokenPipe, "original sandbox launcher is exiting or exited"));
+         }
++        std::mem::forget(self);
+         Ok(())
+     }
+ }

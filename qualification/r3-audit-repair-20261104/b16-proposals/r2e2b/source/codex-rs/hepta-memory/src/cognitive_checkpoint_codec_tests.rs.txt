@@ -1,0 +1,330 @@
+//! Synthetic wire bytes exercise the codec, not a Root peer or Current authority.
+
+use super::*;
+use pretty_assertions::assert_eq;
+use serde_json::Value;
+use serde_json::json;
+
+const REQUEST: &str = r#"{"schema_version":1,"operation":"runtime.cognitive.checkpoint.v1","request_id":"00000000000000070000000000000003","command":"read_head","expected":null,"proposal":null}"#;
+const ACK: &str = r#"{
+  "schema_version": 1, "request_id": "00000000000000070000000000000003", "status": "ack", "reason": null,
+  "token": {"publisher_epoch":7,"counter":1,"head_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+  "head": {
+    "schema_version": 1, "owner_agent_id": "56d6489e-c050-4de0-ab29-61c2ea00d860",
+    "publisher_epoch": 7, "counter": 1, "last_mutation_sequence": 2,
+    "writer_binding": {"lease_id":"checkpoint-wire-fixture","generation":1,"authority_epoch":2,"owner_epoch":3,"authority_grant_digest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","fencing_token_digest":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","expires_at_unix_seconds":1000},
+    "peer_lifetime": {"uid":0,"pid":17,"boot_id":"fixture-boot","process_start_ticks":4},
+    "phase": "current",
+    "last_current": {"profile":"hepta:cognitive:exact-current-cut:v1","owner_agent_id":"56d6489e-c050-4de0-ab29-61c2ea00d860","schema_digest":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","state_digest":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"},
+    "proposal": null, "last_request": null
+  }
+}"#;
+
+fn request() -> CognitiveCheckpointRequest {
+    serde_json::from_str(REQUEST).unwrap()
+}
+
+#[test]
+fn bounded_ack_preserves_the_opaque_token_and_complete_head() {
+    let request = request();
+    assert_eq!(request.encode().unwrap().as_slice(), REQUEST.as_bytes());
+    let wire: CognitiveCheckpointResponse = serde_json::from_str(ACK).unwrap();
+    let expected = CognitiveCheckpointReceipt {
+        token: wire.token.unwrap(),
+        head: wire.head.unwrap(),
+    };
+    let mut padded = ACK.as_bytes().to_vec();
+    padded.resize(COGNITIVE_CHECKPOINT_FRAME_LIMIT, b' ');
+    assert_eq!(request.decode_ack(&padded), Ok(expected));
+    padded.push(b' ');
+    assert_eq!(request.decode_ack(&padded), Err(Error::Unavailable));
+    for invalid in [
+        Vec::new(),
+        vec![0xff],
+        format!("{ACK} trailing").into_bytes(),
+    ] {
+        assert_eq!(request.decode_ack(&invalid), Err(Error::Unavailable));
+    }
+}
+
+#[test]
+fn malformed_or_misbound_ack_is_refused() {
+    let request = request();
+    let source: Value = serde_json::from_str(ACK).unwrap();
+    for (path, replacement) in [
+        ("/schema_version", json!(2)),
+        ("/request_id", json!("00000000000000070000000000000004")),
+        ("/reason", json!("conflict")),
+        ("/token", Value::Null),
+        ("/head", Value::Null),
+        ("/head/schema_version", json!(2)),
+        ("/token/head_sha256", json!("not-a-digest")),
+        ("/head/writer_binding/authority_grant_digest", json!("")),
+        ("/head/last_current/schema_digest", json!("UPPERCASE")),
+        ("/head/last_current/state_digest", json!("short")),
+        ("/head/counter", json!(2)),
+        ("/head/publisher_epoch", json!(8)),
+        ("/head/last_current/profile", json!("not-exact-current")),
+        (
+            "/head/last_current/owner_agent_id",
+            json!("fe4d9e62-67be-4ca8-bfed-8080d473e6a9"),
+        ),
+    ] {
+        let mut frame = source.clone();
+        *frame.pointer_mut(path).unwrap() = replacement;
+        assert_eq!(
+            request.decode_ack(&serde_json::to_vec(&frame).unwrap()),
+            Err(Error::Unavailable),
+            "{path}"
+        );
+    }
+    for path in ["", "/head", "/head/writer_binding", "/head/last_current"] {
+        let mut frame = source.clone();
+        frame
+            .pointer_mut(path)
+            .unwrap()
+            .as_object_mut()
+            .unwrap()
+            .insert("unexpected".to_string(), json!(true));
+        assert_eq!(
+            request.decode_ack(&serde_json::to_vec(&frame).unwrap()),
+            Err(Error::Unavailable),
+            "{path}"
+        );
+    }
+    let duplicate = ACK.replacen('"', "\"schema_version\":1,\"", /*count*/ 1);
+    assert_eq!(
+        request.decode_ack(duplicate.as_bytes()),
+        Err(Error::Unavailable)
+    );
+    for (status, expected) in [
+        ("refused", Error::Refused),
+        ("unknown", Error::Unavailable),
+    ] {
+        let mut frame = source.clone();
+        frame["status"] = json!(status);
+        frame["reason"] = json!("unavailable");
+        assert_eq!(
+            request.decode_ack(&serde_json::to_vec(&frame).unwrap()),
+            Err(expected)
+        );
+    }
+}
+
+#[test]
+fn request_validation_rejects_bad_ids_shapes_and_oversized_frames() {
+    for id in [
+        "",
+        "short",
+        "000000000000000é000000000000000",
+        "000000000000000g0000000000000003",
+        "00000000000000000000000000000003",
+        "00000000000000070000000000000000",
+    ] {
+        let mut request = request();
+        request.request_id = id.to_string();
+        assert_eq!(request.encode(), Err(Error::Refused), "{id}");
+    }
+    let source: Value = serde_json::from_str(REQUEST).unwrap();
+    for (path, replacement) in [
+        ("/schema_version", json!(2)),
+        ("/operation", json!("wrong-operation")),
+        ("/command", json!("begin_writes")),
+        ("/command", json!("prepare_publication")),
+        ("/command", json!("commit_publication")),
+        ("/command", json!("fence_publisher")),
+    ] {
+        let mut value = source.clone();
+        *value.pointer_mut(path).unwrap() = replacement;
+        let request: CognitiveCheckpointRequest = serde_json::from_value(value).unwrap();
+        assert_eq!(request.encode(), Err(Error::Refused), "{path}");
+    }
+    let receipt: Value = serde_json::from_str(ACK).unwrap();
+    let mut fence = receipt["head"]["writer_binding"].clone();
+    fence["owner_agent_id"] = receipt["head"]["owner_agent_id"].clone();
+    fence["lease_sha256"] = receipt["token"]["head_sha256"].clone();
+    let mut value = source;
+    value["command"] = json!("prepare_publication");
+    value["expected"] = receipt["token"].clone();
+    value["proposal"] = json!({"cut": receipt["head"]["last_current"], "writer_fence": fence});
+    let valid: CognitiveCheckpointRequest = serde_json::from_value(value.clone()).unwrap();
+    assert!(valid.encode().is_ok());
+    value["proposal"]["writer_fence"]["lease_id"] = json!("x".repeat(COGNITIVE_CHECKPOINT_FRAME_LIMIT));
+    let oversized: CognitiveCheckpointRequest = serde_json::from_value(value).unwrap();
+    assert_eq!(oversized.encode(), Err(Error::Refused));
+}
+
+// Independent frozen request bytes and SHA-256 values follow the donor's wire
+// rules. Opaque reply tokens are synthetic, not locally derived authority.
+const TRANSITIONS: [(&str, &str); 3] = [
+    (
+        r#"{"schema_version":1,"operation":"runtime.cognitive.checkpoint.v1","request_id":"00000000000000070000000000000003","command":"begin_writes","expected":{"publisher_epoch":7,"counter":1,"head_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},"proposal":null}"#,
+        r#"{
+  "schema_version": 1, "request_id": "00000000000000070000000000000003", "status": "ack", "reason": null,
+  "token": {"publisher_epoch":7,"counter":2,"head_sha256":"1111111111111111111111111111111111111111111111111111111111111111"},
+  "head": {
+    "schema_version": 1, "owner_agent_id": "56d6489e-c050-4de0-ab29-61c2ea00d860",
+    "publisher_epoch": 7, "counter": 2, "last_mutation_sequence": 3,
+    "writer_binding": {"lease_id":"checkpoint-wire-fixture","generation":1,"authority_epoch":2,"owner_epoch":3,"authority_grant_digest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","fencing_token_digest":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","expires_at_unix_seconds":1000},
+    "peer_lifetime": {"uid":0,"pid":17,"boot_id":"fixture-boot","process_start_ticks":4},
+    "phase": "dirty",
+    "last_current": {"profile":"hepta:cognitive:exact-current-cut:v1","owner_agent_id":"56d6489e-c050-4de0-ab29-61c2ea00d860","schema_digest":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","state_digest":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"},
+    "proposal": null,
+    "last_request": {"request_id":"00000000000000070000000000000003","request_sha256":"62d929bbcdedfa662403a40b9c1ad02667a85ddd2c20852d19fd551c0964b5d7","command":"begin_writes","predecessor_token":{"publisher_epoch":7,"counter":1,"head_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}}
+  }
+}"#,
+    ),
+    (
+        r#"{"schema_version":1,"operation":"runtime.cognitive.checkpoint.v1","request_id":"00000000000000070000000000000004","command":"prepare_publication","expected":{"publisher_epoch":7,"counter":2,"head_sha256":"1111111111111111111111111111111111111111111111111111111111111111"},"proposal":{"cut":{"profile":"hepta:cognitive:exact-current-cut:v1","owner_agent_id":"56d6489e-c050-4de0-ab29-61c2ea00d860","schema_digest":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","state_digest":"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},"writer_fence":{"owner_agent_id":"56d6489e-c050-4de0-ab29-61c2ea00d860","lease_id":"checkpoint-wire-fixture","lease_sha256":"9999999999999999999999999999999999999999999999999999999999999999","generation":1,"authority_epoch":2,"owner_epoch":3,"authority_grant_digest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","fencing_token_digest":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","expires_at_unix_seconds":1000}}}"#,
+        r#"{
+  "schema_version": 1, "request_id": "00000000000000070000000000000004", "status": "ack", "reason": null,
+  "token": {"publisher_epoch":7,"counter":3,"head_sha256":"2222222222222222222222222222222222222222222222222222222222222222"},
+  "head": {
+    "schema_version": 1, "owner_agent_id": "56d6489e-c050-4de0-ab29-61c2ea00d860",
+    "publisher_epoch": 7, "counter": 3, "last_mutation_sequence": 4,
+    "writer_binding": {"lease_id":"checkpoint-wire-fixture","generation":1,"authority_epoch":2,"owner_epoch":3,"authority_grant_digest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","fencing_token_digest":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","expires_at_unix_seconds":1000},
+    "peer_lifetime": {"uid":0,"pid":17,"boot_id":"fixture-boot","process_start_ticks":4},
+    "phase": "publishing",
+    "last_current": {"profile":"hepta:cognitive:exact-current-cut:v1","owner_agent_id":"56d6489e-c050-4de0-ab29-61c2ea00d860","schema_digest":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","state_digest":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"},
+    "proposal": {"request_id":"00000000000000070000000000000004","cut":{"profile":"hepta:cognitive:exact-current-cut:v1","owner_agent_id":"56d6489e-c050-4de0-ab29-61c2ea00d860","schema_digest":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","state_digest":"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},"writer_fence":{"owner_agent_id":"56d6489e-c050-4de0-ab29-61c2ea00d860","lease_id":"checkpoint-wire-fixture","lease_sha256":"9999999999999999999999999999999999999999999999999999999999999999","generation":1,"authority_epoch":2,"owner_epoch":3,"authority_grant_digest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","fencing_token_digest":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","expires_at_unix_seconds":1000}},
+    "last_request": {"request_id":"00000000000000070000000000000004","request_sha256":"177cc26478704bbbcafa50763f8a2b2ae7f8e91c45c3e1cf35f896eca09dca6d","command":"prepare_publication","predecessor_token":{"publisher_epoch":7,"counter":2,"head_sha256":"1111111111111111111111111111111111111111111111111111111111111111"}}
+  }
+}"#,
+    ),
+    (
+        r#"{"schema_version":1,"operation":"runtime.cognitive.checkpoint.v1","request_id":"00000000000000070000000000000005","command":"commit_publication","expected":{"publisher_epoch":7,"counter":3,"head_sha256":"2222222222222222222222222222222222222222222222222222222222222222"},"proposal":null}"#,
+        r#"{
+  "schema_version": 1, "request_id": "00000000000000070000000000000005", "status": "ack", "reason": null,
+  "token": {"publisher_epoch":7,"counter":4,"head_sha256":"3333333333333333333333333333333333333333333333333333333333333333"},
+  "head": {
+    "schema_version": 1, "owner_agent_id": "56d6489e-c050-4de0-ab29-61c2ea00d860",
+    "publisher_epoch": 7, "counter": 4, "last_mutation_sequence": 5,
+    "writer_binding": {"lease_id":"checkpoint-wire-fixture","generation":1,"authority_epoch":2,"owner_epoch":3,"authority_grant_digest":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","fencing_token_digest":"cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc","expires_at_unix_seconds":1000},
+    "peer_lifetime": {"uid":0,"pid":17,"boot_id":"fixture-boot","process_start_ticks":4},
+    "phase": "current",
+    "last_current": {"profile":"hepta:cognitive:exact-current-cut:v1","owner_agent_id":"56d6489e-c050-4de0-ab29-61c2ea00d860","schema_digest":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","state_digest":"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},
+    "proposal": null,
+    "last_request": {"request_id":"00000000000000070000000000000005","request_sha256":"9f1d9c58b23324b42b202c84d148e67a445265459a6b4913d294c913108ccb07","command":"commit_publication","predecessor_token":{"publisher_epoch":7,"counter":3,"head_sha256":"2222222222222222222222222222222222222222222222222222222222222222"}}
+  }
+}"#,
+    ),
+];
+
+fn initial_receipt() -> CognitiveCheckpointReceipt {
+    request().decode_ack(ACK.as_bytes()).unwrap()
+}
+
+#[test]
+fn complete_current_dirty_publishing_current_transcript_is_required() {
+    let mut previous = initial_receipt();
+    for (request_bytes, response_bytes) in TRANSITIONS {
+        let request: CognitiveCheckpointRequest = serde_json::from_str(request_bytes).unwrap();
+        assert_eq!(request.encode().unwrap().as_slice(), request_bytes.as_bytes());
+        let response: CognitiveCheckpointResponse = serde_json::from_str(response_bytes).unwrap();
+        let expected = CognitiveCheckpointReceipt {
+            token: response.token.unwrap(),
+            head: response.head.unwrap(),
+        };
+        let observed = request.decode_against(&previous, response_bytes.as_bytes()).unwrap();
+        assert_eq!(observed, expected);
+        previous = observed;
+    }
+}
+
+#[test]
+fn matching_counters_do_not_accept_tampered_successor_heads() {
+    let previous = initial_receipt();
+    let request: CognitiveCheckpointRequest = serde_json::from_str(TRANSITIONS[0].0).unwrap();
+    let source: Value = serde_json::from_str(TRANSITIONS[0].1).unwrap();
+    for (path, replacement) in [
+        ("/token/head_sha256", json!(previous.token.head_sha256)),
+        ("/head/phase", json!("current")),
+        ("/head/last_mutation_sequence", json!(4)),
+        ("/head/writer_binding/generation", json!(2)),
+        ("/head/writer_binding/expires_at_unix_seconds", json!(999)),
+        ("/head/peer_lifetime/pid", json!(18)),
+        ("/head/last_current/state_digest", json!("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")),
+        ("/head/last_request/request_id", json!("00000000000000070000000000000004")),
+        ("/head/last_request/request_sha256", json!("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")),
+        ("/head/last_request/command", json!("commit_publication")),
+        ("/head/last_request/predecessor_token/head_sha256", json!("cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc")),
+    ] {
+        let mut frame = source.clone();
+        *frame.pointer_mut(path).unwrap() = replacement;
+        assert_eq!(request.decode_against(&previous, &serde_json::to_vec(&frame).unwrap()), Err(Error::Unavailable), "{path}");
+    }
+}
+
+#[test]
+fn predecessor_cas_replay_phase_and_writer_mismatch_are_refused() {
+    let previous = initial_receipt();
+    let original: CognitiveCheckpointRequest = serde_json::from_str(TRANSITIONS[0].0).unwrap();
+    let source = serde_json::to_value(&original).unwrap();
+    for (path, replacement) in [
+        ("/expected/counter", json!(2)),
+        ("/expected/head_sha256", json!("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")),
+        ("/request_id", json!("00000000000000080000000000000003")),
+        ("/request_id", json!("00000000000000070000000000000002")),
+    ] {
+        let mut value = source.clone();
+        *value.pointer_mut(path).unwrap() = replacement;
+        let request: CognitiveCheckpointRequest = serde_json::from_value(value).unwrap();
+        assert_eq!(request.decode_against(&previous, TRANSITIONS[0].1.as_bytes()), Err(Error::Refused), "{path}");
+    }
+    let mut dirty = previous.clone();
+    dirty.head.phase = CognitiveCheckpointPhase::Dirty;
+    assert_eq!(original.decode_against(&dirty, TRANSITIONS[0].1.as_bytes()), Err(Error::Refused));
+    let mut overflow = previous.clone();
+    overflow.head.counter = u64::MAX;
+    overflow.token.counter = u64::MAX;
+    let mut request = original.clone();
+    request.expected = Some(overflow.token.clone());
+    assert_eq!(request.decode_against(&overflow, TRANSITIONS[0].1.as_bytes()), Err(Error::Unavailable));
+    let dirty = original.decode_against(&previous, TRANSITIONS[0].1.as_bytes()).unwrap();
+    let prepare: Value = serde_json::from_str(TRANSITIONS[1].0).unwrap();
+    for (path, replacement) in [
+        ("/proposal/cut/profile", json!("not-exact-current")),
+        ("/proposal/cut/owner_agent_id", json!("fe4d9e62-67be-4ca8-bfed-8080d473e6a9")),
+        ("/proposal/writer_fence/generation", json!(2)),
+        ("/proposal/writer_fence/expires_at_unix_seconds", json!(999)),
+    ] {
+        let mut value = prepare.clone();
+        *value.pointer_mut(path).unwrap() = replacement;
+        let request: CognitiveCheckpointRequest = serde_json::from_value(value).unwrap();
+        assert_eq!(request.decode_against(&dirty, TRANSITIONS[1].1.as_bytes()), Err(Error::Refused), "{path}");
+    }
+    let publishing: CognitiveCheckpointResponse = serde_json::from_str(TRANSITIONS[1].1).unwrap();
+    let publishing = CognitiveCheckpointReceipt { token: publishing.token.unwrap(), head: publishing.head.unwrap() };
+    let commit: CognitiveCheckpointRequest = serde_json::from_str(TRANSITIONS[2].0).unwrap();
+    let mut mismatched = publishing.clone();
+    mismatched.head.proposal.as_mut().unwrap().writer_fence.generation += 1;
+    assert_eq!(commit.decode_against(&mismatched, TRANSITIONS[2].1.as_bytes()), Err(Error::Refused));
+    let mut absent = publishing;
+    absent.head.proposal = None;
+    assert_eq!(commit.decode_against(&absent, TRANSITIONS[2].1.as_bytes()), Err(Error::Refused));
+}
+
+#[test]
+fn read_head_checks_identity_and_monotonicity_without_granting_current() {
+    let previous = initial_receipt();
+    let request = request();
+    let mut source: Value = serde_json::from_str(ACK).unwrap();
+    source["head"]["phase"] = json!("fenced");
+    let frame = serde_json::to_vec(&source).unwrap();
+    let mut expected = previous.clone();
+    expected.head.phase = CognitiveCheckpointPhase::Fenced;
+    assert_eq!(request.decode_against(&previous, &frame), Ok(expected));
+    for (path, replacement) in [
+        ("/head/writer_binding/generation", json!(2)),
+        ("/head/peer_lifetime/process_start_ticks", json!(5)),
+        ("/head/last_mutation_sequence", json!(1)),
+    ] {
+        let mut frame = source.clone();
+        *frame.pointer_mut(path).unwrap() = replacement;
+        assert_eq!(request.decode_against(&previous, &serde_json::to_vec(&frame).unwrap()), Err(Error::Refused), "{path}");
+    }
+    let mut advanced = previous;
+    advanced.head.counter = 2;
+    advanced.token.counter = 2;
+    assert_eq!(request.decode_against(&advanced, ACK.as_bytes()), Err(Error::Refused));
+}
