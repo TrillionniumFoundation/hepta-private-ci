@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/728b043792c6/wsp_digital/package/digital_belief_state/qualify.py", line 117, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/workspace/scratch/728b043792c6/wsp_digital/package/digital_belief_state/qualify.py", line 91, in main
+    ctx['Oracle']._value.cache_clear()
+    ^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'Oracle' has no attribute '_value'

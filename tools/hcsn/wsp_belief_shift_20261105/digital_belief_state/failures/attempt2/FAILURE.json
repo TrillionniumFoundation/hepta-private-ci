@@ -1,0 +1,5 @@
+{
+  "status": "failed before timing loop because reference cache is bound per instance, not on class",
+  "remediation": "remove unnecessary class cache clear; new Oracle already has fresh per-instance cache",
+  "cpu_seconds": "not retained; this failed attempt is excluded from measured successful run cost"
+}
