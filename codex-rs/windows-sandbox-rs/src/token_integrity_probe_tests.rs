@@ -22,6 +22,9 @@ use support::LabelledObject;
 use support::ObjectKind;
 use support::observe;
 
+#[path = "token_neither_privilege_observation.rs"]
+mod neither_privileges;
+
 struct Impersonation;
 
 impl Impersonation {
@@ -241,5 +244,8 @@ fn integrity_mechanism_probe_observation_only() -> Result<()> {
     assert_eq!(positive_controls, vec![true; 8]);
     fixture.close()?;
     observe(format_args!("complete rows=8 token_subjects=4 descendants_spawned=0 tests_do_not_qualify_isolation=true"))?;
+    // The preceding receipt belongs only to the original eight-row phase.
+    // The separate privilege observation below owns two gated cmd processes.
+    neither_privileges::run()?;
     Ok(())
 }
