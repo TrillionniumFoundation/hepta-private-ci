@@ -13,6 +13,7 @@ import time
 
 BASE = "6fd18c0e077e2c94ff9968b42de53dcb499aebfa"
 BASE_TREE = "3fde256c766150d154df64b5d1942445d60ee5f4"
+PARENT = "21eaad8cccc856d3093073c3d0e7cc61b999de3e"
 PREFIX = ".github/scripts/hepta_windows_p1_native_diagnostics"
 MANIFEST = PREFIX + "/manifest.json"
 WORKFLOW = ".github/workflows/hepta-windows-p1-native-diagnostics.yml"
@@ -40,7 +41,7 @@ def git(source, *args):
 def snapshot(source, manifest, expected_head):
     head = git(source, "rev-parse", "HEAD").decode().strip()
     require(head == expected_head, "Checkout differs from actual workflow event head")
-    require(git(source, "show", "-s", "--format=%P", "HEAD").decode().strip() == BASE,
+    require(git(source, "show", "-s", "--format=%P", "HEAD").decode().strip() == PARENT,
             "Diagnostic commit has a different parent")
     require(git(source, "rev-parse", BASE + "^{tree}").decode().strip() == BASE_TREE,
             "Original provisional base tree differs")
@@ -69,7 +70,7 @@ def snapshot(source, manifest, expected_head):
     tracked = len(git(source, "ls-files", "-z").split(b"\0")) - 1
     require(tracked == 10774 + len(expected_paths), "Complete tracked file inventory differs")
     return {"head": head, "tree": git(source, "rev-parse", "HEAD^{tree}").decode().strip(),
-            "base": BASE, "base_tree": BASE_TREE, "tracked_files": tracked,
+            "base": BASE, "base_tree": BASE_TREE, "parent": PARENT, "tracked_files": tracked,
             "clean": True, "original_lock_count": len(manifest["locks"]),
             "diagnostic_inputs": input_records}
 
@@ -93,13 +94,16 @@ def main():
               "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
               "probes": [], "complete": False}
     try:
+        report["stage"] = "load_manifest"
         manifest = json.loads((source / MANIFEST).read_text(encoding="utf-8"))
         require(manifest["base"] == BASE and manifest["base_tree"] == BASE_TREE,
                 "Diagnostic manifest base differs")
         expected_head = os.environ["GITHUB_SHA"]
+        report["stage"] = "source_before"
         report["source_before"] = snapshot(source, manifest, expected_head)
         for item in manifest["probes"]:
             label = item["name"]
+            report["stage"] = "probe_" + label
             require(label in {"programdata", "logon-stdio", "token-accesscheck"},
                     "Unexpected native probe")
             stdout_path, stderr_path = output / (label + ".stdout.log"), output / (label + ".stderr.log")
@@ -128,6 +132,7 @@ def main():
                 record["observations_complete"] = False
             report["probes"].append(record)
             (output / "receipt.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+        report["stage"] = "source_after"
         report["source_after"] = snapshot(source, manifest, expected_head)
         require(report["source_before"] == report["source_after"], "Source changed during diagnostics")
         report["complete"] = len(report["probes"]) == len(manifest["probes"]) and all(
@@ -135,6 +140,8 @@ def main():
     except Exception as error:
         report["error_type"] = type(error).__name__
         report["error_errno"] = getattr(error, "errno", None)
+        if isinstance(error, RuntimeError):
+            report["error_message"] = str(error)
     finally:
         report["finished_unix"] = time.time()
         (output / "receipt.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
