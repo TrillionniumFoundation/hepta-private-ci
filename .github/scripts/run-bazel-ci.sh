@@ -99,6 +99,36 @@ print_bazel_test_log_tails() {
   local console_log="$1"
   local testlogs_dir
 
+  local retained_targets=""
+  if [[ -n "${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}" && "${bazel_args[0]}" == "test" ]]; then
+    if ! retained_targets="$(
+      collector_script="$(dirname "${BASH_SOURCE[0]}")/collect_bazel_failed_test_logs.py"
+      collector_console="$console_log"
+      if [[ "${RUNNER_OS:-}" == "Windows" ]] && command -v cygpath >/dev/null 2>&1; then
+        collector_script="$(cygpath -w "$collector_script")" || exit 1
+        collector_console="$(cygpath -w "$collector_console")" || exit 1
+      fi
+      MSYS2_ARG_CONV_EXCL='*' python3 "$collector_script" \
+        --retention-console "$collector_console" --list-retention-targets
+    )"; then
+      echo "::warning::Selected-target-log selection failed; preserving Bazel exit status." >&2
+    fi
+  fi
+
+  local failed_targets=()
+  while IFS= read -r target; do
+    failed_targets+=("$target")
+  done < <(
+    grep -E '^(FAIL: //|ERROR: .* Testing //)' "$console_log" \
+      | sed -E 's#^FAIL: (//[^ ]+).*#\1#; s#^ERROR: .* Testing (//[^ ]+) failed:.*#\1#' \
+      | sort -u
+  )
+
+  if [[ ${#failed_targets[@]} -eq 0 && -z "$retained_targets" ]]; then
+    echo "No failed Bazel test targets were found in console output."
+    return
+  fi
+
   local -a bazel_info_args=(info)
   # The shared Python wrapper resolves authenticated and keyless configs.
   # Use it identically for the build and for locating that build's test logs.
@@ -130,20 +160,6 @@ print_bazel_test_log_tails() {
     "${bazel_info_args[@]}" \
     bazel-testlogs 2>/dev/null || echo bazel-testlogs)"
 
-  local failed_targets=()
-  while IFS= read -r target; do
-    failed_targets+=("$target")
-  done < <(
-    grep -E '^(FAIL: //|ERROR: .* Testing //)' "$console_log" \
-      | sed -E 's#^FAIL: (//[^ ]+).*#\1#; s#^ERROR: .* Testing (//[^ ]+) failed:.*#\1#' \
-      | sort -u
-  )
-
-  if [[ ${#failed_targets[@]} -eq 0 ]]; then
-    echo "No failed Bazel test targets were found in console output."
-    return
-  fi
-
   for target in "${failed_targets[@]}"; do
     local rel_path="${target#//}"
     rel_path="${rel_path/://}"
@@ -166,7 +182,7 @@ print_bazel_test_log_tails() {
 
   # Preserve complete existing shard/attempt logs in the already-uploaded
   # compact-log directory. Collection must never replace Bazel's exit status.
-  if [[ -n "${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}" ]]; then
+  if [[ -n "${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}" && ${#failed_targets[@]} -gt 0 ]]; then
     if ! (
       collector_script="$(dirname "${BASH_SOURCE[0]}")/collect_bazel_failed_test_logs.py"
       collector_testlogs="$testlogs_dir"
@@ -181,6 +197,32 @@ print_bazel_test_log_tails() {
           --testlogs-dir "$collector_testlogs" --output-dir "$collector_output"
     ); then
       echo "::warning::Failed-test-log collection was incomplete; preserving Bazel exit status." >&2
+    fi
+  fi
+  # The same original invocation may pass while its acceptance evidence is
+  # missing. Retain only console-reported allowlisted targets, without rerunning.
+  if [[ -n "$retained_targets" ]]; then
+    if ! (
+      collector_script="$(dirname "${BASH_SOURCE[0]}")/collect_bazel_failed_test_logs.py"
+      collector_testlogs="$testlogs_dir"
+      collector_output="$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"
+      collector_console="$console_log"
+      collector_arguments="$(mktemp)"
+      trap 'rm -f "$collector_arguments"' EXIT
+      printf '%s\0' "${bazel_run_args[@]}" -- "${bazel_targets[@]}" > "$collector_arguments"
+      collector_native_arguments="$collector_arguments"
+      if [[ "${RUNNER_OS:-}" == "Windows" ]] && command -v cygpath >/dev/null 2>&1; then
+        collector_script="$(cygpath -w "$collector_script")" || exit 1
+        collector_testlogs="$(cygpath -w "$collector_testlogs")" || exit 1
+        collector_output="$(cygpath -w "$collector_output")" || exit 1
+        collector_console="$(cygpath -w "$collector_console")" || exit 1
+        collector_native_arguments="$(cygpath -w "$collector_arguments")" || exit 1
+      fi
+      MSYS2_ARG_CONV_EXCL='*' python3 "$collector_script" \
+        --testlogs-dir "$collector_testlogs" --output-dir "$collector_output" \
+        --retention-console "$collector_console" --invocation-args-file "$collector_native_arguments"
+    ); then
+      echo "::warning::Selected-target-log collection was incomplete; preserving Bazel exit status." >&2
     fi
   fi
 }
@@ -460,12 +502,13 @@ run_bazel_with_startup_args \
 bazel_status=${PIPESTATUS[0]}
 set -e
 
-if [[ ${bazel_status:-0} -ne 0 ]]; then
-  if [[ $print_failed_bazel_action_summary -eq 1 ]]; then
-    print_bazel_action_failure_summary "$bazel_console_log"
-  fi
-  if [[ $print_failed_bazel_test_logs -eq 1 ]]; then
-    print_bazel_test_log_tails "$bazel_console_log"
-  fi
-  exit "$bazel_status"
+if [[ ${bazel_status:-0} -ne 0 && $print_failed_bazel_action_summary -eq 1 ]]; then
+  print_bazel_action_failure_summary "$bazel_console_log"
 fi
+if [[ $print_failed_bazel_test_logs -eq 1 ]] && {
+  [[ ${bazel_status:-0} -ne 0 ]] ||
+    [[ -n "${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}" && "${bazel_args[0]}" == "test" ]]
+}; then
+  print_bazel_test_log_tails "$bazel_console_log"
+fi
+exit "$bazel_status"

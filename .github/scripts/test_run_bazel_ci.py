@@ -35,6 +35,9 @@ if patterns:
 with Path(os.environ['BAZEL_PROBE_LOG']).open('a', encoding='utf-8') as output:
     output.write(json.dumps(sys.argv[1:]) + '\\n')
 command = next(arg for arg in sys.argv[1:] if not arg.startswith('-'))
+if command not in ('info', 'query') and os.environ.get('BAZEL_PROBE_SUMMARY_FILE'):
+    sys.stdout.buffer.write(Path(os.environ['BAZEL_PROBE_SUMMARY_FILE']).read_bytes())
+    sys.stdout.flush()
 if command == 'info':
     print(os.environ['BAZEL_PROBE_TESTLOGS'])
 elif command == 'query':
@@ -590,6 +593,183 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(len(calls), 1, calls)
         self.assertFalse((output / "failed-test-logs").exists())
+
+    def test_success_retains_reported_targets_and_preserves_status_scope(self) -> None:
+        output = self.root / "selected evidence with spaces"
+        summary = self.root / "summary.txt"
+        summary.write_bytes(
+            b"\x1b[32m//codex-rs/tui:tui-unit-tests PASSED in 1.0s\x1b[0m\r\n"
+            b"//codex-rs/ext/queue:queue-queue_service-test (cached) PASSED in 2.0s\r\n"
+            b"//codex-rs/app-server:app-server-all-test FLAKY, failed in 1 out of 2 in 3.0s\r\n"
+            b"//codex-rs/app-server:app-server-unit-tests SKIPPED\r\n"
+            b"//unselected:target PASSED in 4.0s\r\n"
+        )
+        self.env.update(
+            CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=str(output),
+            BAZEL_PROBE_SUMMARY_FILE=str(summary),
+        )
+        payloads = {
+            "codex-rs/tui/tui-unit-tests/shard_1_of_2/test.log": bytes(range(256)) * 4097,
+            "codex-rs/tui/tui-unit-tests/shard_1_of_2/test.xml": b'<testsuite tests="1"/>\n',
+            "codex-rs/tui/tui-unit-tests/shard_2_of_2/test.log": b"second shard\n",
+            "codex-rs/ext/queue/queue-queue_service-test/test.log": b"cached record\n",
+            "codex-rs/app-server/app-server-all-test/test.log": b"final attempt\n",
+            "codex-rs/app-server/app-server-all-test/test_attempts/attempt_1.log": b"original failure\x00\xff\n",
+            "codex-rs/app-server/app-server-all-test/test_attempts/attempt_1.xml": b'<testsuite failures="1"/>\n',
+        }
+        for relative, data in {
+            **payloads,
+            "codex-rs/app-server/app-server-unit-tests/test.log": b"stale skipped record",
+            "codex-rs/app-server/app-server-all-wine-exec-test/test.log": b"stale unreported record",
+            "codex-rs/tui/tui-unit-tests/test.outputs/test.log": b"unrelated output",
+            "unselected/target/test.log": b"unselected record",
+        }.items():
+            path = self.testlogs / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+        targets = [
+            "//codex-rs/tui:tui-unit-tests",
+            "//codex-rs/ext/queue:queue-queue_service-test",
+            "//codex-rs/app-server:app-server-all-test",
+            "//codex-rs/app-server:app-server-unit-tests",
+        ]
+        result, calls = self.run_wrapper(
+            "--print-failed-test-logs",
+            "--",
+            "test",
+            "--test_filter",
+            "original::case",
+            "--test_tag_filters=-manual",
+            "--test_timeout=30",
+            "--flaky_test_attempts=1",
+            "--nocache_test_results",
+            "--",
+            *targets,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2, calls)
+        self.assertEqual(calls[0][calls[0].index("--") + 1 :], targets)
+        self.assertIn("--test_timeout=30", calls[0])
+        self.assertIn("--flaky_test_attempts=1", calls[0])
+        self.assertNotIn("--test_filter", calls[1])
+        self.assertFalse((output / "failed-test-logs").exists())
+        manifests = list(
+            output.glob("selected-target-test-logs/invocation-*/manifest.json")
+        )
+        self.assertEqual(len(manifests), 1)
+        manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
+        self.assertEqual(manifest["schema"], "bazel_selected_target_logs_v1")
+        self.assertEqual(manifest["selected_targets"], targets[:3])
+        self.assertTrue(manifest["complete_for_selected_targets"])
+        self.assertFalse(manifest["complete_case_inventory"])
+        self.assertEqual(manifest["errors"], [])
+        reports = manifest["retention"]["targets"]
+        self.assertFalse(reports[targets[0]]["cached_marker"])
+        self.assertTrue(reports[targets[1]]["cached_marker"])
+        self.assertEqual(reports[targets[2]]["status"], "FLAKY")
+        self.assertEqual(reports[targets[3]]["status"], "SKIPPED")
+        self.assertEqual(
+            reports["//codex-rs/app-server:app-server-all-wine-exec-test"]["status"],
+            "NOT_REPORTED",
+        )
+        flags = manifest["retention"]["wrapper_requested_selection_flags"]
+        self.assertEqual(
+            flags[:6],
+            [
+                "--test_filter",
+                "original::case",
+                "--test_tag_filters=-manual",
+                "--test_timeout=30",
+                "--flaky_test_attempts=1",
+                "--nocache_test_results",
+            ],
+        )
+        commit, tree = subprocess.check_output(
+            ["git", "rev-parse", "HEAD", "HEAD^{tree}"], text=True
+        ).splitlines()
+        self.assertEqual(
+            (manifest["source"]["commit"], manifest["source"]["tree"]), (commit, tree)
+        )
+        actual = {}
+        for record in manifest["files"]:
+            data = (manifests[0].parent / record["archive_relative_path"]).read_bytes()
+            self.assertEqual(record["bytes"], len(data))
+            self.assertEqual(record["sha256"], hashlib.sha256(data).hexdigest())
+            self.assertGreater(record["source_mtime_ns"], 0)
+            actual[record["testlogs_relative_path"]] = data
+        self.assertEqual(actual, payloads)
+
+    def test_missing_selected_logs_preserve_success_and_failure_status(self) -> None:
+        summary = self.root / "summary.txt"
+        summary.write_bytes(b"//codex-rs/tui:tui-unit-tests PASSED in 1.0s\n")
+        for original_status in (0, 37):
+            with self.subTest(original_status=original_status):
+                output = self.root / f"missing selected logs {original_status}"
+                self.log.unlink(missing_ok=True)
+                self.env.update(
+                    CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=str(output),
+                    BAZEL_PROBE_SUMMARY_FILE=str(summary),
+                    BAZEL_PROBE_FAIL="1" if original_status else "0",
+                )
+                result, calls = self.run_wrapper(
+                    "--print-failed-test-logs", "--", "test", "--",
+                    "//fake:target", "//codex-rs/tui:tui-unit-tests",
+                )
+                self.assertEqual(
+                    result.returncode, original_status, result.stdout + result.stderr
+                )
+                self.assertEqual(len(calls), 2, calls)
+                self.assertIn(
+                    "Selected-target-log collection was incomplete; preserving Bazel exit status",
+                    result.stderr,
+                )
+                manifests = list(
+                    output.glob("selected-target-test-logs/invocation-*/manifest.json")
+                )
+                self.assertEqual(len(manifests), 1)
+                manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
+                self.assertFalse(manifest["complete_for_selected_targets"])
+                self.assertEqual(manifest["files"], [])
+                self.assertEqual(
+                    manifest["selected_targets"], ["//codex-rs/tui:tui-unit-tests"]
+                )
+                self.assertTrue(manifest["errors"])
+                self.assertEqual(
+                    len(list(output.glob("failed-test-logs/invocation-*/manifest.json"))),
+                    1 if original_status else 0,
+                )
+                if original_status:
+                    self.assertIn("actual failing test diagnostic", result.stdout)
+
+    def test_conflicting_selected_summaries_do_not_read_existing_logs(self) -> None:
+        output = self.root / "conflicting summaries"
+        summary = self.root / "summary.txt"
+        summary.write_bytes(
+            b"//codex-rs/tui:tui-unit-tests PASSED in 1.0s\n"
+            b"//codex-rs/tui:tui-unit-tests SKIPPED\n"
+        )
+        stale = self.testlogs / "codex-rs/tui/tui-unit-tests/test.log"
+        stale.parent.mkdir(parents=True)
+        stale.write_bytes(b"must not turn an ambiguous report into a case receipt")
+        self.env.update(
+            CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=str(output),
+            BAZEL_PROBE_SUMMARY_FILE=str(summary),
+        )
+        result, calls = self.run_wrapper(
+            "--print-failed-test-logs", "--", "test", "--", "//codex-rs/tui:tui-unit-tests"
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2, calls)
+        manifests = list(output.glob("selected-target-test-logs/invocation-*/manifest.json"))
+        self.assertEqual(len(manifests), 1)
+        manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
+        self.assertFalse(manifest["complete_for_selected_targets"])
+        self.assertEqual(manifest["selected_targets"], [])
+        self.assertEqual(manifest["files"], [])
+        self.assertEqual(
+            manifest["retention"]["targets"]["//codex-rs/tui:tui-unit-tests"]["status"],
+            "AMBIGUOUS",
+        )
 
 
 if __name__ == "__main__":
