@@ -8,6 +8,7 @@ mod info;
 mod operations;
 mod platform;
 mod status;
+mod sync_command;
 mod trust;
 
 /// Git configuration that rejects implicitly discovered bare repositories while
@@ -48,4 +49,6 @@ pub use info::local_git_branches;
 pub use info::recent_commits;
 pub use platform::create_symlink;
 pub use status::get_has_changes_in_repo;
+pub use sync_command::GitCommandCancellation;
+pub use sync_command::run_git_command_with_custody;
 pub use trust::resolve_root_git_project_for_trust;
