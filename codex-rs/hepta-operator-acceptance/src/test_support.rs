@@ -3,6 +3,7 @@ use std::os::unix::fs::PermissionsExt;
 
 use std::path::Path;
 use std::path::PathBuf;
+use std::process::Command;
 use std::sync::OnceLock;
 
 #[cfg(windows)]
@@ -44,6 +45,21 @@ pub(crate) fn openssh_keygen() -> &'static Path {
         eprintln!("HEPTA_FIXTURE_OPENSSH_KEYGEN={}", resolved.display());
         resolved
     })
+}
+
+/// The native Windows OpenSSH bootstrap also needs ProgramData in hermetic
+/// Bazel tests. Set it on each child without mutating the test process environment.
+pub(crate) fn openssh_command() -> Command {
+    #[cfg(windows)]
+    {
+        let mut command = Command::new(openssh_keygen());
+        let program_data = crate::openssh_windows::program_data_directory()
+            .expect("resolve Windows ProgramData for OpenSSH fixtures");
+        command.env("ProgramData", program_data);
+        command
+    }
+    #[cfg(not(windows))]
+    Command::new(openssh_keygen())
 }
 
 #[cfg(not(windows))]
