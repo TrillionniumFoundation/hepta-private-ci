@@ -1,9 +1,14 @@
 //! Explicit no-effect child for privileged Worker registration qualification.
-//! It cannot serve a provider, create a local FinalUse owner or activate a Cell.
+//! Journal modes may create a bounded local journal; none serves a provider,
+//! signs or claims a grant, or activates a Cell.
 
 #[cfg(target_os = "linux")]
 #[path = "worker_registration_qualification/lanes.rs"]
 mod lanes;
+
+#[cfg(target_os = "linux")]
+#[path = "worker_registration_qualification/journal.rs"]
+mod journal;
 
 #[cfg(target_os = "linux")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -34,6 +39,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // anonymous socket at 198. It adopts it once; no path or numeric PID is
     // accepted as production authority by the receiver called below.
     let socket = unsafe { UnixDatagram::from_raw_fd(198) };
+    if mode.starts_with("journal-") {
+        drop(stdout);
+        return journal::run(mode, socket, &agent, generation);
+    }
     if mode.starts_with("lanes-") {
         drop(stdout);
         return lanes::run(mode, socket, &agent, generation);

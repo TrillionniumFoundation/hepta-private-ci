@@ -226,3 +226,6 @@ fn root_worker_fresh_floor_requires_the_original_current_starting_or_running_age
     assert!(fixture.original.session.as_ref().unwrap().provision_worker_frontier_fresh().is_err());
     assert!(!fixture.worker_path().exists(), "a live old process cannot provision fresh state after its original Registry drains");
 }
+
+#[path = "worker_root_journal_root_tests.rs"]
+mod journals;
