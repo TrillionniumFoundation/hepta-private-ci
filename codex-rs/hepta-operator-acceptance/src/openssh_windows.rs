@@ -356,6 +356,8 @@ pub(crate) fn verify(
         .parent()
         .ok_or_else(|| invalid("Windows system directory has no root"))?;
     let mut child = Command::new(&verifier.path)
+        // Diagnose the same original verifier child in tests; production stays quiet.
+        .args(if cfg!(test) { &["-vvv"][..] } else { &[][..] })
         .args(["-Y", "verify", "-f"])
         .arg(&inputs.allowed.owned.path)
         .args(["-I", principal, "-n", namespace, "-s"])
@@ -368,7 +370,16 @@ pub(crate) fn verify(
         .env("LC_ALL", "C")
         .current_dir(&verifier.system_directory)
         .stdin(Stdio::piped())
-        .stdout(Stdio::null())
+        .stdout({
+            #[cfg(test)]
+            {
+                Stdio::inherit()
+            }
+            #[cfg(not(test))]
+            {
+                Stdio::null()
+            }
+        })
         .stderr({
             #[cfg(test)]
             {
