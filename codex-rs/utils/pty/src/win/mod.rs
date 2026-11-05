@@ -36,10 +36,12 @@ use std::sync::Mutex;
 use std::task::Context;
 use std::task::Poll;
 use winapi::shared::minwindef::DWORD;
-use winapi::um::minwinbase::STILL_ACTIVE;
+use winapi::shared::winerror::WAIT_TIMEOUT;
 use winapi::um::processthreadsapi::*;
 use winapi::um::synchapi::WaitForSingleObject;
 use winapi::um::winbase::INFINITE;
+use winapi::um::winbase::WAIT_FAILED;
+use winapi::um::winbase::WAIT_OBJECT_0;
 
 pub(crate) mod conpty;
 mod job;
@@ -66,18 +68,29 @@ impl WinChild {
     }
 
     fn is_complete(&mut self) -> IoResult<Option<ExitStatus>> {
-        let mut status: DWORD = 0;
-        let proc = self.proc.lock().unwrap().try_clone().unwrap();
-        let res = unsafe { GetExitCodeProcess(proc.as_raw_handle() as _, &mut status) };
-        if res != 0 {
-            if status == STILL_ACTIVE {
-                Ok(None)
-            } else {
+        self.observe_exit(/*wait_ms*/ 0)
+    }
+
+    fn observe_exit(&self, wait_ms: DWORD) -> IoResult<Option<ExitStatus>> {
+        let proc = self
+            .proc
+            .lock()
+            .map_err(|_| IoError::other("ConPTY process handle lock poisoned"))?
+            .try_clone()?;
+        match unsafe { WaitForSingleObject(proc.as_raw_handle() as _, wait_ms) } {
+            WAIT_OBJECT_0 => {
+                let mut status: DWORD = 0;
+                if unsafe { GetExitCodeProcess(proc.as_raw_handle() as _, &mut status) } == 0 {
+                    return Err(IoError::last_os_error());
+                }
+                // The native object is signaled. A numeric 259 is now an actual
+                // exit code, rather than an inference from STILL_ACTIVE alone.
                 self.preserve_descendants();
                 Ok(Some(ExitStatus::with_exit_code(status)))
             }
-        } else {
-            Ok(None)
+            WAIT_TIMEOUT => Ok(None),
+            WAIT_FAILED => Err(IoError::last_os_error()),
+            _ => Err(IoError::other("unexpected ConPTY process wait result")),
         }
     }
 
@@ -130,21 +143,12 @@ impl Child for WinChild {
     }
 
     fn wait(&mut self) -> IoResult<ExitStatus> {
-        if let Ok(Some(status)) = self.try_wait() {
+        if let Some(status) = self.try_wait()? {
             return Ok(status);
         }
-        let proc = self.proc.lock().unwrap().try_clone().unwrap();
-        unsafe {
-            WaitForSingleObject(proc.as_raw_handle() as _, INFINITE);
-        }
-        let mut status: DWORD = 0;
-        let res = unsafe { GetExitCodeProcess(proc.as_raw_handle() as _, &mut status) };
-        if res != 0 {
-            self.preserve_descendants();
-            Ok(ExitStatus::with_exit_code(status))
-        } else {
-            Err(IoError::last_os_error())
-        }
+        self.observe_exit(INFINITE)?.ok_or_else(|| {
+            IoError::other("infinite ConPTY wait returned without terminal evidence")
+        })
     }
 
     fn process_id(&self) -> Option<u32> {
@@ -157,6 +161,10 @@ impl Child for WinChild {
         Some(proc.as_raw_handle())
     }
 }
+
+#[cfg(test)]
+#[path = "native_observation_tests.rs"]
+mod observation_tests;
 
 impl std::future::Future for WinChild {
     type Output = anyhow::Result<ExitStatus>;

@@ -265,6 +265,17 @@
         "elevated::runner_client::process::owner::custody_tests::cleanup_query_access_failures_fence_without_reclassifying_original_work"
       ],
       "filter": "test(=elevated::runner_client::process::owner::custody_tests::reservation_and_confirmed_exit_release_only_their_exact_slot) | test(=elevated::runner_client::process::owner::custody_tests::session_custody_survives_taken_terminator_and_driver_disconnect) | test(=elevated::runner_client::process::owner::custody_tests::dropped_sync_error_retains_owner_until_late_same_handle_observation) | test(=elevated::runner_client::process::owner::custody_tests::unarmed_startup_abort_keeps_custody_until_zero_wait_terminal_query) | test(=elevated::runner_client::process::owner::custody_tests::failure_fences_admission_before_native_abort_or_wait) | test(=elevated::runner_client::process::owner::custody_tests::cleanup_query_access_failures_fence_without_reclassifying_original_work)"
+    },
+    {
+      "id": "direct-pty-native-observation",
+      "package": "codex-utils-pty",
+      "filter": "test(=win::observation_tests::wait_without_synchronize_is_an_error_not_an_exit) | test(=win::observation_tests::query_failure_after_native_signal_is_not_pending) | test(=win::observation_tests::signaled_process_can_have_exit_code_259)",
+      "expectedTestCount": 3,
+      "requiredTests": [
+        "win::observation_tests::wait_without_synchronize_is_an_error_not_an_exit",
+        "win::observation_tests::query_failure_after_native_signal_is_not_pending",
+        "win::observation_tests::signaled_process_can_have_exit_code_259"
+      ]
     }
   ]
 }
