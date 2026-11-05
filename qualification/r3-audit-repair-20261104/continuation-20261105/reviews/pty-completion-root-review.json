@@ -1,0 +1,44 @@
+{
+  "schema": "hepta-pty-completion-root-review-v1",
+  "controller_job": "1a1aad75300-fc05-47ed",
+  "controller_state": "succeeded",
+  "controller_exit_code": 0,
+  "complete_24_originals_blob": "9c21082edc4baba50058e4da15e2e6b63711c606",
+  "complete_24_originals_bytes": 129314,
+  "complete_24_originals_sha256": "228c5e59ffa151f4a1e4cfce592d2fbd80eb9602e8569c4d98c388526c3eb581",
+  "all24_bytes_and_sha256_verified": true,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--check",
+        "1ddadae2c1bcb3c48047d2692565606833e87909",
+        "--"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.11169366596732289
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--check",
+        "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+        "--"
+      ],
+      "exit_code": 0,
+      "duration_seconds": 0.12101870693732053
+    }
+  ],
+  "whole_source_guards": 6,
+  "working_tree": "ae8ce55dc264cdca2dd4a125d473fbca030f45e2",
+  "ordinary_head": "1ddadae2c1bcb3c48047d2692565606833e87909",
+  "ordinary_index_sha256": "56d2de00dbeca8665114cb11dc63249ffa97f1ce02a2af9bcb25a9e534f9fc3e",
+  "all9_guarded_source_files_unchanged": true,
+  "no_untracked_sources": true,
+  "no_additional_tests_fix_or_fmt": true,
+  "scope_complete": "Independent Linux codex-utils-pty 29/29; original test then fix then fmt, root accepted only mechanical delta, readonly final checks0.",
+  "does_not_qualify_full_workspace_or_macOS_Intel": true,
+  "original_v1_preflight_failure_and_v2_fmt_review_stop_preserved": true
+}

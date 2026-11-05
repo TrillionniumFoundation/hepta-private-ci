@@ -1,0 +1,211 @@
+{
+  "schema": "hepta-P4-openssl-continuation-v2-independent-static-review-v1",
+  "verdict": "STATIC_PASS; NO_ADDITIONAL_EXECUTION_HOLD",
+  "inputs": {
+    "v1_runner": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/run_bootstrap_p4.py",
+      "bytes": 20000,
+      "sha256": "dec66403657278f0ee9b80e333d630b71bd2acf42a920d7b84013bf18df15b07",
+      "git_blob": "3ca4c6add24b3500537d202be113ea529ab71c7f"
+    },
+    "v1_request": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/request-p4.json",
+      "bytes": 73125,
+      "sha256": "e1cd018ae71d45404f0bae02c8e5b78a1c5f853b9eaf1fce909a044697b51bf0",
+      "git_blob": "744ed9795b4e930f687f4e392a14f0a6362d878f"
+    },
+    "run_bootstrap_p4_v2.py": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-openssl-continuation-v2/run_bootstrap_p4_v2.py",
+      "bytes": 24790,
+      "sha256": "77eb447174f9b10054663f7f173e8c64e910cfd8c53e8f7386fcfda6cd964687",
+      "git_blob": "9257c8988db205fef9156ae58dbd4e7a18561579"
+    },
+    "request.json": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-openssl-continuation-v2/request.json",
+      "bytes": 74050,
+      "sha256": "ec8ca4437762e6faac3728bb879af46de1c56600f9100cb020016035d3838572",
+      "git_blob": "6f3c09c7e7a3e5da59f252c7831079a63dcdc97f"
+    },
+    "manifest.json": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-openssl-continuation-v2/manifest.json",
+      "bytes": 2513,
+      "sha256": "6fdd8d275b1ca69b8feb3975dbc2ce9b345939ddc080082339cd73fcfa0c8535",
+      "git_blob": "40d5881000e52477cf203471a1da6815076e1334"
+    },
+    "runner-v1-to-v2.delta.patch": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-openssl-continuation-v2/runner-v1-to-v2.delta.patch",
+      "bytes": 8986,
+      "sha256": "099c5cf128f79630edc6fc10000ffa99f53585b71dd1ad7af9f734031ad9d1e4",
+      "git_blob": "9144bdf687dfc9773043428f450ac7f33d012d54"
+    },
+    "sdk_root_review": {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/inputs/openssl-sdk-root-review.json",
+      "bytes": 3053,
+      "sha256": "601f8931621fed01beec5f961373da40d8281c6f046e4796a20184afc07f8e13",
+      "git_blob": "0f7a1f2627ed2dba7599adeb6abbe7e5bc7fd5f3"
+    },
+    "V6_build_only_consumer": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/b16_build_only.py",
+      "bytes": 13465,
+      "sha256": "f82e03761ea34691193c1ab035debc062ea0a953b80a875afb1e1ab97071b3b9",
+      "git_blob": "4a62c1071298258f1baa0d59fe44ef4de364b8ef"
+    },
+    "V6_guard": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/b16_guard.py",
+      "bytes": 10896,
+      "sha256": "d0ba5a5746711a322438200498786044c8d561d9a256f7280a2c4791c6bd0389",
+      "git_blob": "a9a38d14c220be4c44336a6fefac08a168e52dcf"
+    },
+    "V6_runner": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/b16_runner.py",
+      "bytes": 16005,
+      "sha256": "f419dfa8e4cd98fc729c8b9851d8ea8ae3413a0fb1906358f8556920200b6944",
+      "git_blob": "4c8c2477189b84c6fe7b19c09fd27255bc7d1b66"
+    }
+  },
+  "common_functions": [
+    {
+      "name": "now",
+      "bytes_equal": true,
+      "source_segment_sha256": "657729523cb5c0ead0b1e95551773c0d89eca7b7f361a6f59a6766df30c1b014"
+    },
+    {
+      "name": "bytes_id",
+      "bytes_equal": true,
+      "source_segment_sha256": "3b57d9f6d3ffbaa1c0ae3ef3fd3257b82f90e30ff431eea98935fe768bd1690d"
+    },
+    {
+      "name": "canonical_digest",
+      "bytes_equal": true,
+      "source_segment_sha256": "bf7c435da6fcb7d0d0126700e59171b88e5c1550d0612392bc077a545ef3db6d"
+    },
+    {
+      "name": "file_id",
+      "bytes_equal": true,
+      "source_segment_sha256": "c50f29490144999cb36b209350ad17c87ff8273c9bb8f6c811206bfbaaf20f82"
+    },
+    {
+      "name": "equal_content",
+      "bytes_equal": true,
+      "source_segment_sha256": "1e6b1f7775724c72112b7b10ed59fb2e6d39abac44fff545bf194a1aa314b669"
+    },
+    {
+      "name": "save",
+      "bytes_equal": true,
+      "source_segment_sha256": "03aa84502be23a5ed6b05d9baed55d3e5df32afe1894b475206454f99fd9da73"
+    },
+    {
+      "name": "save_json",
+      "bytes_equal": true,
+      "source_segment_sha256": "491b491ffc4313010dbed1f92f7789d1e586a92af5903704be7a133b8f76e762"
+    },
+    {
+      "name": "capacity",
+      "bytes_equal": true,
+      "source_segment_sha256": "60a708563663d164d9c883257c12cc5fad2733a0941e5074c8d93313813cd689"
+    },
+    {
+      "name": "git",
+      "bytes_equal": true,
+      "source_segment_sha256": "7346548fa5707a7ccb7eacb3dcbdd2b617994f391c5f876f297a59eeab59ecb6"
+    },
+    {
+      "name": "source_guard",
+      "bytes_equal": true,
+      "source_segment_sha256": "cb834345edef406d9bd5efcf021d9c0d266c217cd510bee3d2fc0019ea8d2c7d"
+    },
+    {
+      "name": "run",
+      "bytes_equal": true,
+      "source_segment_sha256": "def6e9191dce290173c1b55da4e403281c1711c6aab284124a6153270a80aca7"
+    },
+    {
+      "name": "portable_graph",
+      "bytes_equal": true,
+      "source_segment_sha256": "e44ba6090513369209e43036528aca59f70f3ea2f618882e79e67e57a13cb6d5"
+    },
+    {
+      "name": "normal_artifacts",
+      "bytes_equal": true,
+      "source_segment_sha256": "9ace4697fc5d01458eb1f31fcdf398db00704ce4f6cefde4161bc0ba196f701d"
+    }
+  ],
+  "new_function": "verify_openssl_sdk",
+  "normal_helper_through_full_catalog_and_artifact_hashing_segment": {
+    "byte_equal_after_removing_only_two_new_final_sdk_guard_lines": true,
+    "original_segment_bytes": 4375,
+    "original_segment_sha256": "be09936999bfca1d8aca865c21f1a1d540d824ecee454f42a46f8016a1fcfb3d"
+  },
+  "request_preservation": {
+    "all_previous_fields_except_runner_bytes_equal": true,
+    "added_fields": [
+      "continuation_authorization",
+      "failed_P4_terminal_identity",
+      "openssl_sdk_identity",
+      "openssl_success_terminal_identity"
+    ],
+    "old_failed101_exact_pin": {
+      "bytes": 14814,
+      "git_blob": "9522e88cfc3910b0e447d6e52a7d805f4cfdac92",
+      "sha256": "3c30831d5055ba4f496eae0ee98edcc2214260a7d2e4b6f0fa500f9712f123a9"
+    },
+    "sdk_identity_equals_root_verified_original": true
+  },
+  "preserved_contract": {
+    "source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+    "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "commands": [
+      "cargo build --locked --profile dev-small --message-format=json-render-diagnostics with the same normal six explicit binaries",
+      "cargo metadata --locked --format-version=1 without -p",
+      "cargo nextest list --locked --cargo-profile dev-small --message-format=json without package/test filters"
+    ],
+    "metadata": {
+      "workspace_members": 193,
+      "nodes": 1501,
+      "full_default_members": true,
+      "complete_resolved_package_ids": true,
+      "historical_portable_graph_digest_unchanged": true
+    },
+    "catalog": {
+      "program_roles": 363,
+      "helper_paths": 33,
+      "eligible_cases": 19506,
+      "ignored_cases": 57,
+      "complete_role_and_case_digest_unchanged": true
+    },
+    "source_fences": "Same original source_guard function and six command-before/after guards, plus initial/final; HEAD/tree/index/both locks/untracked remain checked.",
+    "capacity_minimum_bytes": 64000000000
+  },
+  "openssl_and_continuation": {
+    "previous_failure_preserved": "Reads and hashes the exact prior terminal, requires unsuccessful single original command exit 101, no tests, same source; no overwrite or relabel of that attempt.",
+    "partial_target": "Explicit continuation in the same task-owned target after fresh original source/SDK guards; removes only the first-attempt empty-target assumption.",
+    "environment": "Adds only actual SDK OPENSSL_INCLUDE_DIR and OPENSSL_LIB_DIR; requires the recorded SDK environment key set to equal those two; rejects the listed inherited OpenSSL and pkg-config overrides.",
+    "physical_checks": "The new function verifies every recorded header relative link and official file, both private and system library bytes, .pc records, package archives and linker alias resolution. Runs before build and at successful finish, or in finally following a later failure if initial SDK verification completed.",
+    "SDK_scope": "The exact SDK receipt identity equals the supplied root review. Root verified 142 header mappings and two private/system library pairs. This reviewer did not repeat native file reads or package downloads.",
+    "failure_semantics": "Original command return codes/raw are preserved. A later SDK-check failure is added separately; success is never manufactured from an original command failure."
+  },
+  "v6_compatibility": {
+    "three_added_recipe_sources": [
+      "scripts/check-module-bazel-lock.sh",
+      ".bazelrc",
+      "defs.bzl"
+    ],
+    "relative_recipe_paths_and_content_pins": true,
+    "all_old_baseline_fields_retained": true,
+    "host_source_target_tools_lock_guard_schema_retained": true,
+    "three_command_six_guard_contract_retained": true,
+    "extra_prerequisite_field": "external_build_prerequisites.openssl stores SDK receipt, initial/final guard pins and the actual two environment values; V6 can preserve extra fields without changing its existing requirements.",
+    "effective_environment_binding": "Eventual V6 environment must exactly equal the actual successful P4 environment map; it remains unbound until that original receipt exists.",
+    "not_automatic_future_sdk_guard": "P4 physical checks do not imply that frozen V6 independently revalidates external SDK files on every later phase. Preserve the separate prerequisite receipt/binding limit."
+  },
+  "qualification_limits": {
+    "build_only": true,
+    "tests_executed_by_this_review": false,
+    "P4_success_claimed": false,
+    "B_enabled_or_started_by_this_review": false,
+    "historical_A_test_qualification_relabelled": false,
+    "source_or_ref_modified": false,
+    "frozen_V6_modified": false,
+    "extra_tests_or_internal_gate_added": false
+  }
+}

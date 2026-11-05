@@ -1,0 +1,643 @@
+{
+  "before_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "--version"
+      ],
+      "attempt": 1,
+      "capacity_after": {
+        "at": "2026-11-05T08:43:34.993482+00:00",
+        "available_bytes": 362913615872,
+        "f_bavail": 88601957,
+        "f_frsize": 4096,
+        "minimum_bytes": 5000000000,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:43:34.987456+00:00",
+        "available_bytes": 362913632256,
+        "f_bavail": 88601961,
+        "f_frsize": 4096,
+        "minimum_bytes": 5000000000,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105"
+      },
+      "completed_at": "2026-11-05T08:43:34.993365+00:00",
+      "cwd": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105",
+      "duration_seconds": 0.005821959115564823,
+      "exit_code": 0,
+      "label": "00-python-version",
+      "retries": 0,
+      "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "started_at": "2026-11-05T08:43:34.987442+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 16777233,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 588313302,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/00-python-version.stderr.original",
+        "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/00-python-version.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "symlink": false
+      },
+      "stdout": {
+        "bytes": 14,
+        "dev": 16777233,
+        "git_blob": "4379768dc0bfd0a559cb5f52257915f93782abfd",
+        "inode": 588313301,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/00-python-version.stdout.original",
+        "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/00-python-version.stdout.original",
+        "sha256": "25c3049ed7f825e0565baa3279c7e5218335801d85737ffddce1b39e394d8793",
+        "symlink": false
+      }
+    },
+    {
+      "argv": [
+        "/bin/bash",
+        "--version"
+      ],
+      "attempt": 1,
+      "capacity_after": {
+        "at": "2026-11-05T08:43:34.995452+00:00",
+        "available_bytes": 362913595392,
+        "f_bavail": 88601952,
+        "f_frsize": 4096,
+        "minimum_bytes": 5000000000,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:43:34.993615+00:00",
+        "available_bytes": 362913611776,
+        "f_bavail": 88601956,
+        "f_frsize": 4096,
+        "minimum_bytes": 5000000000,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105"
+      },
+      "completed_at": "2026-11-05T08:43:34.995340+00:00",
+      "cwd": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105",
+      "duration_seconds": 0.0016437908634543419,
+      "exit_code": 0,
+      "label": "01-bash-version",
+      "retries": 0,
+      "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "started_at": "2026-11-05T08:43:34.993610+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 16777233,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 588313307,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/01-bash-version.stderr.original",
+        "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/01-bash-version.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "symlink": false
+      },
+      "stdout": {
+        "bytes": 109,
+        "dev": 16777233,
+        "git_blob": "31f51dc2cf78c668920c2caeabf58df7fac9ed12",
+        "inode": 588313306,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/01-bash-version.stdout.original",
+        "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/01-bash-version.stdout.original",
+        "sha256": "bbb931c0afdf20554fcb03c4414a67092e2d8db87226567a6ad5be3c1bcc1a15",
+        "symlink": false
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "--version"
+      ],
+      "attempt": 1,
+      "capacity_after": {
+        "at": "2026-11-05T08:43:35.002282+00:00",
+        "available_bytes": 362913579008,
+        "f_bavail": 88601948,
+        "f_frsize": 4096,
+        "minimum_bytes": 5000000000,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:43:34.995539+00:00",
+        "available_bytes": 362913591296,
+        "f_bavail": 88601951,
+        "f_frsize": 4096,
+        "minimum_bytes": 5000000000,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105"
+      },
+      "completed_at": "2026-11-05T08:43:35.002161+00:00",
+      "cwd": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105",
+      "duration_seconds": 0.006541959010064602,
+      "exit_code": 0,
+      "label": "02-git-version",
+      "retries": 0,
+      "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "started_at": "2026-11-05T08:43:34.995535+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 16777233,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 588313312,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/02-git-version.stderr.original",
+        "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/02-git-version.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "symlink": false
+      },
+      "stdout": {
+        "bytes": 35,
+        "dev": 16777233,
+        "git_blob": "1ea836c003fbb3eb13ab05c3e811747b75a3f9a1",
+        "inode": 588313311,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/02-git-version.stdout.original",
+        "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/02-git-version.stdout.original",
+        "sha256": "2aa6da9ca331dc6de6fe72460146b9d1ebc22c8df24f3eb2a4c4f7c3c41b93ca",
+        "symlink": false
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "init",
+        "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/source"
+      ],
+      "attempt": 1,
+      "capacity_after": {
+        "at": "2026-11-05T08:43:35.030877+00:00",
+        "available_bytes": 362913468416,
+        "f_bavail": 88601921,
+        "f_frsize": 4096,
+        "minimum_bytes": 5000000000,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:43:35.002380+00:00",
+        "available_bytes": 362913574912,
+        "f_bavail": 88601947,
+        "f_frsize": 4096,
+        "minimum_bytes": 5000000000,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105"
+      },
+      "completed_at": "2026-11-05T08:43:35.030708+00:00",
+      "cwd": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105",
+      "duration_seconds": 0.028246041852980852,
+      "exit_code": 0,
+      "label": "03-init",
+      "retries": 0,
+      "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "started_at": "2026-11-05T08:43:35.002376+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 16777233,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 588313317,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/03-init.stderr.original",
+        "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/03-init.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "symlink": false
+      },
+      "stdout": {
+        "bytes": 98,
+        "dev": 16777233,
+        "git_blob": "a368853ea505639880cce32381dadd66c563380e",
+        "inode": 588313316,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/03-init.stdout.original",
+        "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/03-init.stdout.original",
+        "sha256": "31cc66927a9a53bb4736fe2fb37e945ced50458d8563098b3dd51fa1ad9ac1b8",
+        "symlink": false
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/source",
+        "fetch",
+        "--no-tags",
+        "--depth=1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "20fd174ded4e5ce01bda34e4f6d1d74803301f49"
+      ],
+      "attempt": 1,
+      "capacity_after": {
+        "at": "2026-11-05T09:03:04.486522+00:00",
+        "available_bytes": 362838441984,
+        "f_bavail": 88583604,
+        "f_frsize": 4096,
+        "minimum_bytes": 5000000000,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:43:35.030993+00:00",
+        "available_bytes": 362913464320,
+        "f_bavail": 88601920,
+        "f_frsize": 4096,
+        "minimum_bytes": 5000000000,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105"
+      },
+      "completed_at": "2026-11-05T09:03:04.485189+00:00",
+      "cwd": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105",
+      "duration_seconds": 1169.3930448340252,
+      "exit_code": 128,
+      "label": "04-fixed-fetch",
+      "retries": 0,
+      "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "started_at": "2026-11-05T08:43:35.030987+00:00",
+      "stderr": {
+        "bytes": 144,
+        "dev": 16777233,
+        "git_blob": "1a5858bb7fdf6d2618097fc49972654c68264eb7",
+        "inode": 588313358,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.stderr.original",
+        "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.stderr.original",
+        "sha256": "6cf4f153d32dc065e865345b9d0d93241f202b35d17b22e7d744059054fe5621",
+        "symlink": false
+      },
+      "stdout": {
+        "bytes": 0,
+        "dev": 16777233,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 588313357,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.stdout.original",
+        "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.stdout.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "symlink": false
+      }
+    }
+  ],
+  "completed_at": "2026-11-05T09:03:04.489142+00:00",
+  "errors": [
+    {
+      "message": "04-fixed-fetch failed; complete raw preserved",
+      "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 201, in <module>\n    run('04-fixed-fetch', ['/usr/bin/git', '-C', str(SOURCE), 'fetch', '--no-tags', '--depth=1', REPO, COMMIT], cwd=ROOT)\n    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 157, in run\n    assert result.returncode == 0, label + ' failed; complete raw preserved'\n           ^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 04-fixed-fetch failed; complete raw preserved\n",
+      "type": "AssertionError"
+    }
+  ],
+  "fixed_tree": "890362b5a9c1ad57be55d7e5c8beb2033b2aa63a",
+  "host_alias": "mac",
+  "initial_capacity": {
+    "at": "2026-11-05T08:43:34.983715+00:00",
+    "available_bytes": 362913681408,
+    "f_bavail": 88601973,
+    "f_frsize": 4096,
+    "minimum_bytes": 5000000000,
+    "path": "/Users/qianqi"
+  },
+  "real_bazel_product_builds": false,
+  "records": [
+    {
+      "bytes": 28926,
+      "dev": 16777233,
+      "git_blob": "42180ebdd9cdb796a6222ed7e3be320a6e2b207f",
+      "inode": 588313298,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/request.original.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/request.original.json",
+      "sha256": "5029033e065b6f722f05601a0a036d91757f5c685c11d176a118282ca2eea3a9",
+      "symlink": false
+    },
+    {
+      "bytes": 1720,
+      "dev": 16777233,
+      "git_blob": "4e5152f7afd18b8fd4e964b95bbd83c517e5ce62",
+      "inode": 588313299,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/host-and-environment.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/host-and-environment.json",
+      "sha256": "80a39908f21ff87da2484642701dbfc7887c53a3d055a233cb122169e3e46610",
+      "symlink": false
+    },
+    {
+      "bytes": 544,
+      "dev": 16777233,
+      "git_blob": "4a957729f14ba4a2a35c812c916dbc867ce4ea42",
+      "inode": 588313300,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/00-python-version.command.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/00-python-version.command.json",
+      "sha256": "7095a7941b3394c6530d6f454deab8f1433b2dfd6fbb21ce789c2e5c20682ca5",
+      "symlink": false
+    },
+    {
+      "bytes": 14,
+      "dev": 16777233,
+      "git_blob": "4379768dc0bfd0a559cb5f52257915f93782abfd",
+      "inode": 588313301,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/00-python-version.stdout.original",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/00-python-version.stdout.original",
+      "sha256": "25c3049ed7f825e0565baa3279c7e5218335801d85737ffddce1b39e394d8793",
+      "symlink": false
+    },
+    {
+      "bytes": 0,
+      "dev": 16777233,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 588313302,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/00-python-version.stderr.original",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/00-python-version.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "symlink": false
+    },
+    {
+      "bytes": 1657,
+      "dev": 16777233,
+      "git_blob": "e724931c00c8fb7c41753b9afc21c0fc0da5ae56",
+      "inode": 588313303,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/00-python-version.execution.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/00-python-version.execution.json",
+      "sha256": "d8af4c09db2406dabadaa7352cffbe27f3bc66a8e259fe3be774040a27833636",
+      "symlink": false
+    },
+    {
+      "bytes": 1911,
+      "dev": 16777233,
+      "git_blob": "dcab70af77b96044408a31545aa4164253ad8538",
+      "inode": 588313304,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/00-python-version.status.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/00-python-version.status.json",
+      "sha256": "50b9ddbcd6ca6b7ca13019fed46e142c318753b984abe7d08c431e56eec2d4cd",
+      "symlink": false
+    },
+    {
+      "bytes": 544,
+      "dev": 16777233,
+      "git_blob": "58e5142c3ce863358dd2b4ddf79ad81f759bb349",
+      "inode": 588313305,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/01-bash-version.command.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/01-bash-version.command.json",
+      "sha256": "33d1e36707e14d5a9087cf05000f925023a67b6384ced68fb17650175db37c4d",
+      "symlink": false
+    },
+    {
+      "bytes": 109,
+      "dev": 16777233,
+      "git_blob": "31f51dc2cf78c668920c2caeabf58df7fac9ed12",
+      "inode": 588313306,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/01-bash-version.stdout.original",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/01-bash-version.stdout.original",
+      "sha256": "bbb931c0afdf20554fcb03c4414a67092e2d8db87226567a6ad5be3c1bcc1a15",
+      "symlink": false
+    },
+    {
+      "bytes": 0,
+      "dev": 16777233,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 588313307,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/01-bash-version.stderr.original",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/01-bash-version.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "symlink": false
+    },
+    {
+      "bytes": 1651,
+      "dev": 16777233,
+      "git_blob": "dd602e76015241a4e8345f073abf99e4e070b44f",
+      "inode": 588313308,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/01-bash-version.execution.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/01-bash-version.execution.json",
+      "sha256": "11780bfd7785d402513d737ca922eec28f073bdbbd54a1f666122b928a305eb3",
+      "symlink": false
+    },
+    {
+      "bytes": 1905,
+      "dev": 16777233,
+      "git_blob": "32ee2dc58a590ead860642eee82dc5459b3a78f1",
+      "inode": 588313309,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/01-bash-version.status.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/01-bash-version.status.json",
+      "sha256": "fffc327f0280d9e4f1ca57f96f6af295034dd33468bbe8335950f3276d544b57",
+      "symlink": false
+    },
+    {
+      "bytes": 546,
+      "dev": 16777233,
+      "git_blob": "b5e8f403e5cde5998dc29185e273fb737cb2666f",
+      "inode": 588313310,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/02-git-version.command.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/02-git-version.command.json",
+      "sha256": "f849a7b708f1bee3002f66069f834666dca0fba895d3e35bd9fe9847be2cd687",
+      "symlink": false
+    },
+    {
+      "bytes": 35,
+      "dev": 16777233,
+      "git_blob": "1ea836c003fbb3eb13ab05c3e811747b75a3f9a1",
+      "inode": 588313311,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/02-git-version.stdout.original",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/02-git-version.stdout.original",
+      "sha256": "2aa6da9ca331dc6de6fe72460146b9d1ebc22c8df24f3eb2a4c4f7c3c41b93ca",
+      "symlink": false
+    },
+    {
+      "bytes": 0,
+      "dev": 16777233,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 588313312,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/02-git-version.stderr.original",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/02-git-version.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "symlink": false
+    },
+    {
+      "bytes": 1647,
+      "dev": 16777233,
+      "git_blob": "89f004a1b416b9aa9407193637baa698d6256a2e",
+      "inode": 588313313,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/02-git-version.execution.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/02-git-version.execution.json",
+      "sha256": "60ea4f675a29ace264b8afe594ecd2df7dd65d504fd7083163fcdd11b4c9b582",
+      "symlink": false
+    },
+    {
+      "bytes": 1901,
+      "dev": 16777233,
+      "git_blob": "0084ac23b1bd8a79833ea80cecde30c1e0950064",
+      "inode": 588313314,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/02-git-version.status.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/02-git-version.status.json",
+      "sha256": "d81b29a8c889620b1f9ed96d72c36732ef43e316e72748880585b2ecb513bc7b",
+      "symlink": false
+    },
+    {
+      "bytes": 597,
+      "dev": 16777233,
+      "git_blob": "ead62ec5325b1f36a1b62049b51f709577277838",
+      "inode": 588313315,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/03-init.command.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/03-init.command.json",
+      "sha256": "e8f81d49b9fcd7607b341c3135eeec0d13f3451e934950626d530b1e86b24f73",
+      "symlink": false
+    },
+    {
+      "bytes": 98,
+      "dev": 16777233,
+      "git_blob": "a368853ea505639880cce32381dadd66c563380e",
+      "inode": 588313316,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/03-init.stdout.original",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/03-init.stdout.original",
+      "sha256": "31cc66927a9a53bb4736fe2fb37e945ced50458d8563098b3dd51fa1ad9ac1b8",
+      "symlink": false
+    },
+    {
+      "bytes": 0,
+      "dev": 16777233,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 588313317,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/03-init.stderr.original",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/03-init.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "symlink": false
+    },
+    {
+      "bytes": 1670,
+      "dev": 16777233,
+      "git_blob": "28d9c7e6c6cdb0eeb83c277c1c685a376dc18ba2",
+      "inode": 588313354,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/03-init.execution.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/03-init.execution.json",
+      "sha256": "aba643b262257571169d59b464a3b25f7df188dc8bc1d3c0693b0ee4091b4023",
+      "symlink": false
+    },
+    {
+      "bytes": 1924,
+      "dev": 16777233,
+      "git_blob": "f0451eb740d81a7235cf820404ad1d21f5e52315",
+      "inode": 588313355,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/03-init.status.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/03-init.status.json",
+      "sha256": "820b025a2e81f1cbf582a6a5aa67146cd125fafde5686c2d0b7cbcc1798c4254",
+      "symlink": false
+    },
+    {
+      "bytes": 767,
+      "dev": 16777233,
+      "git_blob": "16f66e552e67f1b50480f2fd246260db3b413492",
+      "inode": 588313356,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.command.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.command.json",
+      "sha256": "bd9c0ca81e16b98f93c3dca07f36dfef2bef8521f4a9d6f2eedf8ccd6810af10",
+      "symlink": false
+    },
+    {
+      "bytes": 0,
+      "dev": 16777233,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 588313357,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.stdout.original",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "symlink": false
+    },
+    {
+      "bytes": 144,
+      "dev": 16777233,
+      "git_blob": "1a5858bb7fdf6d2618097fc49972654c68264eb7",
+      "inode": 588313358,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.stderr.original",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.stderr.original",
+      "sha256": "6cf4f153d32dc065e865345b9d0d93241f202b35d17b22e7d744059054fe5621",
+      "symlink": false
+    },
+    {
+      "bytes": 1869,
+      "dev": 16777233,
+      "git_blob": "8debcad768883460fd0f6958159b152b5bca80dc",
+      "inode": 588322247,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.execution.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.execution.json",
+      "sha256": "175c1d7b717ee707c986543cc44790a7fae9ddd64bf818b2db94c3c77163d43b",
+      "symlink": false
+    },
+    {
+      "bytes": 2123,
+      "dev": 16777233,
+      "git_blob": "7d602b2a23b3de72797f3d542e913669abde840f",
+      "inode": 588322248,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.status.json",
+      "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.status.json",
+      "sha256": "7d2519ec3d3081efde0901b3373edaae9d1f8d7b02dd6bee216a193eebc4ac52",
+      "symlink": false
+    }
+  ],
+  "request": {
+    "bytes": 28926,
+    "git_blob": "42180ebdd9cdb796a6222ed7e3be320a6e2b207f",
+    "sha256": "5029033e065b6f722f05601a0a036d91757f5c685c11d176a118282ca2eea3a9"
+  },
+  "schema": "hepta-native-mac-bazel-wrapper-control-v1",
+  "source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "source_guards": [],
+  "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "started_at": "2026-11-05T08:43:34.983555+00:00",
+  "success": false
+}

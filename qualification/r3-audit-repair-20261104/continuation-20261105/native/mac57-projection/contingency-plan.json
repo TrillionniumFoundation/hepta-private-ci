@@ -1,0 +1,128 @@
+{
+  "schema": "hepta-mac57-projection-contingency-plan-v1",
+  "verdict": "SOURCE_CLOSURE_FEASIBLE_FOR_ORIGINAL_57_PYTHON_BASH_SCOPE; NOT_AUTHORIZED_OR_EXECUTED_BY_THIS_REVIEW",
+  "activation_condition": "Use only after the currently running original fixed Git fetch reaches a genuine unsuccessful terminal and complete original evidence is retained. If it succeeds, discard this contingency without an extra execution. Do not cancel, signal, resend, or modify the running job.",
+  "source_map": "source-map.json",
+  "dependency_closure": [
+    {
+      "group": "Five unchanged unittest modules",
+      "paths": [
+        ".github/scripts/test_run_bazel_ci.py",
+        ".github/scripts/test_run_bazel_clippy_targets.py",
+        ".github/scripts/test_run_bazel_native_msvc_toolchain.py",
+        ".github/scripts/test_run_bazel_windows_fallback.py",
+        ".github/scripts/test_run_bazel_with_buildbuddy.py"
+      ],
+      "reason": "57 original class/method IDs; no new test or assertion."
+    },
+    {
+      "group": "Shared Python wrapper",
+      "paths": [
+        ".github/scripts/run_bazel_with_buildbuddy.py"
+      ],
+      "reason": "Three modules import it; original integration shell scripts invoke its real main, using the test-created CODEX_BAZEL_BIN probe."
+    },
+    {
+      "group": "Log collector",
+      "paths": [
+        ".github/scripts/collect_bazel_failed_test_logs.py"
+      ],
+      "reason": "Original failure/retention cases invoke real collection, copy original physical test fixture files and verify bytes/hashes/source identity."
+    },
+    {
+      "group": "Main and argument-lint shell routes",
+      "paths": [
+        ".github/scripts/run-bazel-ci.sh",
+        ".github/scripts/run-argument-comment-lint-bazel.sh",
+        ".github/scripts/run-bazel-query-ci.sh"
+      ],
+      "reason": "The two original argument-lint cases actually invoke run-bazel-query-ci.sh; this eleventh script is required beyond the previously pinned ten-file map. Query wrapper invokes the same Python wrapper; no additional script dependency was found."
+    },
+    {
+      "group": "Clippy selector",
+      "paths": [
+        "scripts/list-bazel-clippy-targets.sh"
+      ],
+      "reason": "Original Clippy tests copy this file to their own TempDir and generate their existing query fixture there. Do not replace or move that fixture."
+    },
+    {
+      "group": "Original root declaration bytes",
+      "paths": [
+        "BUILD.bazel",
+        "MODULE.bazel"
+      ],
+      "reason": "test_repository_declares_the_required_split_abi_contract reads both files verbatim. They are not evaluated by a real Bazel invocation in this unittest scope."
+    }
+  ],
+  "real_git_requirement": {
+    "required": true,
+    "why": "Collector invokes git rev-parse HEAD and HEAD^{tree}, plus git diff --quiet HEAD. Two original cases compare the emitted commit/tree to their own real git query. An unversioned directory would break the original collector oracle.",
+    "construction": "Create a separate conventional task-owned Git repository with exactly these thirteen tracked files and original modes. Record its genuine projection commit/tree and ordinary index. Use no Git shim, inherited GIT_DIR/WORK_TREE/INDEX redirect, or false original commit label. No remote fetch is needed to commit these already verified bytes.",
+    "identity_split": "Keep source_origin_commit/source_origin_full_tree as provenance only. The actual local HEAD/tree must be the new projection values. They must not be reported as 20fd/4a or the full repaired tree 8903.",
+    "repair_stage": "Keep projection HEAD and ordinary index stable; replace only the reviewed wrapper bytes and verify the predicted projection working tree through a private index. Collector may correctly report a tracked dirty worktree after the wrapper change; original assertions remain unchanged."
+  },
+  "proposed_execution_contract": {
+    "status": "disabled, plan only",
+    "fresh_owned_root": "A different absent task root from the current incomplete fetch; preserve the current directory and all its raw evidence.",
+    "layout": "Exactly original root-relative .github/scripts, scripts, BUILD.bazel and MODULE.bazel. Run from the projection repository root.",
+    "interpreters": "Use existing actual Python 3.14.3 and real /bin/bash 3.2.57 with the same explicit PATH for parent and children; retain tool file/version receipts. No Python3.9 run.",
+    "original_command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      ".github/scripts",
+      "-p",
+      "test_run_bazel*.py"
+    ],
+    "selection": "Original unchanged 57 exact IDs, with separate baseline and repaired command/raw/summary records. No skip, filter, retry or test-created fixture modifications.",
+    "budgets": "Preserve original per-test 60s/15s timeouts and the existing outer task bound; no sleeping or relaxed assertion.",
+    "baseline": "Record actual original outcome without forcing three failures. A causal claim requires the actual raw failure branches, not a generic nonzero result.",
+    "fixed": "Require original 57, zero return code, no failures/errors/skips; retain all actual stdout/stderr."
+  },
+  "harness_and_project_oracle_separation": {
+    "new_harness_guards": [
+      "Explicit13-file membership, original content hashes and modes; absence of unreviewed source files.",
+      "Genuine projection HEAD/tree/ordinary-index identity, safe task ownership and no inherited Git redirection.",
+      "Before/after private-index projection tree and tools; repaired delta only the wrapper.",
+      "Current native host/version/PATH and complete independent stage outputs."
+    ],
+    "unchanged_project_oracles": [
+      "Argument and query transport including spaces/CRLF/large rosters",
+      "Existing physical collection, traversal/link refusal and hash checks",
+      "Original source identity consistency via genuine Git",
+      "Original return codes, retained success/failure/cached/skip scope and file cleanup",
+      "Original Clippy target selection"
+    ],
+    "not_claimed": [
+      "Complete 4a checkout exists",
+      "Full source tree or both absent dependency lock files were guarded",
+      "Real Bazel targets, Rust build/test, dependency graph or release passed",
+      "Windows native execution or Intel qualification",
+      "Current fetch cause is known",
+      "Fallback has executed or passed"
+    ]
+  },
+  "remaining_runtime_dependencies_and_risks": [
+    "Real system Git and ordinary shell tools (sh, grep, sed, awk, sort, tail, head, tee, mktemp, rm, dirname) remain actual native dependencies; preserve failures rather than provide substitutes.",
+    "Original temporary-file and symlink behavior remains exercised on the configured Mac; no simulation of Windows filesystem or actual Bazel server is implied.",
+    "Original tests supply their own process probes and local event JSON; do not accidentally execute real Bazel by dropping the existing fixture environment.",
+    "A new projection commit is required; the original oracle checks consistency of that real identity, not equality with the full upstream source commit. This narrower qualification must be explicit in any result.",
+    "This source-only closure review cannot predict all native platform failures; any unexpected missing file or tool remains a genuine failure, with no fabricated placeholder or oracle weakening."
+  ],
+  "actions_this_review": [
+    "Read fixed original sources and exact source tree entries",
+    "Fetch three additional exact original source files and four narrow Git tree objects",
+    "Validate blob bytes/modes/tree object hashes and calculate predicted projection tree IDs in memory",
+    "Write this disabled plan and source map only"
+  ],
+  "actions_not_performed": [
+    "Native reads/writes or job control",
+    "Git repository/commit creation",
+    "Shell/Python original tests",
+    "Cargo/Bazel",
+    "Source/ref mutation",
+    "Modification of the running fetch or runner"
+  ]
+}

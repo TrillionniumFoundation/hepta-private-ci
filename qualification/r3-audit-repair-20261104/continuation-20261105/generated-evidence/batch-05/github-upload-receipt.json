@@ -1,0 +1,33 @@
+{
+  "schema": "hepta-original-ci-archive-create-get-receipt-v1",
+  "created_at_utc": "2026-11-05T08:27:00.837Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "batch": "05",
+  "archive": {
+    "name": "complete-evidence.tar.gz",
+    "bytes": 220528,
+    "sha256": "b60ab3cf3284d2539d95bd5cb39202cbd71057a76e09b3fe7d3db0924762372d",
+    "computed_git_blob": "5f8405cad1eae94ecc343f4c4e20a7384d421ac4"
+  },
+  "part_count": 2,
+  "parts": [
+    {
+      "name": "part-000.b64.txt",
+      "blob": "1f60425482360caf639d6de0afdd84445e464906",
+      "bytes": 262145,
+      "sha256": "5115c4fbf167badcccc1e12f565a1aa282ecb8336856c5f327c1c1922de3701b",
+      "create_get_byte_equal": true,
+      "verified_at_utc": "2026-11-05T08:26:59.085Z"
+    },
+    {
+      "name": "part-001.b64.txt",
+      "blob": "2b08457ee08d937e1708a8cf05467c5e4a9325cf",
+      "bytes": 31897,
+      "sha256": "0164dd5753aa81490d92c98d6ec68d8a2ef465fc9a73e96c5f0dd4d0827dcb4a",
+      "create_get_byte_equal": true,
+      "verified_at_utc": "2026-11-05T08:27:00.837Z"
+    }
+  ],
+  "all_parts_create_get_byte_equal": true,
+  "refs_changed": false
+}

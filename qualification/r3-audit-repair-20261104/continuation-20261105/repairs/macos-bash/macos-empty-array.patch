@@ -1,0 +1,65 @@
+diff --git a/.github/scripts/run-bazel-ci.sh b/.github/scripts/run-bazel-ci.sh
+index 204c0ac2481f70cc977f777eb2299b740f7ddc17..42b59b6354b5933c8155b992519682c06d024ca1 100755
+--- a/.github/scripts/run-bazel-ci.sh
++++ b/.github/scripts/run-bazel-ci.sh
+@@ -137,8 +137,12 @@
+   # Only pass flags that affect Bazel's output-root selection or repository
+   # lookup. Test/build-only flags such as execution logs or remote download
+   # mode can make `bazel info` fail, which would hide the real test log path.
++  local -a bazel_log_lookup_args=("${bazel_args[@]}")
++  if (( ${#post_config_bazel_args[@]} > 0 )); then
++    bazel_log_lookup_args+=("${post_config_bazel_args[@]}")
++  fi
+   local copy_next=0
+-  for arg in "${bazel_args[@]}" "${post_config_bazel_args[@]}"; do
++  for arg in "${bazel_log_lookup_args[@]}"; do
+     if [[ $copy_next -eq 1 ]]; then
+       bazel_info_args+=("$arg")
+       copy_next=0
+@@ -160,25 +164,27 @@
+     "${bazel_info_args[@]}" \
+     bazel-testlogs 2>/dev/null || echo bazel-testlogs)"
+ 
+-  for target in "${failed_targets[@]}"; do
+-    local rel_path="${target#//}"
+-    rel_path="${rel_path/://}"
+-    local test_log="${testlogs_dir}/${rel_path}/test.log"
+-    local reported_test_log
+-    reported_test_log="$(grep -F "FAIL: ${target} " "$console_log" | sed -nE 's#.* \(see (.*[\\/]test\.log)\).*#\1#p' | head -n 1 || true)"
+-    if [[ -n "$reported_test_log" ]]; then
+-      reported_test_log="${reported_test_log//\\//}"
+-      test_log="$reported_test_log"
+-    fi
+-
+-    echo "::group::Bazel test log tail for ${target}"
+-    if [[ -f "$test_log" ]]; then
+-      tail -n 200 "$test_log"
+-    else
+-      echo "Missing test log: $test_log"
+-    fi
+-    echo "::endgroup::"
+-  done
++  if (( ${#failed_targets[@]} > 0 )); then
++    for target in "${failed_targets[@]}"; do
++      local rel_path="${target#//}"
++      rel_path="${rel_path/://}"
++      local test_log="${testlogs_dir}/${rel_path}/test.log"
++      local reported_test_log
++      reported_test_log="$(grep -F "FAIL: ${target} " "$console_log" | sed -nE 's#.* \(see (.*[\\/]test\.log)\).*#\1#p' | head -n 1 || true)"
++      if [[ -n "$reported_test_log" ]]; then
++        reported_test_log="${reported_test_log//\\//}"
++        test_log="$reported_test_log"
++      fi
++
++      echo "::group::Bazel test log tail for ${target}"
++      if [[ -f "$test_log" ]]; then
++        tail -n 200 "$test_log"
++      else
++        echo "Missing test log: $test_log"
++      fi
++      echo "::endgroup::"
++    done
++  fi
+ 
+   # Preserve complete existing shard/attempt logs in the already-uploaded
+   # compact-log directory. Collection must never replace Bazel's exit status.

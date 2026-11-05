@@ -1,0 +1,117 @@
+{
+  "schema": "hepta-b16-v6-bounded-legacy-mode-equivalence-v1",
+  "scope": "All four changed runtime modules, for the existing approved reuse_final_A mode and its historical receipt domain.",
+  "files": [
+    {
+      "path": "b16_guard.py",
+      "whole_module_AST_equal_under_stated_legacy_conditions": true,
+      "original_AST_sha256": "a255d4b6a139e3020d6a34cd4e0b2489019a245c5686a3064aab1acc0a639926",
+      "projected_AST_sha256": "a255d4b6a139e3020d6a34cd4e0b2489019a245c5686a3064aab1acc0a639926",
+      "explicit_normalizations": [
+        {
+          "kind": "fold only the explicit new-mode branch to false",
+          "exact_expression": "b.get('target_reuse_mode') == 'BUILD_ONLY_CURRENT_HOST'"
+        }
+      ]
+    },
+    {
+      "path": "b16_family.py",
+      "whole_module_AST_equal_under_stated_legacy_conditions": true,
+      "original_AST_sha256": "8557ff11958ad1853f74cb07f229489d5a17ddcf68aa03e71db7d1a84f06c2cb",
+      "projected_AST_sha256": "8557ff11958ad1853f74cb07f229489d5a17ddcf68aa03e71db7d1a84f06c2cb",
+      "explicit_normalizations": [
+        {
+          "kind": "fold only the explicit new-mode branch to false",
+          "exact_expression": "binding.get('target_reuse_mode') == 'BUILD_ONLY_CURRENT_HOST'"
+        },
+        {
+          "kind": "fold only the explicit new-mode branch to false",
+          "exact_expression": "binding.get('target_reuse_mode') == 'BUILD_ONLY_CURRENT_HOST'"
+        },
+        {
+          "kind": "inline local result returned unchanged",
+          "exact_expression": "result = {'family_sha256': binding['approved_foundation_output_family_sha256'], 'existing_catalog_units': len(family['complete_catalog_layout']), 'existing_helper_paths': len(family['complete_helper_relative_paths']), 'existing_executable_paths_checked': len(paths), 'foundation_source_paths': family['foundation_source_paths'], 'full_metadata_projection_equal': True, 'limit': 'Output-path reuse supports this conditional allowance, not a measured 12 GB compiler/linker peak. Fresh per-phase metadata, normal helpers, full catalog and complete helper path checks remain mandatory.'}"
+        }
+      ]
+    },
+    {
+      "path": "b16_capacity.py",
+      "whole_module_AST_equal_under_stated_legacy_conditions": true,
+      "original_AST_sha256": "e7cb06a0bbb6471f31931b7159e31fd736cc5ad245264ba44f1c2f93f2da406e",
+      "projected_AST_sha256": "e7cb06a0bbb6471f31931b7159e31fd736cc5ad245264ba44f1c2f93f2da406e",
+      "explicit_normalizations": [
+        {
+          "kind": "remove known-false mode local",
+          "exact_expression": "build_only = binding.get('target_reuse_mode') == 'BUILD_ONLY_CURRENT_HOST'"
+        },
+        {
+          "kind": "fold only the explicit new-mode branch to false",
+          "exact_expression": "build_only"
+        },
+        {
+          "kind": "valid historical A receipt has no newly introduced BUILD_ONLY role; foreign new-role objects are newly rejected",
+          "exact_expression": "need(artifact.get('role') != 'BUILD_ONLY_CURRENT_HOST', 'build-only evidence is not historical tested-A evidence')"
+        },
+        {
+          "kind": "False or original target condition",
+          "exact_expression": "build_only or target == Path(binding['final_A_target_directory']).resolve()"
+        },
+        {
+          "kind": "only failure wording differs; both branches reject the same missing or mismatched legacy target",
+          "exact_expression": "'reuse the existing approved target'"
+        },
+        {
+          "kind": "select the original return value in legacy mode",
+          "exact_expression": "'BUILD_ONLY_CURRENT_HOST' if build_only else 'reuse_final_A'"
+        },
+        {
+          "kind": "earlier unchanged need proves artifact.source equals bound last-tested source",
+          "exact_expression": "binding['last_tested_A_tree']"
+        },
+        {
+          "kind": "earlier unchanged pin assignment is the same binding record",
+          "exact_expression": "binding['last_tested_A_artifacts']"
+        },
+        {
+          "kind": "fold only the explicit new-mode branch to false",
+          "exact_expression": "build_only"
+        },
+        {
+          "kind": "inline local result returned unchanged",
+          "exact_expression": "result = {'target_reuse_mode': 'reuse_final_A', 'target_directory': str(target), 'final_A_tree': binding['final_A_tree'], 'last_tested_A_tree': artifact['source'], 'last_tested_A_to_final_A_review': binding['last_tested_A_to_final_A_review'], 'original_full_artifact_receipt': pin, 'complete_helper_basename_roster': observed_names, 'known_executable_files': len(rows), 'known_executable_bytes': artifact_bytes, 'actual_free_bytes': free, 'required_free_bytes': required, 'remaining_growth_plan': budget, 'same_filesystem_locations': [str(p) for p in locations], 'initial_cache_copy_bytes': 0, 'existing_cache_deleted': False, 'foundation_only_output_family_review': foundation_reuse, 'limit': 'File-byte observations are not total target allocation or a proven compiler peak. Extra rlib/object/Bazel/evidence allowances are explicitly reviewed estimates. Per-command 8 GB reserve checks remain; a failed estimate stops the epoch without cleanup or selection changes.'}"
+        }
+      ]
+    },
+    {
+      "path": "b16_runner.py",
+      "whole_module_AST_equal_under_stated_legacy_conditions": true,
+      "original_AST_sha256": "7f1cd4940ebd95156fffa22ae6237a26e87ae3a349765723a04052700b38a6c0",
+      "projected_AST_sha256": "7f1cd4940ebd95156fffa22ae6237a26e87ae3a349765723a04052700b38a6c0",
+      "explicit_normalizations": [
+        {
+          "kind": "legacy previous receipt has absent or reuse_final_A mode and current legacy binding is reuse_final_A",
+          "exact_expression": "need(previous.get('target_reuse_mode', 'reuse_final_A') == binding['target_reuse_mode'], 'epoch cache provenance mode changed')"
+        },
+        {
+          "kind": "fold only the explicit new-mode branch to false",
+          "exact_expression": "binding['target_reuse_mode'] == 'BUILD_ONLY_CURRENT_HOST'"
+        },
+        {
+          "kind": "fold only the explicit new-mode branch to false",
+          "exact_expression": "binding['target_reuse_mode'] == 'BUILD_ONLY_CURRENT_HOST'"
+        }
+      ]
+    }
+  ],
+  "original_other_runtime_inputs_byte_equal": true,
+  "accepted_legacy_inputs_outputs_commands_guards_and_source_writes_unchanged": true,
+  "observable_differences": [
+    "An invalid legacy target error says approved target instead of final A target; the rejecting predicate is the same.",
+    "New BUILD_ONLY objects are explicitly refused as historical receipts; they were never original reviewed A evidence.",
+    "New-mode previous receipts cannot be switched into the legacy mode; an original previous receipt omits this field and defaults to legacy."
+  ],
+  "limits": [
+    "This is explicit bounded source comparison, not a formal equivalence claim for arbitrary malformed Python objects or newly invented foreign-role receipts.",
+    "It does not execute native commands, establish current P4 success, prove a disk peak, or grant A/B16 qualification."
+  ]
+}

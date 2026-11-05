@@ -1,0 +1,30 @@
+{
+  "schema": "hepta-ai395-P4-build-only-delivery-v1",
+  "runner": {
+    "bytes": 20000,
+    "sha256": "dec66403657278f0ee9b80e333d630b71bd2acf42a920d7b84013bf18df15b07",
+    "git_blob": "3ca4c6add24b3500537d202be113ea529ab71c7f"
+  },
+  "request": {
+    "bytes": 73125,
+    "sha256": "e1cd018ae71d45404f0bae02c8e5b78a1c5f853b9eaf1fce909a044697b51bf0",
+    "git_blob": "744ed9795b4e930f687f4e392a14f0a6362d878f"
+  },
+  "root_guard": "967ef896907e698a07e8028e049a47e934570b1d",
+  "native_stage": "P4 normal6 helper build/full193-member1501-node metadata/full363-program33-helper catalog only",
+  "tests_executed": false,
+  "future_test_qualification": false,
+  "baseline_schema": "hepta-b16-current-host-build-only-baseline-v1",
+  "host_receipt": "platform.uname six fields plus alias/uid/euid",
+  "commands": 3,
+  "source_guards": 6,
+  "capacity_minimum_bytes": 64000000000,
+  "idempotency_key": "hepta-ai395-b16-cold-bootstrap-p4-20261105-v1",
+  "timeout_seconds": 21600,
+  "metadata_graph_digest": "618b32d86209cf8821fb514b041457fc82ff69dcd794effbda5051789a30cfc7",
+  "complete_case_roster_digest": "2e483bc224e88e59f6ca6680c50d68d8123aa149268d4797de4d5c8496880674",
+  "complete_case_counts": {
+    "False": 19506,
+    "True": 57
+  }
+}

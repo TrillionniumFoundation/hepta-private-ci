@@ -1,0 +1,88 @@
+{
+  "schema": "hepta-macos-python-prerequisite-static-review-v1",
+  "verdict": "PYTHON_3_9_INCOMPATIBLE; COMPATIBLE_INTERPRETER_SELECTION_REPORTED_BY_EXECUTION_AGENT; ORIGINAL_57_NOT_EXECUTED_BY_THIS_REVIEW",
+  "scope": "Five fixed original test modules, their Python wrapper and collector, and three directly referenced shell scripts; no original test or product source changes.",
+  "source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "source_map": "/workspace/scratch/07dd58cc9630/architecture-audit/mac-python39-controls-static-20261105/source-map.json",
+  "static_test_definitions": 57,
+  "blocking_function_annotations": [
+    {
+      "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+      "line": 117,
+      "function": "remote_config",
+      "annotation": "str | None"
+    },
+    {
+      "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+      "line": 286,
+      "function": "bazel_command",
+      "annotation": "Mapping[str, str] | None"
+    },
+    {
+      "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "line": 101,
+      "function": "collect",
+      "annotation": "dict | None"
+    },
+    {
+      "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "line": 133,
+      "function": "record_error",
+      "annotation": "str | None"
+    }
+  ],
+  "reason": "Python 3.10 introduced the runtime type union operator. Neither Python production module postpones annotations. Importing run_bazel_with_buildbuddy reaches remote_config line 117; loading the collector reaches collect line 101. Python 3.9 cannot evaluate these existing annotations. This is a static language/API finding, not an observed Python execution.",
+  "import_callers": [
+    {
+      "path": ".github/scripts/test_run_bazel_with_buildbuddy.py",
+      "line": 11
+    },
+    {
+      "path": ".github/scripts/test_run_bazel_windows_fallback.py",
+      "line": 6
+    },
+    {
+      "path": ".github/scripts/test_run_bazel_native_msvc_toolchain.py",
+      "line": 5
+    }
+  ],
+  "interpreter_binding": {
+    "parent": "The original unittest discover must use an actual compatible interpreter.",
+    "children": "run_bazel_with_buildbuddy.py uses /usr/bin/env python3; run-bazel-ci.sh invokes python3 for collection, so the subprocess PATH must resolve the same compatible interpreter.",
+    "fixture_PATH": "The original test fixture preserves inherited PATH; its environment filter removes only BAZEL_, BUILDBUDDY_, CODEX_BAZEL_, GITHUB_ prefixes. It finds bash via shutil.which.",
+    "ci_reported_existing_python": "3.14.3 at /opt/homebrew/opt/python@3.14/bin/python3, physical Cellar 3.14.3_1",
+    "ci_reported_bash": "/bin/bash 3.2.57",
+    "ci_reported_action": "Use the same Python directory plus system directories in both original and repaired phases; assert real /bin/bash; no Python 3.9 baseline executed.",
+    "observation_scope": "Interpreter paths and versions in this object come from the CI agent message, not an independent native query by this reviewer."
+  },
+  "other_api_scope": [
+    "Path.is_relative_to is documented as available in Python 3.9 and is not this incompatibility.",
+    "No runtime compatibility or 57-test success is inferred from AST parsing or source review.",
+    "The additional directly referenced shell source bodies were only identity-checked/read; no shell or Python module was executed."
+  ],
+  "primary_sources": [
+    {
+      "url": "https://docs.python.org/3.10/whatsnew/3.10.html#pep-604-new-type-union-operator",
+      "supports": "Runtime X | Y type unions are a Python 3.10 feature."
+    },
+    {
+      "url": "https://docs.python.org/3.9/library/pathlib.html#pathlib.PurePath.is_relative_to",
+      "supports": "is_relative_to is available since Python 3.9."
+    }
+  ],
+  "preserved": {
+    "original_tests": true,
+    "original_57_scope": true,
+    "assertions": true,
+    "budgets": true,
+    "bash_repair_candidate": true
+  },
+  "not_performed": [
+    "native command",
+    "module import/execution",
+    "57 tests",
+    "Cargo/Bazel",
+    "source or ref modification"
+  ]
+}

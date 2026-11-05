@@ -1,0 +1,112 @@
+{
+  "schema": "hepta-macos-bash-empty-array-repair-v1",
+  "status": "STATIC_CANDIDATE_NATIVE_AND_ORIGINAL_57_PENDING",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "base_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+  "files": [
+    {
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "mode": "100755",
+      "preimage": {
+        "bytes": 17214,
+        "sha256": "c98766a076b79dc00f08104989faf55cce56375da8ff8ac5d14fb4686b1d6fe7",
+        "blob": "204c0ac2481f70cc977f777eb2299b740f7ddc17"
+      },
+      "postimage": {
+        "bytes": 17448,
+        "sha256": "0136e087ddfac7c01bdacb03357d0353d328dea3b8cd86caf94e64bf10706482",
+        "blob": "42b59b6354b5933c8155b992519682c06d024ca1"
+      }
+    }
+  ],
+  "patch": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/macos-bash-empty-array-20261105/macos-empty-array.patch",
+    "bytes": 2657,
+    "sha256": "20129b8afcbff717a43f5eb2c912631329c2218a41a998dc93b77134a51da42b",
+    "blob": "40f46eeed9ce546829109207b68ca86f4b1af120"
+  },
+  "original_failure": {
+    "job_id": 127089468398,
+    "platform": "macOS ARM workflow job; test fixture intentionally sets RUNNER_OS=Windows while using the host Bash",
+    "raw": {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/terminal/mac-arm-native-wrapper-127089468398/job.log",
+      "bytes": 23085,
+      "sha256": "543fd9437a0b3468209d7c8ff1b3a964a0089b752c11ba339e20e54d6e86f1b7",
+      "blob": "7cf1910264a85f493c6e208612066acccdf41637"
+    },
+    "failure_block": {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/terminal/mac-arm-native-wrapper-127089468398/original-three-failures-block.log.txt",
+      "bytes": 3686,
+      "sha256": "c8b10f6ffb08c724a0ee56acb34d91ded4f0204e0f69130e81e489bcbd0f88a2",
+      "blob": "7bc74651642d4bbb5131872c953509c05c18721c"
+    },
+    "original_command": "python -m unittest discover -s .github/scripts -p 'test_run_bazel*.py'",
+    "tests": 57,
+    "failures": 3,
+    "duration_seconds": 5.184,
+    "cases": [
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_conflicting_selected_summaries_do_not_read_existing_logs",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_missing_selected_logs_preserve_success_and_failure_status (original_status=0)",
+      "test_run_bazel_ci.RunBazelCiIntegrationTest.test_success_retains_reported_targets_and_preserves_status_scope"
+    ],
+    "observed_stderr": "run-bazel-ci.sh: line 98: failed_targets[@]: unbound variable",
+    "line_scope": "98 is the function definition. The unguarded value expansion is the tail loop at original line 163, after an empty failed_targets array passes the retained-target path.",
+    "bash_version_observed": null
+  },
+  "cause": {
+    "observed": "An empty failed-target list with nonempty selected-retention results reaches an unconditional array value expansion under nounset. Collection stops before the selected-target manifest is written.",
+    "minimal_repair": "Only iterate the failed-target tail loop when its original array length is positive. Keep selected-target collection outside this guard.",
+    "same_problem_full_context": "The output-root lookup loop also directly expands potentially empty post_config_bazel_args. Build its same ordered input from the already-nonempty bazel_args and append post-config entries only when nonempty.",
+    "latent_scope": "The optional-post-config path is a directly reachable static hazard, not an additional reproduced failure. The three failed wrapper tests inherit Windows/repo-cache post flags from their common setUp.",
+    "no_version_inference": "The original log does not print Bash --version; no exact Bash version or new platform reproduction is claimed."
+  },
+  "preservation": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/macos-bash-empty-array-20261105/preservation.json",
+    "bytes": 5852,
+    "sha256": "54f772b211396bc228067a508d12e3661a0686a9b4b5cf867fea5c3251caa9f7",
+    "blob": "c7acafbf886e5adb08b150dcca8ce5e9a54229e3"
+  },
+  "pending_gates": [
+    "Root/independent static review of the one-file patch.",
+    "Original complete 57-test Python command using the unchanged tests; record actual host/Bash version without labeling other hosts as macOS qualification.",
+    "Fresh original macOS hosted workflow gate; Windows original 57-test scope remains unchanged."
+  ],
+  "not_changed": [
+    "set -euo pipefail",
+    "collector Python and its tests",
+    "success/FLAKY/SKIP/cache distinctions",
+    "retention allowlist",
+    "Bazel arguments and target order",
+    "test filters/retries/deadlines",
+    "failed tail200",
+    "selected/failure artifact provenance",
+    "original Bazel exit status"
+  ],
+  "native_executed": false,
+  "refs_changed": false,
+  "mode_evidence": {
+    "source_map": {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/app-epoch2-decoded/source-map.json",
+      "bytes": 10059,
+      "sha256": "e1685c6b1122e93a0bc6c264122bc1b540f9b465f6fc4c61fd77e8ecfe533fcf",
+      "blob": "1d8bb948a06415edc30597c3743446c5d811affb"
+    },
+    "source_tree": "f8251e1d14fa8524ab469281296cd4cf708f173c",
+    "entry": {
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "mode": "100755",
+      "git_blob": "204c0ac2481f70cc977f777eb2299b740f7ddc17",
+      "bytes": 17214,
+      "sha256": "c98766a076b79dc00f08104989faf55cce56375da8ff8ac5d14fb4686b1d6fe7"
+    },
+    "scope": "Inherited executable mode; no mode change is proposed. Exact current source bytes are independently pinned at 0e139."
+  },
+  "isolated_static_verification": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/macos-bash-empty-array-20261105/static-verification.json",
+    "bytes": 2137,
+    "sha256": "98274b0447e733a2f00d3c281c1a184d1550b174b225ab9a1c505780ab891d11",
+    "blob": "d5ed109e4a47235be87bd264b8a43179ef3b5db3"
+  },
+  "static_verification_scope": "Six isolated cloud Git/syntax commands, all exit zero. No original CI test, wrapper invocation, Bazel, or native-host execution."
+}

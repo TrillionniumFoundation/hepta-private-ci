@@ -1,0 +1,36 @@
+{
+  "schema": "hepta-product-continuation-publication-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4797,
+  "branch": "fix/r3-original-product-contracts-20261104",
+  "mutation_utc": "2026-11-05T09:02:20Z",
+  "head_readback_utc": "2026-11-05T09:02:33Z",
+  "previous_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "expected_sha_matched": true,
+  "force": false,
+  "published_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "published_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+  "merge_commit": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+  "merge_parents": [
+    "63652be658ebed8d3052eb789b951793384fd5e4",
+    "5b6331250ff459033bd44d1a95daec70131277cc"
+  ],
+  "pr_draft": true,
+  "pr_state": "open",
+  "body_exact_get_readback": true,
+  "scope": {
+    "commits": 7,
+    "paths": 10,
+    "linux_pty_original_cases": 29,
+    "linux_pty_all_pass": true,
+    "linux_pty_fix_fmt_and_final_diffchecks_complete": true,
+    "linux_pty_test_tree": "73f4b30499524d6137bb8f4b40c3977de286d1a5",
+    "linux_pty_formatted_tree": "ae8ce55dc264cdca2dd4a125d473fbca030f45e2",
+    "mac_original57_pending": true,
+    "full_new_head_original_ci_pending": true,
+    "all_original_blockers_closed": false
+  },
+  "decision": "Publish the already reviewed seven-commit candidate to the existing Draft while the fixed Mac checkout is still fetching, so original platform CI can execute concurrently. Local Mac tests remain pending and neither old platform results nor build preparation supply new-head qualification.",
+  "old_original_cancellation_cause": "UNKNOWN; no retroactive attribution to this publication"
+}

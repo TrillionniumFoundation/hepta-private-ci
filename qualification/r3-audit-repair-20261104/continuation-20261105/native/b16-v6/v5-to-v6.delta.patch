@@ -1,0 +1,788 @@
+diff --git a/b16_build_only.py b/b16_build_only.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..4a62c1071298258f1baa0d59fe44ef4de364b8ef
+--- /dev/null
++++ b/b16_build_only.py
+@@ -0,0 +1,192 @@
++"""A current-host build cache is never evidence that A tests were executed."""
++
++import collections
++import json
++import os
++from pathlib import Path
++import platform
++
++from b16_guard import need, same_record
++
++MODE = "BUILD_ONLY_CURRENT_HOST"
++
++
++def validate_mode_binding(binding):
++    pin = binding.get("current_host_build_only_baseline", {})
++    need(pin.get("path") and pin.get("sha256") and isinstance(pin.get("bytes"), int),
++         "actual current-host build-only baseline is missing; this template cannot run")
++    need(binding.get("build_only_host") and binding.get("build_only_cache_owner"),
++         "bind the actual current host and cache owner")
++    need(pin["sha256"] != binding.get("last_tested_A_artifacts", {}).get("sha256"),
++         "build-only evidence cannot replace the historical tested-A receipt")
++
++
++def pinned_json(pin):
++    need(same_record(pin["path"], pin), "build-only original receipt bytes changed: " + pin["path"])
++    return json.loads(Path(pin["path"]).read_bytes())
++
++
++def observed_host():
++    return {"uname": list(platform.uname()), "uid": os.getuid(), "euid": os.geteuid()}
++
++
++def byte_id(row):
++    return {key: row[key] for key in ("bytes", "sha256")}
++
++
++def load_build_only(binding):
++    """Validate pinned original build receipts; no compilation or test execution."""
++    from b16_family import metadata_projection, digest
++    from b16_native import HELPERS, check_helper_roster
++
++    validate_mode_binding(binding)
++    receipt = pinned_json(binding["current_host_build_only_baseline"])
++    need(receipt.get("schema") == "hepta-b16-current-host-build-only-baseline-v1" and
++         receipt.get("role") == MODE and receipt.get("tests_executed") is False and
++         receipt.get("test_qualification") is False,
++         "current-host cache must remain BUILD_ONLY, without A test qualification")
++    historical = pinned_json(binding["last_tested_A_artifacts"])
++    need(historical.get("role") != MODE and historical["source"] == binding["last_tested_A_tree"] and
++         historical["cargo_profile"] == "dev-small" and historical["nextest_profile"] == "local",
++         "historical tested-A identity cannot be relabeled from a build-only receipt")
++    need(receipt["host"] == binding["build_only_host"] and
++         all(receipt["host"].get(key) == value for key, value in observed_host().items()),
++         "build-only receipt belongs to another host or user")
++    need(receipt["cache_owner"] == binding["build_only_cache_owner"], "build-only cache owner differs")
++    need(receipt["source_tree"] == binding["final_A_tree"] and
++         receipt["source_commit"] == binding["ordinary_head"], "build-only source identity differs")
++    need(receipt["source_directory"] == binding["source_directory"] and
++         receipt["target_directory"] == binding["target_directory"], "build-only source/target paths differ")
++    need(byte_id(receipt["ordinary_index"]) == byte_id(binding["ordinary_index"]), "build-only ordinary index differs")
++    tools = lambda rows: sorted(({key: row[key] for key in ("name", "path", "bytes", "sha256")} for row in rows), key=lambda row: row["name"])
++    recipes = lambda rows: sorted(({key: row[key] for key in ("path", "bytes", "sha256")} for row in rows), key=lambda row: row["path"])
++    need(receipt["cargo_profile"] == "dev-small" and tools(receipt["tools"]) == tools(binding["tools"]) and
++         recipes(receipt["recipe_sources"]) == recipes(binding["recipe_sources"]), "build-only recipe/tools/profile differ")
++    need(set(receipt["locks"]) == {"codex-rs/Cargo.lock", "MODULE.bazel.lock"}, "build-only locks missing")
++    if binding["authorized_epoch"] in ("foundation", "driver"):
++        need({key: byte_id(row) for key, row in receipt["locks"].items()} ==
++             {key: byte_id(row) for key, row in binding["locks"].items()}, "pre-adoption build-only locks differ")
++    need(receipt["environment"] == binding["environment"], "build-only effective environment differs")
++    need(len(receipt["source_guards"]) == len({pin["path"] for pin in receipt["source_guards"]}) == 6,
++         "three original build commands need both distinct source fences")
++    for pin in receipt["source_guards"]:
++        guard = pinned_json(pin)
++        files = {row["path"]: row for row in guard["guarded_files"]}
++        need(guard["working_tree"] == guard["head_tree"] == receipt["source_tree"] and
++             guard["head"] == receipt["source_commit"] and
++             byte_id(guard["ordinary_index"]) == byte_id(receipt["ordinary_index"]) and
++             all(byte_id(files[str(Path(receipt["source_directory"]) / key)]) == byte_id(row)
++                 for key, row in receipt["locks"].items()) and guard["untracked"] == [],
++             "build-only source/index/lock fence differs")
++    argv = ["cargo", "build", "--locked", "--profile", "dev-small", "--message-format=json-render-diagnostics"]
++    for package, binaries in HELPERS.items():
++        argv += ["-p", package]
++        for binary in binaries:
++            argv += ["--bin", binary]
++    expected_commands = [argv, ["cargo", "metadata", "--locked", "--format-version=1"],
++                         ["cargo", "nextest", "list", "--locked", "--cargo-profile", "dev-small", "--message-format=json"]]
++    need(len(receipt["commands"]) == 3, "build-only requires the three complete original commands")
++    for command, expected in zip(receipt["commands"], expected_commands, strict=True):
++        need(command["argv"] == expected and command["exit_code"] == 0 and
++             command["cwd"] == str(Path(receipt["source_directory"]) / "codex-rs") and
++             command["source_before"] == command["source_after"] == receipt["source_tree"],
++             "build-only command, zero return code or source binding differs")
++        for stream in ("stdout", "stderr"):
++            need(same_record(command[stream]["path"], command[stream]), "build-only complete command output changed")
++    need(all(receipt[key][field] == receipt["commands"][index]["stdout"][field]
++             for key, index in (("metadata", 1), ("catalog", 2)) for field in ("path", "bytes", "sha256")),
++         "build-only raw command output association differs")
++    metadata, catalog = pinned_json(receipt["metadata"]), pinned_json(receipt["catalog"])
++    need(metadata["workspace_root"] == str(Path(receipt["source_directory"]) / "codex-rs") and
++         metadata["target_directory"] == receipt["target_directory"] and
++         catalog["rust-build-meta"]["target-directory"] == receipt["target_directory"], "build-only metadata paths differ")
++    need(len(metadata["workspace_members"]) == 193 and len(metadata["resolve"]["nodes"]) == 1501 and
++         sorted(metadata["workspace_default_members"]) == sorted(metadata["workspace_members"]) and
++         {row["id"] for row in metadata["packages"]} == {row["id"] for row in metadata["resolve"]["nodes"]},
++         "build-only metadata is not the full original A graph")
++    if binding["authorized_epoch"] == "foundation":
++        need(digest(metadata_projection(metadata)) == digest(metadata_projection(pinned_json(binding["baseline_metadata"]))),
++             "foundation baseline metadata differs from the actual current-host build")
++    normal = receipt["normal_helpers_before_catalog"]
++    messages = [json.loads(line) for line in Path(receipt["commands"][0]["stdout"]["path"]).read_text().splitlines()]
++    need([m for m in messages if m.get("reason") == "build-finished"] == [{"reason": "build-finished", "success": True}],
++         "normal helper build did not finish exactly once")
++    names = {name for binaries in HELPERS.values() for name in binaries}
++    built = [m for m in messages if m.get("reason") == "compiler-artifact" and
++             m.get("executable") and m["target"]["name"] in names]
++    need(len(normal) == len(built) == 6 and {row["target"] for row in normal} == names, "build-only normal helper roster differs")
++    for row in normal:
++        match = [m for m in built if m["target"]["name"] == row["target"]]
++        need(isinstance(row["bytes"], int) and row["bytes"] > 0 and len(row["sha256"]) == 64 and
++             len(match) == 1 and match[0]["executable"] == row["path"] and
++             all(match[0][key] == row[key] for key in ("package_id", "features", "fresh")),
++             "normal helper identity/features differ from compiler output")
++    programs, helpers = receipt["programs_after_catalog"], receipt["helpers_after_catalog"]
++    need(len(programs) == len(catalog["rust-suites"]) == 363 and len(helpers) == 33,
++         "complete current-host 363 programs and 33 helpers are required")
++    need(collections.Counter((row["binary_id"], row["path"]) for row in programs) ==
++         collections.Counter((key, row["binary-path"]) for key, row in catalog["rust-suites"].items()),
++         "program receipt does not cover the complete unfiltered catalog")
++    packages = {package["id"]: package["name"] for package in metadata["packages"]}
++    helper_packages = {binary: package for package, binaries in HELPERS.items() for binary in binaries}
++    need(all(packages.get(row["package-id"]) == row["package-name"] for row in catalog["rust-suites"].values()) and
++         all(packages.get(row["package_id"]) == helper_packages[row["target"]] for row in normal),
++         "catalog/normal helper package identities differ from full metadata")
++    need(all(item["filter-match"]["status"] == "matches" for suite in catalog["rust-suites"].values()
++             for item in suite["testcases"].values()), "build-only catalog was filtered")
++    check_helper_roster(helpers, binding["A_helper_basename_roster"])
++    need(collections.Counter(Path(row["path"]).name for row in historical["helpers_after_catalog_before_just"]) ==
++         collections.Counter(binding["A_helper_basename_roster"]), "historical helper name contract changed")
++    paths = {row["path"] for row in normal}
++
++    def visit(value):
++        if isinstance(value, dict):
++            if value.get("kind") == "bin-exe" and isinstance(value.get("path"), str):
++                path = Path(value["path"])
++                paths.add(str(path if path.is_absolute() else Path(receipt["target_directory"]) / path))
++            for child in value.values():
++                visit(child)
++        elif isinstance(value, list):
++            for child in value:
++                visit(child)
++    visit(catalog["rust-build-meta"]["non-test-binaries"])
++    need(len(paths) == 33 and collections.Counter(row["path"] for row in helpers) == collections.Counter(paths),
++         "helper identities do not cover actual catalog plus normal helpers")
++    by_path = {row["path"]: row for row in helpers}
++    after = receipt["normal_helpers_after_catalog"]
++    need(len(after) == 6 and {row["target"] for row in after} == names, "post-catalog normal helper identities missing")
++    for row in after:
++        need(any(before["target"] == row["target"] and before["path"] == row["path"] for before in normal) and
++             all(row[key] == by_path[row["path"]][key] for key in ("bytes", "sha256")), "post-catalog helper hash association differs")
++    artifact = {"source": receipt["source_tree"], "packages": historical["packages"],
++                "helpers_after_catalog_before_just": helpers, "test_binaries_after_catalog_before_just": programs}
++    return {"receipt": receipt, "metadata": metadata, "catalog": catalog, "normal": normal, "artifact": artifact}
++
++
++def verify_current_outputs(context):
++    receipt = context["receipt"]
++    target = Path(receipt["target_directory"]).resolve()
++    for row in [*receipt["programs_after_catalog"], *receipt["helpers_after_catalog"]]:
++        path = Path(row["path"])
++        need(path.is_file() and path.resolve().is_relative_to(target) and path.stat().st_mode & 0o111 and
++             isinstance(row["bytes"], int) and row["bytes"] > 0 and same_record(path, row),
++             "current-host build-only artifact is missing, changed or outside its target: " + str(path))
++
++
++def current_family(binding, historical_family):
++    from b16_family import catalog_layout, digest, helper_layout, metadata_projection, normal_helper_layout
++
++    context = load_build_only(binding)
++    layout = catalog_layout(context["catalog"])
++    roles = lambda rows: [{key: row[key] for key in ("binary_id", "binary_name", "package_name", "kind", "build_platform")} for row in rows]
++    need(roles(layout) == roles(historical_family["complete_catalog_layout"]), "current-host catalog program roles differ from A")
++    return {"schema": "hepta-b16-build-only-output-family-v1", "role": MODE,
++            "source_tree": context["receipt"]["source_tree"], "tests_executed": False, "test_qualification": False,
++            "current_host_build_only_baseline": binding["current_host_build_only_baseline"],
++            "historical_roster_reference": {"source_tree": binding["last_tested_A_tree"], "receipt": binding["last_tested_A_artifacts"]},
++            **{key: historical_family[key] for key in ("payload_sha256", "foundation_delta_order", "foundation_source_paths")},
++            "complete_metadata_projection_sha256": digest(metadata_projection(context["metadata"])),
++            "complete_rust_build_meta_sha256": digest(context["catalog"]["rust-build-meta"]),
++            "complete_catalog_layout": layout,
++            "normal_six_helper_layout": normal_helper_layout(context["normal"], binding["target_directory"]),
++            "complete_helper_relative_paths": helper_layout(context["receipt"]["helpers_after_catalog"], binding["target_directory"])}
+diff --git a/b16_capacity.py b/b16_capacity.py
+index d256fad2b2a0f098eaf162ca21f52cb53bc18934..4966c059c39ba5f7342feb40f88fda906607a32d 100644
+--- a/b16_capacity.py
++++ b/b16_capacity.py
+@@ -10,11 +10,21 @@
+ 
+ 
+ def cache_and_capacity(binding, baseline_metadata, manifest=None, operations=None):
+-    pin = binding["last_tested_A_artifacts"]
+-    need(same_record(pin["path"], pin), "last-tested A full artifact receipt changed")
+-    artifact = json.loads(Path(pin["path"]).read_bytes())
+-    need(artifact["source"] == binding["last_tested_A_tree"], "actual tested artifact source identity differs")
+-    need(artifact["cargo_profile"] == "dev-small" and artifact["nextest_profile"] == "local", "cache profile differs")
++    build_only = binding.get("target_reuse_mode") == "BUILD_ONLY_CURRENT_HOST"
++    if build_only:
++        from b16_build_only import load_build_only, verify_current_outputs
++        context = load_build_only(binding)
++        artifact = context["artifact"]
++        pin = binding["current_host_build_only_baseline"]
++        if binding["authorized_epoch"] == "foundation":
++            verify_current_outputs(context)
++    else:
++        pin = binding["last_tested_A_artifacts"]
++        need(same_record(pin["path"], pin), "last-tested A full artifact receipt changed")
++        artifact = json.loads(Path(pin["path"]).read_bytes())
++        need(artifact.get("role") != "BUILD_ONLY_CURRENT_HOST", "build-only evidence is not historical tested-A evidence")
++        need(artifact["source"] == binding["last_tested_A_tree"], "actual tested artifact source identity differs")
++        need(artifact["cargo_profile"] == "dev-small" and artifact["nextest_profile"] == "local", "cache profile differs")
+     # The cache's last compilation may precede final A formatting. That fact is
+     # explicit; each B scope rebuilds helpers/catalogue and records current bytes.
+     need(binding.get("last_tested_A_to_final_A_review"), "review the actual tested source versus final A")
+@@ -29,7 +39,7 @@
+     need(programs, "full A test-program identities missing")
+     observed_names = check_helper_roster(helpers, binding["A_helper_basename_roster"])
+     target = Path(binding["target_directory"]).resolve()
+-    need(target.is_dir() and target == Path(binding["final_A_target_directory"]).resolve(), "reuse the existing final A target")
++    need(target.is_dir() and (build_only or target == Path(binding["final_A_target_directory"]).resolve()), "reuse the existing approved target")
+     cache = Path(binding["bazel_cache_directory"]).resolve()
+     cache_existing = cache if cache.exists() else cache.parent
+     locations = [Path(binding["source_directory"]).resolve(),
+@@ -60,13 +70,19 @@
+     free = shutil.disk_usage(target).free
+     required = growth + binding["min_free_bytes"]
+     need(free >= required, "insufficient reviewed growth budget; stop without deleting caches or reducing scope")
+-    return {"target_reuse_mode": "reuse_final_A", "target_directory": str(target),
+-            "final_A_tree": binding["final_A_tree"], "last_tested_A_tree": artifact["source"],
++    result = {"target_reuse_mode": "BUILD_ONLY_CURRENT_HOST" if build_only else "reuse_final_A", "target_directory": str(target),
++            "final_A_tree": binding["final_A_tree"], "last_tested_A_tree": binding["last_tested_A_tree"],
+             "last_tested_A_to_final_A_review": binding["last_tested_A_to_final_A_review"],
+-            "original_full_artifact_receipt": pin, "complete_helper_basename_roster": observed_names,
++            "original_full_artifact_receipt": binding["last_tested_A_artifacts"], "complete_helper_basename_roster": observed_names,
+             "known_executable_files": len(rows), "known_executable_bytes": artifact_bytes,
+             "actual_free_bytes": free, "required_free_bytes": required, "remaining_growth_plan": budget,
+             "same_filesystem_locations": [str(p) for p in locations],
+             "initial_cache_copy_bytes": 0, "existing_cache_deleted": False,
+             "foundation_only_output_family_review": foundation_reuse,
+             "limit": "File-byte observations are not total target allocation or a proven compiler peak. Extra rlib/object/Bazel/evidence allowances are explicitly reviewed estimates. Per-command 8 GB reserve checks remain; a failed estimate stops the epoch without cleanup or selection changes."}
++    if build_only:
++        result["current_host_build_only_cache"] = {"receipt": pin, "source_tree": artifact["source"],
++            "host": context["receipt"]["host"], "owner": context["receipt"]["cache_owner"],
++            "tests_executed": False, "test_qualification": False,
++            "artifact_hashes_checked_at_foundation_entry": binding["authorized_epoch"] == "foundation"}
++    return result
+diff --git a/b16_family.py b/b16_family.py
+index 70afe63df908f6d66747af879c638fede907fd63..cd88578b832200f3fc96435f490440742dc76528 100644
+--- a/b16_family.py
++++ b/b16_family.py
+@@ -69,6 +69,9 @@
+     need(family["last_tested_A_tree"] == binding["last_tested_A_tree"], "family belongs to another tested source")
+     need(family["last_tested_A_artifact_sha256"] == binding["last_tested_A_artifacts"]["sha256"],
+          "family and original full artifact receipt differ")
++    if binding.get("target_reuse_mode") == "BUILD_ONLY_CURRENT_HOST":
++        from b16_build_only import current_family
++        return current_family(binding, family)
+     return family
+ 
+ 
+@@ -127,9 +130,14 @@
+         output = target / relative
+         need(output.is_file() and output.resolve().is_relative_to(target) and output.stat().st_mode & 0o111,
+              "the complete existing output family is missing or outside the target: " + relative)
+-    return {"family_sha256": binding["approved_foundation_output_family_sha256"],
++    result = {"family_sha256": binding["approved_foundation_output_family_sha256"],
+             "existing_catalog_units": len(family["complete_catalog_layout"]),
+             "existing_helper_paths": len(family["complete_helper_relative_paths"]),
+             "existing_executable_paths_checked": len(paths), "foundation_source_paths": family["foundation_source_paths"],
+             "full_metadata_projection_equal": True,
+             "limit": "Output-path reuse supports this conditional allowance, not a measured 12 GB compiler/linker peak. Fresh per-phase metadata, normal helpers, full catalog and complete helper path checks remain mandatory."}
++    if binding.get("target_reuse_mode") == "BUILD_ONLY_CURRENT_HOST":
++        result.update({"family_sha256": digest(family), "role": "BUILD_ONLY_CURRENT_HOST",
++                       "current_host_build_only_baseline": binding["current_host_build_only_baseline"],
++                       "tests_executed": False, "test_qualification": False})
++    return result
+diff --git a/b16_guard.py b/b16_guard.py
+index 9d1c5716db2b50ef86a689fe43db18816d06b561..a9a38d14c220be4c44336a6fefac08a168e52dcf 100644
+--- a/b16_guard.py
++++ b/b16_guard.py
+@@ -61,8 +61,12 @@
+     need(b["baseline_metadata"].get("source_tree") == b["initial_tree"], "metadata must describe this epoch's actual initial source")
+     need(b.get("allowed_untracked_source_paths") == [], "review nonempty untracked allowlist separately")
+     need(b.get("min_free_bytes") == 8000000000, "keep the existing 8 GB prerequisite")
+-    need(b.get("target_reuse_mode") == "reuse_final_A" and b.get("final_A_target_directory") == b.get("target_directory"),
+-         "all five epochs must explicitly reuse the same final A dev-small target")
++    if b.get("target_reuse_mode") == "BUILD_ONLY_CURRENT_HOST":
++        from b16_build_only import validate_mode_binding
++        validate_mode_binding(b)
++    else:
++        need(b.get("target_reuse_mode") == "reuse_final_A" and b.get("final_A_target_directory") == b.get("target_directory"),
++             "all five epochs must explicitly reuse the same final A dev-small target")
+     need(b.get("last_tested_A_artifacts", {}).get("sha256") and b.get("A_helper_basename_roster") and
+          b.get("last_tested_A_to_final_A_review"),
+          "actual last-tested A artifact receipt, full helper roster and final-source relation review are required")
+diff --git a/b16_runner.py b/b16_runner.py
+index 8c22122bb42749a5db955f006bc9e7003ac2f0c6..4c8c2477189b84c6fe7b19c09fd27255bc7d1b66 100644
+--- a/b16_runner.py
++++ b/b16_runner.py
+@@ -105,6 +105,10 @@
+     for field in ("target_directory", "bazel_cache_directory", "bazel_cache_owner", "A_helper_basename_roster", "last_tested_A_tree", "last_tested_A_to_final_A_review"):
+         need(previous[field] == binding[field], "epoch cache/helper contract changed: " + field)
+     need(previous["last_tested_A_artifacts"]["sha256"] == binding["last_tested_A_artifacts"]["sha256"], "last-tested A artifact identity changed")
++    need(previous.get("target_reuse_mode", "reuse_final_A") == binding["target_reuse_mode"], "epoch cache provenance mode changed")
++    if binding["target_reuse_mode"] == "BUILD_ONLY_CURRENT_HOST":
++        for field in ("current_host_build_only_baseline", "build_only_host", "build_only_cache_owner"):
++            need(previous[field] == binding[field], "epoch build-only cache provenance changed: " + field)
+     need(previous["metadata_graph"] == graph(json.loads(Path(binding["baseline_metadata"]["path"]).read_bytes())),
+          "next epoch metadata differs from prior qualified graph")
+     return previous
+@@ -235,6 +239,9 @@
+                        "commands": native.commands, "reviews": [{k: v for k, v in x.items() if k != "cases"} for x in native.reviews],
+                        "post_hygiene_tests_run": False, "platform_matrix_or_B16_closed": False,
+                        "open_limits": manifest["open_limits"]}
++            if binding["target_reuse_mode"] == "BUILD_ONLY_CURRENT_HOST":
++                receipt.update({field: binding[field] for field in (
++                    "target_reuse_mode", "current_host_build_only_baseline", "build_only_host", "build_only_cache_owner")})
+             guard.save("epoch-terminal", receipt)
+             export_evidence(guard)
+         if error or status == "SOURCE_GUARD_FAILED":
+diff --git a/binding-template-UNBOUND.json b/binding-template-UNBOUND.json
+index 26df49ee55981cf2397320c6cd98715a7f222110..334353962fb8652d4af681e140b07b5a1ee02500 100644
+--- a/binding-template-UNBOUND.json
++++ b/binding-template-UNBOUND.json
+@@ -14,7 +14,7 @@
+     "sha256": null
+   },
+   "approved_payload_sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+-  "approved_runner_integrity_sha256": "3e019a1bb9d8f56aef1765cb75592a971bfeb4b151e86de5cc216d3d0bd1a982",
++  "approved_runner_integrity_sha256": "19864e37e4c27c79a22b5c4be99730d00bd03382d5f5ac1c6a0239e528592572",
+   "source_directory": null,
+   "target_directory": null,
+   "target_reuse_mode": "reuse_final_A",
+diff --git a/foundation-binding-UNBOUND.json b/foundation-binding-UNBOUND.json
+index 6cc8b109d0e3d5cff35d9f5b0b5228ec34677549..7e659026e546f17bda34c090b47226b4c81ecfe0 100644
+--- a/foundation-binding-UNBOUND.json
++++ b/foundation-binding-UNBOUND.json
+@@ -14,7 +14,7 @@
+     "sha256": null
+   },
+   "approved_payload_sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
+-  "approved_runner_integrity_sha256": "3e019a1bb9d8f56aef1765cb75592a971bfeb4b151e86de5cc216d3d0bd1a982",
++  "approved_runner_integrity_sha256": "19864e37e4c27c79a22b5c4be99730d00bd03382d5f5ac1c6a0239e528592572",
+   "source_directory": null,
+   "target_directory": null,
+   "target_reuse_mode": "reuse_final_A",
+diff --git a/foundation-build-only-binding-UNBOUND.json b/foundation-build-only-binding-UNBOUND.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..14d7f62530741d9e77cbb3f9c8fbc5b9d4ff88d6
+--- /dev/null
++++ b/foundation-build-only-binding-UNBOUND.json
+@@ -0,0 +1,154 @@
++{
++  "schema": "hepta-b16-explicit-native-binding-v6-build-only-current-host",
++  "internal_stage_ids_are_not_original_blocker_ids": true,
++  "execute": false,
++  "approval_reference": null,
++  "authorized_epoch": "foundation",
++  "final_A_tree": null,
++  "last_tested_A_tree": null,
++  "last_tested_A_to_final_A_review": null,
++  "initial_tree": null,
++  "ordinary_head": null,
++  "ordinary_index": {
++    "bytes": null,
++    "sha256": null
++  },
++  "approved_payload_sha256": "a34cd6c5400deff4fedfffcb1f4f170eecabbb6bbfab1916829ab3911e986237",
++  "approved_runner_integrity_sha256": "19864e37e4c27c79a22b5c4be99730d00bd03382d5f5ac1c6a0239e528592572",
++  "source_directory": null,
++  "target_directory": null,
++  "target_reuse_mode": "BUILD_ONLY_CURRENT_HOST",
++  "final_A_target_directory": null,
++  "last_tested_A_artifacts": {
++    "path": null,
++    "bytes": null,
++    "sha256": null
++  },
++  "A_helper_basename_roster": null,
++  "evidence_directory": null,
++  "bazel_cache_directory": null,
++  "bazel_cache_owner": null,
++  "capacity_plan": {
++    "additional_executable_families": 0,
++    "other_cargo_growth_bytes": 12000000000,
++    "bazel_growth_bytes": 0,
++    "evidence_growth_bytes": 2000000000,
++    "estimate_review_reference": null
++  },
++  "previous_epoch_receipt": null,
++  "baseline_metadata": {
++    "source_tree": null,
++    "path": null,
++    "bytes": null,
++    "sha256": null
++  },
++  "allowed_untracked_source_paths": [],
++  "locks": {
++    "codex-rs/Cargo.lock": {
++      "bytes": null,
++      "sha256": null
++    },
++    "MODULE.bazel.lock": {
++      "bytes": null,
++      "sha256": null
++    }
++  },
++  "cargo_profile": "dev-small",
++  "nextest_profile": "local",
++  "junit_relative_path": "codex-rs/target/nextest/local/junit.xml",
++  "min_free_bytes": 8000000000,
++  "tools": [
++    {
++      "name": "git",
++      "path": null,
++      "bytes": null,
++      "sha256": null
++    },
++    {
++      "name": "cargo",
++      "path": null,
++      "bytes": null,
++      "sha256": null
++    },
++    {
++      "name": "rustc",
++      "path": null,
++      "bytes": null,
++      "sha256": null
++    },
++    {
++      "name": "just",
++      "path": null,
++      "bytes": null,
++      "sha256": null
++    },
++    {
++      "name": "cargo-nextest",
++      "path": null,
++      "bytes": null,
++      "sha256": null
++    },
++    {
++      "name": "bazel",
++      "path": null,
++      "bytes": null,
++      "sha256": null
++    }
++  ],
++  "recipe_sources": [
++    {
++      "path": "justfile",
++      "bytes": null,
++      "sha256": null
++    },
++    {
++      "path": "scripts/run-nextest.py",
++      "bytes": null,
++      "sha256": null
++    },
++    {
++      "path": "scripts/check-module-bazel-lock.sh",
++      "bytes": null,
++      "sha256": null
++    },
++    {
++      "path": ".bazelrc",
++      "bytes": null,
++      "sha256": null
++    },
++    {
++      "path": "defs.bzl",
++      "bytes": null,
++      "sha256": null
++    }
++  ],
++  "environment": {
++    "PATH": null,
++    "CARGO_TARGET_DIR": null,
++    "CARGO_INCREMENTAL": "0",
++    "CARGO_BUILD_JOBS": "4",
++    "RUSTUP_TOOLCHAIN": "1.95.0",
++    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
++    "PYTHONDONTWRITEBYTECODE": "1",
++    "NEXTEST_PROFILE": "local",
++    "DOTSLASH_CACHE": null,
++    "UV_CACHE_DIR": null,
++    "UV_PYTHON_DOWNLOADS": "never",
++    "RUSTY_V8_ARCHIVE": null,
++    "RUSTY_V8_SRC_BINDING_PATH": null
++  },
++  "approved_foundation_output_family_sha256": "5f63fcb507e899cc19df88e86efe997a34929edd5f45c83e7f7197987149a204",
++  "current_host_build_only_baseline": {
++    "path": null,
++    "bytes": null,
++    "sha256": null
++  },
++  "build_only_host": {
++    "alias": null,
++    "uname": null,
++    "uid": null,
++    "euid": null
++  },
++  "build_only_cache_owner": null,
++  "build_only_binding_limit": "Disabled. Populate only from complete actual P4 originals and root approval. Historical A artifacts retain their original source and internal ROG paths. BUILD_ONLY never grants A test qualification."
++}
+diff --git a/runner-integrity.json b/runner-integrity.json
+index 00d5e62ac363f4b427be5a598723fc903f2903f2..2a20bea1ed0a4665307b2a65dd4f6cb74b76e79f 100644
+--- a/runner-integrity.json
++++ b/runner-integrity.json
+@@ -1,23 +1,29 @@
+ {
+-  "schema": "hepta-b16-runner-integrity-v5-single-original-no-fail-fast",
++  "schema": "hepta-b16-runner-integrity-v6-build-only-current-host",
+   "files": [
+     {
++      "path": "b16_build_only.py",
++      "bytes": 13465,
++      "sha256": "f82e03761ea34691193c1ab035debc062ea0a953b80a875afb1e1ab97071b3b9",
++      "blob": "4a62c1071298258f1baa0d59fe44ef4de364b8ef"
++    },
++    {
+       "path": "b16_capacity.py",
+-      "bytes": 5269,
+-      "sha256": "60cab0aae4a5c77e51326e2324f4978509284f82dd51726b4c142151f241ed0d",
+-      "blob": "d256fad2b2a0f098eaf162ca21f52cb53bc18934"
++      "bytes": 6342,
++      "sha256": "1581bdda147f4a74bd41c421cd267686ee75c42619ce37eddc5e459e41a0174d",
++      "blob": "4966c059c39ba5f7342feb40f88fda906607a32d"
+     },
+     {
+       "path": "b16_family.py",
+-      "bytes": 7084,
+-      "sha256": "c493901416a861a3569a617e84321929a84a80906f69351a9ea3eb68ca60c9f2",
+-      "blob": "70afe63df908f6d66747af879c638fede907fd63"
++      "bytes": 7614,
++      "sha256": "6d18326d3dd6f539e85585c23cf682ae1c6cbfc1ef3e44c25fe750d37e006f8e",
++      "blob": "cd88578b832200f3fc96435f490440742dc76528"
+     },
+     {
+       "path": "b16_guard.py",
+-      "bytes": 10724,
+-      "sha256": "dfaa27e85dd1ee2843893af811484f7bc059583615a4234a716e3472d507bb3d",
+-      "blob": "9d1c5716db2b50ef86a689fe43db18816d06b561"
++      "bytes": 10896,
++      "sha256": "d0ba5a5746711a322438200498786044c8d561d9a256f7280a2c4791c6bd0389",
++      "blob": "a9a38d14c220be4c44336a6fefac08a168e52dcf"
+     },
+     {
+       "path": "b16_locks.py",
+@@ -39,9 +45,9 @@
+     },
+     {
+       "path": "b16_runner.py",
+-      "bytes": 15329,
+-      "sha256": "1a4aa7a1e2c79e91759e6e006ee699865d7c2827f77a2453e3bd6e0234953f60",
+-      "blob": "8c22122bb42749a5db955f006bc9e7003ac2f0c6"
++      "bytes": 16005,
++      "sha256": "f419dfa8e4cd98fc729c8b9851d8ea8ae3413a0fb1906358f8556920200b6944",
++      "blob": "4c8c2477189b84c6fe7b19c09fd27255bc7d1b66"
+     },
+     {
+       "path": "epoch-checkpoint.json",
+@@ -122,6 +128,12 @@
+       "blob": "e5a287d7ae1f8a0c77cec32ce1113a48e94f8daa"
+     },
+     {
++      "path": "test_build_only_guard.py",
++      "bytes": 11731,
++      "sha256": "f6bc6532a89b07ebee79226c0f0ada5be981f6a5b31af7349b0e6d8edd318aa8",
++      "blob": "cdc1ed8c08872f2ef950ec285775e9ad30ead116"
++    },
++    {
+       "path": "test_family_guard.py",
+       "bytes": 8509,
+       "sha256": "3c4ecffcf8c7bc4882c7a4f3455f044cfd226db72fe15559cf7b583d10ba7eb9",
+@@ -134,9 +146,5 @@
+       "blob": "378fe4b966d86cced0c89303c34c6ad7bf3b0d57"
+     }
+   ],
+-  "final_A_bound": false,
+-  "native_executed": false,
+-  "internal_stage_ids_are_not_original_blocker_ids": true,
+-  "display_namespace": "B16/phase",
+-  "prior_integrity_blob": "6ee6327fd264948ca518712166966292ac51bbe1"
++  "runtime_scope": "Existing native/test/oracle/lock/source payload code remains frozen; current-host build cache provenance is separate from historical A qualification."
+ }
+diff --git a/test_build_only_guard.py b/test_build_only_guard.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..cdc1ed8c08872f2ef950ec285775e9ad30ead116
+--- /dev/null
++++ b/test_build_only_guard.py
+@@ -0,0 +1,180 @@
++"""Only provenance guards, using tiny synthetic files; no native qualification."""
++
++import copy
++import json
++from pathlib import Path
++import tempfile
++import unittest
++
++from b16_build_only import MODE, load_build_only, observed_host, verify_current_outputs
++from b16_capacity import cache_and_capacity
++from b16_family import load_family
++from b16_guard import record
++from b16_native import HELPERS
++
++
++class BuildOnlyGuardTests(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory(prefix="hepta-b16-build-only-guard-")
++        self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name)
++        self.source, self.target = self.root / "source", self.root / "target"
++        self.source.mkdir()
++        self.target.mkdir()
++        frozen_path = Path(__file__).parent / "foundation-output-family.json"
++        self.family = json.loads(frozen_path.read_bytes())
++        self.names = [Path(path).name for path in self.family["complete_helper_relative_paths"]]
++        package_names = sorted({row["package_name"] for row in self.family["complete_catalog_layout"]} | set(HELPERS))
++        package_names += ["inactive-fixture-" + str(n) for n in range(193 - len(package_names))]
++        ids = {name: "path+file://" + str(self.source / name) + "#" + name for name in package_names}
++        self.metadata = {
++            "workspace_root": str(self.source / "codex-rs"), "target_directory": str(self.target),
++            "workspace_members": list(ids.values()), "workspace_default_members": list(ids.values()),
++            "resolve": {"nodes": [{"id": value, "features": [], "deps": []} for value in ids.values()] +
++                                 [{"id": "registry-fixture-" + str(n), "features": [], "deps": []} for n in range(1501 - len(ids))]},
++            "packages": [{"id": value, "name": name, "manifest_path": str(self.source / name / "Cargo.toml"),
++                          "features": {}, "targets": []} for name, value in ids.items()],
++        }
++        self.metadata["packages"] += [{"id": "registry-fixture-" + str(n), "name": "registry-fixture-" + str(n),
++            "manifest_path": str(self.root / "registry" / str(n) / "Cargo.toml"), "features": {}, "targets": []}
++            for n in range(1501 - len(ids))]
++        helpers = [self.executable("dev-small/" + name) for name in self.names]
++        programs, suites = [], {}
++        for row in self.family["complete_catalog_layout"]:
++            program = {"binary_id": row["binary_id"], **self.executable(row["relative_path"])}
++            programs.append(program)
++            suites[row["binary_id"]] = {
++                "binary-name": row["binary_name"], "package-name": row["package_name"],
++                "package-id": ids[row["package_name"]], "kind": row["kind"], "build-platform": row["build_platform"],
++                "binary-path": program["path"], "testcases": {"fixture": {"filter-match": {"status": "matches"}}},
++            }
++        self.catalog = {"rust-build-meta": {"target-directory": str(self.target),
++                           "non-test-binaries": [{"kind": "bin-exe", "path": row["path"]} for row in helpers]},
++                        "rust-suites": suites}
++        normal, messages = [], []
++        argv = ["cargo", "build", "--locked", "--profile", "dev-small", "--message-format=json-render-diagnostics"]
++        for package, binaries in HELPERS.items():
++            argv += ["-p", package]
++            for binary in binaries:
++                argv += ["--bin", binary]
++                path = self.target / "dev-small" / binary
++                normal.append({"target": binary, "package_id": ids[package], "features": [], "fresh": False, **record(path)})
++                messages.append({"reason": "compiler-artifact", "target": {"name": binary}, "package_id": ids[package],
++                                 "features": [], "fresh": False, "executable": str(path)})
++        messages.append({"reason": "build-finished", "success": True})
++        outputs = [self.write("normal.log", "".join(json.dumps(row) + "\n" for row in messages)),
++                   self.write("metadata.json", self.metadata), self.write("catalog.json", self.catalog)]
++        commands = []
++        argvs = [argv, ["cargo", "metadata", "--locked", "--format-version=1"],
++                 ["cargo", "nextest", "list", "--locked", "--cargo-profile", "dev-small", "--message-format=json"]]
++        tree, head = "4" * 40, "2" * 40
++        for index, args in enumerate(argvs):
++            commands.append({"argv": args, "cwd": str(self.source / "codex-rs"), "exit_code": 0,
++                             "source_before": tree, "source_after": tree, "stdout": outputs[index],
++                             "stderr": self.write(str(index) + ".stderr", "")})
++        index = self.write("ordinary-index", "fixture ordinary index")
++        locks = {name: self.write(name.replace("/", "-"), "fixture lock " + name)
++                 for name in ("codex-rs/Cargo.lock", "MODULE.bazel.lock")}
++        tools = [{"name": name, **self.write("tool-" + name, "fixture " + name)}
++                 for name in ("git", "cargo", "rustc", "just", "cargo-nextest", "bazel")]
++        recipes = [{"path": name, "bytes": 1, "sha256": "a" * 64}
++                   for name in ("justfile", "scripts/run-nextest.py", "scripts/check-module-bazel-lock.sh", ".bazelrc", "defs.bzl")]
++        historical = {"source": self.family["last_tested_A_tree"], "cargo_profile": "dev-small", "nextest_profile": "local",
++                      "packages": package_names,
++                      "helpers_after_catalog_before_just": [{**row, "path": "/historical-rog/dev-small/" + Path(row["path"]).name} for row in helpers]}
++        historical_pin = self.write("historical-tested-A.json", historical)
++        self.binding = {
++            "authorized_epoch": "foundation", "target_reuse_mode": MODE, "final_A_tree": tree, "initial_tree": tree,
++            "ordinary_head": head, "ordinary_index": index, "locks": locks, "tools": tools, "recipe_sources": recipes,
++            "source_directory": str(self.source), "target_directory": str(self.target),
++            "final_A_target_directory": "/historical-rog/target", "build_only_cache_owner": "synthetic-guard-fixture",
++            "build_only_host": {"alias": "synthetic-test-host", **observed_host()},
++            "last_tested_A_tree": self.family["last_tested_A_tree"], "last_tested_A_artifacts": historical_pin,
++            "last_tested_A_to_final_A_review": "synthetic-relation-only", "A_helper_basename_roster": self.names,
++            "baseline_metadata": {**outputs[1], "source_tree": tree}, "environment": {"CARGO_BUILD_JOBS": "4"},
++        }
++        guard = {"working_tree": tree, "head_tree": tree, "head": head, "ordinary_index": index,
++                 "guarded_files": [{**row, "path": str(self.source / key)} for key, row in locks.items()], "untracked": []}
++        self.receipt = {
++            "schema": "hepta-b16-current-host-build-only-baseline-v1", "role": MODE, "tests_executed": False,
++            "test_qualification": False, "host": self.binding["build_only_host"], "cache_owner": self.binding["build_only_cache_owner"],
++            "source_tree": tree, "source_commit": head, "source_directory": str(self.source), "target_directory": str(self.target),
++            "ordinary_index": index, "locks": locks, "cargo_profile": "dev-small", "tools": tools, "recipe_sources": recipes,
++            "environment": self.binding["environment"], "source_guards": [self.write("guard-" + str(n) + ".json", guard) for n in range(6)],
++            "commands": commands, "metadata": outputs[1], "catalog": outputs[2], "normal_helpers_before_catalog": normal,
++            "normal_helpers_after_catalog": [{"target": row["target"], **record(row["path"])} for row in normal],
++            "programs_after_catalog": programs, "helpers_after_catalog": helpers,
++        }
++        self.pin_receipt()
++
++    def write(self, name, content):
++        path = self.root / name
++        path.write_text(content if isinstance(content, str) else json.dumps(content))
++        return record(path)
++
++    def executable(self, relative):
++        path = self.target / relative
++        path.parent.mkdir(parents=True, exist_ok=True)
++        path.write_bytes(b"synthetic artifact; never executed\n")
++        path.chmod(0o700)
++        return record(path)
++
++    def pin_receipt(self):
++        self.binding["current_host_build_only_baseline"] = self.write("build-only.json", self.receipt)
++
++    def test_actual_context_is_accepted_but_different_host_or_source_is_rejected(self):
++        context = load_build_only(self.binding)
++        verify_current_outputs(context)
++        self.assertFalse(context["receipt"]["tests_executed"])
++        self.assertFalse(context["receipt"]["test_qualification"])
++        for field, replacement in (("build_only_host", {"alias": "another-host", **observed_host()}), ("final_A_tree", "8" * 40)):
++            changed = copy.deepcopy(self.binding)
++            changed[field] = replacement
++            with self.subTest(field=field), self.assertRaises(RuntimeError):
++                load_build_only(changed)
++
++    def test_missing_physical_program_is_rejected_after_complete_receipt(self):
++        context = load_build_only(self.binding)
++        Path(self.receipt["programs_after_catalog"][0]["path"]).unlink()
++        with self.assertRaisesRegex(RuntimeError, "artifact is missing"):
++            verify_current_outputs(context)
++
++    def test_build_only_cannot_masquerade_as_tested_or_hide_failed_build(self):
++        for field, value in (("tests_executed", True), ("test_qualification", True)):
++            self.receipt[field] = value
++            self.pin_receipt()
++            with self.subTest(field=field), self.assertRaisesRegex(RuntimeError, "without A test qualification"):
++                load_build_only(self.binding)
++            self.receipt[field] = False
++        self.receipt["commands"][2]["exit_code"] = 1
++        self.pin_receipt()
++        with self.assertRaisesRegex(RuntimeError, "zero return code"):
++            load_build_only(self.binding)
++        self.receipt["commands"][2]["exit_code"] = 0
++        self.pin_receipt()
++        changed = copy.deepcopy(self.binding)
++        changed["target_reuse_mode"] = "reuse_final_A"
++        changed["last_tested_A_artifacts"] = changed["current_host_build_only_baseline"]
++        with self.assertRaisesRegex(RuntimeError, "not historical tested-A"):
++            cache_and_capacity(changed, self.metadata)
++
++    def test_original_family_remains_historical_and_current_family_does_not_relabel_it(self):
++        family_pin = record(Path(__file__).parent / "foundation-output-family.json")
++        binding = {**self.binding, "approved_foundation_output_family_sha256": family_pin["sha256"]}
++        # This original file is the actual old family object, not relabeled data.
++        binding["last_tested_A_artifacts"]["sha256"] = self.family["last_tested_A_artifact_sha256"]
++        binding["target_reuse_mode"] = "reuse_final_A"
++        self.assertEqual(load_family(binding), self.family)
++        # Restore the test-only receipt pin and exercise the new branch separately.
++        binding["last_tested_A_artifacts"] = record(self.root / "historical-tested-A.json")
++        binding["target_reuse_mode"] = MODE
++        from b16_build_only import current_family
++        current = current_family(binding, self.family)
++        self.assertEqual(current["source_tree"], self.binding["final_A_tree"])
++        self.assertNotIn("last_tested_A_tree", current)
++        self.assertEqual(current["historical_roster_reference"]["source_tree"], self.family["last_tested_A_tree"])
++        self.assertFalse(current["test_qualification"])
++
++
++if __name__ == "__main__":
++    unittest.main(verbosity=2)

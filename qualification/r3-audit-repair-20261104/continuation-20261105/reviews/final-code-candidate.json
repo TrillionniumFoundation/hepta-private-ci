@@ -1,0 +1,149 @@
+{
+  "commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "parent": "755374e93dba69214622f91c71a3ccac708d6a76",
+  "native_tested_tree": "73f4b30499524d6137bb8f4b40c3977de286d1a5",
+  "native_formatted_tree": "ae8ce55dc264cdca2dd4a125d473fbca030f45e2",
+  "hygiene_root_review_blob": "f1d1ae028673dfb1aa950d8d910d6ad7b97c7343",
+  "product_ref_changed": true,
+  "compared_against_product_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "ahead_by": 7,
+  "behind_by": 0,
+  "files": [
+    {
+      "path": ".codespellrc",
+      "blob": "65a515a423f52fcea3c0e6462b913d7d3abb6fa1",
+      "status": "modified",
+      "additions": 156,
+      "deletions": 1
+    },
+    {
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "blob": "42b59b6354b5933c8155b992519682c06d024ca1",
+      "status": "modified",
+      "additions": 25,
+      "deletions": 19
+    },
+    {
+      "path": ".github/workflows/hepta-musl-product-smoke.yml",
+      "blob": "fb46a681b5c3cd47c76b20ef56048eae771d9e07",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 0
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "blob": "648a83164c0dd1c28499eaa17f842a83bb2aab04",
+      "status": "modified",
+      "additions": 1,
+      "deletions": 1
+    },
+    {
+      "path": "codex-rs/utils/pty/src/process.rs",
+      "blob": "4ef1f9cd35043437c93bededa867ebf473f4d474",
+      "status": "modified",
+      "additions": 32,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/utils/pty/src/pty.rs",
+      "blob": "e2e294464a2db6b65370afd98b7d49250ddaae2f",
+      "status": "modified",
+      "additions": 11,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/utils/pty/src/tests.rs",
+      "blob": "25836a08f9ff9a90b14204059d2544749a0f5461",
+      "status": "modified",
+      "additions": 4,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io.rs",
+      "blob": "67168dab510c9fd400a1cbcf4b4a6bb905b73c59",
+      "status": "modified",
+      "additions": 53,
+      "deletions": 4
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io_diagnostics.rs",
+      "blob": "3c9f68d86fb47d19d7baf549dfe6b6d5974c8070",
+      "status": "added",
+      "additions": 144,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73",
+      "status": "modified",
+      "additions": 3,
+      "deletions": 2
+    }
+  ],
+  "commits": [
+    {
+      "sha": "15bc63cea4cfd439b857f12f2f73c1c0efc91d23",
+      "tree": "61be8c6ffbada7b6eaa345a844e956b8604d868d",
+      "parents": [
+        "0e139b599f0fe451f80fb7db4b2913bb9c679dce"
+      ]
+    },
+    {
+      "sha": "c70bedd9d2aa69eb6af4e6205a4c0a760db2b341",
+      "tree": "57ca89232ed8941f14fd4a9129ba601324032798",
+      "parents": [
+        "15bc63cea4cfd439b857f12f2f73c1c0efc91d23"
+      ]
+    },
+    {
+      "sha": "f1484b3b39eeb206aab66cad7f75eeb08b79d614",
+      "tree": "1478fcc50cf9f7c6efe316a9119522c87afc8f24",
+      "parents": [
+        "c70bedd9d2aa69eb6af4e6205a4c0a760db2b341"
+      ]
+    },
+    {
+      "sha": "26a651d8cbcf44ca9b7b2e0f70604bf7da742994",
+      "tree": "905d96976fb339d2935ffd0d8f0949fee3f9585d",
+      "parents": [
+        "f1484b3b39eeb206aab66cad7f75eeb08b79d614"
+      ]
+    },
+    {
+      "sha": "814dbd8a4b16be1b63303ab1455a8d9b43aa4e0a",
+      "tree": "64918386b5de73209da15250dbb3f378b97f43f8",
+      "parents": [
+        "26a651d8cbcf44ca9b7b2e0f70604bf7da742994"
+      ]
+    },
+    {
+      "sha": "755374e93dba69214622f91c71a3ccac708d6a76",
+      "tree": "90f23620b03a66acea80424269c864f6915563bd",
+      "parents": [
+        "814dbd8a4b16be1b63303ab1455a8d9b43aa4e0a"
+      ]
+    },
+    {
+      "sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "parents": [
+        "755374e93dba69214622f91c71a3ccac708d6a76"
+      ]
+    }
+  ],
+  "mac_original_57_native_pending": true,
+  "pty_final_readonly_diff_checks_pending": false,
+  "all_original_blockers_closed": false,
+  "original_23_status_counts": {
+    "closed_scoped": 8,
+    "open": 14,
+    "scientific_hold": 1
+  },
+  "pty_final_readonly_diff_checks_blob": "9c21082edc4baba50058e4da15e2e6b63711c606",
+  "pty_linux_scoped_cohort_complete": true,
+  "published_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "publication_receipt": "product-publication-receipt-v1.json",
+  "published_at_utc": "2026-11-05T09:02:20Z",
+  "draft": true
+}

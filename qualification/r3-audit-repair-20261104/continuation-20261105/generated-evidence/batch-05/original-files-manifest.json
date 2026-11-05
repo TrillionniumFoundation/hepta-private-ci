@@ -1,0 +1,114 @@
+{
+  "schema": "hepta-ci-original-evidence-immutable-batch-v1",
+  "created_at_utc": "2026-11-05T08:26:33.067441+00:00",
+  "cutoff_api_snapshot_utc": "2026-11-05T08:25:35.846Z",
+  "scope": "Increment after batch04: final GNU and musl-label main test cancellations, SDK cancellation, complete original API snapshots for blocking, architecture and V8. No retries or new product execution.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4797,
+  "head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "tree": "091e659e0da6602299fd14cfa93889191405edd8",
+  "ordinary_merge": "e93aefbbb33438f6ec67e995adcfe88657158487",
+  "run_attempt": 1,
+  "terminal_directories": [
+    "main-gnu-tests-127089469040",
+    "main-musl-label-tests-127089469218",
+    "sdk-sdks-127089468286"
+  ],
+  "file_count": 14,
+  "total_original_bytes": 2127456,
+  "files": [
+    {
+      "member": "build_archive_batch05.py",
+      "bytes": 5659,
+      "sha256": "c91cabe4ef805312398bbf646120aafa212bbe6c3ab8676ec5ef5ce30a95e0ee",
+      "computed_git_blob": "d501122c7cb29b25f526f3987dab24aa6059056b"
+    },
+    {
+      "member": "snapshot31-artifacts.json",
+      "bytes": 2759,
+      "sha256": "917703e87deba00bae5282872d293a68a803bd85f577ac20d2f99851c4d3ac73",
+      "computed_git_blob": "98068cc0efb673583943ef774841b065cf23eb07"
+    },
+    {
+      "member": "snapshot31-blocking.json",
+      "bytes": 215806,
+      "sha256": "9d2725b3a9eb861b5bde56ae6cfdfb1e7f16a9bbc0dcc1cdc146b2c0e92205ba",
+      "computed_git_blob": "f731c1ea8d77dca225e6557acdea30963ca2e819"
+    },
+    {
+      "member": "snapshot32-41975255750.json",
+      "bytes": 37157,
+      "sha256": "41401840a62c656419547aa08133c7c415295d8e53a868f3d572d8ae173d16e9",
+      "computed_git_blob": "6781a170abc31eacd9d6c4d02994b2524d3a998a"
+    },
+    {
+      "member": "snapshot32-41975255751.json",
+      "bytes": 114773,
+      "sha256": "165464afbf1113d454ddfeb37d8243430bc146e503313ba955b1717f791212cb",
+      "computed_git_blob": "6b5824715b1629b460126e77ff1bddaadd0eefaf"
+    },
+    {
+      "member": "terminal/main-gnu-tests-127089469040/job-log-envelope.json",
+      "bytes": 683272,
+      "sha256": "98d7783726d6d89b5ccb3df609b61609fb077ab9ec76f58ff7e524d9cdcd4556",
+      "computed_git_blob": "86aa9d91bfbc5c074e6435160e80770b77737cf8"
+    },
+    {
+      "member": "terminal/main-gnu-tests-127089469040/job.log",
+      "bytes": 674404,
+      "sha256": "583b9dd9feb27984952f953eddb06213d5fe517ffd1da7cbff618cd3aedafdc6",
+      "computed_git_blob": "e2254e8108cb9b3ba5f9cf4770f041d6157ec1b6"
+    },
+    {
+      "member": "terminal/main-gnu-tests-127089469040/terminal-projection.json",
+      "bytes": 13542,
+      "sha256": "f25d214bc3733cdb9ef9648e0d121f57f0b9374edf21e89857763bfc03048fd7",
+      "computed_git_blob": "1db98479b08c6298f9f5e79c7d80b9860c92daa8"
+    },
+    {
+      "member": "terminal/main-musl-label-tests-127089469218/job-log-envelope.json",
+      "bytes": 101455,
+      "sha256": "819b5070d1e2dfeae15e5a9f9458f62cbf6bd1306f00d9b97b232d4eb399227b",
+      "computed_git_blob": "0527f2ca2829013f53cf62efac4cbc1903c5434d"
+    },
+    {
+      "member": "terminal/main-musl-label-tests-127089469218/job.log",
+      "bytes": 98616,
+      "sha256": "d491d9caee170ea363634bd3a02097d4d9f8e81bdf060065150d63c7c9902896",
+      "computed_git_blob": "162fe0bc0401056f073133da787a97090f299983"
+    },
+    {
+      "member": "terminal/main-musl-label-tests-127089469218/terminal-projection.json",
+      "bytes": 9039,
+      "sha256": "e1a79319c850bc2d56d5a9cdd3a8a037186c8b9caf6912a554243195bd767753",
+      "computed_git_blob": "41e03ae1921db5f6cabb28395443d69f11325032"
+    },
+    {
+      "member": "terminal/sdk-sdks-127089468286/job-log-envelope.json",
+      "bytes": 86843,
+      "sha256": "9edb4392f224c5683de812ae972d749b4925301a4ece7d62b5c15a1f07b22c30",
+      "computed_git_blob": "1e0f44b06b80dbe88c6362a0816d3271d29d469a"
+    },
+    {
+      "member": "terminal/sdk-sdks-127089468286/job.log",
+      "bytes": 83486,
+      "sha256": "0a403b4e9c65ad855121bef0f9e63caa5a2dd9f63772271cafc963042317db80",
+      "computed_git_blob": "5fe93fc96f7767e23f870a417673ab96ab32e152"
+    },
+    {
+      "member": "terminal/sdk-sdks-127089468286/terminal-projection.json",
+      "bytes": 645,
+      "sha256": "0199b8cf102d16bbc632de767e3d1fa66d256b43e80940b89b1cc0766dea737c",
+      "computed_git_blob": "0481c65884fab8655090d3871aa6aee79a58eea8"
+    }
+  ],
+  "limits": [
+    "Sequential original API observations, not an atomic global snapshot.",
+    "GNU ends at 186/435 and the musl-label job at 114/325 partial target progress. Neither has a final target summary or exact final case roster.",
+    "The musl-labelled matrix job still uses the GNU/RBE configuration; it is not the separately scoped real musl product build/process gate.",
+    "Cancellation actor and cause remain unknown. A queued run may contain completed or queued jobs and cannot be treated as proof of active execution.",
+    "The observed main artifact list contains only ARM Clippy execution-log metadata; no main test collector ZIP is present. That absence grants no test qualification.",
+    "Original source/scripts inside transport are passive bytes; the verifier reconstructs and hashes only.",
+    "Computed raw member Git hashes are identities. Verified transport parts provide reachability, not an individual upload claim for each member."
+  ]
+}

@@ -1,0 +1,29 @@
+--- v1/run_pty_diagnostic.py
++++ v2/run_pty_diagnostic.py
+@@ -178,7 +178,7 @@
+     binaries = []
+     for sid, suite in sorted(catalog['rust-suites'].items()):
+         path = Path(suite['binary-path'])
+-        assert path.is_relative_to(TARGET) and path.resolve() == path and os.access(path, os.X)
++        assert path.is_relative_to(TARGET) and path.resolve() == path and os.access(path, os.X_OK)
+         binaries.append({'binary_id': sid, **file_id(path)})
+     helpers = []
+     for package_id, values in sorted(catalog['rust-build-meta']['non-test-binaries'].items()):
+@@ -188,7 +188,7 @@
+             path = Path(value['path'])
+             if not path.is_absolute():
+                 path = TARGET / path
+-            assert path.is_relative_to(TARGET) and path.resolve() == path and os.access(path, os.X)
++            assert path.is_relative_to(TARGET) and path.resolve() == path and os.access(path, os.X_OK)
+             helpers.append({'package_id': package_id, 'catalog_entry': value, **file_id(path)})
+     return binaries, helpers
+ 
+@@ -276,7 +276,7 @@
+         path = Path(expected['path'])
+         assert path.is_relative_to(SHARED_TOOLS) or path == Path('/usr/bin/git')
+         actual = file_id(path)
+-        assert content_equal(actual, expected) and os.access(path, os.X), f'tool identity drift: {path}'
++        assert content_equal(actual, expected) and os.access(path, os.X_OK), f'tool identity drift: {path}'
+     assert file_id('/usr/bin/git')['sha256'] == 'ed8b2df973b28c0fb773b9c0dc0816d3ee2b3835bb932d9153c21417bb51b362'
+     ROOT.mkdir(mode=0o700)
+     created = True

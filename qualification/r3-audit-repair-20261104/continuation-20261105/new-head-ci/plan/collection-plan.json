@@ -1,0 +1,267 @@
+{
+  "schema": "hepta-next-head-original-ci-collection-plan-v1",
+  "created_at_utc": "2026-11-05T09:00:18.812775+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 4797,
+  "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+  "read_only": true,
+  "unpublished_code_candidate": {
+    "commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "binding": "Parent-supplied candidate, not a published CI head"
+  },
+  "publication_binding": {
+    "published_head": null,
+    "published_tree": null,
+    "parent_confirmed_at_utc": null,
+    "source_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "source_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "pr_base_sha": null,
+    "main_sha": null,
+    "actual_merges": []
+  },
+  "old_product_head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "old_snapshot": {
+    "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/snapshot34-blocking.json",
+    "bytes": 215806,
+    "sha256": "28e707c3b599bc82051f8a4d93298fdb09c5b87401997a98d6dfe8064f834a2c",
+    "git_blob": "a8e7fe87f11921e8af0d8ee3981ae4307f9a35c3"
+  },
+  "old_cancellation_boundary": "Original0e139 matrix mostly cancelled; actor/cause unknown. No CI cancellation, rerun or dispatch by this collector. A later publication-associated cancellation is a separate time-bounded observation, not proof of actor or cause.",
+  "polling_enabled": false,
+  "prohibited_actions": [
+    "workflow_dispatch",
+    "rerun",
+    "cancel",
+    "modify refs or PR",
+    "native/Cargo/Bazel execution",
+    "change test selectors/budgets/retries/skips",
+    "shared source/index/target modification"
+  ],
+  "first_read_after_parent_confirmation": [
+    "Fetch PR4797/head/base, confirmed commit/tree and ordinary merge parents/tree. Compare actual tree to final published identity, not source-only candidate tree.",
+    "List workflow runs filtered by exact published head, retaining all pages including terminal empty page and duplicate/cycle checks. Record original run_attempt; never silently mix a later attempt.",
+    "Expand all jobs for each selected run with full pagination. Record status, conclusion, labels, started/completed times, runner identity, check-suite and explicit wait reason only when present.",
+    "Bind each job checkout separately: source head, ordinary merge, UIbrowser merge, native-presentation merge and any workflow-built synthetic merge. Equal trees do not collapse their provenance.",
+    "Verify final workflow and relevant test/collector blobs against this planned baseline; differences are recorded and reviewed before mapping actual outcomes."
+  ],
+  "observation_frequency": {
+    "before_publication": "No CI polling",
+    "after_publication": "Adaptive low-frequency read-only snapshots; usually several minutes between unchanged queued states; immediate bounded capture on actual failure/terminal or important platform execution.",
+    "no_busy_wait_or_blocking_sleep_over_60s": true
+  },
+  "workflow_inventory": {
+    "local_file": "/workspace/scratch/07dd58cc9630/research-audit/next-head-ci-plan-20261105/original-workflows.json",
+    "bytes": 283569,
+    "sha256": "a203ad9b65ad6a95d93712fa1c603c35058803a2bd38ded936202120c9cad8fc",
+    "git_blob": "f3a6e74f7b354771e79b37c11fa14de5d18472fe"
+  },
+  "named_exit_map": {
+    "local_file": "/workspace/scratch/07dd58cc9630/research-audit/next-head-ci-plan-20261105/named-exit-cases.json",
+    "bytes": 180651,
+    "sha256": "16df332bed13d79c0e2f0294d65218a0f83aaa1dd926c0694dfb1363b3b83752",
+    "git_blob": "5ce46bbcb2f3979eb3a320ecf3c3d065000d9645"
+  },
+  "priorities": [
+    {
+      "id": "mac-wrapper-57",
+      "priority": 1,
+      "workflow": "blocking-ci.yml -> repo-checks.yml / bazel.yml",
+      "required": "Complete original unittest57 summary and exact failed/passed names on actual macOS Bash; final wrapper source identity42b59b… or final formatter equivalent. Preserve original57 and actual argv/exit.",
+      "not_sufficient": "Linux/Windows57 PASS, Bash syntax alone or target/API green."
+    },
+    {
+      "id": "intel-pty",
+      "priority": 1,
+      "workflow": "blocking-ci.yml -> bazel.yml",
+      "target": "//codex-rs/utils/pty:pty-unit-tests",
+      "required": "Intel original30 plus separate collector control. Full pty_dropped_output_receiver_keeps_draining_child body, cfg-test observation if emitted, original2s/4MiB/exit0 and all attempts.",
+      "not_sufficient": "Linux29 native PASS, diagnostic presence alone, cache total, or cancellation without body."
+    },
+    {
+      "id": "true-musl-product",
+      "priority": 1,
+      "workflow": "hepta-musl-product-smoke.yml",
+      "required": "Resolved canonical platform, outer/inner configuration and exact artifact, Rust musl target/C linker/rustlib, actual explicit Hepta CLI build, static ELF/hash and --version/--help of that exact binary. Preserve full original build output and source before/after.",
+      "not_sufficient": "Duplicate-label parser now accepts, generic GNU/RBE musl-label test count, cargo-binstall musl host tools, or build without process receipt."
+    },
+    {
+      "id": "windows-strict-8-helper-and-tui",
+      "priority": 1,
+      "workflow": "blocking-ci.yml and original Windows dedicated workflows",
+      "required": "Exact strict8 original/new names, physical deny/host assertions; original helper preparation and CLI scope; TUI13 successful target logs; Queue8 plus Agentd ninth separately. Collect source/merge without substituting one for the other.",
+      "not_sufficient": "Aggregate113/106 targets, only failed-target archive, skipped or cached body treated as fresh execution."
+    },
+    {
+      "id": "core-integration-and-new-full-failures",
+      "priority": 1,
+      "workflow": "blocking-ci.yml; exec-authorized-read for Proxy unit",
+      "required": "142 catalog Core integration rows plus supplemental cold_root and CodeMode; Proxy non-Windows CONNECT exact original2s response body. Separate ordinary and Wine targets; original all-shards/all-attempts.",
+      "not_sufficient": "Windows dedicated2343 Core unit result, Proxy Windows original early return, or successful only-unit library."
+    },
+    {
+      "id": "v8-six-cases",
+      "priority": 1,
+      "workflow": "v8-canary.yml",
+      "required": "Six exact cases per native-eligible matrix row after staged artifacts; explicit no-default-features and sandbox=true feature match, exact target and artifact hashes.",
+      "not_sufficient": "Non-native musl Cargo smoke SKIP or asset uploaded without original process execution."
+    },
+    {
+      "id": "codespell-and-format",
+      "priority": 2,
+      "workflow": "blocking-ci.yml -> codespell.yml / rust-ci.yml; supervisor original fmt",
+      "required": "Actual final-source original Codespell and Rustformat exits, supervisor cargo+1.95 fmt check; preserve exact exclusions/actualdiff and logs.",
+      "not_sufficient": "Static2line formatting review, unexecuted candidate or blanket evidence-directory exemption."
+    },
+    {
+      "id": "ui-browser-execution",
+      "priority": 2,
+      "workflow": "ui-product-foundation.yml",
+      "required": "Source and independently recorded browser-merge checkout, actual Playwright product/browser/HTTP boundary results, renderer and browser identities, complete result cases/artifact manifests. Native-presentation JUnit stays separate with its own merge.",
+      "not_sufficient": "Cargo/unit/npm/build/readiness summary, empty evidence manifest, SDK diagnosticappQualified=false, or UI workflow green alone."
+    }
+  ],
+  "evidence_retrieval": {
+    "metadata": "Save original API response body plus observation time and parsed projection; exact repository/head/run/attempt/job/artifact identities.",
+    "logs": "Fetch complete terminal job log, preserve original decoded UTF8 bytes and length/SHA256/Git hash; do not treat console tail as complete test evidence.",
+    "artifacts": "Use only returned artifact URL in an isolated evidence directory; verify advertised compressed size/digest, ZIP CRC and every member length/hash; never print signed URL. Prefer already recovered originals.",
+    "large_artifacts": "Read needed small result archives first. Do not download large V8 archives/video bundles solely for a summary. Metadata-only status remains metadata-only.",
+    "case_projection": "Exact (classname/binary,name,target,platform,run,attempt,shard,test-attempt). Preserve failure/error XML type/message, ignored/skipped/rerun nodes and complete stdout/stderr. Wrapper XML does not establish individual child cases.",
+    "libtest_names": "Normalize only exact known optional ` - should panic` display suffix before the ellipsis; preserve original line and use full exact-name match, not substring.",
+    "duplicates": "Identical collector copies or duplicated console/artifact output are one physical observation; retain all provenance. Distinct original test attempts stay distinct.",
+    "successful_targets": "Read selected-target-retention manifest first. PASS-with-cache, executed PASS, NOT_REPORTED, missing local log and failed copy remain separate. Do not read unreported old directories or equate mtime with invocation identity.",
+    "early_returns": "Compare raw bodies to historical25 named watchlist and inspect new explicit early-return messages; PASS with omitted behavior is not behavioral qualification.",
+    "immutable_publication": "Freeze bounded completed batches with raw manifests; compress transport if needed, each Git blob<=512KiB, create+GET byte equality and original-file reconstruction hash. Never rewrite prior snapshots."
+  },
+  "observation_record_required_fields": [
+    "published_head",
+    "published_tree",
+    "workflow_path",
+    "workflow_blob",
+    "run_id",
+    "run_attempt",
+    "event",
+    "job_id",
+    "platform_label",
+    "actual_runner",
+    "actual_checkout",
+    "actual_tree",
+    "actual_parents",
+    "original_command",
+    "original_budget",
+    "test_target",
+    "test_binary",
+    "test_name",
+    "shard",
+    "test_attempt",
+    "cache_status",
+    "selection_status",
+    "terminal_type",
+    "result",
+    "early_return",
+    "original_body_identity",
+    "artifact_identity",
+    "observed_at_utc"
+  ],
+  "status_vocabulary": [
+    "AWAITING_PUBLICATION",
+    "NOT_TRIGGERED",
+    "QUEUED",
+    "WAITING_REASON_UNAVAILABLE",
+    "RUNNING_NO_CASE_BODY",
+    "CANCELLED_CAUSE_UNKNOWN",
+    "TARGET_ONLY_PASS",
+    "CACHED_NAMED_PASS",
+    "EXECUTED_NAMED_PASS",
+    "EXECUTED_FAIL",
+    "RETRY_THEN_PASS",
+    "IGNORED",
+    "FILTERED",
+    "CFG_NOT_COMPILED",
+    "PASS_WITH_EARLY_RETURN",
+    "MISSING_ARTIFACT",
+    "MISSING_CASE_BODY",
+    "SOURCE_MISMATCH"
+  ],
+  "qualification_limits": [
+    "No original23ledger exit condition, status, closure_class or count is changed by this plan.",
+    "Current8scopedclosed/14OPEN/B18HOLD is retained. Old scoped closures are not reopened merely to collect the new overall product CI.",
+    "B15 whole-candidate qualification remains open until its actual complete requirements are supported; individual green jobs do not close it.",
+    "Operator fixtures and UI browser fixtures are repository controls, not real operator/WAN/Root-session external acceptance.",
+    "ScientificHOLD and original D-minus-B/full-cost gates are outside this CI pass mapping and unchanged."
+  ],
+  "local_input_identities": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/named-original-exit-scope-current-v1.json",
+      "bytes": 116460,
+      "sha256": "452419986d43b5f46181971dc8ee4b4f0b4123916deaca4b5e6b61e7e6bda6b6",
+      "git_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/workflow-reference-review/verified-registry-originals/fourth-seven-rows-interpretation.json.txt",
+      "bytes": 139128,
+      "sha256": "fe3225123ace3aacd6781278b370a687e54dcabe777e7feb7bab1d2bef63128a",
+      "git_blob": "203d8eab0dd003f272c09f962e16ca9505da4f2a"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/windows-strict-watch.json",
+      "bytes": 8614,
+      "sha256": "e34ff57efb4264540a2c9e82fc322ecf39d58d50993949face275d57f43b3470",
+      "git_blob": "9c053b22cc4cf50b826d3bce1f6f0ef397f421b3"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/watch-scope.json",
+      "bytes": 20264,
+      "sha256": "31e25a287cbe627e32fb2a145cb6267a5b15387e0d5cb2d7fea10263cea59364",
+      "git_blob": "9bbd56768856008be422b5d62175c63ca78028fd"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/workflows-at-0e139.json",
+      "bytes": 846576,
+      "sha256": "51593fb84d85b201788d045dcd0612fd7f778604b0eefb5f9808a82997e214d5",
+      "git_blob": "070636e9212b8cadb7581d42237d9ce6aa5cbf38"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/snapshot29-runs.json",
+      "bytes": 672532,
+      "sha256": "d4a1d984494d95295cc6bef1d9a8d728d87e238286f34c884082f6acf09e51ad",
+      "git_blob": "6cebdaa73f80a0c069f44c18ef2b2e66e91bb699"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/musl-platform-label-repair-20261105/source/.github/workflows/hepta-musl-product-smoke.yml",
+      "bytes": 24716,
+      "sha256": "769a5edc8a956b1947e67d76d63f295b42b0008571e3d8e64ad6757327144cb5",
+      "git_blob": "fb46a681b5c3cd47c76b20ef56048eae771d9e07"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/v8-staged-smoke-repair-20261105/source/.github/workflows/v8-canary.yml",
+      "bytes": 17412,
+      "sha256": "98e3836a3ffceac8acedbf302882f54f8aadc835b9aa21ddbdf1c8ca29741bd8",
+      "git_blob": "648a83164c0dd1c28499eaa17f842a83bb2aab04"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/terminal/exec-mac-arm-source-127072479643/artifact-13394412428/members/resume-junit.xml",
+      "bytes": 2877,
+      "sha256": "d6b20ecd8d98a62fd8bce85a34e3e66dc3a83215ab76e911200a3b861429d427",
+      "git_blob": "ccce056553304c91c64766225b67ca38e5cc6470"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/terminal/retained-windows-127072449914/artifact-13393054052/members/junit-0.xml",
+      "bytes": 115013,
+      "sha256": "9b7894b4a9cb7fad0c41b0fe93a5b48811db1ce8d5c26a4b76240f3325fe55cb",
+      "git_blob": "48e3d0c1a2b27a870ccdda06689e06a0fa4181b9"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/v8-staged-smoke-repair-20261105/primary/codex-rs/v8-poc/src/lib.rs",
+      "bytes": 2752,
+      "sha256": "7121f241941ebc18758bbc9dbfb0848a9ea25a93a65eecd34c890fc86ccecfcc",
+      "git_blob": "5103cdeb39d5e7f28442c7adaef4969e5a008ea4"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/python-index-readonly-review-20261105/collect_bazel_failed_test_logs.py.txt",
+      "bytes": 16238,
+      "sha256": "867d2b315dbb37b5b33c0869281c41fc5586a366f0cd1c19a1703f57d40fda9d",
+      "git_blob": "5427be6c1f37bd7c302d808c2e4f194727abe700"
+    }
+  ]
+}

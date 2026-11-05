@@ -1,0 +1,130 @@
+{
+  "schema": "hepta-ci-evidence-registry-plan-v1",
+  "created_at_utc": "2026-11-05T08:27:36.562749+00:00",
+  "head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "tree": "091e659e0da6602299fd14cfa93889191405edd8",
+  "cutoff_api_snapshot_utc": "2026-11-05T08:25:35.846Z",
+  "immutable_batch": "05",
+  "items": [
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/batch-05/part-000.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/immutable-archive-batch05/part-000.b64.txt",
+      "blob": "1f60425482360caf639d6de0afdd84445e464906",
+      "bytes": 262145,
+      "sha256": "5115c4fbf167badcccc1e12f565a1aa282ecb8336856c5f327c1c1922de3701b",
+      "role": "immutable_gzip_base64_part",
+      "uploaded_and_get_verified": true,
+      "readback_evidence": {
+        "request_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/1f60425482360caf639d6de0afdd84445e464906",
+        "content_byte_equal": true,
+        "observed_utc": "2026-11-05T08:26:59.085Z"
+      }
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/batch-05/part-001.b64.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/immutable-archive-batch05/part-001.b64.txt",
+      "blob": "2b08457ee08d937e1708a8cf05467c5e4a9325cf",
+      "bytes": 31897,
+      "sha256": "0164dd5753aa81490d92c98d6ec68d8a2ef465fc9a73e96c5f0dd4d0827dcb4a",
+      "role": "immutable_gzip_base64_part",
+      "uploaded_and_get_verified": true,
+      "readback_evidence": {
+        "request_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/2b08457ee08d937e1708a8cf05467c5e4a9325cf",
+        "content_byte_equal": true,
+        "observed_utc": "2026-11-05T08:27:00.837Z"
+      }
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/batch-05/original-files-manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/immutable-archive-batch05/original-files-manifest.json",
+      "blob": "c667333587d9f2e76a9517ee7a86395881e4d86d",
+      "bytes": 5378,
+      "sha256": "b81582eeeb9741c9e645f399c84a52e590129ff37782b7475db859c46b744a10",
+      "role": "archive_metadata_or_reproducer",
+      "uploaded_and_get_verified": true,
+      "readback_evidence": {
+        "request_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/c667333587d9f2e76a9517ee7a86395881e4d86d",
+        "content_byte_equal": true,
+        "observed_utc": "2026-11-05T08:27:29.844Z"
+      }
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/batch-05/transport-manifest.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/immutable-archive-batch05/transport-manifest.json",
+      "blob": "adcd6f32c953603a8a03d5834e7185d7470e9648",
+      "bytes": 1966,
+      "sha256": "c90ca69360186cf4980bf5b78a07b347ae66c6df2783aa0c5fd9f443fd80b14d",
+      "role": "archive_metadata_or_reproducer",
+      "uploaded_and_get_verified": true,
+      "readback_evidence": {
+        "request_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/adcd6f32c953603a8a03d5834e7185d7470e9648",
+        "content_byte_equal": true,
+        "observed_utc": "2026-11-05T08:27:30.832Z"
+      }
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/batch-05/verify_archive.py",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/immutable-archive-batch05/verify_archive.py",
+      "blob": "bfa05fa0d818272a53667b938c7ec72c1120d232",
+      "bytes": 3318,
+      "sha256": "cdefc9604af67bebd4570df4e306de80b422a408ce81138ed2a4c1f7c83d93aa",
+      "role": "archive_metadata_or_reproducer",
+      "uploaded_and_get_verified": true,
+      "readback_evidence": {
+        "request_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/bfa05fa0d818272a53667b938c7ec72c1120d232",
+        "content_byte_equal": true,
+        "observed_utc": "2026-11-05T08:27:31.845Z"
+      }
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/batch-05/github-upload-receipt.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/immutable-archive-batch05/github-upload-receipt.json",
+      "blob": "11e0e833155691f44b102dc65bd0fe95845117c0",
+      "bytes": 1126,
+      "sha256": "578956ab104de0c395132e1ce26d80efb2e46d4018e0bd3f2a5199aa23fa2b06",
+      "role": "archive_metadata_or_reproducer",
+      "uploaded_and_get_verified": true,
+      "readback_evidence": {
+        "request_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/11e0e833155691f44b102dc65bd0fe95845117c0",
+        "content_byte_equal": true,
+        "observed_utc": "2026-11-05T08:27:32.846Z"
+      }
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/CI_BATCH05.zh-CN.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/immutable-archive-batch05/CI_BATCH05.zh-CN.md",
+      "blob": "48090ffd154e42032f9f002fbbbd32d119e11d10",
+      "bytes": 1934,
+      "sha256": "fb30c422eb23c8a9f254584621d4c6729646f2c62340e0437fa0b057912d265d",
+      "role": "human_scope_summary",
+      "uploaded_and_get_verified": true,
+      "readback_evidence": {
+        "request_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/48090ffd154e42032f9f002fbbbd32d119e11d10",
+        "content_byte_equal": true,
+        "observed_utc": "2026-11-05T08:27:33.815Z"
+      }
+    }
+  ],
+  "entry_count": 7,
+  "original_file_count": 14,
+  "original_bytes": 2127456,
+  "transport_bytes": 220528,
+  "transport_sha256": "b60ab3cf3284d2539d95bd5cb39202cbd71057a76e09b3fe7d3db0924762372d",
+  "reproducer_actual_result": {
+    "exit_code": 0,
+    "parts_verified": 2,
+    "members_verified": 14,
+    "project_commands_executed": false
+  },
+  "limits": [
+    "Sequential original API observations, not an atomic global snapshot.",
+    "GNU ends at 186/435 and the musl-label job at 114/325 partial target progress. Neither has a final target summary or exact final case roster.",
+    "The musl-labelled matrix job still uses the GNU/RBE configuration; it is not the separately scoped real musl product build/process gate.",
+    "Cancellation actor and cause remain unknown. A queued run may contain completed or queued jobs and cannot be treated as proof of active execution.",
+    "The observed main artifact list contains only ARM Clippy execution-log metadata; no main test collector ZIP is present. That absence grants no test qualification.",
+    "Original source/scripts inside transport are passive bytes; the verifier reconstructs and hashes only.",
+    "Computed raw member Git hashes are identities. Verified transport parts provide reachability, not an individual upload claim for each member.",
+    "No refs changed. Parent controls registration and publication.",
+    "The plan itself may be separately registered as the 8th item after create/GET."
+  ]
+}

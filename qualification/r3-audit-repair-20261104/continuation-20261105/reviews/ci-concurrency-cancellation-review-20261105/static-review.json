@@ -1,0 +1,311 @@
+{
+  "schema": "hepta-ci-concurrency-cancellation-static-review-v1",
+  "verdict": "NO_FIXED_SOURCE_SELF_CANCELLATION_CONFIGURATION_FOUND",
+  "actual_cancellation_cause": "OPEN_UNDETERMINED",
+  "source_commit": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "source_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+  "input_source": {
+    "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/workflows-at-0e139.json",
+    "bytes": 846576,
+    "sha256": "51593fb84d85b201788d045dcd0612fd7f778604b0eefb5f9808a82997e214d5"
+  },
+  "source_provenance": "Reused the root agent's complete fixed-ref GitHub body cache. Independently recomputed all 93 Git blob hashes and parsed every full YAML body; no new 93-file network retrieval.",
+  "projection": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/ci-concurrency-cancellation-review-20261105/fixed-workflow-projection.json",
+    "bytes": 178825,
+    "sha256": "ea007681b0609a6b2dea69a76600dded67620161b023beb96bb0320541333857",
+    "blob": "1b1fd6eea351881e99b57e7509f43581f8ff5a36"
+  },
+  "coverage": {
+    "workflow_count": 93,
+    "unique_workflow_names": 93,
+    "workflow_level_groups": 66,
+    "job_level_groups": 0,
+    "reusable_job_calls": 21,
+    "all_calls_local": true,
+    "concurrency_named_input_or_with_keys": 0
+  },
+  "blocking_tree": [
+    {
+      "path": ".github/workflows/bazel.yml",
+      "blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af",
+      "concurrency": {
+        "group": "concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}",
+        "cancel-in-progress": "${{ github.ref_name != 'main' }}"
+      }
+    },
+    {
+      "path": ".github/workflows/blob-size-policy.yml",
+      "blob": "ac1e8f5ec3354017a76695e5a1f0e270cee440ba",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "blob": "fd01ab5edac5d78c9bcfb78397a157a3d5ea7c71",
+      "concurrency": {
+        "group": "blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "blob": "88b6308899357e23b4a4058aecd4527b4edcee9b",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/codespell.yml",
+      "blob": "06ea9c7226d265405c73850c449b3d6b96d82514",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/hepta-contract-gate.yml",
+      "blob": "0eb3d84801cc456b34fa1e33957400c1a00dcb68",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/repo-checks.yml",
+      "blob": "72bd28da471f893a556c2acb689e52a28d73ff99",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "blob": "81330bf3ed388e9deafa474516be437ac165cbb7",
+      "concurrency": null
+    },
+    {
+      "path": ".github/workflows/sdk.yml",
+      "blob": "8af39601ed7cf800e1449ca12141ac1fdb33937f",
+      "concurrency": null
+    }
+  ],
+  "bazel_call": {
+    "caller": ".github/workflows/blocking-ci.yml",
+    "id": "bazel",
+    "uses": "./.github/workflows/bazel.yml",
+    "with": null,
+    "concurrency": null,
+    "strategy": null,
+    "timeout_minutes": null,
+    "if": "needs.scope.outputs.full_repo == 'true'"
+  },
+  "relevant_effective_groups_for_observed_pr": [
+    {
+      "owner": "blocking-ci workflow",
+      "group": "blocking-ci-fix/r3-original-product-contracts-20261104",
+      "cancel_in_progress": true
+    },
+    {
+      "owner": "Bazel reusable workflow called by blocking-ci",
+      "group": "concurrency-group::blocking-ci::pr-4797",
+      "cancel_in_progress": true
+    },
+    {
+      "owner": "independent v8-canary pull_request workflow",
+      "group": "v8-canary::fix/r3-original-product-contracts-20261104",
+      "cancel_in_progress": true
+    },
+    {
+      "owner": "independent UI workflow",
+      "group": "rust-ui-product-4797",
+      "cancel_in_progress": false
+    },
+    {
+      "owner": "independent Objective owner workflow",
+      "group": "original-objective-owner-4797",
+      "cancel_in_progress": true
+    }
+  ],
+  "bazel_matrices": [
+    {
+      "job_id": "test",
+      "fail_fast": "false",
+      "timeout_minutes": 120
+    },
+    {
+      "job_id": "test-windows-shard",
+      "fail_fast": "false",
+      "timeout_minutes": 120
+    },
+    {
+      "job_id": "clippy",
+      "fail_fast": "false",
+      "timeout_minutes": 120
+    },
+    {
+      "job_id": "verify-release-build",
+      "fail_fast": "false",
+      "timeout_minutes": 120
+    }
+  ],
+  "findings": [
+    "The parent group and called Bazel group differ. The called github.workflow value is blocking-ci, not Bazel. There is no matching parent/callee group in this call tree.",
+    "Exactly one repository call site invokes bazel.yml. The calling job has no matrix, concurrency, or with block. Bazel matrices are internal, have fail-fast false, and have no job-level concurrency to make matrix children cancel one another.",
+    "The other seven called workflows in the blocking closure have neither workflow-level nor job-level concurrency. Their job-level with parameters do not supply a hidden concurrency group.",
+    "All 93 workflows contain no job-level concurrency and no declared concurrency-group input or corresponding with key. The string concurrency-group:: in bazel.yml is a literal prefix of the group expression, not a caller-provided input.",
+    "Known independent v8, UI and Objective groups are different from the blocking and Bazel groups. Their cancellation cannot be attributed to a shared group merely from these fixed definitions.",
+    "No workflow change, dispatch, rerun, cancel, or ref mutation is justified by this static exclusion alone."
+  ],
+  "remaining_limits": [
+    "The definitions intentionally permit a later run with the same computed group to cancel an earlier in-progress run. Unchanged head/base does not itself prove that no such run, rerun, or same branch-label event existed.",
+    "The parent key uses the source branch label rather than a globally unique PR identity. Another PR with the same head.ref can share that key; no such competing invocation has been demonstrated here.",
+    "The saved run query is filtered to one head SHA. It is not an exhaustive history of all repository concurrency groups, other heads, actor actions, or external automation.",
+    "Source analysis cannot identify a cancellation actor or distinguish service-side/manual cancellation. The staggered job end times are not a causal proof.",
+    "The API run status queued does not negate completed/running individual job records. Preserve all original failed and cancelled results; no gate is closed by this receipt."
+  ],
+  "runtime_observation": {
+    "pr": {
+      "number": 4797,
+      "head_ref": "fix/r3-original-product-contracts-20261104",
+      "head_sha": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+      "base_ref": "integration/ui-objective-20261103-product",
+      "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4"
+    },
+    "inputs": [
+      {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/snapshot29-pr.json",
+        "bytes": 94226,
+        "sha256": "dc64db2c4620ddc061d5cc7b36b18bf36e6d328e9a3f037241ac39d58c941d47",
+        "blob": "47756a77fa4516d3e12754fc651cae9fc681dd50"
+      },
+      {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/snapshot29-runs.json",
+        "bytes": 672532,
+        "sha256": "d4a1d984494d95295cc6bef1d9a8d728d87e238286f34c884082f6acf09e51ad",
+        "blob": "6cebdaa73f80a0c069f44c18ef2b2e66e91bb699"
+      },
+      {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/snapshot29-blocking.json",
+        "bytes": 190300,
+        "sha256": "5ee5c4cad32c39d8ffe8718f5e6bacb0f0db0f24a9a7f3d122c1d496ac72448d",
+        "blob": "916f67383cf67b59caebce8d4ea70df9366368ea"
+      }
+    ],
+    "runs_query": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=0e139b599f0fe451f80fb7db4b2913bb9c679dce&per_page=100&page=1",
+    "observed_utc": "2026-11-05T08:11:29.008Z",
+    "returned_runs": 19,
+    "total_count": 19,
+    "blocking_run_id": 41975255726,
+    "run_attempt": 1,
+    "observed_run_status": "queued",
+    "cancelled_jobs_at_this_snapshot": [
+      {
+        "id": 127072481499,
+        "run_id": 41975255726,
+        "run_attempt": 1,
+        "name": "Blob size policy / Blob size policy",
+        "head_sha": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+        "started_at": "2026-11-05T06:55:40Z",
+        "completed_at": "2026-11-05T06:56:58Z",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 127089468880,
+        "run_id": 41975255726,
+        "run_attempt": 1,
+        "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+        "head_sha": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+        "started_at": "2026-11-05T08:00:16Z",
+        "completed_at": "2026-11-05T08:04:28Z",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 127089468909,
+        "run_id": 41975255726,
+        "run_attempt": 1,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "head_sha": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+        "started_at": "2026-11-05T07:33:34Z",
+        "completed_at": "2026-11-05T07:46:21Z",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 127089468919,
+        "run_id": 41975255726,
+        "run_attempt": 1,
+        "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+        "head_sha": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+        "started_at": "2026-11-05T07:56:19Z",
+        "completed_at": "2026-11-05T08:00:19Z",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 127089468938,
+        "run_id": 41975255726,
+        "run_attempt": 1,
+        "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+        "head_sha": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+        "started_at": "2026-11-05T07:49:23Z",
+        "completed_at": "2026-11-05T07:52:08Z",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 127089468954,
+        "run_id": 41975255726,
+        "run_attempt": 1,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "head_sha": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+        "started_at": "2026-11-05T07:35:38Z",
+        "completed_at": "2026-11-05T07:40:52Z",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 127089468985,
+        "run_id": 41975255726,
+        "run_attempt": 1,
+        "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+        "head_sha": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+        "started_at": "2026-11-05T06:46:06Z",
+        "completed_at": "2026-11-05T06:57:42Z",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 127089468988,
+        "run_id": 41975255726,
+        "run_attempt": 1,
+        "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+        "head_sha": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+        "started_at": "2026-11-05T08:04:23Z",
+        "completed_at": "2026-11-05T08:05:59Z",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 127089469050,
+        "run_id": 41975255726,
+        "run_attempt": 1,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+        "head_sha": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+        "started_at": "2026-11-05T08:00:08Z",
+        "completed_at": "2026-11-05T08:01:34Z",
+        "conclusion": "cancelled"
+      },
+      {
+        "id": 127089469104,
+        "run_id": 41975255726,
+        "run_attempt": 1,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "head_sha": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+        "started_at": "2026-11-05T07:58:04Z",
+        "completed_at": "2026-11-05T08:05:50Z",
+        "conclusion": "cancelled"
+      }
+    ],
+    "scope": "Existing snapshot 29 only. Later research-agent updates are not relabeled as independently parsed evidence here."
+  },
+  "official_semantics": [
+    {
+      "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/reusing-workflow-configurations",
+      "finding": "A called workflow inherits the caller github context; using equal concurrency groups with cancellation enabled can cancel the caller. The fixed groups here are unequal.",
+      "retrieved_date": "2026-11-05"
+    },
+    {
+      "url": "https://docs.github.com/en/enterprise-cloud%40latest/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency",
+      "finding": "Concurrency keys operate across workflows in one repository. A new member of a group can replace a pending member, and cancel-in-progress permits cancelling a running member.",
+      "retrieved_date": "2026-11-05"
+    }
+  ],
+  "native_executed": false,
+  "tests_executed": false,
+  "source_changed": false,
+  "refs_changed": false,
+  "ci_actions_triggered": false
+}

@@ -1,0 +1,57 @@
+{
+  "schema": "hepta-pty-native-hygiene-root-review-v1",
+  "native_job": "1a1aac4313d-fc05-46ff",
+  "priority_bundle": {
+    "bytes": 163040,
+    "sha256": "6848c55ef0d9e5011bccad01a83d4bf506fd492f30969d19905fc1467f181b97",
+    "blob": "d34a53344238679934df144cc5472d0a77ee0e92"
+  },
+  "priority_originals_full_byte_verified": 19,
+  "tested_commit": "1ddadae2c1bcb3c48047d2692565606833e87909",
+  "tested_tree": "73f4b30499524d6137bb8f4b40c3977de286d1a5",
+  "post_fmt_tree": "ae8ce55dc264cdca2dd4a125d473fbca030f45e2",
+  "original_package": "codex-utils-pty",
+  "linux_x86_64_cases": {
+    "PASS": 29,
+    "FAIL": 0,
+    "SKIP": 0
+  },
+  "catalog_named_xml_review_Counter_equal": true,
+  "program_and_helper_identities_stable": true,
+  "observed_early_return_lines": [],
+  "retries": 0,
+  "test_fix_fmt_commands_all_zero": true,
+  "fix_changed_paths": [],
+  "fmt_changed_paths": [
+    "codex-rs/utils/pty/src/process.rs",
+    "codex-rs/utils/pty/src/unix_io_diagnostics.rs"
+  ],
+  "whole_file_mechanical_postimage_equal": true,
+  "fmt_changes": "Two expression wraps and AtomicU8/AtomicU64 use-order only; no behavioral token change.",
+  "postimages": [
+    {
+      "path": "codex-rs/utils/pty/src/process.rs",
+      "bytes": 16217,
+      "sha256": "6d3178644b2c4c9601c118d2b84a355e7ebdaeecdc52558b2edf945133b64ea7",
+      "blob": "4ef1f9cd35043437c93bededa867ebf473f4d474"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io_diagnostics.rs",
+      "bytes": 5409,
+      "sha256": "0e401527c4fec016f94e2a41082f390dcd6d4a33fa7ff887b7703148585a6e95",
+      "blob": "3c9f68d86fb47d19d7baf549dfe6b6d5974c8070"
+    }
+  ],
+  "outer_exit_1_preserved": "Intentional assertion stopped on nonempty fmt diff before final diff checks; no project command failed.",
+  "original_v1_preflight_failure_preserved": "86fc2bd60cbd1b9494ca39efeba0d5f17842938c",
+  "B21_closed": false,
+  "macos_intel_root_cause_resolved": false,
+  "full_workspace_qualification": false,
+  "tests_after_fmt": false,
+  "authorized_readonly_completion": [
+    "git diff --check 1ddadae2c1bcb3c48047d2692565606833e87909 --",
+    "git diff --check 20fd174ded4e5ce01bda34e4f6d1d74803301f49 --",
+    "unchanged ae8ce55 whole working tree, ordinary HEAD/index/locks/tools source fences"
+  ],
+  "complete_metadata_archive_pending": true
+}

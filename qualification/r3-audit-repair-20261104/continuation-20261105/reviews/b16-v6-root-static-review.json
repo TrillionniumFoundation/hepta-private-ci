@@ -1,0 +1,55 @@
+{
+  "schema": "hepta-b16-v6-root-static-review-v1",
+  "reviewed_files": "Complete new b16_build_only.py, all four runtime module deltas, full capacity/family modules, disabled binding, all four necessary guard cases and manifest/preservation identity",
+  "manifest": {
+    "bytes": 21856,
+    "sha256": "2471c13086c3b3f02a5ff704029c9d5ea5b436b9161497b20c8a218c25b22512",
+    "blob": "55282764e60c8e4cbe7f4b5d41d52439aeba8e5f"
+  },
+  "delta": {
+    "bytes": 45069,
+    "sha256": "98fae34c8f7b28b127716620fd5a0cf90915eacffbacf18a5f1beed95979d027",
+    "blob": "8ef93744d0f954ea63f3fab3ad1cadf0998272ea"
+  },
+  "runner_integrity": {
+    "bytes": 5374,
+    "sha256": "19864e37e4c27c79a22b5c4be99730d00bd03382d5f5ac1c6a0239e528592572",
+    "blob": "2a20bea1ed0a4665307b2a65dd4f6cb74b76e79f"
+  },
+  "candidate_files_hashed": 28,
+  "unchanged_v5_files": [
+    "b16_locks.py",
+    "b16_native.py",
+    "b16_oracles.py",
+    "epoch-checkpoint.json",
+    "epoch-driver.json",
+    "epoch-foundation.json",
+    "epoch-owning.json",
+    "epoch-pool.json",
+    "foundation-output-family.json",
+    "observed-nextest-timeout-testcase.xml",
+    "payload-manifest.json",
+    "source-payload-00.json",
+    "source-payload-01.json",
+    "source-payload-02.json",
+    "source-payload-03.json",
+    "source-payload-04.json",
+    "test_family_guard.py",
+    "test_runner_guards.py"
+  ],
+  "SourceGuard_AST_unchanged": true,
+  "negative_with_finally_AST_unchanged": true,
+  "static_boundary_accepted": true,
+  "native_execution_authorized_by_this_review": false,
+  "actual_P4_baseline_exists": false,
+  "conditions": [
+    "P4 command outputs must actually exist and be byte-pinned before binding.",
+    "No BUILD_ONLY receipt can replace or relabel historical fb9 tested-A evidence.",
+    "All source/host/environment/owner/recipe/tool/index/lock guards remain; historical inner ROG paths stay unchanged.",
+    "All363 programs+33 helpers must exist with actual hashes at foundation entry; all6 normal helpers and full193/1501 metadata must correspond to original commands.",
+    "The original22GB foundation planning prerequisite and8GB per-command reserve remain, with no cleanup or budget reduction.",
+    "Bind and review actual P4 originals before separately enabling foundation; no future hashes or fabricated native qualification."
+  ],
+  "native_build_or_test_by_root_for_this_review": false,
+  "original_B_product_payload_or_oracle_changed": false
+}

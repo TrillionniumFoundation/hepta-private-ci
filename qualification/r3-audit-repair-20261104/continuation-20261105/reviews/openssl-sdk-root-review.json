@@ -1,0 +1,66 @@
+{
+  "schema": "hepta-openssl-sdk-root-review-v1",
+  "controller_job": "1a1aae5f80d-fc05-4886",
+  "sdk_receipt": {
+    "bytes": 114477,
+    "sha256": "48e973cac721615cf30b937ff20bf7f47cc951265aa5030b194dec971e1e2bc3",
+    "git_blob": "cd94077d9281c979faad884e1f57e07f30c74956"
+  },
+  "sdk_two_version_pinned_chunks_reconstructed": true,
+  "five_full_originals_bytes_and_sha_verified": true,
+  "native_commands": 7,
+  "all_native_commands_exit_zero": true,
+  "official_packages": [
+    {
+      "name": "libssl-dev",
+      "version": "3.5.5-1ubuntu3.7",
+      "download": {
+        "duration_seconds": 4.76628865301609,
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_3.5.5-1ubuntu3.7_amd64.deb",
+        "http_status": 200,
+        "package": {
+          "bytes": 2936724,
+          "dev": 66306,
+          "git_blob": "6053a8ae83897a5410706ee88fe37a7145d02977",
+          "inode": 66869144,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/downloads/libssl-dev_3.5.5-1ubuntu3.7_amd64.deb",
+          "sha256": "d1cf6cafb141490b7020e392964b1f901835d60cb88c3a68ef0f95ef5e930de4"
+        },
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_3.5.5-1ubuntu3.7_amd64.deb"
+      }
+    },
+    {
+      "name": "libssl3t64",
+      "version": "3.5.5-1ubuntu3.7",
+      "download": {
+        "duration_seconds": 7.083306418033317,
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl3t64_3.5.5-1ubuntu3.7_amd64.deb",
+        "http_status": 200,
+        "package": {
+          "bytes": 2368026,
+          "dev": 66306,
+          "git_blob": "e4a7e17fe3575f7a1e259c02419422863540623e",
+          "inode": 66869333,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/downloads/libssl3t64_3.5.5-1ubuntu3.7_amd64.deb",
+          "sha256": "3ff73e121f6cd4f19e80ab4329dfd914108b3936c9db3708200203a9b245b34d"
+        },
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl3t64_3.5.5-1ubuntu3.7_amd64.deb"
+      }
+    }
+  ],
+  "mapped_header_identities": 142,
+  "relative_links_resolve_to_recorded_official_files": true,
+  "two_private_libraries_match_system_recorded_identity": true,
+  "ordinary_source_index_locks_unchanged": true,
+  "environment": {
+    "OPENSSL_INCLUDE_DIR": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include",
+    "OPENSSL_LIB_DIR": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu"
+  },
+  "product_tests_executed": false,
+  "product_build_executed": false,
+  "scope": "Cloud reconstruction verifies receipts; actual package/header/library file checks are native runner observations, not independently re-downloaded cloud binaries. Does not grant P4 or B qualification. New P4 and V6 launcher preserve concrete SDK parent identity and readonly physical-file guards."
+}

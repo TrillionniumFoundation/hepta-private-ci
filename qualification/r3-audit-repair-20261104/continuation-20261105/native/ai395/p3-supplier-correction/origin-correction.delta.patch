@@ -1,0 +1,181 @@
+--- P3-original
++++ P3-supplier-correction
+@@ -15,7 +15,7 @@
+ ROOT = Path('/home/qq/work/hepta-audit-b16-20261105')
+ SOURCE = ROOT / 'source'
+ TOOLS = ROOT / 'tools'
+-EVIDENCE = ROOT / 'evidence/bootstrap-P3-v1'
++EVIDENCE = ROOT / 'evidence/bootstrap-P3-supplier-correction-v1'
+ COMMIT = '20fd174ded4e5ce01bda34e4f6d1d74803301f49'
+ TREE = '4a3374e22e16ce5c764288ad018cd9affadf94ea'
+ GUARD_BLOB = '967ef896907e698a07e8028e049a47e934570b1d'
+@@ -208,16 +208,19 @@
+ 
+ raw = sys.stdin.buffer.read()
+ request = json.loads(raw)
+-terminal = {'schema': 'hepta-ai395-cold-bootstrap-P3-terminal-v1', 'host': 'ai395', 'stage': 'P3',
+-            'root_guard': GUARD_BLOB, 'started_at': now(), 'request': bytes_id(raw),
+-            'build_or_test_execution': False, 'source_mutation': False, 'errors': []}
++terminal = {'schema': 'hepta-ai395-cold-bootstrap-P3-official-origin-correction-v1',
++            'host': 'ai395', 'stage': 'P3', 'root_guard': GUARD_BLOB,
++            'started_at': now(), 'request': bytes_id(raw), 'build_or_test_execution': False,
++            'source_mutation': False, 'original_failure_preserved': True, 'errors': []}
+ created = False
+ success = False
+ try:
+-    assert request['stage'] == 'P3' and request['root_execution_guard_blob'] == GUARD_BLOB
++    assert request['stage'] == 'P3-supplier-correction'
++    assert request['root_execution_guard_blob'] == GUARD_BLOB
+     assert hashlib.sha256(request['root_execution_guard_text'].encode()).hexdigest() == GUARD_SHA
+     assert hashlib.sha256(request['approved_plan_text'].encode()).hexdigest() == PLAN_SHA
+     assert json.loads(request['root_execution_guard_text'])['execute']
++    assert request['root_official_origin_correction_authorized'] is True
+     assert os.getuid() == 1000 and ROOT.resolve() == ROOT and SOURCE.resolve() == SOURCE
+     assert not os.path.lexists(EVIDENCE)
+     for name in ['RUSTC_WRAPPER', 'RUSTC_WORKSPACE_WRAPPER', 'RUSTFLAGS', 'CARGO_ENCODED_RUSTFLAGS', 'GIT_INDEX_FILE']:
+@@ -236,68 +239,108 @@
+     tools_doc = json.loads(tool_data)
+     for old in tools_doc['tools']:
+         actual = file_id(old['path'])
+-        assert all(actual[k] == old[k] for k in ['bytes', 'sha256', 'git_blob']), old['name']
++        assert all(actual[key] == old[key] for key in ['bytes', 'sha256', 'git_blob']), old['name']
++    failed_path = ROOT / 'evidence/bootstrap-P3-v1/terminal.json'
++    failed_bytes = failed_path.read_bytes()
++    assert bytes_id(failed_bytes) == request['failed_P3_terminal_identity']
++    failed = json.loads(failed_bytes)
++    assert not failed['success'] and not failed['commands'] and len(failed['downloads']) == 1
++    assert 'official release asset missing or ambiguous' in failed['errors'][0]['message']
++    for record in failed['records']:
++        actual = file_id(record['path'])
++        assert all(actual[key] == record[key] for key in ['bytes', 'sha256', 'git_blob'])
++    action_path = SOURCE / '.github/actions/setup-rusty-v8/action.yml'
++    action = file_id(action_path)
++    assert action['git_blob'] == '449ab653fd10c07a8a2453b6efe095205157a8ee'
++    assert action_path.read_text() == request['current_source_action_text']
++    old_receipt = request['original_ROG_supply_receipt_text'].encode()
++    assert bytes_id(old_receipt)['sha256'] == '9929de3e38709fe80e3c1f3c3961ad6e9206439ed80a3226db0b2102bba756b9'
+     EVIDENCE.mkdir(mode=0o700)
+     created = True
+     save('request.original.json', raw)
++    save('original-ROG-supply-receipt.json', old_receipt)
++    save('current-source-action.original.yml', action_path.read_bytes())
++    save('prior-failed-terminal.original.json', failed_bytes)
+     terminal['initial_guard'] = source_guard('initial')
+     terminal['installed_tools_receipt'] = file_id(tool_path)
+     lock = tomllib.loads((SOURCE / 'codex-rs/Cargo.lock').read_text())
+-    v8 = [x for x in lock['package'] if x['name'] == 'v8']
+-    assert len(v8) == 1 and v8[0]['version'] == '150.4.0', 'unexpected locked v8 package'
++    v8 = [value for value in lock['package'] if value['name'] == 'v8']
++    assert len(v8) == 1 and v8[0]['version'] == '150.4.0'
+     save_json('locked-v8-package.json', {'source_tree': TREE, 'lock': file_id(SOURCE / 'codex-rs/Cargo.lock'),
+-                                       'package': v8[0]})
++                                       'package': v8[0], 'action': action})
+     folder = TOOLS / 'rusty-v8'
+-    assert not os.path.lexists(folder)
+-    folder.mkdir(mode=0o700)
+-    (TOOLS / 'dotslash-cache').mkdir(mode=0o700)
+-    released = release('denoland', 'rusty_v8', 'v150.4.0', '01-rusty-v8-release')
++    for owned_directory in [folder, TOOLS / 'dotslash-cache']:
++        info = owned_directory.lstat()
++        assert stat.S_ISDIR(info.st_mode) and owned_directory.resolve() == owned_directory
++        assert not list(owned_directory.iterdir()), 'prior failed stage directory no longer empty; do not overwrite'
++    released = release('openai', 'codex', 'rusty-v8-v150.4.0', '01-codex-built-v8-release')
++    base_url = 'https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/'
++    pins = {
++        'librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz':
++            (29366352, 'a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583'),
++        'src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs':
++            (39884, '7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506'),
++    }
++    checksum_name = 'rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256'
++    checksum_asset = asset(released, checksum_name)
++    assert checksum_asset['browser_download_url'] == base_url + checksum_name
++    assert checksum_asset['size'] == 262
++    checksum_path = folder / checksum_name
++    checksum = download('02-official-checksums', checksum_asset['browser_download_url'], checksum_path,
++                        262, '6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be')
++    lines = checksum_path.read_text().replace('\r', '').splitlines()
++    assert len(lines) == 2
++    parsed = {}
++    for line in lines:
++        digest, name = line.split()
++        assert name not in parsed
++        parsed[name] = digest
++    assert parsed == {name: pin[1] for name, pin in pins.items()}, 'official manifest does not equal original variant supply pins'
+     assets = []
+-    names = ['librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz',
+-             'src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs']
+-    for number, name in enumerate(names, 2):
++    for number, (name, (expected_size, expected_sha)) in enumerate(pins.items(), 3):
+         item = asset(released, name)
+-        assert item['browser_download_url'] == 'https://github.com/denoland/rusty_v8/releases/download/v150.4.0/' + name
+-        digest = item.get('digest')
+-        expected_digest = digest.split(':', 1)[1] if digest and digest.startswith('sha256:') else None
+-        path = folder / name
+-        actual = download(f'{number:02d}-v8-asset', item['browser_download_url'], path,
+-                          item['size'], expected_digest, max_size=1200000000)
+-        assets.append({'official_asset_id': item['id'], 'name': name, 'official_digest': digest,
+-                       'official_metadata_digest_available': expected_digest is not None,
++        assert item['browser_download_url'] == base_url + name and item['size'] == expected_size
++        official_digest = item.get('digest')
++        assert official_digest in (None, 'sha256:' + expected_sha), 'GitHub official metadata digest differs'
++        actual = download(f'{number:02d}-v8-asset', item['browser_download_url'], folder / name,
++                          expected_size, expected_sha, max_size=1200000000)
++        assets.append({'official_asset_id': item['id'], 'name': name,
++                       'official_digest': official_digest, 'checksum_manifest': checksum,
+                        'observed': actual})
++    names = list(pins)
+     archive = folder / names[0]
+     before = capacity()
+     count = 0
+     digest = hashlib.sha256()
+     header = b''
+-    with gzip.open(archive, 'rb') as f:
+-        while True:
+-            block = f.read(1024 * 1024)
+-            if not block:
+-                break
++    with gzip.open(archive, 'rb') as stream:
++        while block := stream.read(1024 * 1024):
+             if not header:
+                 header = block[:8]
+             count += len(block)
+-            assert count <= 5000000000, 'unexpected decompressed archive size'
++            assert count <= 5000000000
+             digest.update(block)
+-    assert header == b'!<arch>\n', 'v8 gzip does not contain a native ar archive'
++    assert header == b'!<arch>\n'
+     binding = folder / names[1]
+     binding.read_text(encoding='utf-8')
+-    artifact_receipt = {'schema': 'hepta-ai395-official-v8-prerequisite-v1', 'host': 'ai395', 'source_tree': TREE,
+-                        'locked_v8': v8[0], 'release_tag': released['tag_name'], 'release_id': released['id'],
+-                        'assets': assets, 'gzip_crc_read_complete': True,
+-                        'archive_uncompressed_bytes': count, 'archive_uncompressed_sha256': digest.hexdigest(),
+-                        'decompression_capacity_before': before, 'decompression_capacity_after': capacity(),
+-                        'environment': {'RUSTY_V8_ARCHIVE': str(archive), 'RUSTY_V8_SRC_BINDING_PATH': str(binding),
+-                                        'DOTSLASH_CACHE': str(TOOLS / 'dotslash-cache')},
+-                        'build_or_test_execution': False, 'test_qualification': False}
+-    terminal['artifact_receipt'] = save_json('v8-prerequisites.json', artifact_receipt)
++    receipt = {'schema': 'hepta-ai395-official-v8-prerequisite-v2', 'host': 'ai395', 'source_tree': TREE,
++               'locked_v8': v8[0], 'source_action': action, 'release_owner': 'openai/codex',
++               'release_tag': released['tag_name'], 'release_id': released['id'],
++               'assets': assets, 'official_checksums': checksum, 'gzip_crc_read_complete': True,
++               'archive_uncompressed_bytes': count, 'archive_uncompressed_sha256': digest.hexdigest(),
++               'decompression_capacity_before': before, 'decompression_capacity_after': capacity(),
++               'environment': {'RUSTY_V8_ARCHIVE': str(archive), 'RUSTY_V8_SRC_BINDING_PATH': str(binding),
++                               'DOTSLASH_CACHE': str(TOOLS / 'dotslash-cache')},
++               'build_or_test_execution': False, 'test_qualification': False,
++               'prior_wrong_origin_failure': file_id(failed_path),
++               'origin_correction_authorized_by_root': True,
++               'variant_unchanged': 'ptrcomp_sandbox_release_x86_64-unknown-linux-gnu'}
++    terminal['artifact_receipt'] = save_json('v8-prerequisites.json', receipt)
+     terminal['final_guard'] = source_guard('final')
+     terminal['capacity_final'] = capacity()
+     success = True
+-except Exception as e:
+-    terminal['errors'].append({'type': type(e).__name__, 'message': str(e), 'traceback': traceback.format_exc()})
++except Exception as error:
++    terminal['errors'].append({'type': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc()})
+ finally:
+     terminal.update({'success': success, 'ready_for_P4': success, 'completed_at': now(),
+                      'commands': commands, 'downloads': observations, 'records': list(records)})

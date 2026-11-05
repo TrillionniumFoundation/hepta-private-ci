@@ -1,0 +1,126 @@
+{
+  "archive_uncompressed_bytes": 155276688,
+  "archive_uncompressed_sha256": "82e3368ef77a5427d781104c3903fcffadfaef1fc324d55162cfa598a509e927",
+  "assets": [
+    {
+      "checksum_manifest": {
+        "bytes": 262,
+        "dev": 66306,
+        "git_blob": "f6c17da4f3fc769baf546a24096e8181bbcefae0",
+        "inode": 65965515,
+        "mode": "0o600",
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+        "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be"
+      },
+      "name": "librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "observed": {
+        "bytes": 29366352,
+        "dev": 66306,
+        "git_blob": "c6941f7873bdfb8ac18577c9844f234e76dc5ed6",
+        "inode": 65965522,
+        "mode": "0o600",
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583"
+      },
+      "official_asset_id": 493388485,
+      "official_digest": "sha256:a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583"
+    },
+    {
+      "checksum_manifest": {
+        "bytes": 262,
+        "dev": 66306,
+        "git_blob": "f6c17da4f3fc769baf546a24096e8181bbcefae0",
+        "inode": 65965515,
+        "mode": "0o600",
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+        "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be"
+      },
+      "name": "src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "observed": {
+        "bytes": 39884,
+        "dev": 66306,
+        "git_blob": "818270d5815fe0cce4bbf7f8f0b783291f93127e",
+        "inode": 65965529,
+        "mode": "0o600",
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+        "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506"
+      },
+      "official_asset_id": 493388480,
+      "official_digest": "sha256:7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506"
+    }
+  ],
+  "build_or_test_execution": false,
+  "decompression_capacity_after": {
+    "at": "2026-11-05T08:15:58.023183+00:00",
+    "available_bytes": 917275009024,
+    "f_bavail": 223944094,
+    "f_frsize": 4096,
+    "minimum_bytes": 64000000000
+  },
+  "decompression_capacity_before": {
+    "at": "2026-11-05T08:15:57.167371+00:00",
+    "available_bytes": 917275009024,
+    "f_bavail": 223944094,
+    "f_frsize": 4096,
+    "minimum_bytes": 64000000000
+  },
+  "environment": {
+    "DOTSLASH_CACHE": "/home/qq/work/hepta-audit-b16-20261105/tools/dotslash-cache",
+    "RUSTY_V8_ARCHIVE": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs"
+  },
+  "gzip_crc_read_complete": true,
+  "host": "ai395",
+  "locked_v8": {
+    "checksum": "42a978ff11f15b24e5c05a7123cf2b68f41e763546699781a924ef4e2cf43a49",
+    "dependencies": [
+      "bindgen",
+      "bitflags 2.13.2",
+      "fslock",
+      "gzip-header",
+      "home",
+      "miniz_oxide 0.8.9",
+      "paste",
+      "temporal_capi",
+      "which 6.0.3"
+    ],
+    "name": "v8",
+    "source": "registry+https://github.com/rust-lang/crates.io-index",
+    "version": "150.4.0"
+  },
+  "official_checksums": {
+    "bytes": 262,
+    "dev": 66306,
+    "git_blob": "f6c17da4f3fc769baf546a24096e8181bbcefae0",
+    "inode": 65965515,
+    "mode": "0o600",
+    "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+    "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be"
+  },
+  "origin_correction_authorized_by_root": true,
+  "prior_wrong_origin_failure": {
+    "bytes": 6635,
+    "dev": 66306,
+    "git_blob": "c2bda8d5a8d24b8e491e64548f023774e13ec906",
+    "inode": 65931251,
+    "mode": "0o600",
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-v1/terminal.json",
+    "sha256": "0911a91fee08681d58135ff6f10b348552f52096e40730ddc1b4bdb47a8f7c8e"
+  },
+  "release_id": 361445880,
+  "release_owner": "openai/codex",
+  "release_tag": "rusty-v8-v150.4.0",
+  "schema": "hepta-ai395-official-v8-prerequisite-v2",
+  "source_action": {
+    "bytes": 2151,
+    "dev": 66306,
+    "git_blob": "449ab653fd10c07a8a2453b6efe095205157a8ee",
+    "inode": 65176640,
+    "mode": "0o600",
+    "path": "/home/qq/work/hepta-audit-b16-20261105/source/.github/actions/setup-rusty-v8/action.yml",
+    "sha256": "ec4107dfd69f6034d34a558df2c85191a9e6d03dfedf3bce7a94bb0fb0de85b0"
+  },
+  "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "test_qualification": false,
+  "variant_unchanged": "ptrcomp_sandbox_release_x86_64-unknown-linux-gnu"
+}

@@ -1,0 +1,162 @@
+{
+  "build_or_test_execution": false,
+  "commands": [],
+  "completed_at": "2026-11-05T07:45:52.483800+00:00",
+  "downloads": [
+    {
+      "actual": {
+        "bytes": 124705,
+        "dev": 66306,
+        "git_blob": "be1da2cbc5b48d229a0b58f61a53cab4614bca4d",
+        "inode": 65931247,
+        "mode": "0o600",
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-v1/01-rusty-v8-release.release.original.json",
+        "sha256": "5b68831049cee9a67d7dbfb0dbc560309894c5eb04c79d4985925b5c616757f4"
+      },
+      "capacity_after": {
+        "at": "2026-11-05T07:45:51.864586+00:00",
+        "available_bytes": 961547452416,
+        "f_bavail": 234752796,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000
+      },
+      "capacity_before": {
+        "at": "2026-11-05T07:45:48.752118+00:00",
+        "available_bytes": 961548824576,
+        "f_bavail": 234753131,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000
+      },
+      "completed_at": "2026-11-05T07:45:51.864541+00:00",
+      "content_length_header": null,
+      "destination": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-v1/01-rusty-v8-release.release.original.json",
+      "duration_seconds": 2.4086193670518696,
+      "final_host": "api.github.com",
+      "guard_after": {
+        "bytes": 3043,
+        "dev": 66306,
+        "git_blob": "df3f8c54602537756bb05ae3940130d1d8717137",
+        "inode": 65931249,
+        "mode": "0o600",
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-v1/01-rusty-v8-release-after.guard.json",
+        "sha256": "06adc9fac740575a6e234a7555dc0ad1f524824c45a7286dba3501336ef9641a"
+      },
+      "guard_before": {
+        "bytes": 3043,
+        "dev": 66306,
+        "git_blob": "7d777a39d694c5b2d088151b1c4301e38d9d8e9d",
+        "inode": 65931245,
+        "mode": "0o600",
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-v1/01-rusty-v8-release-before.guard.json",
+        "sha256": "509f1de1d07a9b2ec115357980e97d5ba4cc7ab3a28b18e98036ca747b8b27d6"
+      },
+      "http_status": 200,
+      "label": "01-rusty-v8-release",
+      "official_requested_url": "https://api.github.com/repos/denoland/rusty_v8/releases/tags/v150.4.0",
+      "started_at": "2026-11-05T07:45:49.455753+00:00"
+    }
+  ],
+  "errors": [
+    {
+      "message": "official release asset missing or ambiguous: librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 259, in <module>\n    item = asset(released, name)\n  File \"<string>\", line 176, in asset\n    assert len(matches) == 1, f'official release asset missing or ambiguous: {name}'\n           ^^^^^^^^^^^^^^^^^\nAssertionError: official release asset missing or ambiguous: librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz\n",
+      "type": "AssertionError"
+    }
+  ],
+  "host": "ai395",
+  "initial_guard": {
+    "bytes": 3043,
+    "dev": 66306,
+    "git_blob": "f30a188e9dc45da84549172ba85179611307cd79",
+    "inode": 65931240,
+    "mode": "0o600",
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-v1/initial.guard.json",
+    "sha256": "0882a8a8d282c7bb6ccd47a3a2a0f2f8620fa5415be051f86f019efe9abcd2df"
+  },
+  "installed_tools_receipt": {
+    "bytes": 25851,
+    "dev": 66306,
+    "git_blob": "ab7238e724fb3feddbc8b5fcd691b9ebf0a5033a",
+    "inode": 65824117,
+    "mode": "0o600",
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P2-version-continuation-v1/installed-tools.json",
+    "sha256": "75384c3cf63c14309d5a50b3c0bdb17c71db3cc9669fe9004e226d9b44ad4f22"
+  },
+  "ready_for_P4": false,
+  "records": [
+    {
+      "bytes": 20741,
+      "dev": 66306,
+      "git_blob": "63381feea1ca408d01bbc957373fa0dfa088842a",
+      "inode": 65931238,
+      "mode": "0o600",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-v1/request.original.json",
+      "sha256": "d9fd25f19741618626f7757b09762ee55c62629244b29a546834c5a892660aff"
+    },
+    {
+      "bytes": 3043,
+      "dev": 66306,
+      "git_blob": "f30a188e9dc45da84549172ba85179611307cd79",
+      "inode": 65931240,
+      "mode": "0o600",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-v1/initial.guard.json",
+      "sha256": "0882a8a8d282c7bb6ccd47a3a2a0f2f8620fa5415be051f86f019efe9abcd2df"
+    },
+    {
+      "bytes": 811,
+      "dev": 66306,
+      "git_blob": "bcdfe99d05be1ff95dcf5901b761d048b7bd880e",
+      "inode": 65931241,
+      "mode": "0o600",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-v1/locked-v8-package.json",
+      "sha256": "79fef3ab3c48ca9d7a54cf21a768aad12a8e9fbf597f108a6636e464f35a3ca6"
+    },
+    {
+      "bytes": 3043,
+      "dev": 66306,
+      "git_blob": "7d777a39d694c5b2d088151b1c4301e38d9d8e9d",
+      "inode": 65931245,
+      "mode": "0o600",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-v1/01-rusty-v8-release-before.guard.json",
+      "sha256": "509f1de1d07a9b2ec115357980e97d5ba4cc7ab3a28b18e98036ca747b8b27d6"
+    },
+    {
+      "bytes": 873,
+      "dev": 66306,
+      "git_blob": "0706247c22c459f92d456cb65805981a10334b3a",
+      "inode": 65931246,
+      "mode": "0o600",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-v1/01-rusty-v8-release.request.json",
+      "sha256": "0ff998c37dfd9e0034a6f9cf5656b6f999b2de4f397ef64fa14c1cce681b5da8"
+    },
+    {
+      "bytes": 3043,
+      "dev": 66306,
+      "git_blob": "df3f8c54602537756bb05ae3940130d1d8717137",
+      "inode": 65931249,
+      "mode": "0o600",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-v1/01-rusty-v8-release-after.guard.json",
+      "sha256": "06adc9fac740575a6e234a7555dc0ad1f524824c45a7286dba3501336ef9641a"
+    },
+    {
+      "bytes": 1976,
+      "dev": 66306,
+      "git_blob": "8c53278b34eeb73316d5ae799c9a3045b03ff50b",
+      "inode": 65931250,
+      "mode": "0o600",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-v1/01-rusty-v8-release.status.json",
+      "sha256": "d8bcdd581f26f79ae99e7e2765e34c5b8430d93f5215add122116d8665f0f62d"
+    }
+  ],
+  "request": {
+    "bytes": 20741,
+    "git_blob": "63381feea1ca408d01bbc957373fa0dfa088842a",
+    "sha256": "d9fd25f19741618626f7757b09762ee55c62629244b29a546834c5a892660aff"
+  },
+  "root_guard": "967ef896907e698a07e8028e049a47e934570b1d",
+  "schema": "hepta-ai395-cold-bootstrap-P3-terminal-v1",
+  "source_mutation": false,
+  "stage": "P3",
+  "started_at": "2026-11-05T07:45:47.237747+00:00",
+  "success": false
+}

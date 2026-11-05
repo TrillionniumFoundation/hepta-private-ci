@@ -1,0 +1,2600 @@
+{
+  "build_executed": false,
+  "cargo_features_changed": false,
+  "environment": {
+    "OPENSSL_INCLUDE_DIR": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include",
+    "OPENSSL_LIB_DIR": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu"
+  },
+  "header_bytes_modified": false,
+  "header_layout": "Read-only relative symlinks expose the official common and multiarch headers in one private include directory; original package bytes remain in sysroot.",
+  "headers": [
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/aes.h",
+      "link_target": "../../sysroot/usr/include/openssl/aes.h",
+      "official_file": {
+        "bytes": 3311,
+        "dev": 66306,
+        "git_blob": "2b6c683988266078d502579cbab340540ec30f25",
+        "inode": 66869157,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/aes.h",
+        "sha256": "130e304c466bda5db6de2fdbca3a970905070ab935d702e61c8371334851ea27"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/asn1.h",
+      "link_target": "../../sysroot/usr/include/openssl/asn1.h",
+      "official_file": {
+        "bytes": 57739,
+        "dev": 66306,
+        "git_blob": "6e7fb4316cf84bd37b5ee99c497fc565574a2379",
+        "inode": 66869158,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/asn1.h",
+        "sha256": "4fa5c0b192a3eb73927fbec13c8a399831afd09bf4c0b5f551f025c7c8044a02"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/asn1err.h",
+      "link_target": "../../sysroot/usr/include/openssl/asn1err.h",
+      "official_file": {
+        "bytes": 5169,
+        "dev": 66306,
+        "git_blob": "91756141b0f8322af57c8b29ee5feaf196f5d120",
+        "inode": 66869159,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/asn1err.h",
+        "sha256": "9d60638b3d0c52170d390fe566c0b96a6381590590cc3dd71339eb85140fe1d6"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/asn1t.h",
+      "link_target": "../../sysroot/usr/include/openssl/asn1t.h",
+      "official_file": {
+        "bytes": 38604,
+        "dev": 66306,
+        "git_blob": "5219c4f71bab153956998007276e4e0edc57107d",
+        "inode": 66869160,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/asn1t.h",
+        "sha256": "b6e9322878b397af0704d856f822ccb7b77a2c221d0402a4086c315e240e1ed9"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/async.h",
+      "link_target": "../../sysroot/usr/include/openssl/async.h",
+      "official_file": {
+        "bytes": 3019,
+        "dev": 66306,
+        "git_blob": "904438560f4de3ce7cb9a796e04425771fe72009",
+        "inode": 66869161,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/async.h",
+        "sha256": "708d52ecd7bb5ca83d243ddecb132db0693b0809f65c093eabda549156934030"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/asyncerr.h",
+      "link_target": "../../sysroot/usr/include/openssl/asyncerr.h",
+      "official_file": {
+        "bytes": 739,
+        "dev": 66306,
+        "git_blob": "41bd4a0391ad23d7f857613d526783fccf7d6673",
+        "inode": 66869162,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/asyncerr.h",
+        "sha256": "eb6ea0f0389aa7846ea5b8f5b7b8d2a82a7b52e7dbfa105bc137e52be1399a69"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/bio.h",
+      "link_target": "../../sysroot/usr/include/openssl/bio.h",
+      "official_file": {
+        "bytes": 41407,
+        "dev": 66306,
+        "git_blob": "73b1a97918477a80a61dd0172dc2955b6998e8a3",
+        "inode": 66869163,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/bio.h",
+        "sha256": "c2aa5855e8b17a316d5ec8222db127816c601ce5f19ef239788ad4cc24a1ea53"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/bioerr.h",
+      "link_target": "../../sysroot/usr/include/openssl/bioerr.h",
+      "official_file": {
+        "bytes": 2355,
+        "dev": 66306,
+        "git_blob": "b4ee5c68beec1c747eac51882e125393b285d376",
+        "inode": 66869164,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/bioerr.h",
+        "sha256": "fe1bf57251e4eaab30d2a6aa2048ee93deb1f0f15ef6634f61093b4d405586c6"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/blowfish.h",
+      "link_target": "../../sysroot/usr/include/openssl/blowfish.h",
+      "official_file": {
+        "bytes": 2136,
+        "dev": 66306,
+        "git_blob": "49c74e946ce7c9005ab3224992f3782b14cd28c7",
+        "inode": 66869165,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/blowfish.h",
+        "sha256": "97064924914f71425e48f5d53893abca0f07f329dde7a8b93b581dc9ee2e837a"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/bn.h",
+      "link_target": "../../sysroot/usr/include/openssl/bn.h",
+      "official_file": {
+        "bytes": 22309,
+        "dev": 66306,
+        "git_blob": "d210b8bddd51131dd61eecff2f33236503bfe633",
+        "inode": 66869166,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/bn.h",
+        "sha256": "113a732a94b0221fdcda3e0b0f24b7d389072b2920291c23c0849c7bc5030b3f"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/bnerr.h",
+      "link_target": "../../sysroot/usr/include/openssl/bnerr.h",
+      "official_file": {
+        "bytes": 1329,
+        "dev": 66306,
+        "git_blob": "dbbcd699bba486e84d0c24927e49a60259bedb8f",
+        "inode": 66869167,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/bnerr.h",
+        "sha256": "beeb78746fbcc2c09e1f833f4c2ea72e845e757390aad7dc8699f7787b580204"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/buffer.h",
+      "link_target": "../../sysroot/usr/include/openssl/buffer.h",
+      "official_file": {
+        "bytes": 1591,
+        "dev": 66306,
+        "git_blob": "09b35e8e18e85f7cc49cdd0208ca6cb922b4842c",
+        "inode": 66869168,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/buffer.h",
+        "sha256": "c7b9803f89bb492176a1e2738999dad86195ab8048a26e8ec9ef6948b8882e8a"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/buffererr.h",
+      "link_target": "../../sysroot/usr/include/openssl/buffererr.h",
+      "official_file": {
+        "bytes": 587,
+        "dev": 66306,
+        "git_blob": "4fa0da44be2324d5c67ae9f696aff12e4edf045c",
+        "inode": 66869169,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/buffererr.h",
+        "sha256": "4dea6e8ec7f09bfbdaa85fa3e75572b95d2ea62a813e7420a04f5f56ee7ccdfd"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/byteorder.h",
+      "link_target": "../../sysroot/usr/include/openssl/byteorder.h",
+      "official_file": {
+        "bytes": 8444,
+        "dev": 66306,
+        "git_blob": "393f34b1c3d3dddbfcd0743052b821df2698e6ff",
+        "inode": 66869170,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/byteorder.h",
+        "sha256": "f062018f5fbe9f8459967dffaaa8e27f34596fb0da21fc011d0d556384a0305c"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/camellia.h",
+      "link_target": "../../sysroot/usr/include/openssl/camellia.h",
+      "official_file": {
+        "bytes": 3266,
+        "dev": 66306,
+        "git_blob": "aec94e4efc942cdd18a105e946de4f22f19de6ac",
+        "inode": 66869171,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/camellia.h",
+        "sha256": "e03acf0f3406032e5322e4f3368e8e48e5b73e8846955c3bcb3a4f1cb54d2ebc"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/cast.h",
+      "link_target": "../../sysroot/usr/include/openssl/cast.h",
+      "official_file": {
+        "bytes": 1880,
+        "dev": 66306,
+        "git_blob": "af943124821d9ab8b1dbcb5d8c5c63bda213699b",
+        "inode": 66869172,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/cast.h",
+        "sha256": "4fafc375a53d88fe4c709d8ee5fb74dc0fcaf91915837c3c6b4df0d916b07f0a"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/cmac.h",
+      "link_target": "../../sysroot/usr/include/openssl/cmac.h",
+      "official_file": {
+        "bytes": 1449,
+        "dev": 66306,
+        "git_blob": "c72da7ecdcb04f497d89fa06b6d45ea6906a8f31",
+        "inode": 66869173,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/cmac.h",
+        "sha256": "048677b08aab6fd862d2b8b15556db8355d2142b93a9431ffba1d75a25912847"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/cmp.h",
+      "link_target": "../../sysroot/usr/include/openssl/cmp.h",
+      "official_file": {
+        "bytes": 48041,
+        "dev": 66306,
+        "git_blob": "5a11336645727eaa655dc223b59669daf188629d",
+        "inode": 66869174,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/cmp.h",
+        "sha256": "8945286a4e82fef5a661c23dc3e98deaaba7a9cc75526e726ab1a271f722a603"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/cmp_util.h",
+      "link_target": "../../sysroot/usr/include/openssl/cmp_util.h",
+      "official_file": {
+        "bytes": 1627,
+        "dev": 66306,
+        "git_blob": "a0ee20f473a176d17dc4da4b602757c2eb3f4de3",
+        "inode": 66869175,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/cmp_util.h",
+        "sha256": "16c51c48c83c930b018ff711553e107f1870f1cedd32d94c06f15709b080c321"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/cmperr.h",
+      "link_target": "../../sysroot/usr/include/openssl/cmperr.h",
+      "official_file": {
+        "bytes": 4821,
+        "dev": 66306,
+        "git_blob": "b07ac6d6c6db11e1c83e80d088a3a7d26cddea8b",
+        "inode": 66869176,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/cmperr.h",
+        "sha256": "220d1a903b66e25fa1de92f3ee8b3f5ef27de6dface0a4ea68e683a19e3549a7"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/cms.h",
+      "link_target": "../../sysroot/usr/include/openssl/cms.h",
+      "official_file": {
+        "bytes": 31106,
+        "dev": 66306,
+        "git_blob": "b5e09e26dfda4b34563499bc5e8f18c9694f9c64",
+        "inode": 66869177,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/cms.h",
+        "sha256": "d8c581b225131e918d7f7022cae11d9857d3b7e66167869b78d3c1b1e248f79a"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/cmserr.h",
+      "link_target": "../../sysroot/usr/include/openssl/cmserr.h",
+      "official_file": {
+        "bytes": 4547,
+        "dev": 66306,
+        "git_blob": "8c12c5664fd156fc8a678b7b9c2002e3aaef8c7e",
+        "inode": 66869178,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/cmserr.h",
+        "sha256": "1cfc091ae52fe85c79bccfe1cc2d0e2979afff511e6a91fd04142596a65ac31a"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/comp.h",
+      "link_target": "../../sysroot/usr/include/openssl/comp.h",
+      "official_file": {
+        "bytes": 4696,
+        "dev": 66306,
+        "git_blob": "d47246a1a2023856a7350eaa01beff72da0a7c2d",
+        "inode": 66869179,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/comp.h",
+        "sha256": "3f95492b4054a8064bc75f770766aa6c8c0866cbd267939460786e13092a053e"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/comperr.h",
+      "link_target": "../../sysroot/usr/include/openssl/comperr.h",
+      "official_file": {
+        "bytes": 1002,
+        "dev": 66306,
+        "git_blob": "90ec7c1144be7636ff9743b87aaa6c50dce258c9",
+        "inode": 66869180,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/comperr.h",
+        "sha256": "03faa7ac9cf7ec99350a55758a685056dae8f75992887e0411c23b0d8c5d83b0"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/conf.h",
+      "link_target": "../../sysroot/usr/include/openssl/conf.h",
+      "official_file": {
+        "bytes": 10390,
+        "dev": 66306,
+        "git_blob": "139baa6a12395e192cd6084721b7f1a3a0c5f04f",
+        "inode": 66869181,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/conf.h",
+        "sha256": "14c276c3b47e537d7efc1150bc4bf9054c85a1eba6f60bd7b237885327f071fa"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/conf_api.h",
+      "link_target": "../../sysroot/usr/include/openssl/conf_api.h",
+      "official_file": {
+        "bytes": 1328,
+        "dev": 66306,
+        "git_blob": "f3f3c640853ad27feecd710fa6c9c2aa49346cd1",
+        "inode": 66869182,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/conf_api.h",
+        "sha256": "38dce9e9e0a438fcaf1d173c26e61c821bfd3756e221e3be76cf010580ac52f7"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/conferr.h",
+      "link_target": "../../sysroot/usr/include/openssl/conferr.h",
+      "official_file": {
+        "bytes": 1697,
+        "dev": 66306,
+        "git_blob": "0b984dd65d4d0dafcb2b6731a77da625a50b43ea",
+        "inode": 66869183,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/conferr.h",
+        "sha256": "ea9346e399d5dd1fbcca4f34078e1acb5039333602ecaf72faa04e32cdd55484"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/conftypes.h",
+      "link_target": "../../sysroot/usr/include/openssl/conftypes.h",
+      "official_file": {
+        "bytes": 1176,
+        "dev": 66306,
+        "git_blob": "f2d2be19d0674e1033faaa9880bac708871a6471",
+        "inode": 66869184,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/conftypes.h",
+        "sha256": "496997cc0f4c32b840677eeefd3ecb488453254be6e228b8cd34d4a4061a9e28"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/core.h",
+      "link_target": "../../sysroot/usr/include/openssl/core.h",
+      "official_file": {
+        "bytes": 7820,
+        "dev": 66306,
+        "git_blob": "a883173ddd2abcad78c5ebc75351261466be3931",
+        "inode": 66869185,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/core.h",
+        "sha256": "4d4e63e2e01d06530515adbbe3c93601c5f0f5e1a96754d34d3470bccfcbdbc3"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/core_dispatch.h",
+      "link_target": "../../sysroot/usr/include/openssl/core_dispatch.h",
+      "official_file": {
+        "bytes": 46948,
+        "dev": 66306,
+        "git_blob": "65faa5f2cf128231ab2848ed95e13c3cbc86da99",
+        "inode": 66869186,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/core_dispatch.h",
+        "sha256": "43e25c38bbdc9b070ce14111d8722cf1c4072ba52fb0d0fe40f6fbbc2dc70365"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/core_names.h",
+      "link_target": "../../sysroot/usr/include/openssl/core_names.h",
+      "official_file": {
+        "bytes": 29408,
+        "dev": 66306,
+        "git_blob": "4477ca55afb3f8de237c6e84d740d0f50583a3bb",
+        "inode": 66869187,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/core_names.h",
+        "sha256": "7a1e3743f463fe1684953ba27d34592972fd48a2b48dc45319f6a840a8436c21"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/core_object.h",
+      "link_target": "../../sysroot/usr/include/openssl/core_object.h",
+      "official_file": {
+        "bytes": 1047,
+        "dev": 66306,
+        "git_blob": "df0c79436d880ee96cca41d4a1d0271692879788",
+        "inode": 66869188,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/core_object.h",
+        "sha256": "e8fa8c62ad1367bd325d59d721214d1a7afd5423205134152f60cc39a8590c8a"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/crmf.h",
+      "link_target": "../../sysroot/usr/include/openssl/crmf.h",
+      "official_file": {
+        "bytes": 19647,
+        "dev": 66306,
+        "git_blob": "1e20ab16787f6e1434489c0d8d8d85b19673bfaa",
+        "inode": 66869189,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/crmf.h",
+        "sha256": "6c2c4de95fa8e59c0b7bef929eb190aa2cb27bccdd1fe2de35fbed095791628f"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/crmferr.h",
+      "link_target": "../../sysroot/usr/include/openssl/crmferr.h",
+      "official_file": {
+        "bytes": 1858,
+        "dev": 66306,
+        "git_blob": "22153940eeb90760d5eab608566cd3493ad1daed",
+        "inode": 66869190,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/crmferr.h",
+        "sha256": "9f2ff7a468b5048d543fef0324b39abdea63fa07bc915f62ff42a1937d7258c2"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/crypto.h",
+      "link_target": "../../sysroot/usr/include/openssl/crypto.h",
+      "official_file": {
+        "bytes": 23122,
+        "dev": 66306,
+        "git_blob": "7c0a20b28098d334f05e1aa8adf8b7f2001864ea",
+        "inode": 66869191,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/crypto.h",
+        "sha256": "345267a63492320c5c23550bf10b6b94744c6250bcbb17a87954e324c7a51faf"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/cryptoerr.h",
+      "link_target": "../../sysroot/usr/include/openssl/cryptoerr.h",
+      "official_file": {
+        "bytes": 1986,
+        "dev": 66306,
+        "git_blob": "626e3e9be57bdb934a309b599ca0188798d47d1f",
+        "inode": 66869192,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/cryptoerr.h",
+        "sha256": "c457c0591449551657a69ff9727784a79cc1afd899ac733c682c1a41fefdaa19"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/cryptoerr_legacy.h",
+      "link_target": "../../sysroot/usr/include/openssl/cryptoerr_legacy.h",
+      "official_file": {
+        "bytes": 48019,
+        "dev": 66306,
+        "git_blob": "b1388a5b57b369ce9c2a02f2981578ba5c47ab23",
+        "inode": 66869193,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/cryptoerr_legacy.h",
+        "sha256": "985664cb71a62441b2822028340bb4ad5e3f98d6c74ba4c1bc7c997e188b97d3"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ct.h",
+      "link_target": "../../sysroot/usr/include/openssl/ct.h",
+      "official_file": {
+        "bytes": 22241,
+        "dev": 66306,
+        "git_blob": "8b82ae2db6f0111ef39d37c05192c82449755980",
+        "inode": 66869194,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ct.h",
+        "sha256": "bafa52d57bb3da74016273aca034fdf1f402b935430cbc0943a7526bd7939d0a"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/cterr.h",
+      "link_target": "../../sysroot/usr/include/openssl/cterr.h",
+      "official_file": {
+        "bytes": 1241,
+        "dev": 66306,
+        "git_blob": "950b7b388cc7812d39767951c60ccd6509aa3593",
+        "inode": 66869195,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/cterr.h",
+        "sha256": "26d971ab2166ba4473864506dcd933290fa6c321956ef46220eb61fb33a04c89"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/decoder.h",
+      "link_target": "../../sysroot/usr/include/openssl/decoder.h",
+      "official_file": {
+        "bytes": 4907,
+        "dev": 66306,
+        "git_blob": "8194c2492acb8625d11fbd33f1afeb7ad130c6bc",
+        "inode": 66869196,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/decoder.h",
+        "sha256": "72dbf52e4dc4efbfaddbf31ab6f2bec3e9a5c22eed865d057b960a014a4b9ec8"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/decodererr.h",
+      "link_target": "../../sysroot/usr/include/openssl/decodererr.h",
+      "official_file": {
+        "bytes": 740,
+        "dev": 66306,
+        "git_blob": "5fdeace4f971af74c4aa655819258934f01f7056",
+        "inode": 66869197,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/decodererr.h",
+        "sha256": "c6818c667bdf8c37c5423580e0551359c69efc884198d28675db23e9fc70946e"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/des.h",
+      "link_target": "../../sysroot/usr/include/openssl/des.h",
+      "official_file": {
+        "bytes": 7764,
+        "dev": 66306,
+        "git_blob": "daaef4e820b6c5d05efcf0be4c00ed73cbbd4f74",
+        "inode": 66869198,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/des.h",
+        "sha256": "420afefcf27f28046912c5f156bc9e93d71a2c8a47bf0f605695a13f391cd5f9"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/dh.h",
+      "link_target": "../../sysroot/usr/include/openssl/dh.h",
+      "official_file": {
+        "bytes": 13025,
+        "dev": 66306,
+        "git_blob": "6d0abe2d217d2750ce988ca91a60131119629365",
+        "inode": 66869199,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/dh.h",
+        "sha256": "25080c32c48d5a88053c4b83c326e8f024b68249a0ef65d3c45af4f9aab6e0c6"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/dherr.h",
+      "link_target": "../../sysroot/usr/include/openssl/dherr.h",
+      "official_file": {
+        "bytes": 1702,
+        "dev": 66306,
+        "git_blob": "753659be16f823a49e8f03f7db1cd3773d832987",
+        "inode": 66869200,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/dherr.h",
+        "sha256": "70f9e260865a9aae4c5f9a72d42d878e4dc216c906709245a8da2cceb79c3a14"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/dsa.h",
+      "link_target": "../../sysroot/usr/include/openssl/dsa.h",
+      "official_file": {
+        "bytes": 10982,
+        "dev": 66306,
+        "git_blob": "61baa64bee7e9ffbef7ce5f8bdbb70c284012776",
+        "inode": 66869201,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/dsa.h",
+        "sha256": "dac47d9779f83eb4e5a4f57c234e6eb25277cea68001384360e16c8859c38338"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/dsaerr.h",
+      "link_target": "../../sysroot/usr/include/openssl/dsaerr.h",
+      "official_file": {
+        "bytes": 1164,
+        "dev": 66306,
+        "git_blob": "cc5f4bfbb7c3ac6807f9957ec055ca594676bba3",
+        "inode": 66869202,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/dsaerr.h",
+        "sha256": "b8fb8dae664d18298ae4b0c5444378e3f5c5d095256acb50764230159b1a15d6"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/dtls1.h",
+      "link_target": "../../sysroot/usr/include/openssl/dtls1.h",
+      "official_file": {
+        "bytes": 1239,
+        "dev": 66306,
+        "git_blob": "0b42948d02d8cbc089a70bc82e479d46dc3618f2",
+        "inode": 66869203,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/dtls1.h",
+        "sha256": "3477022a712ecbb2bfb61b297c57026f1c354d52c638dfb22292183bd68d2e8f"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/e_os2.h",
+      "link_target": "../../sysroot/usr/include/openssl/e_os2.h",
+      "official_file": {
+        "bytes": 8445,
+        "dev": 66306,
+        "git_blob": "86a572bb12e3f40df82c490d01176fc04236909c",
+        "inode": 66869204,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/e_os2.h",
+        "sha256": "d7300e16ec04f764e8fd45ae5288c37ab5af09dd1ea204d17c54c0155c69921c"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/e_ostime.h",
+      "link_target": "../../sysroot/usr/include/openssl/e_ostime.h",
+      "official_file": {
+        "bytes": 1147,
+        "dev": 66306,
+        "git_blob": "c0f1c547db72b49be4cfe437fa1b7b3c2ab64c52",
+        "inode": 66869205,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/e_ostime.h",
+        "sha256": "0528cffa1548778b3ad52d4abb527e5f31590fb1bab4b0f55aad391efd79fd68"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ebcdic.h",
+      "link_target": "../../sysroot/usr/include/openssl/ebcdic.h",
+      "official_file": {
+        "bytes": 1025,
+        "dev": 66306,
+        "git_blob": "f2171bb055464f5792deb2f7b3dc386f52eb6c7d",
+        "inode": 66869206,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ebcdic.h",
+        "sha256": "f50d3c91cb24772cf3155fe6464d811219b8f7c65ea3d4f974f58c03c3f27ab5"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ec.h",
+      "link_target": "../../sysroot/usr/include/openssl/ec.h",
+      "official_file": {
+        "bytes": 62313,
+        "dev": 66306,
+        "git_blob": "cdde09ca62b66e2778cc6d5f9ec736858228f194",
+        "inode": 66869207,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ec.h",
+        "sha256": "2cc0edb6a18c4c1199bfce6799ca56362a6c27d41dfdfee62177a3d53a8c9a65"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ecdh.h",
+      "link_target": "../../sysroot/usr/include/openssl/ecdh.h",
+      "official_file": {
+        "bytes": 361,
+        "dev": 66306,
+        "git_blob": "56bd4cc2ce0de4c0f34180c7ef51201f061f0172",
+        "inode": 66869208,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ecdh.h",
+        "sha256": "5b99fdd1dfea38640ed8a506fb9b66db381cc26a1254448a81cc6b161e41850f"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ecdsa.h",
+      "link_target": "../../sysroot/usr/include/openssl/ecdsa.h",
+      "official_file": {
+        "bytes": 361,
+        "dev": 66306,
+        "git_blob": "56bd4cc2ce0de4c0f34180c7ef51201f061f0172",
+        "inode": 66869209,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ecdsa.h",
+        "sha256": "5b99fdd1dfea38640ed8a506fb9b66db381cc26a1254448a81cc6b161e41850f"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ecerr.h",
+      "link_target": "../../sysroot/usr/include/openssl/ecerr.h",
+      "official_file": {
+        "bytes": 3359,
+        "dev": 66306,
+        "git_blob": "e4d26aa1115122d391297fa3b126bd14a9f25342",
+        "inode": 66869210,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ecerr.h",
+        "sha256": "c072432649cd1e4bd1eb8c1f636bc2b57045d6f620d69d61c85f589d1c6b63e3"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/encoder.h",
+      "link_target": "../../sysroot/usr/include/openssl/encoder.h",
+      "official_file": {
+        "bytes": 4570,
+        "dev": 66306,
+        "git_blob": "9138c07276b6983f551200c68286c9fec026767a",
+        "inode": 66869211,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/encoder.h",
+        "sha256": "73459b25f863cf9bbb3de66f04ffe7ddaf9450f3c26afb1d5827325fa0a89fd9"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/encodererr.h",
+      "link_target": "../../sysroot/usr/include/openssl/encodererr.h",
+      "official_file": {
+        "bytes": 741,
+        "dev": 66306,
+        "git_blob": "e07174c3acd23020fec8edcb8d541a0e34fa430f",
+        "inode": 66869212,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/encodererr.h",
+        "sha256": "d010ca78b1df89c7fe3410d2aa5674179bf6750a445382ab8a0314c20a5b9799"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/engine.h",
+      "link_target": "../../sysroot/usr/include/openssl/engine.h",
+      "official_file": {
+        "bytes": 37536,
+        "dev": 66306,
+        "git_blob": "73f6d86aaf70402451462a05c957160b0f5d0d86",
+        "inode": 66869213,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/engine.h",
+        "sha256": "185311cc9702aa00fcafefad6f83ca1f597659d5075b66100c61053e1be5f47d"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/engineerr.h",
+      "link_target": "../../sysroot/usr/include/openssl/engineerr.h",
+      "official_file": {
+        "bytes": 2034,
+        "dev": 66306,
+        "git_blob": "7cdfb8aa64882bc271d76dad9a1b83d03749a033",
+        "inode": 66869214,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/engineerr.h",
+        "sha256": "2732c698916f320ba12ba690a80c1ef0651112015c5eac6141b1c3c315d1f5fc"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/err.h",
+      "link_target": "../../sysroot/usr/include/openssl/err.h",
+      "official_file": {
+        "bytes": 20436,
+        "dev": 66306,
+        "git_blob": "a15ac6ac1f78569ccfd00e2a318c2fb587a57d77",
+        "inode": 66869215,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/err.h",
+        "sha256": "0d673984ff62d55d1fb4534d8136b7325e5264efeeb0b911cc94a4922681e080"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ess.h",
+      "link_target": "../../sysroot/usr/include/openssl/ess.h",
+      "official_file": {
+        "bytes": 8707,
+        "dev": 66306,
+        "git_blob": "6f69c75f6b601fd83bfa59b0fe2af287a96c1b5a",
+        "inode": 66869216,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ess.h",
+        "sha256": "4e2de254dfe25ef69976e53a276681ffca2354b307a8674ef7028bdd515cfe2a"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/esserr.h",
+      "link_target": "../../sysroot/usr/include/openssl/esserr.h",
+      "official_file": {
+        "bytes": 982,
+        "dev": 66306,
+        "git_blob": "46881293cb071fde79319dbc0830ccb45b5e0936",
+        "inode": 66869217,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/esserr.h",
+        "sha256": "9ab984787cce1224e1426be57987e7726d8c5d38651dd96802a7d433c5288ae4"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/evp.h",
+      "link_target": "../../sysroot/usr/include/openssl/evp.h",
+      "official_file": {
+        "bytes": 94953,
+        "dev": 66306,
+        "git_blob": "e83ad131834665dac265532bb6140f877f90e036",
+        "inode": 66869218,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/evp.h",
+        "sha256": "41b42c68adfd98b9d8a80fb2d78bbdaf1094f43dd02be045c7d8605edf36a706"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/evperr.h",
+      "link_target": "../../sysroot/usr/include/openssl/evperr.h",
+      "official_file": {
+        "bytes": 5528,
+        "dev": 66306,
+        "git_blob": "06dd95f4e2541e6de79de7fa94368358dfa5dc16",
+        "inode": 66869219,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/evperr.h",
+        "sha256": "ee0a462f1985667434a2b8a91d5df67ce2ee74e4ad9246f660dece5fafcf4474"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/fips_names.h",
+      "link_target": "../../sysroot/usr/include/openssl/fips_names.h",
+      "official_file": {
+        "bytes": 1850,
+        "dev": 66306,
+        "git_blob": "bbecb1a5ae7fca658f8802c6eaac570920567a57",
+        "inode": 66869220,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/fips_names.h",
+        "sha256": "211628f73b7fa7e9ea0514b491e63704714a56c5a7874ef743b79ad3bef1e590"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/fipskey.h",
+      "link_target": "../../sysroot/usr/include/openssl/fipskey.h",
+      "official_file": {
+        "bytes": 1253,
+        "dev": 66306,
+        "git_blob": "d5a91d436433c1c82d9b64072af9a9964b43aed2",
+        "inode": 66869221,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/fipskey.h",
+        "sha256": "5d1d3508af245e532d9f6766d499a390d29655f25d89fc5d832edb64348a13f6"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/hmac.h",
+      "link_target": "../../sysroot/usr/include/openssl/hmac.h",
+      "official_file": {
+        "bytes": 1892,
+        "dev": 66306,
+        "git_blob": "cb866b22787b0644c519aa7f806e04e3dfc896a6",
+        "inode": 66869222,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/hmac.h",
+        "sha256": "9caf0b993c6ae2b3c75b9b585c8539dd358ca5f4edc42447295f87fc504eb1b9"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/hpke.h",
+      "link_target": "../../sysroot/usr/include/openssl/hpke.h",
+      "official_file": {
+        "bytes": 6081,
+        "dev": 66306,
+        "git_blob": "12496ffe60ee819a9f7c9107cc995067a54cbb58",
+        "inode": 66869223,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/hpke.h",
+        "sha256": "58f81dab37eddc03b86db9dd640980fca872ddf19f4477482826a64f20454cb9"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/http.h",
+      "link_target": "../../sysroot/usr/include/openssl/http.h",
+      "official_file": {
+        "bytes": 4717,
+        "dev": 66306,
+        "git_blob": "91aa923282a2347832d59274b7090ef2fe0f1df6",
+        "inode": 66869224,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/http.h",
+        "sha256": "1f8d65d9633d54a74e8477396f2e3d34f5cdafc753fa8d56a5ee31753f5b734f"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/httperr.h",
+      "link_target": "../../sysroot/usr/include/openssl/httperr.h",
+      "official_file": {
+        "bytes": 1851,
+        "dev": 66306,
+        "git_blob": "adac95018691d77ff257d5dd179a5cd9ba952299",
+        "inode": 66869225,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/httperr.h",
+        "sha256": "cdf601f69893a286d921dfbc8a017c78462959395939c9f1ba639ed27d5c087c"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/idea.h",
+      "link_target": "../../sysroot/usr/include/openssl/idea.h",
+      "official_file": {
+        "bytes": 2285,
+        "dev": 66306,
+        "git_blob": "674a941b1a3ab1c0d127eea024df2f5d4afe6845",
+        "inode": 66869226,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/idea.h",
+        "sha256": "d114cb69e2e820008c508b7ad9002586806d82e3006e88162bd4a7c2dcd1e801"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/indicator.h",
+      "link_target": "../../sysroot/usr/include/openssl/indicator.h",
+      "official_file": {
+        "bytes": 818,
+        "dev": 66306,
+        "git_blob": "66d6f4234a65c1c67c559bad06300195e5f66004",
+        "inode": 66869227,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/indicator.h",
+        "sha256": "4be987d4fe4a4b39feac27c2ee85000e1b6ca7188d8ca9f75689a8205c2b4563"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/kdf.h",
+      "link_target": "../../sysroot/usr/include/openssl/kdf.h",
+      "official_file": {
+        "bytes": 4938,
+        "dev": 66306,
+        "git_blob": "d06ca6c69de9601082c878ed2be1263576853f9c",
+        "inode": 66869228,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/kdf.h",
+        "sha256": "a4a7c722598b9b5b5fa6e4d659a7c8cf659c5db60c7396ed021d434c45e552c6"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/kdferr.h",
+      "link_target": "../../sysroot/usr/include/openssl/kdferr.h",
+      "official_file": {
+        "bytes": 480,
+        "dev": 66306,
+        "git_blob": "a2c1f24e046df7164c706fc99693747c74c21413",
+        "inode": 66869229,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/kdferr.h",
+        "sha256": "cbf4bd667f0a53459163f546920c2c98ce6d10b0db99176c779d8bf32f04e8b7"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/lhash.h",
+      "link_target": "../../sysroot/usr/include/openssl/lhash.h",
+      "official_file": {
+        "bytes": 33375,
+        "dev": 66306,
+        "git_blob": "dab9372b0b67dcf94c6c246b2d65496704408171",
+        "inode": 66869230,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/lhash.h",
+        "sha256": "ba50a0dc4caa9662e138f913566c44454a68f6e59c405c761c1f387f58855af4"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/macros.h",
+      "link_target": "../../sysroot/usr/include/openssl/macros.h",
+      "official_file": {
+        "bytes": 10718,
+        "dev": 66306,
+        "git_blob": "de34b4640d490d1ada45a296d518c83e8605cac4",
+        "inode": 66869231,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/macros.h",
+        "sha256": "de19de1ecdef8709fecdd76fcaa35e78ca22afd15a0e938f13d98857b8713f49"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/md2.h",
+      "link_target": "../../sysroot/usr/include/openssl/md2.h",
+      "official_file": {
+        "bytes": 1336,
+        "dev": 66306,
+        "git_blob": "10d9a0f216266b2ee8c02ffcb0511fa2cb6b064f",
+        "inode": 66869232,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/md2.h",
+        "sha256": "a8eb0a1cdd0ced053d0f5dc5d1f63fe67f96a83c1cc37b6bf7adde85a567a631"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/md4.h",
+      "link_target": "../../sysroot/usr/include/openssl/md4.h",
+      "official_file": {
+        "bytes": 1610,
+        "dev": 66306,
+        "git_blob": "d60fe4a667dab639325468b73e2a5accc0b22b6e",
+        "inode": 66869233,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/md4.h",
+        "sha256": "75d0ff7b22daa2ab31a0cd03ce9ca10cef64f431d32c49def33d0f0164e36f0d"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/md5.h",
+      "link_target": "../../sysroot/usr/include/openssl/md5.h",
+      "official_file": {
+        "bytes": 1608,
+        "dev": 66306,
+        "git_blob": "0ec3d1ce956dacc1c2e93534d0eef329db60e446",
+        "inode": 66869234,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/md5.h",
+        "sha256": "e22e567d09253eebf2c17f620783808f407bc7b969aa90bf3b44ac9001f6d329"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/mdc2.h",
+      "link_target": "../../sysroot/usr/include/openssl/mdc2.h",
+      "official_file": {
+        "bytes": 1312,
+        "dev": 66306,
+        "git_blob": "46c96525deee03b6443342da9ff4a2b39a965007",
+        "inode": 66869235,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/mdc2.h",
+        "sha256": "740c2361d9b0ab5330ae0054e368f573416c401cb3855b72323967b29232421f"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ml_kem.h",
+      "link_target": "../../sysroot/usr/include/openssl/ml_kem.h",
+      "official_file": {
+        "bytes": 959,
+        "dev": 66306,
+        "git_blob": "fe5b0e2b7b89dda9712bc2189929986fb63dce8a",
+        "inode": 66869236,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ml_kem.h",
+        "sha256": "58ecec9d4d95ab5172290a4c5725b7b6940149ecdbff5a33b93cc67ede1b25f7"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/modes.h",
+      "link_target": "../../sysroot/usr/include/openssl/modes.h",
+      "official_file": {
+        "bytes": 8135,
+        "dev": 66306,
+        "git_blob": "df11114569f249be69914dfab4f9ecc35a07b74c",
+        "inode": 66869237,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/modes.h",
+        "sha256": "8ea97ace0601cdce6a12d0e1e92aefec062c299d0fcb5ff6477e3d752a9b9763"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/obj_mac.h",
+      "link_target": "../../sysroot/usr/include/openssl/obj_mac.h",
+      "official_file": {
+        "bytes": 289525,
+        "dev": 66306,
+        "git_blob": "bbce70f3652cc9be5c1d73349ea510802a31956c",
+        "inode": 66869238,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/obj_mac.h",
+        "sha256": "d51cb3f619888a0485ba46ad886f76ac605ce78a3cfbc080460947ab2dbb3a02"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/objects.h",
+      "link_target": "../../sysroot/usr/include/openssl/objects.h",
+      "official_file": {
+        "bytes": 7567,
+        "dev": 66306,
+        "git_blob": "de1f1db97d6d511625ecde69807a02823ed4edfd",
+        "inode": 66869239,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/objects.h",
+        "sha256": "b6227db488aa39ed20a29e67d48fe8fefb2f649a1afcc3149cba22ac26510057"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/objectserr.h",
+      "link_target": "../../sysroot/usr/include/openssl/objectserr.h",
+      "official_file": {
+        "bytes": 686,
+        "dev": 66306,
+        "git_blob": "2927561135f20a7067f2ae2df03047c255fa56f2",
+        "inode": 66869240,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/objectserr.h",
+        "sha256": "fc14e6c9e71fb550363394f912cb72e6078dd11e300bdddfdd17ec118c88dc4b"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ocsp.h",
+      "link_target": "../../sysroot/usr/include/openssl/ocsp.h",
+      "official_file": {
+        "bytes": 27859,
+        "dev": 66306,
+        "git_blob": "faa178833d887403694527338daf8a1993005b64",
+        "inode": 66869241,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ocsp.h",
+        "sha256": "f853c0679f955a3140f1cb3d9175ef768bd26c951c029cbf9336a5c1b4e01275"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ocsperr.h",
+      "link_target": "../../sysroot/usr/include/openssl/ocsperr.h",
+      "official_file": {
+        "bytes": 1636,
+        "dev": 66306,
+        "git_blob": "18e035e8a4e10d9196cbb562a0dddda55b55a615",
+        "inode": 66869242,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ocsperr.h",
+        "sha256": "51b319980fb406b70ff0aee9c145c260553f4ff6516305b9c2864643096cc30c"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/opensslv.h",
+      "link_target": "../../sysroot/usr/include/openssl/opensslv.h",
+      "official_file": {
+        "bytes": 3452,
+        "dev": 66306,
+        "git_blob": "3068395fa0a47fa7afeb075d0395bbf449db108c",
+        "inode": 66869243,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/opensslv.h",
+        "sha256": "7acbe88993a8691183aff3277743d8090c6bbba24b6e218919cf8afdbde42de6"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ossl_typ.h",
+      "link_target": "../../sysroot/usr/include/openssl/ossl_typ.h",
+      "official_file": {
+        "bytes": 561,
+        "dev": 66306,
+        "git_blob": "a562299b9f9ad0b26ca9496d53008388508923a0",
+        "inode": 66869244,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ossl_typ.h",
+        "sha256": "8d430751bbcd1d9695f3dd85b16958fd6255dfbf55775207923f67cba1754548"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/param_build.h",
+      "link_target": "../../sysroot/usr/include/openssl/param_build.h",
+      "official_file": {
+        "bytes": 2363,
+        "dev": 66306,
+        "git_blob": "be6a0252100ea76f2afac3bf41c48cc293a025b9",
+        "inode": 66869245,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/param_build.h",
+        "sha256": "f078c5549e172b49da9993ef68c7b7fedafd66b05255c9bf8a37154f0a40bdb7"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/params.h",
+      "link_target": "../../sysroot/usr/include/openssl/params.h",
+      "official_file": {
+        "bytes": 7060,
+        "dev": 66306,
+        "git_blob": "73e0d41b7179111ed5aa3ee70b006ae3c0a49be7",
+        "inode": 66869246,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/params.h",
+        "sha256": "b76d73449d8d44d14a7da9918caf3d1feee85b384e2d62ace73a8a1126152702"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/pem.h",
+      "link_target": "../../sysroot/usr/include/openssl/pem.h",
+      "official_file": {
+        "bytes": 22667,
+        "dev": 66306,
+        "git_blob": "fa64aaf4ca27fa4a0c204dcf2590d7ba6dc55b3a",
+        "inode": 66869247,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/pem.h",
+        "sha256": "9098124ff7a21c8f1db5ddead59b1cf092f88c9f44bf88dacd3c8de9c67ade76"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/pem2.h",
+      "link_target": "../../sysroot/usr/include/openssl/pem2.h",
+      "official_file": {
+        "bytes": 523,
+        "dev": 66306,
+        "git_blob": "6d3ab2abf8893daea273df3dce2c0675c5469615",
+        "inode": 66869248,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/pem2.h",
+        "sha256": "5bd104c872bbfee2d16f5af88c01b0aeee9f177ecc88c0dd237c9c9948eeedc6"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/pemerr.h",
+      "link_target": "../../sysroot/usr/include/openssl/pemerr.h",
+      "official_file": {
+        "bytes": 1836,
+        "dev": 66306,
+        "git_blob": "eb3c9a1d94fa19ac594524e29771dfecbbfe6964",
+        "inode": 66869249,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/pemerr.h",
+        "sha256": "18c1dbdde2452416b1d49c7512b7c4b8bf26ac7b83f5c0ee5e27e9bec454d2fb"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/pkcs12.h",
+      "link_target": "../../sysroot/usr/include/openssl/pkcs12.h",
+      "official_file": {
+        "bytes": 17007,
+        "dev": 66306,
+        "git_blob": "60c986e454eab68f646ec75dc52d0dcc66f94094",
+        "inode": 66869250,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/pkcs12.h",
+        "sha256": "96ec6d9eb6df21c2403359c145ede06881fbb4eefb4ad66f3bab220d8f9fbd6e"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/pkcs12err.h",
+      "link_target": "../../sysroot/usr/include/openssl/pkcs12err.h",
+      "official_file": {
+        "bytes": 1427,
+        "dev": 66306,
+        "git_blob": "2ad38f88ff5d5f59756412b6698f467d3b54c810",
+        "inode": 66869251,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/pkcs12err.h",
+        "sha256": "fbf4142e0ee58b6c6841890d873f07ba0362e21ad74702d70552122e01c096e9"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/pkcs7.h",
+      "link_target": "../../sysroot/usr/include/openssl/pkcs7.h",
+      "official_file": {
+        "bytes": 21874,
+        "dev": 66306,
+        "git_blob": "5127f0e623d2a10eded7d0147b0cfb728996d45c",
+        "inode": 66869252,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/pkcs7.h",
+        "sha256": "667c662d2efd30e5a69e61d8129770425479dae87c5cb28b0c0624ad7fff3b4d"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/pkcs7err.h",
+      "link_target": "../../sysroot/usr/include/openssl/pkcs7err.h",
+      "official_file": {
+        "bytes": 2242,
+        "dev": 66306,
+        "git_blob": "358fe1018fb2dc679d85e4f2d86a256bd8a6a2a7",
+        "inode": 66869253,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/pkcs7err.h",
+        "sha256": "717e017e7d0981928b33820660e19d5c264a06a5e824b94194036a8be92be07c"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/prov_ssl.h",
+      "link_target": "../../sysroot/usr/include/openssl/prov_ssl.h",
+      "official_file": {
+        "bytes": 969,
+        "dev": 66306,
+        "git_blob": "269c3b805737871c152f614ccc42bd8999ac8854",
+        "inode": 66869254,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/prov_ssl.h",
+        "sha256": "23b96759ae94e17c7c0e7ee32a531676be2a276a6d9802828e80268e20f224fd"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/proverr.h",
+      "link_target": "../../sysroot/usr/include/openssl/proverr.h",
+      "official_file": {
+        "bytes": 6414,
+        "dev": 66306,
+        "git_blob": "3dff4b75482fff5274e2a4cea44151b32cba5d97",
+        "inode": 66869255,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/proverr.h",
+        "sha256": "3aaec27b2bf592b5861a3524b6f03a541d7de34e6dfcbcabc2b6bc40221bc743"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/provider.h",
+      "link_target": "../../sysroot/usr/include/openssl/provider.h",
+      "official_file": {
+        "bytes": 3383,
+        "dev": 66306,
+        "git_blob": "c34beea201f2fa95b7d866d288db1d86c01f9a2b",
+        "inode": 66869256,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/provider.h",
+        "sha256": "dac4bfad226a8e5513cecf472e41e0b7ed93c95374a0ec3fd56f7b046e0aeff1"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/quic.h",
+      "link_target": "../../sysroot/usr/include/openssl/quic.h",
+      "official_file": {
+        "bytes": 2101,
+        "dev": 66306,
+        "git_blob": "657969bc8acb9c1eab91e5101ae149ab85a04ee4",
+        "inode": 66869257,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/quic.h",
+        "sha256": "a80af6c42394132eaad8de7177c6b0b3f747711730e8dd687acdc34284b3c2f8"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/rand.h",
+      "link_target": "../../sysroot/usr/include/openssl/rand.h",
+      "official_file": {
+        "bytes": 4058,
+        "dev": 66306,
+        "git_blob": "7272309fba702a9691826b1c7c5d880fa3f90f7e",
+        "inode": 66869258,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/rand.h",
+        "sha256": "cb240ffedfd9516ec7a8cd0796951d46a4707c0460f940371620c83f7bafd037"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/randerr.h",
+      "link_target": "../../sysroot/usr/include/openssl/randerr.h",
+      "official_file": {
+        "bytes": 2486,
+        "dev": 66306,
+        "git_blob": "6107cdd48167dec0dc3fa45e2a573354043c62f7",
+        "inode": 66869259,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/randerr.h",
+        "sha256": "a6acbb47da2f26fe5e572f232eb9d9ebcd65bb7c01d5984ab26229e5bf0bd45e"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/rc2.h",
+      "link_target": "../../sysroot/usr/include/openssl/rc2.h",
+      "official_file": {
+        "bytes": 1771,
+        "dev": 66306,
+        "git_blob": "7da28f7c72c369da19f0c6bedc61c64089965b36",
+        "inode": 66869260,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/rc2.h",
+        "sha256": "b86a429de0c73aca6e0504b8833c1dcd9e8c7cdf65c2b31b38d0d0c7b19cc5e9"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/rc4.h",
+      "link_target": "../../sysroot/usr/include/openssl/rc4.h",
+      "official_file": {
+        "bytes": 1075,
+        "dev": 66306,
+        "git_blob": "92dce0c40522471f160f6c68bb5fb0031a7e28f8",
+        "inode": 66869261,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/rc4.h",
+        "sha256": "1bb4fa9d14861cdcf0a721d8d1026be80ce019da459ffdd8b5c1d12365110e78"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/rc5.h",
+      "link_target": "../../sysroot/usr/include/openssl/rc5.h",
+      "official_file": {
+        "bytes": 2146,
+        "dev": 66306,
+        "git_blob": "2e91e9854097705e5ca1575192772d7d41228901",
+        "inode": 66869262,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/rc5.h",
+        "sha256": "dd71ab468383a2a8ca4ff34f9273b481c1ed518c380da6d1ab82e9ca6b7edbd9"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ripemd.h",
+      "link_target": "../../sysroot/usr/include/openssl/ripemd.h",
+      "official_file": {
+        "bytes": 1537,
+        "dev": 66306,
+        "git_blob": "a72d1dad0a176c93cf61db914c410f5d7114aac2",
+        "inode": 66869263,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ripemd.h",
+        "sha256": "4457b36942bc0e298c993b48468ef8f3f00331a9d67bd0b894dd5bc5f58ab35d"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/rsa.h",
+      "link_target": "../../sysroot/usr/include/openssl/rsa.h",
+      "official_file": {
+        "bytes": 22299,
+        "dev": 66306,
+        "git_blob": "a06d4f0a027287b38b835bdbb323b30b76ab9335",
+        "inode": 66869264,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/rsa.h",
+        "sha256": "86d3fcf7e4f018e512f025ba7e51c465a97e2d7d9cdb07cb89f9cda583f7afc4"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/rsaerr.h",
+      "link_target": "../../sysroot/usr/include/openssl/rsaerr.h",
+      "official_file": {
+        "bytes": 3861,
+        "dev": 66306,
+        "git_blob": "8432f5f6552dd0eafdffa634c4a42c3eb60dbda7",
+        "inode": 66869265,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/rsaerr.h",
+        "sha256": "b4f87b5dddc672b81de0dfd7f3c4e6409887bd08b286c99ded8f1255e5836804"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/safestack.h",
+      "link_target": "../../sysroot/usr/include/openssl/safestack.h",
+      "official_file": {
+        "bytes": 29157,
+        "dev": 66306,
+        "git_blob": "8a256668785b3a0cef64a40623bb5a538787a3c0",
+        "inode": 66869266,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/safestack.h",
+        "sha256": "0468b87ce8ea20069f621cc4dfc25fe6788408d5f46ce3baec738c89b64c2591"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/seed.h",
+      "link_target": "../../sysroot/usr/include/openssl/seed.h",
+      "official_file": {
+        "bytes": 3611,
+        "dev": 66306,
+        "git_blob": "8c2b20a4d801d8745af5855fde5c324c6de6c5a1",
+        "inode": 66869267,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/seed.h",
+        "sha256": "75a00b017f40beba051fdaad04876e18d3c80d1b1f1c21d78fafc69ae8e3b034"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/self_test.h",
+      "link_target": "../../sysroot/usr/include/openssl/self_test.h",
+      "official_file": {
+        "bytes": 4720,
+        "dev": 66306,
+        "git_blob": "de736794a99a6e7292b153ba85804666c198a2ff",
+        "inode": 66869268,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/self_test.h",
+        "sha256": "4bb6ecb6d55e5e1bee6ef79c24bc8691174ad1b5c160f7d3daea150c140d3abb"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/sha.h",
+      "link_target": "../../sysroot/usr/include/openssl/sha.h",
+      "official_file": {
+        "bytes": 4404,
+        "dev": 66306,
+        "git_blob": "52b02661f6244c72c209d769f91bff069f673b60",
+        "inode": 66869269,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/sha.h",
+        "sha256": "7e006accd6565cc97dee672c097acc5e38482be7cd4fa1e0c316bf466425b895"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/srp.h",
+      "link_target": "../../sysroot/usr/include/openssl/srp.h",
+      "official_file": {
+        "bytes": 15162,
+        "dev": 66306,
+        "git_blob": "969b7cfc430c508231b965a394928b21b4b27600",
+        "inode": 66869270,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/srp.h",
+        "sha256": "8cc97f89d07e2ec543571253fcaa4229671cd71c0e2fba2993a1b73e7ebdbcc3"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/srtp.h",
+      "link_target": "../../sysroot/usr/include/openssl/srtp.h",
+      "official_file": {
+        "bytes": 1888,
+        "dev": 66306,
+        "git_blob": "3b716e124b38a5bf9e00809985690e196eac2f95",
+        "inode": 66869271,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/srtp.h",
+        "sha256": "6efa8edb1f040ba35cb05a671efc74c1494b9d4badc32d47cd5bb99e1a9cda38"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ssl.h",
+      "link_target": "../../sysroot/usr/include/openssl/ssl.h",
+      "official_file": {
+        "bytes": 122040,
+        "dev": 66306,
+        "git_blob": "55023727da4e478104a453c744d8500866651075",
+        "inode": 66869272,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ssl.h",
+        "sha256": "8d68f9a7d1f98ace505505767260a7013468ce6b0ab3fdb43c036adb17abc2a9"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ssl2.h",
+      "link_target": "../../sysroot/usr/include/openssl/ssl2.h",
+      "official_file": {
+        "bytes": 625,
+        "dev": 66306,
+        "git_blob": "67d1d0291a160d2689c9f8122eff1c0050743cbe",
+        "inode": 66869273,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ssl2.h",
+        "sha256": "d33dc2afbcdee20f20ffcdd5cda6777c5e49a7cc37d513e4618b71a99129af20"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ssl3.h",
+      "link_target": "../../sysroot/usr/include/openssl/ssl3.h",
+      "official_file": {
+        "bytes": 12748,
+        "dev": 66306,
+        "git_blob": "f35b6eadb0f7bd5b323dee4aadb726cbcdd9b8cc",
+        "inode": 66869274,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ssl3.h",
+        "sha256": "f98e0eb1702bf99614e92e2d09f1af5b59309e156441e40ab711df7d661536aa"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/sslerr.h",
+      "link_target": "../../sysroot/usr/include/openssl/sslerr.h",
+      "official_file": {
+        "bytes": 15413,
+        "dev": 66306,
+        "git_blob": "6993255b199f141ef8675943ec59eb31b12107bc",
+        "inode": 66869275,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/sslerr.h",
+        "sha256": "7a9dab7a198ea5c17fe5cf8e1905a54ae88c0044a86c1accf1e7cc9e7de374e2"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/sslerr_legacy.h",
+      "link_target": "../../sysroot/usr/include/openssl/sslerr_legacy.h",
+      "official_file": {
+        "bytes": 18269,
+        "dev": 66306,
+        "git_blob": "8cf1ebd7b026ffd651021f51bf4de6e7213b198d",
+        "inode": 66869276,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/sslerr_legacy.h",
+        "sha256": "988c235994713d83d73ee904804f7edb4f6e321b4ab94c5aa5a9a0c7134fb499"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/stack.h",
+      "link_target": "../../sysroot/usr/include/openssl/stack.h",
+      "official_file": {
+        "bytes": 3122,
+        "dev": 66306,
+        "git_blob": "82ef52ab72a7382991b99acdf138d5ff1e704e9d",
+        "inode": 66869277,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/stack.h",
+        "sha256": "c81fbb17b5476dca609b96eb11372d1d246a49096838c2cf7e81ad6b25f69316"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/store.h",
+      "link_target": "../../sysroot/usr/include/openssl/store.h",
+      "official_file": {
+        "bytes": 14008,
+        "dev": 66306,
+        "git_blob": "53c68516f8eef1a237f20b4b7f7b101b821b3f20",
+        "inode": 66869278,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/store.h",
+        "sha256": "0fd665a474792f49055d7bd6e2bebed1449fb2dfd21ac042aa2cbc4cb6c8c66e"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/storeerr.h",
+      "link_target": "../../sysroot/usr/include/openssl/storeerr.h",
+      "official_file": {
+        "bytes": 1702,
+        "dev": 66306,
+        "git_blob": "a61bee11125f972ca7925a859202b99c22261dee",
+        "inode": 66869279,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/storeerr.h",
+        "sha256": "e13ecdf3c46b4dde5d857f8a7a3e2c0a444e309aa05d789bf99d73ecefab87aa"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/symhacks.h",
+      "link_target": "../../sysroot/usr/include/openssl/symhacks.h",
+      "official_file": {
+        "bytes": 1102,
+        "dev": 66306,
+        "git_blob": "d04139545385cfad1632d2d12355014a2442dbcc",
+        "inode": 66869280,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/symhacks.h",
+        "sha256": "2b54552189bfbf4204c28c6a421b21702a3cd3dba37570dbcdadb7ee648f155b"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/thread.h",
+      "link_target": "../../sysroot/usr/include/openssl/thread.h",
+      "official_file": {
+        "bytes": 865,
+        "dev": 66306,
+        "git_blob": "6d86e0e355186402b363d2b308845ee277c24f95",
+        "inode": 66869281,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/thread.h",
+        "sha256": "583716b74d6aa0596c1d1b06cb16f657d4d9fb9c13cf30505ec0327046af6baf"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/tls1.h",
+      "link_target": "../../sysroot/usr/include/openssl/tls1.h",
+      "official_file": {
+        "bytes": 63321,
+        "dev": 66306,
+        "git_blob": "931ee790fb01f6b5a172551c792ac10636608e82",
+        "inode": 66869282,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/tls1.h",
+        "sha256": "f075f51b48cdc3503e40b8f81fb2b760ba2d4f315d2844759d9089ffb10613dc"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/trace.h",
+      "link_target": "../../sysroot/usr/include/openssl/trace.h",
+      "official_file": {
+        "bytes": 10823,
+        "dev": 66306,
+        "git_blob": "ff0fba729589785aab988584ee6d76a15f9005ab",
+        "inode": 66869283,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/trace.h",
+        "sha256": "5b7f86a453e6b404ff019e23e84de856c2a25b8243d4bfb92c92471a3735e332"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ts.h",
+      "link_target": "../../sysroot/usr/include/openssl/ts.h",
+      "official_file": {
+        "bytes": 19419,
+        "dev": 66306,
+        "git_blob": "edb6ca17bd7aee87282c97514b482b766e1b60e0",
+        "inode": 66869284,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ts.h",
+        "sha256": "3de4eecd9a731d9a05a1b7baab18cb1c62f59f8a9f9e5ed049525a8ada9207b8"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/tserr.h",
+      "link_target": "../../sysroot/usr/include/openssl/tserr.h",
+      "official_file": {
+        "bytes": 2077,
+        "dev": 66306,
+        "git_blob": "0bec94a37cd3672cdd5e6f4056f78f8410813312",
+        "inode": 66869285,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/tserr.h",
+        "sha256": "27e66bf494926dea06d8c3800823f2485cf1a7f8f41f5628ff4a443f9bcceb87"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/txt_db.h",
+      "link_target": "../../sysroot/usr/include/openssl/txt_db.h",
+      "official_file": {
+        "bytes": 1635,
+        "dev": 66306,
+        "git_blob": "64e9d4c04e7646ca931206adee5e2385abb712bc",
+        "inode": 66869286,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/txt_db.h",
+        "sha256": "cbd03be764d6d12e12895703756fbe5f2b7611d4cd55d343837d48e8e6e60523"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/types.h",
+      "link_target": "../../sysroot/usr/include/openssl/types.h",
+      "official_file": {
+        "bytes": 7302,
+        "dev": 66306,
+        "git_blob": "e4d105c991977f838fdd9d3ae33a849b25a45c03",
+        "inode": 66869287,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/types.h",
+        "sha256": "426f5586d3e21033515498d81ce77c1ae022c5aab52962d91d6c88a36cd07262"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/ui.h",
+      "link_target": "../../sysroot/usr/include/openssl/ui.h",
+      "official_file": {
+        "bytes": 18515,
+        "dev": 66306,
+        "git_blob": "8201f59e20df712f4dd8719bc58c1d920828cde6",
+        "inode": 66869288,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/ui.h",
+        "sha256": "cef3b9a240669810f11ea82ff463cebf620ee8c1ea55d8908d6aa9925b7f8d17"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/uierr.h",
+      "link_target": "../../sysroot/usr/include/openssl/uierr.h",
+      "official_file": {
+        "bytes": 1062,
+        "dev": 66306,
+        "git_blob": "5201b0311df6f473205ac8f37a330b5c5be2583d",
+        "inode": 66869289,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/uierr.h",
+        "sha256": "a21be118ee97343a03dc28256370839e5751c82a2a7bcb4c60fcbd97a9e2bef5"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/whrlpool.h",
+      "link_target": "../../sysroot/usr/include/openssl/whrlpool.h",
+      "official_file": {
+        "bytes": 1681,
+        "dev": 66306,
+        "git_blob": "cff913453fdd49f5f9fb52643dd04186cd295e31",
+        "inode": 66869290,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/whrlpool.h",
+        "sha256": "d38ef40783400956d571e442d4f459e9c611239d719eb128e19bc64982d01922"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/x509.h",
+      "link_target": "../../sysroot/usr/include/openssl/x509.h",
+      "official_file": {
+        "bytes": 67492,
+        "dev": 66306,
+        "git_blob": "0f9a1687a7c9c07f5f82e4198992cb0eae287110",
+        "inode": 66869291,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/x509.h",
+        "sha256": "4221e65e6a73feaed17d839bd5e91f2db2e2d53cec06ab57715c344f326d67c0"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/x509_acert.h",
+      "link_target": "../../sysroot/usr/include/openssl/x509_acert.h",
+      "official_file": {
+        "bytes": 21922,
+        "dev": 66306,
+        "git_blob": "e536721025574286c41bc6c0fede88f59f83a51e",
+        "inode": 66869292,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/x509_acert.h",
+        "sha256": "6e69a569faaebeff0dfe793ad2eb04360c73966f42b3a5443c30ebfa8e583bfb"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/x509_vfy.h",
+      "link_target": "../../sysroot/usr/include/openssl/x509_vfy.h",
+      "official_file": {
+        "bytes": 47179,
+        "dev": 66306,
+        "git_blob": "784ef7e2fca7148d20da930236c541dfb5e582d1",
+        "inode": 66869293,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/x509_vfy.h",
+        "sha256": "be68c37fdfeb10ea258609eba9f750478e61a7b9b3017d82a8d3a8dd278175c8"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/x509err.h",
+      "link_target": "../../sysroot/usr/include/openssl/x509err.h",
+      "official_file": {
+        "bytes": 2316,
+        "dev": 66306,
+        "git_blob": "7123a725e8254dc7aa7e03866dbb47a5d0736770",
+        "inode": 66869294,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/x509err.h",
+        "sha256": "2250a50091ffbc35c6cc45fc2a32b68ea38cf2ba510b197cc7d58c957179bd1e"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/x509v3.h",
+      "link_target": "../../sysroot/usr/include/openssl/x509v3.h",
+      "official_file": {
+        "bytes": 129350,
+        "dev": 66306,
+        "git_blob": "d7de435c6669f28585f8a1134ef68da10f10d5e9",
+        "inode": 66869295,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/x509v3.h",
+        "sha256": "9dcdd51c9ca9d8ff6fb6d82293f29472897d2155007b395a843d042a85ba3aca"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/x509v3err.h",
+      "link_target": "../../sysroot/usr/include/openssl/x509v3err.h",
+      "official_file": {
+        "bytes": 3578,
+        "dev": 66306,
+        "git_blob": "19f938626bd8470a581292fdf5a246fdf43cd00c",
+        "inode": 66869296,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/openssl/x509v3err.h",
+        "sha256": "b9be8b0429bfaefb973531e81d598e40779b3788e129c4cc9e33651d2308b990"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/configuration.h",
+      "link_target": "../../sysroot/usr/include/x86_64-linux-gnu/openssl/configuration.h",
+      "official_file": {
+        "bytes": 4465,
+        "dev": 66306,
+        "git_blob": "bc941777f40ca7e6c6f4bc68d6fa77fd1ddfb76b",
+        "inode": 66869299,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/x86_64-linux-gnu/openssl/configuration.h",
+        "sha256": "0fe39d13260d1cbcca3e54fad2a160fa63ae8f955749c3dc15599c87b11f3146"
+      }
+    },
+    {
+      "exposed_path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include/openssl/opensslconf.h",
+      "link_target": "../../sysroot/usr/include/x86_64-linux-gnu/openssl/opensslconf.h",
+      "official_file": {
+        "bytes": 510,
+        "dev": 66306,
+        "git_blob": "4a8d78efff70ad27ea0251a3562ffa227d7ca993",
+        "inode": 66869300,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/include/x86_64-linux-gnu/openssl/opensslconf.h",
+        "sha256": "7f4b522c049d0bd0d651e6f6ebe71d6df0c37231a94e32524da3f4642ebda3be"
+      }
+    }
+  ],
+  "host_alias": "ai395",
+  "libraries": [
+    {
+      "byte_equal": true,
+      "private": {
+        "bytes": 1114280,
+        "dev": 66306,
+        "git_blob": "d6435a411c7a1bc3b91677f61f564ed369362557",
+        "inode": 66869353,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu/libssl.so.3",
+        "sha256": "63b47f444efa588e291e9b650a5ba2ab02f856356f2d50f13a2e477db9119e09"
+      },
+      "system_readonly": {
+        "bytes": 1114280,
+        "dev": 66306,
+        "git_blob": "d6435a411c7a1bc3b91677f61f564ed369362557",
+        "inode": 82182555,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/usr/lib/x86_64-linux-gnu/libssl.so.3",
+        "sha256": "63b47f444efa588e291e9b650a5ba2ab02f856356f2d50f13a2e477db9119e09"
+      }
+    },
+    {
+      "byte_equal": true,
+      "private": {
+        "bytes": 6386528,
+        "dev": 66306,
+        "git_blob": "ec878ad5567f242dcaf4c866e9d0e4185d611684",
+        "inode": 66869352,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu/libcrypto.so.3",
+        "sha256": "5385f0436ac2e284ba8c5fb1488874057c29c04be72dea32add832694f381e28"
+      },
+      "system_readonly": {
+        "bytes": 6386528,
+        "dev": 66306,
+        "git_blob": "ec878ad5567f242dcaf4c866e9d0e4185d611684",
+        "inode": 82182554,
+        "mode": "0o644",
+        "nlink": 1,
+        "path": "/usr/lib/x86_64-linux-gnu/libcrypto.so.3",
+        "sha256": "5385f0436ac2e284ba8c5fb1488874057c29c04be72dea32add832694f381e28"
+      }
+    }
+  ],
+  "packages": [
+    {
+      "data_archive": {
+        "bytes": 16199680,
+        "dev": 66306,
+        "git_blob": "5224b9b43fe5a5cb40b26e9cabb4e9ab06c30513",
+        "inode": 66869146,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev.data.tar",
+        "sha256": "202e8c36782bfae34e702da79589f8669c72d78574a7fb902c66b1dc35ee5cc9"
+      },
+      "extract": {
+        "argv": [
+          "/usr/bin/dpkg-deb",
+          "--extract",
+          "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/downloads/libssl-dev_3.5.5-1ubuntu3.7_amd64.deb",
+          "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot"
+        ],
+        "capacity_after": {
+          "at": "2026-11-05T08:49:32.304115+00:00",
+          "available_bytes": 891643842560,
+          "f_bavail": 217686485,
+          "f_frsize": 4096,
+          "minimum_bytes": 64000000000,
+          "path": "/home/qq/work/hepta-audit-b16-20261105"
+        },
+        "capacity_before": {
+          "at": "2026-11-05T08:49:32.046168+00:00",
+          "available_bytes": 891667001344,
+          "f_bavail": 217692139,
+          "f_frsize": 4096,
+          "minimum_bytes": 64000000000,
+          "path": "/home/qq/work/hepta-audit-b16-20261105"
+        },
+        "cargo_profile": "dev-small",
+        "completed_at": "2026-11-05T08:49:32.065041+00:00",
+        "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+        "duration_seconds": 0.01883771293796599,
+        "exit_code": 0,
+        "label": "libssl-dev-data-only-extract",
+        "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+        "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+        "source_guard_after": {
+          "bytes": 3239,
+          "dev": 66306,
+          "git_blob": "ac3ffff7692e62064faf32cb521f1e13d2bb6266",
+          "inode": 66869322,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract-after.guard.json",
+          "sha256": "90367efd24b91241dc480949b13207f37ebd10fde152a98be371bf961ace12e3"
+        },
+        "source_guard_before": {
+          "bytes": 3239,
+          "dev": 66306,
+          "git_blob": "71d07e3a56632b866c3a0f6a8d5e9c26b8f7ee14",
+          "inode": 66869150,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract-before.guard.json",
+          "sha256": "6f261825cfecec11a88fc8872cc4560fef0dd97391df6205a88181de8abf899d"
+        },
+        "started_at": "2026-11-05T08:49:32.046164+00:00",
+        "stderr": {
+          "bytes": 0,
+          "dev": 66306,
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "inode": 66869153,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract.stderr.original",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "dev": 66306,
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "inode": 66869152,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract.stdout.original",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "tests_executed": false
+      },
+      "metadata_command": {
+        "argv": [
+          "/usr/bin/apt-cache",
+          "show",
+          "--no-all-versions",
+          "libssl-dev=3.5.5-1ubuntu3.7"
+        ],
+        "capacity_after": {
+          "at": "2026-11-05T08:49:27.004555+00:00",
+          "available_bytes": 891767840768,
+          "f_bavail": 217716758,
+          "f_frsize": 4096,
+          "minimum_bytes": 64000000000,
+          "path": "/home/qq/work/hepta-audit-b16-20261105"
+        },
+        "capacity_before": {
+          "at": "2026-11-05T08:49:26.605965+00:00",
+          "available_bytes": 891774275584,
+          "f_bavail": 217718329,
+          "f_frsize": 4096,
+          "minimum_bytes": 64000000000,
+          "path": "/home/qq/work/hepta-audit-b16-20261105"
+        },
+        "cargo_profile": "dev-small",
+        "completed_at": "2026-11-05T08:49:26.764371+00:00",
+        "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+        "duration_seconds": 0.15837995894253254,
+        "exit_code": 0,
+        "label": "libssl-dev-metadata",
+        "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+        "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+        "source_guard_after": {
+          "bytes": 3239,
+          "dev": 66306,
+          "git_blob": "53c67752a80364fe71b736fbf41fe616a372eeaf",
+          "inode": 66869142,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata-after.guard.json",
+          "sha256": "562db82e52190d5d95149aaa4648e12440162fc7e9107b4563a4c390d5b796f5"
+        },
+        "source_guard_before": {
+          "bytes": 3239,
+          "dev": 66306,
+          "git_blob": "bc6b95ca8dc2bd8e97c1cd9c813549010f69a5e6",
+          "inode": 66869136,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata-before.guard.json",
+          "sha256": "869bd8849a450981788bd4cb9c354d5157eed7db692fa1c3a19e7b6b2f03e0d3"
+        },
+        "started_at": "2026-11-05T08:49:26.605961+00:00",
+        "stderr": {
+          "bytes": 0,
+          "dev": 66306,
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "inode": 66869139,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata.stderr.original",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1217,
+          "dev": 66306,
+          "git_blob": "fad861fb442594fc113ac96075fa830bc2546c3f",
+          "inode": 66869138,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata.stdout.original",
+          "sha256": "91b2fe96665421a29f3133de3eda3cede48e3191e6b7cd6c6636e73873297d71"
+        },
+        "tests_executed": false
+      },
+      "name": "libssl-dev",
+      "official_download": {
+        "duration_seconds": 4.76628865301609,
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_3.5.5-1ubuntu3.7_amd64.deb",
+        "http_status": 200,
+        "package": {
+          "bytes": 2936724,
+          "dev": 66306,
+          "git_blob": "6053a8ae83897a5410706ee88fe37a7145d02977",
+          "inode": 66869144,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/downloads/libssl-dev_3.5.5-1ubuntu3.7_amd64.deb",
+          "sha256": "d1cf6cafb141490b7020e392964b1f901835d60cb88c3a68ef0f95ef5e930de4"
+        },
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_3.5.5-1ubuntu3.7_amd64.deb"
+      },
+      "version": "3.5.5-1ubuntu3.7"
+    },
+    {
+      "data_archive": {
+        "bytes": 7639040,
+        "dev": 66306,
+        "git_blob": "9ffd12b3712f1d81f952e2e00d9148e89ff30eb7",
+        "inode": 66869340,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64.data.tar",
+        "sha256": "e245dc0f338243ec0e92d0fddcbbb68fe5fb4cfa1b166a9524497bb5dec20aca"
+      },
+      "extract": {
+        "argv": [
+          "/usr/bin/dpkg-deb",
+          "--extract",
+          "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/downloads/libssl3t64_3.5.5-1ubuntu3.7_amd64.deb",
+          "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot"
+        ],
+        "capacity_after": {
+          "at": "2026-11-05T08:49:40.537128+00:00",
+          "available_bytes": 890963558400,
+          "f_bavail": 217520400,
+          "f_frsize": 4096,
+          "minimum_bytes": 64000000000,
+          "path": "/home/qq/work/hepta-audit-b16-20261105"
+        },
+        "capacity_before": {
+          "at": "2026-11-05T08:49:40.288972+00:00",
+          "available_bytes": 890973528064,
+          "f_bavail": 217522834,
+          "f_frsize": 4096,
+          "minimum_bytes": 64000000000,
+          "path": "/home/qq/work/hepta-audit-b16-20261105"
+        },
+        "cargo_profile": "dev-small",
+        "completed_at": "2026-11-05T08:49:40.300940+00:00",
+        "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+        "duration_seconds": 0.01192954508587718,
+        "exit_code": 0,
+        "label": "libssl3t64-data-only-extract",
+        "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+        "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+        "source_guard_after": {
+          "bytes": 3239,
+          "dev": 66306,
+          "git_blob": "d213080acf7d81a382e97ba0b2ac42dbcac40594",
+          "inode": 66869363,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract-after.guard.json",
+          "sha256": "c7c8921e7bf9afb4c676579cdd2fc2db7dca34cd15dd638a6717e6df8b81957d"
+        },
+        "source_guard_before": {
+          "bytes": 3239,
+          "dev": 66306,
+          "git_blob": "721c1f2cb5d8548ae39e962b60bfe4a005caaf34",
+          "inode": 66869344,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract-before.guard.json",
+          "sha256": "e108dc72c3de9375b80e8356c8b5bbdb09a2a0d0e5aa461479d0afba584ce55b"
+        },
+        "started_at": "2026-11-05T08:49:40.288969+00:00",
+        "stderr": {
+          "bytes": 0,
+          "dev": 66306,
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "inode": 66869347,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract.stderr.original",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "dev": 66306,
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "inode": 66869346,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract.stdout.original",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "tests_executed": false
+      },
+      "metadata_command": {
+        "argv": [
+          "/usr/bin/apt-cache",
+          "show",
+          "--no-all-versions",
+          "libssl3t64=3.5.5-1ubuntu3.7"
+        ],
+        "capacity_after": {
+          "at": "2026-11-05T08:49:32.946311+00:00",
+          "available_bytes": 891624595456,
+          "f_bavail": 217681786,
+          "f_frsize": 4096,
+          "minimum_bytes": 64000000000,
+          "path": "/home/qq/work/hepta-audit-b16-20261105"
+        },
+        "capacity_before": {
+          "at": "2026-11-05T08:49:32.555603+00:00",
+          "available_bytes": 891636723712,
+          "f_bavail": 217684747,
+          "f_frsize": 4096,
+          "minimum_bytes": 64000000000,
+          "path": "/home/qq/work/hepta-audit-b16-20261105"
+        },
+        "cargo_profile": "dev-small",
+        "completed_at": "2026-11-05T08:49:32.707686+00:00",
+        "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+        "duration_seconds": 0.15206673904322088,
+        "exit_code": 0,
+        "label": "libssl3t64-metadata",
+        "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+        "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+        "source_guard_after": {
+          "bytes": 3239,
+          "dev": 66306,
+          "git_blob": "c94655e6da187e4dfde8de75b54211e963452969",
+          "inode": 66869331,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata-after.guard.json",
+          "sha256": "18a822cd84e383b638112c4c8b52476f45a69dfcd597cefed6ba11a544aab116"
+        },
+        "source_guard_before": {
+          "bytes": 3239,
+          "dev": 66306,
+          "git_blob": "ac76f6fb83902a14f15adadc27d74d9c6cabd12a",
+          "inode": 66869325,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata-before.guard.json",
+          "sha256": "996035c405300a9a04fcaed0b437854308fb6fc6e81edc224d26baf0384aca13"
+        },
+        "started_at": "2026-11-05T08:49:32.555599+00:00",
+        "stderr": {
+          "bytes": 0,
+          "dev": 66306,
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "inode": 66869328,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata.stderr.original",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 1437,
+          "dev": 66306,
+          "git_blob": "ae6a56fc92222eb3115e81b7b6e627f0c6b90915",
+          "inode": 66869327,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata.stdout.original",
+          "sha256": "1b8f9bde4a9497aa9d2ee55227211d0dc1c85b5fab8e5b9b6255db7f441dbe1e"
+        },
+        "tests_executed": false
+      },
+      "name": "libssl3t64",
+      "official_download": {
+        "duration_seconds": 7.083306418033317,
+        "final_url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl3t64_3.5.5-1ubuntu3.7_amd64.deb",
+        "http_status": 200,
+        "package": {
+          "bytes": 2368026,
+          "dev": 66306,
+          "git_blob": "e4a7e17fe3575f7a1e259c02419422863540623e",
+          "inode": 66869333,
+          "mode": "0o600",
+          "nlink": 1,
+          "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/downloads/libssl3t64_3.5.5-1ubuntu3.7_amd64.deb",
+          "sha256": "3ff73e121f6cd4f19e80ab4329dfd914108b3936c9db3708200203a9b245b34d"
+        },
+        "url": "https://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl3t64_3.5.5-1ubuntu3.7_amd64.deb"
+      },
+      "version": "3.5.5-1ubuntu3.7"
+    }
+  ],
+  "pkg_config_commands": [
+    {
+      "argv": [
+        "/usr/bin/pkg-config",
+        "--define-variable=prefix=/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr",
+        "--define-variable=includedir=/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include",
+        "--define-variable=libdir=/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu",
+        "--modversion",
+        "openssl"
+      ],
+      "capacity_after": {
+        "at": "2026-11-05T08:49:41.046338+00:00",
+        "available_bytes": 890957967360,
+        "f_bavail": 217519035,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:49:40.811450+00:00",
+        "available_bytes": 890960613376,
+        "f_bavail": 217519681,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "cargo_profile": "dev-small",
+      "completed_at": "2026-11-05T08:49:40.812030+00:00",
+      "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+      "duration_seconds": 0.0005390410078689456,
+      "exit_code": 0,
+      "label": "pkg-config-version",
+      "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_guard_after": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "740e3cbdfb3a103ec65ab56f984c3299f66a7479",
+        "inode": 66869520,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version-after.guard.json",
+        "sha256": "3823c7a4835f3b380c481d722a3e4237d140bc11495c07328d8b03381bcff681"
+      },
+      "source_guard_before": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "24d95edcbea4eeda1a3fe45da48153faef059048",
+        "inode": 66869514,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version-before.guard.json",
+        "sha256": "e6afc41a69da36fb8c0a4b75e992f02bcda4057d5497b41353b31637fc8b51ed"
+      },
+      "started_at": "2026-11-05T08:49:40.811447+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 66869517,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 6,
+        "dev": 66306,
+        "git_blob": "7d280e2cd476e3b95ea26bb6842b575197e53f53",
+        "inode": 66869516,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version.stdout.original",
+        "sha256": "8ec82964f3c2d35b593360c9ca94418e4079e96d1522e4fd5f9b95c1d7ba6716"
+      },
+      "tests_executed": false
+    },
+    {
+      "argv": [
+        "/usr/bin/pkg-config",
+        "--define-variable=prefix=/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr",
+        "--define-variable=includedir=/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include",
+        "--define-variable=libdir=/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu",
+        "--libs",
+        "--cflags",
+        "openssl"
+      ],
+      "capacity_after": {
+        "at": "2026-11-05T08:49:41.523124+00:00",
+        "available_bytes": 890952708096,
+        "f_bavail": 217517751,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:49:41.284710+00:00",
+        "available_bytes": 890955358208,
+        "f_bavail": 217518398,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "cargo_profile": "dev-small",
+      "completed_at": "2026-11-05T08:49:41.285692+00:00",
+      "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+      "duration_seconds": 0.0009368169121444225,
+      "exit_code": 0,
+      "label": "pkg-config-relocated-flags",
+      "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_guard_after": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "a779d3592d030043b1dbb380773d335f35c274f1",
+        "inode": 66869529,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags-after.guard.json",
+        "sha256": "9754d4ef8dd1466fccfea0260419f09c40f19b7ab0f50d3cf60efc54cf2e4742"
+      },
+      "source_guard_before": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "ee2ecffe8645e935c62a17def55c77588e3e4fa2",
+        "inode": 66869523,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags-before.guard.json",
+        "sha256": "4c63a1132e977808eac27eeaf595f250f2e91692bab98613632fd99eb9dc255c"
+      },
+      "started_at": "2026-11-05T08:49:41.284707+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 66869526,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 200,
+        "dev": 66306,
+        "git_blob": "10fca97b6351008a27da33f1beaaa75e0efcacb2",
+        "inode": 66869525,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags.stdout.original",
+        "sha256": "ac3015c18cf3ae2cd9e3a9b10d5355c6235600df70bc9b240093cf2d68b5f220"
+      },
+      "tests_executed": false
+    }
+  ],
+  "pkg_config_sources": [
+    {
+      "bytes": 235,
+      "dev": 66306,
+      "git_blob": "53f0731ccc741d0a824f12edf2b8f25c0f29d0a0",
+      "inode": 66869312,
+      "mode": "0o644",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu/pkgconfig/openssl.pc",
+      "sha256": "7d89355aedc931b82854646efccf242b07c2769fea75b36a71b8309dec82cd29"
+    },
+    {
+      "bytes": 281,
+      "dev": 66306,
+      "git_blob": "2f93bdb5e043dec86d05ec6cdd71fdb246627c48",
+      "inode": 66869311,
+      "mode": "0o644",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu/pkgconfig/libssl.pc",
+      "sha256": "845cf3ed323bc927b2c0549b925b84b52db4a476b683ee8e0fd74b5e6a523c2d"
+    },
+    {
+      "bytes": 366,
+      "dev": 66306,
+      "git_blob": "ea41926b730c68b89c7376af9635e852d5df82b9",
+      "inode": 66869310,
+      "mode": "0o644",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu/pkgconfig/libcrypto.pc",
+      "sha256": "70abc5d96356365cc48a1eb4dc6d7a1632565614fac86d35dfab85514596a444"
+    }
+  ],
+  "schema": "hepta-official-openssl-private-sdk-v1",
+  "source_or_lock_change": false,
+  "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "system_mutation": false,
+  "tests_executed": false,
+  "version": "3.5.5-1ubuntu3.7"
+}

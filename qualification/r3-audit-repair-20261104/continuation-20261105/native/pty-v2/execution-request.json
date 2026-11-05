@@ -1,0 +1,584 @@
+{
+  "base_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "disabled_plan_identity": {
+    "bytes": 17342,
+    "git_blob": "a71c18af2b475765a3e3ae8c05925e4fd45ef45e",
+    "sha256": "de40fe09cbef67125944bb60b03e41ddb9321d8a90e4915dfa47762cc1e6a2de"
+  },
+  "execute": true,
+  "expected_dependency_packages": [
+    [
+      "anyhow",
+      "1.0.104"
+    ],
+    [
+      "bitflags",
+      "1.3.2"
+    ],
+    [
+      "bitflags",
+      "2.13.2"
+    ],
+    [
+      "bytes",
+      "1.12.1"
+    ],
+    [
+      "cfg-if",
+      "1.0.5"
+    ],
+    [
+      "cfg_aliases",
+      "0.1.1"
+    ],
+    [
+      "codex-utils-pty",
+      "0.0.0"
+    ],
+    [
+      "diff",
+      "0.1.13"
+    ],
+    [
+      "downcast-rs",
+      "1.2.1"
+    ],
+    [
+      "errno",
+      "0.3.14"
+    ],
+    [
+      "filedescriptor",
+      "0.8.3"
+    ],
+    [
+      "lazy_static",
+      "1.5.1"
+    ],
+    [
+      "libc",
+      "0.2.191"
+    ],
+    [
+      "lock_api",
+      "0.4.14"
+    ],
+    [
+      "log",
+      "0.4.34"
+    ],
+    [
+      "mio",
+      "1.2.4"
+    ],
+    [
+      "nix",
+      "0.28.0"
+    ],
+    [
+      "parking_lot",
+      "0.12.5"
+    ],
+    [
+      "parking_lot_core",
+      "0.9.12"
+    ],
+    [
+      "pin-project-lite",
+      "0.2.17"
+    ],
+    [
+      "portable-pty",
+      "0.9.0"
+    ],
+    [
+      "pretty_assertions",
+      "1.4.1"
+    ],
+    [
+      "proc-macro2",
+      "1.0.107"
+    ],
+    [
+      "quote",
+      "1.0.47"
+    ],
+    [
+      "redox_syscall",
+      "0.5.18"
+    ],
+    [
+      "scopeguard",
+      "1.2.0"
+    ],
+    [
+      "serde",
+      "1.0.229"
+    ],
+    [
+      "serde_core",
+      "1.0.229"
+    ],
+    [
+      "serde_derive",
+      "1.0.229"
+    ],
+    [
+      "serial2",
+      "0.2.38"
+    ],
+    [
+      "shared_library",
+      "0.1.9"
+    ],
+    [
+      "shell-words",
+      "1.1.1"
+    ],
+    [
+      "signal-hook-registry",
+      "1.4.8"
+    ],
+    [
+      "smallvec",
+      "1.16.3"
+    ],
+    [
+      "socket2",
+      "0.6.5"
+    ],
+    [
+      "syn",
+      "2.0.119"
+    ],
+    [
+      "syn",
+      "3.0.9"
+    ],
+    [
+      "thiserror",
+      "1.0.69"
+    ],
+    [
+      "thiserror-impl",
+      "1.0.69"
+    ],
+    [
+      "tokio",
+      "1.53.3"
+    ],
+    [
+      "tokio-macros",
+      "2.7.2"
+    ],
+    [
+      "unicode-ident",
+      "1.0.27"
+    ],
+    [
+      "wasi",
+      "0.11.1+wasi-snapshot-preview1"
+    ],
+    [
+      "winapi",
+      "0.3.9"
+    ],
+    [
+      "winapi-i686-pc-windows-gnu",
+      "0.4.0"
+    ],
+    [
+      "winapi-x86_64-pc-windows-gnu",
+      "0.4.0"
+    ],
+    [
+      "windows-link",
+      "0.2.1"
+    ],
+    [
+      "windows-sys",
+      "0.61.2"
+    ],
+    [
+      "winreg",
+      "0.10.1"
+    ],
+    [
+      "yansi",
+      "1.0.1"
+    ]
+  ],
+  "expected_linux_cases": [
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::driver_backed_process_can_expose_split_stdout_and_stderr"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::driver_backed_process_can_resize_via_resizer_hook"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::driver_backed_process_drains_output_that_arrives_after_exit_signal"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::output_collector_waits_for_exit_after_output_closes"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_and_pty_share_interface"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_drains_stderr_without_stdout_activity"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_drop_reaps_child"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_process_can_expose_split_stdout_and_stderr"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_process_detaches_from_parent_session"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_process_round_trips_stdin"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_spawn_no_stdin_can_preserve_inherited_fds"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_terminate_aborts_detached_readers"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_terminate_reaps_child"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_close_stdin_preserves_large_input_and_delivers_eof"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_drop_allows_runtime_shutdown_with_detached_child"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_dropped_output_receiver_keeps_draining_child"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_preserving_fds_drop_allows_runtime_shutdown_with_detached_child"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_preserving_fds_terminate_allows_runtime_shutdown_with_detached_child"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_preserving_inherited_fds_keeps_python_repl_running"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_python_repl_emits_output_and_exits"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_python_repl_readiness_waits_for_execution_after_input_echo"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_spawn_can_preserve_inherited_fds"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_spawn_with_inherited_fds_reports_exec_failures"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_spawn_with_inherited_fds_supports_resize"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_spawn_without_io_driver_returns_error"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_terminate_allows_runtime_shutdown_with_detached_child"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_terminate_allows_runtime_shutdown_with_full_output_channel"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_terminate_kills_background_children_in_same_process_group"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_terminate_reaps_child_when_waiter_is_queued"
+    }
+  ],
+  "fixed_files": [
+    {
+      "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+      "path": "codex-rs/Cargo.lock"
+    },
+    {
+      "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7",
+      "path": "MODULE.bazel.lock"
+    },
+    {
+      "git_blob": "a22ff3bee70261f6061d598c31f0016e785a7a3c",
+      "path": "AGENTS.md"
+    },
+    {
+      "git_blob": "910c65114ec128a8317ee8257428451f3cd28230",
+      "path": "codex-rs/rust-toolchain.toml"
+    },
+    {
+      "git_blob": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44",
+      "path": "codex-rs/.cargo/config.toml"
+    },
+    {
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "path": "justfile"
+    },
+    {
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "path": "scripts/run-nextest.py"
+    },
+    {
+      "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "path": "scripts/format.py"
+    },
+    {
+      "git_blob": "868f75986ea9719e116b8fa8a0aa53bd269bc830",
+      "path": "codex-rs/.config/nextest.toml"
+    }
+  ],
+  "nine_source_postimages": [
+    {
+      "git_blob": "65a515a423f52fcea3c0e6462b913d7d3abb6fa1",
+      "path": ".codespellrc"
+    },
+    {
+      "git_blob": "fb46a681b5c3cd47c76b20ef56048eae771d9e07",
+      "path": ".github/workflows/hepta-musl-product-smoke.yml"
+    },
+    {
+      "git_blob": "648a83164c0dd1c28499eaa17f842a83bb2aab04",
+      "path": ".github/workflows/v8-canary.yml"
+    },
+    {
+      "git_blob": "f0e9ccde6829f0d0fb6bd59e154360018856b7fc",
+      "path": "codex-rs/utils/pty/src/process.rs"
+    },
+    {
+      "git_blob": "e2e294464a2db6b65370afd98b7d49250ddaae2f",
+      "path": "codex-rs/utils/pty/src/pty.rs"
+    },
+    {
+      "git_blob": "25836a08f9ff9a90b14204059d2544749a0f5461",
+      "path": "codex-rs/utils/pty/src/tests.rs"
+    },
+    {
+      "git_blob": "67168dab510c9fd400a1cbcf4b4a6bb905b73c59",
+      "path": "codex-rs/utils/pty/src/unix_io.rs"
+    },
+    {
+      "git_blob": "393cceaa6544e3de4f4ca41579bc48ebf95582fd",
+      "path": "codex-rs/utils/pty/src/unix_io_diagnostics.rs"
+    },
+    {
+      "git_blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73",
+      "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs"
+    }
+  ],
+  "owned_root": "/home/qq/work/hepta-audit-pty-diagnostic-20261105",
+  "root_execution_guard_blob": "96264b194811891db8a17cc2a83937f7ac5a633f",
+  "root_execution_guard_text": "{\n  \"authorization_type\": \"explicit parent message authorizing the concrete bounded cohort; not a claim of prior line-by-line root runner review\",\n  \"base_commit\": \"20fd174ded4e5ce01bda34e4f6d1d74803301f49\",\n  \"disabled_plan\": {\n    \"bytes\": 17342,\n    \"git_blob\": \"a71c18af2b475765a3e3ae8c05925e4fd45ef45e\",\n    \"sha256\": \"de40fe09cbef67125944bb60b03e41ddb9321d8a90e4915dfa47762cc1e6a2de\"\n  },\n  \"execute\": true,\n  \"host_alias\": \"ai395\",\n  \"no_B_mutation\": true,\n  \"no_tests_after_hygiene\": true,\n  \"only_authorized_package\": \"codex-utils-pty\",\n  \"owned_root\": \"/home/qq/work/hepta-audit-pty-diagnostic-20261105\",\n  \"precise_continuation_delta\": \"Three os.X -> os.X_OK executable-bit queries only; all source, scope, budgets, guards and commands unchanged.\",\n  \"root_authorization_scope\": \"Root explicitly authorized this independent PTY cohort on 2026-11-05: absent owned root; exact1dda/tree73f4 and20fd base; independent source/target/evidence; pinned P2 tools; fresh complete metadata proving no V8 in PTY closure; fresh complete29-case Counter plus empty conpty target; original just test once, retries0, no duplicate --no-fail-fast; successful tests then scoped fix and original just fmt --base20fd; no tests afterward; preserve all output/source/index/locks/hygiene deltas; no mutation to B source/target or ROG. Root did not claim to have read this subsequently frozen runner.\",\n  \"runner\": {\n    \"bytes\": 24011,\n    \"git_blob\": \"763f2ec8a428288e9e0155c4d4b655fb1794396f\",\n    \"sha256\": \"8ba5b24a0e50f0d264cfde1ad683b55c2e07868b28f342409570f6f9b8b7374e\"\n  },\n  \"schema\": \"hepta-pty-ci-materialized-root-authorization-v2\",\n  \"source_commit\": \"1ddadae2c1bcb3c48047d2692565606833e87909\",\n  \"source_tree\": \"73f4b30499524d6137bb8f4b40c3977de286d1a5\"\n}\n",
+  "runner_sha256": "8ba5b24a0e50f0d264cfde1ad683b55c2e07868b28f342409570f6f9b8b7374e",
+  "schema": "hepta-ai395-independent-pty-request-v2",
+  "shared_readonly_files": [
+    {
+      "bytes": 1224180,
+      "dev": 66306,
+      "git_blob": "69adeb086eccf95645c8a580bf82fa85eef8fb7a",
+      "inode": 65176547,
+      "mode": "0o600",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/source/.git/index",
+      "sha256": "6b39b6b27d164001c9b130487d0d7879be5f80e22a4579d06fd472c2bb8d7ac0"
+    },
+    {
+      "bytes": 413768,
+      "dev": 66306,
+      "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+      "inode": 65177174,
+      "mode": "0o600",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs/Cargo.lock",
+      "relative_path": "codex-rs/Cargo.lock",
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    },
+    {
+      "bytes": 1738619,
+      "dev": 66306,
+      "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7",
+      "inode": 64654420,
+      "mode": "0o600",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/source/MODULE.bazel.lock",
+      "relative_path": "MODULE.bazel.lock",
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    },
+    {
+      "bytes": 25851,
+      "git_blob": "ab7238e724fb3feddbc8b5fcd691b9ebf0a5033a",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P2-version-continuation-v1/installed-tools.json",
+      "sha256": "75384c3cf63c14309d5a50b3c0bdb17c71db3cc9669fe9004e226d9b44ad4f22"
+    },
+    {
+      "bytes": 3639,
+      "git_blob": "653a16ba41817931e2d6cba0ad6dbbf8205f1716",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P1-v1/source-baseline.json",
+      "sha256": "fce5af861d21fbf8e891744127eaa8c880261c533ff31363372ef989254dc9b7"
+    },
+    {
+      "bytes": 41,
+      "git_blob": "c7a391cd59bb4f8bd87495d01f68cd6ae98aa22d",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/source/.git/HEAD",
+      "sha256": "44a2763e10d342db5e9a637e31a4472d1e13b0c97d56780184a69e9487c5e8dc"
+    },
+    {
+      "bytes": 644784,
+      "git_blob": "d2d5434a06d69fdd4982b4ed3e41cba1d138cd4e",
+      "name": "rustc",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6"
+    },
+    {
+      "bytes": 42185192,
+      "git_blob": "dbc25264b05124bf8b4cabb637e73229f52c138f",
+      "name": "cargo",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "sha256": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66"
+    },
+    {
+      "bytes": 1263912,
+      "git_blob": "dbf54b2ab4a561ada99f2bbfb47c1e9fbd0b013d",
+      "name": "cargo-clippy",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo-clippy",
+      "sha256": "b71b1263063707608daa1e9b231ad9d87507c11d6aa178ede2b01d8372d5effb"
+    },
+    {
+      "bytes": 5295560,
+      "git_blob": "9cd0dd53f44f9fe85f52b0d0b59f5008aed4f501",
+      "name": "rustfmt",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "sha256": "56b31ad3ec8fe0277a2884a189e243b8f04e9b48e5fd22e547c1516c5f8fd34c"
+    },
+    {
+      "bytes": 5452040,
+      "git_blob": "1da163996dca7176901b8e5b2514a4ff9fae8a01",
+      "name": "just",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    {
+      "bytes": 24038232,
+      "git_blob": "b15125abb7e82cfbe52f7d2a1b6dfb90b914e990",
+      "name": "cargo-nextest",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    {
+      "bytes": 77023347,
+      "git_blob": "b5eed055bd801723ce22ab16114d4adbc0ffa43e",
+      "name": "bazel",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/bazel",
+      "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8"
+    }
+  ],
+  "source_commit": "1ddadae2c1bcb3c48047d2692565606833e87909",
+  "source_tree": "73f4b30499524d6137bb8f4b40c3977de286d1a5",
+  "system_path": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+  "tool_pins": [
+    {
+      "bytes": 644784,
+      "name": "rustc",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6"
+    },
+    {
+      "bytes": 42185192,
+      "name": "cargo",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "sha256": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66"
+    },
+    {
+      "bytes": 1263912,
+      "name": "cargo-clippy",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo-clippy",
+      "sha256": "b71b1263063707608daa1e9b231ad9d87507c11d6aa178ede2b01d8372d5effb"
+    },
+    {
+      "bytes": 5295560,
+      "name": "rustfmt",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "sha256": "56b31ad3ec8fe0277a2884a189e243b8f04e9b48e5fd22e547c1516c5f8fd34c"
+    },
+    {
+      "bytes": 5452040,
+      "name": "just",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    {
+      "bytes": 24038232,
+      "name": "cargo-nextest",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    {
+      "bytes": 77023347,
+      "name": "bazel",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/bazel",
+      "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8"
+    }
+  ]
+}

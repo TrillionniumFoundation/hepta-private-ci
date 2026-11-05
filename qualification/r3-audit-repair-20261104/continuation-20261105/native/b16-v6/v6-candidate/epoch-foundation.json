@@ -1,0 +1,332 @@
+{
+  "epoch": "foundation",
+  "operations": [
+    {
+      "kind": "scopes",
+      "id": "B01_R2c_V3",
+      "before": [
+        "r2c-v3-full"
+      ],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B01_R2c_V3",
+          "package": "codex-state",
+          "exact_names": [
+            "sqlite::commit_gate_tests::commit_gate_rejects_explicit_transaction_after_revocation",
+            "sqlite::commit_gate_tests::commit_gate_covers_pool_growth_and_replacement",
+            "sqlite::commit_gate_tests::checkout_callback_blocks_initial_connect_and_reused_connection",
+            "sqlite::commit_gate_tests::cancelled_checkout_does_not_release_uncoordinated_connection"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-state",
+            "--lib",
+            "-E",
+            "test(sqlite::commit_gate_tests::)",
+            "--retries",
+            "0",
+            "--no-fail-fast"
+          ],
+          "oracle": null,
+          "supports": []
+        }
+      ]
+    },
+    {
+      "kind": "apply",
+      "delta": "r2d-full"
+    },
+    {
+      "kind": "negative",
+      "id": "B02_R2d_counterfactual",
+      "before": [
+        "r2d-without-close-on-drop"
+      ],
+      "restore": "r2d-restore-close-on-drop",
+      "scopes": [
+        {
+          "label": "B02_R2d_counterfactual",
+          "package": "codex-state",
+          "exact_names": [
+            "sqlite_read_barrier::tests::cancelled_barrier_transition_discards_changed_connection"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-state",
+            "--lib",
+            "-E",
+            "test(sqlite_read_barrier::tests::cancelled_barrier_transition_discards_changed_connection)",
+            "--retries",
+            "0"
+          ],
+          "oracle": "barrier",
+          "supports": []
+        }
+      ]
+    },
+    {
+      "kind": "scopes",
+      "id": "B03_R2d_final",
+      "before": [],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B03_R2d_final",
+          "package": "codex-state",
+          "exact_names": [
+            "sqlite_read_barrier::tests::observation_pool_is_read_only_and_does_not_create_missing_database",
+            "sqlite_read_barrier::tests::barrier_excludes_real_writer_while_observer_reads",
+            "sqlite_read_barrier::tests::barrier_commit_hook_rejects_writes_if_query_only_is_disabled",
+            "sqlite_read_barrier::tests::barrier_rejects_read_only_connection",
+            "sqlite_read_barrier::tests::cancelled_barrier_transition_discards_changed_connection"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-state",
+            "--lib",
+            "-E",
+            "test(sqlite_read_barrier::tests::)",
+            "--retries",
+            "0",
+            "--no-fail-fast"
+          ],
+          "oracle": null,
+          "supports": []
+        }
+      ]
+    },
+    {
+      "kind": "negative",
+      "id": "B04_R2e1_baseline",
+      "before": [
+        "r2e1-test-only-baseline"
+      ],
+      "restore": "r2e1-repair-after-baseline",
+      "scopes": [
+        {
+          "label": "B04_R2e1_baseline",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_read_transaction",
+            "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_connection_waiting_for_sqlite",
+            "production_writer::objective_sender::commit_interlock_tests::refused_checkpoint_vetoes_growth_replacement_and_writes_after_read_ack",
+            "production_writer::objective_sender::commit_interlock_tests::recovered_pool_vetoes_commits_and_retains_its_exclusive_open_guard"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "-E",
+            "test(/production_writer::objective_sender::commit_interlock_tests::/)",
+            "--retries",
+            "0"
+          ],
+          "oracle": "interlock",
+          "supports": []
+        }
+      ]
+    },
+    {
+      "kind": "scopes",
+      "id": "B05_R2e1_final",
+      "before": [],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B05_R2e1_final",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_read_transaction",
+            "production_writer::objective_sender::commit_interlock_tests::cancelled_checkpoint_vetoes_a_preexisting_connection_waiting_for_sqlite",
+            "production_writer::objective_sender::commit_interlock_tests::refused_checkpoint_vetoes_growth_replacement_and_writes_after_read_ack",
+            "production_writer::objective_sender::commit_interlock_tests::recovered_pool_vetoes_commits_and_retains_its_exclusive_open_guard"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "-E",
+            "test(/production_writer::objective_sender::commit_interlock_tests::/)",
+            "--retries",
+            "0"
+          ],
+          "oracle": null,
+          "supports": []
+        }
+      ]
+    },
+    {
+      "kind": "scopes",
+      "id": "B06_R2e2a",
+      "before": [
+        "r2e2a-full"
+      ],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B06_R2e2a",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "cognitive_checkpoint_codec::tests::bounded_ack_preserves_the_opaque_token_and_complete_head",
+            "cognitive_checkpoint_codec::tests::malformed_or_misbound_ack_is_refused",
+            "cognitive_checkpoint_codec::tests::request_validation_rejects_bad_ids_shapes_and_oversized_frames"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "--retries",
+            "0",
+            "-E",
+            "test(=cognitive_checkpoint_codec::tests::bounded_ack_preserves_the_opaque_token_and_complete_head) | test(=cognitive_checkpoint_codec::tests::malformed_or_misbound_ack_is_refused) | test(=cognitive_checkpoint_codec::tests::request_validation_rejects_bad_ids_shapes_and_oversized_frames)"
+          ],
+          "oracle": null,
+          "supports": []
+        }
+      ]
+    },
+    {
+      "kind": "scopes",
+      "id": "B07_R2e2b",
+      "before": [
+        "r2e2b-full"
+      ],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B07_R2e2b",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "cognitive_checkpoint_codec::tests::bounded_ack_preserves_the_opaque_token_and_complete_head",
+            "cognitive_checkpoint_codec::tests::malformed_or_misbound_ack_is_refused",
+            "cognitive_checkpoint_codec::tests::request_validation_rejects_bad_ids_shapes_and_oversized_frames",
+            "cognitive_checkpoint_codec::tests::complete_current_dirty_publishing_current_transcript_is_required",
+            "cognitive_checkpoint_codec::tests::matching_counters_do_not_accept_tampered_successor_heads",
+            "cognitive_checkpoint_codec::tests::predecessor_cas_replay_phase_and_writer_mismatch_are_refused",
+            "cognitive_checkpoint_codec::tests::read_head_checks_identity_and_monotonicity_without_granting_current"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "--retries",
+            "0",
+            "-E",
+            "test(cognitive_checkpoint_codec::tests::)"
+          ],
+          "oracle": null,
+          "supports": []
+        }
+      ]
+    },
+    {
+      "kind": "negative",
+      "id": "B08_R2e3_baseline",
+      "before": [
+        "r2e3-test-only-baseline"
+      ],
+      "restore": "r2e3-repair-after-baseline",
+      "scopes": [
+        {
+          "label": "B08_R2e3_baseline",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "production_writer::objective_sender::connection_custody_tests::detached_shared_connection_retains_original_file_lock_until_close",
+            "production_writer::objective_sender::connection_custody_tests::recovered_connection_retains_exclusive_custody_after_store_close",
+            "production_writer::objective_sender::connection_custody_tests::cancelled_close_retains_custody_after_a_cancelled_checkpoint",
+            "production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "-E",
+            "test(/production_writer::objective_sender::connection_custody_tests::/)",
+            "--retries",
+            "0"
+          ],
+          "oracle": "custody",
+          "supports": []
+        }
+      ]
+    },
+    {
+      "kind": "negative",
+      "id": "B09_R2e3_anchor_counterfactual",
+      "before": [
+        "r2e3-without-native-anchor"
+      ],
+      "restore": "r2e3-restore-native-anchor",
+      "scopes": [
+        {
+          "label": "B09_R2e3_anchor_counterfactual",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "-E",
+            "test(=production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close)",
+            "--retries",
+            "0"
+          ],
+          "oracle": "anchor",
+          "supports": []
+        }
+      ]
+    },
+    {
+      "kind": "scopes",
+      "id": "B10_R2e3_final",
+      "before": [],
+      "restore": null,
+      "scopes": [
+        {
+          "label": "B10_R2e3_final",
+          "package": "codex-hepta-memory",
+          "exact_names": [
+            "production_writer::objective_sender::connection_custody_tests::detached_shared_connection_retains_original_file_lock_until_close",
+            "production_writer::objective_sender::connection_custody_tests::recovered_connection_retains_exclusive_custody_after_store_close",
+            "production_writer::objective_sender::connection_custody_tests::cancelled_close_retains_custody_after_a_cancelled_checkpoint",
+            "production_writer::objective_sender::connection_custody_tests::commit_hook_teardown_keeps_custody_until_native_connection_close"
+          ],
+          "authored_argv": [
+            "just",
+            "test",
+            "-p",
+            "codex-hepta-memory",
+            "--lib",
+            "-E",
+            "test(/production_writer::objective_sender::connection_custody_tests::/)",
+            "--retries",
+            "0"
+          ],
+          "oracle": null,
+          "supports": []
+        }
+      ]
+    }
+  ]
+}

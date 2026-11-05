@@ -1,0 +1,158 @@
+{
+  "schema": "hepta-branch-visible-concurrency-runtime-check-v1",
+  "verdict": "NO_LATER_RUN_OR_NEW_ATTEMPT_IN_COMPLETE_VISIBLE_BRANCH_RESULTS",
+  "actual_cancellation_cause": "OPEN_UNDETERMINED",
+  "branch": "fix/r3-original-product-contracts-20261104",
+  "target_cancellation_window_utc": [
+    "2026-11-05T08:00:00Z",
+    "2026-11-05T08:23:59Z"
+  ],
+  "request_envelope": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/ci-concurrency-cancellation-review-20261105/branch-visible-runtime/request-envelope.json",
+    "bytes": 2795,
+    "sha256": "e4a65c93c12c254a2589df5210a5504a0dbdf915718cd3b79f13b2fb0fb41750",
+    "blob": "ac7791eda3fffa93652b519d519d9745c1c6c3ba"
+  },
+  "full_originals_archive": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/ci-concurrency-cancellation-review-20261105/branch-visible-runtime/api-originals.gzip-base64.json",
+    "bytes": 38434,
+    "sha256": "c1de5639cc5d6b8211be68d6a7e977c2d946f28e56f2e58e4c3585e6beaadd7b",
+    "blob": "ecf8f56a656cc21b21f0e30df1d9a8babf16a9da"
+  },
+  "projection": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/ci-concurrency-cancellation-review-20261105/branch-visible-runtime/visible-run-projection.json",
+    "bytes": 52645,
+    "sha256": "56c8b50bce86d3db540814803313f483fb7af0fa7a59e6abc4a7bc433de3261d",
+    "blob": "020dc42defbd59c91bc100ad8d44cfe5841870cc"
+  },
+  "queries": [
+    {
+      "scope": "All workflow types and head SHAs on the product branch, created since 2026-11-05T00:00:00Z",
+      "returned": 19,
+      "total_count": 19,
+      "per_page": 100,
+      "page": 1,
+      "complete_for_filter": true,
+      "observed_after_utc": "2026-11-05 08:25:37 UTC",
+      "same_ids_as_original_19": true
+    },
+    {
+      "scope": "All visible workflow types, creation dates and head SHAs on the exact product branch; no head, event, status or created filter",
+      "returned": 74,
+      "total_count": 74,
+      "unique_ids": 74,
+      "per_page": 100,
+      "page": 1,
+      "complete_for_filter": true,
+      "observed_interval_utc": {
+        "before": "2026-11-05 08:25:58 UTC",
+        "after": "2026-11-05 08:26:00 UTC"
+      }
+    }
+  ],
+  "heads": {
+    "0e139b599f0fe451f80fb7db4b2913bb9c679dce": 19,
+    "cabcb40d36e116beaa65750e1f674c52035da785": 19,
+    "ff72d462d74f9eb856aa9edbc368caad9c466708": 18,
+    "e729e6c2becb528e3a6b49c9e5bbea57bd26637a": 18
+  },
+  "created_at_range": [
+    "2026-11-04T12:16:15Z",
+    "2026-11-05T05:38:12Z"
+  ],
+  "all_74_run_attempts_are_one": true,
+  "runs_created_in_target_window": [],
+  "runs_created_after_original_19": [],
+  "blocking_runs": [
+    {
+      "id": 41975255726,
+      "name": "blocking-ci",
+      "path": ".github/workflows/blocking-ci.yml",
+      "workflow_id": 336746106,
+      "event": "pull_request",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "head_sha": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+      "run_attempt": 1,
+      "created_at": "2026-11-05T05:38:12Z",
+      "updated_at": "2026-11-05T05:38:12Z",
+      "run_started_at": "2026-11-05T05:38:12Z",
+      "status": "queued",
+      "conclusion": null,
+      "actor_login": "Franksudoman",
+      "triggering_actor_login": "Franksudoman",
+      "actor_field_scope": "Run creation/trigger metadata only; not a cancellation actor."
+    },
+    {
+      "id": 41902318286,
+      "name": "blocking-ci",
+      "path": ".github/workflows/blocking-ci.yml",
+      "workflow_id": 336746106,
+      "event": "pull_request",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "head_sha": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "run_attempt": 1,
+      "created_at": "2026-11-04T19:59:56Z",
+      "updated_at": "2026-11-04T20:52:10Z",
+      "run_started_at": "2026-11-04T19:59:56Z",
+      "status": "completed",
+      "conclusion": "failure",
+      "actor_login": "Franksudoman",
+      "triggering_actor_login": "Franksudoman",
+      "actor_field_scope": "Run creation/trigger metadata only; not a cancellation actor."
+    },
+    {
+      "id": 41875454075,
+      "name": "blocking-ci",
+      "path": ".github/workflows/blocking-ci.yml",
+      "workflow_id": 336746106,
+      "event": "pull_request",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "head_sha": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "run_attempt": 1,
+      "created_at": "2026-11-04T17:13:25Z",
+      "updated_at": "2026-11-04T18:26:29Z",
+      "run_started_at": "2026-11-04T17:13:25Z",
+      "status": "completed",
+      "conclusion": "failure",
+      "actor_login": "Franksudoman",
+      "triggering_actor_login": "Franksudoman",
+      "actor_field_scope": "Run creation/trigger metadata only; not a cancellation actor."
+    },
+    {
+      "id": 41827879433,
+      "name": "blocking-ci",
+      "path": ".github/workflows/blocking-ci.yml",
+      "workflow_id": 336746106,
+      "event": "pull_request",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "head_sha": "e729e6c2becb528e3a6b49c9e5bbea57bd26637a",
+      "run_attempt": 1,
+      "created_at": "2026-11-04T12:16:42Z",
+      "updated_at": "2026-11-04T13:56:12Z",
+      "run_started_at": "2026-11-04T12:16:42Z",
+      "status": "completed",
+      "conclusion": "failure",
+      "actor_login": "Franksudoman",
+      "triggering_actor_login": "Franksudoman",
+      "actor_field_scope": "Run creation/trigger metadata only; not a cancellation actor."
+    }
+  ],
+  "direct_bazel_runs": [],
+  "findings": [
+    "The all-branch response is complete according to its total_count: 74 unique runs, covering four distinct head SHAs. The earlier head-only limitation is removed for this visible branch result set.",
+    "The original 19 current-head runs are still the complete set created today. All 74 runs report run_attempt=1. There is no visible later run or new attempt in this branch result set to explain the target cancellation window.",
+    "Exactly four blocking-ci runs are visible, one at each head. The three prior heads completed with failure on November 4; the current original run is still reported queued despite actual individual-job activity. This status is preserved without treating it as no execution.",
+    "The workflow-specific collection URL was rejected by the connector without a run payload. A supported repository-level collection query supplied the complete branch result. Two successful pages were read; no further optional queries were made.",
+    "Actor and triggering_actor describe run initiation. No cancellation actor is inferred from those fields."
+  ],
+  "limits": [
+    "This excludes a competing later run or new attempt only within the exact branch records visible to this connection at the observation time. It does not prove that no record was deleted or inaccessible.",
+    "Other branch labels, other repositories, externally initiated actions, manual cancellation and service-side causes are outside this bounded query. No actor or cancellation mechanism is proven.",
+    "Existing cancelled jobs and their prior failures remain cancelled/failed. No CI qualification is closed by this read-only check."
+  ],
+  "native_executed": false,
+  "source_changed": false,
+  "refs_changed": false,
+  "ci_actions_triggered": false,
+  "stopped_after_complete_branch_coverage": true
+}

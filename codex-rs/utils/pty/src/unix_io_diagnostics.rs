@@ -4,8 +4,8 @@ use std::fs::File;
 use std::io;
 use std::os::fd::AsRawFd;
 use std::sync::Weak;
-use std::sync::atomic::AtomicU64;
 use std::sync::atomic::AtomicU8;
+use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
 use tokio::io::unix::AsyncFd;
@@ -68,7 +68,8 @@ impl PtyIoDiagnostics {
             }
             ReaderEvent::Sending => self.wait_state.store(/*val*/ 3, Ordering::Relaxed),
             ReaderEvent::Discarded(count) => {
-                self.discarded_bytes.fetch_add(count as u64, Ordering::Relaxed);
+                self.discarded_bytes
+                    .fetch_add(count as u64, Ordering::Relaxed);
             }
             ReaderEvent::Eof => self.wait_state.store(/*val*/ 4, Ordering::Relaxed),
             ReaderEvent::Failed(error) => {

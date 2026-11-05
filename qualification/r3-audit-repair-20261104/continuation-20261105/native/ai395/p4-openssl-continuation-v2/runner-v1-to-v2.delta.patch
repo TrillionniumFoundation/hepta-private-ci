@@ -1,0 +1,149 @@
+--- run_bootstrap_p4.py
++++ run_bootstrap_p4_v2.py
+@@ -15,7 +15,7 @@
+ SOURCE = ROOT / 'source'
+ TARGET = ROOT / 'target-dev-small'
+ TOOLS = ROOT / 'tools'
+-EVIDENCE = ROOT / 'evidence/bootstrap-P4-v1'
++EVIDENCE = ROOT / 'evidence/bootstrap-P4-openssl-continuation-v2'
+ COMMIT = '20fd174ded4e5ce01bda34e4f6d1d74803301f49'
+ TREE = '4a3374e22e16ce5c764288ad018cd9affadf94ea'
+ GUARD_BLOB = '967ef896907e698a07e8028e049a47e934570b1d'
+@@ -196,9 +196,47 @@
+     return rows
+ 
+ 
++def verify_openssl_sdk(label, sdk):
++    sdk_root = TOOLS / 'openssl-3.5.5-1ubuntu3.7'
++    assert sdk_root.resolve() == sdk_root
++    actual = {'headers': [], 'libraries': [], 'pkg_config_sources': [], 'packages': [], 'linker_aliases': []}
++    for row in sdk['headers']:
++        link = Path(row['exposed_path'])
++        assert link.is_relative_to(sdk_root) and link.is_symlink()
++        assert os.readlink(link) == row['link_target']
++        expected = row['official_file']
++        assert link.resolve() == Path(expected['path']) and link.resolve().is_relative_to(sdk_root)
++        identity = file_id(link.resolve())
++        assert equal_content(identity, expected)
++        actual['headers'].append({'exposed_path': str(link), 'link_target': os.readlink(link), 'official_file': identity})
++    for row in sdk['libraries']:
++        observed = {}
++        for role in ('private', 'system_readonly'):
++            identity = file_id(row[role]['path'])
++            assert equal_content(identity, row[role])
++            observed[role] = identity
++        assert equal_content(observed['private'], observed['system_readonly'])
++        actual['libraries'].append(observed)
++    for row in sdk['pkg_config_sources']:
++        identity = file_id(row['path'])
++        assert equal_content(identity, row)
++        actual['pkg_config_sources'].append(identity)
++    for row in sdk['packages']:
++        expected = row['official_download']['package']
++        identity = file_id(expected['path'])
++        assert equal_content(identity, expected)
++        actual['packages'].append(identity)
++    for name in ('libssl.so', 'libcrypto.so'):
++        alias = Path(sdk['environment']['OPENSSL_LIB_DIR']) / name
++        assert alias.is_symlink() and os.readlink(alias) == name + '.3'
++        assert alias.resolve() == alias.parent / (name + '.3')
++        actual['linker_aliases'].append({'path': str(alias), 'link_target': os.readlink(alias), 'file': file_id(alias.resolve())})
++    return save_json(label + '.openssl-sdk-guard.json', actual)
++
++
+ raw = sys.stdin.buffer.read()
+ request = json.loads(raw)
+-terminal = {'schema': 'hepta-ai395-cold-bootstrap-P4-terminal-v1', 'host_alias': 'ai395',
++terminal = {'schema': 'hepta-ai395-cold-bootstrap-P4-terminal-v2', 'host_alias': 'ai395',
+             'source_commit': COMMIT, 'source_tree': TREE, 'root_execution_guard_blob': GUARD_BLOB,
+             'started_at': now(), 'request': bytes_id(raw), 'tests_executed': False,
+             'test_qualification': False, 'B_source_applied': False, 'errors': []}
+@@ -237,7 +275,27 @@
+         actual = file_id(expected['path'])
+         assert equal_content(actual, expected) and os.access(expected['path'], os.X_OK)
+         tool_rows.append({'name': expected['name'], 'version_output': expected['version_output'], **actual})
+-    assert not list(TARGET.iterdir()), 'cold target is not empty before first P4 build; preserve and stop'
++    assert TARGET.is_dir() and TARGET.resolve() == TARGET and TARGET.is_relative_to(ROOT)
++    failed_path = ROOT / 'evidence/bootstrap-P4-v1/terminal.json'
++    failed_bytes = failed_path.read_bytes()
++    assert bytes_id(failed_bytes) == request['failed_P4_terminal_identity']
++    failed = json.loads(failed_bytes)
++    assert failed['source_tree'] == TREE and not failed['success'] and not failed['tests_executed']
++    assert len(failed['commands']) == 1 and failed['commands'][0]['exit_code'] == 101
++    sdk_terminal_path = ROOT / 'evidence/bootstrap-P4-openssl-sdk-v1/terminal.json'
++    sdk_terminal_bytes = sdk_terminal_path.read_bytes()
++    assert bytes_id(sdk_terminal_bytes) == request['openssl_success_terminal_identity']
++    sdk_terminal = json.loads(sdk_terminal_bytes)
++    assert sdk_terminal['success'] and not sdk_terminal['tests_executed'] and not sdk_terminal['build_executed']
++    sdk_path = Path(sdk_terminal['sdk_receipt']['path'])
++    assert equal_content(file_id(sdk_path), sdk_terminal['sdk_receipt'])
++    sdk_bytes = sdk_path.read_bytes()
++    assert bytes_id(sdk_bytes) == request['openssl_sdk_identity']
++    sdk = json.loads(sdk_bytes)
++    assert set(sdk['environment']) == {'OPENSSL_INCLUDE_DIR', 'OPENSSL_LIB_DIR'}
++    for name in ('OPENSSL_DIR', 'OPENSSL_INCLUDE_DIR', 'OPENSSL_LIB_DIR', 'OPENSSL_STATIC', 'OPENSSL_DYNAMIC',
++                 'PKG_CONFIG_PATH', 'PKG_CONFIG_LIBDIR', 'PKG_CONFIG_SYSROOT_DIR'):
++        assert not os.environ.get(name), 'unexpected inherited prerequisite override: ' + name
+     EVIDENCE.mkdir(mode=0o700)
+     created = True
+     save('request.original.json', raw)
+@@ -247,10 +305,13 @@
+     save_json('host.original.json', host)
+     environment = dict(tools_doc['task_environment'])
+     environment.update({'CARGO_TARGET_DIR': str(TARGET), 'CARGO_INCREMENTAL': '0', 'CARGO_BUILD_JOBS': '4',
+-                        'CARGO_NET_GIT_FETCH_WITH_CLI': 'true', 'NEXTEST_PROFILE': 'local', **supply['environment']})
++                        'CARGO_NET_GIT_FETCH_WITH_CLI': 'true', 'NEXTEST_PROFILE': 'local', **supply['environment'], **sdk['environment']})
+     env.update(environment)
+     save_json('effective-task-environment.json', environment)
+     terminal['initial_guard'] = source_guard('initial')
++    terminal['prior_failed_P4'] = file_id(failed_path)
++    terminal['openssl_sdk_receipt'] = file_id(sdk_path)
++    terminal['openssl_initial_guard'] = verify_openssl_sdk('initial', sdk)
+     terminal['tools'] = tool_rows
+     terminal['supply_receipt'] = file_id(supply_path)
+     helper_argv = ['cargo', 'build', '--locked', '--profile', 'dev-small', '--message-format=json-render-diagnostics']
+@@ -310,6 +371,8 @@
+     helpers = [file_id(path, artifact=True) for path in sorted(helper_paths)]
+     normal_after = [{'target': row['target'], **file_id(row['path'], artifact=True)} for row in normal_before]
+     save_json('normal-six-after-catalog.json', normal_after)
++    openssl_final_guard = verify_openssl_sdk('final', sdk)
++    terminal['openssl_final_guard'] = openssl_final_guard
+     final_guard = source_guard('final')
+     recipes = []
+     locks = {}
+@@ -320,6 +383,9 @@
+             locks[path] = actual
+         else:
+             recipes.append({**actual, 'path': path})
++    for relative_path in ('scripts/check-module-bazel-lock.sh', '.bazelrc', 'defs.bzl'):
++        assert relative_path not in {row['path'] for row in recipes}
++        recipes.append({**file_id(SOURCE / relative_path), 'path': relative_path})
+     receipt = {'schema': 'hepta-b16-current-host-build-only-baseline-v1', 'role': 'BUILD_ONLY_CURRENT_HOST',
+                'tests_executed': False, 'test_qualification': False, 'host': host,
+                'cache_owner': {'owned_root': str(ROOT), 'host_alias': 'ai395', 'uid': os.getuid(), 'euid': os.geteuid(),
+@@ -337,7 +403,11 @@
+                'published_A_head': '0e139b599f0fe451f80fb7db4b2913bb9c679dce',
+                'published_A_complete_tree': '091e659e0da6602299fd14cfa93889191405edd8',
+                'historical_ROG_test_qualification_not_relabelled': True,
+-               'future_B_execution_requires_separate_enabled_binding': True}
++               'future_B_execution_requires_separate_enabled_binding': True,
++               'prior_failed_P4': file_id(failed_path),
++               'external_build_prerequisites': {'openssl': {'receipt': file_id(sdk_path),
++                   'initial_guard': terminal['openssl_initial_guard'], 'final_guard': openssl_final_guard,
++                   'environment': sdk['environment'], 'pkg_config_relocation_is_preparation_only': True}}}
+     assert len(command_source_guards) == 6
+     terminal['build_only_baseline'] = save_json('new-host-build-only-baseline.json', receipt)
+     terminal['final_guard'] = final_guard
+@@ -346,6 +416,12 @@
+ except Exception as error:
+     terminal['errors'].append({'type': type(error).__name__, 'message': str(error), 'traceback': traceback.format_exc()})
+ finally:
++    if created and 'openssl_initial_guard' in terminal and 'openssl_final_guard' not in terminal:
++        try:
++            terminal['openssl_final_guard'] = verify_openssl_sdk('terminal', sdk)
++        except Exception as error:
++            success = False
++            terminal['errors'].append({'type': type(error).__name__, 'message': 'SDK terminal guard: ' + str(error), 'traceback': traceback.format_exc()})
+     terminal.update({'completed_at': now(), 'success': success, 'commands': commands,
+                      'source_guards': command_source_guards, 'records': list(records)})
+     if created:

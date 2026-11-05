@@ -1,0 +1,796 @@
+{
+  "B_source_applied": false,
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "build",
+        "--locked",
+        "--profile",
+        "dev-small",
+        "--message-format=json-render-diagnostics",
+        "-p",
+        "codex-arg0",
+        "--bin",
+        "test_arg0_preflight",
+        "-p",
+        "codex-code-mode-host",
+        "--bin",
+        "codex-code-mode-host",
+        "-p",
+        "codex-shell-escalation",
+        "--bin",
+        "codex-execve-wrapper",
+        "-p",
+        "codex-rmcp-client",
+        "--bin",
+        "test_stdio_server",
+        "--bin",
+        "test_streamable_http_server",
+        "-p",
+        "codex-exec",
+        "--bin",
+        "codex-exec"
+      ],
+      "capacity_after": {
+        "at": "2026-11-05T09:00:29.543066+00:00",
+        "available_bytes": 865088466944,
+        "f_bavail": 211203239,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:57:43.925300+00:00",
+        "available_bytes": 876878020608,
+        "f_bavail": 214081548,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "cargo_profile": "dev-small",
+      "completed_at": "2026-11-05T09:00:29.172501+00:00",
+      "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+      "duration_seconds": 165.24717320606578,
+      "exit_code": 0,
+      "label": "01-normal-six-helper-build",
+      "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_guard_after": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "eb05fce3252e3005f24c181b9ae8d8b304026e2a",
+        "inode": 67145565,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/01-normal-six-helper-build-after.guard.json",
+        "sha256": "d451a17db84f1ab68c45c9f7452d08e9eea5c2b2bfec04a67200a4602ce7b236"
+      },
+      "source_guard_before": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "afa4fd38aa33247864d477890efa00c2a8c25146",
+        "inode": 67145532,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/01-normal-six-helper-build-before.guard.json",
+        "sha256": "043085b0bb811062cc86ef58494de45c1adbcd696e403f2fee9331b3d55b569f"
+      },
+      "started_at": "2026-11-05T08:57:43.925296+00:00",
+      "stderr": {
+        "bytes": 41798,
+        "dev": 66306,
+        "git_blob": "44c39c004ca52f06c9c4e75a811b6c1dec177f44",
+        "inode": 67145535,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/01-normal-six-helper-build.stderr.original",
+        "sha256": "aeca5bc8513979778eb89ee979cb484a47dc484c7df3e521f159373bfc1074f7"
+      },
+      "stdout": {
+        "bytes": 1132209,
+        "dev": 66306,
+        "git_blob": "2c121e115600c5fbc13dd8a31f4042e75949db1e",
+        "inode": 67145534,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/01-normal-six-helper-build.stdout.original",
+        "sha256": "1ac45296a2398f8dcb4bbed635a10ce63669a8e1dfa025392a0b45c0a2027c77"
+      },
+      "tests_executed": false
+    },
+    {
+      "argv": [
+        "cargo",
+        "metadata",
+        "--locked",
+        "--format-version=1"
+      ],
+      "capacity_after": {
+        "at": "2026-11-05T09:00:41.933387+00:00",
+        "available_bytes": 862911967232,
+        "f_bavail": 210671867,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T09:00:30.187230+00:00",
+        "available_bytes": 865080270848,
+        "f_bavail": 211201238,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "cargo_profile": "dev-small",
+      "completed_at": "2026-11-05T09:00:41.676326+00:00",
+      "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+      "duration_seconds": 11.489078048034571,
+      "exit_code": 0,
+      "label": "02-full-metadata",
+      "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_guard_after": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "7528fea144368b8be58a4fac3c84d401242450ec",
+        "inode": 67145575,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/02-full-metadata-after.guard.json",
+        "sha256": "02c2b4310b81b4bb91aa012920e02760545c5593cdb8556e47d9aea7973ec465"
+      },
+      "source_guard_before": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "2e1c65a5702c924c79d575458e7d78bf53ca66aa",
+        "inode": 67145569,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/02-full-metadata-before.guard.json",
+        "sha256": "b0a811e090478c94cda6c364484a7391c5dde2ad053a8a15220834eed4d4d4e8"
+      },
+      "started_at": "2026-11-05T09:00:30.187226+00:00",
+      "stderr": {
+        "bytes": 12177,
+        "dev": 66306,
+        "git_blob": "003d1cbca16e0764d3d27088e659b42e1dfd692a",
+        "inode": 67145572,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/02-full-metadata.stderr.original",
+        "sha256": "364672e87ec04be381bfce51771d590f99e34f430248c42bf1f18927341a2de5"
+      },
+      "stdout": {
+        "bytes": 8296096,
+        "dev": 66306,
+        "git_blob": "e1f0ddb638f8d46e24d94176c3993e7fa2a293fd",
+        "inode": 67145571,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/02-full-metadata.stdout.original",
+        "sha256": "b4090db792babde64575b11e7ae04df8245074b96a154048c4de08691e4a23e0"
+      },
+      "tests_executed": false
+    },
+    {
+      "argv": [
+        "cargo",
+        "nextest",
+        "list",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--message-format=json"
+      ],
+      "capacity_after": {
+        "at": "2026-11-05T09:03:09.020008+00:00",
+        "available_bytes": 848581242880,
+        "f_bavail": 207173155,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T09:00:42.279891+00:00",
+        "available_bytes": 862867439616,
+        "f_bavail": 210660996,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "cargo_profile": "dev-small",
+      "completed_at": "2026-11-05T09:03:08.342915+00:00",
+      "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+      "duration_seconds": 146.0630063159624,
+      "exit_code": 101,
+      "label": "03-full-unfiltered-catalog",
+      "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_guard_after": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "76466a127bc7c0d0d57761b67a9591c7df5fc040",
+        "inode": 67145654,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/03-full-unfiltered-catalog-after.guard.json",
+        "sha256": "c0167a8e8414f9ff0de8f7b7c2207ce2a6ace2074ead484836e5adc1738e873d"
+      },
+      "source_guard_before": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "366f5a7638f6cfaf8743819ad55e4baf89ef5eb4",
+        "inode": 67145579,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/03-full-unfiltered-catalog-before.guard.json",
+        "sha256": "2e6279aafba6f7526c0a2fe3f08da5072a1fb653cfc9d40d9b681df9c89b5ddc"
+      },
+      "started_at": "2026-11-05T09:00:42.279888+00:00",
+      "stderr": {
+        "bytes": 40456,
+        "dev": 66306,
+        "git_blob": "754c20e67f869e0351db3c9cb699072a2d33dce0",
+        "inode": 67145582,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/03-full-unfiltered-catalog.stderr.original",
+        "sha256": "9d2b98b298bd71ebbd92f86be07466146a60ca0136a74cfd3465b0d86d7e0412"
+      },
+      "stdout": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 67145581,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/03-full-unfiltered-catalog.stdout.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "tests_executed": false
+    }
+  ],
+  "completed_at": "2026-11-05T09:03:09.092211+00:00",
+  "errors": [
+    {
+      "message": "03-full-unfiltered-catalog: exit 101; complete original stdout/stderr preserved",
+      "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 335, in <module>\n    catalog_command = run('03-full-unfiltered-catalog', ['cargo', 'nextest', 'list', '--locked', '--cargo-profile', 'dev-small', '--message-format=json'])\n  File \"<string>\", line 161, in run\n    assert result.returncode == 0, f'{label}: exit {result.returncode}; complete original stdout/stderr preserved'\n           ^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 03-full-unfiltered-catalog: exit 101; complete original stdout/stderr preserved\n",
+      "type": "AssertionError"
+    }
+  ],
+  "host_alias": "ai395",
+  "initial_guard": {
+    "bytes": 3239,
+    "dev": 66306,
+    "git_blob": "b441286d91c18f9ca3aa800bcee7059995885cd1",
+    "inode": 67145529,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/initial.guard.json",
+    "sha256": "5e835c5bfa020eff98b8d21c80ff3cd6eaa1c2fe651010f20ffcf5f502ebe4a4"
+  },
+  "openssl_final_guard": {
+    "bytes": 93803,
+    "dev": 66306,
+    "git_blob": "cc83062847e6f8d40315700fd3e6ec093f954ef5",
+    "inode": 67145656,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/terminal.openssl-sdk-guard.json",
+    "sha256": "764eca25406722c8f9f9a73a12cf125a617c5c96b50f2d4a20b0da331bb9e46c"
+  },
+  "openssl_initial_guard": {
+    "bytes": 93803,
+    "dev": 66306,
+    "git_blob": "cc83062847e6f8d40315700fd3e6ec093f954ef5",
+    "inode": 67145530,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/initial.openssl-sdk-guard.json",
+    "sha256": "764eca25406722c8f9f9a73a12cf125a617c5c96b50f2d4a20b0da331bb9e46c"
+  },
+  "openssl_sdk_receipt": {
+    "bytes": 114477,
+    "dev": 66306,
+    "git_blob": "cd94077d9281c979faad884e1f57e07f30c74956",
+    "inode": 66869533,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/openssl-sdk.json",
+    "sha256": "48e973cac721615cf30b937ff20bf7f47cc951265aa5030b194dec971e1e2bc3"
+  },
+  "prior_failed_P4": {
+    "bytes": 14814,
+    "dev": 66306,
+    "git_blob": "9522e88cfc3910b0e447d6e52a7d805f4cfdac92",
+    "inode": 66490058,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-v1/terminal.json",
+    "sha256": "3c30831d5055ba4f496eae0ee98edcc2214260a7d2e4b6f0fa500f9712f123a9"
+  },
+  "records": [
+    {
+      "bytes": 74050,
+      "dev": 66306,
+      "git_blob": "6f3c09c7e7a3e5da59f252c7831079a63dcdc97f",
+      "inode": 67145523,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/request.original.json",
+      "sha256": "ec8ca4437762e6faac3728bb879af46de1c56600f9100cb020016035d3838572"
+    },
+    {
+      "bytes": 3349,
+      "dev": 66306,
+      "git_blob": "967ef896907e698a07e8028e049a47e934570b1d",
+      "inode": 67145524,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/root-guard.original.json",
+      "sha256": "189adc8deb54a5c53a444de491407b5c4fb3da359cac3a53942cca06adc94f77"
+    },
+    {
+      "bytes": 14420,
+      "dev": 66306,
+      "git_blob": "80e01271a43a894e35818715c70d55579c382eac",
+      "inode": 67145525,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/approved-plan.original.json",
+      "sha256": "8fffcd480b6708b16e6bf98182679de5f82f5e5c4567478258aaa37f704a85d8"
+    },
+    {
+      "bytes": 210,
+      "dev": 66306,
+      "git_blob": "784b3d9fefbacb5965ce5ee66115ef0abce5ade0",
+      "inode": 67145526,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/host.original.json",
+      "sha256": "b00171064087d7227c2d512c8f0e17546d3cb0d07cf12af671f3422abbfef7bf"
+    },
+    {
+      "bytes": 1371,
+      "dev": 66306,
+      "git_blob": "ff3960817aa3999bd2882024ef542751ea7a43fc",
+      "inode": 67145527,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/effective-task-environment.json",
+      "sha256": "af83281c8cecf53c603426e2f00c47ee50caadf665dcf8a2ef20ad969d00010a"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "b441286d91c18f9ca3aa800bcee7059995885cd1",
+      "inode": 67145529,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/initial.guard.json",
+      "sha256": "5e835c5bfa020eff98b8d21c80ff3cd6eaa1c2fe651010f20ffcf5f502ebe4a4"
+    },
+    {
+      "bytes": 93803,
+      "dev": 66306,
+      "git_blob": "cc83062847e6f8d40315700fd3e6ec093f954ef5",
+      "inode": 67145530,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/initial.openssl-sdk-guard.json",
+      "sha256": "764eca25406722c8f9f9a73a12cf125a617c5c96b50f2d4a20b0da331bb9e46c"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "afa4fd38aa33247864d477890efa00c2a8c25146",
+      "inode": 67145532,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/01-normal-six-helper-build-before.guard.json",
+      "sha256": "043085b0bb811062cc86ef58494de45c1adbcd696e403f2fee9331b3d55b569f"
+    },
+    {
+      "bytes": 1495,
+      "dev": 66306,
+      "git_blob": "def2de96b8ffbbcd64386e9da556473ed9c31175",
+      "inode": 67145533,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/01-normal-six-helper-build.command.json",
+      "sha256": "0a00d6017cd7bcb9c66021bccbf177ec7cff79f3c1086ccece62620effe3004a"
+    },
+    {
+      "bytes": 1132209,
+      "dev": 66306,
+      "git_blob": "2c121e115600c5fbc13dd8a31f4042e75949db1e",
+      "inode": 67145534,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/01-normal-six-helper-build.stdout.original",
+      "sha256": "1ac45296a2398f8dcb4bbed635a10ce63669a8e1dfa025392a0b45c0a2027c77"
+    },
+    {
+      "bytes": 41798,
+      "dev": 66306,
+      "git_blob": "44c39c004ca52f06c9c4e75a811b6c1dec177f44",
+      "inode": 67145535,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/01-normal-six-helper-build.stderr.original",
+      "sha256": "aeca5bc8513979778eb89ee979cb484a47dc484c7df3e521f159373bfc1074f7"
+    },
+    {
+      "bytes": 2413,
+      "dev": 66306,
+      "git_blob": "b8ed2afdf9e4206e5b62c8500075ad69b5cd6059",
+      "inode": 67145563,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/01-normal-six-helper-build.execution.json",
+      "sha256": "6da384e05d74cc9b6948049c60a8ad299966c2daa75ad7255580d1d5c61e8b0a"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "eb05fce3252e3005f24c181b9ae8d8b304026e2a",
+      "inode": 67145565,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/01-normal-six-helper-build-after.guard.json",
+      "sha256": "d451a17db84f1ab68c45c9f7452d08e9eea5c2b2bfec04a67200a4602ce7b236"
+    },
+    {
+      "bytes": 3134,
+      "dev": 66306,
+      "git_blob": "8ad0f5229e2d1cc061cbcab4ec67406295c5d052",
+      "inode": 67145566,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/01-normal-six-helper-build.status.json",
+      "sha256": "3f240814bd84b57ae71127ae7cda76691abe6cfb29108504fcff94bc162a9885"
+    },
+    {
+      "bytes": 6293,
+      "dev": 66306,
+      "git_blob": "044c10ed81103cbc3e0a51a1eba6fefbfff28bc5",
+      "inode": 67145567,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/normal-six-before-catalog.json",
+      "sha256": "0d96f7ff1e898d6c99e93250fea09f1c95c384577daf3bbbd067562457b4a03c"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "2e1c65a5702c924c79d575458e7d78bf53ca66aa",
+      "inode": 67145569,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/02-full-metadata-before.guard.json",
+      "sha256": "b0a811e090478c94cda6c364484a7391c5dde2ad053a8a15220834eed4d4d4e8"
+    },
+    {
+      "bytes": 1014,
+      "dev": 66306,
+      "git_blob": "bb88fc09c87aa0109f6a252b698e38ab9b16b087",
+      "inode": 67145570,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/02-full-metadata.command.json",
+      "sha256": "6eff6e01e049617f7f550a759effd11cbe48bad2ad979d7a4abd6e776143e42b"
+    },
+    {
+      "bytes": 8296096,
+      "dev": 66306,
+      "git_blob": "e1f0ddb638f8d46e24d94176c3993e7fa2a293fd",
+      "inode": 67145571,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/02-full-metadata.stdout.original",
+      "sha256": "b4090db792babde64575b11e7ae04df8245074b96a154048c4de08691e4a23e0"
+    },
+    {
+      "bytes": 12177,
+      "dev": 66306,
+      "git_blob": "003d1cbca16e0764d3d27088e659b42e1dfd692a",
+      "inode": 67145572,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/02-full-metadata.stderr.original",
+      "sha256": "364672e87ec04be381bfce51771d590f99e34f430248c42bf1f18927341a2de5"
+    },
+    {
+      "bytes": 1912,
+      "dev": 66306,
+      "git_blob": "ea54ad2f5650864e6f2b8408a4d8dce7bde875e0",
+      "inode": 67145573,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/02-full-metadata.execution.json",
+      "sha256": "02238a3e492f2d700d93208e5a0aa3ec91aba96da0a6ce7c0660a857cc788aef"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "7528fea144368b8be58a4fac3c84d401242450ec",
+      "inode": 67145575,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/02-full-metadata-after.guard.json",
+      "sha256": "02c2b4310b81b4bb91aa012920e02760545c5593cdb8556e47d9aea7973ec465"
+    },
+    {
+      "bytes": 2623,
+      "dev": 66306,
+      "git_blob": "ff30c89a82572ec688027328754d5429b2a47578",
+      "inode": 67145576,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/02-full-metadata.status.json",
+      "sha256": "7b0154e25b2f9ee6397794f8a30b43865d15bb09ba7367917512cea6ae65ff42"
+    },
+    {
+      "bytes": 1173,
+      "dev": 66306,
+      "git_blob": "14d11febf20690d3722f720134621c247c6a2d03",
+      "inode": 67145577,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/portable-graph-verification.json",
+      "sha256": "ad8de169a4541cdc6721556b47d8fec30bbe1523916ebb7b0d7fc60f891ca699"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "366f5a7638f6cfaf8743819ad55e4baf89ef5eb4",
+      "inode": 67145579,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/03-full-unfiltered-catalog-before.guard.json",
+      "sha256": "2e6279aafba6f7526c0a2fe3f08da5072a1fb653cfc9d40d9b681df9c89b5ddc"
+    },
+    {
+      "bytes": 1088,
+      "dev": 66306,
+      "git_blob": "71e713ad3691187e61796baba5631452890f4817",
+      "inode": 67145580,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/03-full-unfiltered-catalog.command.json",
+      "sha256": "ea946b0a8bee8bc5c3c5ba3b40bbff03ca40a74ff602d601fe78215266edad6f"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 67145581,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/03-full-unfiltered-catalog.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 40456,
+      "dev": 66306,
+      "git_blob": "754c20e67f869e0351db3c9cb699072a2d33dce0",
+      "inode": 67145582,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/03-full-unfiltered-catalog.stderr.original",
+      "sha256": "9d2b98b298bd71ebbd92f86be07466146a60ca0136a74cfd3465b0d86d7e0412"
+    },
+    {
+      "bytes": 2001,
+      "dev": 66306,
+      "git_blob": "6e18bb13898956a8880570ae0817bbfa9541a568",
+      "inode": 67145652,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/03-full-unfiltered-catalog.execution.json",
+      "sha256": "ce7f4758f9d4a0d494e998fbda98f46490932f72fab31afbffbe4342847d895b"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "76466a127bc7c0d0d57761b67a9591c7df5fc040",
+      "inode": 67145654,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/03-full-unfiltered-catalog-after.guard.json",
+      "sha256": "c0167a8e8414f9ff0de8f7b7c2207ce2a6ace2074ead484836e5adc1738e873d"
+    },
+    {
+      "bytes": 2722,
+      "dev": 66306,
+      "git_blob": "8b8253a3187849d40352183aee078d1538107f89",
+      "inode": 67145655,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/03-full-unfiltered-catalog.status.json",
+      "sha256": "b96334f999916b146144dfffbfd84da03dffa5350fcacb713bd564e77f608e72"
+    },
+    {
+      "bytes": 93803,
+      "dev": 66306,
+      "git_blob": "cc83062847e6f8d40315700fd3e6ec093f954ef5",
+      "inode": 67145656,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/terminal.openssl-sdk-guard.json",
+      "sha256": "764eca25406722c8f9f9a73a12cf125a617c5c96b50f2d4a20b0da331bb9e46c"
+    }
+  ],
+  "request": {
+    "bytes": 74050,
+    "git_blob": "6f3c09c7e7a3e5da59f252c7831079a63dcdc97f",
+    "sha256": "ec8ca4437762e6faac3728bb879af46de1c56600f9100cb020016035d3838572"
+  },
+  "root_execution_guard_blob": "967ef896907e698a07e8028e049a47e934570b1d",
+  "schema": "hepta-ai395-cold-bootstrap-P4-terminal-v2",
+  "source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "source_guards": [
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "afa4fd38aa33247864d477890efa00c2a8c25146",
+      "inode": 67145532,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/01-normal-six-helper-build-before.guard.json",
+      "sha256": "043085b0bb811062cc86ef58494de45c1adbcd696e403f2fee9331b3d55b569f"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "eb05fce3252e3005f24c181b9ae8d8b304026e2a",
+      "inode": 67145565,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/01-normal-six-helper-build-after.guard.json",
+      "sha256": "d451a17db84f1ab68c45c9f7452d08e9eea5c2b2bfec04a67200a4602ce7b236"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "2e1c65a5702c924c79d575458e7d78bf53ca66aa",
+      "inode": 67145569,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/02-full-metadata-before.guard.json",
+      "sha256": "b0a811e090478c94cda6c364484a7391c5dde2ad053a8a15220834eed4d4d4e8"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "7528fea144368b8be58a4fac3c84d401242450ec",
+      "inode": 67145575,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/02-full-metadata-after.guard.json",
+      "sha256": "02c2b4310b81b4bb91aa012920e02760545c5593cdb8556e47d9aea7973ec465"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "366f5a7638f6cfaf8743819ad55e4baf89ef5eb4",
+      "inode": 67145579,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/03-full-unfiltered-catalog-before.guard.json",
+      "sha256": "2e6279aafba6f7526c0a2fe3f08da5072a1fb653cfc9d40d9b681df9c89b5ddc"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "76466a127bc7c0d0d57761b67a9591c7df5fc040",
+      "inode": 67145654,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-continuation-v2/03-full-unfiltered-catalog-after.guard.json",
+      "sha256": "c0167a8e8414f9ff0de8f7b7c2207ce2a6ace2074ead484836e5adc1738e873d"
+    }
+  ],
+  "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "started_at": "2026-11-05T08:57:42.944744+00:00",
+  "success": false,
+  "supply_receipt": {
+    "bytes": 5101,
+    "dev": 66306,
+    "git_blob": "cd5c45c0cf03593644a80315186f1ebae2b9e07b",
+    "inode": 65965533,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P3-supplier-correction-v1/v8-prerequisites.json",
+    "sha256": "4872133bd7e4d2afdf9a33fc472202c545793dcf2c55f8c918d3f3ee47075f15"
+  },
+  "test_qualification": false,
+  "tests_executed": false,
+  "tools": [
+    {
+      "bytes": 644784,
+      "dev": 66306,
+      "git_blob": "d2d5434a06d69fdd4982b4ed3e41cba1d138cd4e",
+      "inode": 65436480,
+      "mode": "0o700",
+      "name": "rustc",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6",
+      "version_output": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n"
+    },
+    {
+      "bytes": 42185192,
+      "dev": 66306,
+      "git_blob": "dbc25264b05124bf8b4cabb637e73229f52c138f",
+      "inode": 65436393,
+      "mode": "0o700",
+      "name": "cargo",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "sha256": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66",
+      "version_output": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)\n"
+    },
+    {
+      "bytes": 1263912,
+      "dev": 66306,
+      "git_blob": "dbf54b2ab4a561ada99f2bbfb47c1e9fbd0b013d",
+      "inode": 65436331,
+      "mode": "0o700",
+      "name": "cargo-clippy",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo-clippy",
+      "sha256": "b71b1263063707608daa1e9b231ad9d87507c11d6aa178ede2b01d8372d5effb",
+      "version_output": "clippy 0.1.95 (59807616e1 2026-04-14)\n"
+    },
+    {
+      "bytes": 5295560,
+      "dev": 66306,
+      "git_blob": "9cd0dd53f44f9fe85f52b0d0b59f5008aed4f501",
+      "inode": 65436471,
+      "mode": "0o700",
+      "name": "rustfmt",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "sha256": "56b31ad3ec8fe0277a2884a189e243b8f04e9b48e5fd22e547c1516c5f8fd34c",
+      "version_output": "rustfmt 1.9.0-stable (59807616e1 2026-04-14)\n"
+    },
+    {
+      "bytes": 5452040,
+      "dev": 66306,
+      "git_blob": "1da163996dca7176901b8e5b2514a4ff9fae8a01",
+      "inode": 65436562,
+      "mode": "0o700",
+      "name": "just",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7",
+      "version_output": "just 1.51.0\n"
+    },
+    {
+      "bytes": 24038232,
+      "dev": 66306,
+      "git_blob": "b15125abb7e82cfbe52f7d2a1b6dfb90b914e990",
+      "inode": 65436586,
+      "mode": "0o700",
+      "name": "cargo-nextest",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1",
+      "version_output": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu\n"
+    },
+    {
+      "bytes": 77023347,
+      "dev": 66306,
+      "git_blob": "b5eed055bd801723ce22ab16114d4adbc0ffa43e",
+      "inode": 65436613,
+      "mode": "0o700",
+      "name": "bazel",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/bazel",
+      "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+      "version_output": "bazel 9.3.0\n"
+    }
+  ]
+}

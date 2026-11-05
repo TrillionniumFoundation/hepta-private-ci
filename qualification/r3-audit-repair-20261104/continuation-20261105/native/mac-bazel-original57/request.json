@@ -1,0 +1,151 @@
+{
+  "authorization": "Root authorized this bounded independent macOS baseline-to-fixed original57 cohort directly, with existing compatible Python selected consistently for parent and wrapper child and original /bin/bash preserved. No further approval required.",
+  "execute": true,
+  "expected_test_ids": [
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_authenticated_cross_keeps_linux_build_actions_and_windows_tests",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_collector_accepts_root_link_but_refuses_traversal_and_external_links",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_collector_failure_keeps_original_bazel_status_and_tail",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_conflicting_selected_summaries_do_not_read_existing_logs",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_failure_archives_all_selected_shards_and_attempts_without_truncation",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_failure_preserves_status_linker_diagnostics_and_test_log_configuration",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_keyless_cross_uses_msvc_exec_and_gnullvm_target",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_large_windows_build_preserves_all_targets_without_a_large_native_command",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_missing_selected_logs_preserve_success_and_failure_status",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_native_windows_forwards_required_msvc_environment",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_native_windows_rejects_missing_required_msvc_environment",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_success_does_not_collect_failed_test_logs",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_success_retains_reported_targets_and_preserves_status_scope",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_windows_argument_lint_preserves_the_entire_large_crlf_query_roster",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_windows_argument_lint_uses_the_shared_split_abi_wrapper",
+    "test_run_bazel_ci.RunBazelCiIntegrationTest.test_windows_target_files_preserve_test_and_coverage_failures",
+    "test_run_bazel_clippy_targets.ClippyTargetSelectionTests.test_explicit_windows_cross_leg_preserves_cross_helpers",
+    "test_run_bazel_clippy_targets.ClippyTargetSelectionTests.test_failed_query_emits_no_partial_target_list",
+    "test_run_bazel_clippy_targets.ClippyTargetSelectionTests.test_linux_and_native_windows_preserve_native_test_helpers",
+    "test_run_bazel_clippy_targets.ClippyTargetSelectionTests.test_unknown_selector_option_is_rejected",
+    "test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_authenticated_rbe_keeps_remote_compiler_selection",
+    "test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_cache_only_native_msvc_keeps_abi_and_remote_cache",
+    "test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_native_msvc_does_not_duplicate_explicit_toolchain_flags",
+    "test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_native_msvc_keeps_target_and_injects_matching_cc_toolchain",
+    "test_run_bazel_native_msvc_toolchain.NativeWindowsMsvcToolchainTest.test_non_windows_cache_only_keeps_native_arguments",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_arguments_after_separator_are_neither_interpreted_nor_removed",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_authenticated_cross_request_remains_rbe",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_clippy_does_not_hide_required_local_platform_config",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_defaults_precede_explicit_caches_and_preserve_startup_options",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_existing_local_config_is_not_duplicated",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_explicit_compiler_and_detection_setting_take_precedence",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_explicit_host_and_target_platforms_are_preserved",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_explicit_local_split_support_is_not_duplicated",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_explicit_msvc_host_is_not_silently_reinterpreted",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_keyless_cross_fallback_splits_msvc_exec_from_gnullvm_target",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_keyless_windows_invocation_selects_local_ci_config",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_non_build_commands_do_not_gain_ci_flags",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_non_windows_cross_request_does_not_enable_local_msvc",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_non_windows_local_invocation_stays_native",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_repository_declares_the_required_split_abi_contract",
+    "test_run_bazel_windows_fallback.WindowsLocalFallbackTest.test_target_discovery_does_not_inject_build_configuration",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_bazel_command_adds_local_caches_before_separator",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_bazel_command_normalizes_github_actions_startup_options",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_bazel_command_uses_configured_binary_locally",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_bazel_command_uses_configured_local_caches",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_explicit_pattern_file_is_not_replaced_or_deleted_by_transport",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_fork_pull_request_cannot_select_openai_host",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_keyless_invocation_drops_remote_ci_configuration",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_main_preserves_spaced_argument_and_child_exit_status",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_program_arguments_after_separator_do_not_select_or_lose_rbe",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_pull_request_without_readable_event_payload_fails_closed",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_query_remote_configuration_is_inserted_before_expression",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_raw_target_patterns_still_reject_embedded_and_trailing_line_breaks",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_run_in_fork_repository_cannot_select_openai_host",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_same_repository_pull_request_selects_openai_host",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_upstream_push_selects_openai_rbe_before_target_separator",
+    "test_run_bazel_with_buildbuddy.RunBazelWithBuildBuddyTest.test_windows_cross_ci_configuration_follows_remote_configuration"
+  ],
+  "fixed_wrapper": {
+    "bytes": 17448,
+    "content": "#!/usr/bin/env bash\n\nset -euo pipefail\n\nprint_failed_bazel_test_logs=0\nprint_failed_bazel_action_summary=0\nremote_download_toplevel=0\nwindows_msvc_host_platform=0\nwindows_cross_compile=0\n\nwhile [[ $# -gt 0 ]]; do\n  case \"$1\" in\n    --print-failed-test-logs)\n      print_failed_bazel_test_logs=1\n      shift\n      ;;\n    --print-failed-action-summary)\n      print_failed_bazel_action_summary=1\n      shift\n      ;;\n    --remote-download-toplevel)\n      remote_download_toplevel=1\n      shift\n      ;;\n    --windows-msvc-host-platform)\n      windows_msvc_host_platform=1\n      shift\n      ;;\n    --windows-cross-compile)\n      windows_cross_compile=1\n      shift\n      ;;\n    --)\n      shift\n      break\n      ;;\n    *)\n      echo \"Unknown option: $1\" >&2\n      exit 1\n      ;;\n  esac\ndone\n\nif [[ $# -eq 0 ]]; then\n  echo \"Usage: $0 [--print-failed-test-logs] [--print-failed-action-summary] [--remote-download-toplevel] [--windows-msvc-host-platform] [--windows-cross-compile] -- <bazel args> -- <targets>\" >&2\n  exit 1\nfi\n\nbazel_startup_args=()\nif [[ -n \"${BAZEL_OUTPUT_USER_ROOT:-}\" ]]; then\n  bazel_startup_args+=(\"--output_user_root=${BAZEL_OUTPUT_USER_ROOT}\")\nfi\n\nrun_bazel() (\n  if [[ \"${RUNNER_OS:-}\" == \"Windows\" ]]; then\n    # Bash writes its full array without spawning a native process with that\n    # array. A large target roster can exceed Windows' native argv limit before\n    # Python or Bazel starts; only the transport path crosses this boundary.\n    local argument_file\n    argument_file=\"$(mktemp)\"\n    trap 'rm -f \"$argument_file\"' EXIT\n    printf '%s\\0' \"$@\" > \"$argument_file\"\n    local native_argument_file=\"$argument_file\"\n    if command -v cygpath >/dev/null 2>&1; then\n      native_argument_file=\"$(cygpath -w \"$argument_file\")\"\n    fi\n    MSYS2_ARG_CONV_EXCL='*' \"$(dirname \"${BASH_SOURCE[0]}\")/run_bazel_with_buildbuddy.py\" \\\n      --wrapper-args-file \"$native_argument_file\"\n    return\n  fi\n\n  \"$(dirname \"${BASH_SOURCE[0]}\")/run_bazel_with_buildbuddy.py\" \"$@\"\n)\n\nrun_bazel_with_startup_args() {\n  if (( ${#bazel_startup_args[@]} > 0 )); then\n    run_bazel \"${bazel_startup_args[@]}\" \"$@\"\n    return\n  fi\n\n  run_bazel \"$@\"\n}\n\nci_config=ci-linux\ncase \"${RUNNER_OS:-}\" in\n  macOS)\n    ci_config=ci-macos\n    ;;\n  Windows)\n    if [[ $windows_cross_compile -eq 1 ]]; then\n      ci_config=ci-windows-cross\n    else\n      ci_config=ci-windows\n    fi\n    ;;\nesac\n\nprint_bazel_test_log_tails() {\n  local console_log=\"$1\"\n  local testlogs_dir\n\n  local retained_targets=\"\"\n  if [[ -n \"${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}\" && \"${bazel_args[0]}\" == \"test\" ]]; then\n    if ! retained_targets=\"$(\n      collector_script=\"$(dirname \"${BASH_SOURCE[0]}\")/collect_bazel_failed_test_logs.py\"\n      collector_console=\"$console_log\"\n      if [[ \"${RUNNER_OS:-}\" == \"Windows\" ]] && command -v cygpath >/dev/null 2>&1; then\n        collector_script=\"$(cygpath -w \"$collector_script\")\" || exit 1\n        collector_console=\"$(cygpath -w \"$collector_console\")\" || exit 1\n      fi\n      MSYS2_ARG_CONV_EXCL='*' python3 \"$collector_script\" \\\n        --retention-console \"$collector_console\" --list-retention-targets\n    )\"; then\n      echo \"::warning::Selected-target-log selection failed; preserving Bazel exit status.\" >&2\n    fi\n  fi\n\n  local failed_targets=()\n  while IFS= read -r target; do\n    failed_targets+=(\"$target\")\n  done < <(\n    grep -E '^(FAIL: //|ERROR: .* Testing //)' \"$console_log\" \\\n      | sed -E 's#^FAIL: (//[^ ]+).*#\\1#; s#^ERROR: .* Testing (//[^ ]+) failed:.*#\\1#' \\\n      | sort -u\n  )\n\n  if [[ ${#failed_targets[@]} -eq 0 && -z \"$retained_targets\" ]]; then\n    echo \"No failed Bazel test targets were found in console output.\"\n    return\n  fi\n\n  local -a bazel_info_args=(info)\n  # The shared Python wrapper resolves authenticated and keyless configs.\n  # Use it identically for the build and for locating that build's test logs.\n  bazel_info_args+=(\"--config=${ci_config}\")\n\n  # Only pass flags that affect Bazel's output-root selection or repository\n  # lookup. Test/build-only flags such as execution logs or remote download\n  # mode can make `bazel info` fail, which would hide the real test log path.\n  local -a bazel_log_lookup_args=(\"${bazel_args[@]}\")\n  if (( ${#post_config_bazel_args[@]} > 0 )); then\n    bazel_log_lookup_args+=(\"${post_config_bazel_args[@]}\")\n  fi\n  local copy_next=0\n  for arg in \"${bazel_log_lookup_args[@]}\"; do\n    if [[ $copy_next -eq 1 ]]; then\n      bazel_info_args+=(\"$arg\")\n      copy_next=0\n      continue\n    fi\n    case \"$arg\" in\n      --host_platform | --platforms | --repo_contents_cache | --repository_cache)\n        bazel_info_args+=(\"$arg\")\n        copy_next=1\n        ;;\n      --host_platform=* | --platforms=* | --repo_contents_cache=* | --repository_cache=*)\n        bazel_info_args+=(\"$arg\")\n        ;;\n    esac\n  done\n\n  testlogs_dir=\"$(run_bazel_with_startup_args \\\n    --noexperimental_remote_repo_contents_cache \\\n    \"${bazel_info_args[@]}\" \\\n    bazel-testlogs 2>/dev/null || echo bazel-testlogs)\"\n\n  if (( ${#failed_targets[@]} > 0 )); then\n    for target in \"${failed_targets[@]}\"; do\n      local rel_path=\"${target#//}\"\n      rel_path=\"${rel_path/://}\"\n      local test_log=\"${testlogs_dir}/${rel_path}/test.log\"\n      local reported_test_log\n      reported_test_log=\"$(grep -F \"FAIL: ${target} \" \"$console_log\" | sed -nE 's#.* \\(see (.*[\\\\/]test\\.log)\\).*#\\1#p' | head -n 1 || true)\"\n      if [[ -n \"$reported_test_log\" ]]; then\n        reported_test_log=\"${reported_test_log//\\\\//}\"\n        test_log=\"$reported_test_log\"\n      fi\n\n      echo \"::group::Bazel test log tail for ${target}\"\n      if [[ -f \"$test_log\" ]]; then\n        tail -n 200 \"$test_log\"\n      else\n        echo \"Missing test log: $test_log\"\n      fi\n      echo \"::endgroup::\"\n    done\n  fi\n\n  # Preserve complete existing shard/attempt logs in the already-uploaded\n  # compact-log directory. Collection must never replace Bazel's exit status.\n  if [[ -n \"${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}\" && ${#failed_targets[@]} -gt 0 ]]; then\n    if ! (\n      collector_script=\"$(dirname \"${BASH_SOURCE[0]}\")/collect_bazel_failed_test_logs.py\"\n      collector_testlogs=\"$testlogs_dir\"\n      collector_output=\"$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR\"\n      if [[ \"${RUNNER_OS:-}\" == \"Windows\" ]] && command -v cygpath >/dev/null 2>&1; then\n        collector_script=\"$(cygpath -w \"$collector_script\")\" || exit 1\n        collector_testlogs=\"$(cygpath -w \"$collector_testlogs\")\" || exit 1\n        collector_output=\"$(cygpath -w \"$collector_output\")\" || exit 1\n      fi\n      printf '%s\\n' \"${failed_targets[@]}\" \\\n        | MSYS2_ARG_CONV_EXCL='*' python3 \"$collector_script\" \\\n          --testlogs-dir \"$collector_testlogs\" --output-dir \"$collector_output\"\n    ); then\n      echo \"::warning::Failed-test-log collection was incomplete; preserving Bazel exit status.\" >&2\n    fi\n  fi\n  # The same original invocation may pass while its acceptance evidence is\n  # missing. Retain only console-reported allowlisted targets, without rerunning.\n  if [[ -n \"$retained_targets\" ]]; then\n    if ! (\n      collector_script=\"$(dirname \"${BASH_SOURCE[0]}\")/collect_bazel_failed_test_logs.py\"\n      collector_testlogs=\"$testlogs_dir\"\n      collector_output=\"$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR\"\n      collector_console=\"$console_log\"\n      collector_arguments=\"$(mktemp)\"\n      trap 'rm -f \"$collector_arguments\"' EXIT\n      printf '%s\\0' \"${bazel_run_args[@]}\" -- \"${bazel_targets[@]}\" > \"$collector_arguments\"\n      collector_native_arguments=\"$collector_arguments\"\n      if [[ \"${RUNNER_OS:-}\" == \"Windows\" ]] && command -v cygpath >/dev/null 2>&1; then\n        collector_script=\"$(cygpath -w \"$collector_script\")\" || exit 1\n        collector_testlogs=\"$(cygpath -w \"$collector_testlogs\")\" || exit 1\n        collector_output=\"$(cygpath -w \"$collector_output\")\" || exit 1\n        collector_console=\"$(cygpath -w \"$collector_console\")\" || exit 1\n        collector_native_arguments=\"$(cygpath -w \"$collector_arguments\")\" || exit 1\n      fi\n      MSYS2_ARG_CONV_EXCL='*' python3 \"$collector_script\" \\\n        --testlogs-dir \"$collector_testlogs\" --output-dir \"$collector_output\" \\\n        --retention-console \"$collector_console\" --invocation-args-file \"$collector_native_arguments\"\n    ); then\n      echo \"::warning::Selected-target-log collection was incomplete; preserving Bazel exit status.\" >&2\n    fi\n  fi\n}\n\nprint_bazel_action_failure_summary() {\n  local console_log=\"$1\"\n  local escaped_summary\n  local summary\n\n  summary=\"$(\n    awk '\n      function clean(line) {\n        gsub(sprintf(\"%c\", 27) \"\\\\[[0-9;]*m\", \"\", line)\n        sub(/^.*\\t[^\\t]*\\t[0-9TZ:._-]+ /, \"\", line)\n        return line\n      }\n\n      function is_diagnostic(line) {\n        return line ~ /^(error(\\[[^]]+\\])?:|warning:|note:|help:)/ ||\n          line ~ /^[[:space:]]+-->/ ||\n          line ~ /^[[:space:]]*[0-9]+[[:space:]]+\\|/ ||\n          line ~ /^[[:space:]]*\\|/ ||\n          line ~ /^[[:space:]]+= (note|help):/ ||\n          line ~ /^[[:space:]]*\\^[[:space:]^~-]*$/ ||\n          line ~ /^For more information/ ||\n          line ~ /^error: aborting/ ||\n          line ~ /^[[:space:]]+(rust-lld:|lld-link:|ld\\.lld:|>>>|clang:|collect2:)/\n      }\n\n      {\n        line = clean($0)\n      }\n\n      line ~ /^ERROR: .* failed:/ {\n        if (printed) {\n          print \"\"\n        }\n        print line\n        in_failure = 1\n        seen_diagnostic = 0\n        printed = 1\n        next\n      }\n\n      in_failure && is_diagnostic(line) {\n        print line\n        seen_diagnostic = 1\n        next\n      }\n\n      in_failure && seen_diagnostic && line == \"\" {\n        print \"\"\n        next\n      }\n\n      in_failure && seen_diagnostic {\n        in_failure = 0\n        seen_diagnostic = 0\n        next\n      }\n    ' \"$console_log\"\n  )\"\n\n  if [[ -z \"$summary\" ]]; then\n    summary=\"$(grep -E '^ERROR: |^FAILED: ' \"$console_log\" | tail -n 50 || true)\"\n  fi\n\n  if [[ -z \"$summary\" ]]; then\n    echo \"No Bazel action failures were found in the captured console output.\"\n    return\n  fi\n\n  if [[ \"${GITHUB_ACTIONS:-}\" == \"true\" ]]; then\n    escaped_summary=\"$(\n      printf '%s' \"$summary\" \\\n        | awk 'BEGIN { ORS = \"\" } {\n            gsub(/%/, \"%25\")\n            gsub(/\\r/, \"%0D\")\n            print sep $0\n            sep = \"%0A\"\n          }'\n    )\"\n    echo \"::error title=Bazel failed action diagnostics::${escaped_summary}\"\n  fi\n\n  echo\n  echo \"Bazel failed action diagnostics:\"\n  echo \"--------------------------------\"\n  printf '%s\\n' \"$summary\"\n  echo \"--------------------------------\"\n}\n\nbazel_args=()\nbazel_targets=()\nfound_target_separator=0\nfor arg in \"$@\"; do\n  if [[ \"$arg\" == \"--\" && $found_target_separator -eq 0 ]]; then\n    found_target_separator=1\n    continue\n  fi\n\n  if [[ $found_target_separator -eq 0 ]]; then\n    bazel_args+=(\"$arg\")\n  else\n    bazel_targets+=(\"$arg\")\n  fi\ndone\n\nif [[ ${#bazel_args[@]} -eq 0 || ${#bazel_targets[@]} -eq 0 ]]; then\n  echo \"Expected Bazel args and targets separated by --\" >&2\n  exit 1\nfi\n\npost_config_bazel_args=()\nif [[ \"${RUNNER_OS:-}\" == \"Windows\" && $windows_msvc_host_platform -eq 1 ]]; then\n  has_host_platform_override=0\n  for arg in \"${bazel_args[@]}\"; do\n    if [[ \"$arg\" == --host_platform=* ]]; then\n      has_host_platform_override=1\n      break\n    fi\n  done\n\n  if [[ $has_host_platform_override -eq 0 ]]; then\n    # Use the MSVC Windows platform for jobs that need helper binaries like\n    # Rust test wrappers and V8 generators to resolve a compatible toolchain.\n    # Callers that need a different Windows target platform should pass an\n    # explicit `--platforms=...` flag.\n    post_config_bazel_args+=(\"--host_platform=//:local_windows_msvc\")\n  fi\nfi\n\nif [[ $remote_download_toplevel -eq 1 ]]; then\n  # Override the CI config's remote_download_minimal setting when callers need\n  # the built artifact to exist on disk after the command completes.\n  post_config_bazel_args+=(--remote_download_toplevel)\nfi\n\nif [[ \"${RUNNER_OS:-}\" == \"Windows\" && $windows_cross_compile -eq 1 && -n \"${BUILDBUDDY_API_KEY:-}\" ]]; then\n  # `--enable_platform_specific_config` expands `common:windows` on Windows\n  # hosts after ordinary rc configs, which can override `ci-windows-cross`'s\n  # RBE host platform. Repeat the host platform on the command line so V8 and\n  # other genrules execute on Linux RBE workers instead of Git Bash locally.\n  #\n  # Bazel also derives the default genrule shell from the client host. Without\n  # an explicit shell executable, remote Linux actions can be asked to run\n  # `C:\\Program Files\\Git\\usr\\bin\\bash.exe`.\n  post_config_bazel_args+=(--host_platform=//:rbe --shell_executable=/bin/bash)\nfi\n\nif [[ \"${RUNNER_OS:-}\" == \"Windows\" && $windows_cross_compile -eq 1 && -z \"${BUILDBUDDY_API_KEY:-}\" ]]; then\n  # The Windows cross-compile config depends on authenticated remote\n  # execution. When credentials are unavailable, keep the local build shape\n  # and its lower concurrency cap.\n  post_config_bazel_args+=(--jobs=8)\nfi\n\nif [[ -n \"${BAZEL_REPO_CONTENTS_CACHE:-}\" ]]; then\n  # Windows self-hosted runners can run multiple Bazel jobs concurrently. Give\n  # each job its own repo contents cache so they do not fight over the shared\n  # path configured in `ci-windows`.\n  post_config_bazel_args+=(\"--repo_contents_cache=${BAZEL_REPO_CONTENTS_CACHE}\")\nfi\n\nif [[ -n \"${BAZEL_REPOSITORY_CACHE:-}\" ]]; then\n  post_config_bazel_args+=(\"--repository_cache=${BAZEL_REPOSITORY_CACHE}\")\nfi\n\nif [[ -n \"${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}\" ]]; then\n  post_config_bazel_args+=(\n    \"--execution_log_compact_file=${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR}/execution-log-${bazel_args[0]}-${GITHUB_JOB:-local}-$$.zst\"\n  )\nfi\n\nif [[ \"${RUNNER_OS:-}\" == \"Windows\" ]]; then\n  pass_windows_build_env=1\n  if [[ $windows_cross_compile -eq 1 && -n \"${BUILDBUDDY_API_KEY:-}\" ]]; then\n    # Remote build actions execute on Linux RBE workers. Passing the Windows\n    # runner's build environment there makes Bazel genrules try to execute\n    # C:\\Program Files\\Git\\usr\\bin\\bash.exe on Linux.\n    pass_windows_build_env=0\n  fi\n\n  if [[ $pass_windows_build_env -eq 1 ]]; then\n    windows_action_env_vars=(\n      INCLUDE\n      LIB\n      LIBPATH\n      UCRTVersion\n      UniversalCRTSdkDir\n      VCINSTALLDIR\n      VCToolsInstallDir\n      WindowsLibPath\n      WindowsSdkBinPath\n      WindowsSdkDir\n      WindowsSDKLibVersion\n      WindowsSDKVersion\n    )\n    required_windows_action_env_vars=(\n      INCLUDE\n      LIB\n      LIBPATH\n      UniversalCRTSdkDir\n      VCToolsInstallDir\n      WindowsSdkDir\n    )\n    missing_windows_action_env_vars=()\n\n    for env_var in \"${required_windows_action_env_vars[@]}\"; do\n      if [[ -z \"${!env_var:-}\" ]]; then\n        missing_windows_action_env_vars+=(\"${env_var}\")\n      fi\n    done\n    if (( ${#missing_windows_action_env_vars[@]} > 0 )); then\n      printf 'Missing required native Windows toolchain environment: %s\\n' \\\n        \"${missing_windows_action_env_vars[*]}\" >&2\n      exit 1\n    fi\n\n    for env_var in \"${windows_action_env_vars[@]}\"; do\n      if [[ -n \"${!env_var:-}\" ]]; then\n        post_config_bazel_args+=(\"--action_env=${env_var}\" \"--host_action_env=${env_var}\")\n      fi\n    done\n  fi\n\n  if [[ -z \"${CODEX_BAZEL_WINDOWS_PATH:-}\" ]]; then\n    echo \"CODEX_BAZEL_WINDOWS_PATH must be set for Windows Bazel CI.\" >&2\n    exit 1\n  fi\n\n  if [[ $pass_windows_build_env -eq 1 ]]; then\n    post_config_bazel_args+=(\n      \"--action_env=PATH=${CODEX_BAZEL_WINDOWS_PATH}\"\n      \"--host_action_env=PATH=${CODEX_BAZEL_WINDOWS_PATH}\"\n    )\n  elif [[ $windows_cross_compile -eq 1 ]]; then\n    # Remote build actions run on Linux RBE workers. Give their shell snippets\n    # a Linux PATH while preserving CODEX_BAZEL_WINDOWS_PATH below for local\n    # Windows test execution.\n    post_config_bazel_args+=(\n      \"--action_env=PATH=/usr/bin:/bin\"\n      \"--host_action_env=PATH=/usr/bin:/bin\"\n    )\n  fi\n  post_config_bazel_args+=(\"--test_env=PATH=${CODEX_BAZEL_WINDOWS_PATH}\")\nfi\n\nbazel_console_log=\"$(mktemp)\"\ntrap 'rm -f \"$bazel_console_log\"' EXIT\n\nbazel_run_args=(\n  \"${bazel_args[@]}\"\n)\nif [[ -n \"${BUILDBUDDY_API_KEY:-}\" ]]; then\n  echo \"BuildBuddy API key is available; using remote Bazel configuration.\"\nelse\n  echo \"BuildBuddy API key is not available; using local Bazel configuration.\"\nfi\n# Preserve cross intent until the shared wrapper can choose a coherent local\n# GNU LLVM fallback. Do not replace it with an MSVC host in this shell layer.\nbazel_run_args+=(\"--config=${ci_config}\")\nif (( ${#post_config_bazel_args[@]} > 0 )); then\n  bazel_run_args+=(\"${post_config_bazel_args[@]}\")\nfi\nset +e\n# Work around Bazel 9 remote repo contents cache / overlay materialization\n# failures seen in CI (for example \"is not a symlink\" or permission errors\n# while materializing external repos such as rules_perl). This only disables\n# the startup-level repo contents cache; keyed runs still use BuildBuddy.\nrun_bazel_with_startup_args \\\n  --noexperimental_remote_repo_contents_cache \\\n  \"${bazel_run_args[@]}\" \\\n  -- \\\n  \"${bazel_targets[@]}\" \\\n  2>&1 | tee \"$bazel_console_log\"\nbazel_status=${PIPESTATUS[0]}\nset -e\n\nif [[ ${bazel_status:-0} -ne 0 && $print_failed_bazel_action_summary -eq 1 ]]; then\n  print_bazel_action_failure_summary \"$bazel_console_log\"\nfi\nif [[ $print_failed_bazel_test_logs -eq 1 ]] && {\n  [[ ${bazel_status:-0} -ne 0 ]] ||\n    [[ -n \"${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}\" && \"${bazel_args[0]}\" == \"test\" ]]\n}; then\n  print_bazel_test_log_tails \"$bazel_console_log\"\nfi\nexit \"$bazel_status\"\n",
+    "git_blob": "42b59b6354b5933c8155b992519682c06d024ca1",
+    "path": ".github/scripts/run-bazel-ci.sh",
+    "sha256": "0136e087ddfac7c01bdacb03357d0353d328dea3b8cd86caf94e64bf10706482"
+  },
+  "locks": [
+    {
+      "bytes": 413768,
+      "path": "codex-rs/Cargo.lock",
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    },
+    {
+      "bytes": 1738619,
+      "path": "MODULE.bazel.lock",
+      "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+    }
+  ],
+  "root_review_blob": "17dd529a880045c2a6c9bb661d6d86553adf97b6",
+  "runner": {
+    "bytes": 12724,
+    "git_blob": "8e6b71a2dbfbfe9cf4b2668c7f82afa30bd46311",
+    "sha256": "fb574f7b78f21fd48f2442c2530a1a794f608e48157524cdb5a088728d724b3f"
+  },
+  "schema": "hepta-native-mac57-request-v1",
+  "source_files": [
+    {
+      "bytes": 11353,
+      "git_blob": "3c8c83d39328ed5bde888cadafe73888c6d77b74",
+      "path": ".github/scripts/test_run_bazel_with_buildbuddy.py",
+      "sha256": "ab50f8efa2b4687e9f74df1a769a16fed5994bd6b3acc55eeb6564d60ca0903f"
+    },
+    {
+      "bytes": 12458,
+      "git_blob": "12b503d6d70fce2268bebe4a475e64c34b3dc504",
+      "path": ".github/scripts/test_run_bazel_windows_fallback.py",
+      "sha256": "5ca1594d20fc73b23c338cda70626365abfaedc0837a3094ae5fa2ecc6d5250b"
+    },
+    {
+      "bytes": 5401,
+      "git_blob": "d6a51de52362a910645fd97d4857f00372abdeea",
+      "path": ".github/scripts/test_run_bazel_native_msvc_toolchain.py",
+      "sha256": "ad71693c007c32c2270f8f0469e8375b2fe04bc6f346a4213d25546820255eab"
+    },
+    {
+      "bytes": 2952,
+      "git_blob": "7084bf40d39f024f06347b8588e4ef3024e2f7a3",
+      "path": ".github/scripts/test_run_bazel_clippy_targets.py",
+      "sha256": "2249aa908329f2312e0ceebac42cc063db7437f1017afb0d8fded3e783bde29d"
+    },
+    {
+      "bytes": 33989,
+      "git_blob": "ed8276016bcf8ff7738c1769907ae1c145438add",
+      "path": ".github/scripts/test_run_bazel_ci.py",
+      "sha256": "83dfc9788189aa2279dbc4be8ad0aacca31c9c63c0d2cd3b58e386784b7cc80d"
+    },
+    {
+      "bytes": 14442,
+      "git_blob": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+      "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+      "sha256": "656fa9f508bb339da949a359a457f02fa3979449ae1761b0084494cf38e83a0e"
+    },
+    {
+      "bytes": 16260,
+      "git_blob": "2142eeb382664d95f77d83ac7ae3da4459601abf",
+      "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "sha256": "55353f094531a4af974c519fadca01dcd0c8be6ece1f8b10efb70d24ae2a44eb"
+    },
+    {
+      "bytes": 17214,
+      "git_blob": "204c0ac2481f70cc977f777eb2299b740f7ddc17",
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "sha256": "c98766a076b79dc00f08104989faf55cce56375da8ff8ac5d14fb4686b1d6fe7"
+    },
+    {
+      "bytes": 2783,
+      "git_blob": "75de9b9f4ccf8a39ffc7acb152bf68e74e757dcf",
+      "path": ".github/scripts/run-argument-comment-lint-bazel.sh",
+      "sha256": "768be06a3b61451ed03c21129f96f6cb51890510af8a913ae9d0ee6adae2b87e"
+    },
+    {
+      "bytes": 2032,
+      "git_blob": "991f5825e070ffd42c92dcc18cb724e099e6fdcd",
+      "path": "scripts/list-bazel-clippy-targets.sh",
+      "sha256": "52ad8b152f9d6cab3413779e0cfc004ae577a62bb9eff44634f85b4c7d96acdb"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "hepta-actions-branch-visible-readonly-requests-v1",
+  "branch": "fix/r3-original-product-contracts-20261104",
+  "successful_pages": [
+    {
+      "name": "runs-created-today.original.json",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?branch=fix%2Fr3-original-product-contracts-20261104&created=%3E%3D2026-11-05T00%3A00%3A00Z&per_page=100&page=1",
+      "observed_after": "2026-11-05 08:25:37 UTC",
+      "raw_added_trailing_newline_for_file": false,
+      "original_response_characters": 298982,
+      "transport_note": "The local apply_patch transport added one trailing newline; it was removed after checking the exact original response character count. This file contains the original returned JSON string bytes.",
+      "raw_identity": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/ci-concurrency-cancellation-review-20261105/branch-visible-runtime/runs-created-today.original.json",
+        "bytes": 298982,
+        "sha256": "01d45aa63754b82d0cd72874a29af785c05aeea031f45df096eb690678f5e04f",
+        "blob": "f0212b613abdc925bef586c1ab1b3cff535d0ae3"
+      }
+    },
+    {
+      "name": "all-branch-runs.original.json",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?branch=fix%2Fr3-original-product-contracts-20261104&per_page=100&page=1",
+      "observed_interval": {
+        "before": "2026-11-05 08:25:58 UTC",
+        "after": "2026-11-05 08:26:00 UTC"
+      },
+      "raw_added_trailing_newline_for_file": false,
+      "original_response_characters": 1158249,
+      "transport_note": "The local apply_patch transport added one trailing newline; it was removed after checking the exact original response character count. This file contains the original returned JSON string bytes.",
+      "raw_identity": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/ci-concurrency-cancellation-review-20261105/branch-visible-runtime/all-branch-runs.original.json",
+        "bytes": 1158257,
+        "sha256": "724b7b9859a588f95d26aaa8ce32c1c81d21a69de4163357ab1b1bf39c4b1c84",
+        "blob": "1c3d5b3075334439f22cb45327044418d2ad3377"
+      }
+    }
+  ],
+  "unsuccessful_endpoint": {
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/workflows/blocking-ci.yml/runs?branch=fix%2Fr3-original-product-contracts-20261104&per_page=100&page=1",
+    "isError": true,
+    "error_text": [
+      "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)"
+    ],
+    "no_run_payload_received": true
+  },
+  "no_head_sha_or_event_filter_in_either_successful_query": true,
+  "no_more_queries_after_complete_all_branch_page": true,
+  "mutations": false
+}

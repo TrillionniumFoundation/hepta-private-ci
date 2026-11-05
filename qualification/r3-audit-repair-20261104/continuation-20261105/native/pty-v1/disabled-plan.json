@@ -1,0 +1,597 @@
+{
+  "base_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "base_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "capacity": {
+    "before_after_command_minimum_bytes": 64000000000,
+    "fresh_root_minimum_bytes": 200000000000,
+    "not_a_measured_peak_guarantee": true
+  },
+  "commands": [
+    [
+      "cargo",
+      "metadata",
+      "--locked",
+      "--format-version=1"
+    ],
+    [
+      "cargo",
+      "metadata",
+      "--no-deps",
+      "--format-version=1",
+      "--locked"
+    ],
+    [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--cargo-metadata",
+      "<actual scoped metadata>",
+      "-p",
+      "codex-utils-pty",
+      "--message-format=json"
+    ],
+    [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate",
+      "-p",
+      "codex-utils-pty"
+    ],
+    [
+      "just",
+      "fix",
+      "--locked",
+      "--profile",
+      "dev-small",
+      "-p",
+      "codex-utils-pty"
+    ],
+    [
+      "just",
+      "fmt",
+      "--base",
+      "20fd174ded4e5ce01bda34e4f6d1d74803301f49"
+    ]
+  ],
+  "dependency_static_limit": "Static full-graph transitive dependency closure; 1dda changes no Cargo/BUILD/lock/config input. Native exact1dda metadata remains required, no execution claim.",
+  "empty_integration_target": "codex-utils-pty::conpty_search_path",
+  "execute": false,
+  "expected_dependency_packages": [
+    [
+      "anyhow",
+      "1.0.104"
+    ],
+    [
+      "bitflags",
+      "1.3.2"
+    ],
+    [
+      "bitflags",
+      "2.13.2"
+    ],
+    [
+      "bytes",
+      "1.12.1"
+    ],
+    [
+      "cfg-if",
+      "1.0.5"
+    ],
+    [
+      "cfg_aliases",
+      "0.1.1"
+    ],
+    [
+      "codex-utils-pty",
+      "0.0.0"
+    ],
+    [
+      "diff",
+      "0.1.13"
+    ],
+    [
+      "downcast-rs",
+      "1.2.1"
+    ],
+    [
+      "errno",
+      "0.3.14"
+    ],
+    [
+      "filedescriptor",
+      "0.8.3"
+    ],
+    [
+      "lazy_static",
+      "1.5.1"
+    ],
+    [
+      "libc",
+      "0.2.191"
+    ],
+    [
+      "lock_api",
+      "0.4.14"
+    ],
+    [
+      "log",
+      "0.4.34"
+    ],
+    [
+      "mio",
+      "1.2.4"
+    ],
+    [
+      "nix",
+      "0.28.0"
+    ],
+    [
+      "parking_lot",
+      "0.12.5"
+    ],
+    [
+      "parking_lot_core",
+      "0.9.12"
+    ],
+    [
+      "pin-project-lite",
+      "0.2.17"
+    ],
+    [
+      "portable-pty",
+      "0.9.0"
+    ],
+    [
+      "pretty_assertions",
+      "1.4.1"
+    ],
+    [
+      "proc-macro2",
+      "1.0.107"
+    ],
+    [
+      "quote",
+      "1.0.47"
+    ],
+    [
+      "redox_syscall",
+      "0.5.18"
+    ],
+    [
+      "scopeguard",
+      "1.2.0"
+    ],
+    [
+      "serde",
+      "1.0.229"
+    ],
+    [
+      "serde_core",
+      "1.0.229"
+    ],
+    [
+      "serde_derive",
+      "1.0.229"
+    ],
+    [
+      "serial2",
+      "0.2.38"
+    ],
+    [
+      "shared_library",
+      "0.1.9"
+    ],
+    [
+      "shell-words",
+      "1.1.1"
+    ],
+    [
+      "signal-hook-registry",
+      "1.4.8"
+    ],
+    [
+      "smallvec",
+      "1.16.3"
+    ],
+    [
+      "socket2",
+      "0.6.5"
+    ],
+    [
+      "syn",
+      "2.0.119"
+    ],
+    [
+      "syn",
+      "3.0.9"
+    ],
+    [
+      "thiserror",
+      "1.0.69"
+    ],
+    [
+      "thiserror-impl",
+      "1.0.69"
+    ],
+    [
+      "tokio",
+      "1.53.3"
+    ],
+    [
+      "tokio-macros",
+      "2.7.2"
+    ],
+    [
+      "unicode-ident",
+      "1.0.27"
+    ],
+    [
+      "wasi",
+      "0.11.1+wasi-snapshot-preview1"
+    ],
+    [
+      "winapi",
+      "0.3.9"
+    ],
+    [
+      "winapi-i686-pc-windows-gnu",
+      "0.4.0"
+    ],
+    [
+      "winapi-x86_64-pc-windows-gnu",
+      "0.4.0"
+    ],
+    [
+      "windows-link",
+      "0.2.1"
+    ],
+    [
+      "windows-sys",
+      "0.61.2"
+    ],
+    [
+      "winreg",
+      "0.10.1"
+    ],
+    [
+      "yansi",
+      "1.0.1"
+    ]
+  ],
+  "expected_linux_cases": [
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::driver_backed_process_can_expose_split_stdout_and_stderr"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::driver_backed_process_can_resize_via_resizer_hook"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::driver_backed_process_drains_output_that_arrives_after_exit_signal"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::output_collector_waits_for_exit_after_output_closes"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_and_pty_share_interface"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_drains_stderr_without_stdout_activity"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_drop_reaps_child"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_process_can_expose_split_stdout_and_stderr"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_process_detaches_from_parent_session"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_process_round_trips_stdin"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_spawn_no_stdin_can_preserve_inherited_fds"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_terminate_aborts_detached_readers"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pipe_terminate_reaps_child"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_close_stdin_preserves_large_input_and_delivers_eof"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_drop_allows_runtime_shutdown_with_detached_child"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_dropped_output_receiver_keeps_draining_child"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_preserving_fds_drop_allows_runtime_shutdown_with_detached_child"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_preserving_fds_terminate_allows_runtime_shutdown_with_detached_child"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_preserving_inherited_fds_keeps_python_repl_running"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_python_repl_emits_output_and_exits"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_python_repl_readiness_waits_for_execution_after_input_echo"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_spawn_can_preserve_inherited_fds"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_spawn_with_inherited_fds_reports_exec_failures"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_spawn_with_inherited_fds_supports_resize"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_spawn_without_io_driver_returns_error"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_terminate_allows_runtime_shutdown_with_detached_child"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_terminate_allows_runtime_shutdown_with_full_output_channel"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_terminate_kills_background_children_in_same_process_group"
+    },
+    {
+      "classname": "codex-utils-pty",
+      "ignored": false,
+      "name": "tests::pty_terminate_reaps_child_when_waiter_is_queued"
+    }
+  ],
+  "feature_scope": "Original package command, normal dev-small build, original local nextest budgets; no all-features or source/environment skips. Full metadata is read for closure; original scoped wrapper metadata strategy is preserved.",
+  "fixed_files": [
+    {
+      "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+      "path": "codex-rs/Cargo.lock"
+    },
+    {
+      "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7",
+      "path": "MODULE.bazel.lock"
+    },
+    {
+      "git_blob": "a22ff3bee70261f6061d598c31f0016e785a7a3c",
+      "path": "AGENTS.md"
+    },
+    {
+      "git_blob": "910c65114ec128a8317ee8257428451f3cd28230",
+      "path": "codex-rs/rust-toolchain.toml"
+    },
+    {
+      "git_blob": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44",
+      "path": "codex-rs/.cargo/config.toml"
+    },
+    {
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "path": "justfile"
+    },
+    {
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "path": "scripts/run-nextest.py"
+    },
+    {
+      "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "path": "scripts/format.py"
+    },
+    {
+      "git_blob": "868f75986ea9719e116b8fa8a0aa53bd269bc830",
+      "path": "codex-rs/.config/nextest.toml"
+    }
+  ],
+  "format_scope": "Existing --base selects all9 committed code/CI changes plus fix edits. Six Rust files; no changed Python, Starlark, or formatter configuration files. No uv/buildifier installation is currently needed for this exact scope.",
+  "host_alias": "ai395",
+  "hygiene_policy": "Original command output and all source postimages are archived. Any nonzero phase stops. Any automatic fix or fmt source change stops for root review before later stages; no tests are rerun. Ordinary index drift is preserved, never reset.",
+  "nine_source_postimages": [
+    {
+      "git_blob": "65a515a423f52fcea3c0e6462b913d7d3abb6fa1",
+      "path": ".codespellrc"
+    },
+    {
+      "git_blob": "fb46a681b5c3cd47c76b20ef56048eae771d9e07",
+      "path": ".github/workflows/hepta-musl-product-smoke.yml"
+    },
+    {
+      "git_blob": "648a83164c0dd1c28499eaa17f842a83bb2aab04",
+      "path": ".github/workflows/v8-canary.yml"
+    },
+    {
+      "git_blob": "f0e9ccde6829f0d0fb6bd59e154360018856b7fc",
+      "path": "codex-rs/utils/pty/src/process.rs"
+    },
+    {
+      "git_blob": "e2e294464a2db6b65370afd98b7d49250ddaae2f",
+      "path": "codex-rs/utils/pty/src/pty.rs"
+    },
+    {
+      "git_blob": "25836a08f9ff9a90b14204059d2544749a0f5461",
+      "path": "codex-rs/utils/pty/src/tests.rs"
+    },
+    {
+      "git_blob": "67168dab510c9fd400a1cbcf4b4a6bb905b73c59",
+      "path": "codex-rs/utils/pty/src/unix_io.rs"
+    },
+    {
+      "git_blob": "393cceaa6544e3de4f4ca41579bc48ebf95582fd",
+      "path": "codex-rs/utils/pty/src/unix_io_diagnostics.rs"
+    },
+    {
+      "git_blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73",
+      "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs"
+    }
+  ],
+  "owned_root": "/home/qq/work/hepta-audit-pty-diagnostic-20261105",
+  "qualifications": [
+    "Linux project compilation and regression only.",
+    "Original macOS Intel drain/close failures remain open until native original-platform evidence.",
+    "Windows source formatting is not a Windows compile/test result.",
+    "No A full test replay, B source change, B test execution, Git ref publication, cleanup, or host policy change."
+  ],
+  "role": "concrete reviewed-scope execution plan, disabled preserved original",
+  "root_authorization_scope": "Root explicitly authorized this independent PTY cohort on 2026-11-05: absent owned root; exact1dda/tree73f4 and20fd base; independent source/target/evidence; pinned P2 tools; fresh complete metadata proving no V8 in PTY closure; fresh complete29-case Counter plus empty conpty target; original just test once, retries0, no duplicate --no-fail-fast; successful tests then scoped fix and original just fmt --base20fd; no tests afterward; preserve all output/source/index/locks/hygiene deltas; no mutation to B source/target or ROG. Root did not claim to have read this subsequently frozen runner.",
+  "roster_reference": {
+    "bytes": 2846923,
+    "git_blob": "6215be8be0979a4af011c64de4043c934aeee81a",
+    "only_name_expectation_not_new_source_qualification": true,
+    "path": "ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/full-workspace-catalog.stdout",
+    "sha256": "37aa98bace85dfa81d9c729820de24912d913bd85c3a10b60243f4dba67e4001",
+    "source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff"
+  },
+  "runner": {
+    "bytes": 24002,
+    "git_blob": "7bf926c0cb2021bb534bb549c909750c68464bb4",
+    "sha256": "a08ed3d7f83beeb684131235051c87372b5924ea54f9ff2a6e1c10b696c49666"
+  },
+  "schema": "hepta-ai395-independent-pty-plan-v1",
+  "source_bridge": {
+    "base_code_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "bridge_argument": "The prior996 publication entries all lie under qualification/r3-audit-repair-20261104. Each of the nine new code/CI paths lies outside that prefix. The same nine overlays were actually applied to the verified4a native base and091e publication base, so the only remaining tree difference is the preserved publication evidence overlay. This is source-composition reasoning, not full-tree test qualification.",
+    "commit": "1ddadae2c1bcb3c48047d2692565606833e87909",
+    "existing_verified_evidence_overlay": {
+      "all_in_qualification_prefix": true,
+      "base_code_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "expected_publication_tree": "091e659e0da6602299fd14cfa93889191405edd8",
+      "overlay_entries": 996
+    },
+    "parent": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+    "project_test_fix_format_pending": true,
+    "publication_evidence_excluded_from_native_formatting": true,
+    "same_exact_nine_code_CI_postimages": true,
+    "tree": "73f4b30499524d6137bb8f4b40c3977de286d1a5"
+  },
+  "source_commit": "1ddadae2c1bcb3c48047d2692565606833e87909",
+  "source_tree": "73f4b30499524d6137bb8f4b40c3977de286d1a5",
+  "tool_origin_receipt": {
+    "bytes": 25851,
+    "git_blob": "ab7238e724fb3feddbc8b5fcd691b9ebf0a5033a",
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P2-version-continuation-v1/installed-tools.json",
+    "sha256": "75384c3cf63c14309d5a50b3c0bdb17c71db3cc9669fe9004e226d9b44ad4f22"
+  },
+  "tools_readonly_from_P2": [
+    {
+      "bytes": 644784,
+      "name": "rustc",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6",
+      "version_output": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n"
+    },
+    {
+      "bytes": 42185192,
+      "name": "cargo",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "sha256": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66",
+      "version_output": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)\n"
+    },
+    {
+      "bytes": 1263912,
+      "name": "cargo-clippy",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo-clippy",
+      "sha256": "b71b1263063707608daa1e9b231ad9d87507c11d6aa178ede2b01d8372d5effb",
+      "version_output": "clippy 0.1.95 (59807616e1 2026-04-14)\n"
+    },
+    {
+      "bytes": 5295560,
+      "name": "rustfmt",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "sha256": "56b31ad3ec8fe0277a2884a189e243b8f04e9b48e5fd22e547c1516c5f8fd34c",
+      "version_output": "rustfmt 1.9.0-stable (59807616e1 2026-04-14)\n"
+    },
+    {
+      "bytes": 5452040,
+      "name": "just",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7",
+      "version_output": "just 1.51.0\n"
+    },
+    {
+      "bytes": 24038232,
+      "name": "cargo-nextest",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1",
+      "version_output": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu\n"
+    },
+    {
+      "bytes": 77023347,
+      "name": "bazel",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/bazel",
+      "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+      "version_output": "bazel 9.3.0\n"
+    }
+  ]
+}

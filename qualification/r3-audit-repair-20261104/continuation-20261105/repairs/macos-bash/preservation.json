@@ -1,0 +1,172 @@
+{
+  "schema": "hepta-macos-bash-empty-array-source-preservation-v1",
+  "inverse_two_transformations_reconstruct_original_exactly": true,
+  "tail_body_unchanged_except_two_space_indentation": true,
+  "lookup_sequence": "bazel_args followed by post_config_bazel_args; optional empty post array contributes zero elements, with all original quoting and element order preserved.",
+  "new_bash_features": false,
+  "full_script_array_expansion_inventory": [
+    {
+      "line": 76,
+      "expression": "${#bazel_startup_args[@]}",
+      "source": "  if (( ${#bazel_startup_args[@]} > 0 )); then"
+    },
+    {
+      "line": 77,
+      "expression": "${bazel_startup_args[@]}",
+      "source": "    run_bazel \"${bazel_startup_args[@]}\" \"$@\""
+    },
+    {
+      "line": 127,
+      "expression": "${#failed_targets[@]}",
+      "source": "  if [[ ${#failed_targets[@]} -eq 0 && -z \"$retained_targets\" ]]; then"
+    },
+    {
+      "line": 141,
+      "expression": "${bazel_args[@]}",
+      "source": "  for arg in \"${bazel_args[@]}\" \"${post_config_bazel_args[@]}\"; do"
+    },
+    {
+      "line": 141,
+      "expression": "${post_config_bazel_args[@]}",
+      "source": "  for arg in \"${bazel_args[@]}\" \"${post_config_bazel_args[@]}\"; do"
+    },
+    {
+      "line": 160,
+      "expression": "${bazel_info_args[@]}",
+      "source": "    \"${bazel_info_args[@]}\" \\"
+    },
+    {
+      "line": 163,
+      "expression": "${failed_targets[@]}",
+      "source": "  for target in \"${failed_targets[@]}\"; do"
+    },
+    {
+      "line": 185,
+      "expression": "${#failed_targets[@]}",
+      "source": "  if [[ -n \"${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}\" && ${#failed_targets[@]} -gt 0 ]]; then"
+    },
+    {
+      "line": 195,
+      "expression": "${failed_targets[@]}",
+      "source": "      printf '%s\\n' \"${failed_targets[@]}\" \\"
+    },
+    {
+      "line": 212,
+      "expression": "${bazel_run_args[@]}",
+      "source": "      printf '%s\\0' \"${bazel_run_args[@]}\" -- \"${bazel_targets[@]}\" > \"$collector_arguments\""
+    },
+    {
+      "line": 212,
+      "expression": "${bazel_targets[@]}",
+      "source": "      printf '%s\\0' \"${bazel_run_args[@]}\" -- \"${bazel_targets[@]}\" > \"$collector_arguments\""
+    },
+    {
+      "line": 334,
+      "expression": "${#bazel_args[@]}",
+      "source": "if [[ ${#bazel_args[@]} -eq 0 || ${#bazel_targets[@]} -eq 0 ]]; then"
+    },
+    {
+      "line": 334,
+      "expression": "${#bazel_targets[@]}",
+      "source": "if [[ ${#bazel_args[@]} -eq 0 || ${#bazel_targets[@]} -eq 0 ]]; then"
+    },
+    {
+      "line": 342,
+      "expression": "${bazel_args[@]}",
+      "source": "  for arg in \"${bazel_args[@]}\"; do"
+    },
+    {
+      "line": 434,
+      "expression": "${required_windows_action_env_vars[@]}",
+      "source": "    for env_var in \"${required_windows_action_env_vars[@]}\"; do"
+    },
+    {
+      "line": 439,
+      "expression": "${#missing_windows_action_env_vars[@]}",
+      "source": "    if (( ${#missing_windows_action_env_vars[@]} > 0 )); then"
+    },
+    {
+      "line": 441,
+      "expression": "${missing_windows_action_env_vars[*]}",
+      "source": "        \"${missing_windows_action_env_vars[*]}\" >&2"
+    },
+    {
+      "line": 445,
+      "expression": "${windows_action_env_vars[@]}",
+      "source": "    for env_var in \"${windows_action_env_vars[@]}\"; do"
+    },
+    {
+      "line": 478,
+      "expression": "${bazel_args[@]}",
+      "source": "  \"${bazel_args[@]}\""
+    },
+    {
+      "line": 488,
+      "expression": "${#post_config_bazel_args[@]}",
+      "source": "if (( ${#post_config_bazel_args[@]} > 0 )); then"
+    },
+    {
+      "line": 489,
+      "expression": "${post_config_bazel_args[@]}",
+      "source": "  bazel_run_args+=(\"${post_config_bazel_args[@]}\")"
+    },
+    {
+      "line": 498,
+      "expression": "${bazel_run_args[@]}",
+      "source": "  \"${bazel_run_args[@]}\" \\"
+    },
+    {
+      "line": 500,
+      "expression": "${bazel_targets[@]}",
+      "source": "  \"${bazel_targets[@]}\" \\"
+    }
+  ],
+  "array_safety": [
+    {
+      "array": "bazel_startup_args",
+      "status": "existing length guard before value expansion"
+    },
+    {
+      "array": "failed_targets",
+      "status": "new length guard protects tail loop; collector printf already has an existing positive-length guard"
+    },
+    {
+      "array": "post_config_bazel_args",
+      "status": "new lookup-copy append guard; original actual-run append already guarded"
+    },
+    {
+      "array": "bazel_args / bazel_targets",
+      "status": "both are validated nonempty before these functions or their value expansions execute"
+    },
+    {
+      "array": "bazel_info_args",
+      "status": "constructed with info then config, always nonempty"
+    },
+    {
+      "array": "bazel_run_args",
+      "status": "initialized from validated nonempty args, then config appended; nonempty before invocation or archival printf"
+    },
+    {
+      "array": "required_windows_action_env_vars / windows_action_env_vars",
+      "status": "fixed nonempty literals"
+    },
+    {
+      "array": "missing_windows_action_env_vars",
+      "status": "existing length guard before [*] value expansion"
+    }
+  ],
+  "unchanged": {
+    "test_file": {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/published-0e139-ci-20261105/terminal/mac-arm-native-wrapper-127089468398/fixed-source/test_run_bazel_ci.py.source.txt",
+      "bytes": 33989,
+      "sha256": "83dfc9788189aa2279dbc4be8ad0aacca31c9c63c0d2cd3b58e386784b7cc80d",
+      "blob": "ed8276016bcf8ff7738c1769907ae1c145438add"
+    },
+    "original_test_definitions_and_assertions": true,
+    "collector_source": true,
+    "actual_bazel_run_block": true,
+    "retention_and_collection_blocks": true,
+    "filters_retries_deadlines_targets_exit_status": true
+  },
+  "native_or_original57_execution": false
+}

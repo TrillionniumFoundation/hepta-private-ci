@@ -1,0 +1,131 @@
+{
+  "schema": "hepta-mac57-runner-v6-sdk-narrow-static-review-v1",
+  "author": "architecture_audit",
+  "native_execution_performed": false,
+  "source_changes": false,
+  "ref_changes": false,
+  "mac57": {
+    "verdict": "STATIC_PASS; NO_NEW_EXECUTION_HOLD",
+    "inputs": {
+      "run_controls.py": {
+        "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/mac-bazel-wrapper-controls-v1/run_controls.py",
+        "bytes": 12724,
+        "sha256": "fb574f7b78f21fd48f2442c2530a1a794f608e48157524cdb5a088728d724b3f",
+        "git_blob": "8e6b71a2dbfbfe9cf4b2668c7f82afa30bd46311"
+      },
+      "request.json": {
+        "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/mac-bazel-wrapper-controls-v1/request.json",
+        "bytes": 28926,
+        "sha256": "5029033e065b6f722f05601a0a036d91757f5c685c11d176a118282ca2eea3a9",
+        "git_blob": "42180ebdd9cdb796a6222ed7e3be320a6e2b207f"
+      },
+      "manifest.json": {
+        "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/mac-bazel-wrapper-controls-v1/manifest.json",
+        "bytes": 8350,
+        "sha256": "117d293dcbc39249fb412be770055d52ff454651788072ccfde52ea23e2ee525",
+        "git_blob": "703371ee55d0caa0b054a4d5c7546ea315a0d1a1"
+      }
+    },
+    "source_map": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/mac-python39-controls-static-20261105/source-map.json",
+      "bytes": 4957,
+      "sha256": "2e1133d58e8e42738b0bb63128beaf99337973fdcebfb1a5ab89f3ef422f517c",
+      "git_blob": "4c8738703e4580ccb62e84e243bcb2660709d98c"
+    },
+    "source_commit": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+    "before_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "after_tree": "890362b5a9c1ad57be55d7e5c8beb2033b2aa63a",
+    "checked": [
+      "Runner/request bytes and Git identities exactly equal frozen manifest entries.",
+      "Ten critical source entries exactly equal the independently checked fixed-source map.",
+      "All 57 expected IDs equal the five original test modules class/method definitions; no imported execution was used to derive this review.",
+      "The only write is reviewed wrapper 204c0ac2481f70cc977f777eb2299b740f7ddc17 to 42b59b6354b5933c8155b992519682c06d024ca1 with mode 0755.",
+      "Whole working tree, fixed HEAD/tree, original index bytes, both locks, critical source and actual tools are checked around each original scope.",
+      "Parent unittest and child env-python3/collector share the same explicit PATH to existing Python 3.14.3; /bin/bash is selected and its known bytes are pinned, then compared for stability.",
+      "Original and repaired commands have distinct complete raw/status files. Baseline is required to run 57, without forcing the historical failure count; fixed requires original 57, return code 0, OK, no failures/errors/skips."
+    ],
+    "limits": [
+      "This source review is not an observed baseline or repaired test result.",
+      "A causal repair claim still depends on the actual baseline errors and repaired result; the runner intentionally does not manufacture exactly three baseline failures."
+    ]
+  },
+  "v6_openssl": {
+    "verdict": "EXISTING_ENVIRONMENT_BINDING_ACCEPTS_TWO_KEYS; EXTERNAL_SDK_IDENTITY_IS_SEPARATE_PROVENANCE",
+    "frozen_inputs": {
+      "b16_guard.py": {
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/b16_guard.py",
+        "bytes": 10896,
+        "sha256": "d0ba5a5746711a322438200498786044c8d561d9a256f7280a2c4791c6bd0389",
+        "git_blob": "a9a38d14c220be4c44336a6fefac08a168e52dcf"
+      },
+      "b16_runner.py": {
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/b16_runner.py",
+        "bytes": 16005,
+        "sha256": "f419dfa8e4cd98fc729c8b9851d8ea8ae3413a0fb1906358f8556920200b6944",
+        "git_blob": "4c8c2477189b84c6fe7b19c09fd27255bc7d1b66"
+      },
+      "b16_build_only.py": {
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/b16_build_only.py",
+        "bytes": 13465,
+        "sha256": "f82e03761ea34691193c1ab035debc062ea0a953b80a875afb1e1ab97071b3b9",
+        "git_blob": "4a62c1071298258f1baa0d59fe44ef4de364b8ef"
+      },
+      "b16_native.py": {
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/b16_native.py",
+        "bytes": 17595,
+        "sha256": "10620e1688ba208db22e22b6ecd727657b18967ca0d749be8ff0fd348fd1c92d",
+        "git_blob": "7596d6a32f4066cc72336767bcc71313d68675f8"
+      }
+    },
+    "sdk_preparation_plan_inputs": {
+      "run_prepare_sdk.py": {
+        "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-openssl-sdk-v1/run_prepare_sdk.py",
+        "bytes": 18812,
+        "sha256": "97ba9be9f9dc561883b2e0d7257a8540c78b5e7b02c848a87637de1d546acbb6",
+        "git_blob": "92e10b0c97d42755a4ab1c2427561a99ade693d5"
+      },
+      "request.json": {
+        "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-openssl-sdk-v1/request.json",
+        "bytes": 1000,
+        "sha256": "835a7d6593f0d9a3ec5efb1bf80a461292c73610354264524b70db1f4ad3dd87",
+        "git_blob": "2efaed43bea7a5c728a9302366febd3b4a96ae1e"
+      },
+      "manifest.json": {
+        "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-openssl-sdk-v1/manifest.json",
+        "bytes": 2064,
+        "sha256": "b11a1244b590108600ae29f060e6f3ea40d9e4652353bc55e8bbfdd3cf90c0a1",
+        "git_blob": "2690f3a07d8e02ada695d68beedd6c16f29f3ced"
+      }
+    },
+    "supported_without_frozen_v6_change": [
+      "OPENSSL_INCLUDE_DIR and OPENSSL_LIB_DIR can be added as literal keys to the successful actual P4 environment and subsequent approved binding.",
+      "b16_build_only.py requires equality of the entire recorded environment map; b16_runner.py merges that map into the subprocess environment used by all original phase commands.",
+      "The tools list permits additional actual executable pins; pkg-config can use that mechanism only when it is actually part of the lane. No placeholder executable or source-file-as-tool is necessary."
+    ],
+    "required_provenance_boundary": [
+      "Keep the failed P4 attempt and any preparation-only environment separate from the eventual successful BUILD_ONLY baseline.",
+      "Bind the actual SDK receipt alongside the actual P4/binding provenance: package identities, official header byte identities, exposed symlink targets, private and same-version system library identities, and pkg-config source/query evidence.",
+      "The preparation script uses PKG_CONFIG_LIBDIR/PATH for its own relocated queries but emits only two OPENSSL_* keys; do not claim those preparation-only variables were actual P4/B inputs unless they really were.",
+      "V6 currently checks executable tool files and tracked recipe/source files, not all external SDK headers/.pc/.so/symlink targets. If startup needs physical SDK revalidation, that must be an explicit existing-launch binding/read-only check; no such automatic coverage is inferred here.",
+      "V6 merges os.environ and overrides the recorded environment map; equality of that map is not a claim that every ambient variable is sealed. Retain the original forbidden compilation/test override checks and record the actual supplied subset faithfully."
+    ],
+    "unchanged": [
+      "Frozen V6 files",
+      "payloads",
+      "physical controls",
+      "test filters and selections",
+      "budgets",
+      "retries",
+      "features",
+      "dependency locks",
+      "enabled/disabled state"
+    ],
+    "not_claimed": [
+      "SDK preparation succeeded",
+      "P4 succeeded",
+      "new-host A tests ran",
+      "external SDK files are covered by whole-source guards",
+      "B foundation is authorized or executed"
+    ]
+  }
+}

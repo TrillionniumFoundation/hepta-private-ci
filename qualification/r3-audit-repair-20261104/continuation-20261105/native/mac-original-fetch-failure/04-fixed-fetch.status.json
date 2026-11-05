@@ -1,0 +1,61 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "-C",
+    "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/source",
+    "fetch",
+    "--no-tags",
+    "--depth=1",
+    "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+    "20fd174ded4e5ce01bda34e4f6d1d74803301f49"
+  ],
+  "attempt": 1,
+  "capacity_after": {
+    "at": "2026-11-05T09:03:04.486522+00:00",
+    "available_bytes": 362838441984,
+    "f_bavail": 88583604,
+    "f_frsize": 4096,
+    "minimum_bytes": 5000000000,
+    "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105"
+  },
+  "capacity_before": {
+    "at": "2026-11-05T08:43:35.030993+00:00",
+    "available_bytes": 362913464320,
+    "f_bavail": 88601920,
+    "f_frsize": 4096,
+    "minimum_bytes": 5000000000,
+    "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105"
+  },
+  "completed_at": "2026-11-05T09:03:04.485189+00:00",
+  "cwd": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105",
+  "duration_seconds": 1169.3930448340252,
+  "exit_code": 128,
+  "label": "04-fixed-fetch",
+  "retries": 0,
+  "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "started_at": "2026-11-05T08:43:35.030987+00:00",
+  "stderr": {
+    "bytes": 144,
+    "dev": 16777233,
+    "git_blob": "1a5858bb7fdf6d2618097fc49972654c68264eb7",
+    "inode": 588313358,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.stderr.original",
+    "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.stderr.original",
+    "sha256": "6cf4f153d32dc065e865345b9d0d93241f202b35d17b22e7d744059054fe5621",
+    "symlink": false
+  },
+  "stdout": {
+    "bytes": 0,
+    "dev": 16777233,
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "inode": 588313357,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.stdout.original",
+    "resolved": "/Users/qianqi/hepta-audit-bazel-wrapper-20261105/evidence/04-fixed-fetch.stdout.original",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "symlink": false
+  }
+}

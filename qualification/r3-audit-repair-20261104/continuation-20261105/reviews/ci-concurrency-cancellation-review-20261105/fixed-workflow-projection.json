@@ -1,0 +1,5790 @@
+{
+  "schema": "hepta-fixed-0e139-workflow-call-concurrency-projection-v1",
+  "source_commit": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+  "input": {
+    "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/workflows-at-0e139.json",
+    "bytes": 846576,
+    "sha256": "51593fb84d85b201788d045dcd0612fd7f778604b0eefb5f9808a82997e214d5"
+  },
+  "all_93_body_git_hashes_verified": true,
+  "workflows": [
+    {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "blob": "43269479125e8e8b660cee1ad80666fe017205b8",
+      "bytes": 1691,
+      "sha256": "d3f1a50e4e3d9e7f665092e236382f64f50d766d989be796f2d6dae167662e93",
+      "name": "automation-taskflow-focused",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "focused",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af",
+      "bytes": 20751,
+      "sha256": "a7bf703f31b14fd0925e3db892e4444d2ebd8db0033b69ec47ff44eae65104dd",
+      "name": "Bazel",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}",
+        "cancel-in-progress": "${{ github.ref_name != 'main' }}"
+      },
+      "jobs": [
+        {
+          "id": "test",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "os": "macos-15",
+                  "target": "aarch64-apple-darwin"
+                },
+                {
+                  "os": "macos-15-intel",
+                  "target": "x86_64-apple-darwin"
+                },
+                {
+                  "os": "ubuntu-24.04",
+                  "target": "x86_64-unknown-linux-gnu"
+                },
+                {
+                  "os": "ubuntu-24.04",
+                  "target": "x86_64-unknown-linux-musl"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "120",
+          "if": null
+        },
+        {
+          "id": "test-windows-shard",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "shard": [
+                "1",
+                "2",
+                "3",
+                "4"
+              ]
+            }
+          },
+          "timeout_minutes": "120",
+          "if": null
+        },
+        {
+          "id": "test-windows",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "always()"
+        },
+        {
+          "id": "test-windows-native-main",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "120",
+          "if": "github.event_name == 'push' && github.ref == 'refs/heads/main'"
+        },
+        {
+          "id": "clippy",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "os": "ubuntu-24.04",
+                  "target": "x86_64-unknown-linux-gnu"
+                },
+                {
+                  "os": "macos-15",
+                  "target": "aarch64-apple-darwin"
+                },
+                {
+                  "os": "windows-latest",
+                  "target": "x86_64-pc-windows-msvc"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "120",
+          "if": null
+        },
+        {
+          "id": "verify-release-build",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "os": "ubuntu-24.04",
+                  "target": "x86_64-unknown-linux-gnu"
+                },
+                {
+                  "os": "macos-15",
+                  "target": "aarch64-apple-darwin"
+                },
+                {
+                  "os": "windows-latest",
+                  "target": "x86_64-pc-windows-msvc"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "120",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/blob-size-policy.yml",
+      "blob": "ac1e8f5ec3354017a76695e5a1f0e270cee440ba",
+      "bytes": 1682,
+      "sha256": "eb7d3d23ab1e6bc0257101f7e891943cace4077aa39f6e982546db6c920ff329",
+      "name": "blob-size-policy",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "check",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "blob": "fd01ab5edac5d78c9bcfb78397a157a3d5ea7c71",
+      "bytes": 9486,
+      "sha256": "f1bcb14e114cb10553ce3691f7c48a216cc696a88549de8b1f63207b6218aa56",
+      "name": "blocking-ci",
+      "events": [
+        "pull_request",
+        "push"
+      ],
+      "concurrency": {
+        "group": "blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "scope",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "5",
+          "if": null
+        },
+        {
+          "id": "hepta-contract-gate",
+          "uses": "./.github/workflows/hepta-contract-gate.yml",
+          "with": {
+            "profile": "development"
+          },
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": "needs.scope.outputs.native == 'true' || needs.scope.outputs.full_repo == 'true'"
+        },
+        {
+          "id": "bazel",
+          "uses": "./.github/workflows/bazel.yml",
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": "needs.scope.outputs.full_repo == 'true'"
+        },
+        {
+          "id": "blob-size-policy",
+          "uses": "./.github/workflows/blob-size-policy.yml",
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "cargo-deny",
+          "uses": "./.github/workflows/cargo-deny.yml",
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": "needs.scope.outputs.full_repo == 'true'"
+        },
+        {
+          "id": "codespell",
+          "uses": "./.github/workflows/codespell.yml",
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "repo-checks",
+          "uses": "./.github/workflows/repo-checks.yml",
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": "needs.scope.outputs.full_repo == 'true'"
+        },
+        {
+          "id": "rust-ci",
+          "uses": "./.github/workflows/rust-ci.yml",
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": "needs.scope.outputs.full_repo == 'true'"
+        },
+        {
+          "id": "sdk",
+          "uses": "./.github/workflows/sdk.yml",
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": "needs.scope.outputs.full_repo == 'true'"
+        },
+        {
+          "id": "hepta-scoped",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "75",
+          "if": "needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'"
+        },
+        {
+          "id": "lightweight",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "15",
+          "if": "needs.scope.outputs.native != 'true' && needs.scope.outputs.full_repo != 'true'"
+        },
+        {
+          "id": "required",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ always() }}"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "blob": "88b6308899357e23b4a4058aecd4527b4edcee9b",
+      "bytes": 965,
+      "sha256": "1cdaf438b2a2c158b046675ee5a8d0f878d9e3e32a30b9fd9dd5a32e5fa9bf9e",
+      "name": "cargo-deny",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "cargo-deny",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/cla.yml",
+      "blob": "8316a3562fb2adeda5deb36a94d7aafa3fc5a8df",
+      "bytes": 2060,
+      "sha256": "ed68d940a662a74dd2566442089e29e958d21192d1728ff81d1ed0e0aea36d3f",
+      "name": "CLA Assistant",
+      "events": [
+        "issue_comment",
+        "pull_request_target"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "cla",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci' }}"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/close-stale-contributor-prs.yml",
+      "blob": "cbda37e3105bd47fc22dcd46b3edc47db676162f",
+      "bytes": 3615,
+      "sha256": "e28059bb98c7abb8517bf3565353a23684031c6ff50d5830656bfb0a3dded32b",
+      "name": "Close stale contributor PRs",
+      "events": [
+        "workflow_dispatch",
+        "schedule"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "close-stale-contributor-prs",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/codespell.yml",
+      "blob": "06ea9c7226d265405c73850c449b3d6b96d82514",
+      "bytes": 1513,
+      "sha256": "10ee518ee74e77f8e3a078aa22f546af36aca6306598830ae4905cbe263f756e",
+      "name": "Codespell",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "codespell",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-algorithm-docs.yml",
+      "blob": "c324bb5be80d978289ed54fb25d6cf4f2b594acd",
+      "bytes": 4258,
+      "sha256": "dccde05c593074f71011bb0df2af6207e02a204e51027fea4ac566c825b93813",
+      "name": "Hepta adaptive algorithm documents",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-algorithm-docs-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "source-head",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "merge-candidate",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "github.event_name == 'pull_request'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-app-server-schema-refresh.yml",
+      "blob": "d0ed2fd1b14879ddf22c871bb6b36ed6bab5ef0d",
+      "bytes": 7830,
+      "sha256": "2f0859a213cf92264474458bb5a40a2f9063d8d577194c9b983584e1798c8121",
+      "name": "App-server schema refresh",
+      "events": [
+        "pull_request"
+      ],
+      "concurrency": {
+        "group": "app-server-schema-refresh-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "generate-and-verify",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "60",
+          "if": "github.event.pull_request.number == 2885 && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'agents/a00-ui-main-20261019'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "blob": "fb2491dea531af8f2750d08c9010069065bc35fc",
+      "bytes": 19380,
+      "sha256": "445b3402be0dd393351b0f35a186646fd5548c4cab29e55ac04e2819e1466427",
+      "name": "Hepta architecture convergence",
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-architecture-convergence-${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "qualification",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": "${{ fromJSON(github.event_name == 'pull_request' && '[\"source-head\",\"base-merge\"]' || '[\"source-head\"]') }}"
+            }
+          },
+          "timeout_minutes": "60",
+          "if": null
+        },
+        {
+          "id": "required",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "5",
+          "if": "${{ always() }}"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-artifact-storage.yml",
+      "blob": "b6e05d76c3ee4b5e94994937bef77278bb6a1c22",
+      "bytes": 2706,
+      "sha256": "8ed36d944999cc62e3923d93c66b11f8f3611f138aea047a9b54838f26c1711b",
+      "name": "Hepta immutable artifact storage (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "artifact-storage",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": [
+                "source-head",
+                "synthetic-merge"
+              ]
+            }
+          },
+          "timeout_minutes": "35",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-assimilation-discovery.yml",
+      "blob": "12c4ffb399949abd6d0f2cf99fd68d7bbd7dfecf",
+      "bytes": 2439,
+      "sha256": "7dc9d4f101ff3ded42f5350941299fbb4153fba809cf518a7795d5b041dd0976",
+      "name": "Hepta scoped discovery (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-scoped-discovery-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "discovery",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": [
+                "source-head",
+                "synthetic-merge"
+              ]
+            }
+          },
+          "timeout_minutes": "10",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-audit-remediation.yml",
+      "blob": "05b56cd3c6dfff68641a5c9b5e7036140ea760a7",
+      "bytes": 3495,
+      "sha256": "2d4464847cf0fead16ff4e58615f8168ace59df3096d53726a37e8091aa0be07",
+      "name": "Hepta audit remediation (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-audit-remediation-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "rust-evaluation",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": "${{ fromJSON(github.event_name == 'pull_request' && '[\"source-head\",\"synthetic-merge\"]' || '[\"source-head\"]') }}"
+            }
+          },
+          "timeout_minutes": "35",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-bazel-stable-lock-proposal.yml",
+      "blob": "9196345f6b3688ee3dcb55bde42404ea8b99aa12",
+      "bytes": 4782,
+      "sha256": "223bcd7e7c2c911c032c67a877f0a89a9855cecf3453c88b71ca1130ff97078c",
+      "name": "Bazel stable lock proposal",
+      "events": [
+        "pull_request"
+      ],
+      "concurrency": {
+        "group": "bazel-stable-lock-proposal-${{ github.event.pull_request.head.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "lock-candidate",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-browser-agentd-composition.yml",
+      "blob": "1c856bc9231633413cadb9b7f70e8fcfdb14d8d8",
+      "bytes": 2333,
+      "sha256": "ec1f4d93dd894edc4a72e55033c8da935b2765d0c8b6d02799852e6a6db0734f",
+      "name": "Hepta Browser Agentd composition",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-browser-agentd-composition-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "exact-composition",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "45",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
+      "blob": "73db9f4a62ab3027c81363c33f1846f99f6dd8f9",
+      "bytes": 7643,
+      "sha256": "71411665d8b355eec9381b1c9e317bf872f7e94fe758142b2c3c2032a1d93387",
+      "name": "Hepta Browser Servo deployment qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-browser-servo-deployment-qualification",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "linux-target",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-worker-dev.yml",
+      "blob": "f36e53e91ca31b16d5e9202a433f1c7b2ed0a749",
+      "bytes": 8546,
+      "sha256": "4c785c2a5fc5d04735e0562765a14316534d43fe876f90b3be5279ea4485c837",
+      "name": "Hepta Browser Servo worker dev",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-browser-servo-worker-dev-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "worker-evidence",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "120",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-cns-embodiment.yml",
+      "blob": "fdd4c690d2c46d858c93960a738fc72282a35d2e",
+      "bytes": 5864,
+      "sha256": "c60b59754a81121a70e0ef9eb405dc14215c629a93a3ab387c00a40cc8882561",
+      "name": "Hepta CNS organ embodiment",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-cns-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "source-head",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "40",
+          "if": null
+        },
+        {
+          "id": "merge-candidate",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "40",
+          "if": "github.event_name == 'pull_request'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-consolidated-source.yml",
+      "blob": "c812debd2c3d2909696e25fa0f84a85f48be6922",
+      "bytes": 33640,
+      "sha256": "eebbf460629bbfbff51dcc69128ecff8b46217f2329199d1cdd7afe648f71870",
+      "name": "Hepta consolidated source qualification (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-consolidated-source-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "workspace-regression",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "60",
+          "if": null
+        },
+        {
+          "id": "engineering-sandbox",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": "${{ fromJSON(github.event_name == 'pull_request' && '[\"source-head\",\"base-merge\"]' || '[\"source-head\"]') }}"
+            }
+          },
+          "timeout_minutes": "15",
+          "if": null
+        },
+        {
+          "id": "os-evidence",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "15",
+          "if": null
+        },
+        {
+          "id": "qualification",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": "${{ fromJSON(github.event_name == 'pull_request' && '[\"source-head\",\"base-merge\"]' || '[\"source-head\"]') }}"
+            }
+          },
+          "timeout_minutes": "45",
+          "if": null
+        },
+        {
+          "id": "engineering-product-gate",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": "${{ fromJSON(github.event_name == 'pull_request' && '[\"source-head\",\"base-merge\"]' || '[\"source-head\"]') }}"
+            }
+          },
+          "timeout_minutes": "10",
+          "if": "${{ always() && needs.engineering-sandbox.result == 'success' }}"
+        },
+        {
+          "id": "engineering-product-evidence",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "10",
+          "if": "${{ github.event_name == 'pull_request' && needs.engineering-product-gate.result == 'success' }}"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-contract-gate.yml",
+      "blob": "0eb3d84801cc456b34fa1e33957400c1a00dcb68",
+      "bytes": 2493,
+      "sha256": "61faff97c373308ded3cde266cad512c3f8795db2646f1a77779a7c8b46aa7f9",
+      "name": "Hepta contract gate",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "contract",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "15",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-converged-learning.yml",
+      "blob": "612b8821d7ff64fb547017845dbed540f838f868",
+      "bytes": 10196,
+      "sha256": "036a29631f8ed4a508085deed537ebd105ce6f2487b429760efd1ccce2c9c88f",
+      "name": "Hepta converged learning qualification (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-converged-learning-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "formatting",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": "${{ fromJSON(github.event_name == 'pull_request' && '[\"source-head\",\"synthetic-merge\"]' || '[\"source-head\"]') }}"
+            }
+          },
+          "timeout_minutes": "10",
+          "if": null
+        },
+        {
+          "id": "qualification",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": "${{ fromJSON(github.event_name == 'pull_request' && '[\"source-head\",\"synthetic-merge\"]' || '[\"source-head\"]') }}"
+            }
+          },
+          "timeout_minutes": "45",
+          "if": null
+        },
+        {
+          "id": "qualification-result",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "5",
+          "if": "${{ always() }}"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-deployment-handoff.yml",
+      "blob": "484ddf80b8547212f3bfab73cca8249599f9a772",
+      "bytes": 2938,
+      "sha256": "d5da56cd0876a8b749cb595d278b1590ba99b99fac9c041d8b153703d55e1f8b",
+      "name": "Hepta deployment handoff (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-deployment-handoff-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "inventory",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": [
+                "source-head",
+                "synthetic-merge"
+              ]
+            }
+          },
+          "timeout_minutes": "15",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-development-docs.yml",
+      "blob": "7aab1401243b47d5cd08d91173e477dcc63647c3",
+      "bytes": 5530,
+      "sha256": "6622d6b75446f70a30a90f3a9f34a7f047b134feadffb7b9ebb33b80ea0d0a43",
+      "name": "Hepta development documents",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-development-docs-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "source-head",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "merge-candidate",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "github.event_name == 'pull_request'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-diagnostic-source-export.yml",
+      "blob": "b55dfea959f9a289485f17596206a341bd3505f6",
+      "bytes": 8742,
+      "sha256": "5b1ef27c5fb40e5acc04f75ec8ad4cbcf660273147983e23e46d0acf8e940b4e",
+      "name": "Hepta diagnostic source export",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-diagnostic-source-export-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "export-exact-source",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "15",
+          "if": null
+        },
+        {
+          "id": "rust-policy-diagnostics",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "bazel-lock-diagnostics",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "python-sdk-diagnostics",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "20",
+          "if": null
+        },
+        {
+          "id": "python-format-candidate",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "15",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-durable-learning-roundtrip.yml",
+      "blob": "02d7d00321cf2531e3bd21f7cc0c69b15ba172ca",
+      "bytes": 3104,
+      "sha256": "2a509955792e8be3bde4dd5b57c623837c1756c31d844291f23af206d4301f56",
+      "name": "Hepta durable learning roundtrip (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "roundtrip",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": [
+                "source-head",
+                "synthetic-merge"
+              ]
+            }
+          },
+          "timeout_minutes": "45",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      "blob": "6044fc72bc0b27a56445670ab9f11ea9375fd20e",
+      "bytes": 13475,
+      "sha256": "76f4bccc0858054937910e4e7d30bd240f486ccae0d19287ea0cc31595f7f7f7",
+      "name": "Hepta exec recovery and authorized-read conformance",
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-exec-authorized-read-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "capability",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "os": [
+                "ubuntu-24.04",
+                "windows-latest",
+                "macos-15"
+              ],
+              "revision": [
+                "source-head",
+                "base-merge"
+              ]
+            }
+          },
+          "timeout_minutes": "65",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "blob": "18a6d4e1108482653ff7560d9e64d91649e41236",
+      "bytes": 8794,
+      "sha256": "f52889571fa8722f0845eb797756e0dfeaf7d50c2fa2b1d992c8408b3e70ae42",
+      "name": "Hepta Agentd process qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-agentd-process-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "derived-projections",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "15",
+          "if": null
+        },
+        {
+          "id": "owner-formatting",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "15",
+          "if": null
+        },
+        {
+          "id": "catalog-admission",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "process-qualification",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": "${{ fromJSON(github.event_name == 'pull_request' && '[\"source-head\",\"merge-candidate\"]' || '[\"source-head\"]') }}",
+              "os": "${{ fromJSON('[\"ubuntu-24.04\",\"macos-15\"]') }}"
+            }
+          },
+          "timeout_minutes": "90",
+          "if": null
+        },
+        {
+          "id": "qualification-result",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "5",
+          "if": "${{ always() }}"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-implementation-readiness.yml",
+      "blob": "d79bb1fb105a7ef5258a9c5735abd898845dbe40",
+      "bytes": 3404,
+      "sha256": "fbbd9cdd0033ef5323d83b7ea407f027758ab35e12248c239ce47701f127ab9d",
+      "name": "Hepta pre-coding implementation readiness",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-implementation-readiness-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "source-head",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "merge-candidate",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "github.event_name == 'pull_request'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-inference-maintenance.yml",
+      "blob": "f260bd655d0efc9b67daebb3ab24541482caff68",
+      "bytes": 8025,
+      "sha256": "d26062aa88984c1c979653c46dde32b40b4b0acdfd7fadcc6d5bce4ba225a59d",
+      "name": "Hepta inference maintenance",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-inference-maintenance-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "owner-regression",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": "${{ fromJSON(github.event_name == 'pull_request' && '[\"source-head\",\"base-merge\"]' || '[\"source-head\"]') }}"
+            }
+          },
+          "timeout_minutes": "45",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-integration-diagnostics.yml",
+      "blob": "fa58a00ef075c620d8d3b682f0656dcc4e7fcd57",
+      "bytes": 7034,
+      "sha256": "1852411bc5a11df5927a248e2ee7e93e672be7746c2d4ef86ba2ba2659797b2b",
+      "name": "Hepta integration diagnostics",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-integration-diagnostics-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "source-preflight",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "merge-diagnostics",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "10",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-intuition-qualification.yml",
+      "blob": "be6988be378481a9c55c221d56e1816dd29ce2a5",
+      "bytes": 5245,
+      "sha256": "78da2191ccf83a01da37e51f0f4cea245b10d7483b5f65ae29590dc0a7723c5b",
+      "name": "Hepta intuition qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-intuition-qualification-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "source-head",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "merge-candidate",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "github.event_name == 'pull_request'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-kernel-evidence-qualification.yml",
+      "blob": "f9faf5a9f7d48b4e47ed292fa62284e1b37bc0f2",
+      "bytes": 6479,
+      "sha256": "53f34825b703305167cc222713f848a4f6236bf02381aa3c8170b75888c1247e",
+      "name": "Kernel evidence qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "kernel-evidence-qualification-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "source-head",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "90",
+          "if": null
+        },
+        {
+          "id": "merge-candidate",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "90",
+          "if": "github.event_name == 'pull_request'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-keyring-sync-advisory.yml",
+      "blob": "430f36f8dbfc01d569e80b18e3d49ebee192cbd2",
+      "bytes": 3293,
+      "sha256": "fe9f3090c8da1981c9487de114c5051907a1f04a9324cff39b8ae9ddb3269024",
+      "name": "Hepta Keyring Sync Security Migration (Draft)",
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "keyring-sync-resolution",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "os": [
+                "ubuntu-24.04",
+                "macos-15",
+                "windows-latest"
+              ]
+            }
+          },
+          "timeout_minutes": "25",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
+      "blob": "0ff0899ba4440034a994072e853a1c42d4841ad7",
+      "bytes": 6698,
+      "sha256": "6b59a11c8e93a3f9a2714a4ccafdad1ac8c71ca052a2e7f91e91ca5760f75ce8",
+      "name": "Hepta knowledge.graph qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-knowledge-graph-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "qualification",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": "${{ fromJSON(github.event_name == 'pull_request' && '[\"source-head\",\"base-merge\"]' || '[\"source-head\"]') }}"
+            }
+          },
+          "timeout_minutes": "60",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-lane-b-truth.yml",
+      "blob": "8e28fec00be67547ba1393462abffa810e0181fb",
+      "bytes": 6751,
+      "sha256": "4848c33d7f0f89c584c18f9d8220dc6121912d45bda84bde40dd7824f536bab4",
+      "name": "Hepta Lane B source closure",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-lane-b-source-closure-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "source-head",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "45",
+          "if": null
+        },
+        {
+          "id": "merge-candidate",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "45",
+          "if": "github.event_name == 'pull_request'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+      "blob": "4756be76b745582520ff66d07fa103048fc6ec5c",
+      "bytes": 4604,
+      "sha256": "479465eda2593e3e8f58b68a1447748b073f38a5c5feeecb720015c44cce8b2b",
+      "name": "Hepta Lane D semantic conformance",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-lane-d-semantic-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "semantic-contract",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "20",
+          "if": null
+        },
+        {
+          "id": "rust-package-contract",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "os": [
+                "ubuntu-24.04",
+                "macos-15",
+                "windows-2025"
+              ]
+            }
+          },
+          "timeout_minutes": "90",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-lane-e-gap-closure.yml",
+      "blob": "1962600a30be18c08e46c99aed0babb61c01361d",
+      "bytes": 22924,
+      "sha256": "0e8bf4c50b84e10388aab12698a5bbbf7dd91655e313f53417cecdd1db8b2f09",
+      "name": "Hepta Lane E gap closure",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-lane-e-gap-closure-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "rust-closure",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "120",
+          "if": null
+        },
+        {
+          "id": "synthetic-merge",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "120",
+          "if": "github.event_name == 'pull_request' || github.event.before != '0000000000000000000000000000000000000000'"
+        },
+        {
+          "id": "learning-eval-qualification",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "120",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-lane-f-shadow-qualification.yml",
+      "blob": "f70c4a3a1f35b1e1e81956d066ff096c42b2e42e",
+      "bytes": 5762,
+      "sha256": "b9d139c0cf98cccbd08011bb73cd8dc163a393482e0d45e0e4ce6f3855694dd6",
+      "name": "Hepta Lane F shadow qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "lane-f-shadow-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "exact-head",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "synthetic-merge",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "github.event_name == 'pull_request'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-learning-ledger-durable.yml",
+      "blob": "30de1cf1befb1a16a412fa0ba91163db88040824",
+      "bytes": 3570,
+      "sha256": "d69d22fe8b2d4764142b564575c4bebd30817f7026e666aca5f5ce937e725510",
+      "name": "Hepta durable causal ledger (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-learning-ledger-durable-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "ledger",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": [
+                "source-head",
+                "synthetic-merge"
+              ]
+            }
+          },
+          "timeout_minutes": "35",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+      "blob": "8d91832441db0cf8f064e27ed8193f9cadbbf462",
+      "bytes": 3798,
+      "sha256": "de965b37c80134f33f8007234242c101fc22b2c0a04235df61b2a99c8b1e6376",
+      "name": "Hepta memory retrieval qualification host",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-memory-retrieval-qualification-host-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "qualification-host",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "45",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-musl-product-smoke.yml",
+      "blob": "a157c21a3e79460dc6f32147d952f3dacb4ed197",
+      "bytes": 24659,
+      "sha256": "a96f31f7ee4ce8de9377faf24b0509dc0532590c76d4fac83cd6e7cfd243836a",
+      "name": "Hepta musl product smoke",
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-musl-product-smoke::${{ github.ref }}",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "musl-product-smoke",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "120",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-ndu-recursion.yml",
+      "blob": "2d4d44b3e920bc0e025704ddae82054103a8688f",
+      "bytes": 6186,
+      "sha256": "669497f104c4b0da94122d9427ef8d8d7d75a1a6d020483b0fb38e95f21a780c",
+      "name": "Hepta NDU recursion (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-ndu-recursion-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "ndu",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": [
+                "source-head",
+                "synthetic-merge"
+              ]
+            }
+          },
+          "timeout_minutes": "35",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-objective-admission.yml",
+      "blob": "ef98ab5c6918c38949583ecdb4b089a31cb4ceac",
+      "bytes": 2830,
+      "sha256": "6c59dd41c8e21917bea5202279cdb7219298a02c8821fcfdbe74efa385a5267a",
+      "name": "Hepta objective admission qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-objective-admission-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "qualify",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "60",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-objective-owner.yml",
+      "blob": "22b551a58fa9900560767a2b39da5d3f1d01aeea",
+      "bytes": 30960,
+      "sha256": "c62a79f4851f36c731741a88967f58eda58b7bd05be091eab49a8293ffa9d360",
+      "name": "Original Objective owner package gates",
+      "events": [
+        "pull_request"
+      ],
+      "concurrency": {
+        "group": "original-objective-owner-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "owning-packages",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "240",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-objective-product-composition.yml",
+      "blob": "755f775987c992aa4a6e7ef212d6fd7de7bfb75b",
+      "bytes": 4726,
+      "sha256": "904203fb212915a991d154ef30085e0d446310659a4dd3e761bc40162a19c06e",
+      "name": "Hepta objective product composition",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-objective-product-composition-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "product-composition",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": "${{ fromJSON(github.event_name == 'pull_request' && '[\"source-head\",\"synthetic-merge\"]' || '[\"source-head\"]') }}"
+            }
+          },
+          "timeout_minutes": "60",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-offline-build-inputs.yml",
+      "blob": "43980e2ef6870d20d1a3fedebcb04fbfd647c1c2",
+      "bytes": 9453,
+      "sha256": "3fde10f81d5fb9a1aca8af4c3790e203a5fbe07406b69585d50e370c441bf374",
+      "name": "Hepta offline native build inputs",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-offline-build-inputs-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "inputs",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "25",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-operator-acceptance-native.yml",
+      "blob": "bab92677a76682d21e6dacaa7b0c7c9424664773",
+      "bytes": 8772,
+      "sha256": "7f027a14c0517fc4ffc494d4f471f0cd5a351e7921ca3db721d6d0da16119221",
+      "name": "Hepta operator acceptance native signature verification",
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-operator-native-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "native",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "os": [
+                "windows-2025",
+                "ubuntu-24.04",
+                "macos-15"
+              ]
+            }
+          },
+          "timeout_minutes": "45",
+          "if": null
+        },
+        {
+          "id": "bazel-oracle",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "os": "ubuntu-24.04",
+                  "target": "x86_64-unknown-linux-gnu"
+                },
+                {
+                  "os": "macos-15",
+                  "target": "aarch64-apple-darwin"
+                },
+                {
+                  "os": "macos-15-intel",
+                  "target": "x86_64-apple-darwin"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "45",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-organ-implementation.yml",
+      "blob": "8c9850af7a5816a1895dcaaa6ebfe848071569a6",
+      "bytes": 5293,
+      "sha256": "9d9020e6645ed6de008bcdf4dce7e2ed0a0f67bc6e0e1661939ce13a50e7799b",
+      "name": "Hepta organ implementation (read-only)",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-organ-implementation-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "neuron",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": [
+                "source-head",
+                "synthetic-merge"
+              ],
+              "profile": [
+                {
+                  "name": "Neuron",
+                  "packages": "codex-hepta-neuron"
+                },
+                {
+                  "name": "Hierarchy and live consumer",
+                  "packages": "codex-hepta-control-plane codex-hepta-runtime"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "35",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-owner-local-native.yml",
+      "blob": "02f820467201a77a8b58fdd9905dd720f1e46ffb",
+      "bytes": 3827,
+      "sha256": "5b0c9724651f25b2295d581dc8a2ccfe17ba5f717a83dd0f52b9168f02ba2dbc",
+      "name": "Hepta owner-local Matrixd and Agentd native transport",
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-owner-local-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "native",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "os": [
+                "windows-2025",
+                "ubuntu-24.04",
+                "macos-15"
+              ]
+            }
+          },
+          "timeout_minutes": "80",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-production-hos2-proposal.yml",
+      "blob": "c827659c00614c1f149ef62f4c1f03d13114751c",
+      "bytes": 15689,
+      "sha256": "743ed54ab7873e001eb54245e7ca19b47fe890ca1a39c8aaf216df93a24e8382",
+      "name": "Production HOS2 owner proposal",
+      "events": [
+        "pull_request"
+      ],
+      "concurrency": {
+        "group": "production-hos2-proposal-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "owner-candidate",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "180",
+          "if": "github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'codex/production-hos2-delivery-20261020'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-repository-integrity.yml",
+      "blob": "0a2115eac94a7f25bead86e3859fd3a2b9ec90e8",
+      "bytes": 4796,
+      "sha256": "01251fd151cf4cca8f87f56b3e2d4ac1cfc1371487447829a1e2f85feea133d0",
+      "name": "Hepta repository integrity",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-repository-integrity-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "workspace-preflight",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "10",
+          "if": null
+        },
+        {
+          "id": "source-integrity",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "15",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-self-iteration-activation.yml",
+      "blob": "ef8fbdbbe33eb1da199df244a86d6a3708130839",
+      "bytes": 1574,
+      "sha256": "5d423ac4c07d70c5d01e724f89b7a76a7c5b1b010282ac9c799f821e3fa55d66",
+      "name": "Hepta self-iteration activation gate",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "repository-control",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "10",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-supervisor-p0-crossplatform.yml",
+      "blob": "fdeb340099f9f720a353aa8b69372e75a335387e",
+      "bytes": 7522,
+      "sha256": "56e9f8d91ff20a85b41191663273c82d352f2b92f571dbd2274e8572db306a92",
+      "name": "Hepta Supervisor P0 Cross-Platform Restart Qualification",
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "windows-linux-restart",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "os": [
+                "windows-latest",
+                "ubuntu-24.04"
+              ]
+            }
+          },
+          "timeout_minutes": "45",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-vnext-qualification.yml",
+      "blob": "948b9094ad7619317c02471ac57392bac0a46ad5",
+      "bytes": 6650,
+      "sha256": "f61e0f95e6e37c07f29114c28015a3fc3a66ed2be3c39afbeb7f2a4f8578108d",
+      "name": "hepta-vnext qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "portable-product",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "os": [
+                "ubuntu-24.04",
+                "windows-latest"
+              ]
+            }
+          },
+          "timeout_minutes": "90",
+          "if": null
+        },
+        {
+          "id": "authbus-local-qualification",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "generated-and-locks",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "60",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-windows-federation-revoke.yml",
+      "blob": "392a4cbc6fc5ddd73d67edfa328648170e2f9bd6",
+      "bytes": 7175,
+      "sha256": "2d7c98c86ec6308319c6fa5c5e218a037f191e24c55241a318c349679deb3568",
+      "name": "Hepta Memory P0 native regressions",
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "exact-memory-regressions",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "os": [
+                "windows-latest",
+                "ubuntu-24.04"
+              ]
+            }
+          },
+          "timeout_minutes": "60",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hepta-windows-private-state-native.yml",
+      "blob": "3b3651595d169451067d5a932294417717ea422e",
+      "bytes": 5866,
+      "sha256": "b4c01bba254b1e09230a994c37f7f2eda40bf1eecf6b9b6eac1d353a16d09124",
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "hepta-windows-private-state-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "windows-secure-private-state",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "65",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/hnmf-qualification.yml",
+      "blob": "178e47acc1f35b21bda334345f71e95e784481d3",
+      "bytes": 4522,
+      "sha256": "9fb0efb9240a242323e5a06259d82b2464e4f47698480df3b0ea373354979dbd",
+      "name": "hnmf-qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "reference-closure",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "20",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/issue-deduplicator.yml",
+      "blob": "05ef554988de56a6ecb9d033243d7df401227f24",
+      "bytes": 16557,
+      "sha256": "ba5a4bef1ad9eb973130f8cdcd27f7e51d09db6b33c773573153871b956deadb",
+      "name": "Issue Deduplicator",
+      "events": [
+        "issues"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "gather-duplicates-all",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci' && (github.event.action == 'opened' || (github.event.action == 'labeled' && github.event.label.name == 'codex-deduplicate'))"
+        },
+        {
+          "id": "normalize-duplicates-all",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ needs.gather-duplicates-all.result == 'success' }}"
+        },
+        {
+          "id": "gather-duplicates-open",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ needs.normalize-duplicates-all.result == 'success' && needs.normalize-duplicates-all.outputs.has_matches != 'true' }}"
+        },
+        {
+          "id": "normalize-duplicates-open",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ needs.gather-duplicates-open.result == 'success' }}"
+        },
+        {
+          "id": "select-final",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ always() && needs.normalize-duplicates-all.result == 'success' && (needs.normalize-duplicates-open.result == 'success' || needs.normalize-duplicates-open.result == 'skipped') }}"
+        },
+        {
+          "id": "comment-on-issue",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ always() && needs.select-final.result == 'success' }}"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/issue-labeler.yml",
+      "blob": "c9f1a8f1281f9af1dc7998d5d47b604617f4bca9",
+      "bytes": 9404,
+      "sha256": "d021126359a00770ea5d701830213b094435935632849ce6cb0ab4df50e20dbb",
+      "name": "Issue Labeler",
+      "events": [
+        "issues"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "gather-labels",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci' && (github.event.action == 'opened' || (github.event.action == 'labeled' && github.event.label.name == 'codex-label'))"
+        },
+        {
+          "id": "apply-labels",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ needs.gather-labels.result != 'skipped' }}"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/issue-translator.yml",
+      "blob": "8fe85ba0d51bdea3e087f9ce874d82bde887fadd",
+      "bytes": 5761,
+      "sha256": "cf4f9034b3928012b179be39ff3e2a66cc742731f4cd707aab5a0e1cba0feac1",
+      "name": "Issue Translator",
+      "events": [
+        "issues"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "translate-issue",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'"
+        },
+        {
+          "id": "apply-translation",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ needs.translate-issue.result == 'success' }}"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/lane-a-foundation.yml",
+      "blob": "a3bd267880a6faf81f4b83af4bb5d54765074851",
+      "bytes": 7148,
+      "sha256": "b35d9372299f53a34222942d559cb6b51504fcb8fe4dceae8ab3e29f79875fdd",
+      "name": "Lane A foundation truth and native qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "lane-a-foundation-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "source-head",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "90",
+          "if": null
+        },
+        {
+          "id": "merge-candidate",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "90",
+          "if": "github.event_name == 'pull_request'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/memory-federation-v2-final-verify.yml",
+      "blob": "5e08c0d7d19c4df1e87b2cae7db83c8a1d4c236b",
+      "bytes": 6628,
+      "sha256": "056d1a9431bb2b0f9141c1d8fbcec25372c7ce235e4ec6e935eb7ecf0663073d",
+      "name": "memory federation v2 final verify",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "memory-federation-v2-final-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "source-head",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "45",
+          "if": null
+        },
+        {
+          "id": "merge-candidate",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "45",
+          "if": "github.event_name == 'pull_request'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/openbao-compatibility.yml",
+      "blob": "bb6875c2a0213e6dfe3e8c73eaee4ed843bee9d4",
+      "bytes": 1194,
+      "sha256": "6d56c3614a44bd7dfe96472648acc8262ea818cbb4e4c120efd112d66c4d49c5",
+      "name": "OpenBao compatibility qualification",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "openbao-compatibility-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "compatibility",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "10",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/postmerge-ci.yml",
+      "blob": "2a7032e049df0efb8056211f96bc9b41174c10e2",
+      "bytes": 1563,
+      "sha256": "e68ef60919f1d5c73455903092faea02b03921b803c12e547070a1f5816a7c4b",
+      "name": "postmerge-ci",
+      "events": [
+        "push"
+      ],
+      "concurrency": {
+        "group": "postmerge-ci-main",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "rust-ci-full",
+          "uses": "./.github/workflows/rust-ci-full.yml",
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "v8-canary",
+          "uses": "./.github/workflows/v8-canary.yml",
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "results",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ always() }}"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/python-runtime-build.yml",
+      "blob": "aa8d6d891daf76b5f13a03db92e2e2c8fc7ca1f4",
+      "bytes": 3986,
+      "sha256": "3ed05402dff33f620ae4321e4f30989af9ee337563b7b231cb464698cefa6d2c",
+      "name": "python-runtime-build",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "build-python-runtime",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/python-runtime-release.yml",
+      "blob": "8316bf911c3e383a54ec7417ec72b035cb32ec73",
+      "bytes": 3393,
+      "sha256": "0cb41b3804598f06e6cae3f393c74bb4c1f5a8e54925b27263d5f5ca75c21bfb",
+      "name": "python-runtime-release",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "python-runtime-release-${{ inputs.runtime_version }}",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "prepare-python-runtime",
+          "uses": "./.github/workflows/python-runtime-build.yml",
+          "with": {
+            "runtime_version": "${{ inputs.runtime_version }}"
+          },
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "publish-python-runtime",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/python-sdk-release.yml",
+      "blob": "a322c87c5bc250f7026e2700f92b6edfd45ef6be",
+      "bytes": 8551,
+      "sha256": "a78ff42d81fa709818feaf307a8438a9cae0fad87e4f8f6ca53c614ec345f832",
+      "name": "python-sdk-release",
+      "events": [
+        "push"
+      ],
+      "concurrency": {
+        "group": "${{ github.workflow }}",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "resolve-python-release",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'"
+        },
+        {
+          "id": "prepare-python-runtime",
+          "uses": "./.github/workflows/python-runtime-build.yml",
+          "with": {
+            "runtime_version": "${{ needs.resolve-python-release.outputs.runtime_version }}"
+          },
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "publish-python-runtime",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'"
+        },
+        {
+          "id": "build-python-sdk",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'"
+        },
+        {
+          "id": "publish-python-sdk",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/r2-release.yml",
+      "blob": "96a07685cfc41a0383a14fc7bf99d8584d10f865",
+      "bytes": 1553,
+      "sha256": "5e33593a64238d54500700f2c48a4690291b14a0173956f423c6d454dda85670",
+      "name": "publish-r2-release",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "publish",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "60",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/repo-checks.yml",
+      "blob": "72bd28da471f893a556c2acb689e52a28d73ff99",
+      "bytes": 4263,
+      "sha256": "ee6a2c1204698740ca8420fbf9859f4b4248e44f08d5e05050b8d846036dd081",
+      "name": "repo-checks",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "build-test",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "10",
+          "if": null
+        },
+        {
+          "id": "native-paths",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "os": [
+                "ubuntu-24.04",
+                "windows-latest",
+                "macos-15"
+              ]
+            }
+          },
+          "timeout_minutes": "20",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "blob": "0ea9d5dcd5ffd622c2d25f3d808ab5738142a851",
+      "bytes": 17668,
+      "sha256": "fe2804bc8003b797f691f27edd2105ad78ef0c6460deb28f6da120d86e684505",
+      "name": "rust-ci-full nextest platform",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "archive",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "60",
+          "if": null
+        },
+        {
+          "id": "shard",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "shard": [
+                "1",
+                "2",
+                "3",
+                "4"
+              ]
+            }
+          },
+          "timeout_minutes": "60",
+          "if": null
+        },
+        {
+          "id": "result",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "always()"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "blob": "e02bd495a9aace4d789cd9a579c9c3b6ae4f5b40",
+      "bytes": 22006,
+      "sha256": "7aeea55bd6f1b6bab572b72cb2a5096cac683608b744413c3b0ce7fd2810f72e",
+      "name": "rust-ci-full",
+      "events": [
+        "workflow_call",
+        "push",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "rust-ci-full-${{ github.ref_name }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "general",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "cargo_shear",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "argument_comment_lint_package",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "argument_comment_lint_prebuilt",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "name": "Linux",
+                  "runner": "ubuntu-24.04"
+                },
+                {
+                  "name": "macOS",
+                  "runner": "macos-15"
+                },
+                {
+                  "name": "Windows",
+                  "runner": "windows-latest"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "lint_build",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "runner": "macos-15",
+                  "target": "aarch64-apple-darwin",
+                  "profile": "dev"
+                },
+                {
+                  "runner": "macos-15",
+                  "target": "x86_64-apple-darwin",
+                  "profile": "dev"
+                },
+                {
+                  "runner": "ubuntu-24.04",
+                  "target": "x86_64-unknown-linux-musl",
+                  "profile": "dev"
+                },
+                {
+                  "runner": "ubuntu-24.04",
+                  "target": "x86_64-unknown-linux-gnu",
+                  "profile": "dev"
+                },
+                {
+                  "runner": "ubuntu-24.04-arm",
+                  "target": "aarch64-unknown-linux-musl",
+                  "profile": "dev"
+                },
+                {
+                  "runner": "ubuntu-24.04-arm",
+                  "target": "aarch64-unknown-linux-gnu",
+                  "profile": "dev"
+                },
+                {
+                  "runner": "windows-latest",
+                  "target": "x86_64-pc-windows-msvc",
+                  "profile": "dev"
+                },
+                {
+                  "runner": "windows-11-arm",
+                  "target": "aarch64-pc-windows-msvc",
+                  "profile": "dev"
+                },
+                {
+                  "runner": "macos-15",
+                  "target": "aarch64-apple-darwin",
+                  "profile": "release"
+                },
+                {
+                  "runner": "ubuntu-24.04",
+                  "target": "x86_64-unknown-linux-musl",
+                  "profile": "release"
+                },
+                {
+                  "runner": "ubuntu-24.04-arm",
+                  "target": "aarch64-unknown-linux-musl",
+                  "profile": "release"
+                },
+                {
+                  "runner": "windows-latest",
+                  "target": "x86_64-pc-windows-msvc",
+                  "profile": "release"
+                },
+                {
+                  "runner": "windows-11-arm",
+                  "target": "aarch64-pc-windows-msvc",
+                  "profile": "release"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "tests_macos_aarch64",
+          "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+          "with": {
+            "runner": "macos-15",
+            "target": "aarch64-apple-darwin",
+            "profile": "ci-test",
+            "artifact_id": "macos-aarch64",
+            "use_sccache": "true"
+          },
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "tests_linux_x64_remote",
+          "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+          "with": {
+            "runner": "ubuntu-24.04",
+            "target": "x86_64-unknown-linux-gnu",
+            "profile": "ci-test",
+            "artifact_id": "linux-x64-remote",
+            "remote_env": "true",
+            "use_sccache": "true"
+          },
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "tests_linux_arm64",
+          "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+          "with": {
+            "runner": "ubuntu-24.04-arm",
+            "target": "aarch64-unknown-linux-gnu",
+            "profile": "ci-test",
+            "artifact_id": "linux-arm64",
+            "use_sccache": "true"
+          },
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "tests_windows_x64",
+          "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+          "with": {
+            "runner": "windows-latest",
+            "target": "x86_64-pc-windows-msvc",
+            "profile": "ci-test",
+            "artifact_id": "windows-x64",
+            "test_threads": "8"
+          },
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "tests_windows_arm64",
+          "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+          "with": {
+            "runner": "windows-11-arm",
+            "archive_runner": "windows-latest",
+            "target": "aarch64-pc-windows-msvc",
+            "profile": "ci-test",
+            "artifact_id": "windows-arm64",
+            "test_threads": "8",
+            "use_sccache": "true"
+          },
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "results",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "always()"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "blob": "81330bf3ed388e9deafa474516be437ac165cbb7",
+      "bytes": 12233,
+      "sha256": "76ce84512f019867e9513c74e01877d47ba5e2b1ec554fa35175e9f0e9c6e373",
+      "name": "rust-ci",
+      "events": [
+        "workflow_call",
+        "workflow_dispatch"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "changed",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "workspace_manifest",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "15",
+          "if": "${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}"
+        },
+        {
+          "id": "general",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}"
+        },
+        {
+          "id": "benchmark_smoke",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}"
+        },
+        {
+          "id": "cargo_shear",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ needs.changed.outputs.codex == 'true' || needs.changed.outputs.workflows == 'true' }}"
+        },
+        {
+          "id": "argument_comment_lint_package",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ needs.changed.outputs.argument_comment_lint_package == 'true' }}"
+        },
+        {
+          "id": "results",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "always()"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/rust-release-argument-comment-lint.yml",
+      "blob": "a4f3540b342b13015e26f3d0011c01b87686cbca",
+      "bytes": 4716,
+      "sha256": "429254911e199f41a2ec8b2ed3d1a0469c65e6cdd025dfbdda1263f9173477cb",
+      "name": "rust-release-argument-comment-lint",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "skip",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{ !inputs.publish }}"
+        },
+        {
+          "id": "build",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "runner": "macos-15-xlarge",
+                  "target": "aarch64-apple-darwin",
+                  "archive_name": "argument-comment-lint-aarch64-apple-darwin.tar.gz",
+                  "lib_name": "libargument_comment_lint@nightly-2025-09-18-aarch64-apple-darwin.dylib",
+                  "runner_binary": "argument-comment-lint",
+                  "cargo_dylint_binary": "cargo-dylint"
+                },
+                {
+                  "runner": "ubuntu-24.04",
+                  "target": "x86_64-unknown-linux-gnu",
+                  "archive_name": "argument-comment-lint-x86_64-unknown-linux-gnu.tar.gz",
+                  "lib_name": "libargument_comment_lint@nightly-2025-09-18-x86_64-unknown-linux-gnu.so",
+                  "runner_binary": "argument-comment-lint",
+                  "cargo_dylint_binary": "cargo-dylint"
+                },
+                {
+                  "runner": "ubuntu-24.04-arm",
+                  "target": "aarch64-unknown-linux-gnu",
+                  "archive_name": "argument-comment-lint-aarch64-unknown-linux-gnu.tar.gz",
+                  "lib_name": "libargument_comment_lint@nightly-2025-09-18-aarch64-unknown-linux-gnu.so",
+                  "runner_binary": "argument-comment-lint",
+                  "cargo_dylint_binary": "cargo-dylint"
+                },
+                {
+                  "runner": "windows-x64",
+                  "target": "x86_64-pc-windows-msvc",
+                  "archive_name": "argument-comment-lint-x86_64-pc-windows-msvc.zip",
+                  "lib_name": "argument_comment_lint@nightly-2025-09-18-x86_64-pc-windows-msvc.dll",
+                  "runner_binary": "argument-comment-lint.exe",
+                  "cargo_dylint_binary": "cargo-dylint.exe",
+                  "runs_on": {
+                    "group": "${{ github.event.repository.name }}-runners",
+                    "labels": "${{ github.event.repository.name }}-windows-x64"
+                  }
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "60",
+          "if": "${{ inputs.publish }}"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/rust-release-prepare.yml",
+      "blob": "fbdcb2e43f2bae3ce34645a6f5d1556069cd8756",
+      "bytes": 1889,
+      "sha256": "2176116b8b984e4422c3d07dffdb0b7b81114b5d0fa1fdd59af635f46c8bc5ad",
+      "name": "rust-release-prepare",
+      "events": [
+        "workflow_dispatch",
+        "schedule"
+      ],
+      "concurrency": {
+        "group": "${{ github.workflow }}",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "prepare",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "vars.ENABLE_UPSTREAM_AUTOMATION == 'true' && github.repository == 'TrillionniumFoundation/hepta-private-ci'"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/rust-release-windows.yml",
+      "blob": "2e723ea2d52817ea3b8e87d8787fdc63ff8fb724",
+      "bytes": 16979,
+      "sha256": "00153ad5e174cb4979b7801bf77988fc51e58c1ce86b5b2f4d551ba4bae0f9cd",
+      "name": "rust-release-windows",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "build-windows-binaries",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "runner": "windows-x64",
+                  "target": "x86_64-pc-windows-msvc",
+                  "bundle": "primary",
+                  "binaries": "codex codex-code-mode-host codex-responses-api-proxy",
+                  "runs_on": {
+                    "group": "${{ github.event.repository.name }}-runners",
+                    "labels": "${{ github.event.repository.name }}-windows-x64"
+                  }
+                },
+                {
+                  "runner": "windows-arm64",
+                  "target": "aarch64-pc-windows-msvc",
+                  "bundle": "primary",
+                  "binaries": "codex codex-code-mode-host codex-responses-api-proxy",
+                  "runs_on": {
+                    "group": "${{ github.event.repository.name }}-runners",
+                    "labels": "${{ github.event.repository.name }}-windows-arm64"
+                  }
+                },
+                {
+                  "runner": "windows-x64",
+                  "target": "x86_64-pc-windows-msvc",
+                  "bundle": "helpers",
+                  "binaries": "codex-windows-sandbox-setup codex-command-runner",
+                  "runs_on": {
+                    "group": "${{ github.event.repository.name }}-runners",
+                    "labels": "${{ github.event.repository.name }}-windows-x64"
+                  }
+                },
+                {
+                  "runner": "windows-arm64",
+                  "target": "aarch64-pc-windows-msvc",
+                  "bundle": "helpers",
+                  "binaries": "codex-windows-sandbox-setup codex-command-runner",
+                  "runs_on": {
+                    "group": "${{ github.event.repository.name }}-runners",
+                    "labels": "${{ github.event.repository.name }}-windows-arm64"
+                  }
+                },
+                {
+                  "runner": "windows-x64",
+                  "target": "x86_64-pc-windows-msvc",
+                  "bundle": "app-server",
+                  "binaries": "codex-app-server codex-code-mode-host",
+                  "runs_on": {
+                    "group": "${{ github.event.repository.name }}-runners",
+                    "labels": "${{ github.event.repository.name }}-windows-x64"
+                  }
+                },
+                {
+                  "runner": "windows-arm64",
+                  "target": "aarch64-pc-windows-msvc",
+                  "bundle": "app-server",
+                  "binaries": "codex-app-server codex-code-mode-host",
+                  "runs_on": {
+                    "group": "${{ github.event.repository.name }}-runners",
+                    "labels": "${{ github.event.repository.name }}-windows-arm64"
+                  }
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "90",
+          "if": null
+        },
+        {
+          "id": "build-windows-symbols",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "target": [
+                "aarch64-pc-windows-msvc",
+                "x86_64-pc-windows-msvc"
+              ]
+            }
+          },
+          "timeout_minutes": "15",
+          "if": null
+        },
+        {
+          "id": "build-windows",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "runner": "windows-x64",
+                  "target": "x86_64-pc-windows-msvc",
+                  "runs_on": {
+                    "group": "${{ github.event.repository.name }}-runners",
+                    "labels": "${{ github.event.repository.name }}-windows-x64"
+                  }
+                },
+                {
+                  "runner": "windows-x64",
+                  "target": "aarch64-pc-windows-msvc",
+                  "runs_on": {
+                    "group": "${{ github.event.repository.name }}-runners",
+                    "labels": "${{ github.event.repository.name }}-windows-x64"
+                  }
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "90",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/rust-release-zsh.yml",
+      "blob": "7c0eab9ee115e68be98202b845d19967fec45b93",
+      "bytes": 5651,
+      "sha256": "83831f162f8c675bea841aa4030a84986b61026aa5424daf9798d111896acc74",
+      "name": "rust-release-zsh",
+      "events": [
+        "push"
+      ],
+      "concurrency": {
+        "group": "${{ github.workflow }}::${{ github.ref_name }}",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "metadata",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "linux",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "runner": "ubuntu-24.04",
+                  "target": "x86_64-unknown-linux-musl",
+                  "variant": "ubuntu-24.04",
+                  "image": "ubuntu:24.04",
+                  "archive_name": "codex-zsh-x86_64-unknown-linux-musl.tar.gz"
+                },
+                {
+                  "runner": "ubuntu-24.04-arm",
+                  "target": "aarch64-unknown-linux-musl",
+                  "variant": "ubuntu-24.04",
+                  "image": "arm64v8/ubuntu:24.04",
+                  "archive_name": "codex-zsh-aarch64-unknown-linux-musl.tar.gz"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "darwin",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "runner": "macos-15-large",
+                  "target": "x86_64-apple-darwin",
+                  "variant": "macos-15",
+                  "archive_name": "codex-zsh-x86_64-apple-darwin.tar.gz"
+                },
+                {
+                  "runner": "macos-15-xlarge",
+                  "target": "aarch64-apple-darwin",
+                  "variant": "macos-15",
+                  "archive_name": "codex-zsh-aarch64-apple-darwin.tar.gz"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "publish-release",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "blob": "4f4eb28f9be4d399b89087c42f02d1be5693c176",
+      "bytes": 64099,
+      "sha256": "73f18e634181f520ea37ca3397297beba177838d4156139475735c7521d93303",
+      "name": "rust-release",
+      "events": [
+        "push"
+      ],
+      "concurrency": {
+        "group": "${{ github.workflow }}",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "tag-check",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "build",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "runner": "macos-15-xlarge",
+                  "target": "aarch64-apple-darwin",
+                  "bundle": "primary",
+                  "artifact_name": "aarch64-apple-darwin",
+                  "binaries": "codex codex-code-mode-host codex-responses-api-proxy",
+                  "build_dmg": "true"
+                },
+                {
+                  "runner": "macos-15-xlarge",
+                  "target": "aarch64-apple-darwin",
+                  "bundle": "app-server",
+                  "artifact_name": "aarch64-apple-darwin-app-server",
+                  "binaries": "codex-app-server codex-code-mode-host",
+                  "build_dmg": "false"
+                },
+                {
+                  "runner": "macos-15-xlarge",
+                  "target": "x86_64-apple-darwin",
+                  "bundle": "primary",
+                  "artifact_name": "x86_64-apple-darwin",
+                  "binaries": "codex codex-code-mode-host codex-responses-api-proxy",
+                  "build_dmg": "true"
+                },
+                {
+                  "runner": "macos-15-xlarge",
+                  "target": "x86_64-apple-darwin",
+                  "bundle": "app-server",
+                  "artifact_name": "x86_64-apple-darwin-app-server",
+                  "binaries": "codex-app-server codex-code-mode-host",
+                  "build_dmg": "false"
+                },
+                {
+                  "runner": "${{ github.event.repository.name }}-linux-x64-xl",
+                  "target": "x86_64-unknown-linux-musl",
+                  "bundle": "primary",
+                  "artifact_name": "x86_64-unknown-linux-musl",
+                  "binaries": "codex codex-code-mode-host codex-responses-api-proxy bwrap",
+                  "build_dmg": "false"
+                },
+                {
+                  "runner": "${{ github.event.repository.name }}-linux-x64-xl",
+                  "target": "x86_64-unknown-linux-musl",
+                  "bundle": "app-server",
+                  "artifact_name": "x86_64-unknown-linux-musl-app-server",
+                  "binaries": "codex-app-server codex-code-mode-host",
+                  "build_dmg": "false"
+                },
+                {
+                  "runner": "${{ github.event.repository.name }}-linux-arm64",
+                  "target": "aarch64-unknown-linux-musl",
+                  "bundle": "primary",
+                  "artifact_name": "aarch64-unknown-linux-musl",
+                  "binaries": "codex codex-code-mode-host codex-responses-api-proxy bwrap",
+                  "build_dmg": "false"
+                },
+                {
+                  "runner": "${{ github.event.repository.name }}-linux-arm64",
+                  "target": "aarch64-unknown-linux-musl",
+                  "bundle": "app-server",
+                  "artifact_name": "aarch64-unknown-linux-musl-app-server",
+                  "binaries": "codex-app-server codex-code-mode-host",
+                  "build_dmg": "false"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "90",
+          "if": null
+        },
+        {
+          "id": "sign-macos-binaries",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "target": "aarch64-apple-darwin",
+                  "bundle": "primary",
+                  "artifact_name": "aarch64-apple-darwin",
+                  "binaries": "codex codex-code-mode-host codex-responses-api-proxy"
+                },
+                {
+                  "target": "aarch64-apple-darwin",
+                  "bundle": "app-server",
+                  "artifact_name": "aarch64-apple-darwin-app-server",
+                  "binaries": "codex-app-server codex-code-mode-host"
+                },
+                {
+                  "target": "x86_64-apple-darwin",
+                  "bundle": "primary",
+                  "artifact_name": "x86_64-apple-darwin",
+                  "binaries": "codex codex-code-mode-host codex-responses-api-proxy"
+                },
+                {
+                  "target": "x86_64-apple-darwin",
+                  "bundle": "app-server",
+                  "artifact_name": "x86_64-apple-darwin-app-server",
+                  "binaries": "codex-app-server codex-code-mode-host"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "45",
+          "if": null
+        },
+        {
+          "id": "package-macos",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "target": "aarch64-apple-darwin",
+                  "bundle": "primary",
+                  "artifact_name": "aarch64-apple-darwin",
+                  "binaries": "codex codex-code-mode-host codex-responses-api-proxy",
+                  "build_dmg": "true"
+                },
+                {
+                  "target": "aarch64-apple-darwin",
+                  "bundle": "app-server",
+                  "artifact_name": "aarch64-apple-darwin-app-server",
+                  "binaries": "codex-app-server codex-code-mode-host",
+                  "build_dmg": "false"
+                },
+                {
+                  "target": "x86_64-apple-darwin",
+                  "bundle": "primary",
+                  "artifact_name": "x86_64-apple-darwin",
+                  "binaries": "codex codex-code-mode-host codex-responses-api-proxy",
+                  "build_dmg": "true"
+                },
+                {
+                  "target": "x86_64-apple-darwin",
+                  "bundle": "app-server",
+                  "artifact_name": "x86_64-apple-darwin-app-server",
+                  "binaries": "codex-app-server codex-code-mode-host",
+                  "build_dmg": "false"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "45",
+          "if": null
+        },
+        {
+          "id": "sign-macos-dmg",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "target": "aarch64-apple-darwin",
+                  "artifact_name": "aarch64-apple-darwin"
+                },
+                {
+                  "target": "x86_64-apple-darwin",
+                  "artifact_name": "x86_64-apple-darwin"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "45",
+          "if": null
+        },
+        {
+          "id": "finalize-macos",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "target": "aarch64-apple-darwin",
+                  "bundle": "primary",
+                  "artifact_name": "aarch64-apple-darwin",
+                  "binaries": "codex codex-code-mode-host codex-responses-api-proxy",
+                  "verify_dmg": "true"
+                },
+                {
+                  "target": "aarch64-apple-darwin",
+                  "bundle": "app-server",
+                  "artifact_name": "aarch64-apple-darwin-app-server",
+                  "binaries": "codex-app-server codex-code-mode-host",
+                  "verify_dmg": "false"
+                },
+                {
+                  "target": "x86_64-apple-darwin",
+                  "bundle": "primary",
+                  "artifact_name": "x86_64-apple-darwin",
+                  "binaries": "codex codex-code-mode-host codex-responses-api-proxy",
+                  "verify_dmg": "true"
+                },
+                {
+                  "target": "x86_64-apple-darwin",
+                  "bundle": "app-server",
+                  "artifact_name": "x86_64-apple-darwin-app-server",
+                  "binaries": "codex-app-server codex-code-mode-host",
+                  "verify_dmg": "false"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "build-windows",
+          "uses": "./.github/workflows/rust-release-windows.yml",
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "argument-comment-lint-release-assets",
+          "uses": "./.github/workflows/rust-release-argument-comment-lint.yml",
+          "with": {
+            "publish": "true"
+          },
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "release",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{\n  always() &&\n  needs.tag-check.result == 'success' &&\n  needs.build.result == 'success' &&\n  needs.finalize-macos.result == 'success' &&\n  needs.build-windows.result == 'success' &&\n  needs.argument-comment-lint-release-assets.result == 'success'\n}}"
+        },
+        {
+          "id": "publish-r2-assets",
+          "uses": "./.github/workflows/r2-release.yml",
+          "with": {
+            "tag": "${{ needs.release.outputs.tag }}",
+            "make_latest": "${{ fromJSON(needs.release.outputs.make_latest) }}",
+            "prerelease": "${{ fromJSON(needs.release.outputs.prerelease) }}",
+            "stage": "assets"
+          },
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "publish-r2",
+          "uses": "./.github/workflows/r2-release.yml",
+          "with": {
+            "tag": "${{ needs.release.outputs.tag }}",
+            "make_latest": "${{ fromJSON(needs.release.outputs.make_latest) }}",
+            "prerelease": "${{ fromJSON(needs.release.outputs.prerelease) }}",
+            "stage": "finalize"
+          },
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": null,
+          "if": null
+        },
+        {
+          "id": "publish-dotslash",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "publish-npm",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{\n  !cancelled() &&\n  needs.release.result == 'success' &&\n  needs.release.outputs.should_publish_npm == 'true'\n}}"
+        },
+        {
+          "id": "deploy-dev-website",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{\n  !cancelled() &&\n  needs.release.result == 'success' &&\n  !contains(needs.release.outputs.version, '-')\n}}"
+        },
+        {
+          "id": "winget",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{\n  !cancelled() &&\n  needs.release.result == 'success' &&\n  !contains(needs.release.outputs.version, '-')\n}}"
+        },
+        {
+          "id": "update-branch",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": "${{\n  !cancelled() &&\n  needs.release.result == 'success' &&\n  needs.publish-r2.result == 'success' &&\n  (\n    needs.release.outputs.should_publish_npm != 'true' ||\n    needs.publish-npm.result == 'success'\n  )\n}}"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "blob": "83d3b98c2359ec312cc5fbe560334598489e2e1e",
+      "bytes": 16471,
+      "sha256": "41417489a73fddce4aa396a8e8d6acc280331b430906fbdea9373eb2fdf9dfcf",
+      "name": "rusty-v8-release",
+      "events": [
+        "push"
+      ],
+      "concurrency": {
+        "group": "${{ github.workflow }}::${{ github.ref_name }}",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "metadata",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "build",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "runner": "ubuntu-24.04",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_amd64",
+                  "sandbox": "false",
+                  "target": "x86_64-unknown-linux-gnu",
+                  "v8_cpu": "x64",
+                  "variant": "release"
+                },
+                {
+                  "runner": "ubuntu-24.04",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_amd64",
+                  "sandbox": "true",
+                  "target": "x86_64-unknown-linux-gnu",
+                  "v8_cpu": "x64",
+                  "variant": "ptrcomp-sandbox"
+                },
+                {
+                  "runner": "ubuntu-24.04-arm",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_arm64",
+                  "sandbox": "false",
+                  "target": "aarch64-unknown-linux-gnu",
+                  "v8_cpu": "arm64",
+                  "variant": "release"
+                },
+                {
+                  "runner": "ubuntu-24.04-arm",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_arm64",
+                  "sandbox": "true",
+                  "target": "aarch64-unknown-linux-gnu",
+                  "v8_cpu": "arm64",
+                  "variant": "ptrcomp-sandbox"
+                },
+                {
+                  "runner": "macos-15-xlarge",
+                  "bazel_config": "ci-macos",
+                  "platform": "macos_amd64",
+                  "sandbox": "false",
+                  "target": "x86_64-apple-darwin",
+                  "v8_cpu": "x64",
+                  "variant": "release"
+                },
+                {
+                  "runner": "macos-15-xlarge",
+                  "bazel_config": "ci-macos",
+                  "platform": "macos_amd64",
+                  "sandbox": "true",
+                  "target": "x86_64-apple-darwin",
+                  "v8_cpu": "x64",
+                  "variant": "ptrcomp-sandbox"
+                },
+                {
+                  "runner": "macos-15-xlarge",
+                  "bazel_config": "ci-macos",
+                  "platform": "macos_arm64",
+                  "sandbox": "false",
+                  "target": "aarch64-apple-darwin",
+                  "v8_cpu": "arm64",
+                  "variant": "release"
+                },
+                {
+                  "runner": "macos-15-xlarge",
+                  "bazel_config": "ci-macos",
+                  "platform": "macos_arm64",
+                  "sandbox": "true",
+                  "target": "aarch64-apple-darwin",
+                  "v8_cpu": "arm64",
+                  "variant": "ptrcomp-sandbox"
+                },
+                {
+                  "runner": "ubuntu-24.04",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_amd64_musl",
+                  "sandbox": "false",
+                  "target": "x86_64-unknown-linux-musl",
+                  "v8_cpu": "x64",
+                  "variant": "release"
+                },
+                {
+                  "runner": "ubuntu-24.04-arm",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_arm64_musl",
+                  "sandbox": "false",
+                  "target": "aarch64-unknown-linux-musl",
+                  "v8_cpu": "arm64",
+                  "variant": "release"
+                },
+                {
+                  "runner": "ubuntu-24.04",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_amd64_musl",
+                  "sandbox": "true",
+                  "target": "x86_64-unknown-linux-musl",
+                  "v8_cpu": "x64",
+                  "variant": "ptrcomp-sandbox"
+                },
+                {
+                  "runner": "ubuntu-24.04-arm",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_arm64_musl",
+                  "sandbox": "true",
+                  "target": "aarch64-unknown-linux-musl",
+                  "v8_cpu": "arm64",
+                  "variant": "ptrcomp-sandbox"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "build-windows-source",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "runner": "windows-2022",
+                  "target": "x86_64-pc-windows-msvc"
+                },
+                {
+                  "runner": "windows-2022",
+                  "target": "aarch64-pc-windows-msvc"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "30",
+          "if": null
+        },
+        {
+          "id": "publish-release",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/sdk.yml",
+      "blob": "8af39601ed7cf800e1449ca12141ac1fdb33937f",
+      "bytes": 6864,
+      "sha256": "eb4524b90e69a8d0aa03eb38a3ba002293ee04d2f6719c4a5fd9b31f87334b7f",
+      "name": "sdk",
+      "events": [
+        "workflow_call"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "python-sdk",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "20",
+          "if": null
+        },
+        {
+          "id": "sdks",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "60",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/self-hosted-desktop-availability.yml",
+      "blob": "54fef7f63726fd870974223b2205b73664995f24",
+      "bytes": 1686,
+      "sha256": "228d2c0cf5c87ff7ae791a6b22a93e8dfbe7849caa5d9a0c10efcb7b2cde8606",
+      "name": "Self-hosted desktop runner availability",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "runner-probe",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "10",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/self-hosted-fleet-availability.yml",
+      "blob": "09d77076acd3a231a3b0245bc946349d7cff2188",
+      "bytes": 3346,
+      "sha256": "25de5bf36e21d196a6ea222a2a84d91cd225be53635ee5ed72bf48b8f9ddd084",
+      "name": "Self-hosted ROG Pocket4 and Mac availability",
+      "events": [
+        "workflow_dispatch"
+      ],
+      "concurrency": null,
+      "jobs": [
+        {
+          "id": "rog",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "10",
+          "if": null
+        },
+        {
+          "id": "pocket4",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "10",
+          "if": null
+        },
+        {
+          "id": "macbook",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "10",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "blob": "69509c54da76eee1a6cb5a350f231117174c784d",
+      "bytes": 6247,
+      "sha256": "dc7be5bbd1366233786f10939aa749cb0d5c12e029ac54c4c73c5f519d362a1e",
+      "name": "single-main-consolidation",
+      "events": [
+        "push"
+      ],
+      "concurrency": {
+        "group": "single-main-consolidation",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "stage-foundation",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "15",
+          "if": null
+        },
+        {
+          "id": "validate",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "20",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "blob": "7a4102412d01b6f63c4a7dceb490633733d8b0e5",
+      "bytes": 9987,
+      "sha256": "9a0dba6ba5120188c778254fa016ca74e5b195a23210e3aefd09e3d8b0502977",
+      "name": "single-main-foundation",
+      "events": [
+        "push"
+      ],
+      "concurrency": {
+        "group": "single-main-foundation",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "stage",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "15",
+          "if": null
+        },
+        {
+          "id": "source-and-format",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "20",
+          "if": null
+        },
+        {
+          "id": "focused-rust",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "45",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "blob": "f75d05e226d2b6579c8f029d91490591839e0b54",
+      "bytes": 4614,
+      "sha256": "1adcdca9c6900edd969fb30cedc5e75ff92ca4a611bdf63a28e5fb249bc5bb98",
+      "name": "single-main-maintenance",
+      "events": [
+        "push"
+      ],
+      "concurrency": {
+        "group": "single-main-maintenance",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "compiler-tools",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "15",
+          "if": null
+        },
+        {
+          "id": "focused-rust",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "45",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/trillionnium-os-attestation-handoff-check.yml",
+      "blob": "811964e6d542e70b7dd4cae955f80af76e4f411c",
+      "bytes": 2266,
+      "sha256": "ace90464faa80d769a93a82bee10659a5fe61e1938462c53564b383383f03bb9",
+      "name": "Trillionnium OS attestation handoff safety",
+      "events": [
+        "pull_request"
+      ],
+      "concurrency": {
+        "group": "trillionnium-os-attestation-handoff-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "verify-handoff",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "10",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/ui-product-foundation.yml",
+      "blob": "748773dfa939194f5b8184406a261def15817904",
+      "bytes": 33806,
+      "sha256": "dec7581a5bb0a85f2875fa22a18f4462a6c26b32fbbeded38f4e7be204e3327d",
+      "name": "Rust UI product foundation",
+      "events": [
+        "pull_request"
+      ],
+      "concurrency": {
+        "group": "rust-ui-product-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "robrix-host",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": [
+                "source-head",
+                "base-merge"
+              ]
+            }
+          },
+          "timeout_minutes": "60",
+          "if": "github.event.pull_request.head.repo.full_name == github.repository"
+        },
+        {
+          "id": "native-presentation",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "lane": [
+                "source-head",
+                "base-merge"
+              ]
+            }
+          },
+          "timeout_minutes": "45",
+          "if": "github.event.pull_request.head.repo.full_name == github.repository"
+        },
+        {
+          "id": "ui-bazel-lock-generation",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "60",
+          "if": "github.event.pull_request.head.repo.full_name == github.repository"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/ui-security-lock-proposal.yml",
+      "blob": "bb80893a8ada8e781360b8f1b13fc16c254456bc",
+      "bytes": 13523,
+      "sha256": "220cef9e3bbb9c4c85746deea981f0c364c09b49ee5378a4d06ce36ba8700893",
+      "name": "Generate UI security dependency proposal",
+      "events": [
+        "push"
+      ],
+      "concurrency": {
+        "group": "ui-native-security-generation",
+        "cancel-in-progress": "true"
+      },
+      "jobs": [
+        {
+          "id": "dependency-proposal",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "120",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "blob": "7bd9a55dcab283c743bd3a05f69c8c6c3e3ff2c4",
+      "bytes": 17390,
+      "sha256": "efc9d1351968fde9ef4257d108025b6cc16bd323ed1d835abe254f3d0ab2873b",
+      "name": "v8-canary",
+      "events": [
+        "workflow_call",
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "${{ github.ref_name != 'main' }}"
+      },
+      "jobs": [
+        {
+          "id": "metadata",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "90",
+          "if": null
+        },
+        {
+          "id": "build",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "runner": "ubuntu-24.04",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_amd64",
+                  "sandbox": "false",
+                  "target": "x86_64-unknown-linux-gnu",
+                  "v8_cpu": "x64",
+                  "variant": "release"
+                },
+                {
+                  "runner": "ubuntu-24.04",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_amd64",
+                  "sandbox": "true",
+                  "target": "x86_64-unknown-linux-gnu",
+                  "v8_cpu": "x64",
+                  "variant": "ptrcomp-sandbox"
+                },
+                {
+                  "runner": "ubuntu-24.04-arm",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_arm64",
+                  "sandbox": "false",
+                  "target": "aarch64-unknown-linux-gnu",
+                  "v8_cpu": "arm64",
+                  "variant": "release"
+                },
+                {
+                  "runner": "ubuntu-24.04-arm",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_arm64",
+                  "sandbox": "true",
+                  "target": "aarch64-unknown-linux-gnu",
+                  "v8_cpu": "arm64",
+                  "variant": "ptrcomp-sandbox"
+                },
+                {
+                  "runner": "macos-15-intel",
+                  "bazel_config": "ci-macos",
+                  "platform": "macos_amd64",
+                  "sandbox": "false",
+                  "target": "x86_64-apple-darwin",
+                  "v8_cpu": "x64",
+                  "variant": "release"
+                },
+                {
+                  "runner": "macos-15-intel",
+                  "bazel_config": "ci-macos",
+                  "platform": "macos_amd64",
+                  "sandbox": "true",
+                  "target": "x86_64-apple-darwin",
+                  "v8_cpu": "x64",
+                  "variant": "ptrcomp-sandbox"
+                },
+                {
+                  "runner": "macos-15",
+                  "bazel_config": "ci-macos",
+                  "platform": "macos_arm64",
+                  "sandbox": "false",
+                  "target": "aarch64-apple-darwin",
+                  "v8_cpu": "arm64",
+                  "variant": "release"
+                },
+                {
+                  "runner": "macos-15",
+                  "bazel_config": "ci-macos",
+                  "platform": "macos_arm64",
+                  "sandbox": "true",
+                  "target": "aarch64-apple-darwin",
+                  "v8_cpu": "arm64",
+                  "variant": "ptrcomp-sandbox"
+                },
+                {
+                  "runner": "ubuntu-24.04",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_amd64_musl",
+                  "sandbox": "false",
+                  "target": "x86_64-unknown-linux-musl",
+                  "v8_cpu": "x64",
+                  "variant": "release"
+                },
+                {
+                  "runner": "ubuntu-24.04",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_amd64_musl",
+                  "sandbox": "true",
+                  "target": "x86_64-unknown-linux-musl",
+                  "v8_cpu": "x64",
+                  "variant": "ptrcomp-sandbox"
+                },
+                {
+                  "runner": "ubuntu-24.04-arm",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_arm64_musl",
+                  "sandbox": "false",
+                  "target": "aarch64-unknown-linux-musl",
+                  "v8_cpu": "arm64",
+                  "variant": "release"
+                },
+                {
+                  "runner": "ubuntu-24.04-arm",
+                  "bazel_config": "ci-v8",
+                  "platform": "linux_arm64_musl",
+                  "sandbox": "true",
+                  "target": "aarch64-unknown-linux-musl",
+                  "v8_cpu": "arm64",
+                  "variant": "ptrcomp-sandbox"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "120",
+          "if": "${{ needs.metadata.outputs.canary_required == 'true' }}"
+        },
+        {
+          "id": "build-windows-source",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "include": [
+                {
+                  "runner": "windows-2025",
+                  "target": "x86_64-pc-windows-msvc"
+                },
+                {
+                  "runner": "windows-2025",
+                  "target": "aarch64-pc-windows-msvc"
+                }
+              ]
+            }
+          },
+          "timeout_minutes": "120",
+          "if": "${{ needs.metadata.outputs.windows_source_required == 'true' }}"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/windows-bazel-process-native.yml",
+      "blob": "0902ceaca163b9f32036029a1140c0b368ee3dfd",
+      "bytes": 6762,
+      "sha256": "d2462faa47da5839a99ebb812354ad69bfbc7c41ef03f427f5f23ec6a885d9f2",
+      "name": "Native Windows Bazel process environment",
+      "events": [
+        "pull_request",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "windows-bazel-process-${{ github.ref }}",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "native",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "ref-kind": [
+                "source-head",
+                "base-merge"
+              ]
+            }
+          },
+          "timeout_minutes": "120",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/windows-core-lifecycle.yml",
+      "blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88",
+      "bytes": 10189,
+      "sha256": "08f5998a000e117aa068b236a0ce677a571f67f8b946af861ea81ce7305d7f26",
+      "name": "Native Windows Core lifecycle ordering",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "windows-core-lifecycle-${{ github.ref }}",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "core-lifecycle",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "60",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/windows-ordinary-consumers.yml",
+      "blob": "6d3cbfe5532260cd8c6084b39d28f54916153484",
+      "bytes": 10967,
+      "sha256": "99ccd5f569251bc1fd6df65e5c999bfdf82bc30ab1f4daf5283670d3645d7eaf",
+      "name": "Native Windows ordinary business consumers",
+      "events": [
+        "pull_request"
+      ],
+      "concurrency": {
+        "group": "windows-ordinary-consumers-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "original-libraries",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": {
+            "fail-fast": "false",
+            "matrix": {
+              "revision": [
+                "source-head",
+                "base-merge"
+              ]
+            }
+          },
+          "timeout_minutes": "120",
+          "if": null
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/windows-retained-recovery.yml",
+      "blob": "dd4716a3540b752dc49e2ee193c90170187bf251",
+      "bytes": 9035,
+      "sha256": "bff03f860b15ee6cb313cd38051aad7d624d049ef366cdf0d22185cd2999faf9",
+      "name": "Native Windows retained recovery and cognitive owner",
+      "events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "concurrency": {
+        "group": "windows-retained-recovery-${{ github.ref }}",
+        "cancel-in-progress": "false"
+      },
+      "jobs": [
+        {
+          "id": "native",
+          "uses": null,
+          "with": null,
+          "concurrency": null,
+          "strategy": null,
+          "timeout_minutes": "30",
+          "if": null
+        }
+      ]
+    }
+  ],
+  "calls": [
+    {
+      "caller": ".github/workflows/blocking-ci.yml",
+      "id": "hepta-contract-gate",
+      "uses": "./.github/workflows/hepta-contract-gate.yml",
+      "with": {
+        "profile": "development"
+      },
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": "needs.scope.outputs.native == 'true' || needs.scope.outputs.full_repo == 'true'"
+    },
+    {
+      "caller": ".github/workflows/blocking-ci.yml",
+      "id": "bazel",
+      "uses": "./.github/workflows/bazel.yml",
+      "with": null,
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": "needs.scope.outputs.full_repo == 'true'"
+    },
+    {
+      "caller": ".github/workflows/blocking-ci.yml",
+      "id": "blob-size-policy",
+      "uses": "./.github/workflows/blob-size-policy.yml",
+      "with": null,
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    },
+    {
+      "caller": ".github/workflows/blocking-ci.yml",
+      "id": "cargo-deny",
+      "uses": "./.github/workflows/cargo-deny.yml",
+      "with": null,
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": "needs.scope.outputs.full_repo == 'true'"
+    },
+    {
+      "caller": ".github/workflows/blocking-ci.yml",
+      "id": "codespell",
+      "uses": "./.github/workflows/codespell.yml",
+      "with": null,
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    },
+    {
+      "caller": ".github/workflows/blocking-ci.yml",
+      "id": "repo-checks",
+      "uses": "./.github/workflows/repo-checks.yml",
+      "with": null,
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": "needs.scope.outputs.full_repo == 'true'"
+    },
+    {
+      "caller": ".github/workflows/blocking-ci.yml",
+      "id": "rust-ci",
+      "uses": "./.github/workflows/rust-ci.yml",
+      "with": null,
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": "needs.scope.outputs.full_repo == 'true'"
+    },
+    {
+      "caller": ".github/workflows/blocking-ci.yml",
+      "id": "sdk",
+      "uses": "./.github/workflows/sdk.yml",
+      "with": null,
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": "needs.scope.outputs.full_repo == 'true'"
+    },
+    {
+      "caller": ".github/workflows/postmerge-ci.yml",
+      "id": "rust-ci-full",
+      "uses": "./.github/workflows/rust-ci-full.yml",
+      "with": null,
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    },
+    {
+      "caller": ".github/workflows/postmerge-ci.yml",
+      "id": "v8-canary",
+      "uses": "./.github/workflows/v8-canary.yml",
+      "with": null,
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    },
+    {
+      "caller": ".github/workflows/python-runtime-release.yml",
+      "id": "prepare-python-runtime",
+      "uses": "./.github/workflows/python-runtime-build.yml",
+      "with": {
+        "runtime_version": "${{ inputs.runtime_version }}"
+      },
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    },
+    {
+      "caller": ".github/workflows/python-sdk-release.yml",
+      "id": "prepare-python-runtime",
+      "uses": "./.github/workflows/python-runtime-build.yml",
+      "with": {
+        "runtime_version": "${{ needs.resolve-python-release.outputs.runtime_version }}"
+      },
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    },
+    {
+      "caller": ".github/workflows/rust-ci-full.yml",
+      "id": "tests_macos_aarch64",
+      "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+      "with": {
+        "runner": "macos-15",
+        "target": "aarch64-apple-darwin",
+        "profile": "ci-test",
+        "artifact_id": "macos-aarch64",
+        "use_sccache": "true"
+      },
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    },
+    {
+      "caller": ".github/workflows/rust-ci-full.yml",
+      "id": "tests_linux_x64_remote",
+      "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+      "with": {
+        "runner": "ubuntu-24.04",
+        "target": "x86_64-unknown-linux-gnu",
+        "profile": "ci-test",
+        "artifact_id": "linux-x64-remote",
+        "remote_env": "true",
+        "use_sccache": "true"
+      },
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    },
+    {
+      "caller": ".github/workflows/rust-ci-full.yml",
+      "id": "tests_linux_arm64",
+      "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+      "with": {
+        "runner": "ubuntu-24.04-arm",
+        "target": "aarch64-unknown-linux-gnu",
+        "profile": "ci-test",
+        "artifact_id": "linux-arm64",
+        "use_sccache": "true"
+      },
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    },
+    {
+      "caller": ".github/workflows/rust-ci-full.yml",
+      "id": "tests_windows_x64",
+      "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+      "with": {
+        "runner": "windows-latest",
+        "target": "x86_64-pc-windows-msvc",
+        "profile": "ci-test",
+        "artifact_id": "windows-x64",
+        "test_threads": "8"
+      },
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    },
+    {
+      "caller": ".github/workflows/rust-ci-full.yml",
+      "id": "tests_windows_arm64",
+      "uses": "./.github/workflows/rust-ci-full-nextest-platform.yml",
+      "with": {
+        "runner": "windows-11-arm",
+        "archive_runner": "windows-latest",
+        "target": "aarch64-pc-windows-msvc",
+        "profile": "ci-test",
+        "artifact_id": "windows-arm64",
+        "test_threads": "8",
+        "use_sccache": "true"
+      },
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    },
+    {
+      "caller": ".github/workflows/rust-release.yml",
+      "id": "build-windows",
+      "uses": "./.github/workflows/rust-release-windows.yml",
+      "with": null,
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    },
+    {
+      "caller": ".github/workflows/rust-release.yml",
+      "id": "argument-comment-lint-release-assets",
+      "uses": "./.github/workflows/rust-release-argument-comment-lint.yml",
+      "with": {
+        "publish": "true"
+      },
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    },
+    {
+      "caller": ".github/workflows/rust-release.yml",
+      "id": "publish-r2-assets",
+      "uses": "./.github/workflows/r2-release.yml",
+      "with": {
+        "tag": "${{ needs.release.outputs.tag }}",
+        "make_latest": "${{ fromJSON(needs.release.outputs.make_latest) }}",
+        "prerelease": "${{ fromJSON(needs.release.outputs.prerelease) }}",
+        "stage": "assets"
+      },
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    },
+    {
+      "caller": ".github/workflows/rust-release.yml",
+      "id": "publish-r2",
+      "uses": "./.github/workflows/r2-release.yml",
+      "with": {
+        "tag": "${{ needs.release.outputs.tag }}",
+        "make_latest": "${{ fromJSON(needs.release.outputs.make_latest) }}",
+        "prerelease": "${{ fromJSON(needs.release.outputs.prerelease) }}",
+        "stage": "finalize"
+      },
+      "concurrency": null,
+      "strategy": null,
+      "timeout_minutes": null,
+      "if": null
+    }
+  ],
+  "groups": [
+    {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}",
+        "cancel-in-progress": "${{ github.ref_name != 'main' }}"
+      }
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-algorithm-docs.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-algorithm-docs-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-app-server-schema-refresh.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "app-server-schema-refresh-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-architecture-convergence-${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-assimilation-discovery.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-scoped-discovery-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-audit-remediation.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-audit-remediation-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-bazel-stable-lock-proposal.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "bazel-stable-lock-proposal-${{ github.event.pull_request.head.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-browser-agentd-composition.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-browser-agentd-composition-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-browser-servo-deployment-qualification",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-worker-dev.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-browser-servo-worker-dev-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-cns-embodiment.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-cns-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-consolidated-source.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-consolidated-source-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-converged-learning.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-converged-learning-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-deployment-handoff.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-deployment-handoff-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-development-docs.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-development-docs-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-diagnostic-source-export.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-diagnostic-source-export-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-exec-authorized-read-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-agentd-process-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-implementation-readiness.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-implementation-readiness-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-inference-maintenance.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-inference-maintenance-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-integration-diagnostics.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-integration-diagnostics-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-intuition-qualification.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-intuition-qualification-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-kernel-evidence-qualification.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "kernel-evidence-qualification-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-knowledge-graph-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-lane-b-truth.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-lane-b-source-closure-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-lane-d-semantic-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-lane-e-gap-closure.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-lane-e-gap-closure-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-lane-f-shadow-qualification.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "lane-f-shadow-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-learning-ledger-durable.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-learning-ledger-durable-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-memory-retrieval-qualification-host-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-musl-product-smoke.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-musl-product-smoke::${{ github.ref }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-ndu-recursion.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-ndu-recursion-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-objective-admission.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-objective-admission-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-objective-owner.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "original-objective-owner-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-objective-product-composition.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-objective-product-composition-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-offline-build-inputs.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-offline-build-inputs-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-operator-acceptance-native.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-operator-native-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-organ-implementation.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-organ-implementation-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-owner-local-native.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-owner-local-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-production-hos2-proposal.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "production-hos2-proposal-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-repository-integrity.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-repository-integrity-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-windows-private-state-native.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "hepta-windows-private-state-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/lane-a-foundation.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "lane-a-foundation-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/memory-federation-v2-final-verify.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "memory-federation-v2-final-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/openbao-compatibility.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "openbao-compatibility-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/postmerge-ci.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "postmerge-ci-main",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/python-runtime-release.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "python-runtime-release-${{ inputs.runtime_version }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/python-sdk-release.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "${{ github.workflow }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "rust-ci-full-${{ github.ref_name }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/rust-release-prepare.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "${{ github.workflow }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/rust-release-zsh.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "${{ github.workflow }}::${{ github.ref_name }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "${{ github.workflow }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "${{ github.workflow }}::${{ github.ref_name }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "single-main-consolidation",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "single-main-foundation",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "single-main-maintenance",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/trillionnium-os-attestation-handoff-check.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "trillionnium-os-attestation-handoff-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/ui-product-foundation.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "rust-ui-product-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/ui-security-lock-proposal.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "ui-native-security-generation",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "${{ github.ref_name != 'main' }}"
+      }
+    },
+    {
+      "path": ".github/workflows/windows-bazel-process-native.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "windows-bazel-process-${{ github.ref }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/windows-core-lifecycle.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "windows-core-lifecycle-${{ github.ref }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/windows-ordinary-consumers.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "windows-ordinary-consumers-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/windows-retained-recovery.yml",
+      "scope": "workflow",
+      "value": {
+        "group": "windows-retained-recovery-${{ github.ref }}",
+        "cancel-in-progress": "false"
+      }
+    }
+  ],
+  "all_concurrency_named_keys": [
+    {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}",
+        "cancel-in-progress": "${{ github.ref_name != 'main' }}"
+      }
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-algorithm-docs.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-algorithm-docs-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-app-server-schema-refresh.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "app-server-schema-refresh-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-architecture-convergence-${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-assimilation-discovery.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-scoped-discovery-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-audit-remediation.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-audit-remediation-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-bazel-stable-lock-proposal.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "bazel-stable-lock-proposal-${{ github.event.pull_request.head.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-browser-agentd-composition.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-browser-agentd-composition-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-browser-servo-deployment-qualification",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-browser-servo-worker-dev.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-browser-servo-worker-dev-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-cns-embodiment.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-cns-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-consolidated-source.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-consolidated-source-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-converged-learning.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-converged-learning-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-deployment-handoff.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-deployment-handoff-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-development-docs.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-development-docs-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-diagnostic-source-export.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-diagnostic-source-export-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-exec-authorized-read-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-agentd-process-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-implementation-readiness.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-implementation-readiness-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-inference-maintenance.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-inference-maintenance-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-integration-diagnostics.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-integration-diagnostics-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-intuition-qualification.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-intuition-qualification-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-kernel-evidence-qualification.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "kernel-evidence-qualification-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-knowledge-graph-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-lane-b-truth.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-lane-b-source-closure-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-lane-d-semantic-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-lane-e-gap-closure.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-lane-e-gap-closure-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-lane-f-shadow-qualification.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "lane-f-shadow-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-learning-ledger-durable.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-learning-ledger-durable-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-memory-retrieval-qualification-host-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-musl-product-smoke.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-musl-product-smoke::${{ github.ref }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-ndu-recursion.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-ndu-recursion-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-objective-admission.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-objective-admission-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-objective-owner.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "original-objective-owner-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-objective-product-composition.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-objective-product-composition-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-offline-build-inputs.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-offline-build-inputs-${{ github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-operator-acceptance-native.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-operator-native-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-organ-implementation.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-organ-implementation-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-owner-local-native.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-owner-local-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-production-hos2-proposal.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "production-hos2-proposal-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-repository-integrity.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-repository-integrity-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-windows-private-state-native.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "hepta-windows-private-state-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/lane-a-foundation.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "lane-a-foundation-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/memory-federation-v2-final-verify.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "memory-federation-v2-final-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/openbao-compatibility.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "openbao-compatibility-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/postmerge-ci.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "postmerge-ci-main",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/python-runtime-release.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "python-runtime-release-${{ inputs.runtime_version }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/python-sdk-release.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "${{ github.workflow }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "rust-ci-full-${{ github.ref_name }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/rust-release-prepare.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "${{ github.workflow }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/rust-release-zsh.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "${{ github.workflow }}::${{ github.ref_name }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/rust-release.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "${{ github.workflow }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/rusty-v8-release.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "${{ github.workflow }}::${{ github.ref_name }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/single-main-consolidation.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "single-main-consolidation",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/single-main-foundation.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "single-main-foundation",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/single-main-maintenance.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "single-main-maintenance",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/trillionnium-os-attestation-handoff-check.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "trillionnium-os-attestation-handoff-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/ui-product-foundation.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "rust-ui-product-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/ui-security-lock-proposal.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "ui-native-security-generation",
+        "cancel-in-progress": "true"
+      }
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "${{ github.workflow }}::${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "${{ github.ref_name != 'main' }}"
+      }
+    },
+    {
+      "path": ".github/workflows/windows-bazel-process-native.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "windows-bazel-process-${{ github.ref }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/windows-core-lifecycle.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "windows-core-lifecycle-${{ github.ref }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/windows-ordinary-consumers.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "windows-ordinary-consumers-${{ github.event.pull_request.number }}",
+        "cancel-in-progress": "false"
+      }
+    },
+    {
+      "path": ".github/workflows/windows-retained-recovery.yml",
+      "location": "/concurrency",
+      "value": {
+        "group": "windows-retained-recovery-${{ github.ref }}",
+        "cancel-in-progress": "false"
+      }
+    }
+  ]
+}

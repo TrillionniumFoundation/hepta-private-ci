@@ -1,0 +1,41 @@
+{
+  "ast_parse": true,
+  "controller": {
+    "args": [
+      "-c",
+      "<exact runner bytes>"
+    ],
+    "cwd": "/",
+    "executable": "/usr/bin/python3",
+    "host": "ai395",
+    "idempotency_key": "hepta-ai395-pty-diagnostic-20261105-v1",
+    "stdin": "<exact request bytes>",
+    "timeout_seconds": 7200
+  },
+  "disabled_plan": {
+    "bytes": 17126,
+    "git_blob": "07d20f05d124fc68f2acc1c32925aa74263c1aa5",
+    "local_path": "ci-audit/recovered-20261105/pty-diagnostic-ai395-plan-v1/disabled-plan.json",
+    "sha256": "c6d57de4c5b266d56c915a264f641383a3e76b452ab3b4d4bf789f1df8ab859a"
+  },
+  "execution_request": {
+    "bytes": 17408,
+    "git_blob": "32f274147f218a37126c6de23f27aeafb12b0058",
+    "local_path": "ci-audit/recovered-20261105/pty-diagnostic-ai395-plan-v1/execution-request.json",
+    "sha256": "5b8d7b381e243d101280c21c2b45a7e4af7754ba2c098668e7705de6c1dbadad"
+  },
+  "native_started": false,
+  "root_message_materialized_guard": {
+    "bytes": 1611,
+    "git_blob": "400f501be651f65f83e2c1c0c4057d24bfb68612",
+    "local_path": "ci-audit/recovered-20261105/pty-diagnostic-ai395-plan-v1/execution-guard.json",
+    "sha256": "144efdfd5cdc23273495953463766b94ff386f549a0b3791bf45c2315c18943b"
+  },
+  "runner": {
+    "bytes": 24002,
+    "git_blob": "7bf926c0cb2021bb534bb549c909750c68464bb4",
+    "local_path": "ci-audit/recovered-20261105/pty-diagnostic-ai395-plan-v1/run_pty_diagnostic.py",
+    "sha256": "a08ed3d7f83beeb684131235051c87372b5924ea54f9ff2a6e1c10b696c49666"
+  },
+  "schema": "hepta-pty-diagnostic-ai395-delivery-v1"
+}

@@ -1,0 +1,1223 @@
+{
+  "build_executed": false,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/dpkg-query",
+        "-W",
+        "-f=${Version}",
+        "libssl3t64"
+      ],
+      "capacity_after": {
+        "at": "2026-11-05T08:49:26.365527+00:00",
+        "available_bytes": 891777572864,
+        "f_bavail": 217719134,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:49:26.113447+00:00",
+        "available_bytes": 891780886528,
+        "f_bavail": 217719943,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "cargo_profile": "dev-small",
+      "completed_at": "2026-11-05T08:49:26.125694+00:00",
+      "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+      "duration_seconds": 0.012204845086671412,
+      "exit_code": 0,
+      "label": "01-installed-runtime-version",
+      "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_guard_after": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "39cf64c10b156e50a795d9321af0f79729b209d8",
+        "inode": 66869130,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/01-installed-runtime-version-after.guard.json",
+        "sha256": "1f0c341f7e5959aa22dda431559e9d1b946d3f48dedc6d22f22930a0deaaff4a"
+      },
+      "source_guard_before": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "8cf5ca6d6102e5d94ece54cb3d54fac6707dff07",
+        "inode": 66869124,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/01-installed-runtime-version-before.guard.json",
+        "sha256": "dcabcde9d880997974436b403ecb50b5e9b5578dd7ea6ff30492eaf8e1ba6fbc"
+      },
+      "started_at": "2026-11-05T08:49:26.113443+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 66869127,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/01-installed-runtime-version.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 16,
+        "dev": 66306,
+        "git_blob": "34fbc5e8eece7bae5010e869f499c5da64d3b3f9",
+        "inode": 66869126,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/01-installed-runtime-version.stdout.original",
+        "sha256": "92e8c3e33abe15bdbd43af41a8f12f1d035d9be3d30a87bb06e2c0e7815b377c"
+      },
+      "tests_executed": false
+    },
+    {
+      "argv": [
+        "/usr/bin/apt-cache",
+        "show",
+        "--no-all-versions",
+        "libssl-dev=3.5.5-1ubuntu3.7"
+      ],
+      "capacity_after": {
+        "at": "2026-11-05T08:49:27.004555+00:00",
+        "available_bytes": 891767840768,
+        "f_bavail": 217716758,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:49:26.605965+00:00",
+        "available_bytes": 891774275584,
+        "f_bavail": 217718329,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "cargo_profile": "dev-small",
+      "completed_at": "2026-11-05T08:49:26.764371+00:00",
+      "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+      "duration_seconds": 0.15837995894253254,
+      "exit_code": 0,
+      "label": "libssl-dev-metadata",
+      "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_guard_after": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "53c67752a80364fe71b736fbf41fe616a372eeaf",
+        "inode": 66869142,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata-after.guard.json",
+        "sha256": "562db82e52190d5d95149aaa4648e12440162fc7e9107b4563a4c390d5b796f5"
+      },
+      "source_guard_before": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "bc6b95ca8dc2bd8e97c1cd9c813549010f69a5e6",
+        "inode": 66869136,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata-before.guard.json",
+        "sha256": "869bd8849a450981788bd4cb9c354d5157eed7db692fa1c3a19e7b6b2f03e0d3"
+      },
+      "started_at": "2026-11-05T08:49:26.605961+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 66869139,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1217,
+        "dev": 66306,
+        "git_blob": "fad861fb442594fc113ac96075fa830bc2546c3f",
+        "inode": 66869138,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata.stdout.original",
+        "sha256": "91b2fe96665421a29f3133de3eda3cede48e3191e6b7cd6c6636e73873297d71"
+      },
+      "tests_executed": false
+    },
+    {
+      "argv": [
+        "/usr/bin/dpkg-deb",
+        "--extract",
+        "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/downloads/libssl-dev_3.5.5-1ubuntu3.7_amd64.deb",
+        "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot"
+      ],
+      "capacity_after": {
+        "at": "2026-11-05T08:49:32.304115+00:00",
+        "available_bytes": 891643842560,
+        "f_bavail": 217686485,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:49:32.046168+00:00",
+        "available_bytes": 891667001344,
+        "f_bavail": 217692139,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "cargo_profile": "dev-small",
+      "completed_at": "2026-11-05T08:49:32.065041+00:00",
+      "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+      "duration_seconds": 0.01883771293796599,
+      "exit_code": 0,
+      "label": "libssl-dev-data-only-extract",
+      "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_guard_after": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "ac3ffff7692e62064faf32cb521f1e13d2bb6266",
+        "inode": 66869322,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract-after.guard.json",
+        "sha256": "90367efd24b91241dc480949b13207f37ebd10fde152a98be371bf961ace12e3"
+      },
+      "source_guard_before": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "71d07e3a56632b866c3a0f6a8d5e9c26b8f7ee14",
+        "inode": 66869150,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract-before.guard.json",
+        "sha256": "6f261825cfecec11a88fc8872cc4560fef0dd97391df6205a88181de8abf899d"
+      },
+      "started_at": "2026-11-05T08:49:32.046164+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 66869153,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 66869152,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract.stdout.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "tests_executed": false
+    },
+    {
+      "argv": [
+        "/usr/bin/apt-cache",
+        "show",
+        "--no-all-versions",
+        "libssl3t64=3.5.5-1ubuntu3.7"
+      ],
+      "capacity_after": {
+        "at": "2026-11-05T08:49:32.946311+00:00",
+        "available_bytes": 891624595456,
+        "f_bavail": 217681786,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:49:32.555603+00:00",
+        "available_bytes": 891636723712,
+        "f_bavail": 217684747,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "cargo_profile": "dev-small",
+      "completed_at": "2026-11-05T08:49:32.707686+00:00",
+      "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+      "duration_seconds": 0.15206673904322088,
+      "exit_code": 0,
+      "label": "libssl3t64-metadata",
+      "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_guard_after": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "c94655e6da187e4dfde8de75b54211e963452969",
+        "inode": 66869331,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata-after.guard.json",
+        "sha256": "18a822cd84e383b638112c4c8b52476f45a69dfcd597cefed6ba11a544aab116"
+      },
+      "source_guard_before": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "ac76f6fb83902a14f15adadc27d74d9c6cabd12a",
+        "inode": 66869325,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata-before.guard.json",
+        "sha256": "996035c405300a9a04fcaed0b437854308fb6fc6e81edc224d26baf0384aca13"
+      },
+      "started_at": "2026-11-05T08:49:32.555599+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 66869328,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1437,
+        "dev": 66306,
+        "git_blob": "ae6a56fc92222eb3115e81b7b6e627f0c6b90915",
+        "inode": 66869327,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata.stdout.original",
+        "sha256": "1b8f9bde4a9497aa9d2ee55227211d0dc1c85b5fab8e5b9b6255db7f441dbe1e"
+      },
+      "tests_executed": false
+    },
+    {
+      "argv": [
+        "/usr/bin/dpkg-deb",
+        "--extract",
+        "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/downloads/libssl3t64_3.5.5-1ubuntu3.7_amd64.deb",
+        "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot"
+      ],
+      "capacity_after": {
+        "at": "2026-11-05T08:49:40.537128+00:00",
+        "available_bytes": 890963558400,
+        "f_bavail": 217520400,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:49:40.288972+00:00",
+        "available_bytes": 890973528064,
+        "f_bavail": 217522834,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "cargo_profile": "dev-small",
+      "completed_at": "2026-11-05T08:49:40.300940+00:00",
+      "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+      "duration_seconds": 0.01192954508587718,
+      "exit_code": 0,
+      "label": "libssl3t64-data-only-extract",
+      "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_guard_after": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "d213080acf7d81a382e97ba0b2ac42dbcac40594",
+        "inode": 66869363,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract-after.guard.json",
+        "sha256": "c7c8921e7bf9afb4c676579cdd2fc2db7dca34cd15dd638a6717e6df8b81957d"
+      },
+      "source_guard_before": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "721c1f2cb5d8548ae39e962b60bfe4a005caaf34",
+        "inode": 66869344,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract-before.guard.json",
+        "sha256": "e108dc72c3de9375b80e8356c8b5bbdb09a2a0d0e5aa461479d0afba584ce55b"
+      },
+      "started_at": "2026-11-05T08:49:40.288969+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 66869347,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 66869346,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract.stdout.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "tests_executed": false
+    },
+    {
+      "argv": [
+        "/usr/bin/pkg-config",
+        "--define-variable=prefix=/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr",
+        "--define-variable=includedir=/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include",
+        "--define-variable=libdir=/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu",
+        "--modversion",
+        "openssl"
+      ],
+      "capacity_after": {
+        "at": "2026-11-05T08:49:41.046338+00:00",
+        "available_bytes": 890957967360,
+        "f_bavail": 217519035,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:49:40.811450+00:00",
+        "available_bytes": 890960613376,
+        "f_bavail": 217519681,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "cargo_profile": "dev-small",
+      "completed_at": "2026-11-05T08:49:40.812030+00:00",
+      "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+      "duration_seconds": 0.0005390410078689456,
+      "exit_code": 0,
+      "label": "pkg-config-version",
+      "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_guard_after": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "740e3cbdfb3a103ec65ab56f984c3299f66a7479",
+        "inode": 66869520,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version-after.guard.json",
+        "sha256": "3823c7a4835f3b380c481d722a3e4237d140bc11495c07328d8b03381bcff681"
+      },
+      "source_guard_before": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "24d95edcbea4eeda1a3fe45da48153faef059048",
+        "inode": 66869514,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version-before.guard.json",
+        "sha256": "e6afc41a69da36fb8c0a4b75e992f02bcda4057d5497b41353b31637fc8b51ed"
+      },
+      "started_at": "2026-11-05T08:49:40.811447+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 66869517,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 6,
+        "dev": 66306,
+        "git_blob": "7d280e2cd476e3b95ea26bb6842b575197e53f53",
+        "inode": 66869516,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version.stdout.original",
+        "sha256": "8ec82964f3c2d35b593360c9ca94418e4079e96d1522e4fd5f9b95c1d7ba6716"
+      },
+      "tests_executed": false
+    },
+    {
+      "argv": [
+        "/usr/bin/pkg-config",
+        "--define-variable=prefix=/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr",
+        "--define-variable=includedir=/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include",
+        "--define-variable=libdir=/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu",
+        "--libs",
+        "--cflags",
+        "openssl"
+      ],
+      "capacity_after": {
+        "at": "2026-11-05T08:49:41.523124+00:00",
+        "available_bytes": 890952708096,
+        "f_bavail": 217517751,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "capacity_before": {
+        "at": "2026-11-05T08:49:41.284710+00:00",
+        "available_bytes": 890955358208,
+        "f_bavail": 217518398,
+        "f_frsize": 4096,
+        "minimum_bytes": 64000000000,
+        "path": "/home/qq/work/hepta-audit-b16-20261105"
+      },
+      "cargo_profile": "dev-small",
+      "completed_at": "2026-11-05T08:49:41.285692+00:00",
+      "cwd": "/home/qq/work/hepta-audit-b16-20261105/source/codex-rs",
+      "duration_seconds": 0.0009368169121444225,
+      "exit_code": 0,
+      "label": "pkg-config-relocated-flags",
+      "source_after": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_before": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+      "source_guard_after": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "a779d3592d030043b1dbb380773d335f35c274f1",
+        "inode": 66869529,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags-after.guard.json",
+        "sha256": "9754d4ef8dd1466fccfea0260419f09c40f19b7ab0f50d3cf60efc54cf2e4742"
+      },
+      "source_guard_before": {
+        "bytes": 3239,
+        "dev": 66306,
+        "git_blob": "ee2ecffe8645e935c62a17def55c77588e3e4fa2",
+        "inode": 66869523,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags-before.guard.json",
+        "sha256": "4c63a1132e977808eac27eeaf595f250f2e91692bab98613632fd99eb9dc255c"
+      },
+      "started_at": "2026-11-05T08:49:41.284707+00:00",
+      "stderr": {
+        "bytes": 0,
+        "dev": 66306,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "inode": 66869526,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 200,
+        "dev": 66306,
+        "git_blob": "10fca97b6351008a27da33f1beaaa75e0efcacb2",
+        "inode": 66869525,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags.stdout.original",
+        "sha256": "ac3015c18cf3ae2cd9e3a9b10d5355c6235600df70bc9b240093cf2d68b5f220"
+      },
+      "tests_executed": false
+    }
+  ],
+  "completed_at": "2026-11-05T08:49:41.761531+00:00",
+  "errors": [],
+  "final_guard": {
+    "bytes": 3239,
+    "dev": 66306,
+    "git_blob": "25e4979638a9d8bdd04ad4be4684f64f0f3c7804",
+    "inode": 66869532,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/final.guard.json",
+    "sha256": "765242425329ec205e81b63dcc40c30a9f115b4dddeeedbc7ad71b35541b5e5c"
+  },
+  "initial_guard": {
+    "bytes": 3239,
+    "dev": 66306,
+    "git_blob": "de11feedc2a8fd841f8217299b16b301807554f6",
+    "inode": 66869122,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/initial.guard.json",
+    "sha256": "4dbf40e6d738a03031c372c849ca44c1776eab8df0fa8a5b352f42f1cd6cd7fe"
+  },
+  "records": [
+    {
+      "bytes": 1000,
+      "dev": 66306,
+      "git_blob": "2efaed43bea7a5c728a9302366febd3b4a96ae1e",
+      "inode": 66869120,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/request.original.json",
+      "sha256": "835a7d6593f0d9a3ec5efb1bf80a461292c73610354264524b70db1f4ad3dd87"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "de11feedc2a8fd841f8217299b16b301807554f6",
+      "inode": 66869122,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/initial.guard.json",
+      "sha256": "4dbf40e6d738a03031c372c849ca44c1776eab8df0fa8a5b352f42f1cd6cd7fe"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "8cf5ca6d6102e5d94ece54cb3d54fac6707dff07",
+      "inode": 66869124,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/01-installed-runtime-version-before.guard.json",
+      "sha256": "dcabcde9d880997974436b403ecb50b5e9b5578dd7ea6ff30492eaf8e1ba6fbc"
+    },
+    {
+      "bytes": 1034,
+      "dev": 66306,
+      "git_blob": "85c467ddd4a6dbaf5ab034ad6a8f2ff759d0b407",
+      "inode": 66869125,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/01-installed-runtime-version.command.json",
+      "sha256": "59e7344086baf20096ca2e5234059a10006e0ff5e6adb924ff3f07121fe30621"
+    },
+    {
+      "bytes": 16,
+      "dev": 66306,
+      "git_blob": "34fbc5e8eece7bae5010e869f499c5da64d3b3f9",
+      "inode": 66869126,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/01-installed-runtime-version.stdout.original",
+      "sha256": "92e8c3e33abe15bdbd43af41a8f12f1d035d9be3d30a87bb06e2c0e7815b377c"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 66869127,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/01-installed-runtime-version.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1931,
+      "dev": 66306,
+      "git_blob": "39c00ff1f68b4291d5c0d2418f94a92631a993c0",
+      "inode": 66869128,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/01-installed-runtime-version.execution.json",
+      "sha256": "ea17ca4cca7db661f466d490cc246b73f4ed5674d651c5db15e3461c5a2093ff"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "39cf64c10b156e50a795d9321af0f79729b209d8",
+      "inode": 66869130,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/01-installed-runtime-version-after.guard.json",
+      "sha256": "1f0c341f7e5959aa22dda431559e9d1b946d3f48dedc6d22f22930a0deaaff4a"
+    },
+    {
+      "bytes": 2645,
+      "dev": 66306,
+      "git_blob": "142d9f4ad4b3972cec833d9a56949c84be391a12",
+      "inode": 66869131,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/01-installed-runtime-version.status.json",
+      "sha256": "2281cad31a87a4a3cd38cf4e43e36e10b4f243d31ea69149d5a81433fc79e30a"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "bc6b95ca8dc2bd8e97c1cd9c813549010f69a5e6",
+      "inode": 66869136,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata-before.guard.json",
+      "sha256": "869bd8849a450981788bd4cb9c354d5157eed7db692fa1c3a19e7b6b2f03e0d3"
+    },
+    {
+      "bytes": 1038,
+      "dev": 66306,
+      "git_blob": "fe060e58fd086a6a8b7c4ecad21d6612de0f5d3e",
+      "inode": 66869137,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata.command.json",
+      "sha256": "8d2512d20b23c5573eab58ca2993f373409cc63e95296654a48a98cfb89cb09a"
+    },
+    {
+      "bytes": 1217,
+      "dev": 66306,
+      "git_blob": "fad861fb442594fc113ac96075fa830bc2546c3f",
+      "inode": 66869138,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata.stdout.original",
+      "sha256": "91b2fe96665421a29f3133de3eda3cede48e3191e6b7cd6c6636e73873297d71"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 66869139,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1918,
+      "dev": 66306,
+      "git_blob": "86503a1c1a2941131811e9d73638adfb7f1f57ec",
+      "inode": 66869140,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata.execution.json",
+      "sha256": "f837fc353302a879127f4186ac7fd8959463cb1fb3cd3d0d53df9efd7e91b9d3"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "53c67752a80364fe71b736fbf41fe616a372eeaf",
+      "inode": 66869142,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata-after.guard.json",
+      "sha256": "562db82e52190d5d95149aaa4648e12440162fc7e9107b4563a4c390d5b796f5"
+    },
+    {
+      "bytes": 2623,
+      "dev": 66306,
+      "git_blob": "a84a679a2b51ca888f654910ef9c0a0b8499127d",
+      "inode": 66869143,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-metadata.status.json",
+      "sha256": "318af1041e456ccc6c927db9110f86b454f9ee3e68e3a77b7e190ad3a60f5fd0"
+    },
+    {
+      "bytes": 673,
+      "dev": 66306,
+      "git_blob": "8132d8941130e97d5fd6441138ba39964159a36c",
+      "inode": 66869145,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-download.json",
+      "sha256": "9ff9bf31c998b924817080d890099a3c3599158c0f4712a5d2dd73a2c5fb0189"
+    },
+    {
+      "bytes": 16199680,
+      "dev": 66306,
+      "git_blob": "5224b9b43fe5a5cb40b26e9cabb4e9ab06c30513",
+      "inode": 66869146,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev.data.tar",
+      "sha256": "202e8c36782bfae34e702da79589f8669c72d78574a7fb902c66b1dc35ee5cc9"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 66869147,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev.data-tar.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 22017,
+      "dev": 66306,
+      "git_blob": "b1428a36392605b967d720366f05ea54aa855b5c",
+      "inode": 66869148,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-members.json",
+      "sha256": "010bd42e27470ed5aa26ffd08ecb4d789f358dc190c07334b6d74a6d5aa4f7c1"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "71d07e3a56632b866c3a0f6a8d5e9c26b8f7ee14",
+      "inode": 66869150,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract-before.guard.json",
+      "sha256": "6f261825cfecec11a88fc8872cc4560fef0dd97391df6205a88181de8abf899d"
+    },
+    {
+      "bytes": 1210,
+      "dev": 66306,
+      "git_blob": "0faff95af0d4e040b75671819a03f1480b7783de",
+      "inode": 66869151,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract.command.json",
+      "sha256": "d05baed6539c20b37e847402ec892e891794a1309557e8badea2802dfa664498"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 66869152,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 66869153,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2105,
+      "dev": 66306,
+      "git_blob": "1acf5fc5114ade6d2c5c2b656bd43fa9a19b6249",
+      "inode": 66869320,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract.execution.json",
+      "sha256": "72ed6ed3d2092696aef32d93be0f7fb46324f62c058f20df7030867383acda99"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "ac3ffff7692e62064faf32cb521f1e13d2bb6266",
+      "inode": 66869322,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract-after.guard.json",
+      "sha256": "90367efd24b91241dc480949b13207f37ebd10fde152a98be371bf961ace12e3"
+    },
+    {
+      "bytes": 2819,
+      "dev": 66306,
+      "git_blob": "15688a8218549bf3f3a6460b2f6f1e775c6afe50",
+      "inode": 66869323,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl-dev-data-only-extract.status.json",
+      "sha256": "28739b729de5f51cd21c422f709919e89d86e03a6bda7eb5ed77f927f203ba2b"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "ac76f6fb83902a14f15adadc27d74d9c6cabd12a",
+      "inode": 66869325,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata-before.guard.json",
+      "sha256": "996035c405300a9a04fcaed0b437854308fb6fc6e81edc224d26baf0384aca13"
+    },
+    {
+      "bytes": 1038,
+      "dev": 66306,
+      "git_blob": "ca38eb894f019df4aaae042bcc54d8bba9d6603a",
+      "inode": 66869326,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata.command.json",
+      "sha256": "b463ad49f92c782840ca1974edc45eedef93460ad327099bbe5770782059a5d9"
+    },
+    {
+      "bytes": 1437,
+      "dev": 66306,
+      "git_blob": "ae6a56fc92222eb3115e81b7b6e627f0c6b90915",
+      "inode": 66869327,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata.stdout.original",
+      "sha256": "1b8f9bde4a9497aa9d2ee55227211d0dc1c85b5fab8e5b9b6255db7f441dbe1e"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 66869328,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1918,
+      "dev": 66306,
+      "git_blob": "64958f1f052cc28b97969f5e95c3f96377888456",
+      "inode": 66869329,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata.execution.json",
+      "sha256": "6e4aa5287818b3bb8da9b7e649be1bbdf18c8a6413b220b64d8270d811c051db"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "c94655e6da187e4dfde8de75b54211e963452969",
+      "inode": 66869331,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata-after.guard.json",
+      "sha256": "18a822cd84e383b638112c4c8b52476f45a69dfcd597cefed6ba11a544aab116"
+    },
+    {
+      "bytes": 2623,
+      "dev": 66306,
+      "git_blob": "ced29906e8d4eef2dfbed1e827f09c3c27756be5",
+      "inode": 66869332,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-metadata.status.json",
+      "sha256": "ad75421021840a7015df09d195f6dcc30ece4a87bfe971063c8b0ba3d2d9c075"
+    },
+    {
+      "bytes": 674,
+      "dev": 66306,
+      "git_blob": "203f81283a3c556fd7e20c2f2077e7fe727c319a",
+      "inode": 66869339,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-download.json",
+      "sha256": "fc76c73edc74ac9e7b3d9aa3c63be22709ed2e20a2be0265b6564f0114ee3bb6"
+    },
+    {
+      "bytes": 7639040,
+      "dev": 66306,
+      "git_blob": "9ffd12b3712f1d81f952e2e00d9148e89ff30eb7",
+      "inode": 66869340,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64.data.tar",
+      "sha256": "e245dc0f338243ec0e92d0fddcbbb68fe5fb4cfa1b166a9524497bb5dec20aca"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 66869341,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64.data-tar.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2462,
+      "dev": 66306,
+      "git_blob": "fe0be613b546df4702ea834fb0a38a0d8f80e5e7",
+      "inode": 66869342,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-members.json",
+      "sha256": "e5dda5013b5421cf69ebe53bc22715c0309773f0997b39f2c6189080fc6f510d"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "721c1f2cb5d8548ae39e962b60bfe4a005caaf34",
+      "inode": 66869344,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract-before.guard.json",
+      "sha256": "e108dc72c3de9375b80e8356c8b5bbdb09a2a0d0e5aa461479d0afba584ce55b"
+    },
+    {
+      "bytes": 1210,
+      "dev": 66306,
+      "git_blob": "8c5b4aa1dfeed2ee4063c4bb018a1177aaa7ca5b",
+      "inode": 66869345,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract.command.json",
+      "sha256": "227065098a97405069fb9d55e2b57c739781641799d09e58d51d01f79b4f2eaa"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 66869346,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 66869347,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2105,
+      "dev": 66306,
+      "git_blob": "7bcf62c032e24909914b4648e9a5a782e0602075",
+      "inode": 66869361,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract.execution.json",
+      "sha256": "f7127e1d3e1897712f7286b29d782f9ab4a0bd758592d204fb5222add19306fb"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "d213080acf7d81a382e97ba0b2ac42dbcac40594",
+      "inode": 66869363,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract-after.guard.json",
+      "sha256": "c7c8921e7bf9afb4c676579cdd2fc2db7dca34cd15dd638a6717e6df8b81957d"
+    },
+    {
+      "bytes": 2819,
+      "dev": 66306,
+      "git_blob": "9b6580e00be9ad97d668b48a1ed394895f11c544",
+      "inode": 66869364,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl3t64-data-only-extract.status.json",
+      "sha256": "dac628cd438e20f9f6cd44ab063f9c068d94475dbd1a8502f4b36025c66d5874"
+    },
+    {
+      "bytes": 84852,
+      "dev": 66306,
+      "git_blob": "759a124118b203581d97f0f18b2cf4368dd39f5a",
+      "inode": 66869509,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/unmodified-header-relocation-map.json",
+      "sha256": "1a8bc819f18b664906bce40fd13d9823be3fa8adeff9710449d685e8336a9c43"
+    },
+    {
+      "bytes": 235,
+      "dev": 66306,
+      "git_blob": "53f0731ccc741d0a824f12edf2b8f25c0f29d0a0",
+      "inode": 66869510,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/openssl.pc.original",
+      "sha256": "7d89355aedc931b82854646efccf242b07c2769fea75b36a71b8309dec82cd29"
+    },
+    {
+      "bytes": 281,
+      "dev": 66306,
+      "git_blob": "2f93bdb5e043dec86d05ec6cdd71fdb246627c48",
+      "inode": 66869511,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libssl.pc.original",
+      "sha256": "845cf3ed323bc927b2c0549b925b84b52db4a476b683ee8e0fd74b5e6a523c2d"
+    },
+    {
+      "bytes": 366,
+      "dev": 66306,
+      "git_blob": "ea41926b730c68b89c7376af9635e852d5df82b9",
+      "inode": 66869512,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/libcrypto.pc.original",
+      "sha256": "70abc5d96356365cc48a1eb4dc6d7a1632565614fac86d35dfab85514596a444"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "24d95edcbea4eeda1a3fe45da48153faef059048",
+      "inode": 66869514,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version-before.guard.json",
+      "sha256": "e6afc41a69da36fb8c0a4b75e992f02bcda4057d5497b41353b31637fc8b51ed"
+    },
+    {
+      "bytes": 1363,
+      "dev": 66306,
+      "git_blob": "42237109360785e5e570d4cb6347b3d1bde7b3bc",
+      "inode": 66869515,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version.command.json",
+      "sha256": "109bf2c602641925920e8be1a6e8d5cf619dc5c6cce1db92458661c03b76c20f"
+    },
+    {
+      "bytes": 6,
+      "dev": 66306,
+      "git_blob": "7d280e2cd476e3b95ea26bb6842b575197e53f53",
+      "inode": 66869516,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version.stdout.original",
+      "sha256": "8ec82964f3c2d35b593360c9ca94418e4079e96d1522e4fd5f9b95c1d7ba6716"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 66869517,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2240,
+      "dev": 66306,
+      "git_blob": "3b9cfb24efd955780094680798abf7fc31a2a088",
+      "inode": 66869518,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version.execution.json",
+      "sha256": "fd01cf3cfb25b8b6bb1daf4b2aab27b66174b6ee5b731e9757ce20024b13b04d"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "740e3cbdfb3a103ec65ab56f984c3299f66a7479",
+      "inode": 66869520,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version-after.guard.json",
+      "sha256": "3823c7a4835f3b380c481d722a3e4237d140bc11495c07328d8b03381bcff681"
+    },
+    {
+      "bytes": 2944,
+      "dev": 66306,
+      "git_blob": "4c010a147e6c6d7e8542e47c17f1fad44ca141f1",
+      "inode": 66869521,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-version.status.json",
+      "sha256": "f48a62071ef28f639e59f3b1ea58bbd3247e14e7ff81c13e831a6f487f6c2d81"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "ee2ecffe8645e935c62a17def55c77588e3e4fa2",
+      "inode": 66869523,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags-before.guard.json",
+      "sha256": "4c63a1132e977808eac27eeaf595f250f2e91692bab98613632fd99eb9dc255c"
+    },
+    {
+      "bytes": 1389,
+      "dev": 66306,
+      "git_blob": "faea47daebecb874b1ddd76748d898ce07f52520",
+      "inode": 66869524,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags.command.json",
+      "sha256": "e884dc2a238db67cba10c10f99c51e33d0fd8115b535a883a29c02633816bc38"
+    },
+    {
+      "bytes": 200,
+      "dev": 66306,
+      "git_blob": "10fca97b6351008a27da33f1beaaa75e0efcacb2",
+      "inode": 66869525,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags.stdout.original",
+      "sha256": "ac3015c18cf3ae2cd9e3a9b10d5355c6235600df70bc9b240093cf2d68b5f220"
+    },
+    {
+      "bytes": 0,
+      "dev": 66306,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "inode": 66869526,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2284,
+      "dev": 66306,
+      "git_blob": "383a7bfd443c9bb225b393dc582c837f4e590227",
+      "inode": 66869527,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags.execution.json",
+      "sha256": "f03295f8f0b8cc178bf014501dc3e9685fad605b25648fa562ebe14b314684c8"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "a779d3592d030043b1dbb380773d335f35c274f1",
+      "inode": 66869529,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags-after.guard.json",
+      "sha256": "9754d4ef8dd1466fccfea0260419f09c40f19b7ab0f50d3cf60efc54cf2e4742"
+    },
+    {
+      "bytes": 2996,
+      "dev": 66306,
+      "git_blob": "cb823aaad6dba1743a80529d560ef84c3f9f9eca",
+      "inode": 66869530,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/pkg-config-relocated-flags.status.json",
+      "sha256": "d838c75711b02585e1320cbc60a62482ef4cf19bddeb2a5e0de400a1784d5b10"
+    },
+    {
+      "bytes": 3239,
+      "dev": 66306,
+      "git_blob": "25e4979638a9d8bdd04ad4be4684f64f0f3c7804",
+      "inode": 66869532,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/final.guard.json",
+      "sha256": "765242425329ec205e81b63dcc40c30a9f115b4dddeeedbc7ad71b35541b5e5c"
+    },
+    {
+      "bytes": 114477,
+      "dev": 66306,
+      "git_blob": "cd94077d9281c979faad884e1f57e07f30c74956",
+      "inode": 66869533,
+      "mode": "0o600",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/openssl-sdk.json",
+      "sha256": "48e973cac721615cf30b937ff20bf7f47cc951265aa5030b194dec971e1e2bc3"
+    }
+  ],
+  "request": {
+    "bytes": 1000,
+    "git_blob": "2efaed43bea7a5c728a9302366febd3b4a96ae1e",
+    "sha256": "835a7d6593f0d9a3ec5efb1bf80a461292c73610354264524b70db1f4ad3dd87"
+  },
+  "schema": "hepta-ai395-official-openssl-sdk-v1",
+  "sdk_receipt": {
+    "bytes": 114477,
+    "dev": 66306,
+    "git_blob": "cd94077d9281c979faad884e1f57e07f30c74956",
+    "inode": 66869533,
+    "mode": "0o600",
+    "nlink": 1,
+    "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/openssl-sdk.json",
+    "sha256": "48e973cac721615cf30b937ff20bf7f47cc951265aa5030b194dec971e1e2bc3"
+  },
+  "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "started_at": "2026-11-05T08:49:25.429405+00:00",
+  "success": true,
+  "system_install": false,
+  "tests_executed": false
+}

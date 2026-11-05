@@ -1,0 +1,72 @@
+{
+  "atomic_snapshot": false,
+  "encoding": "utf-8",
+  "files": [
+    {
+      "eof": true,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/terminal.json",
+      "sha256": "8c558348bccc04b84f79399a6c746a552b4f2307ac9f5fb04dd35cb247669a4c",
+      "size": 6871,
+      "text": "{\n  \"at\": \"2026-11-05T08:34:08.231276+00:00\",\n  \"commands\": [\n    {\n      \"argv\": [\n        \"/usr/bin/dpkg-query\",\n        \"-W\",\n        \"-f=${Package} ${Version} ${db:Status-Abbrev}\\\\n\",\n        \"libssl-dev\",\n        \"libssl3t64\",\n        \"openssl\",\n        \"pkg-config\"\n      ],\n      \"exit_code\": 1,\n      \"seconds\": 0.007490915013477206,\n      \"stderr\": {\n        \"bytes\": 50,\n        \"exists\": true,\n        \"mode\": \"0o600\",\n        \"path\": \"/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/0.stderr.original\",\n        \"sha256\": \"b94991199d865813fd019c15d79ce39816f7246b04498283c59ceb02633c1ab4\",\n        \"symlink\": false\n      },\n      \"stdout\": {\n        \"bytes\": 84,\n        \"exists\": true,\n        \"mode\": \"0o600\",\n        \"path\": \"/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/0.stdout.original\",\n        \"sha256\": \"f3f2f954b4df26d15b7e1b66242efba693ac18bc4480ef959830e89ca4d3bb44\",\n        \"symlink\": false\n      }\n    },\n    {\n      \"argv\": [\n        \"/usr/bin/pkg-config\",\n        \"--variable\",\n        \"pc_path\",\n        \"pkg-config\"\n      ],\n      \"exit_code\": 0,\n      \"seconds\": 0.0012345269788056612,\n      \"stderr\": {\n        \"bytes\": 0,\n        \"exists\": true,\n        \"mode\": \"0o600\",\n        \"path\": \"/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/1.stderr.original\",\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n        \"symlink\": false\n      },\n      \"stdout\": {\n        \"bytes\": 170,\n        \"exists\": true,\n        \"mode\": \"0o600\",\n        \"path\": \"/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/1.stdout.original\",\n        \"sha256\": \"8f0defe120101551026218eb37cb94697f410caecbe97e8d4250155e7c20ddd5\",\n        \"symlink\": false\n      }\n    },\n    {\n      \"argv\": [\n        \"/usr/bin/pkg-config\",\n        \"--libs\",\n        \"--cflags\",\n        \"openssl\"\n      ],\n      \"exit_code\": 1,\n      \"seconds\": 0.0011768779950216413,\n      \"stderr\": {\n        \"bytes\": 194,\n        \"exists\": true,\n        \"mode\": \"0o600\",\n        \"path\": \"/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/2.stderr.original\",\n        \"sha256\": \"c9e228a3507fd10b9c61112563f6d812708400329f026b6fdc3851d470bcf063\",\n        \"symlink\": false\n      },\n      \"stdout\": {\n        \"bytes\": 0,\n        \"exists\": true,\n        \"mode\": \"0o600\",\n        \"path\": \"/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/2.stdout.original\",\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n        \"symlink\": false\n      }\n    },\n    {\n      \"argv\": [\n        \"/usr/bin/openssl\",\n        \"version\"\n      ],\n      \"exit_code\": 0,\n      \"seconds\": 0.007499404950067401,\n      \"stderr\": {\n        \"bytes\": 0,\n        \"exists\": true,\n        \"mode\": \"0o600\",\n        \"path\": \"/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/3.stderr.original\",\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n        \"symlink\": false\n      },\n      \"stdout\": {\n        \"bytes\": 63,\n        \"exists\": true,\n        \"mode\": \"0o600\",\n        \"path\": \"/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/3.stdout.original\",\n        \"sha256\": \"76d922b00bdb7f0b6518e54b3dbb77688b6726113b5d69eb2c2db45c1b13eb8c\",\n        \"symlink\": false\n      }\n    },\n    {\n      \"argv\": [\n        \"/usr/bin/apt-cache\",\n        \"policy\",\n        \"libssl-dev\",\n        \"libssl3t64\"\n      ],\n      \"exit_code\": 0,\n      \"seconds\": 0.06413220905233175,\n      \"stderr\": {\n        \"bytes\": 0,\n        \"exists\": true,\n        \"mode\": \"0o600\",\n        \"path\": \"/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/4.stderr.original\",\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n        \"symlink\": false\n      },\n      \"stdout\": {\n        \"bytes\": 791,\n        \"exists\": true,\n        \"mode\": \"0o600\",\n        \"path\": \"/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/4.stdout.original\",\n        \"sha256\": \"b0bbdf1d7e54e06d651c43df068fc65598a211c1e4c8876438fe92ebfc4721de\",\n        \"symlink\": false\n      }\n    },\n    {\n      \"argv\": [\n        \"/usr/bin/apt-cache\",\n        \"show\",\n        \"--no-all-versions\",\n        \"libssl-dev\"\n      ],\n      \"exit_code\": 0,\n      \"seconds\": 0.16545409604441375,\n      \"stderr\": {\n        \"bytes\": 0,\n        \"exists\": true,\n        \"mode\": \"0o600\",\n        \"path\": \"/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/5.stderr.original\",\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n        \"symlink\": false\n      },\n      \"stdout\": {\n        \"bytes\": 1217,\n        \"exists\": true,\n        \"mode\": \"0o600\",\n        \"path\": \"/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/5.stdout.original\",\n        \"sha256\": \"91b2fe96665421a29f3133de3eda3cede48e3191e6b7cd6c6636e73873297d71\",\n        \"symlink\": false\n      }\n    }\n  ],\n  \"f_bavail_bytes\": 898514771968,\n  \"os_release\": \"PRETTY_NAME=\\\"Ubuntu 26.04.1 LTS\\\"\\nNAME=\\\"Ubuntu\\\"\\nVERSION_ID=\\\"26.04\\\"\\nVERSION=\\\"26.04.1 LTS (Resolute Raccoon)\\\"\\nVERSION_CODENAME=resolute\\nID=ubuntu\\nID_LIKE=debian\\nHOME_URL=\\\"https://www.ubuntu.com/\\\"\\nSUPPORT_URL=\\\"https://help.ubuntu.com/\\\"\\nBUG_REPORT_URL=\\\"https://bugs.launchpad.net/ubuntu/\\\"\\nPRIVACY_POLICY_URL=\\\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\\\"\\nUBUNTU_CODENAME=resolute\\nLOGO=ubuntu-logo\\n\",\n  \"paths\": [\n    {\n      \"bytes\": 21,\n      \"exists\": true,\n      \"link_target\": \"../usr/lib/os-release\",\n      \"mode\": \"0o777\",\n      \"path\": \"/etc/os-release\",\n      \"symlink\": true\n    },\n    {\n      \"exists\": false,\n      \"path\": \"/usr/include/openssl/ssl.h\"\n    },\n    {\n      \"exists\": false,\n      \"path\": \"/usr/include/openssl/opensslv.h\"\n    },\n    {\n      \"exists\": false,\n      \"path\": \"/usr/lib/x86_64-linux-gnu/pkgconfig/openssl.pc\"\n    },\n    {\n      \"exists\": false,\n      \"path\": \"/usr/lib/x86_64-linux-gnu/libssl.so\"\n    },\n    {\n      \"bytes\": 1114280,\n      \"exists\": true,\n      \"mode\": \"0o644\",\n      \"path\": \"/usr/lib/x86_64-linux-gnu/libssl.so.3\",\n      \"sha256\": \"63b47f444efa588e291e9b650a5ba2ab02f856356f2d50f13a2e477db9119e09\",\n      \"symlink\": false\n    },\n    {\n      \"bytes\": 6386528,\n      \"exists\": true,\n      \"mode\": \"0o644\",\n      \"path\": \"/usr/lib/x86_64-linux-gnu/libcrypto.so.3\",\n      \"sha256\": \"5385f0436ac2e284ba8c5fb1488874057c29c04be72dea32add832694f381e28\",\n      \"symlink\": false\n    }\n  ],\n  \"scope\": \"read-only installed package and named build prerequisite metadata; no install/build/source mutation\"\n}\n",
+      "version": "66306:66863810:6871:1793867648242083416:1793867648242083416"
+    },
+    {
+      "eof": true,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/0.stdout.original",
+      "sha256": "f3f2f954b4df26d15b7e1b66242efba693ac18bc4480ef959830e89ca4d3bb44",
+      "size": 84,
+      "text": "libssl3t64 3.5.5-1ubuntu3.7 ii \nopenssl 3.5.5-1ubuntu3.7 ii \npkg-config 2.5.1-4 ii \n",
+      "version": "66306:66863798:84:1793867647989329667:1793867647989329667"
+    },
+    {
+      "eof": true,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/0.stderr.original",
+      "sha256": "b94991199d865813fd019c15d79ce39816f7246b04498283c59ceb02633c1ab4",
+      "size": 50,
+      "text": "dpkg-query: no packages found matching libssl-dev\n",
+      "version": "66306:66863799:50:1793867647989329667:1793867647989329667"
+    },
+    {
+      "eof": true,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/1.stdout.original",
+      "sha256": "8f0defe120101551026218eb37cb94697f410caecbe97e8d4250155e7c20ddd5",
+      "size": 170,
+      "text": "/usr/local/lib/x86_64-linux-gnu/pkgconfig:/usr/local/lib/pkgconfig:/usr/local/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig\n",
+      "version": "66306:66863800:170:1793867647991651667:1793867647991651667"
+    },
+    {
+      "eof": true,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/2.stderr.original",
+      "sha256": "c9e228a3507fd10b9c61112563f6d812708400329f026b6fdc3851d470bcf063",
+      "size": 194,
+      "text": "Package openssl was not found in the pkg-config search path.\nPerhaps you should add the directory containing `openssl.pc'\nto the PKG_CONFIG_PATH environment variable\nPackage 'openssl' not found\n",
+      "version": "66306:66863803:194:1793867647992329560:1793867647992329560"
+    },
+    {
+      "eof": true,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/3.stdout.original",
+      "sha256": "76d922b00bdb7f0b6518e54b3dbb77688b6726113b5d69eb2c2db45c1b13eb8c",
+      "size": 63,
+      "text": "OpenSSL 3.5.5 27 Jan 2026 (Library: OpenSSL 3.5.5 27 Jan 2026)\n",
+      "version": "66306:66863804:63:1793867647996329416:1793867647996329416"
+    },
+    {
+      "eof": true,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/4.stdout.original",
+      "sha256": "b0bbdf1d7e54e06d651c43df068fc65598a211c1e4c8876438fe92ebfc4721de",
+      "size": 791,
+      "text": "libssl-dev:\n  Installed: (none)\n  Candidate: 3.5.5-1ubuntu3.7\n  Version table:\n     3.5.5-1ubuntu3.7 500\n        500 https://mirrors.ustc.edu.cn/ubuntu resolute-updates/main amd64 Packages\n        500 https://mirrors.ustc.edu.cn/ubuntu resolute-security/main amd64 Packages\n     3.5.5-1ubuntu3 500\n        500 https://mirrors.ustc.edu.cn/ubuntu resolute/main amd64 Packages\nlibssl3t64:\n  Installed: 3.5.5-1ubuntu3.7\n  Candidate: 3.5.5-1ubuntu3.7\n  Version table:\n *** 3.5.5-1ubuntu3.7 500\n        500 https://mirrors.ustc.edu.cn/ubuntu resolute-updates/main amd64 Packages\n        500 https://mirrors.ustc.edu.cn/ubuntu resolute-security/main amd64 Packages\n        100 /var/lib/dpkg/status\n     3.5.5-1ubuntu3 500\n        500 https://mirrors.ustc.edu.cn/ubuntu resolute/main amd64 Packages\n",
+      "version": "66306:66863806:791:1793867648055327296:1793867648055327296"
+    },
+    {
+      "eof": true,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-prerequisite-readonly-v1/5.stdout.original",
+      "sha256": "91b2fe96665421a29f3133de3eda3cede48e3191e6b7cd6c6636e73873297d71",
+      "size": 1217,
+      "text": "Package: libssl-dev\nSource: openssl\nPriority: optional\nSection: libdevel\nInstalled-Size: 16042\nMaintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>\nArchitecture: amd64\nVersion: 3.5.5-1ubuntu3.7\nSuggests: libssl-doc\nDepends: libssl3t64 (= 3.5.5-1ubuntu3.7)\nFilename: pool/main/o/openssl/libssl-dev_3.5.5-1ubuntu3.7_amd64.deb\nSize: 2936724\nMD5sum: 8ef4fd546d216f314f8778e9f0b6aba2\nSHA1: cec0d231aa738ce1519beb1cce2719a44c5a53e0\nSHA256: d1cf6cafb141490b7020e392964b1f901835d60cb88c3a68ef0f95ef5e930de4\nSHA512: abc3abe1f9b112144c187f8969b9e9151e564c18b740ff261774487c8b9d3b799f8bcf2706beabd5673dfbd36a27e2f353bb13c3b8af39fe90567f5efcd4f3d6\nHomepage: https://openssl-library.org\nDescription-en: Secure Sockets Layer toolkit - development files\n This package is part of the OpenSSL project's implementation of the SSL\n and TLS cryptographic protocols for secure communication over the\n Internet.\n .\n It contains development libraries, header files, and manpages for libssl\n and libcrypto.\nDescription-md5: 27044468897c45b271f879c7c6e135fe\nMulti-Arch: same\nOriginal-Maintainer: Debian OpenSSL Team <pkg-openssl-devel@alioth-lists.debian.net>\nOrigin: Ubuntu\nBugs: https://bugs.launchpad.net/ubuntu/+filebug\n\n",
+      "version": "66306:66863808:1217:1793867648197520007:1793867648197520007"
+    }
+  ],
+  "snapshot_scope": "independent_file",
+  "truncated": false
+}

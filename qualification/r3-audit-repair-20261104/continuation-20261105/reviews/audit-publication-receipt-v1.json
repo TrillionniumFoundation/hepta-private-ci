@@ -1,0 +1,56 @@
+{
+  "schema": "hepta-continuation-publication-receipt-v1",
+  "published_commit": "5801001c488dcb3ea4c3e1a2e5f7cba7b9eef84b",
+  "tree_review": {
+    "base_tree": "64918386b5de73209da15250dbb3f378b97f43f8",
+    "final_tree": "d530d05338d3d1eb293c394ae01d112f10366f9b",
+    "base_leaf_count": 10580,
+    "final_leaf_count": 10842,
+    "added": 262,
+    "all_old_leaves_unchanged": true,
+    "all_new_paths_exact": true,
+    "not_truncated": true
+  },
+  "tree_creation_steps": [
+    {
+      "offset": 0,
+      "count": 100,
+      "tree": "08afdb9c4800469edad8eed8532f1ecce53ca28c"
+    },
+    {
+      "offset": 100,
+      "count": 100,
+      "tree": "8b43c7e860387f65d92bc9f3f6589c940a68969a"
+    },
+    {
+      "offset": 200,
+      "count": 62,
+      "tree": "d530d05338d3d1eb293c394ae01d112f10366f9b"
+    }
+  ],
+  "preserved_initial_tree_creation_failures": [
+    {
+      "offset": 100,
+      "result": {
+        "error": "GitHub API error 422: {\"message\":\"tree.sha 70a931dca9b3b67ab2d1936f832381d1fb9ff81f is not a valid blob\",\"documentation_url\":\"https://docs.github.com/rest/git/trees#create-a-tree\",\"status\":\"422\"}",
+        "error_code": "INVALID_ARGUMENT",
+        "error_data": {
+          "message": "tree.sha 70a931dca9b3b67ab2d1936f832381d1fb9ff81f is not a valid blob",
+          "documentation_url": "https://docs.github.com/rest/git/trees#create-a-tree",
+          "status": "422"
+        }
+      },
+      "base": "08afdb9c4800469edad8eed8532f1ecce53ca28c"
+    }
+  ],
+  "failure_resolution": "A previously local readback-receipt file was then actually create+GET verified as70a931dca9b3b67ab2d1936f832381d1fb9ff81f; exact same content and all subsequent tree entries accepted. No ref moved on the failed tree call.",
+  "index_blob": "98036cf321c2a262a8e0f5cea408f6394649dd55",
+  "lease_previous": "2ca528f625f1d24de2909ced4f26fd05fe8fd767",
+  "lease_force": false,
+  "product_pr": {
+    "head": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "draft": true
+  },
+  "audit_ref_actions_total_at_verification": 0
+}

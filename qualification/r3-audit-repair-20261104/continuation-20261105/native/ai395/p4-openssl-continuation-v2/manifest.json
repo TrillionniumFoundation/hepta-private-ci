@@ -1,0 +1,65 @@
+{
+  "B_source_applied": false,
+  "SDK_terminal_guard": "Runs at successful completion or in finally after any command failure once initial SDK verification passed; actual failures remain unchanged.",
+  "capacity_minimum_bytes": 64000000000,
+  "changes": [
+    "preserve prior101; reuse its same partial task-owned target after source/SDK guards",
+    "only two actual OPENSSL environment values added to Cargo; pkg-config preparation environment not propagated",
+    "SDK official bytes and header/linker aliases rechecked before/after builds",
+    "include the three previously missing relative recipe paths in the new successful baseline"
+  ],
+  "delta": {
+    "bytes": 8986,
+    "git_blob": "9144bdf687dfc9773043428f450ac7f33d012d54",
+    "sha256": "099c5cf128f79630edc6fc10000ffa99f53585b71dd1ad7af9f734031ad9d1e4"
+  },
+  "idempotency_key": "hepta-ai395-b16-cold-bootstrap-p4-openssl-continuation-20261105-v2",
+  "new_function": "verify_openssl_sdk",
+  "ordinary_head": "20fd174ded4e5ce01bda34e4f6d1d74803301f49",
+  "original_common_functions_byte_equal": [
+    "bytes_id",
+    "canonical_digest",
+    "capacity",
+    "equal_content",
+    "file_id",
+    "git",
+    "normal_artifacts",
+    "now",
+    "portable_graph",
+    "run",
+    "save",
+    "save_json",
+    "source_guard"
+  ],
+  "prior_failure": {
+    "bytes": 14814,
+    "git_blob": "9522e88cfc3910b0e447d6e52a7d805f4cfdac92",
+    "sha256": "3c30831d5055ba4f496eae0ee98edcc2214260a7d2e4b6f0fa500f9712f123a9"
+  },
+  "request": {
+    "bytes": 74050,
+    "git_blob": "6f3c09c7e7a3e5da59f252c7831079a63dcdc97f",
+    "sha256": "ec8ca4437762e6faac3728bb879af46de1c56600f9100cb020016035d3838572"
+  },
+  "root_original_guard": "967ef896907e698a07e8028e049a47e934570b1d",
+  "runner": {
+    "bytes": 24790,
+    "git_blob": "9257c8988db205fef9156ae58dbd4e7a18561579",
+    "sha256": "77eb447174f9b10054663f7f173e8c64e910cfd8c53e8f7386fcfda6cd964687"
+  },
+  "schema": "hepta-ai395-P4-openssl-continuation-v2",
+  "scope": [
+    "same normal6 Cargo build with locked dev-small",
+    "same full metadata no package filter",
+    "same full unfiltered catalog193/1501/363+33/19506eligible57ignored",
+    "record BUILD_ONLY baseline and source/index/locks/tool guards"
+  ],
+  "sdk_receipt": {
+    "bytes": 114477,
+    "git_blob": "cd94077d9281c979faad884e1f57e07f30c74956",
+    "sha256": "48e973cac721615cf30b937ff20bf7f47cc951265aa5030b194dec971e1e2bc3"
+  },
+  "source": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "tests_executed": false,
+  "timeout_seconds": 21600
+}

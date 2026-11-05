@@ -1,0 +1,80 @@
+{
+  "schema": "hepta-b16-P4-to-V6-static-contract-review-v1",
+  "verdict": "STATIC_SCHEMA_COMPATIBLE_EXCEPT_THREE_REQUIRED_RECIPE_PINS_PENDING_SUPPLEMENT",
+  "sources": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/run_bootstrap_p4.py",
+      "bytes": 20000,
+      "sha256": "dec66403657278f0ee9b80e333d630b71bd2acf42a920d7b84013bf18df15b07",
+      "blob": "3ca4c6add24b3500537d202be113ea529ab71c7f"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/manifest-p4.json",
+      "bytes": 1237,
+      "sha256": "29ea6dcce5d8798fd5c2cb49d6ae8fe03d8babfbc004c70e3ab7c8464eefdf9b",
+      "blob": "b6754aee4ff5031c67624dbfb9b3e329c5e93189"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/b16_build_only.py",
+      "bytes": 13465,
+      "sha256": "f82e03761ea34691193c1ab035debc062ea0a953b80a875afb1e1ab97071b3b9",
+      "blob": "4a62c1071298258f1baa0d59fe44ef4de364b8ef"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-guarded-native-runner-20261105/build-only-current-host-v6/v6-candidate/b16_guard.py",
+      "bytes": 10896,
+      "sha256": "d0ba5a5746711a322438200498786044c8d561d9a256f7280a2c4791c6bd0389",
+      "blob": "a9a38d14c220be4c44336a6fefac08a168e52dcf"
+    }
+  ],
+  "scope": "Read-only comparison of frozen P4 receipt construction and V6 validation. No P4 output or successful baseline yet exists in this review.",
+  "compatible_fields": [
+    {
+      "area": "Role and qualification",
+      "detail": "P4 emits BUILD_ONLY_CURRENT_HOST, tests_executed=false and test_qualification=false. It does not relabel historical ROG A tests."
+    },
+    {
+      "area": "Host and source",
+      "detail": "platform.uname six-item list with alias/uid/euid, source/target paths, actual commit/tree, ordinary index, locks, tools and effective task environment match the V6 field shape. Exact future binding values must come from actual originals."
+    },
+    {
+      "area": "Commands and fences",
+      "detail": "The three literal locked dev-small commands match V6 expected argv order. Each saves before/after source fences, complete stdout/stderr, exit_code and exact source_before/source_after; the baseline requires six distinct fence receipts."
+    },
+    {
+      "area": "Metadata and catalog",
+      "detail": "P4 checks the full 193-member/1501-node graph, unfiltered 363-program catalog and complete case roster; V6 reads the actual command output pins."
+    },
+    {
+      "area": "Artifact identity",
+      "detail": "Normal six helpers carry compiler target/package_id/features/fresh plus initial byte identity; all 363 programs and 33 helper paths are independently hashed after the full catalog, and normal six are rehashed. Initial-to-final helper drift is recorded, not rewritten as stable."
+    }
+  ],
+  "known_required_supplement": {
+    "paths": [
+      "scripts/check-module-bazel-lock.sh",
+      ".bazelrc",
+      "defs.bzl"
+    ],
+    "reason": "V6 validate_binding requires these paths in recipe_sources; load_build_only requires exact equality between the pinned baseline and binding recipe_sources. The frozen P4 writer derives only the five non-lock P1 guarded files, so a binding cannot add the three absent entries alone.",
+    "authorization": "Root explicitly authorized a read-only supplement after successful original P4, retaining original v1 and producing a parent-pinned baseline-v2. No further permission request is needed for this stated scope.",
+    "implementation_boundary": "After the three original commands succeed, read/hash only the three existing tracked files under a fresh exact 4a/index/locks guard; append relative-path identities in derived baseline-v2 with an exact parent pin. Preserve original v1 bytes, commands, artifacts, logs and source fences.",
+    "must_not_do": [
+      "Do not mutate the already-running P4 runner.",
+      "Do not weaken the V6 minimum recipe contract.",
+      "Do not rerun build/metadata/catalog merely to add these identity records.",
+      "Do not claim P4 executes A or B tests."
+    ]
+  },
+  "execution_state": {
+    "ci_reported_P4_job": "1a1aace46f7-fc05-4788",
+    "job_observation_source": "CI agent message; this reviewer did not poll native status",
+    "actual_baseline_received": false,
+    "baseline_v2_received": false,
+    "B_enabled_binding_created": false
+  },
+  "pending": "Wait for actual complete P4 originals and the already-authorized three-file supplement; independently verify their identities before any B binding.",
+  "native_executed_by_reviewer": false,
+  "candidate_or_shared_source_changed": false,
+  "new_test_or_probe_added": false
+}

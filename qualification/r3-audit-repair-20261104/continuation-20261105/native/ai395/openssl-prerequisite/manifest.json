@@ -1,0 +1,49 @@
+{
+  "capacity_minimum_bytes": 64000000000,
+  "development_package_pin": {
+    "bytes": 2936724,
+    "sha256": "d1cf6cafb141490b7020e392964b1f901835d60cb88c3a68ef0f95ef5e930de4"
+  },
+  "failure_policy": "Preserve original error and partial owned directory; no automatic retry or fallback source.",
+  "host": "ai395",
+  "idempotency_key": "hepta-ai395-b16-openssl-private-sdk-20261105-v1",
+  "installed_runtime_exact_version": true,
+  "not_executed": [
+    "Cargo",
+    "Bazel",
+    "tests",
+    "system install",
+    "global config changes"
+  ],
+  "official_supplier": "https://archive.ubuntu.com/ubuntu/ plus exact distribution package Filename and SHA256 from existing Ubuntu package metadata",
+  "operations": [
+    "fresh ordinary source/index/locks/capacity guards",
+    "query exact installed runtime and official package metadata",
+    "TLS-verified official downloads and exact size/SHA256 check",
+    "inspect package data tar members and data-only extract; no maintainer scripts",
+    "expose unmodified common/multiarch headers using private relative symlinks",
+    "prove private runtime libraries byte-equal to installed same-version libraries",
+    "record official pkg-config files and supported relocated query outputs",
+    "emit OPENSSL_INCLUDE_DIR/OPENSSL_LIB_DIR only for future task-local Cargo environment",
+    "whole source/index/locks final guard"
+  ],
+  "packages": [
+    "libssl-dev",
+    "libssl3t64"
+  ],
+  "private_prefix": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7",
+  "request": {
+    "bytes": 1000,
+    "git_blob": "2efaed43bea7a5c728a9302366febd3b4a96ae1e",
+    "sha256": "835a7d6593f0d9a3ec5efb1bf80a461292c73610354264524b70db1f4ad3dd87"
+  },
+  "runner": {
+    "bytes": 18812,
+    "git_blob": "92e10b0c97d42755a4ab1c2427561a99ade693d5",
+    "sha256": "97ba9be9f9dc561883b2e0d7257a8540c78b5e7b02c848a87637de1d546acbb6"
+  },
+  "schema": "hepta-private-openssl-preparation-plan-v1",
+  "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "timeout_seconds": 600,
+  "version": "3.5.5-1ubuntu3.7"
+}

@@ -1,0 +1,154 @@
+{
+  "success": true,
+  "version": "150.4.0",
+  "target": "x86_64-unknown-linux-gnu",
+  "profile": "ptrcomp_sandbox_release",
+  "artifacts": {
+    "librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "bytes": 29366352,
+      "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583"
+    },
+    "src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs": {
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "bytes": 39884,
+      "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506"
+    }
+  },
+  "checksum_manifest": {
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+    "bytes": 262,
+    "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be"
+  },
+  "downloads": [
+    {
+      "url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+      "bytes": 262,
+      "sha256": "6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be",
+      "seconds": 2.7932095200230833
+    },
+    {
+      "url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "bytes": 29366352,
+      "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+      "seconds": 7.769794349005679
+    },
+    {
+      "url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "bytes": 39884,
+      "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+      "seconds": 2.908191682974575
+    }
+  ],
+  "steps": [
+    {
+      "name": "resolved-v8-version",
+      "argv": [
+        "python3",
+        ".github/scripts/rusty_v8_bazel.py",
+        "resolved-v8-crate-version"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/resolved-v8-version.stdout",
+        "bytes": 8,
+        "sha256": "ee7db03d6aad33641791469a5cbec6568b2c05c9112d402008801d9714f7e500"
+      },
+      "stderr": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/resolved-v8-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "dotslash-static-usage",
+      "argv": [
+        "rg",
+        "-n",
+        "--glob",
+        "*.rs",
+        "/usr/local/bin/dotslash|DOTSLASH|dotslash",
+        "codex-rs/core/tests",
+        "codex-rs/cli/tests",
+        "codex-rs/utils"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/dotslash-static-usage.stdout",
+        "bytes": 1749,
+        "sha256": "9c4aec733a3ed0d4e4dbdcd59451734ef898c04f01279611823462ecaec26a55"
+      },
+      "stderr": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/dotslash-static-usage.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "node-version",
+      "argv": [
+        "node",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/node-version.stdout",
+        "bytes": 9,
+        "sha256": "33e26f35db6e57ce0c486ddc815fe966867e4f649e418eaf323f75f4720eb8e9"
+      },
+      "stderr": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/node-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "python-version",
+      "argv": [
+        "python3",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/python-version.stdout",
+        "bytes": 14,
+        "sha256": "63990b3ee50c49ab28d70e29c0f967f0c71330e39243ffeb4d3a8d5878c8a978"
+      },
+      "stderr": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/python-version.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "runtime-host-controls",
+      "argv": [
+        "python3",
+        "-c",
+        "import json,pathlib;paths=['/proc/sys/kernel/unprivileged_userns_clone','/proc/sys/kernel/apparmor_restrict_unprivileged_userns'];print(json.dumps({p:pathlib.Path(p).read_text().strip() if pathlib.Path(p).exists() else None for p in paths}))"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/runtime-host-controls.stdout",
+        "bytes": 115,
+        "sha256": "32befefc23eff5efb6500e48dd980d166ace39a39629e20aa0a708ed7afa15f5"
+      },
+      "stderr": {
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/evidence/v8-runtime-prerequisites/runtime-host-controls.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "future_env": {
+    "RUSTY_V8_ARCHIVE": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs"
+  },
+  "source_basis": ".github/actions/setup-rusty-v8/action.yml at cabcb40d, unchanged original official artifact path and exactly two SHA256s.",
+  "cargo_started": false,
+  "system_settings_modified": false,
+  "completed_at": "2026-11-04T22:14:32.823404+00:00"
+}

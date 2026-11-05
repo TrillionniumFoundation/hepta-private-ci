@@ -1,0 +1,88 @@
+{
+  "schema": "hepta-macos-bash-empty-array-isolated-static-check-v1",
+  "scope": "Cloud isolated Git application and syntax parsing only; no wrapper execution, Bazel, original 57 tests, or native-host action.",
+  "preimage": {
+    "bytes": 17214,
+    "sha256": "c98766a076b79dc00f08104989faf55cce56375da8ff8ac5d14fb4686b1d6fe7",
+    "blob": "204c0ac2481f70cc977f777eb2299b740f7ddc17"
+  },
+  "expected_postimage": {
+    "bytes": 17448,
+    "sha256": "0136e087ddfac7c01bdacb03357d0353d328dea3b8cd86caf94e64bf10706482",
+    "blob": "42b59b6354b5933c8155b992519682c06d024ca1"
+  },
+  "applied_postimage": {
+    "bytes": 17448,
+    "sha256": "0136e087ddfac7c01bdacb03357d0353d328dea3b8cd86caf94e64bf10706482",
+    "blob": "42b59b6354b5933c8155b992519682c06d024ca1"
+  },
+  "applied_mode": "100755",
+  "records": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--",
+        ".github/scripts/run-bazel-ci.sh"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/macos-bash-empty-array-20261105/macos-empty-array.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/macos-bash-empty-array-20261105/macos-empty-array.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "bash",
+        "-n",
+        ".github/scripts/run-bazel-ci.sh"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "all_checks_exit_zero": true,
+  "original_test_gate_executed": false,
+  "macos_execution_qualification": false,
+  "shared_source_or_index_changed": false
+}

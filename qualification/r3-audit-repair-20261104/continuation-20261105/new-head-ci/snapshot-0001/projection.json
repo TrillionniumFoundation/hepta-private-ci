@@ -1,0 +1,1693 @@
+{
+  "schema": "hepta-original-ci-head-binding-and-first-snapshot-v1",
+  "observed_interval_utc": [
+    "2026-11-05T09:03:09.433Z",
+    "2026-11-05T09:04:29.272Z"
+  ],
+  "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "head_parents": [
+    "755374e93dba69214622f91c71a3ccac708d6a76"
+  ],
+  "ordinary_merge": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+  "merge_parents": [
+    "63652be658ebed8d3052eb789b951793384fd5e4",
+    "5b6331250ff459033bd44d1a95daec70131277cc"
+  ],
+  "merge_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "pr": {
+    "number": 4797,
+    "state": "open",
+    "draft": true,
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc"
+  },
+  "run_count": 19,
+  "run_status_counts": {
+    "queued": 16,
+    "completed": 2,
+    "pending": 1
+  },
+  "run_conclusion_counts": {
+    "none": 17,
+    "skipped": 2
+  },
+  "run_attempts": [
+    1
+  ],
+  "events": {
+    "pull_request": 17,
+    "push": 2
+  },
+  "job_count": 41,
+  "job_status_counts": {
+    "queued": 39,
+    "completed": 2
+  },
+  "job_conclusion_counts": {
+    "none": 39,
+    "skipped": 2
+  },
+  "jobs": [
+    {
+      "run_id": 41999115065,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-musl-product-smoke.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149584475,
+      "name": "Static x86_64 musl Hepta CLI build and process smoke",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114715,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/ui-product-foundation.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149583165,
+      "name": "Rust UI foundation / base-merge",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114715,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/ui-product-foundation.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149583438,
+      "name": "Original native presentation / base-merge",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114715,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/ui-product-foundation.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149583527,
+      "name": "Original native presentation / source-head",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114715,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/ui-product-foundation.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149583596,
+      "name": "Generate UI dependency lock for review",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114715,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/ui-product-foundation.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149583647,
+      "name": "Rust UI foundation / source-head",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114721,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-windows-private-state-native.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149582685,
+      "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "windows-latest"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114561,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-app-server-schema-refresh.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149634369,
+      "name": "Generate schemas and run complete protocol tests",
+      "status": "completed",
+      "conclusion": "skipped",
+      "created_at": "2026-11-05T09:02:35Z",
+      "started_at": "2026-11-05T09:02:35Z",
+      "completed_at": "2026-11-05T09:02:27Z",
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114539,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/windows-ordinary-consumers.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149582006,
+      "name": "Original Windows business libraries (base-merge)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "windows-2025"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114539,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/windows-ordinary-consumers.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149582480,
+      "name": "Original Windows business libraries (source-head)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "windows-2025"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114773,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-supervisor-p0-crossplatform.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149582849,
+      "name": "Restart and signed recovery (windows-latest)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "windows-latest"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114773,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-supervisor-p0-crossplatform.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149583259,
+      "name": "Restart and signed recovery (ubuntu-24.04)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114838,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/windows-bazel-process-native.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149583164,
+      "name": "Original Bazel Git and queue process controls (source-head)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "windows-latest"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114838,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/windows-bazel-process-native.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149583430,
+      "name": "Original Bazel Git and queue process controls (base-merge)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null,
+      "labels": [
+        "windows-latest"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114618,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-windows-federation-revoke.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149581896,
+      "name": "Memory schema and final-use (windows-latest)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "windows-latest"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114618,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-windows-federation-revoke.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149582083,
+      "name": "Memory schema and final-use (ubuntu-24.04)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114654,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-production-hos2-proposal.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149641605,
+      "name": "owner-candidate",
+      "status": "completed",
+      "conclusion": "skipped",
+      "created_at": "2026-11-05T09:02:36Z",
+      "started_at": "2026-11-05T09:02:36Z",
+      "completed_at": "2026-11-05T09:02:27Z",
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114971,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149584244,
+      "name": "Original recovery and authorized-read scopes (macos-15, source-head)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null,
+      "labels": [
+        "macos-15"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114971,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149584381,
+      "name": "Original recovery and authorized-read scopes (macos-15, base-merge)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "macos-15"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114971,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149584445,
+      "name": "Original recovery and authorized-read scopes (windows-latest, base-merge)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "windows-latest"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114971,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149584446,
+      "name": "Original recovery and authorized-read scopes (ubuntu-24.04, source-head)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114971,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149584468,
+      "name": "Original recovery and authorized-read scopes (windows-latest, source-head)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null,
+      "labels": [
+        "windows-latest"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114971,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149584782,
+      "name": "Original recovery and authorized-read scopes (ubuntu-24.04, base-merge)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114565,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-keyring-sync-advisory.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149582352,
+      "name": "Encrypted keyring closure (ubuntu-24.04, non-authorizing)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114565,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-keyring-sync-advisory.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149582672,
+      "name": "Encrypted keyring closure (windows-latest, non-authorizing)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null,
+      "labels": [
+        "windows-latest"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114565,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-keyring-sync-advisory.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149582821,
+      "name": "Encrypted keyring closure (macos-15, non-authorizing)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "macos-15"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114742,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-operator-acceptance-native.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149583568,
+      "name": "Original Bazel operator oracle with native placement (x86_64-unknown-linux-gnu)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114742,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-operator-acceptance-native.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149584012,
+      "name": "Original operator controls and independent OpenSSH oracle (macos-15)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "macos-15"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114742,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-operator-acceptance-native.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149584027,
+      "name": "Original operator controls and independent OpenSSH oracle (ubuntu-24.04)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114742,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-operator-acceptance-native.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149584053,
+      "name": "Original operator controls and independent OpenSSH oracle (windows-2025)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null,
+      "labels": [
+        "windows-2025"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114742,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-operator-acceptance-native.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149584078,
+      "name": "Original Bazel operator oracle with native placement (x86_64-apple-darwin)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "macos-15-intel"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114742,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-operator-acceptance-native.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149584086,
+      "name": "Original Bazel operator oracle with native placement (aarch64-apple-darwin)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null,
+      "labels": [
+        "macos-15"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114651,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-owner-local-native.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149582027,
+      "name": "Owner-local and original Matrixd/Agentd controls (macos-15)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "macos-15"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114651,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-owner-local-native.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149582441,
+      "name": "Owner-local and original Matrixd/Agentd controls (windows-2025)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "windows-2025"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114651,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-owner-local-native.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149582479,
+      "name": "Owner-local and original Matrixd/Agentd controls (ubuntu-24.04)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114801,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-architecture-convergence.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149583355,
+      "name": "Architecture convergence (base-merge)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04-arm"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114801,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-architecture-convergence.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149583515,
+      "name": "Architecture convergence (source-head)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04-arm"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999114631,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/hepta-objective-owner.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149582491,
+      "name": "Original memory and Agentd libraries (source head)",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999115000,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/v8-canary.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149587849,
+      "name": "metadata",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:28Z",
+      "started_at": "2026-11-05T09:02:28Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999104713,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/windows-retained-recovery.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149547694,
+      "name": "Original path, state and Memory library controls",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:23Z",
+      "started_at": "2026-11-05T09:02:23Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "windows-2025"
+      ],
+      "steps": []
+    },
+    {
+      "run_id": 41999104379,
+      "run_attempt": 1,
+      "workflow_path": ".github/workflows/windows-core-lifecycle.yml",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "id": 127149546323,
+      "name": "core-lifecycle",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:23Z",
+      "started_at": "2026-11-05T09:02:23Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "windows-2025"
+      ],
+      "steps": []
+    }
+  ],
+  "pagination_guards": [
+    {
+      "run_id": 41999115065,
+      "page1_count": 1,
+      "page1_total": 1,
+      "page2_count": 0,
+      "page2_total": 1,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114715,
+      "page1_count": 5,
+      "page1_total": 5,
+      "page2_count": 0,
+      "page2_total": 5,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114721,
+      "page1_count": 1,
+      "page1_total": 1,
+      "page2_count": 0,
+      "page2_total": 1,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114561,
+      "page1_count": 1,
+      "page1_total": 1,
+      "page2_count": 0,
+      "page2_total": 1,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114539,
+      "page1_count": 2,
+      "page1_total": 2,
+      "page2_count": 0,
+      "page2_total": 2,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114773,
+      "page1_count": 2,
+      "page1_total": 2,
+      "page2_count": 0,
+      "page2_total": 2,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114838,
+      "page1_count": 2,
+      "page1_total": 2,
+      "page2_count": 0,
+      "page2_total": 2,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114618,
+      "page1_count": 2,
+      "page1_total": 2,
+      "page2_count": 0,
+      "page2_total": 2,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114842,
+      "page1_count": 0,
+      "page1_total": 0,
+      "page2_count": 0,
+      "page2_total": 0,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114654,
+      "page1_count": 1,
+      "page1_total": 1,
+      "page2_count": 0,
+      "page2_total": 1,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114971,
+      "page1_count": 6,
+      "page1_total": 6,
+      "page2_count": 0,
+      "page2_total": 6,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114565,
+      "page1_count": 3,
+      "page1_total": 3,
+      "page2_count": 0,
+      "page2_total": 3,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114742,
+      "page1_count": 6,
+      "page1_total": 6,
+      "page2_count": 0,
+      "page2_total": 6,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114651,
+      "page1_count": 3,
+      "page1_total": 3,
+      "page2_count": 0,
+      "page2_total": 3,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114801,
+      "page1_count": 2,
+      "page1_total": 2,
+      "page2_count": 0,
+      "page2_total": 2,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999114631,
+      "page1_count": 1,
+      "page1_total": 1,
+      "page2_count": 0,
+      "page2_total": 1,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999115000,
+      "page1_count": 1,
+      "page1_total": 1,
+      "page2_count": 0,
+      "page2_total": 1,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999104713,
+      "page1_count": 1,
+      "page1_total": 1,
+      "page2_count": 0,
+      "page2_total": 1,
+      "total_changed_during_pagination": false
+    },
+    {
+      "run_id": 41999104379,
+      "page1_count": 1,
+      "page1_total": 1,
+      "page2_count": 0,
+      "page2_total": 1,
+      "total_changed_during_pagination": false
+    }
+  ],
+  "planned_workflow_bindings": [
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "actual_blob": "fd01ab5edac5d78c9bcfb78397a157a3d5ea7c71",
+      "planned_blob": "fd01ab5edac5d78c9bcfb78397a157a3d5ea7c71",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "actual_blob": "648a83164c0dd1c28499eaa17f842a83bb2aab04",
+      "planned_blob": "648a83164c0dd1c28499eaa17f842a83bb2aab04",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "actual_blob": "fb2491dea531af8f2750d08c9010069065bc35fc",
+      "planned_blob": "fb2491dea531af8f2750d08c9010069065bc35fc",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/ui-product-foundation.yml",
+      "actual_blob": "748773dfa939194f5b8184406a261def15817904",
+      "planned_blob": "748773dfa939194f5b8184406a261def15817904",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+      "actual_blob": "6044fc72bc0b27a56445670ab9f11ea9375fd20e",
+      "planned_blob": "6044fc72bc0b27a56445670ab9f11ea9375fd20e",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-supervisor-p0-crossplatform.yml",
+      "actual_blob": "fdeb340099f9f720a353aa8b69372e75a335387e",
+      "planned_blob": "fdeb340099f9f720a353aa8b69372e75a335387e",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-windows-private-state-native.yml",
+      "actual_blob": "3b3651595d169451067d5a932294417717ea422e",
+      "planned_blob": "3b3651595d169451067d5a932294417717ea422e",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-keyring-sync-advisory.yml",
+      "actual_blob": "430f36f8dbfc01d569e80b18e3d49ebee192cbd2",
+      "planned_blob": "430f36f8dbfc01d569e80b18e3d49ebee192cbd2",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-windows-federation-revoke.yml",
+      "actual_blob": "392a4cbc6fc5ddd73d67edfa328648170e2f9bd6",
+      "planned_blob": "392a4cbc6fc5ddd73d67edfa328648170e2f9bd6",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-app-server-schema-refresh.yml",
+      "actual_blob": "d0ed2fd1b14879ddf22c871bb6b36ed6bab5ef0d",
+      "planned_blob": "d0ed2fd1b14879ddf22c871bb6b36ed6bab5ef0d",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-production-hos2-proposal.yml",
+      "actual_blob": "c827659c00614c1f149ef62f4c1f03d13114751c",
+      "planned_blob": "c827659c00614c1f149ef62f4c1f03d13114751c",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-objective-owner.yml",
+      "actual_blob": "22b551a58fa9900560767a2b39da5d3f1d01aeea",
+      "planned_blob": "22b551a58fa9900560767a2b39da5d3f1d01aeea",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-owner-local-native.yml",
+      "actual_blob": "02f820467201a77a8b58fdd9905dd720f1e46ffb",
+      "planned_blob": "02f820467201a77a8b58fdd9905dd720f1e46ffb",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/windows-retained-recovery.yml",
+      "actual_blob": "dd4716a3540b752dc49e2ee193c90170187bf251",
+      "planned_blob": "dd4716a3540b752dc49e2ee193c90170187bf251",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/windows-bazel-process-native.yml",
+      "actual_blob": "0902ceaca163b9f32036029a1140c0b368ee3dfd",
+      "planned_blob": "0902ceaca163b9f32036029a1140c0b368ee3dfd",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/windows-core-lifecycle.yml",
+      "actual_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88",
+      "planned_blob": "95371c3bcd383f5f2356fe4b10bd8ccc2fde6b88",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-operator-acceptance-native.yml",
+      "actual_blob": "bab92677a76682d21e6dacaa7b0c7c9424664773",
+      "planned_blob": "bab92677a76682d21e6dacaa7b0c7c9424664773",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/windows-ordinary-consumers.yml",
+      "actual_blob": "6d3cbfe5532260cd8c6084b39d28f54916153484",
+      "planned_blob": "6d3cbfe5532260cd8c6084b39d28f54916153484",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-musl-product-smoke.yml",
+      "actual_blob": "fb46a681b5c3cd47c76b20ef56048eae771d9e07",
+      "planned_blob": "fb46a681b5c3cd47c76b20ef56048eae771d9e07",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "actual_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af",
+      "planned_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/blob-size-policy.yml",
+      "actual_blob": "ac1e8f5ec3354017a76695e5a1f0e270cee440ba",
+      "planned_blob": "ac1e8f5ec3354017a76695e5a1f0e270cee440ba",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "actual_blob": "88b6308899357e23b4a4058aecd4527b4edcee9b",
+      "planned_blob": "88b6308899357e23b4a4058aecd4527b4edcee9b",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/codespell.yml",
+      "actual_blob": "06ea9c7226d265405c73850c449b3d6b96d82514",
+      "planned_blob": "06ea9c7226d265405c73850c449b3d6b96d82514",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-contract-gate.yml",
+      "actual_blob": "0eb3d84801cc456b34fa1e33957400c1a00dcb68",
+      "planned_blob": "0eb3d84801cc456b34fa1e33957400c1a00dcb68",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/repo-checks.yml",
+      "actual_blob": "72bd28da471f893a556c2acb689e52a28d73ff99",
+      "planned_blob": "72bd28da471f893a556c2acb689e52a28d73ff99",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "actual_blob": "81330bf3ed388e9deafa474516be437ac165cbb7",
+      "planned_blob": "81330bf3ed388e9deafa474516be437ac165cbb7",
+      "equal": true
+    },
+    {
+      "path": ".github/workflows/sdk.yml",
+      "actual_blob": "8af39601ed7cf800e1449ca12141ac1fdb33937f",
+      "planned_blob": "8af39601ed7cf800e1449ca12141ac1fdb33937f",
+      "equal": true
+    }
+  ],
+  "raw_api": [
+    {
+      "key": "pr",
+      "path": "pulls/4797",
+      "requested_at_utc": "2026-11-05T09:03:09.433Z",
+      "observed_at_utc": "2026-11-05T09:03:10.453Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/pr.json",
+      "bytes": 44653,
+      "sha256": "0cbd8637c97240fca92d7e904ef39798c81e1a32f6424d3bc8e164023a6846e0",
+      "git_blob": "b689a85e3dd39d049f8756b943c33cac168eaa1c"
+    },
+    {
+      "key": "head",
+      "path": "git/commits/5b6331250ff459033bd44d1a95daec70131277cc",
+      "requested_at_utc": "2026-11-05T09:03:09.434Z",
+      "observed_at_utc": "2026-11-05T09:03:09.873Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/head.json",
+      "bytes": 1303,
+      "sha256": "7b3251aeae6fdc5bc6b94b6d5323b8ab6f6d815c7ae32f1f627ad0024b846f51",
+      "git_blob": "d7cdae880bf51e2c45adff3f7effe55f0ee8f7d5"
+    },
+    {
+      "key": "merge",
+      "path": "git/commits/9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+      "requested_at_utc": "2026-11-05T09:03:09.434Z",
+      "observed_at_utc": "2026-11-05T09:03:09.866Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/merge.json",
+      "bytes": 2814,
+      "sha256": "87a8cee04b161aaf9d28ed3b042e379216e28ce202d664cad270aedc17407977",
+      "git_blob": "904b066d8adccb67243c8e1643ac1ed7f848b8db"
+    },
+    {
+      "key": "main",
+      "path": "branches/main",
+      "requested_at_utc": "2026-11-05T09:03:09.434Z",
+      "observed_at_utc": "2026-11-05T09:03:09.978Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/main.json",
+      "bytes": 4059,
+      "sha256": "cef6a3734d37e94a21ee5fabc85607efdc333211f4b48c96d7a7fa80da39b2c0",
+      "git_blob": "e850d58bd76e6644d363b0ece7624b3ef57dab63"
+    },
+    {
+      "key": "runs-page1",
+      "path": "actions/runs?head_sha=5b6331250ff459033bd44d1a95daec70131277cc&per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:09.434Z",
+      "observed_at_utc": "2026-11-05T09:03:10.295Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/runs-page1.json",
+      "bytes": 287403,
+      "sha256": "25ae39d6479df11ce437d76e26e4cdbbba1e98378c17e46ed8c1d82bebb44f0d",
+      "git_blob": "46ab3a8de53232501757c4782259dd8d05bc4cca"
+    },
+    {
+      "key": "runs-page2",
+      "path": "actions/runs?head_sha=5b6331250ff459033bd44d1a95daec70131277cc&per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:03:35.821Z",
+      "observed_at_utc": "2026-11-05T09:03:36.320Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/runs-page2.json",
+      "bytes": 37,
+      "sha256": "d3e5bc395937be69faa112712fc84a633de2a796329b85f43a229ff2ff90fb35",
+      "git_blob": "3d3dbc87293b76b9d37d0ebba984af9ce59447d7"
+    },
+    {
+      "key": "workflow-directory",
+      "path": "contents/.github/workflows?ref=5b6331250ff459033bd44d1a95daec70131277cc",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.802Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/workflow-directory.json",
+      "bytes": 124679,
+      "sha256": "46da21f8b322211b6f1577656f73a4d533f9d9efc7f8ad7d8d8d03dd22c6217f",
+      "git_blob": "8da6e6c879cb8bb245ab3da13b0a3a182312f9a5"
+    },
+    {
+      "key": "jobs-41999115065",
+      "path": "actions/runs/41999115065/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.820Z",
+      "observed_at_utc": "2026-11-05T09:03:36.222Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999115065.json",
+      "bytes": 1012,
+      "sha256": "52f8e12934851ab306cef5c8cfc28674c93811a093441b8ba991e4456ea70555",
+      "git_blob": "42f917fea30921557a0776d3b76b4c26517aa633"
+    },
+    {
+      "key": "jobs-41999115065-page2",
+      "path": "actions/runs/41999115065/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.398Z",
+      "observed_at_utc": "2026-11-05T09:04:28.769Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999115065-page2.json",
+      "bytes": 27,
+      "sha256": "5dd8446ebdbe715a2030afb987fd0ef3c8455b4353d1dcda3e17c68217366cea",
+      "git_blob": "902faccb7951e8d933429dca70bee9e208b1cd92"
+    },
+    {
+      "key": "jobs-41999114715",
+      "path": "actions/runs/41999114715/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.820Z",
+      "observed_at_utc": "2026-11-05T09:03:36.208Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114715.json",
+      "bytes": 4900,
+      "sha256": "0ec345262bae9ffefa71d08c47fd8021c2c00bd2b95ac6c24805e9a9280449fc",
+      "git_blob": "bc2f61860313c2063553eeb486226dbc23723d36"
+    },
+    {
+      "key": "jobs-41999114715-page2",
+      "path": "actions/runs/41999114715/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.788Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114715-page2.json",
+      "bytes": 27,
+      "sha256": "afa59b6fd950f54625aedd00749ea80576ff7eb7860aff385a7dbde82f640c5c",
+      "git_blob": "448393b256a0f26c5cc7e5397941c545fb63337c"
+    },
+    {
+      "key": "jobs-41999114721",
+      "path": "actions/runs/41999114721/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.820Z",
+      "observed_at_utc": "2026-11-05T09:03:36.223Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114721.json",
+      "bytes": 1068,
+      "sha256": "9f80afdc24cac44d0de499210df1c62f5356a55271d233eec03ff2d96ed98ad6",
+      "git_blob": "2c526f8f5036d186c4a4913eb0181aeb8276bd4c"
+    },
+    {
+      "key": "jobs-41999114721-page2",
+      "path": "actions/runs/41999114721/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:29.272Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114721-page2.json",
+      "bytes": 27,
+      "sha256": "5dd8446ebdbe715a2030afb987fd0ef3c8455b4353d1dcda3e17c68217366cea",
+      "git_blob": "902faccb7951e8d933429dca70bee9e208b1cd92"
+    },
+    {
+      "key": "jobs-41999114561",
+      "path": "actions/runs/41999114561/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.820Z",
+      "observed_at_utc": "2026-11-05T09:03:36.246Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114561.json",
+      "bytes": 1045,
+      "sha256": "a997afb0c589da5cc1fbe89839a86461bab5759b0f87be41f92b1ea760638dd0",
+      "git_blob": "be9529cf616a57c5bd7e7de4ebe891628a43daf9"
+    },
+    {
+      "key": "jobs-41999114561-page2",
+      "path": "actions/runs/41999114561/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.705Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114561-page2.json",
+      "bytes": 27,
+      "sha256": "5dd8446ebdbe715a2030afb987fd0ef3c8455b4353d1dcda3e17c68217366cea",
+      "git_blob": "902faccb7951e8d933429dca70bee9e208b1cd92"
+    },
+    {
+      "key": "jobs-41999114539",
+      "path": "actions/runs/41999114539/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.820Z",
+      "observed_at_utc": "2026-11-05T09:03:36.258Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114539.json",
+      "bytes": 2027,
+      "sha256": "d6d60db9da1a9e42fdf9853a09b879f30dbc09062ae73bb450539c09bd0ad7d5",
+      "git_blob": "327880e6e15fb57223f70f139f2152119f32c004"
+    },
+    {
+      "key": "jobs-41999114539-page2",
+      "path": "actions/runs/41999114539/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.749Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114539-page2.json",
+      "bytes": 27,
+      "sha256": "d2924d8b32d528e0c552cf2305c959bf075be223bd7bd30d07c9d27bc011b887",
+      "git_blob": "33ab97461affa2b734fca05626ff40ef0b80e774"
+    },
+    {
+      "key": "jobs-41999114773",
+      "path": "actions/runs/41999114773/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.820Z",
+      "observed_at_utc": "2026-11-05T09:03:36.244Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114773.json",
+      "bytes": 2046,
+      "sha256": "ef91b54be5fb335e576ffbc64fd05fcdb11a3a6ef13dc1072a8445c04c448262",
+      "git_blob": "b2006d11f75d0ba7932e3854ad6d4a5459749b39"
+    },
+    {
+      "key": "jobs-41999114773-page2",
+      "path": "actions/runs/41999114773/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.916Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114773-page2.json",
+      "bytes": 27,
+      "sha256": "d2924d8b32d528e0c552cf2305c959bf075be223bd7bd30d07c9d27bc011b887",
+      "git_blob": "33ab97461affa2b734fca05626ff40ef0b80e774"
+    },
+    {
+      "key": "jobs-41999114838",
+      "path": "actions/runs/41999114838/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.820Z",
+      "observed_at_utc": "2026-11-05T09:03:36.145Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114838.json",
+      "bytes": 2057,
+      "sha256": "9c4d73cec789fbd5e86e153d1513789eb693cbea935f283fee924e1de3fcefc7",
+      "git_blob": "27589c8649779b2a328fa5e9d30bbe04db329651"
+    },
+    {
+      "key": "jobs-41999114838-page2",
+      "path": "actions/runs/41999114838/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.724Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114838-page2.json",
+      "bytes": 27,
+      "sha256": "d2924d8b32d528e0c552cf2305c959bf075be223bd7bd30d07c9d27bc011b887",
+      "git_blob": "33ab97461affa2b734fca05626ff40ef0b80e774"
+    },
+    {
+      "key": "jobs-41999114618",
+      "path": "actions/runs/41999114618/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.820Z",
+      "observed_at_utc": "2026-11-05T09:03:36.266Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114618.json",
+      "bytes": 2012,
+      "sha256": "abc9a7808eb5f499e36811829185f999d0c9c206303c9eaf171b8174a83c9e1f",
+      "git_blob": "711faf21bd8b3a55afb6b344d90f5c80e7415704"
+    },
+    {
+      "key": "jobs-41999114618-page2",
+      "path": "actions/runs/41999114618/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.749Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114618-page2.json",
+      "bytes": 27,
+      "sha256": "d2924d8b32d528e0c552cf2305c959bf075be223bd7bd30d07c9d27bc011b887",
+      "git_blob": "33ab97461affa2b734fca05626ff40ef0b80e774"
+    },
+    {
+      "key": "jobs-41999114842",
+      "path": "actions/runs/41999114842/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.820Z",
+      "observed_at_utc": "2026-11-05T09:03:36.252Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114842.json",
+      "bytes": 27,
+      "sha256": "b3dab5870ff3a8209160335de7c1077b89e461d875d9041ac9d8b8ed7c1666f6",
+      "git_blob": "4f9bdd7bcd783d2155d1f2e7dff68294c20eaffa"
+    },
+    {
+      "key": "jobs-41999114842-page2",
+      "path": "actions/runs/41999114842/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.740Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114842-page2.json",
+      "bytes": 27,
+      "sha256": "b3dab5870ff3a8209160335de7c1077b89e461d875d9041ac9d8b8ed7c1666f6",
+      "git_blob": "4f9bdd7bcd783d2155d1f2e7dff68294c20eaffa"
+    },
+    {
+      "key": "jobs-41999114654",
+      "path": "actions/runs/41999114654/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.820Z",
+      "observed_at_utc": "2026-11-05T09:03:36.280Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114654.json",
+      "bytes": 1017,
+      "sha256": "d1dd243b1899aeb16937d3332ea15c3ed1cea33cc45bf9c32e57a53e5760f4ec",
+      "git_blob": "268b2fc49a78a26258f24ebbc5e2dfe4fca8b1a0"
+    },
+    {
+      "key": "jobs-41999114654-page2",
+      "path": "actions/runs/41999114654/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.708Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114654-page2.json",
+      "bytes": 27,
+      "sha256": "5dd8446ebdbe715a2030afb987fd0ef3c8455b4353d1dcda3e17c68217366cea",
+      "git_blob": "902faccb7951e8d933429dca70bee9e208b1cd92"
+    },
+    {
+      "key": "jobs-41999114971",
+      "path": "actions/runs/41999114971/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.820Z",
+      "observed_at_utc": "2026-11-05T09:03:36.273Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114971.json",
+      "bytes": 6233,
+      "sha256": "a0e5fb792047a63178b0318fd405b04c3a00080bd39d0ac39fd3b159d3080104",
+      "git_blob": "b329e4ce0ac4fc9666f88216900ced347bb796f2"
+    },
+    {
+      "key": "jobs-41999114971-page2",
+      "path": "actions/runs/41999114971/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.709Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114971-page2.json",
+      "bytes": 27,
+      "sha256": "fca3f8a24dbbe5912565fc8783385bd97a7598fb69d38f7542d47153b939497e",
+      "git_blob": "290911f4750dfb60377c0392ee2c6b78cea7179d"
+    },
+    {
+      "key": "jobs-41999114565",
+      "path": "actions/runs/41999114565/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.821Z",
+      "observed_at_utc": "2026-11-05T09:03:36.264Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114565.json",
+      "bytes": 3068,
+      "sha256": "2cdbb5c6d1acd8080fb345a7bf9ce4c3cdb46c94a8b0a15ac80b743dc708a85f",
+      "git_blob": "abc4cec7349734472d9f752f7fca5e6297b227f8"
+    },
+    {
+      "key": "jobs-41999114565-page2",
+      "path": "actions/runs/41999114565/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.774Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114565-page2.json",
+      "bytes": 27,
+      "sha256": "bcad4a09d3a8b3fbfcba9d75bb897db9d5d597bc524acd8c29f0c7b2c63e54d1",
+      "git_blob": "f11f5f6c8c01ebad1db590ea6ab4955a4e28b731"
+    },
+    {
+      "key": "jobs-41999114742",
+      "path": "actions/runs/41999114742/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.821Z",
+      "observed_at_utc": "2026-11-05T09:03:36.397Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114742.json",
+      "bytes": 6270,
+      "sha256": "40606a6d3bb0eb3b08c5d9993a0a9fc387d4c1609fd1425150fde3a8d2f45a31",
+      "git_blob": "a6e499c1c0f435361e760e2d88d2817d316a9127"
+    },
+    {
+      "key": "jobs-41999114742-page2",
+      "path": "actions/runs/41999114742/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.747Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114742-page2.json",
+      "bytes": 27,
+      "sha256": "fca3f8a24dbbe5912565fc8783385bd97a7598fb69d38f7542d47153b939497e",
+      "git_blob": "290911f4750dfb60377c0392ee2c6b78cea7179d"
+    },
+    {
+      "key": "jobs-41999114651",
+      "path": "actions/runs/41999114651/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.821Z",
+      "observed_at_utc": "2026-11-05T09:03:36.275Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114651.json",
+      "bytes": 3096,
+      "sha256": "85dfeee39e6d62d513fb84e10409426463cdffda9683ac2f4889e07252e7c387",
+      "git_blob": "37fddecd1587eb4d7d8bb59b8c4e9fed4052fa2b"
+    },
+    {
+      "key": "jobs-41999114651-page2",
+      "path": "actions/runs/41999114651/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.711Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114651-page2.json",
+      "bytes": 27,
+      "sha256": "bcad4a09d3a8b3fbfcba9d75bb897db9d5d597bc524acd8c29f0c7b2c63e54d1",
+      "git_blob": "f11f5f6c8c01ebad1db590ea6ab4955a4e28b731"
+    },
+    {
+      "key": "jobs-41999114801",
+      "path": "actions/runs/41999114801/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.821Z",
+      "observed_at_utc": "2026-11-05T09:03:36.327Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114801.json",
+      "bytes": 1989,
+      "sha256": "99602eb80fc0ecd90774b41bbfe100321a755da02e7cfc120128f2fa2ad83e22",
+      "git_blob": "9e4bb5a44dbc950c6ee4851a456f7402138f46fb"
+    },
+    {
+      "key": "jobs-41999114801-page2",
+      "path": "actions/runs/41999114801/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.769Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114801-page2.json",
+      "bytes": 27,
+      "sha256": "d2924d8b32d528e0c552cf2305c959bf075be223bd7bd30d07c9d27bc011b887",
+      "git_blob": "33ab97461affa2b734fca05626ff40ef0b80e774"
+    },
+    {
+      "key": "jobs-41999114631",
+      "path": "actions/runs/41999114631/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.821Z",
+      "observed_at_utc": "2026-11-05T09:03:36.231Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114631.json",
+      "bytes": 1024,
+      "sha256": "0a89745bd0da5e05ec93e5ade22b5d260ca51ccbddae825740bf95b9986b56a6",
+      "git_blob": "0ce21bbf35f7f6b8445951d39c0b9323dbab8a33"
+    },
+    {
+      "key": "jobs-41999114631-page2",
+      "path": "actions/runs/41999114631/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.716Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999114631-page2.json",
+      "bytes": 27,
+      "sha256": "5dd8446ebdbe715a2030afb987fd0ef3c8455b4353d1dcda3e17c68217366cea",
+      "git_blob": "902faccb7951e8d933429dca70bee9e208b1cd92"
+    },
+    {
+      "key": "jobs-41999115000",
+      "path": "actions/runs/41999115000/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.821Z",
+      "observed_at_utc": "2026-11-05T09:03:36.221Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999115000.json",
+      "bytes": 954,
+      "sha256": "bc840b6161354db60c243382d721db4d6e3f4ecd8e1091f52a9e6665fdab91d2",
+      "git_blob": "6de429b07406369de7a124a1094a2791889fe4cd"
+    },
+    {
+      "key": "jobs-41999115000-page2",
+      "path": "actions/runs/41999115000/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.768Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999115000-page2.json",
+      "bytes": 27,
+      "sha256": "5dd8446ebdbe715a2030afb987fd0ef3c8455b4353d1dcda3e17c68217366cea",
+      "git_blob": "902faccb7951e8d933429dca70bee9e208b1cd92"
+    },
+    {
+      "key": "jobs-41999104713",
+      "path": "actions/runs/41999104713/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.821Z",
+      "observed_at_utc": "2026-11-05T09:03:36.208Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999104713.json",
+      "bytes": 1036,
+      "sha256": "3949f080a30ce5d4fa58f8d0c092a3d5f0001175f377e7f068b9bb5bb1294425",
+      "git_blob": "d26812bdaf988c42cf6e667a329e8209c2013b3d"
+    },
+    {
+      "key": "jobs-41999104713-page2",
+      "path": "actions/runs/41999104713/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.770Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999104713-page2.json",
+      "bytes": 27,
+      "sha256": "5dd8446ebdbe715a2030afb987fd0ef3c8455b4353d1dcda3e17c68217366cea",
+      "git_blob": "902faccb7951e8d933429dca70bee9e208b1cd92"
+    },
+    {
+      "key": "jobs-41999104379",
+      "path": "actions/runs/41999104379/attempts/1/jobs?per_page=100&page=1",
+      "requested_at_utc": "2026-11-05T09:03:35.821Z",
+      "observed_at_utc": "2026-11-05T09:03:36.298Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999104379.json",
+      "bytes": 988,
+      "sha256": "23af8f476c4e8c7ba8d31a87363a89a4b0578483e5572fb7dfac9e36e61405d4",
+      "git_blob": "5fffb5af41c94a7a4a57da85cab58fcbc6644ee8"
+    },
+    {
+      "key": "jobs-41999104379-page2",
+      "path": "actions/runs/41999104379/attempts/1/jobs?per_page=100&page=2",
+      "requested_at_utc": "2026-11-05T09:04:28.399Z",
+      "observed_at_utc": "2026-11-05T09:04:28.774Z",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/snapshot-0001/raw-api/jobs-41999104379-page2.json",
+      "bytes": 27,
+      "sha256": "5dd8446ebdbe715a2030afb987fd0ef3c8455b4353d1dcda3e17c68217366cea",
+      "git_blob": "902faccb7951e8d933429dca70bee9e208b1cd92"
+    }
+  ],
+  "limits": [
+    "This interval is not atomic; every response has its own observation time.",
+    "Queued job.started_at fields are present but runner_name is empty/null and no actual execution is established.",
+    "Blocking run pending and zero jobs: the main platform matrix has not expanded in this snapshot; no waiting cause is invented.",
+    "Two original completed/skipped workflows are not test passes.",
+    "No log/artifact/case execution result is claimed in this initial binding.",
+    "No CI mutation/ref/native action. Old0e139 cancellations remain separate and cause unknown."
+  ]
+}
