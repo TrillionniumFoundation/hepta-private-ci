@@ -1051,6 +1051,19 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
         let mut entry = archive
             .by_index(index)
             .map_err(|err| format!("failed to read curated plugins zip entry: {err}"))?;
+
+        // Reject symlinks, devices, and mismatched file types before extracting
+        // any content. A ZIP is untrusted even when its download URL is trusted.
+        if let Some(mode) = entry.unix_mode() {
+            let file_type = mode & 0o170000;
+            let expected_type = if entry.is_dir() { 0o040000 } else { 0o100000 };
+            if file_type != 0 && file_type != expected_type {
+                return Err(format!(
+                    "curated plugins zip entry `{}` has an unsafe Unix file type",
+                    entry.name()
+                ));
+            }
+        }
         let Some(relative_path) = entry.enclosed_name() else {
             return Err(format!(
                 "curated plugins zip entry `{}` escapes extraction root",
@@ -1092,12 +1105,18 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
                 )
             })?;
         }
-        let mut output = std::fs::File::create(&output_path).map_err(|err| {
-            format!(
-                "failed to create curated plugins file {}: {err}",
-                output_path.display()
-            )
-        })?;
+        // Do not follow an existing symlink or replace a previous ZIP entry.
+        // This also fails closed on duplicate normalized extraction paths.
+        let mut output = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&output_path)
+            .map_err(|err| {
+                format!(
+                    "failed to create curated plugins file {}: {err}",
+                    output_path.display()
+                )
+            })?;
         std::io::copy(&mut entry, &mut output).map_err(|err| {
             format!(
                 "failed to write curated plugins file {}: {err}",
@@ -1117,12 +1136,15 @@ fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> 
     let Some(mode) = entry.unix_mode() else {
         return Ok(());
     };
-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
-        format!(
-            "failed to set permissions on curated plugins file {}: {err}",
-            output_path.display()
-        )
-    })
+    // Never copy setuid, setgid, sticky, or group/world-writable bits from
+    // a downloaded archive into executable plugin content.
+    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode & 0o755))
+        .map_err(|err| {
+            format!(
+                "failed to set permissions on curated plugins file {}: {err}",
+                output_path.display()
+            )
+        })
 }
 
 #[cfg(not(unix))]

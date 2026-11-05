@@ -207,7 +207,7 @@ mod tests {
                     accelerator_millis: 1_000,
                 },
             })
-            .unwrap();
+            .expect("host observation fixture must be admitted");
         ledger
     }
 

@@ -15,7 +15,12 @@ runs:
     - id: setup_ci
       uses: ./.github/actions/setup-ci
 
+    # A verified Bazelisk tag can intermittently fail to resolve through
+    # GitHub's release metadata API. Retry only a failed setup once, without
+    # relaxing version pinning or treating a second failure as success.
     - name: Set up Bazel
+      id: bazel_setup_first
+      continue-on-error: true
       uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 # 0.19.0
       # Without an explicit Bazelisk version, setup-bazel leaves PATH unchanged
       # and Windows can use the runner's standalone Bazel, ignoring .bazelversion.
@@ -23,6 +28,13 @@ runs:
         bazelisk-version: 1.28.1
         # setup-bazel writes an explicit output_base, which otherwise overrides
         # BAZEL_OUTPUT_USER_ROOT and leaves Bazel's I/O-heavy trees on C:.
+        output-base: ${{ steps.setup_ci.outputs.bazel-output-base }}
+
+    - name: Retry failed Bazel installation once
+      if: steps.bazel_setup_first.outcome == 'failure'
+      uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 # 0.19.0
+      with:
+        bazelisk-version: 1.28.1
         output-base: ${{ steps.setup_ci.outputs.bazel-output-base }}
 
     - name: Configure Bazel repository cache
