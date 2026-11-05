@@ -247,6 +247,10 @@ mod calculator_deadline;
 #[cfg(target_os = "linux")]
 mod calculator_observer;
 #[cfg(target_os = "linux")]
+mod calculator_recovery_process;
+#[cfg(target_os = "linux")]
+mod calculator_recovery_selection;
+#[cfg(target_os = "linux")]
 mod cpu_policy;
 #[cfg(target_os = "linux")]
 mod cpu_policy_consumer;
@@ -332,6 +336,12 @@ mod production_writer_host;
 mod prompt_runtime;
 mod qualification_writer;
 mod runtime;
+#[cfg(target_os = "linux")]
+pub use calculator_recovery_process::AgentdCalculatorPreviousRecoveryLaunch;
+#[cfg(target_os = "linux")]
+pub use calculator_recovery_selection::AgentdCalculatorPreviousRecoveryRequest;
+#[cfg(target_os = "linux")]
+pub use calculator_recovery_selection::AgentdCalculatorRecoverySelector;
 #[cfg(target_os = "linux")]
 pub use notes_organ::run_notes_organ;
 #[cfg(target_os = "linux")]

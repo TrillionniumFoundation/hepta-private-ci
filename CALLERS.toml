@@ -147,6 +147,10 @@ required_boundary_ids = [
   "agentd_original_recovered_writer_custody_factory",
   "agentd_original_root_handoff_unique_file",
   "calculator_previous_recovery_owner_target",
+  "calculator_previous_recovery_host_attach",
+  "calculator_previous_recovery_process_attach",
+  "calculator_previous_recovery_runtime_selection",
+  "calculator_previous_recovery_config_selection",
 ]
 
 [[boundary]]
@@ -2020,6 +2024,42 @@ symbol = "ProductionDurableWriter::calculator_recovery_target_for_retained_opera
 call_pattern = '(?:\.\s*|ProductionDurableWriter\s*::\s*)calculator_recovery_target_for_retained_operation\s*\('
 definition_path = "codex-rs/hepta-memory/src/production_calculator_previous.rs"
 definition_markers = ["pub async fn calculator_recovery_target_for_retained_operation(", "self.verify_current_authority().await?", "let original = calculator_operation_intent(", "retained.topic != CALCULATOR_EVALUATE_TOPIC_V1", "LocalOutcomeState::Indeterminate | LocalOutcomeState::Committed"]
+product_callers = ["codex-rs/hepta-agentd/src/calculator_runtime_recovery.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "calculator_previous_recovery_host_attach"
+symbol = "AgentdProductionWriterHost::attach_explicit_previous_calculator_recovery"
+call_pattern = '(?:\.\s*|AgentdProductionWriterHost\s*::\s*)attach_explicit_previous_calculator_recovery\s*\('
+definition_path = "codex-rs/hepta-agentd/src/calculator_runtime_recovery.rs"
+definition_markers = ["pub async fn attach_explicit_previous_calculator_recovery(", "current.validate()", "self.previous_calculator.is_some()", "previous == *current", "!self.has_destination(&current.destination_id())", ".calculator_recovery_target_for_retained_operation("]
+product_callers = ["codex-rs/hepta-agentd/src/calculator_recovery_process.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "calculator_previous_recovery_process_attach"
+symbol = "AgentdProductionWriterHost::attach_previous_calculator_recovery_process"
+call_pattern = '(?:\.\s*|AgentdProductionWriterHost\s*::\s*)attach_previous_calculator_recovery_process\s*\('
+definition_path = "codex-rs/hepta-agentd/src/calculator_recovery_process.rs"
+definition_markers = ["pub async fn attach_previous_calculator_recovery_process(", "ProcessRecoveryChannel::prepare(launch)?", ".attach_explicit_previous_calculator_recovery(", "channel.start()?", "host.writer().verify_current_authority().await?"]
+product_callers = ["codex-rs/hepta-agentd/src/calculator_runtime_recovery.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "calculator_previous_recovery_runtime_selection"
+symbol = "AgentdProductionOperationRuntimeConfig::select_previous_calculator_process"
+call_pattern = '(?:\.\s*|AgentdProductionOperationRuntimeConfig\s*::\s*)select_previous_calculator_process\s*\('
+definition_path = "codex-rs/hepta-agentd/src/calculator_runtime_recovery.rs"
+definition_markers = ["pub(crate) fn select_previous_calculator_process(", "self.calculator_recovery.is_some()", "launch.previous_target == *current", "!launch.helper.is_absolute()", "!launch.state_directory.is_absolute()", "self.target.destination_id() != destination"]
+product_callers = ["codex-rs/hepta-agentd/src/config.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "calculator_previous_recovery_config_selection"
+symbol = "AgentdConfig::with_original_calculator_previous_recovery"
+call_pattern = '(?:\.\s*|AgentdConfig\s*::\s*)with_original_calculator_previous_recovery\s*\('
+definition_path = "codex-rs/hepta-agentd/src/config.rs"
+definition_markers = ["pub fn with_original_calculator_previous_recovery(", ".ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?", ".select_previous_calculator_process(current, launch)?"]
 product_callers = []
 caller_markers = []
 
@@ -2028,3 +2068,13 @@ caller_markers = []
 path = "codex-rs/hepta-memory/src/production_calculator_previous.rs"
 required = ["struct RecoveryOnlyChannel", "recovery-only Calculator target cannot dispatch", "self.matches(permit.request())", "self.matches(request)", "LocalOutcomeState::Indeterminate | LocalOutcomeState::Committed", "self.verify_current_authority().await?"]
 forbidden = ["prepare_operation(", "mark_indeterminate(", "open_with_live_verifier(", "AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/calculator_recovery_process.rs"
+required = ["libc::O_NOFOLLOW", "libc::F_SEAL_WRITE", "libc::F_SEAL_GROW", "libc::F_SEAL_SHRINK", "libc::F_SEAL_SEAL", "launch.helper_sha256", ".env_clear()", "libc::PR_SET_PDEATHSIG", "Some(\"observe\" | \"acknowledge\")", "value[\"operation_id\"].as_str() != Some(self.launch.operation_id.as_str())", "host.writer().verify_current_authority().await?"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/calculator_recovery_selection.rs"
+required = ["#[serde(deny_unknown_fields)]\n        struct Exact", "#[serde(deny_unknown_fields)]\n        struct Latest", "LatestRecordedOriginalCalculator", "codex_hepta_types::StableId::new(&operation_id)"]
+forbidden = ["unsafe", "transmute", "AllowVerifier", "permit_all"]

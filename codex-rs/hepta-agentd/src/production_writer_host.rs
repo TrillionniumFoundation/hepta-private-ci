@@ -16,6 +16,11 @@ use std::time::Duration;
 mod notes_runtime_recovery;
 #[cfg(target_os = "linux")]
 use notes_runtime_recovery::NotesRuntimeRecovery;
+#[cfg(target_os = "linux")]
+#[path = "calculator_runtime_recovery.rs"]
+mod calculator_runtime_recovery;
+#[cfg(target_os = "linux")]
+use calculator_runtime_recovery::CalculatorRuntimeRecovery;
 
 use codex_hepta_cognitive_store::CognitiveAccess;
 use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
@@ -84,6 +89,8 @@ pub struct AgentdProductionOperationRuntimeConfig {
     additional_targets: Vec<(FinalUseAuthority, Arc<dyn FinalUseProductionOutboxTarget>)>,
     #[cfg(target_os = "linux")]
     notes_recovery: Option<NotesRuntimeRecovery>,
+    #[cfg(target_os = "linux")]
+    calculator_recovery: Option<CalculatorRuntimeRecovery>,
 }
 
 impl fmt::Debug for AgentdProductionOperationRuntimeConfig {
@@ -124,6 +131,8 @@ impl AgentdProductionOperationRuntimeConfig {
             additional_targets: Vec::new(),
             #[cfg(target_os = "linux")]
             notes_recovery: None,
+            #[cfg(target_os = "linux")]
+            calculator_recovery: None,
         }
     }
 
@@ -221,6 +230,8 @@ impl AgentdProductionOperationRuntimeConfig {
             additional_targets,
             #[cfg(target_os = "linux")]
             notes_recovery,
+            #[cfg(target_os = "linux")]
+            calculator_recovery,
             ..
         } = self;
         let mut host = recovered_host.as_ref().clone().attach_target(
@@ -233,6 +244,10 @@ impl AgentdProductionOperationRuntimeConfig {
         }
         #[cfg(target_os = "linux")]
         if let Some(recovery) = notes_recovery {
+            host = recovery.attach(host).await?;
+        }
+        #[cfg(target_os = "linux")]
+        if let Some(recovery) = calculator_recovery {
             host = recovery.attach(host).await?;
         }
         Ok((Arc::new(host), reconcile_interval))
@@ -251,6 +266,10 @@ pub struct AgentdProductionWriterHost {
     previous_notes: Option<(
         String,
         Arc<codex_hepta_memory::ProductionNotesRecoveryTarget>,
+    )>,
+    previous_calculator: Option<(
+        String,
+        Arc<codex_hepta_memory::ProductionCalculatorRecoveryTarget>,
     )>,
     // Private read-side clone of the exact recovered generation. Runtime
     // composition can reuse the same fenced owner without reopening by path or
@@ -386,6 +405,7 @@ impl AgentdProductionWriterHost {
             dispatchers: BTreeMap::new(),
             grants: None,
             previous_notes: None,
+            previous_calculator: None,
         })
     }
 
@@ -414,6 +434,7 @@ impl AgentdProductionWriterHost {
             dispatchers: BTreeMap::new(),
             grants: None,
             previous_notes: None,
+            previous_calculator: None,
             cognitive_runtime: codex_hepta_memory::CognitiveRuntime::Available(Arc::new(
                 runtime_store,
             )),

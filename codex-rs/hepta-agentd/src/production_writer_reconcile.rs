@@ -34,8 +34,8 @@ impl AgentdProductionWriterHost {
         self.reconcile_scope(DestinationScope::All, limit).await
     }
 
-    /// Reconcile only this deployment-fixed destination and any old Notes
-    /// receipt attached through that same current Notes recovery channel.
+    /// Reconcile only this deployment-fixed destination and its explicitly
+    /// attached old application receipt, without entering an effect channel.
     pub(crate) async fn reconcile_for_destination(
         &self,
         destination: &str,
@@ -68,6 +68,15 @@ impl AgentdProductionWriterHost {
             total += self
                 .writer
                 .reconcile_target_batch(previous.as_ref(), limit)
+                .await?;
+        }
+        if let Some((current_destination, previous)) = &self.previous_calculator
+            && scope.includes(current_destination)
+            && total < limit
+        {
+            total += self
+                .writer
+                .reconcile_target_batch(previous.as_ref(), limit - total)
                 .await?;
         }
         for dispatcher in self

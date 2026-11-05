@@ -575,6 +575,21 @@ impl AgentdConfig {
         self.with_original_notes_previous_recovery(request.resolved(operation_id))
     }
 
+    /// Attach a sealed old Calculator operation to the same recovered runtime.
+    /// The supplied current identity must already be an actual attached target.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_calculator_previous_recovery(
+        mut self,
+        current: &codex_hepta_memory::CalculatorTargetIdentity,
+        launch: crate::AgentdCalculatorPreviousRecoveryLaunch,
+    ) -> Result<Self, AgentdError> {
+        self.production_operations
+            .as_mut()
+            .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?
+            .select_previous_calculator_process(current, launch)?;
+        Ok(self)
+    }
+
     /// Attach an externally verified production cognitive writer to normal
     /// Agentd composition. Agentd never manufactures this authority.
     pub fn with_production_writer_host(
