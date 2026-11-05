@@ -1,0 +1,58 @@
+{
+  "schema": "recovery-cross-source-refusal-review-v1",
+  "requested_source": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+  "requested_tree": "1c34e75019730bfdd238ebc612701d9f9583759d",
+  "observation": {
+    "passed": false,
+    "status": "FAIL",
+    "receipt": "/workspace/scratch/768fd621f7e2/hepta-receipts/hepta-recovery-owner.json",
+    "expected_source_sha": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+    "expected_tree": "1c34e75019730bfdd238ebc612701d9f9583759d",
+    "required_tests": [
+      "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+      "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+      "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+      "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+      "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+      "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+      "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+      "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+      "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+      "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+      "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+      "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+      "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+      "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+      "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+      "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+      "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness"
+    ],
+    "receipt_sha256": "b99cb43fa298ce56c8dbe80e2fb2bdecc68ceaeb0d83ea5b13425f7a1db61f31",
+    "recorded_status": "failed",
+    "recorded_source_sha": "97ae5b4bf5e5f0d0589c1c653f1861e1d9c1242f",
+    "recorded_tested_sha": "97ae5b4bf5e5f0d0589c1c653f1861e1d9c1242f",
+    "recorded_before": {
+      "commit": "97ae5b4bf5e5f0d0589c1c653f1861e1d9c1242f",
+      "dirty": false,
+      "parents": [
+        "7530e4bc7aa61a0c23a5933fef4a65d86a586cf8"
+      ],
+      "tree": "fdce3b8e854629315cea088f5d549aed3f8b2021"
+    },
+    "recorded_after": {
+      "commit": "97ae5b4bf5e5f0d0589c1c653f1861e1d9c1242f",
+      "dirty": false,
+      "parents": [
+        "7530e4bc7aa61a0c23a5933fef4a65d86a586cf8"
+      ],
+      "tree": "fdce3b8e854629315cea088f5d549aed3f8b2021"
+    },
+    "recorded_exit_code": 101,
+    "recorded_command_exit_code": 101,
+    "recorded_passed_tests": 0,
+    "recorded_failed_tests": 0,
+    "reason": "wrong source/tested SHA or lane; retain this attempt under its original source"
+  },
+  "hosted_qualification": false,
+  "native_tests_or_builds_run_by_inspector": false
+}

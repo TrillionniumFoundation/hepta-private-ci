@@ -1,0 +1,56 @@
+{
+  "after": {
+    "commit": "9438a6c27a5e2f25169445f39499631db4e00529",
+    "dirty": false,
+    "parents": [
+      "ff19c86b7190204e9172a1595a58d8eb9f897c6d"
+    ],
+    "tree": "a9cba014de26164f0285c6c886fb071b19a04845"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "9438a6c27a5e2f25169445f39499631db4e00529",
+    "dirty": false,
+    "parents": [
+      "ff19c86b7190204e9172a1595a58d8eb9f897c6d"
+    ],
+    "tree": "a9cba014de26164f0285c6c886fb071b19a04845"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(authbus_dispatch::tests::)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 81.90177571299864,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T10:21:09.554268+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 33590,
+  "log_file": "hepta-final-dispatcher.json.85cf9a4704b54604bff6e23aa63a7fc2.log",
+  "log_sha256": "c8f1b83e5ab5eb403ca7d5719cfd8bea6e29eea0c71ff24d0c5ff690b592baee",
+  "minimum_tests": 14,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 14,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+  "started_at": "2026-11-05T10:19:47.650073+00:00",
+  "status": "passed",
+  "tested_sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+  "timed_out": false,
+  "working_directory": "/workspace/scratch/768fd621f7e2/hepta"
+}

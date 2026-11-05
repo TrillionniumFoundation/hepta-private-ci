@@ -1,0 +1,47 @@
+{
+  "after": {
+    "commit": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+    "dirty": false,
+    "parents": [
+      "c90d13228514440e82d4bbb0da2bdaf13d145c8a"
+    ],
+    "tree": "1c34e75019730bfdd238ebc612701d9f9583759d"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+    "dirty": false,
+    "parents": [
+      "c90d13228514440e82d4bbb0da2bdaf13d145c8a"
+    ],
+    "tree": "1c34e75019730bfdd238ebc612701d9f9583759d"
+  },
+  "command": [
+    "bash",
+    "-c",
+    "set -e\npython3 scripts/verify_lane_a_foundation.py verify\npython3 scripts/verify_lane_a_foundation.py self-test\npython3 /workspace/scratch/768fd621f7e2/verify_hepta_recovery_docs.py\npython3 scripts/test_hepta_implementation_maps.py\npython3 scripts/test_hepta_source_observation.py\npython3 scripts/test_hepta_ci_exec.py"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 26.398437504001777,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T10:13:33.750941+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 1129,
+  "log_file": "hepta-composed-source-contracts.json.1feeb0e85672419c9135f60264a479df.log",
+  "log_sha256": "7defc3d0186ccf30a0f239b58f5c8dedc5612a06f9e9f56413da9ab2dfae77da",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 120,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+  "started_at": "2026-11-05T10:13:07.351465+00:00",
+  "status": "passed",
+  "tested_sha": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+  "timed_out": false,
+  "working_directory": "/workspace/scratch/768fd621f7e2/hepta"
+}

@@ -1,0 +1,35 @@
+{
+  "sha": "9438a6c27a5e2f25169445f39499631db4e00529",
+  "node_id": "C_kwDOTrgxoNoAKDk0MzhhNmMyN2E1ZTJmMjUxNjk0NDVmMzk0OTk2MzFkYjRlMDA1Mjk",
+  "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/9438a6c27a5e2f25169445f39499631db4e00529",
+  "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/9438a6c27a5e2f25169445f39499631db4e00529",
+  "author": {
+    "name": "Tomasrgbsf",
+    "email": "273673612+Tomasrgbsf@users.noreply.github.com",
+    "date": "2026-11-05T10:19:02Z"
+  },
+  "committer": {
+    "name": "Tomasrgbsf",
+    "email": "273673612+Tomasrgbsf@users.noreply.github.com",
+    "date": "2026-11-05T10:19:02Z"
+  },
+  "tree": {
+    "sha": "a9cba014de26164f0285c6c886fb071b19a04845",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/a9cba014de26164f0285c6c886fb071b19a04845"
+  },
+  "message": "fix(agentd): use existing assertions in composed qualification tests\n\nRemove one unresolved pretty_assertions import from the concurrently composed Agentd tests and use the standard assert_eq macro already available in the crate. Both complete-value assertions, their inputs and order remain unchanged. No dependency, lockfile, authorization behavior, test roster or budget changes.\n\nRetain ff19's 17 recovery and 120 source-check passes and its dispatcher compilation failure as results of that exact source. This new commit requires its own validation. DRAFT/HOLD only.\n\nSigned-off-by: Tomasrgbsf <273673612+Tomasrgbsf@users.noreply.github.com>",
+  "parents": [
+    {
+      "sha": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/ff19c86b7190204e9172a1595a58d8eb9f897c6d"
+    }
+  ],
+  "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+  }
+}

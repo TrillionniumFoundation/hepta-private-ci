@@ -1,0 +1,48 @@
+{
+  "source_sha": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+  "tested_sha": "ff19c86b7190204e9172a1595a58d8eb9f897c6d",
+  "source_tree": "1c34e75019730bfdd238ebc612701d9f9583759d",
+  "recorded_at": "2026-11-05T10:14:00.471005+00:00",
+  "independent_deployment_qualified": false,
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_TARGET_DIR": "/workspace/scratch/aea25ba345a8/hepta-effects-agent/target",
+    "RUSTFLAGS": null,
+    "CARGO_ENCODED_RUSTFLAGS": null,
+    "HEPTA_CI_LANE": "source-head"
+  },
+  "files": {
+    "codex-rs/Cargo.lock": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "codex-rs/Cargo.toml": "0a5c94692252cc1b0511be6c053201596788f24da3406b9a741cddb195681c69",
+    "codex-rs/rust-toolchain.toml": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+  },
+  "tools": {
+    "rustc --version --verbose": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2",
+    "cargo --version": "cargo 1.96.0 (30a34c682 2026-05-25)",
+    "cargo nextest --version": "cargo-nextest 0.9.151 (6b3f99457 2026-11-02)\nrelease: 0.9.151\ncommit-hash: 6b3f994577a98874a2e0ea5bef77fbbab3434044\ncommit-date: 2026-11-02\nhost: x86_64-unknown-linux-gnu",
+    "just --version": "just 1.59.0"
+  },
+  "cache_observations": [
+    "native-static-cache-relocation.json",
+    "obsolete-runtime-cache-backup.json"
+  ],
+  "local_tool_differences_from_hosted_workflow": {
+    "just": {
+      "local": "1.59.0",
+      "workflow": "1.51.0"
+    },
+    "nextest": {
+      "local": "0.9.151",
+      "workflow": "0.9.103"
+    },
+    "build_jobs": {
+      "local": 1,
+      "workflow": 2
+    }
+  }
+}
