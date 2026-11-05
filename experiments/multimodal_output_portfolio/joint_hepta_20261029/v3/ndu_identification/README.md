@@ -31,6 +31,9 @@ and sequential hypothesis testing**. Renaming its hidden label or decision as
 an NDU internal state does not establish novelty. The useful implementation
 increment is the explicit joint duration likelihood, censoring, cancellation,
 stopping and payment semantics, with strong exact and myopic baselines.
+A separate [exact binary SPRT reference](BINARY_SPRT.md) connects classical
+fixed-confidence sampling cost to a KL lower bound and tests deadline failures;
+it is not the objective optimized by these 18 Bayesian utility cases.
 
 ## Joint information, time, and fee contract
 
