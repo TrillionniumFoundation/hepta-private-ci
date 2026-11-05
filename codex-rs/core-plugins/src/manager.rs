@@ -63,7 +63,8 @@ use crate::skill_snapshots::new_plugin_skill_snapshots;
 use crate::startup_sync::curated_plugins_api_marketplace_path;
 use crate::startup_sync::curated_plugins_repo_path;
 use crate::startup_sync::read_curated_plugins_sha;
-use crate::startup_sync::sync_openai_plugins_repo;
+use crate::startup_sync::sync_openai_plugins_repo_with_cancellation;
+use crate::startup_sync_task::StartupSyncTask;
 use crate::store::PluginInstallResult as StorePluginInstallResult;
 use crate::store::PluginStore;
 use crate::store::PluginStoreError;
@@ -493,6 +494,7 @@ impl From<PluginDetail> for PluginCapabilitySummary {
 }
 
 pub struct PluginsManager {
+    curated_startup_task: StartupSyncTask,
     codex_home: PathBuf,
     store: PluginStore,
     featured_plugin_ids_cache: RwLock<Option<CachedFeaturedPluginIds>>,
@@ -597,6 +599,7 @@ impl PluginsManager {
         let remote_installed_plugin_bundle_sync_gate =
             crate::remote::remote_installed_plugin_bundle_sync_gate(&codex_home);
         Self {
+            curated_startup_task: StartupSyncTask::default(),
             codex_home: codex_home.clone(),
             store: PluginStore::new(codex_home),
             featured_plugin_ids_cache: RwLock::new(None),
@@ -3074,6 +3077,18 @@ impl PluginsManager {
         }
     }
 
+    /// Stop admitting work for the retained curated sync owner. Other plugin
+    /// background workers have separate ownership and are not covered here.
+    pub fn cancel_curated_startup_sync(&self) {
+        self.curated_startup_task.cancel();
+    }
+
+    /// Wait for this actual startup thread after cancellation. A successful
+    /// join does not imply a successful repository refresh.
+    pub fn shutdown_curated_startup_sync(&self) -> Result<(), String> {
+        self.curated_startup_task.shutdown()
+    }
+
     fn start_curated_repo_sync(
         self: &Arc<Self>,
         http_client_factory: HttpClientFactory,
@@ -3082,53 +3097,60 @@ impl PluginsManager {
         if CURATED_REPO_SYNC_STARTED.swap(true, Ordering::SeqCst) {
             return;
         }
-        let on_effective_plugins_changed =
-            on_effective_plugins_changed.map(|on_effective_plugins_changed| {
-                let Ok(runtime) = tokio::runtime::Handle::try_current() else {
-                    return on_effective_plugins_changed;
-                };
-                let callback: EffectivePluginsChangedCallback = Arc::new(move |change| {
-                    let on_effective_plugins_changed = Arc::clone(&on_effective_plugins_changed);
-                    runtime.spawn(async move {
-                        on_effective_plugins_changed(change);
-                    });
-                });
-                callback
-            });
-        let manager = Arc::clone(self);
+        let manager = Arc::downgrade(self);
         let codex_home = self.codex_home.clone();
-        if let Err(err) = std::thread::Builder::new()
-            .name("plugins-curated-repo-sync".to_string())
-            .spawn(move || {
-                match sync_openai_plugins_repo(codex_home.as_path(), http_client_factory) {
-                    Ok(curated_plugin_version) => {
-                        let configured_curated_plugin_ids =
-                            configured_curated_plugin_ids_from_codex_home(codex_home.as_path());
-                        match refresh_curated_plugin_cache(
-                            codex_home.as_path(),
-                            &curated_plugin_version,
-                            &configured_curated_plugin_ids,
-                        ) {
-                            Ok(cache_refreshed) => {
-                                manager.clear_caches_after_marketplace_source_refresh(
-                                    cache_refreshed,
-                                    on_effective_plugins_changed.as_ref(),
-                                );
+        let runtime = tokio::runtime::Handle::try_current().ok();
+        if let Err(err) = self.curated_startup_task.start(move |cancellation| {
+            let on_effective_plugins_changed = on_effective_plugins_changed.map(|callback| {
+                let callback_cancellation = cancellation.clone();
+                let guarded: EffectivePluginsChangedCallback = Arc::new(move |change| {
+                    if callback_cancellation.is_cancelled() {
+                        return;
+                    }
+                    if let Some(runtime) = &runtime {
+                        let callback = Arc::clone(&callback);
+                        let cancellation = callback_cancellation.clone();
+                        runtime.spawn(async move {
+                            if !cancellation.is_cancelled() {
+                                callback(change);
                             }
-                            Err(err) => {
-                                manager.clear_cache();
-                                CURATED_REPO_SYNC_STARTED.store(false, Ordering::SeqCst);
-                                warn!("failed to refresh curated plugin cache after sync: {err}");
+                        });
+                    } else {
+                        callback(change);
+                    }
+                });
+                guarded
+            });
+            match sync_openai_plugins_repo_with_cancellation(codex_home.as_path(), http_client_factory, &cancellation) {
+                Ok(curated_plugin_version) => {
+                    if cancellation.is_cancelled() {
+                        CURATED_REPO_SYNC_STARTED.store(false, Ordering::SeqCst);
+                        return;
+                    }
+                    let Some(manager) = manager.upgrade() else {
+                        CURATED_REPO_SYNC_STARTED.store(false, Ordering::SeqCst);
+                        return;
+                    };
+                    let configured_curated_plugin_ids = configured_curated_plugin_ids_from_codex_home(codex_home.as_path());
+                    match refresh_curated_plugin_cache(codex_home.as_path(), &curated_plugin_version, &configured_curated_plugin_ids) {
+                        Ok(cache_refreshed) => {
+                            if !cancellation.is_cancelled() {
+                                manager.clear_caches_after_marketplace_source_refresh(cache_refreshed, on_effective_plugins_changed.as_ref());
                             }
                         }
-                    }
-                    Err(err) => {
-                        CURATED_REPO_SYNC_STARTED.store(false, Ordering::SeqCst);
-                        warn!("failed to sync curated plugins repo: {err}");
+                        Err(err) => {
+                            manager.clear_cache();
+                            CURATED_REPO_SYNC_STARTED.store(false, Ordering::SeqCst);
+                            warn!("failed to refresh curated plugin cache after sync: {err}");
+                        }
                     }
                 }
-            })
-        {
+                Err(err) => {
+                    CURATED_REPO_SYNC_STARTED.store(false, Ordering::SeqCst);
+                    warn!("failed to sync curated plugins repo: {err}");
+                }
+            }
+        }) {
             CURATED_REPO_SYNC_STARTED.store(false, Ordering::SeqCst);
             warn!("failed to start curated plugins repo sync task: {err}");
         }
