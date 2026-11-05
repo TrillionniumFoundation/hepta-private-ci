@@ -1,0 +1,7 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+error: failed to download `accessory v2.1.1`
+
+Caused by:
+  attempting to make an HTTP request, but --offline was specified
+error: command `/root/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo '--color=auto' metadata '--format-version=1' --all-features '--filter-platform=x86_64-unknown-linux-gnu' --locked --offline '--config=target.x86_64-unknown-linux-gnu.runner=["/usr/bin/env","-u","LD_LIBRARY_PATH"]'` failed with exit status: 101
+error: recipe `test` failed on line 89 with exit code 102

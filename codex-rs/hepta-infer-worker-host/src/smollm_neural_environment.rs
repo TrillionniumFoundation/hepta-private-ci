@@ -3,17 +3,26 @@
 
 use std::process::Command;
 
-pub(super) fn configure_python_environment(command: &mut Command) {
-    // The supervisor must retain its verified script directory for project
-    // imports. Its original child uses sys.executable without these switches,
-    // so enforce the same user-site/bytecode policy in the inherited environment.
-    command.args(["-E", "-s", "-B"]);
+pub(super) fn configure_python_environment(command: &mut Command) -> Result<(), String> {
+    if std::env::vars_os()
+        .any(|(name, _)| name.to_string_lossy().starts_with("LD_") || name == "GLIBC_TUNABLES")
+        || command.get_envs().any(|(name, value)| {
+            value.is_some()
+                && (name.to_string_lossy().starts_with("LD_") || name == "GLIBC_TUNABLES")
+        })
+    {
+        return Err("neural Python loader overrides are not allowed".to_owned());
+    }
+    // Both supervisor and descendant use isolated, no-site entry. The pinned
+    // helper restores only the explicitly declared import roots afterwards.
+    command.args(["-I", "-S", "-B"]);
     for name in [
         "PYTHONPATH",
         "PYTHONHOME",
         "PYTHONUSERBASE",
         "PYTHONSTARTUP",
         "PYTHONINSPECT",
+        "PYTHONPYCACHEPREFIX",
         "LD_PRELOAD",
         "LD_LIBRARY_PATH",
         "LD_AUDIT",
@@ -25,6 +34,7 @@ pub(super) fn configure_python_environment(command: &mut Command) {
     command
         .env("PYTHONNOUSERSITE", "1")
         .env("PYTHONDONTWRITEBYTECODE", "1");
+    Ok(())
 }
 
 #[cfg(test)]

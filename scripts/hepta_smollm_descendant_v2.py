@@ -26,7 +26,7 @@ def run(args):
     config_raw = args.native_input.read_bytes()
     config = json.loads(config_raw)
     rounds.require(
-        config["schema"] == "hepta-smollm-neural-native-check-v1",
+        config["schema"] == "hepta-smollm-neural-native-check-v2",
         "original cold native configuration required",
     )
     for name in ("chain", "materials", "parent"):

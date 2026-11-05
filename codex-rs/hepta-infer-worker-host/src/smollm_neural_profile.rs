@@ -7,7 +7,7 @@ use serde::Serialize;
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
-pub(super) const SCHEMA: &str = "hepta-smollm-neural-read-worker-v1";
+pub(super) const SCHEMA: &str = "hepta-smollm-neural-read-worker-v2";
 pub(super) const PROFILE: &str = "hepta-smollm-single-token-action-score-v1";
 
 /// Host-owned fixed model material and executable pins. Action completions are
@@ -18,6 +18,8 @@ pub struct SmolLmNeuralReadConfigV1 {
     pub materials: PathBuf,
     pub run_directory: PathBuf,
     pub source_pins: BTreeMap<PathBuf, Digest32>,
+    /// Independently pinned v2 cold-runtime snapshot. No capture-at-load fallback.
+    pub runtime_snapshot: Vec<u8>,
     pub target_contract: Vec<u8>,
     pub wrapped_adapter: Vec<u8>,
     pub contract_digest: Digest32,
@@ -35,9 +37,11 @@ impl SmolLmNeuralReadConfigV1 {
         let sources = self.source_identities()?;
         let actions = self.actions();
         let bytes = serde_json::to_vec(&(
+            "hepta-smollm-runtime-bound-execution-v2",
             PROFILE,
             sources,
             actions,
+            super::python_runtime::snapshot_digest(&self.runtime_snapshot)?.to_string(),
             self.contract_digest.to_string(),
             self.adapter_digest.to_string(),
             Digest32::of_bytes(&self.target_contract).to_string(),
@@ -68,12 +72,19 @@ impl SmolLmNeuralReadConfigV1 {
             }
         }
         let required = [
+            "contract_wire.py",
+            "devnet-v1.json",
+            "ledger-v1.json",
             "llm_adapter_contract.py",
+            "llm_base_material.py",
             "llm_inherited_runtime.py",
             "llm_neural_read_worker.py",
             "llm_parent_material.py",
+            "llm_python_runtime_contract.py",
             "llm_runtime_pilot.py",
             "model-family-smollm2-135m-v1.json",
+            "model-family-v1.json",
+            "work-profile-v1.json",
         ];
         if identities.keys().map(String::as_str).collect::<Vec<_>>() != required {
             return Err(
@@ -144,6 +155,7 @@ pub(super) struct Ready {
     pub(super) tokenizer: String,
     pub(super) source_pins: BTreeMap<String, String>,
     pub(super) worker_source: String,
+    pub(super) runtime_snapshot_sha256: String,
     pub(super) actions: Vec<Action>,
     pub(super) observed_rss_bytes: u64,
     pub(super) authority: NoAuthority,

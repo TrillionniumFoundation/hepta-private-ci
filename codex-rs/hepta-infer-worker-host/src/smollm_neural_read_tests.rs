@@ -335,12 +335,19 @@ fn controlled_start_inputs(
     root: &Path,
 ) -> (SmolLmNeuralReadConfigV1, NeuralCognitivePinV1, Vec<u8>) {
     let source_pins = [
+        "contract_wire.py",
+        "devnet-v1.json",
+        "ledger-v1.json",
         "llm_adapter_contract.py",
+        "llm_base_material.py",
         "llm_inherited_runtime.py",
         "llm_neural_read_worker.py",
         "llm_parent_material.py",
+        "llm_python_runtime_contract.py",
         "llm_runtime_pilot.py",
         "model-family-smollm2-135m-v1.json",
+        "model-family-v1.json",
+        "work-profile-v1.json",
     ]
     .into_iter()
     .map(|name| {
@@ -356,6 +363,8 @@ fn controlled_start_inputs(
         materials: root.join("absent-model"),
         run_directory: root.join("must-not-create-model-session"),
         source_pins,
+        runtime_snapshot: b"explicit unexecuted runtime snapshot fixture; not model evidence"
+            .to_vec(),
         target_contract: b"controlled sidecar fixture".to_vec(),
         wrapped_adapter: b"controlled wrapper fixture".to_vec(),
         contract_digest: Digest32::of_bytes(b"contract"),
@@ -374,6 +383,19 @@ fn controlled_start_inputs(
         execution_profile_digest: config.execution_profile_digest().unwrap(),
     };
     (config, pin, parameters)
+}
+
+#[test]
+fn execution_profile_requires_and_binds_independent_runtime_snapshot_bytes() {
+    let directory = tempfile::tempdir().unwrap();
+    let (mut config, pin, _) = controlled_start_inputs(directory.path());
+    config.runtime_snapshot = b"another explicit non-model runtime contract fixture".to_vec();
+    assert_ne!(
+        config.execution_profile_digest().unwrap(),
+        pin.execution_profile_digest
+    );
+    config.runtime_snapshot.clear();
+    assert!(config.execution_profile_digest().is_err());
 }
 
 #[test]
@@ -667,6 +689,7 @@ fn passive_failure_snapshot_survives_closed_admission_but_refuses_busy_and_poiso
         materials: PathBuf::new(),
         run_directory: PathBuf::new(),
         source_pins: BTreeMap::new(),
+        runtime_snapshot: Vec::new(),
         target_contract: vec![],
         wrapped_adapter: vec![],
         contract_digest: digest,
