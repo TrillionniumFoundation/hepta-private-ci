@@ -64,7 +64,7 @@ fn observe_for_test(
     observe_event(output, &observed(notification), &binding)
 }
 
-fn output() -> NativeRunOutput {
+pub(super) fn output() -> NativeRunOutput {
     NativeRunOutput {
         thread_id: "thread-a".to_string(),
         turn_id: "turn-a".to_string(),
@@ -178,6 +178,7 @@ fn only_the_bound_turn_can_complete_the_native_request() {
 #[test]
 fn output_is_observed_bounded_and_never_predeclares_success() {
     let mut output = output();
+    let mut messages = AgentMessageOutput::default();
     let delta = |thread: &str, text: String| {
         ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
             thread_id: thread.to_string(),
@@ -186,12 +187,21 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_for_test(&mut output, delta("unrelated", "discard".to_string())).unwrap();
-    observe_for_test(&mut output, delta("thread-a", "model output".to_string())).unwrap();
+    messages
+        .observe(&delta("unrelated", "discard".to_string()), &mut output)
+        .unwrap();
+    messages
+        .observe(&delta("thread-a", "model output".to_string()), &mut output)
+        .unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_for_test(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
+        messages
+            .observe(
+                &delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES)),
+                &mut output
+            )
+            .is_err()
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
