@@ -47,6 +47,12 @@ pub use session::RootNotesPolicyPredecessor;
 mod writer_rotation;
 pub use writer_rotation::rotate_host_writer_authorization;
 
+#[path = "authority_host_issuer_renewal.rs"]
+mod issuer_renewal;
+pub use issuer_renewal::HostIssuerLeaseRenewalPlan;
+pub use issuer_renewal::commit_host_issuer_lease_renewal;
+pub use issuer_renewal::prepare_host_issuer_lease_renewal;
+
 const CLOCK_OWNER: &str = "root-authority-clock-v1";
 const LEASE_OWNER: &str = "root-authority-leases-v1";
 

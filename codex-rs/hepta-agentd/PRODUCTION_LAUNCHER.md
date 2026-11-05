@@ -185,6 +185,34 @@ Desktop Root/Session implementation and a newly seeded original thread. See
 [the candidate handbook](DESKTOP_ORGAN_CANDIDATE.md) for source ownership,
 verification commands and the current unexecuted joint-runtime gates.
 
+## Explicit Root issuer lease renewal
+
+The administrator may prepare one fixed `HostIssuerLeaseRenewalPlan` with
+`prepare_host_issuer_lease_renewal` and commit that same plan with
+`commit_host_issuer_lease_renewal`. Both entry points require actual real and
+effective UID 0, the original root-only configuration, the existing protected
+bind/state/clock/frontier and the independently pinned original issuer key.
+They never initialize missing state or accept an ordinary peer's revision/key.
+
+Preparation does not change the canonical lease or issuer. It retains the
+canonical lease ID, epoch and binding,
+increments its revision exactly once and uses the original clock for a fixed
+lifetime of at most 300,000 ms. The old canonical lease may be expired but must
+remain present and unrevoked. Root retains the predecessor configuration and
+the serialized plan in its administrative phase record. Commit accepts only
+that exact canonical predecessor or the exact already-committed postimage.
+The original registry CAS rechecks epoch and revocation under its lock even
+on a lost-acknowledgement retry. Missing, pruned, changed or revoked originals,
+changed bindings, future/expired plans and extended retries fail closed.
+
+Only after commit succeeds may Root write a successor configuration pinning
+the returned revision and reopen the same original issuer. Old instances still
+pin their old revision and fail original final-use checks. The returned lease
+record is not a use token, writer proof, Current witness or production-readiness
+claim. This explicit administrative operation adds no automatic renewal service,
+new issuer, epoch reset, second writer, operation ledger or dispatch retry.
+The isolated registry tests do not qualify a native Root continuation.
+
 ## Startup and retained lifetimes
 
 The Root text-UI lane accepts one frame per connection. Each accepted connection

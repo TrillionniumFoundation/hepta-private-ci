@@ -139,11 +139,17 @@ pub use authority_host_runtime::HostAuthorityBootstrap;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::HostAuthorityInitialized;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::HostIssuerLeaseRenewalPlan;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::PreparedHostAuthoritySession;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootNotesPolicyPredecessor;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::commit_host_issuer_lease_renewal;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::initialize_host_authority;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::prepare_host_issuer_lease_renewal;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::register_host_writer_authorization;
 #[cfg(target_os = "linux")]

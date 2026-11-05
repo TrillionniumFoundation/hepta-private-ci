@@ -151,6 +151,8 @@ required_boundary_ids = [
   "calculator_previous_recovery_process_attach",
   "calculator_previous_recovery_runtime_selection",
   "calculator_previous_recovery_config_selection",
+  "root_original_issuer_renewal_prepare",
+  "root_original_issuer_renewal_commit",
 ]
 
 [[boundary]]
@@ -444,7 +446,7 @@ symbol = "AuthorityLeaseRegistry::put_lease"
 call_pattern = '(?:\.\s*|AuthorityLeaseRegistry\s*::\s*)put_lease\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseRegistry", "pub fn put_lease(", "expected_revision"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_runtime.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs", "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs", "codex-rs/hepta-agentd/src/deployment_calculator.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_runtime.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs", "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs", "codex-rs/hepta-agentd/src/deployment_calculator.rs", "codex-rs/hepta-agentd/src/authority_host_issuer_renewal.rs"]
 caller_markers = ["put_lease"]
 
 [[boundary]]
@@ -2101,3 +2103,26 @@ forbidden = ["unsafe", "transmute", "AllowVerifier", "permit_all"]
 path = "codex-rs/hepta-agentd/src/runtime.rs"
 required = ["let app_server_model_tools = if desktop_thread_tools.is_some()", "AppServerModelToolProfile::OriginalDesktop", "} else if notes_thread_tools.is_some()", "AppServerModelToolProfile::OriginalNotes", "AppServerModelToolProfile::Standard"]
 forbidden = []
+
+[[boundary]]
+id = "root_original_issuer_renewal_prepare"
+symbol = "prepare_host_issuer_lease_renewal"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_issuer_renewal.rs"
+definition_markers = ["pub fn prepare_host_issuer_lease_renewal(", "require_actual_root()?", "read_root_json(config_file)?", "open_registered_issuer(&config)?", "prepare_existing(&config, &leases, now, lifetime_ms)"]
+product_callers = []
+caller_markers = []
+
+
+[[boundary]]
+id = "root_original_issuer_renewal_commit"
+symbol = "commit_host_issuer_lease_renewal"
+definition_path = "codex-rs/hepta-agentd/src/authority_host_issuer_renewal.rs"
+definition_markers = ["pub fn commit_host_issuer_lease_renewal(", "require_actual_root()?", "open_registered_issuer(&config)?", "commit_existing(&config, &leases, plan, now)"]
+product_callers = []
+caller_markers = []
+
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_issuer_renewal.rs"
+required = ["#[serde(deny_unknown_fields)]", "libc::getuid()", "libc::geteuid()", "MAX_ISSUER_RENEWAL_MS: u64 = 300_000", "old.revision.checked_add(1)", "new.binding != old.binding", "new.authority_epoch != old.authority_epoch", "current != plan.previous_lease && current != plan.renewed_lease", ".read_revocation(", ".put_lease(", "plan.previous_lease.revision", "now >= new.expires_at_unix_ms"]
+forbidden = ["initialize_host_authority(", "create_protected(", "advance_epoch(", "AllowVerifier", "permit_all"]
