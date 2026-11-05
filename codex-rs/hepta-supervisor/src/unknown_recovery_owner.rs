@@ -67,35 +67,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                 "source frontier or release generation changed".to_string(),
             ));
         }
-        let parse = |value: &str| Sha256Digest::parse(value).map_err(SupervisorError::Invalid);
-        verifier
-            .verify_recovery(
-                decision,
-                agent_id,
-                &intent.grant_sha256,
-                &intent.intent_sha256,
-                &absent_release_transaction_digest(),
-                &intent.source_release,
-                &parse(&source.manifest_sha256)?,
-                &parse(&source.agentd_program_sha256)?,
-                source
-                    .matrixd_program_sha256
-                    .as_deref()
-                    .map(parse)
-                    .transpose()?
-                    .as_ref(),
-                record.lifecycle.generation,
-                expected_authority_epoch,
-                now_unix_seconds,
-            )
-            .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
-        let terminal = intent
-            .abandon_unknown(decision)
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let next_revision = slot
-            .control_revision
-            .checked_add(1)
-            .ok_or_else(|| SupervisorError::Invalid("control revision overflow".to_string()))?;
         // Revalidate immediately before the existing single writer publishes.
         // No transaction, release selection, or unknown fact is synthesized.
         if self.record(agent_id)?.release_state != record.release_state
@@ -118,6 +89,45 @@ impl<D: ProcessDriver> Supervisor<D> {
                 agent_id.clone(),
             ));
         }
+        let policy_admission = crate::signed_intent_policy::MutationPolicyAdmission::acquire(
+            &self.registry,
+            verifier,
+            now_unix_seconds,
+        )?;
+        let current_now = policy_admission.now_seconds()?;
+        let parse = |value: &str| Sha256Digest::parse(value).map_err(SupervisorError::Invalid);
+        verifier
+            .verify_recovery(
+                decision,
+                agent_id,
+                &intent.grant_sha256,
+                &intent.intent_sha256,
+                &absent_release_transaction_digest(),
+                &intent.source_release,
+                &parse(&source.manifest_sha256)?,
+                &parse(&source.agentd_program_sha256)?,
+                source
+                    .matrixd_program_sha256
+                    .as_deref()
+                    .map(parse)
+                    .transpose()?
+                    .as_ref(),
+                record.lifecycle.generation,
+                expected_authority_epoch,
+                current_now,
+            )
+            .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
+        let terminal = intent
+            .abandon_unknown(decision)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let next_revision = slot
+            .control_revision
+            .checked_add(1)
+            .ok_or_else(|| SupervisorError::Invalid("control revision overflow".to_string()))?;
+        policy_admission.revalidate_window(
+            decision.issued_at_unix_seconds,
+            decision.expires_at_unix_seconds,
+        )?;
         write_intent(record.layout.run_root(), &terminal)
             .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
         slot.signed_intent = Some(terminal.clone());
