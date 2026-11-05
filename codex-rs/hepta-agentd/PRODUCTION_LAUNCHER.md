@@ -128,13 +128,15 @@ parameters and all legacy Notes descriptors, including the Notes UI listener.
 The dedicated `PrimaryInputs::Desktop` branch does not reinterpret a Notes
 deployment or attach Calculator under a Notes target identity.
 
-The trusted Root caller uses
+The fresh trusted Root caller uses
 `PreparedHostAuthoritySession::with_desktop_startup_from_session_before` with a
-`hepta.root.desktop_launch_profile.v1` profile whose `profile` is exactly
-`notes_calculator_v1`. The actual Session reservation supplies both targets
-and a nonce. It is metadata, not application rights or an attachment ACK.
-Root validates the actual Session sender credentials, held pidfd and target
-pair before sealing the late deployment.
+`hepta.root.desktop_launch_profile.v1` profile. Explicit successor recovery
+uses `with_desktop_recovery_startup_from_session_before` and `.v2`, with the
+exact previous policy pair. Both require `profile: notes_calculator_v1`.
+The actual Session reservation supplies both new targets and a nonce. It is
+metadata, not application rights or an attachment ACK. Root validates the
+actual Session sender credentials, held pidfd and target pair before sealing
+the late deployment.
 
 The child inherits a separately opened read-only descriptor before Root fills
 the deployment. Root must finish and seal the producer before its late handoff;
@@ -144,25 +146,32 @@ at most 16 KiB, and the actual post-drop owner. Its strict fields are:
 
 | Field | Required value |
 | --- | --- |
-| `schema`, `profile` | `hepta.agentd.original_desktop_launch.v1`, `notes_calculator_v1` |
+| `schema`, `profile` | Fresh `hepta.agentd.original_desktop_launch.v1` or explicit recovery `.v2`; `notes_calculator_v1` in both |
 | `agent_id`, `spawn_generation` | Exact original Agentd Registry/Config identity |
 | `session` | Actual `uid`, `pid`, `boot_id`, `process_start_ticks`, independently checked against the retained Session pidfd |
 | `bindings` | The same ten original fields listed for Notes below: scope, scope digest, issuer, policy generation, locale and five input digests |
 | `startup_release` | Required exact `notes`, `calculator`, `nonce`; task IDs 1 and 2, same Session instance and distinct application incarnations |
 | `interaction` | Required `kind: original_desktop_thread_tool_v1`, actual `route` and `DesktopThreadSeedReceipt` |
+| `previous_recovery` | Absent in v1; required non-null `notes` and `calculator` selections in v2, as specified below |
 
-Unknown fields, an absent/null required interaction, a legacy Notes seed or
-`previous_recovery` are not supported. The new seed must match the actual
-six-tool SessionMeta, execution configuration and observed model/provider
-tuple. Its data does not authorize a model turn or replace the original human
-admission. Existing Notes threads and their three-tool catalogs are unchanged.
+Unknown fields, an absent/null required interaction and a legacy Notes seed
+are rejected. The v1/v2 and `previous_recovery` presence rules are exact:
+v1 with that field, v2 without it, and explicit null in either version fail.
+The Desktop seed must match the actual six-tool SessionMeta, execution
+configuration and observed model/provider tuple. Its data does not authorize
+a model turn or replace the original human admission. Fresh initialization
+seeds a new original Desktop thread; recovery verifies its retained original
+route and seed. Existing Notes threads and their three-tool catalogs are
+unchanged.
 
 `attach_root_desktop_operation_host_with_startup_before` receives the launcher's
 original absolute `CLOCK_BOOTTIME` deadline. It recovers the same protected
 writer once, verifies its live authority, activates the sealed reservation and
 accepts Notes's original two-descriptor offer/ACK followed by Calculator's.
 Notes uses the original Notes FinalUse consumer; Calculator uses the original
-Device consumer with its distinct exact admission. The original atomic host
+Device consumer with its distinct exact admission. The joint owner publishes
+its protected Current through the original writer before installing the
+composition and selecting previous operations. The original atomic host
 installer publishes the composition after both handoffs and live checks.
 `with_root_desktop_thread_tools` installs the six-tool Core callback runtime on
 that attachment. The launcher retains the entire
@@ -179,11 +188,69 @@ sender work; late acknowledgement leaves the existing result unknown and
 does not create another dispatch opportunity.
 
 This is a finite session under the existing Root lifetime maximum of
-300,000 ms. It provides no issuer-renewal service, epoch continuation or
-qualified joint product restart. Use the new profile only with the matching
-Desktop Root/Session implementation and a newly seeded original thread. See
-[the candidate handbook](DESKTOP_ORGAN_CANDIDATE.md) for source ownership,
-verification commands and the current unexecuted joint-runtime gates.
+300,000 ms, with application grants capped at 30,000 ms. The explicit same-ID
+issuer renewal below and the v2 recovery path are implemented source contracts;
+they are not automatic renewal, an epoch reset or installed joint-product
+qualification. Use the profile only with the matching Desktop Root/Session
+implementation. See [the candidate handbook](DESKTOP_ORGAN_CANDIDATE.md) for
+source ownership, separately scoped executed evidence and remaining runtime
+gates.
+
+## Explicit joint recovery
+
+`desktop_previous_recovery.rs` defines one strict `previous_recovery` object
+with required `notes` and `calculator` fields. Each contains `helper`,
+`helper_sha256`, `state_directory`, the application's typed `previous_target`
+and its typed `selector`. Helper and state paths must be absolute and each
+helper hash must parse as SHA256. The old targets must share their old Session
+instance, have distinct task IDs and differ from their corresponding current
+targets. The Notes selector is `ExactOperation` or
+`LatestRecordedOriginalNotes`; Calculator has the corresponding
+`ExactOperation` or `LatestRecordedOriginalCalculator` selector. These are
+Rust variant names; the sealed JSON uses their defined serde representation.
+Unknown fields and null substitutions are rejected.
+
+`root_desktop_startup.rs` accepts v2 only for the retained original successor
+writer, not a fresh filesystem or initial lease generation. The supplied old
+pair must exactly match the previous policies. Root observes its retained
+physical Current and replaces both old policies with the real new Reserved
+pair in one original issuer CAS. This does not change the retained signed
+source bindings or authorize a policy-generation migration. New application
+targets acquire rights only through the original admission and FinalUse paths;
+previous targets are installed for recovery only.
+
+After the joint runtime is installed, `config_desktop.rs` resolves both requests
+before configuring either previous helper. `desktop_thread_recovery_runtime.rs`
+caps the original suspend-aware deadline once at five seconds for the combined
+selection; there is no additional five-second allowance per application. It
+verifies the retained seed and actual Session before and after that work.
+`desktop_thread_recovery.rs` reads one complete original sender cut between two
+actual protected Current observations and requires their full receipts to
+match. It verifies every matching profile's original signed callback, route,
+operation and target before applying either old-target selector, and rechecks
+the original Root authority and remaining total deadline. The query never
+publishes Current or changes an operation.
+
+An exact selector must find its operation under the explicit old target. A
+latest selector may produce no helper only after the complete cut has passed
+all checks. Every unselected candidate must already have the original writer's
+durable, validated target retirement ACK; `Committed` alone does not prove
+retirement. `Indeterminate` may be selected for the original recovery path,
+but another unacknowledged operation blocks selection. `Queued`, `Rejected`
+and `RolledBack` do not establish that the target performed no effect and are
+refused by this selector. Missing or ambiguous source/operation data also
+refuses recovery. A selected already-acknowledged operation can still install
+its exact helper for an idempotent metadata check.
+
+The original Notes and Calculator recovery factories pin the helper ELF,
+previous target and selected operation. Their channels admit only observation
+and terminal metadata acknowledgement, not dispatch or a new grant. The
+original writer retains the causal operation, terminal receipt and durable
+retirement ACK in its one journal. The original hard cut bounds of 1,024
+requests and 32 MiB remain; this path adds no history reclamation, unlimited
+successor service or cross-version database migration qualification. Actual
+Notes/Calculator use, two bounded successor cycles and revocation refusal on
+one installed source pair remain independent acceptance gates.
 
 ## Explicit Root issuer lease renewal
 

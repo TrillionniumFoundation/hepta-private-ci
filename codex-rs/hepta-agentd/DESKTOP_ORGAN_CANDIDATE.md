@@ -2,9 +2,10 @@
 
 This is the development and qualification entry for the independent Notes and
 Calculator successor to Hepta `a39a0871d9601ffccb5e0d95d8f39d54b3a63360`.
-The frozen Linux product remains Desktop
-`fd8d56c52b971c2d5d0e6430f296803b43ef60a3` with that Hepta commit. Candidate
-source, fixture results and the frozen product's receipts have separate scope.
+The historical frozen Linux product paired Desktop
+`fd8d56c52b971c2d5d0e6430f296803b43ef60a3` with that Hepta commit. The current
+source contract below, each fixture result and each installed product receipt
+have separate scope. Historical evidence is preserved with its original pair.
 
 ## Versioned composition
 
@@ -17,8 +18,8 @@ payload and typed receipt on the original Device consumer. Both use the same
 | Boundary | Candidate value and owning code |
 | --- | --- |
 | Session reservation and deployment profile | `notes_calculator_v1`; `desktop_startup.rs`, `root_desktop_reservation.rs` |
-| Trusted Root launch profile | `hepta.root.desktop_launch_profile.v1`; `desktop_launch.rs`, `root_desktop_startup.rs` |
-| Root-sealed Agentd deployment | `hepta.agentd.original_desktop_launch.v1`; `production_desktop_deployment.rs` |
+| Trusted Root launch profile | Fresh `hepta.root.desktop_launch_profile.v1`, explicit recovery `.v2`; `desktop_launch.rs`, `root_desktop_startup.rs` |
+| Root-sealed Agentd deployment | Fresh `hepta.agentd.original_desktop_launch.v1`, explicit recovery `.v2`; `production_desktop_deployment.rs`, `desktop_previous_recovery.rs` |
 | Original Core execution profile | `hepta.desktop.core-execution.v1`; `desktop_thread_execution.rs` |
 | Original Objective admission and retained callback profile | `organ.desktop.thread-tool.v1`; `hepta-objective/src/desktop_thread_source.rs`, `hepta-memory/src/objective_sender_desktop.rs` |
 | Original Core catalog and seed | `desktop_thread_catalog.rs`, `desktop_thread_seed.rs`; a new `DesktopThreadSeedReceipt` |
@@ -78,8 +79,10 @@ the separate Desktop deployment, and releases the original late Root handoff.
 Agentd reads the deployment only after authenticating that handoff. It opens
 the original protected writer once, activates the reservation, then accepts
 Notes's two-descriptor offer/ACK followed by Calculator's two-descriptor
-offer/ACK. The original installer publishes the joint runtime only after its
-live-authority checks. The launcher retains the entire
+offer/ACK. The original owner acknowledges its protected Current before installing the
+joint runtime and selecting previous operations. Selection itself is read-only.
+The original installer publishes the runtime only after its live-authority
+checks. The launcher retains the entire
 `AgentdDesktopProductionAttachment`, including Calculator's read-only observer.
 
 The new launcher carries one 30-second `CLOCK_BOOTTIME` deadline from argument
@@ -93,10 +96,35 @@ implementations and their verification commands are in
 [the launcher contract](PRODUCTION_LAUNCHER.md).
 
 The retained Root service is still a finite session, with the existing maximum
-300,000 ms lifetime. This candidate does not implement long-running issuer
-renewal or epoch continuation. Its sealed deployment has no `previous_recovery`
-field, and the joint product has no qualified restart/recovery path. The old
-Notes-only recovery contract must not be applied to it by renaming a profile.
+300,000 ms lifetime and application grants of at most 30,000 ms. The source now
+includes an explicit Root administrative renewal of the same original issuer
+lease: one fixed predecessor/postimage, revision plus one, original registry
+CAS, then a newly opened original instance pinned to the returned revision.
+Revoked or missing originals cannot be renewed or recreated. This is neither
+an automatic renewal service nor an epoch reset.
+
+Fresh v1 profiles require `previous_recovery` to be absent; explicit null is
+rejected. Recovery v2 requires both exact previous targets, frozen helper
+hashes, absolute helper/state paths and each application's typed exact/latest
+selector. Root verifies the retained physical Current and replaces both exact
+old policies with the actual new Session reservation in one original CAS.
+Both applications then resolve against one complete, bounded original sender
+cut with identical protected Current observations before and after the read.
+An unselected old operation can be skipped only when the original writer has
+persisted its validated target retirement ACK. The old helpers can observe and
+acknowledge their selected operations, never dispatch a new effect. See
+[the joint recovery contract](PRODUCTION_LAUNCHER.md#explicit-joint-recovery).
+
+These source paths do not establish installed joint recovery qualification.
+The same new product pair still needs the actual Notes/Calculator round trip,
+two consecutive bounded successor cycles and post-revocation refusal. The
+original 1,024-request/32-MiB retained-cut limits remain; no unlimited history,
+automatic reclamation or cross-version database upgrade is qualified. New
+application targets start with new document/state identity. Explicit Notes
+text restoration retains its revision/digest checks; Calculator has no
+automatic historical-state transfer. Old target results and new target state
+must remain distinct. The original Notes-only recovery contract retains its
+own meaning and cannot be applied by renaming a profile.
 
 ## Executed evidence and remaining gates
 
