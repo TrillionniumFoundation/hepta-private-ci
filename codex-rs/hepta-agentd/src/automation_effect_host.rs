@@ -1148,7 +1148,11 @@ impl AgentdAutomationEffectHost {
             let _refresh = self.revocation_refresh.lock().map_err(|_| {
                 AgentdError::Protocol("automation revocation refresh lock is poisoned".to_string())
             })?;
-            Some(pq.authenticate(&self.authority, &self.revocations_file, signed_grant)?)
+            pq::EffectDispatchLease::Pq(pq.authenticate(
+                &self.authority,
+                &self.revocations_file,
+                signed_grant,
+            )?)
         } else {
             #[cfg(test)]
             self.refresh_revocations()?;
@@ -1157,7 +1161,7 @@ impl AgentdAutomationEffectHost {
                 "ordinary automation effect PQ owner missing".to_string(),
             ));
             #[cfg(test)]
-            None
+            pq::EffectDispatchLease::ClassicalFixture
         };
         let run = store
             .taskflow_run(&intent.run_id)
@@ -1498,7 +1502,7 @@ impl AgentdAutomationEffectHost {
 
 struct AgentdAuthorizedEffectDriver {
     adapter: AgentdProviderEffectAdapter,
-    lease: Option<pq::PqDispatchLease>,
+    lease: pq::EffectDispatchLease,
     provider_scope: String,
     destination_id: String,
 }
@@ -1528,9 +1532,7 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
         if request.intent.destination_id != self.destination_id {
             return Err(AuthorizedEffectDriverError::BeforeProviderContact);
         }
-        if let Some(lease) = &self.lease {
-            lease.check()?;
-        }
+        self.lease.check()?;
         let expected = self.recovery_key(request.owner_agent_id, request.intent)?;
         let legacy = ProviderEffectKey::for_operation(
             &self.provider_scope,
@@ -1559,7 +1561,7 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
                     Ok(runtime) => runtime,
                     Err(_) => return ProviderThreadOutcome::BeforeContact,
                 };
-                if lease.as_ref().is_some_and(|lease| lease.check().is_err()) {
+                if lease.check().is_err() {
                     return ProviderThreadOutcome::BeforeContact;
                 }
                 ProviderThreadOutcome::Dispatch(

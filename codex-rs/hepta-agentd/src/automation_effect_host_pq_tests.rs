@@ -9,6 +9,7 @@ use codex_model_provider::PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER;
 use codex_model_provider::PROVIDER_EFFECT_PAYLOAD_SHA256_HEADER;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 use std::sync::atomic::Ordering;
 use wiremock::Mock;
 use wiremock::MockServer;
@@ -429,7 +430,7 @@ async fn original_store_driver_refuses_authenticated_lease_after_exact_head_chan
     host.authority.update_revocations(successor.clone())?;
     let mut driver = AgentdAuthorizedEffectDriver {
         adapter: host.adapter.clone(),
-        lease: Some(lease),
+        lease: EffectDispatchLease::Pq(lease),
         provider_scope: host.provider_scope.clone(),
         destination_id: host.destination_id.clone(),
     };

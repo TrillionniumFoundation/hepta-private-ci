@@ -94,6 +94,25 @@ pub(super) struct PqDispatchLease {
     valid_until_unix_ms: u64,
 }
 
+/// Production drivers must carry the authenticated PQ lease. Classical test
+/// fixtures have an explicit variant that is absent from production builds.
+#[derive(Clone)]
+pub(super) enum EffectDispatchLease {
+    Pq(PqDispatchLease),
+    #[cfg(test)]
+    ClassicalFixture,
+}
+
+impl EffectDispatchLease {
+    pub(super) fn check(&self) -> Result<(), AuthorizedEffectDriverError> {
+        match self {
+            Self::Pq(lease) => lease.check(),
+            #[cfg(test)]
+            Self::ClassicalFixture => Ok(()),
+        }
+    }
+}
+
 impl PqDispatchLease {
     pub(super) fn check(&self) -> Result<(), AuthorizedEffectDriverError> {
         if self.authority.authentication_profile() != FinalUseAuthenticationProfile::MlDsa65V2
