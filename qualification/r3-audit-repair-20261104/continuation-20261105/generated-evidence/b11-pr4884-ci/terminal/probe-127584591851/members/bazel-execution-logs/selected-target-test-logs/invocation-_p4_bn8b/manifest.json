@@ -1,0 +1,106 @@
+{
+  "complete_case_inventory": false,
+  "complete_for_selected_targets": true,
+  "errors": [],
+  "files": [],
+  "retention": {
+    "console_bytes": 192570,
+    "console_sha256": "5b9418dd9e27720053d6c7c85e179cf7ab1438d431a3527821a4371e363cff6a",
+    "limitations": "NOT_REPORTED does not mean filtered or skipped. An absent cached marker does not prove local execution or an independent remote execution. Files are existing local records for a console-reported target; their binding to this invocation is not independently established. Bazel config expansion and per-case filtering must be checked separately. Checkout identity is recorded at collection time, not at test start.",
+    "selection_errors": [],
+    "targets": {
+      "//codex-rs/app-server:app-server-all-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/app-server:app-server-all-wine-exec-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/app-server:app-server-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/codex-mcp:codex-mcp-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/core:core-all-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/core:core-all-wine-exec-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/core:core-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/ext/queue:queue-queue_service-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/tui:tui-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/utils/pty:pty-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests": {
+        "cached_marker": false,
+        "collect_existing_logs": false,
+        "status": "FAILED",
+        "summary_lines": [
+          "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 53.9s"
+        ]
+      }
+    },
+    "wrapper_requested_selection_flags": [
+      "--test_tag_filters=-argument-comment-lint",
+      "--config=ci-windows"
+    ]
+  },
+  "schema": "bazel_selected_target_logs_v1",
+  "scope": "Existing local test.log/test.xml and test_attempts log/XML records for the allowlisted targets reported PASSED or FLAKY in this console; not failed-target-only evidence or a complete case/attempt inventory.",
+  "selected_targets": [],
+  "source": {
+    "commit": "5ce73498a9e8ee843d156c43593b1bc2fede416f",
+    "tracked_worktree_dirty": false,
+    "tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa"
+  }
+}

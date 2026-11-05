@@ -1,0 +1,225 @@
+{
+  "schema": "b11-read-readiness-independent-review-v1",
+  "reviewed_utc": "2026-11-05T18:11:07.934071+00:00",
+  "decision": "STATIC_ACCEPT_WITH_EXPLICIT_BEHAVIOR_AND_RUNTIME_LIMITS",
+  "author_manifest": {
+    "path": "research-audit/b11-read-readiness-20261105/manifest.json",
+    "bytes": 16741,
+    "sha256": "1ad864f7a8a628a5153eb644065799f811787cb70ed638eadcc2fa68d09dc0fa",
+    "blob": "3c41554c5584b237f5c32996017d09a89cc9372c"
+  },
+  "author_publication_map": {
+    "path": "research-audit/b11-read-readiness-20261105/publication-map.json",
+    "bytes": 13721,
+    "sha256": "d8045a5a3408a4f50a6b30e468c3c79a41b402f4c97e388d25a3caf70a491436",
+    "blob": "60e0d0042a8777173e437b67dbc4868333530a54"
+  },
+  "patch": {
+    "path": "research-audit/b11-read-readiness-20261105/read-readiness.patch",
+    "bytes": 11629,
+    "sha256": "4a7262dfba537f18e838121b7f3fe4065518d3c63b2e4204d35c7bd2641e3f8f",
+    "blob": "0a80cbb044a0e00fc1a59810e7174dde0501b5c7"
+  },
+  "source_evidence": {
+    "path": "research-audit/b11-read-readiness-20261105/source-evidence.json",
+    "bytes": 40723,
+    "sha256": "67c3efcfc6a64676371319e78798cb650588d53d0e11280869ff25c99f6be31b",
+    "blob": "4c6c98f723b329513cbd318f23676e17518aaf4f"
+  },
+  "independent_byte_verification": {
+    "path": "ci-audit/b11-read-readiness-independent-20261105/static-verification.json",
+    "bytes": 5887,
+    "sha256": "fc2a88834f1cb6cdd589c0f429fa617491833968c2dde491c84dc493b33a0363",
+    "blob": "fa8062f6534f08b4599f75b4848e845e0f6398e1"
+  },
+  "fixed_source": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+  "fixed_tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+  "candidate_three_paths": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "preimage": {
+        "bytes": 47955,
+        "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3",
+        "blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d"
+      },
+      "postimage": {
+        "bytes": 45950,
+        "sha256": "56fc08023e586ee8faa88dc630d2b946080a7779773da406918c13f5697b0d01",
+        "blob": "c39b298b7889dc3669e1ee7e2816f7e77568e955"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "preimage": {
+        "bytes": 1913,
+        "sha256": "89d689e0c0a07ff8b68d719f6ffb23df86a22598df37d57f6d70360ca738e695",
+        "blob": "a96b6a502474a8bab3baa7842f36dfa814c9cc37"
+      },
+      "postimage": {
+        "bytes": 1960,
+        "sha256": "38f994940b12741210bc9b4cd3d648ed9a53378c638f2671154d0777d13b2598",
+        "blob": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "bytes": 2425,
+        "sha256": "c8076fe5e2946b273186654da298fd08d0d885317273a56eb1c80e424023bb18",
+        "blob": "333aefdf9584ef29612ac6f9814ff34308971754"
+      }
+    }
+  ],
+  "verified_changes": [
+    {
+      "area": "Full read completion",
+      "finding": "For nonempty original read_roots, run_setup_full directly calls the same run_read_acl_only at the former detached-helper branch. The original deny-read stage stays before it; runtime/write/deny stages stay after. Empty roots preserve the explicit skip."
+    },
+    {
+      "area": "Error propagation and marker",
+      "finding": "All recorded read-stage errors now return Err for initial Full and explicit non-refresh ReadAclsOnly as well as refresh. The unchanged run_setup commits the initial marker only after its mode body returns Ok. Existing real_main and orchestrator paths preserve nonzero propagation."
+    },
+    {
+      "area": "Normal caller",
+      "finding": "The pinned require_logon_sandbox_creds optionally performs initial setup, then unconditionally runs Full refresh for the current roots before returning credentials. The read stage is therefore included in that existing awaited operation."
+    },
+    {
+      "area": "Mutex acquisition",
+      "finding": "The fixed Local name/default descriptor/noninheritance remain. Only a newly created mutex yields a guard. Existing objects return an error with raw io OS183 after closing the newly opened non-owner handle; no existing object is treated as a completion receipt."
+    },
+    {
+      "area": "Owned handles",
+      "finding": "Production guard ReleaseMutex/CloseHandle body is byte-identical and remains in one synchronous setup thread. The test independent OpenMutex handle uses OwnedHandle. No new wait loop, subprocess, environment mutation or production-name test is added."
+    }
+  ],
+  "preservation_proof": {
+    "three_paths_only": true,
+    "patch_added_removed": [
+      96,
+      92
+    ],
+    "full_cached_source_files_rehashed": 12,
+    "exact_original_source_excerpts_rechecked": 8,
+    "preserved_regions": [
+      {
+        "name": "Payload and SetupMode",
+        "equal": true,
+        "bytes": 777,
+        "sha256": "01bd10a060c331c34654a584f90f4473eb33af14e03560aa2a557ecf1197a830",
+        "blob": "6b5d7260ad7ba45442fdbb312f7517e8f8c288f7"
+      },
+      {
+        "name": "ReadAclSubjects and unchanged per-root read operations",
+        "equal": true,
+        "bytes": 3034,
+        "sha256": "b0901ac7a6819326c243180be475a3e477df03788eb1f16107359ee5380d34d1",
+        "blob": "c36146960fd022f6f7bb0e19f08375aabbc120e3"
+      },
+      {
+        "name": "Directory helper, real_main and setup marker ordering",
+        "equal": true,
+        "bytes": 8388,
+        "sha256": "65a7199ef397b697bd9f3a81485705d8e498c54a0c1bc54939d76a71c93cfbb6",
+        "blob": "bf7586e64475bf766ad3e6df1c01df9e913c17e3"
+      },
+      {
+        "name": "Provision-only and common account/network operations",
+        "equal": true,
+        "bytes": 5399,
+        "sha256": "625f8c65e04abeea970550602e125bc8be3a9f71c01b9fb51e96febb3a5a40aa",
+        "blob": "a2dda5c280e3e3c50958522ba6788b16e931d679"
+      },
+      {
+        "name": "Read SID/mask/inheritance and cleanup",
+        "equal": true,
+        "bytes": 1424,
+        "sha256": "c4c402515422590ee7017d1f48e47b612948222bebc0a38c3a8d91609905c72d",
+        "blob": "05e6f7c70c48f51ea9d34cebf25369fabd51b6f9"
+      },
+      {
+        "name": "All existing helper test bodies",
+        "equal": true,
+        "bytes": 12138,
+        "sha256": "db47aa2ace0cbfba0dcfbc8a68b5b5cbf83638974b8bd9cb9df85a0819b8327e",
+        "blob": "0f0fcbfd79c00eb363175cd5fcd84016b43df595"
+      },
+      {
+        "name": "Remaining Full runtime/write/deny stages, except progress wording",
+        "equal": true,
+        "bytes": 19134,
+        "sha256": "e205cd02f1aa4660bc3276dbbe7cbd5ffc5aa496d1686270f6984b8a22366d6d",
+        "blob": "97ae15c15b7b528535857e80a3b232c31ddb9302"
+      }
+    ],
+    "finite_input_roots": "The original build_payload_roots helper/platform selection, profile/SSH exclusions, canonical-existing treatment, write-root removal and deny-read filtering remain untouched.",
+    "actual_read_operation": "Original per-root builtin/group RX shortcuts, sandbox group SID, FILE_GENERIC_READ|FILE_GENERIC_EXECUTE and OBJECT_INHERIT_ACE|CONTAINER_INHERIT_ACE are byte-identical. No additional recursive path walk or root is introduced.",
+    "token_and_other_contracts": "No token flag, restricting SID, read-cap, write/delete denial assertion, Cargo/BUILD/lock/feature/workflow change exists in the three-path patch.",
+    "protocol": "Payload/SetupMode, SetupErrorCode and serialization remain unchanged. The obsolete spawn-error variant remains historical; this patch adds no enum or wire field.",
+    "isolated_reconstruction": "Independent cloud git apply --check/apply/reverse --check/reverse all exit0; each postimage equals the frozen candidate and both preimages plus new-path absence are restored."
+  },
+  "new_control_review": {
+    "name": "win::read_acl_mutex::tests::existing_read_acl_mutex_is_not_a_completion_receipt",
+    "definitions": 1,
+    "native_executions": 0,
+    "physical_api_steps": [
+      "Create and own an isolated Local mutex.",
+      "Second CreateMutex acquisition returns io OS183 plus not-ready context.",
+      "Open a separate real handle, drop the owner and retain the unowned object.",
+      "The retained object still produces OS183 rather than readiness.",
+      "Drop the final retained handle; a new owner can then be created."
+    ],
+    "leak_observation": "The final recreation also depends on the competing non-owner handles having been closed; the source does not replace real kernel objects with a fake mutex.",
+    "narrow_scope": "This single-thread actual Win32 object control verifies named-object ownership/retention behavior, not cross-process completed payloads or actual Full read ACL success."
+  },
+  "target_selection": {
+    "helper": "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests",
+    "library": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+    "source_chain": "Cargo binds codex-windows-sandbox-setup to src/bin/setup_main/main.rs; its Windows-only win module imports read_acl_mutex, whose cfg(test) module imports the new test. defs.bzl generates a separate <binary>-bin-unit-tests outer wrapper and BUILD keeps its Windows platform constraint.",
+    "cargo_limit": "A --lib-only invocation cannot include this new helper test. The original whole package entrypoint or the explicit existing Bazel helper target must supply its own actual roster and result.",
+    "old_library_156_not_borrowed": true,
+    "existing_helper_names_not_claimed_complete_runtime_catalog": true
+  },
+  "compatibility_and_limits": [
+    "Busy or retained named objects now fail an otherwise legitimate concurrent request. The session-wide name is not keyed by read roots and provides no cross-process completion record; identical same-process payload singleflight remains unchanged.",
+    "The initial non-elevated and refresh Command::status calls have no local timeout; elevated WaitForSingleObject(INFINITE) and singleflight Condvar remain unbounded. Synchronous read work can increase startup latency. This is not a bounded readiness implementation.",
+    "The OS183 cause is preserved in the anyhow chain and detailed debug log. Unchanged real_main maps it to HelperUnknownError with the top-level not-ready context in the JSON report; that message is not guaranteed to include the numeric OS code.",
+    "Original missing-path and builtin/group RX shortcuts remain. Successful completion means the existing read stage returned normally, not that a future full-restricting read SID, every descendant, or protected children are authorized.",
+    "No rollback is added: earlier provisioning, deny-read or partial ACL effects may remain after failure. Path replacement, concurrent ACL writers, root drift, normal loader, descendant lifetime and cancellation remain outside this patch.",
+    "No Rust formatting, compilation, Windows execution, Full/refresh endpoint or performance/concurrency qualification was performed in this review. The original library target and separate helper target retain their own results."
+  ],
+  "primary_api_basis": {
+    "frozen_windows_sys_052_source": {
+      "bytes": 136501,
+      "sha256": "6258ef99d17078002020644540a608a89cdf20436daefa3970a65348e6793c1c",
+      "blob": "6ee2c4ad6120e5a3ad34c87e67d6d9187304d9ac"
+    },
+    "windows_sys_source_body": true,
+    "official_original": {
+      "path": "research-audit/b11-read-readiness-20261105/originals/mutex-official-api.json",
+      "bytes": 15220,
+      "sha256": "e67f083a553a3048ab79ec0b8024c60ca78d9e073da0053fe782e7a58c0107a4",
+      "blob": "9d98d861b340984c55b71ac1aac2fabac79089ac"
+    },
+    "documents": [
+      "https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-createmutexw",
+      "https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-releasemutex"
+    ],
+    "meaning": "Existing named objects ignore initial-owner request; release requires ownership; last-handle closure ends object lifetime. These primary API semantics support the source review but do not substitute for Windows execution."
+  },
+  "reviewer_correction": {
+    "path": "ci-audit/b11-read-readiness-independent-20261105/reviewer-line-range-correction.json",
+    "bytes": 801,
+    "sha256": "7626123c6c8f49b820c2c20980827434067d6afc97d214df5cac3c3e9b4197f1",
+    "blob": "ad5df0622206ccb87ffac3e03a74979dd10907ba"
+  },
+  "reviewer_correction_limit": "Two local source-input adapter errors stopped before git patch application. They were corrected without changing the candidate or any native input; the exact byte checks and the final independent four-command reconstruction then passed.",
+  "blocker_status": "B11 remains OPEN. No original exit condition is changed and no native execution is authorized by this review.",
+  "actions": {
+    "new_native_jobs": 0,
+    "product_tests": 0,
+    "CI_queries_or_mutations": 0,
+    "shared_source_index_target_ref_changes": 0,
+    "cloud_private_patch_reconstruction": true
+  }
+}

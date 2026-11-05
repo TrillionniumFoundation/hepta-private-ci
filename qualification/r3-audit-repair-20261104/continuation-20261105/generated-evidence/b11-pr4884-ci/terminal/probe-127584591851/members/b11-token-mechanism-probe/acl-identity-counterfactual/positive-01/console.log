@@ -1,0 +1,61 @@
+BuildBuddy API key is available; using remote Bazel configuration.
+Using generic BuildBuddy configuration: buildbuddy-generic.
+INFO: Invocation ID: abaac195-19fb-48d3-af1b-2174973dc430
+INFO: Streaming build results to: https://app.buildbuddy.io/invocation/abaac195-19fb-48d3-af1b-2174973dc430
+INFO: Checking for file changes...
+Computing main repo mapping: 
+Loading: 
+Loading: 3 packages loaded
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (4 packages loaded, 0 targets configured)
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (4 packages loaded, 0 targets configured)
+
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (67 packages loaded, 3 targets configured)
+
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (82 packages loaded, 713 targets configured)
+
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (135 packages loaded, 2932 targets configured)
+
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (215 packages loaded, 8408 targets configured)
+
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (350 packages loaded, 13208 targets configured)
+
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (454 packages loaded, 16152 targets configured)
+
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (568 packages loaded, 23722 targets configured)
+
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (618 packages loaded, 27237 targets configured)
+
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (643 packages loaded, 31963 targets configured)
+
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (643 packages loaded, 33929 targets configured)
+
+INFO: Analyzed target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (644 packages loaded, 33968 targets configured).
+[406 / 1,616] checking cached actions
+[1,616 / 1,617] [Prepa] Testing //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests
+INFO: From Testing //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests:
+==================== Test output for //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests:
+
+running 1 test
+
+deny_repair_identity: directory=false returned_ok=false replacement_changed=false original_changed=false
+
+deny_repair_identity: directory=true returned_ok=false replacement_changed=false original_changed=false
+test acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 155 filtered out; finished in 0.00s
+
+================================================================================
+INFO: Found 1 test target...
+Target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests up-to-date:
+  bazel-bin/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests.bat
+INFO: Elapsed time: 21.624s, Critical Path: 2.51s
+INFO: 3 processes: 1614 action cache hit, 2 internal, 2 local.
+INFO: Build completed successfully, 3 total actions
+INFO: 
+//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              PASSED in 0.1s
+  WARNING: //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+
+Executed 1 out of 1 test: 1 test passes.
+INFO: 
+INFO: Streaming build results to: https://app.buildbuddy.io/invocation/abaac195-19fb-48d3-af1b-2174973dc430
+Selected-target-log archive: D:\a\_temp\b11-token-mechanism-probe\acl-identity-counterfactual\positive-01\bazel-execution-logs\selected-target-test-logs\invocation-bllv549o (complete_for_selected_targets=True)

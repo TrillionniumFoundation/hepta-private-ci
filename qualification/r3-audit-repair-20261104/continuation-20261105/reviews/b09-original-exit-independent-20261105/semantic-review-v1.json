@@ -1,0 +1,1007 @@
+{
+  "schema": "b09-original-contract-independent-review/v1",
+  "conclusion": "CLOSED_SCOPED_CANDIDATE_FOR_ROOT_DECISION",
+  "root_has_not_yet_closed_b09_in_this_record": true,
+  "literal_original_exit": "原注入、idle-steer、suspension、8 个 turn_recover 原用例（含特性门负控）和 panic/cancel/watchdog 负控通过。",
+  "counts": {
+    "original_names": 19,
+    "actual_unique_executions": 19,
+    "passed": 19,
+    "failed": 0,
+    "skipped": 0,
+    "observed_early_return": 0,
+    "composition": {
+      "injection": 1,
+      "turn_recover": 8,
+      "suspension_integration": 1,
+      "panic_cancel_watchdog": 7,
+      "idle_steer": 2
+    },
+    "turn_recover_composition": {
+      "successful_recovery": 3,
+      "rejection_scenarios": 4,
+      "feature_disabled_rejection": 1
+    }
+  },
+  "tested_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "native_job": "1a1a9f68261-fc05-3a71",
+  "platform": "Linux x86_64 GNU / original host rog",
+  "evidence": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/original-19-case-evidence-v1.json",
+    "bytes": 60739,
+    "sha256": "7e0c527e201904840c48a5733916570206fe2d14301c4224618fb1112f3f592e",
+    "git_blob": "dced05028fcf9c5c67d9200b6519f9db7567a955"
+  },
+  "source_bridge": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-leaf-bridge-v1.json",
+    "bytes": 69372,
+    "sha256": "fb77e79ecfb39b4ad8aa0ac24e47cf290c6b1ac0153fd4183076c5c0fa3a77c1",
+    "git_blob": "154ba0fd9a259bd30654d9a8dc6984cd7ffc7c50"
+  },
+  "complete_original_verification": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/complete-original-verification-v1.json",
+    "bytes": 25841,
+    "sha256": "b23ea81b5a039e1486792e4eed7d5b6f3b5eaf3a375ea9cd2074d85263ca3da5",
+    "git_blob": "e3cf7cc3590d1748df55537398ee3a0af465f8f7"
+  },
+  "verifier": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/verify_b09_originals.py",
+    "bytes": 16235,
+    "sha256": "d8e75ca6b77eb00c3aadd8c7f2c75ae1f93f36f5882a9f9b4390a3c8dd03378b",
+    "git_blob": "9ec14a4a3c3e57a4e9528dd82da86a1384d24ecf"
+  },
+  "complete_source_file_count": 22,
+  "case_contracts": [
+    {
+      "position": 1,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn",
+      "result": "PASS",
+      "seconds": "0.480",
+      "contract_kind": "positive_and_absence_control",
+      "original_assertions_reviewed": "First turn completes before injection. The injected developer item is durably present with metadata=None. Exactly two physical provider requests: absent from request 1 and present in request 2.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/01-thread_inject_items_adds_raw_response_items_after_a_turn.rs.source.txt",
+        "bytes": 4639,
+        "sha256": "0e8cfad1fec83d4fc80c34cb6a8b8deea9500176ca1426b35187ac8285a6a668",
+        "git_blob": "2c6cd3ef319fa99b5609368b34c6268085f5aef9"
+      },
+      "source_original_lines": [
+        272,
+        403
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/01-thread_inject_items_adds_raw_response_items_after_a_turn.log",
+        "bytes": 17847,
+        "sha256": "9d2aa130169497345370cdfc25fc5e2dbd5e870bdfb09ddcc769826230c4d1ce",
+        "git_blob": "02899b11fd6423526ab9975b5a14a3f0bae3a842",
+        "byte_offset": 23994647,
+        "end_byte_offset_exclusive": 24012494,
+        "first_line": 205682,
+        "last_line": 205737
+      },
+      "direct_raw_observations": [
+        {
+          "original_full_raw_line": 205716,
+          "text": "    writing message to stdin: Request(JSONRPCRequest { id: Integer(3), method: \"thread/inject_items\", params: Some(Object {\"threadId\": String(\"01a1aa00-c417-730e-a9d8-10d7fcb3fdf5\"), \"items\": Array [Object {\"type\": String(\"message\"), \"role\": String(\"developer\"), \"content\": Array [Object {\"type\": String(\"input_text\"), \"text\": String(\"Injected after first turn\")}]}]}), trace: None })"
+        }
+      ],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 2,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery",
+      "result": "PASS",
+      "seconds": "0.619",
+      "contract_kind": "negative_rejection",
+      "original_assertions_reviewed": "After a real child kill and cold resume with an explicit different cwd, the returned cwd is the override; recover must return INVALID_REQUEST and no-longer-valid, and provider request count stays 1.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/02-cold_resume_explicit_cwd_override_is_fail_closed_for_recovery.rs.source.txt",
+        "bytes": 2452,
+        "sha256": "ef0659daa6b8c3c68f399c78c556678fedc23f6b242f90080c3458f788781a9f",
+        "git_blob": "6f7af28ac66821920ec54e3000d8d23da4b9bc39"
+      },
+      "source_original_lines": [
+        448,
+        516
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/02-cold_resume_explicit_cwd_override_is_fail_closed_for_recovery.log",
+        "bytes": 12596,
+        "sha256": "67944dadb8d344574105ce316604be61992e56793c6c66cf485c8b7878d2957e",
+        "git_blob": "1b5f750620b99ee2f3273fa9447a253eb106e028",
+        "byte_offset": 27367657,
+        "end_byte_offset_exclusive": 27380253,
+        "first_line": 214400,
+        "last_line": 214439
+      },
+      "direct_raw_observations": [
+        {
+          "original_full_raw_line": 214435,
+          "text": "    writing message to stdin: Request(JSONRPCRequest { id: Integer(2), method: \"turn/recover\", params: Some(Object {\"threadId\": String(\"01a1aa01-2076-7422-8dfe-29ba8c9f403d\"), \"turnId\": String(\"01a1aa01-209a-71c2-a1db-9bf5c13541ed\")}), trace: None })"
+        },
+        {
+          "original_full_raw_line": 214438,
+          "text": "    read message from stdout: Error(JSONRPCError { error: JSONRPCErrorError { code: -32600, data: None, message: \"thread recovery candidate is no longer valid; start a new turn\" }, id: Integer(2) })"
+        }
+      ],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 3,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail",
+      "result": "PASS",
+      "seconds": "0.725",
+      "contract_kind": "positive",
+      "original_assertions_reviewed": "After a real child kill, the paginated canonical context tail is Interrupted; recovery preserves the original turn id through completion, paginated history contains one such turn, and provider requests are exactly 2.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/03-cold_paginated_sigkill_recovery_uses_canonical_context_tail.rs.source.txt",
+        "bytes": 3521,
+        "sha256": "456df287e2dd724110e9ef26448714504cf5e2909bc36d3050498384a75a5984",
+        "git_blob": "7d0b607f00c842fe2b7bc79b4d01f5db10d4df80"
+      },
+      "source_original_lines": [
+        568,
+        667
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/03-cold_paginated_sigkill_recovery_uses_canonical_context_tail.log",
+        "bytes": 18391,
+        "sha256": "028557fa8165284db00276b8f47b7a7168f5dfb5a41c9cbbb3d40c9676c550e0",
+        "git_blob": "087f2c364c18112d591f59bcb01be36f82eb6db3",
+        "byte_offset": 27337014,
+        "end_byte_offset_exclusive": 27355405,
+        "first_line": 214307,
+        "last_line": 214361
+      },
+      "direct_raw_observations": [
+        {
+          "original_full_raw_line": 214342,
+          "text": "    writing message to stdin: Request(JSONRPCRequest { id: Integer(2), method: \"turn/recover\", params: Some(Object {\"threadId\": String(\"01a1aa01-1f59-70d4-bc76-9602973676d4\"), \"turnId\": String(\"01a1aa01-1f76-746c-96da-4d1661707949\")}), trace: None })"
+        }
+      ],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 4,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery",
+      "result": "PASS",
+      "seconds": "0.599",
+      "contract_kind": "negative_rejection",
+      "original_assertions_reviewed": "After a real child kill, explicit resumed roots override persisted roots; recover is INVALID_REQUEST and physical provider requests remain 1.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/04-cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery.rs.source.txt",
+        "bytes": 2712,
+        "sha256": "d14dfa0031a68a1a26bd0a665112d96a75010c1a117681cbfd4ae40f5589b6ac",
+        "git_blob": "52fb8d81c421454230ea04d6e41d45e29fa88c35"
+      },
+      "source_original_lines": [
+        370,
+        446
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/04-cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery.log",
+        "bytes": 12656,
+        "sha256": "819f2b3639ff507e5ed1cabdb0ccafcf91acea96d103f7b82733918d178cda8a",
+        "git_blob": "e16040c957b717728892d9e14f1c48d30aa2dab7",
+        "byte_offset": 27380253,
+        "end_byte_offset_exclusive": 27392909,
+        "first_line": 214440,
+        "last_line": 214479
+      },
+      "direct_raw_observations": [
+        {
+          "original_full_raw_line": 214475,
+          "text": "    writing message to stdin: Request(JSONRPCRequest { id: Integer(2), method: \"turn/recover\", params: Some(Object {\"threadId\": String(\"01a1aa01-2234-734a-ba35-0b42e8fecffd\"), \"turnId\": String(\"01a1aa01-2256-7418-9e37-1ea898e016ac\")}), trace: None })"
+        },
+        {
+          "original_full_raw_line": 214478,
+          "text": "    read message from stdout: Error(JSONRPCError { error: JSONRPCErrorError { code: -32600, data: None, message: \"thread recovery candidate is no longer valid; start a new turn\" }, id: Integer(2) })"
+        }
+      ],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 5,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+      "result": "PASS",
+      "seconds": "0.613",
+      "contract_kind": "negative_rejection",
+      "original_assertions_reviewed": "The test first receives a real command-execution approval request from provider output, kills the child, and cold resumes. Recovery is rejected as not interrupted; no second physical provider send.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/05-cold_sigkill_after_provider_output_is_not_recoverable.rs.source.txt",
+        "bytes": 1681,
+        "sha256": "b51f14364a4311b7cc641b75b008f339ea7c4679cea2c1f5263e18b0d22a1262",
+        "git_blob": "5163451de01971d9b60d83396be55b64ffeb28a1"
+      },
+      "source_original_lines": [
+        518,
+        566
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/05-cold_sigkill_after_provider_output_is_not_recoverable.log",
+        "bytes": 16208,
+        "sha256": "637b7cdfb63539f48cdc6882230355cf93c95e9efd66c1ec26a603fabe5e1dcb",
+        "git_blob": "778df8c3ff38dfc6abf2ad91027c292a9ecf091c",
+        "byte_offset": 27392909,
+        "end_byte_offset_exclusive": 27409117,
+        "first_line": 214480,
+        "last_line": 214530
+      },
+      "direct_raw_observations": [
+        {
+          "original_full_raw_line": 214527,
+          "text": "    writing message to stdin: Request(JSONRPCRequest { id: Integer(2), method: \"turn/recover\", params: Some(Object {\"threadId\": String(\"01a1aa01-22b1-70a9-8124-b38f1f20c147\"), \"turnId\": String(\"01a1aa01-22d5-72fe-ad6a-606bfa3fe74f\")}), trace: None })"
+        },
+        {
+          "original_full_raw_line": 214529,
+          "text": "    read message from stdout: Error(JSONRPCError { error: JSONRPCErrorError { code: -32600, data: None, message: \"thread is not idle or turn is not interrupted\" }, id: Integer(2) })"
+        }
+      ],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 6,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns",
+      "result": "PASS",
+      "seconds": "0.612",
+      "contract_kind": "negative_rejections",
+      "original_assertions_reviewed": "The same original test rejects busy, already completed, and cross-thread/wrong-tail identities plus a pending interruption/approval boundary. Exactly two provider requests ensure rejects do not sample.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/06-recover_rejects_busy_completed_and_cross_thread_turns.rs.source.txt",
+        "bytes": 3137,
+        "sha256": "fe0de2fb61be3d1a7ad81ded3c9223396d43253c67f78e34065686977da8f27e",
+        "git_blob": "9b9f649a3c596fd4e5e595fadcebf90d4f8f6f7a"
+      },
+      "source_original_lines": [
+        89,
+        173
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/06-recover_rejects_busy_completed_and_cross_thread_turns.log",
+        "bytes": 24906,
+        "sha256": "1697ad31442d8429e21954f84913e5b99942b1a42aa9bdb32d707fbd4d4106d3",
+        "git_blob": "612b7fef16ac7c314f49d4b06823d1c8c135411d",
+        "byte_offset": 27469325,
+        "end_byte_offset_exclusive": 27494231,
+        "first_line": 214724,
+        "last_line": 214795
+      },
+      "direct_raw_observations": [
+        {
+          "original_full_raw_line": 214756,
+          "text": "    writing message to stdin: Request(JSONRPCRequest { id: Integer(3), method: \"turn/recover\", params: Some(Object {\"threadId\": String(\"01a1aa01-2480-7201-962e-9f07c410b64e\"), \"turnId\": String(\"01a1aa01-2495-7413-b109-159b0d833b3b\")}), trace: None })"
+        },
+        {
+          "original_full_raw_line": 214757,
+          "text": "    read message from stdout: Error(JSONRPCError { error: JSONRPCErrorError { code: -32600, data: None, message: \"turn `01a1aa01-2495-7413-b109-159b0d833b3b` is not interrupted\" }, id: Integer(3) })"
+        },
+        {
+          "original_full_raw_line": 214780,
+          "text": "    writing message to stdin: Request(JSONRPCRequest { id: Integer(6), method: \"turn/recover\", params: Some(Object {\"threadId\": String(\"01a1aa01-254c-7742-b20e-7a05fe21ea97\"), \"turnId\": String(\"01a1aa01-2579-7032-882d-233963fd53a8\")}), trace: None })"
+        },
+        {
+          "original_full_raw_line": 214781,
+          "text": "    read message from stdout: Error(JSONRPCError { error: JSONRPCErrorError { code: -32600, data: None, message: \"turn `01a1aa01-2579-7032-882d-233963fd53a8` is not interrupted\" }, id: Integer(6) })"
+        },
+        {
+          "original_full_raw_line": 214790,
+          "text": "    writing message to stdin: Request(JSONRPCRequest { id: Integer(8), method: \"turn/recover\", params: Some(Object {\"threadId\": String(\"01a1aa01-2480-7201-962e-9f07c410b64e\"), \"turnId\": String(\"01a1aa01-2495-7413-b109-159b0d833b3b\")}), trace: None })"
+        },
+        {
+          "original_full_raw_line": 214792,
+          "text": "    read message from stdout: Error(JSONRPCError { error: JSONRPCErrorError { code: -32600, data: None, message: \"thread is not idle or turn is not interrupted\" }, id: Integer(8) })"
+        },
+        {
+          "original_full_raw_line": 214793,
+          "text": "    writing message to stdin: Request(JSONRPCRequest { id: Integer(9), method: \"turn/recover\", params: Some(Object {\"threadId\": String(\"01a1aa01-254c-7742-b20e-7a05fe21ea97\"), \"turnId\": String(\"01a1aa01-2495-7413-b109-159b0d833b3b\")}), trace: None })"
+        },
+        {
+          "original_full_raw_line": 214794,
+          "text": "    read message from stdout: Error(JSONRPCError { error: JSONRPCErrorError { code: -32600, data: None, message: \"turn `01a1aa01-2495-7413-b109-159b0d833b3b` is not the interrupted tail of thread `01a1aa01-254c-7742-b20e-7a05fe21ea97`\" }, id: Integer(9) })"
+        }
+      ],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 7,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state",
+      "result": "PASS",
+      "seconds": "0.409",
+      "contract_kind": "positive",
+      "original_assertions_reviewed": "The ephemeral thread has no persisted rollout. After a real request and interrupt it recovers from listener state, preserves the turn id, completes, and the restored input occurs once across exactly two requests.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/07-same_process_ephemeral_interrupted_turn_recovers_from_listener_state.rs.source.txt",
+        "bytes": 2589,
+        "sha256": "bad6176bb374445aaea2e27157f0b726c51e5f55e1474b9bbecb345c3efa1af5",
+        "git_blob": "519ab7933538a3ae8e28df72036914f6fba9d750"
+      },
+      "source_original_lines": [
+        669,
+        737
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/07-same_process_ephemeral_interrupted_turn_recovers_from_listener_state.log",
+        "bytes": 14466,
+        "sha256": "057e0844b344a3289d693140fbd1aa8d481d72b426f0f8fc0fcc26f443486e1a",
+        "git_blob": "4f515eba89521131d9452007e6b342c2f3792435",
+        "byte_offset": 27421995,
+        "end_byte_offset_exclusive": 27436461,
+        "first_line": 214578,
+        "last_line": 214627
+      },
+      "direct_raw_observations": [
+        {
+          "original_full_raw_line": 214612,
+          "text": "    writing message to stdin: Request(JSONRPCRequest { id: Integer(4), method: \"turn/recover\", params: Some(Object {\"threadId\": String(\"01a1aa01-2521-7650-949d-721400184d41\"), \"turnId\": String(\"01a1aa01-2541-752e-a461-8436e6be0cc8\")}), trace: None })"
+        }
+      ],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 8,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature",
+      "result": "PASS",
+      "seconds": "0.236",
+      "contract_kind": "negative_rejection",
+      "original_assertions_reviewed": "HeptaTurnRecovery is not enabled; actual turn/recover returns -32600 with the exact feature-required message and the model server receives zero requests.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/08-turn_recover_requires_hepta_turn_recovery_feature.rs.source.txt",
+        "bytes": 895,
+        "sha256": "039ff70ad4ba97bc2d2ff46605a0ef40e75f2fa3bca15241d1dcccc9c91a8084",
+        "git_blob": "a491ad80a4e02350e5b3aa9fba8c33e9ba27c7b8"
+      },
+      "source_original_lines": [
+        65,
+        87
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/08-turn_recover_requires_hepta_turn_recovery_feature.log",
+        "bytes": 5364,
+        "sha256": "b2e3e6bfdda2a5a6ba371fc33fc45bf7209e2577c340f96077f7b4f7d1fa5938",
+        "git_blob": "e4988dcd47cf8ddd92442a0a5e2d5d7959edd1ad",
+        "byte_offset": 27416631,
+        "end_byte_offset_exclusive": 27421995,
+        "first_line": 214557,
+        "last_line": 214577
+      },
+      "direct_raw_observations": [
+        {
+          "original_full_raw_line": 214574,
+          "text": "    writing message to stdin: Request(JSONRPCRequest { id: Integer(2), method: \"turn/recover\", params: Some(Object {\"threadId\": String(\"01a1aa01-25ad-75c4-bc39-57d8704c3f98\"), \"turnId\": String(\"disabled-feature-turn\")}), trace: None })"
+        },
+        {
+          "original_full_raw_line": 214576,
+          "text": "    read message from stdout: Error(JSONRPCError { error: JSONRPCErrorError { code: -32600, data: None, message: \"turn/recover requires features.hepta_turn_recovery=true\" }, id: Integer(2) })"
+        }
+      ],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 9,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input",
+      "result": "PASS",
+      "seconds": "1.011",
+      "contract_kind": "positive_and_deduplication_controls",
+      "original_assertions_reviewed": "A real child is killed after the first physical provider send. Cold recovery hydrates roots, preserves the interrupted id, consumes the same stable queued user input once, does not consume SessionStart on recovery, and the next new turn runs that hook once. History/physical input occurrence counts are asserted.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/09-cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input.rs.source.txt",
+        "bytes": 6919,
+        "sha256": "2ba10c43975fae773fae9e085a4b6b219644fc352a85479b17a9367997bf28ec",
+        "git_blob": "54149cf4b3727329581eff13917d190ed7cd5117"
+      },
+      "source_original_lines": [
+        175,
+        368
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/09-cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input.log",
+        "bytes": 32864,
+        "sha256": "674c80ad6f98a557f4978307f16d9a4e290f64482beeb0a803283687df0f913f",
+        "git_blob": "b2592239180362eed873258255492056438bbd57",
+        "byte_offset": 27436461,
+        "end_byte_offset_exclusive": 27469325,
+        "first_line": 214628,
+        "last_line": 214723
+      },
+      "direct_raw_observations": [
+        {
+          "original_full_raw_line": 214679,
+          "text": "    writing message to stdin: Request(JSONRPCRequest { id: Integer(3), method: \"turn/recover\", params: Some(Object {\"threadId\": String(\"01a1aa01-22ed-703f-97f0-4c96bd268e2d\"), \"turnId\": String(\"01a1aa01-2307-71fb-9e92-012795f9030a\")}), trace: None })"
+        }
+      ],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 10,
+      "classname": "codex-core::all",
+      "name": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+      "result": "PASS",
+      "seconds": "0.502",
+      "contract_kind": "positive_and_descendant_rejection",
+      "original_assertions_reviewed": "A delayed local provider response keeps the root active. A currently loaded descendant blocks handoff; after it shuts down/removal, suspension succeeds. Durable history has no TurnAborted/TurnComplete and retains Ready. A replacement runtime preserves config and environment, recovers the same id, and both original and recovered provider requests are single requests.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/10-root_turn_suspension_preserves_unfinished_turn_history.rs.source.txt",
+        "bytes": 8412,
+        "sha256": "d76d85cc8b46a01d8679531ece4f1085ab20be1a975e2a2f095ab25f813afeb8",
+        "git_blob": "f0cddc38432cc3c297bfd69b3c4c7412c1b4da4c"
+      },
+      "source_original_lines": [
+        75,
+        288
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/10-root_turn_suspension_preserves_unfinished_turn_history.log",
+        "bytes": 350,
+        "sha256": "0fd76d6aa95e5aa5b994c5452ce14ca37c0bc24c7b63888a1ce91fc314cb18f1",
+        "git_blob": "bf89e5f12ccff47c4fe1ca89d09cbf843eda7a36",
+        "byte_offset": 2266048,
+        "end_byte_offset_exclusive": 2266398,
+        "first_line": 48359,
+        "last_line": 48367
+      },
+      "direct_raw_observations": [],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 11,
+      "classname": "codex-core",
+      "name": "session::tests::panicking_session_task_is_converted_to_terminal_error_and_releases_slot",
+      "result": "PASS",
+      "seconds": "0.056",
+      "contract_kind": "fault_injection",
+      "original_assertions_reviewed": "An intentional SessionTask panic is converted to a TurnComplete terminal lifecycle event and the active slot becomes None, within the original two-second waits.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/11-panicking_session_task_is_converted_to_terminal_error_and_releases_slot.rs.source.txt",
+        "bytes": 1150,
+        "sha256": "521b9d3c2bf0baf233c0cf6906cd234100c526a8f11cc832056c87b18525249a",
+        "git_blob": "e57b0d97e00623d83e00a5a70578d89cede19efa"
+      },
+      "source_original_lines": [
+        11052,
+        11084
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/11-panicking_session_task_is_converted_to_terminal_error_and_releases_slot.log",
+        "bytes": 621,
+        "sha256": "3ce2eee487fbcb4221853ef80cefff011cbe2a14092a0cc3b19061bd4f406741",
+        "git_blob": "17c22f4b1e04ac9eef04f9d9979ffea450e613b7",
+        "byte_offset": 1840981,
+        "end_byte_offset_exclusive": 1841602,
+        "first_line": 40038,
+        "last_line": 40051
+      },
+      "direct_raw_observations": [
+        {
+          "original_full_raw_line": 40049,
+          "text": "    intentional session task panic for lifecycle fencing test"
+        }
+      ],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 12,
+      "classname": "codex-core",
+      "name": "session::tests::cancelled_finish_owner_keeps_terminalizer_alive",
+      "result": "PASS",
+      "seconds": "0.076",
+      "contract_kind": "fault_injection",
+      "original_assertions_reviewed": "A real spawned finish owner is cancelled while the idle contributor is blocked. Releasing the contributor lets the detached terminalizer complete its exact witness, clear the pending/active fences, and publish idle exactly once.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/12-cancelled_finish_owner_keeps_terminalizer_alive.rs.source.txt",
+        "bytes": 4110,
+        "sha256": "38a97027c89ef0a54aa45606921d1528c628e11b0f871fe7fb59fcb343b09754",
+        "git_blob": "b060079d4900b62c76f3a138336a3e61b7dc24d7"
+      },
+      "source_original_lines": [
+        12069,
+        12185
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/12-cancelled_finish_owner_keeps_terminalizer_alive.log",
+        "bytes": 323,
+        "sha256": "8ddfd29233f45d318ae3c95cf5762c676c2fbda654377e47e9172c978edc4f7b",
+        "git_blob": "8cb9bb63e8de13a4bbc492a5fd471310700eea78",
+        "byte_offset": 1811046,
+        "end_byte_offset_exclusive": 1811369,
+        "first_line": 39321,
+        "last_line": 39329
+      },
+      "direct_raw_observations": [],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 13,
+      "classname": "codex-core",
+      "name": "session::tests::panicking_finish_terminalizer_retains_fence",
+      "result": "PASS",
+      "seconds": "0.169",
+      "contract_kind": "fault_injection",
+      "original_assertions_reviewed": "The turn-stop contributor intentionally panics after the non-idempotent transition. Pending/exact active terminalization fences remain, no TurnComplete is emitted, and the original 100 ms shutdown-drain observation remains unresolved.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/13-panicking_finish_terminalizer_retains_fence.rs.source.txt",
+        "bytes": 2364,
+        "sha256": "56ab7ddde4478ebfb83f5f1e12f0b119447d036a97e152341a1851050430067d",
+        "git_blob": "6d71858a0cd88b1a0f3b7727188c109fcf78597f"
+      },
+      "source_original_lines": [
+        12187,
+        12254
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/13-panicking_finish_terminalizer_retains_fence.log",
+        "bytes": 569,
+        "sha256": "7447e707492c29aaf20a5400e7733a28de2ac96bf1ad3f800bbaa4af04f7db40",
+        "git_blob": "7605b30e3b80f95c938749445e1444ac3dfdc6cd",
+        "byte_offset": 1850440,
+        "end_byte_offset_exclusive": 1851009,
+        "first_line": 40273,
+        "last_line": 40286
+      },
+      "direct_raw_observations": [
+        {
+          "original_full_raw_line": 40284,
+          "text": "    intentional finish terminalizer panic for fencing regression"
+        }
+      ],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 14,
+      "classname": "codex-core",
+      "name": "session::tests::hung_finish_terminalizer_watchdog_retains_fence",
+      "result": "PASS",
+      "seconds": "4.069",
+      "contract_kind": "fault_injection",
+      "original_assertions_reviewed": "A contributor signals entry then remains pending. The original watchdog returns, elapsed time is at least the actual cfg(test) watchdog; the completion observation resolves but pending/active fences stay, with no terminal event.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/14-hung_finish_terminalizer_watchdog_retains_fence.rs.source.txt",
+        "bytes": 2908,
+        "sha256": "86559659a326b22f7e7b1c9217d3a8c871d1fd6890f7cf6a1485cb66c0f1e3d1",
+        "git_blob": "f5ba2c4c74e4a88df21679bafd9f1faa1588dba6"
+      },
+      "source_original_lines": [
+        12256,
+        12336
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/14-hung_finish_terminalizer_watchdog_retains_fence.log",
+        "bytes": 323,
+        "sha256": "1a8b36035ad376206204e0beb02cb8d52bd5a3c24c645907e32419371c8381ab",
+        "git_blob": "364573aff18895fdecfdd01ac2dae7610dd16c66",
+        "byte_offset": 2167023,
+        "end_byte_offset_exclusive": 2167346,
+        "first_line": 46488,
+        "last_line": 46496
+      },
+      "direct_raw_observations": [],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 15,
+      "classname": "codex-core",
+      "name": "session::tests::cancelled_abort_owner_keeps_terminalizer_alive",
+      "result": "PASS",
+      "seconds": "0.189",
+      "contract_kind": "fault_injection",
+      "original_assertions_reviewed": "The actual public abort owner is cancelled after entering a blocking abort hook. Releasing that hook allows its detached owner to clear the exact active and registry fences within the original two-second wait.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/15-cancelled_abort_owner_keeps_terminalizer_alive.rs.source.txt",
+        "bytes": 1732,
+        "sha256": "9bdb6fd812688164eaf1c9e97f363f1c41167cca0e3c4cd0405c0423c49a7be2",
+        "git_blob": "cd36fe606e00debd5d741dcd824841af54fc9df8"
+      },
+      "source_original_lines": [
+        12529,
+        12576
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/15-cancelled_abort_owner_keeps_terminalizer_alive.log",
+        "bytes": 321,
+        "sha256": "e3ff4fcf12fc517947a69e6e6b39e392f9494357cfbb3f2ab13eb252a37d68cc",
+        "git_blob": "2b783ebeb23e028141646a3541437304704ce5f9",
+        "byte_offset": 1822262,
+        "end_byte_offset_exclusive": 1822583,
+        "first_line": 39593,
+        "last_line": 39601
+      },
+      "direct_raw_observations": [],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 16,
+      "classname": "codex-core",
+      "name": "session::tests::panicking_abort_terminalizer_retains_fence",
+      "result": "PASS",
+      "seconds": "0.167",
+      "contract_kind": "fault_injection",
+      "original_assertions_reviewed": "An actual PanickingAbortTask executes its panic path; pending and active terminalization witnesses remain instead of admitting a replacement writer.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/16-panicking_abort_terminalizer_retains_fence.rs.source.txt",
+        "bytes": 900,
+        "sha256": "e590ac1e9c57666b28bec5d4d915bf2be514366ad6adface3d2faeaef5c85259",
+        "git_blob": "86a76e5d5d0bfb9824b03613ff7a0eb0639f6420"
+      },
+      "source_original_lines": [
+        13002,
+        13023
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/16-panicking_abort_terminalizer_retains_fence.log",
+        "bytes": 559,
+        "sha256": "b94993770a2e58f4b10980e7b3f19117b874919b15f2cd2cc897e1e3645e8828",
+        "git_blob": "74dda2261e40030b40ebc14892f2b290d1f44305",
+        "byte_offset": 1849881,
+        "end_byte_offset_exclusive": 1850440,
+        "first_line": 40259,
+        "last_line": 40272
+      },
+      "direct_raw_observations": [
+        {
+          "original_full_raw_line": 40270,
+          "text": "    intentional terminalizer panic for fencing regression"
+        }
+      ],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 17,
+      "classname": "codex-core",
+      "name": "session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive",
+      "result": "PASS",
+      "seconds": "0.085",
+      "contract_kind": "fault_injection",
+      "original_assertions_reviewed": "The real suspend caller is cancelled while thread-stop lifecycle blocks. Active/pending fences remain across cancellation; after release, shutdown completes once and the exact turn id stays the same. This original unit fixture bypasses only descendant inventory; the separate root integration test exercises the live descendant check.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/17-cancelled_suspend_caller_keeps_writer_handoff_alive.rs.source.txt",
+        "bytes": 2850,
+        "sha256": "628891fa094897290c37ff923254e21120516a064808d96997dd9da7e24b562b",
+        "git_blob": "65dc37b1f95ac027f137734f08570dc0ed012edb"
+      },
+      "source_original_lines": [
+        11644,
+        11726
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/17-cancelled_suspend_caller_keeps_writer_handoff_alive.log",
+        "bytes": 331,
+        "sha256": "354d4506d59d2ad4db03b14c8721fa232a36b6966f88ee67ad6824ba55e96ac6",
+        "git_blob": "7968c6aa22ae9fde35228371546f8da28b9a5773",
+        "byte_offset": 1814217,
+        "end_byte_offset_exclusive": 1814548,
+        "first_line": 39404,
+        "last_line": 39412
+      },
+      "direct_raw_observations": [],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 18,
+      "classname": "codex-core",
+      "name": "session::turn_input::tests::steer_only_requires_active_turn",
+      "result": "PASS",
+      "seconds": "0.070",
+      "contract_kind": "negative_rejection",
+      "original_assertions_reviewed": "Steer-only with no active turn returns NotSubmitted::NoActiveTurn; it cannot create a new turn.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/18-steer_only_requires_active_turn.rs.source.txt",
+        "bytes": 520,
+        "sha256": "cb237d7b6487d03f172612751de3805ea18eb7ec33ebe4d2e6202000e560c85d",
+        "git_blob": "604b872c41d4519123b40a9b4b07b163bf85e240"
+      },
+      "source_original_lines": [
+        2168,
+        2187
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/18-steer_only_requires_active_turn.log",
+        "bytes": 315,
+        "sha256": "9c873a07c696f4c1c58c67a91b7db9f2539e794034cbb4881eae23adb30e5e3a",
+        "git_blob": "5face18dd19013d61a8271872e0984c0ee9d846b",
+        "byte_offset": 1905163,
+        "end_byte_offset_exclusive": 1905478,
+        "first_line": 41673,
+        "last_line": 41681
+      },
+      "direct_raw_observations": [],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    },
+    {
+      "position": 19,
+      "classname": "codex-core",
+      "name": "session::turn_input::tests::steer_only_enforces_expected_turn_id",
+      "result": "PASS",
+      "seconds": "0.092",
+      "contract_kind": "negative_rejection",
+      "original_assertions_reviewed": "With a live never-ending regular task, steering the wrong id returns ExpectedTurnMismatch carrying both exact expected and actual ids.",
+      "source_body_identity": {
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/19-steer_only_enforces_expected_turn_id.rs.source.txt",
+        "bytes": 1194,
+        "sha256": "7ac09cc3a3a0cc49ac15ad5d5f971ad4699d1ce141e1f59549d01b2857a54c66",
+        "git_blob": "457b9ce2cea903b6c45de4cbfba9a9a7507c9c4c"
+      },
+      "source_original_lines": [
+        2189,
+        2228
+      ],
+      "complete_original_raw": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/19-steer_only_enforces_expected_turn_id.log",
+        "bytes": 325,
+        "sha256": "51a737bd232cc59cb4821e92646d7da08a37b2e0ab969fe643c9a946b3266e0f",
+        "git_blob": "871ba8137187630022db7ab34ad427dff01d0fab",
+        "byte_offset": 1908465,
+        "end_byte_offset_exclusive": 1908790,
+        "first_line": 41763,
+        "last_line": 41771
+      },
+      "direct_raw_observations": [],
+      "broad_no_skip_notice_checked": true,
+      "inference_limit": "Assertions not printed by libtest are supported by the exact unchanged test body and its successful complete execution; no claim is made that every assertion text appears in stdout."
+    }
+  ],
+  "production_review": [
+    {
+      "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__src__request_processors__turn_processor.rs.source.txt",
+        "bytes": 72090,
+        "sha256": "431f5bdcafe0845d4e383b024a80ad410c03776347195ca28560847d2b06ad77",
+        "git_blob": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
+      },
+      "lines": [
+        907,
+        937
+      ],
+      "review": "Raw injection validates and deserializes the requested ResponseItems, routes to the actual thread, and propagates errors."
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__src__request_processors__turn_processor.rs.source.txt",
+        "bytes": 72090,
+        "sha256": "431f5bdcafe0845d4e383b024a80ad410c03776347195ca28560847d2b06ad77",
+        "git_blob": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
+      },
+      "lines": [
+        1592,
+        1790
+      ],
+      "review": "Recovery checks feature, exact thread/tail/id/status and captured Core epoch, calls recover_turn_if_idle, and rejects invalid/busy/stale states; ephemeral listener history and paginated bounded history stay distinct."
+    },
+    {
+      "path": "codex-rs/core/src/codex_thread.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__codex_thread.rs.source.txt",
+        "bytes": 49604,
+        "sha256": "bd552252887317518d7eeb77fd80f3c8744729a2f2f3708d0487cac4f5597475",
+        "git_blob": "0d96d2b722eb1ade7b4974ffee1fbb729847508b"
+      },
+      "lines": [
+        674,
+        807
+      ],
+      "review": "Public recovery does not add new user input and preserves the turn id. Suspension is root-only, accepted work belongs to the session after caller disconnect, and waits for actual loop termination. Steer-only cannot become Started."
+    },
+    {
+      "path": "codex-rs/core/src/codex_thread.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__codex_thread.rs.source.txt",
+        "bytes": 49604,
+        "sha256": "bd552252887317518d7eeb77fd80f3c8744729a2f2f3708d0487cac4f5597475",
+        "git_blob": "0d96d2b722eb1ade7b4974ffee1fbb729847508b"
+      },
+      "lines": [
+        939,
+        983
+      ],
+      "review": "Injection routes into real session history and flushes persisted rollout; this is not a recorder-only fixture."
+    },
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__mod.rs.source.txt",
+        "bytes": 215824,
+        "sha256": "a666d5f63dddd2a197827082087692819a841cfa2d30943ab3a19a7ba983ba39",
+        "git_blob": "b71bc56687973debf2b8615da036e60a436e3c08"
+      },
+      "lines": [
+        1213,
+        1240
+      ],
+      "review": "Recovery epoch is returned only for the exact idle candidate and matching turn epoch/persistence generation, with no shutdown or terminalization fence."
+    },
+    {
+      "path": "codex-rs/core/src/session/turn_input.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__turn_input.rs.source.txt",
+        "bytes": 41654,
+        "sha256": "7959e38afd075c5cad233a7d1ba59b3406b1de96d9076e444a51ce8ac33b9841",
+        "git_blob": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+      },
+      "lines": [
+        396,
+        773
+      ],
+      "review": "Recovery under active-turn ownership validates exact candidate generation, persisted context/environment and history boundary; settings drift rejects before a new provider send. Consumption and reservation remain explicit."
+    },
+    {
+      "path": "codex-rs/core/src/session/turn_input.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__turn_input.rs.source.txt",
+        "bytes": 41654,
+        "sha256": "7959e38afd075c5cad233a7d1ba59b3406b1de96d9076e444a51ce8ac33b9841",
+        "git_blob": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+      },
+      "lines": [
+        911,
+        1035
+      ],
+      "review": "Steer-only retains active-turn/task/terminalization and expected-turn-id checks before queue admission."
+    },
+    {
+      "path": "codex-rs/core/src/session/turn_suspension.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__turn_suspension.rs.source.txt",
+        "bytes": 19038,
+        "sha256": "5f5da2f8d0d2b50530f06b0d5e2b41626c9036a4429cebc4174196f304d96c26",
+        "git_blob": "403a208f3a953bcc7e2c8bcf1ae91c19bdcee5e6"
+      },
+      "lines": [
+        20,
+        131
+      ],
+      "review": "Public handoff is bounded at 30s independently of the detached owner. Live descendant inventory, durable preflush, exact task claim, and first-poll witness are preserved. Unit-only helper omits only inventory."
+    },
+    {
+      "path": "codex-rs/core/src/session/turn_suspension.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__turn_suspension.rs.source.txt",
+        "bytes": 19038,
+        "sha256": "5f5da2f8d0d2b50530f06b0d5e2b41626c9036a4429cebc4174196f304d96c26",
+        "git_blob": "403a208f3a953bcc7e2c8bcf1ae91c19bdcee5e6"
+      },
+      "lines": [
+        274,
+        493
+      ],
+      "review": "Owned suspension retains the exact witness on panic/cancellation; task quiescing, input clearing, runtime stop, writer flush/close, lifecycle/event publication and final exact marker release remain ordered."
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__tasks__mod.rs.source.txt",
+        "bytes": 176503,
+        "sha256": "0161b0acb05df2f9d153090cfd258f8ace71f7a3510d98ec6a55be5baabdf426",
+        "git_blob": "2ee949fb477313003f6eb02961e5cebf50432613"
+      },
+      "lines": [
+        90,
+        97
+      ],
+      "review": "Existing production terminalizer watchdog is 30s; existing cfg(test) constant is 2s. This review changes neither."
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__tasks__mod.rs.source.txt",
+        "bytes": 176503,
+        "sha256": "0161b0acb05df2f9d153090cfd258f8ace71f7a3510d98ec6a55be5baabdf426",
+        "git_blob": "2ee949fb477313003f6eb02961e5cebf50432613"
+      },
+      "lines": [
+        2505,
+        2578
+      ],
+      "review": "SessionTask panic is caught and converted into the ordinary fatal terminalization path; attached task epoch and recovery identity remain actual."
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__tasks__mod.rs.source.txt",
+        "bytes": 176503,
+        "sha256": "0161b0acb05df2f9d153090cfd258f8ace71f7a3510d98ec6a55be5baabdf426",
+        "git_blob": "2ee949fb477313003f6eb02961e5cebf50432613"
+      },
+      "lines": [
+        2734,
+        2789
+      ],
+      "review": "Abort owns a detached scheduled job after claiming the complete task witness, so cancelling the public await does not discard cleanup."
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__tasks__mod.rs.source.txt",
+        "bytes": 176503,
+        "sha256": "0161b0acb05df2f9d153090cfd258f8ace71f7a3510d98ec6a55be5baabdf426",
+        "git_blob": "2ee949fb477313003f6eb02961e5cebf50432613"
+      },
+      "lines": [
+        3149,
+        3186
+      ],
+      "review": "Finish likewise claims a witness then runs the owned terminalizer detached from the public caller."
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__tasks__mod.rs.source.txt",
+        "bytes": 176503,
+        "sha256": "0161b0acb05df2f9d153090cfd258f8ace71f7a3510d98ec6a55be5baabdf426",
+        "git_blob": "2ee949fb477313003f6eb02961e5cebf50432613"
+      },
+      "lines": [
+        3507,
+        3629
+      ],
+      "review": "Finish/abort handoff drivers catch panic and use the watchdog while retaining exact failed-closed witnesses; successful release requires completed side effects."
+    },
+    {
+      "path": "codex-rs/core/tests/common/lib.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__tests__common__lib.rs.source.txt",
+        "bytes": 22506,
+        "sha256": "5418ece8bb498ed07b87e99e1faa9a8c86944a40cfe20d519e4d60ecbec54f24",
+        "git_blob": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+      },
+      "lines": [
+        583,
+        616
+      ],
+      "review": "The original skip_if_remote macro prints Skipping test in a remote test environment before returning. All original19 raw blocks were separately checked against the broad Skipping test prefix."
+    }
+  ],
+  "interpretation": [
+    "The literal B09 exit names these existing controls. It does not state a new five-platform matrix or whole-candidate success prerequisite. Q01 and historical broad evidence-gathering plans are not added as new exit requirements.",
+    "All nineteen original names now have complete original fb9 GNU/Linux execution evidence, including their existing functional rejection/fault controls. No substitute new recovery case or newly written mirror test is used.",
+    "The full reviewed test files and direct production/test-support files are unchanged across four independently reconstructed trees: fb9, 5b, e78, eed. All existing Cargo manifests and the two lock leaves also match. This supports scoped source continuity only.",
+    "The seven enabled-feature turn_recover cases are not all positive recoveries: three succeed, four exercise rejection scenarios. The eighth is the explicit disabled-feature rejection.",
+    "Panic/cancel/watchdog negative controls are existing fault-injection tests whose expected outcome is a PASS with the original fail-closed assertions. They are not separately counted as failed product tests or invented mutation runs.",
+    "The old complete fb9 run remains 19490 PASS / 16 FAIL / 25 observed early-return cases, command exit100/controller nonpass. The nineteen cases are outside those25. B15 and other whole-tree/platform obligations remain separate.",
+    "No new GNU execution of the entire eed tree, Wine, macOS, musl, or Windows run is claimed by this receipt. Existing platform evidence remains separately labelled by its actual source/job."
+  ],
+  "reviewer_corrections": [
+    {
+      "issue": "Frozen verifier v1 skip_re covers because and in the Wine but not the remote-test-environment spelling.",
+      "resolution": "v1 source and its outputs stay unchanged. This independent semantic review checks every full original19 block for any Skipping test prefix and skipping capability test, then verifies real request/response activity for all nine App cases. Root independently performs the same broader check.",
+      "outcome": "No such skip/early-return prefix appears in the nineteen blocks."
+    },
+    {
+      "issue": "The initial local verifier draft counted all 19522 header-shaped lines, including the final16 failure-summary repetitions.",
+      "resolution": "Before freezing v1, the parser was bounded by the exact original full Summary line and requires the16 summary rows separately equal the original failure Counter; no deduplication disguises repeated executions.",
+      "outcome": "19506 original execution records, 19 unique B09 records; source/raw/XML remain unchanged."
+    },
+    {
+      "issue": "The earlier remaining-five-exit assessment used the limited e78 project selection and therefore did not notice that full fb9 already contained the eight original recovery cases.",
+      "resolution": "Keep that historical assessment. This review supplies the full older archive and explicit source bridge rather than changing its coverage or relabelling fb9 as e78/eed.",
+      "outcome": "The original19-execution gap is now covered by complete originals; whole-candidate failures remain open elsewhere."
+    }
+  ],
+  "no_native_or_tests_executed_by_review": true
+}

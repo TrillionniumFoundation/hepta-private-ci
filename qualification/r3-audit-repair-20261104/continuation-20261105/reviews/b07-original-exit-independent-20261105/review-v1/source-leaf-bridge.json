@@ -1,0 +1,349 @@
+{
+  "schema": "b07-complete-source-leaf-bridge-v1",
+  "inputs": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/inputs/product-5b-full-leaf-manifest.json",
+      "bytes": 2262883,
+      "sha256": "b2deb3758d48bcec2a07eb9fe6678248af8683478d765806a3c19bb682dd07b2",
+      "git_blob": "ec157b75bbf716ac43b2f7027b2821e76142c5a9"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/core-musl-initial-source-binding.json",
+      "bytes": 1103,
+      "sha256": "63458816ecc15342a6e2d0bce8b8ba0801538d8d4bfff99a0f30943d562f2605",
+      "git_blob": "62c0ea0c0335150ab85c5269d8bf2dc8846d4a64"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/inputs/integrated-14-path-candidate-v2.json",
+      "bytes": 5034,
+      "sha256": "5235b86305704413b18a01759abd4b1306907a4c9d72ad5e99ea2a922678b4e6",
+      "git_blob": "0592379433dfb360da232677002ea8345b489199"
+    }
+  ],
+  "whole_trees_independently_recomputed": {
+    "5b": {
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "leaves": 10580
+    },
+    "e78": {
+      "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "leaves": 10580
+    },
+    "eed": {
+      "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+      "leaves": 10582
+    }
+  },
+  "published_commits": {
+    "5b": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "eed": "eed4d6bb61b789b19f60facc79f9e031765fa4c9"
+  },
+  "sources": [
+    {
+      "logical_source_path": "codex-rs/codex-mcp/src/binding.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__binding.rs.source.txt",
+        "bytes": 11804,
+        "sha256": "dbf388038db00379c8f50f9fc3cf34946d7e01b6c92e6466530ec9b9e6f65d4e",
+        "git_blob": "de0238af78e06046a110877513ff172a3a44ff85"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": null
+    },
+    {
+      "logical_source_path": "codex-rs/codex-mcp/src/binding_tests.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__binding_tests.rs.source.txt",
+        "bytes": 13600,
+        "sha256": "972f394f14572afc9d88fd9f1eb7c613c68802a1edfde35c77e3e612a92dc036",
+        "git_blob": "a95d1913cd11a8426e56c3b1d030641d9c287220"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": null
+    },
+    {
+      "logical_source_path": "codex-rs/codex-mcp/src/catalog.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__catalog.rs.source.txt",
+        "bytes": 19481,
+        "sha256": "7f4d75faf9c63e34f873b0dfc8fde0373c456ac4e0a39511684d9658e35b0ad0",
+        "git_blob": "5d3d473c049d9344c4498390ae141dcf44b1d3fe"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__catalog.rs.source.txt.fetch.json",
+        "bytes": 20225,
+        "sha256": "796d736f80c570c6b7fb7b640fea78be2aa67a5fe9c94e07ee64326b291f5169",
+        "git_blob": "7f4a754fbadbf9b6c68023e38c48466fdeeab09c"
+      }
+    },
+    {
+      "logical_source_path": "codex-rs/codex-mcp/src/connection_manager/tool_catalog.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__connection_manager__tool_catalog.rs.source.txt",
+        "bytes": 17286,
+        "sha256": "dbb0d154f570637679baf29e72cec930c34c85bd4735e4038f228ba8bc0b99af",
+        "git_blob": "1cda1d902fd31897b3de6b9dd629dce8741b6c75"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__connection_manager__tool_catalog.rs.source.txt.fetch.json",
+        "bytes": 17932,
+        "sha256": "61d7faa160456a61184b05dea8619162a8cda595640142801fff73b067e16e93",
+        "git_blob": "2c08ed10632f99c99f1d575ed45016cdfb94370f"
+      }
+    },
+    {
+      "logical_source_path": "codex-rs/codex-mcp/src/runtime.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__runtime.rs.source.txt",
+        "bytes": 40360,
+        "sha256": "cf1762c1ca527915de437477642d9421559e2da178f0718ba2da087c9fd7f476",
+        "git_blob": "0ff4d56a281d00936d0e26fef67ea85315d577e1"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__runtime.rs.source.txt.fetch.json",
+        "bytes": 41786,
+        "sha256": "fa77e3d57c3a111520716a8a37e9bd224178375c4bf640aa94681d01eb465bf1",
+        "git_blob": "4b2b8d68a408019b12cd386dfa8e797f2eae5098"
+      }
+    },
+    {
+      "logical_source_path": "codex-rs/codex-mcp/src/tools.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__tools.rs.source.txt",
+        "bytes": 11037,
+        "sha256": "3df721059290b134cef2bae1f174f6562d2b53f0f80280c69f5ab337a99eeb74",
+        "git_blob": "51d3f05aac817325392f2cac6c684c936db7af22"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__tools.rs.source.txt.fetch.json",
+        "bytes": 11557,
+        "sha256": "39fb43a3d9e05e5a72b8b1cded6ac96bae3cc8b5e92473868d4b360fb45b12eb",
+        "git_blob": "67e6e767d77268a44597eaf846c1910d951da936"
+      }
+    },
+    {
+      "logical_source_path": "codex-rs/core-plugins/src/executor_hooks.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core-plugins__src__executor_hooks.rs.source.txt",
+        "bytes": 4222,
+        "sha256": "fbdc87934d9dae73014f626dd079989986c1b1e8bcc8d068cb6f1d4fc555463a",
+        "git_blob": "58d1ea62663bf64c346e981bf2aa3267e44fb0f5"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core-plugins__src__executor_hooks.rs.source.txt.fetch.json",
+        "bytes": 4510,
+        "sha256": "7b5e9834901bc82f4b189c33876b4908699d072807da95d780e44199ee4b2ab7",
+        "git_blob": "f1eac98bb883a356c50ccb9e58a53ed33c975da0"
+      }
+    },
+    {
+      "logical_source_path": "codex-rs/core/src/hook_mcp_executor.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__src__hook_mcp_executor.rs.source.txt",
+        "bytes": 3100,
+        "sha256": "21c841f114dbd06925ea444bde1adcb00f5720c6d96849b722aaa4f72fa2564f",
+        "git_blob": "6eca59da7d93ae157af653e8ce19159bfa728dc8"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__src__hook_mcp_executor.rs.source.txt.fetch.json",
+        "bytes": 3366,
+        "sha256": "d0bb87876e87547009480211bf382a91c3cb489fb33bfb16b04b0e430e951819",
+        "git_blob": "78251d33c251feef396cd074d26ed091d379228f"
+      }
+    },
+    {
+      "logical_source_path": "codex-rs/core/src/hook_runtime.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__src__hook_runtime.rs.source.txt",
+        "bytes": 43465,
+        "sha256": "9afb40589d3a6d3132a5fb85cf3691c7b110353a34aebd921cd954eb13f52dfa",
+        "git_blob": "c520135afdd384df148c184baa57568766eb3abc"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__src__hook_runtime.rs.source.txt.fetch.json",
+        "bytes": 45018,
+        "sha256": "d4cbe73944d92e0be2710492a30029984f0f94e2ad6e3e173f2bebf1069b0de6",
+        "git_blob": "5d7b3cc781a2de7a2be62fd3a1bfd88536f3b08d"
+      }
+    },
+    {
+      "logical_source_path": "codex-rs/core/src/session/mod.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__src__session__mod.rs.source.txt",
+        "bytes": 215824,
+        "sha256": "a666d5f63dddd2a197827082087692819a841cfa2d30943ab3a19a7ba983ba39",
+        "git_blob": "b71bc56687973debf2b8615da036e60a436e3c08"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": null
+    },
+    {
+      "logical_source_path": "codex-rs/core/src/session/token_budget.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__src__session__token_budget.rs.source.txt",
+        "bytes": 4038,
+        "sha256": "f9c347e376132956947694439e7d24020d9ada86dbd5fc1143c9477d6192f686",
+        "git_blob": "747d8cf5bc9a57e15e8954d3d761f94223ae528a"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__src__session__token_budget.rs.source.txt.fetch.json",
+        "bytes": 4329,
+        "sha256": "b196bd4cae1e7b91ecd8e81c9d3d14fb12a428d3ce9e5f222f7d06d006ac7147",
+        "git_blob": "4bad33226a2a16fb2efadcdf5fb9a50442f76121"
+      }
+    },
+    {
+      "logical_source_path": "codex-rs/core/src/tools/lifecycle.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__src__tools__lifecycle.rs.source.txt",
+        "bytes": 16576,
+        "sha256": "c1026ea7a0e66865d48e6ce271eeba983eff63aa4d7d249f9e086df7f0b83719",
+        "git_blob": "d67baea1b193f3eff145030c902be6961f165ffc"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__src__tools__lifecycle.rs.source.txt.fetch.json",
+        "bytes": 17286,
+        "sha256": "9b9afb2346cd1f3cd0b65390259c195270dba5d91b70912b716b11340d5f89ee",
+        "git_blob": "a066d897eae80d4b945b24c48302a8cf866ab85e"
+      }
+    },
+    {
+      "logical_source_path": "codex-rs/core/tests/common/lib.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__common__lib.rs.source.txt",
+        "bytes": 22506,
+        "sha256": "5418ece8bb498ed07b87e99e1faa9a8c86944a40cfe20d519e4d60ecbec54f24",
+        "git_blob": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__common__lib.rs.source.txt.fetch.json",
+        "bytes": 23524,
+        "sha256": "546798b43e9eef3414483fb06f0ef807477a95d1c1f5e80331f326a5dfc5d314",
+        "git_blob": "d7ec2471c18534ce99b63ca90bee0702044af203"
+      }
+    },
+    {
+      "logical_source_path": "codex-rs/core/tests/suite/code_mode.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__suite__code_mode.rs.source.txt",
+        "bytes": 213008,
+        "sha256": "b053267b92afa19a861d800814e43c8a33e4ea2f823fb26e0a4eb89c6853eba2",
+        "git_blob": "d1970f7853bcd5777ef96881b457525b7abfa92a"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": null
+    },
+    {
+      "logical_source_path": "codex-rs/core/tests/suite/hooks_executor.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__suite__hooks_executor.rs.source.txt",
+        "bytes": 14976,
+        "sha256": "db64962784e6e067f13e1a4f1b9458893fc084e8713e8d48b3f0d093043cb130",
+        "git_blob": "d664d41c9a7ca66d1a9b47445b36f2754bf6fece"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": null
+    },
+    {
+      "logical_source_path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__suite__hooks_mcp.rs.source.txt",
+        "bytes": 44872,
+        "sha256": "b5a7a405723e233c14ab3e73213f8010f53c862df1328a92ae92c32f7e9ba73b",
+        "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": null
+    },
+    {
+      "logical_source_path": "codex-rs/core/tests/suite/mod.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__suite__mod.rs.source.txt",
+        "bytes": 4895,
+        "sha256": "6cfc926f1fb4417554b75f337372fd714fdd3769b0db9db1398bc8a0ffc9938e",
+        "git_blob": "17145f671a76a894ab374ca299a67cf1a43e9c55"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__suite__mod.rs.source.txt.fetch.json",
+        "bytes": 5266,
+        "sha256": "126969ea33b676f28834b773f77384ca708871b7e59fe8d9e3774117c64dcce6",
+        "git_blob": "36fa69ca303bec8a26059e72b579c52d5730955e"
+      }
+    },
+    {
+      "logical_source_path": "codex-rs/core/tests/suite/rmcp_client.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__suite__rmcp_client.rs.source.txt",
+        "bytes": 146845,
+        "sha256": "78fbb2b9cef8a4dd64dab34123e28524c0964ee11058fef8bb2f4fa1dcff04ee",
+        "git_blob": "3897f4396696ba94ce93c7be8f29b3c65a0f5de8"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__suite__rmcp_client.rs.source.txt.fetch.json",
+        "bytes": 152895,
+        "sha256": "83af702336b183cd6e4344f60b02e1960f1cf4889cdc901c2a189232af990280",
+        "git_blob": "4562837d29c301a0e657de453b998e72e0d4b888"
+      }
+    },
+    {
+      "logical_source_path": "codex-rs/core/tests/suite/token_budget.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__suite__token_budget.rs.source.txt",
+        "bytes": 61980,
+        "sha256": "71d164c4ddd7bf3feb3ef8c7bef7ff150ed28db936680a0d1752844b6287d706",
+        "git_blob": "e7fb29f3b32eafc364022be4405a6edf736f9afd"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": null
+    },
+    {
+      "logical_source_path": "codex-rs/rmcp-client/src/bin/test_stdio_server.rs",
+      "complete_source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__rmcp-client__src__bin__test_stdio_server.rs.source.txt",
+        "bytes": 40654,
+        "sha256": "ea08de179afeb0a8ca089497ed790a108044414e7ca455ab955c0e50191700ba",
+        "git_blob": "5ebd161921b9064444841d631835d4f51f78813e"
+      },
+      "mode": "100644",
+      "5b_e78_eed_byte_identical": true,
+      "existing_fetch_response": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__rmcp-client__src__bin__test_stdio_server.rs.source.txt.fetch.json",
+        "bytes": 42513,
+        "sha256": "00ddb81aaf125cd39a0e0132453d1c42a8a0f8458dc0e5ef7b5f5dea09d3e9a8",
+        "git_blob": "a46ed349babb2b4100a5364397dd65807ce3780c"
+      }
+    }
+  ],
+  "limit": "Complete relevant files are preserved and all20 leaves match5b/e78/eed. This is source equality, not an eed GNU or new platform execution claim. Only the cited relevant regions were manually reviewed in larger omnibus source files."
+}

@@ -1,0 +1,100 @@
+{
+  "complete_case_inventory": false,
+  "complete_for_selected_targets": true,
+  "errors": [],
+  "files": [],
+  "retention": {
+    "console_bytes": 192490,
+    "console_sha256": "ee6b272a544c3d9e25a7998392326c2e16a783bc65abf5a4884b42623b2ce848",
+    "limitations": "NOT_REPORTED does not mean filtered or skipped. An absent cached marker does not prove local execution or an independent remote execution. Files are existing local records for a console-reported target; their binding to this invocation is not independently established. Bazel config expansion and per-case filtering must be checked separately. Checkout identity is recorded at collection time, not at test start.",
+    "selection_errors": [],
+    "targets": {
+      "//codex-rs/app-server:app-server-all-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/app-server:app-server-all-wine-exec-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/app-server:app-server-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/codex-mcp:codex-mcp-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/core:core-all-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/core:core-all-wine-exec-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/core:core-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/ext/queue:queue-queue_service-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/tui:tui-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests": {
+        "cached_marker": false,
+        "collect_existing_logs": false,
+        "status": "FAILED",
+        "summary_lines": [
+          "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 56.5s"
+        ]
+      }
+    },
+    "wrapper_requested_selection_flags": [
+      "--test_tag_filters=-argument-comment-lint",
+      "--config=ci-windows"
+    ]
+  },
+  "schema": "bazel_selected_target_logs_v1",
+  "scope": "Existing local test.log/test.xml and test_attempts log/XML records for the allowlisted targets reported PASSED or FLAKY in this console; not failed-target-only evidence or a complete case/attempt inventory.",
+  "selected_targets": [],
+  "source": {
+    "commit": "cb5aba57802272d7f535cd6ee2ac3e26334dbff6",
+    "tracked_worktree_dirty": false,
+    "tree": "bf1c52a3ed14ca2bd0276ffc693dccf6c1dbbb83"
+  }
+}

@@ -1,0 +1,242 @@
+{
+  "schema": "B10-original-fourteen-contracts-independent-review-v1",
+  "created_utc": "2026-11-05T22:10:20.243245+00:00",
+  "reviewer": "/root/research_audit",
+  "decision": "RECOMMEND_CLOSED_SCOPED_ORIGINAL_B10_CONTRACTS_PENDING_ROOT_DECISION",
+  "ledger_modified": false,
+  "original_exit_condition_zh": "原连接数、请求数、工具/模型/工作区断言通过；身份变化的拒绝和重连边界保留。",
+  "original_exit_unchanged": true,
+  "frozen_catalog_composition": {
+    "original_failure_snapshot": 10,
+    "original_turn_state_regression": 3,
+    "new_reconnection_control": 1
+  },
+  "frozen_catalog_total": 14,
+  "physical_function_definitions": 13,
+  "additional_identity_unit_controls": [
+    "client::tests::websocket_connection_identity_binds_provider_and_stable_handshake_semantics",
+    "client::tests::websocket_connection_reuse_keeps_dynamic_metadata_in_wire_and_recovery_identity"
+  ],
+  "evidence_conclusion_zh": "14个冻结integration名字在GNU e78逐case原stdout+JUnit全部PASS，在Windows5b原core-all-test具名正文全部ok；Windows额外3条首attempt也ok，无B10失败被retry抹去。两原身份unit控制另列并在GNU逐case真实PASS；新重连控制有[1,3]实际双socket日志。由固定源码与实际原环境排除本14名走network禁用早退；不把其他25早退或10ignored合并为本范围通过。",
+  "source_bridge": {
+    "proof": "complete-source-bridge.json",
+    "fixed_current_source_files": 18,
+    "merkle_roots_independently_recomputed": true,
+    "GNU_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "Windows_PR_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "Windows_checkout_merge": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+    "Windows_checkout_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "eed_tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+    "no_transfer_of_program_or_whole_new_head_PASS": true,
+    "Windows_LF_CRLF_working_bytes_not_claimed_equal_to_Git_blobs": true
+  },
+  "Windows_exact_scope": {
+    "run_id": 41999114842,
+    "run_attempt": 1,
+    "job_id": 127339256056,
+    "artifact_id": 13430354553,
+    "ZIP": {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/windows-originals/artifact-13430354553/artifact.zip",
+      "bytes": 5452583,
+      "sha256": "21ecf40e7ebebf10fd2abe08caa6f598c5557fbb89eb8a62f11a109e8e9130c4",
+      "git_blob": "d870ccfd79e1db966f93bc3fbba72a9f7070a1c4"
+    },
+    "job_log": {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/windows-originals/job.log",
+      "bytes": 1405851,
+      "sha256": "5586c4ac026a7ddae3d38dc6399e3b21003d797aef7ff9bb2174c7e7112c4a4d",
+      "git_blob": "b7daa5dbfbea29aa9f38b4593c5ebea525aa5ad7"
+    },
+    "all45_ZIP_members_CRC_and_hash_verified": true,
+    "collector_all42_log_XML_members_hash_verified": true,
+    "complete21_wrapper_XML_systemout_equals_entire_original_testlog": true,
+    "16_shards_21_attempts_21_real_test_actions": true,
+    "actual_runner": "local",
+    "cache_hit": false,
+    "final14_case_results": "ok",
+    "all_attempt17_case_results": "ok",
+    "three_names_with_two_pass_occurrences": [
+      "suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm",
+      "suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation",
+      "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state"
+    ],
+    "target_whole_result": "FAILED in6of21, unrelated cases; retained, not promoted.",
+    "per_case_XML_warning": "XML has one outer wrapper testcase each, names are from raw libtest log and byte-identical system-out, not fabricated14 XML testcase nodes."
+  },
+  "GNU_exact_scope": {
+    "command": {
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate",
+        "-p",
+        "codex-core",
+        "-p",
+        "codex-linux-sandbox"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "started_at": "2026-11-05T14:07:58.749428+00:00",
+      "extra_environment": {},
+      "attempt": 1,
+      "cargo_profile": "dev-small",
+      "nextest_profile": "local",
+      "retries": 0
+    },
+    "original_whole_counts": {
+      "PASS": 3962,
+      "FAIL": 5
+    },
+    "whole_exit": 100,
+    "B10_cases": 14,
+    "identity_supplement_cases": 2,
+    "B10_ignored": 0,
+    "B10_skipped": 0,
+    "retries": 0,
+    "JUnit_contains_exact16_individual_case_nodes": true,
+    "full_originals_references": [
+      {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/upstream-complete-originals/GNU-full-originals-existing-actual-Git-map.json",
+        "bytes": 64716,
+        "sha256": "55b596f5548714dc021fc2d5576161d45564fd10c31385e01194666a2b1c37f6",
+        "git_blob": "47403c6e7516a92557c874abbdda68281031ba37"
+      },
+      {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/upstream-complete-originals/Windows-full-originals-existing-transport-manifest.json",
+        "bytes": 46843,
+        "sha256": "6e1541ddbccd7eb9ab8198e9cc95d9f3c871fdeaea1c53f3822510549c030abb",
+        "git_blob": "794e77f47e99823d3155f80c28ab61d4e066bf04"
+      },
+      {
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/upstream-complete-originals/Windows-full-originals-existing-member-manifest.json",
+        "bytes": 43016,
+        "sha256": "3a28d05879944f1c0a04b652a30ae0be584c562f909afe1e8bf2dc1eb658e3c5",
+        "git_blob": "37bcb3fec9fa03519f63d95392f08a57b124b856"
+      }
+    ]
+  },
+  "skip_and_ignore_audit": {
+    "actual_macro_source": {
+      "logical_source_path": "codex-rs/core/tests/common/lib.rs",
+      "archive_source_suffix": ".source.txt",
+      "fixed_leaf_matches": {
+        "5b": {
+          "path": "codex-rs/core/tests/common/lib.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+        },
+        "e78": {
+          "path": "codex-rs/core/tests/common/lib.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+        },
+        "eed": {
+          "path": "codex-rs/core/tests/common/lib.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+        }
+      },
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/source/codex-rs/core/tests/common/lib.rs.source.txt",
+      "bytes": 22506,
+      "sha256": "5418ece8bb498ed07b87e99e1faa9a8c86944a40cfe20d519e4d60ecbec54f24",
+      "git_blob": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+    },
+    "macro_condition": "std::env::var(CODEX_SANDBOX_NETWORK_DISABLED).is_ok()",
+    "GNU_complete_success_blocks_have_no_skip_marker": true,
+    "Windows_complete_compact_log_all89920_entries_consumed": true,
+    "Windows21_actual_test_action_envs_lack_key_case_insensitively": true,
+    "Windows_fixed_defs_and_BAT_launcher_do_not_set_this_key": true,
+    "all14_test_sources_have_no_other_conditional_success_return_or_ignore": true,
+    "success_stdout_capture_limit": "Windows libtest hides successful-case stdout; do not infer no early return only from absence of its text. The additional original action environment and unchanged launcher/macro are the evidence.",
+    "no_environment_or_skips_changed": true
+  },
+  "budget": {
+    "source_is_unmodified": true,
+    "Windows_actual_21_test_actions_timeout_millis": 900000,
+    "Windows_core_BUILD_integration_test_timeout": "long",
+    "Windows_core_BUILD_shards": 16,
+    "Windows_core_BUILD_flaky_via_defs": true,
+    "GNU_actual_command_retries": 0,
+    "GNU_actual_nextest_profile": "local",
+    "GNU_nextest_default_configuration": "slow-timeout period 30s / terminate-after 2; selected names have no more-specific source override; command retries=0.",
+    "shared_submit_turn_complete_wait": "30s per next_event iteration, turn_id matched; not asserted to be a new whole-case 30s deadline.",
+    "shared_wait_for_event": "calls helper with1s; helper clamps per-event wait to at least10s.",
+    "WebSocket_wait_for_request": "no inner wall-clock timeout; some original callers wrap prewarm with5s; original outer test budget remains.",
+    "WebSocket_shutdown": "10s then abort and await owned task.",
+    "startup_git": "prewarm5s + original5000ms sync tool + TurnComplete30s per event.",
+    "ephemeral_git": "two separate prewarm5s waits + original1000ms sync tool."
+  },
+  "intentional_previously_accepted_oracle_corrections": {
+    "stable": {
+      "old_blob": "cafb5b4bdea1b05faa0fb8380e538a7d4b6d850f",
+      "old_total_assert_line": 246,
+      "old_total": 3,
+      "approved_prefmt_blob": "7744c37e11b596d53db1e716de4e7adeff213936",
+      "approved_prefmt_total_assert_line": 294,
+      "published_blob": "8c20f52ed34b6cf848ee1851f0ff3507f6a26cb6",
+      "published_total_assert_line": 296,
+      "current_total": 4,
+      "explanation_zh": "原预热会消费首脚本，旧总3没有表达一份独立无工具预热与全部三个真实turn请求。已接受修正增加真实无工具预热，原后三请求[null,ts-1,ts-1]语义完整保留，并加入两工具exit0/stdout、generate、request_kind及同turn_id控制。不是全部旧assert byteequal。"
+    },
+    "permission": "原read-only→full×3向量和一连接要求冲突；同权限复用仍严格1connection/4requests，原权限向量独立由新keep-alive双连接[1,3]实测，生产身份隔离未移除。",
+    "neither_change_is_a_new_budget_or_weakening_of_required_tool_model_workspace_semantics": true
+  },
+  "identity_negative_controls": {
+    "provider_identity_source_blob": "4f16e0eec07d7d95ad3fc206140d260500592277",
+    "tests_source_blob": "ff91f479aa615f56ae26d910894598a4e51895ae",
+    "sensitive_variants": [
+      "sandbox",
+      "parent thread",
+      "fork source",
+      "thread source",
+      "review policy",
+      "non-turn request kind Memory",
+      "client metadata extra",
+      "beta header",
+      "base URL",
+      "provider name",
+      "query params",
+      "authorization headers"
+    ],
+    "sensitive_assertion": "all must differ from prior WebsocketConnectionIdentity",
+    "dynamic_request_variants": [
+      "Node REPL review requirement",
+      "Node REPL availability",
+      "Git workspaces",
+      "tool namespace inventory",
+      "inline compaction"
+    ],
+    "dynamic_assertion": "same transport identity but changed physical-wire digest AND changed full cold-recovery fingerprint",
+    "production_reconnect": "client.rs websocket_connection computes needs_new on identity inequality or actual closed socket, clears old request/response state before opening; new integration keepsold socket alive to distinguish identity cause from serverEOF.",
+    "physical_GNU_reconnect_lines": [
+      "connection=0 received request=0",
+      "connection=1 received request=0",
+      "connection=1 received request=1",
+      "connection=1 received request=2"
+    ],
+    "these_are_existing_data_negative_and_physical_reconnection_controls_not_a_new_guard-removal_experiment": true
+  },
+  "historical_platform_mapping_boundary_zh": "原48失败平台逐名索引在fourteen-contracts及原catalog保留。它不在原B10退出句中构成一律五平台门；本建议只闭合冻结14合同及身份边界，不能称macOS原名、真实musl、Wine或eed新head全部通过。既有assessment-v2的ORIGINAL_MULTI_PLATFORM_GATE_REMAINS作为先前评估保留，不把它新增成B10文字退出条件。主原CI/B15及具体未取平台结果仍各自OPEN/未知，由root最终裁决。",
+  "global_nonpass_and_other_scope_preserved": [
+    "GNU原owning3962PASS/5FAIL/exit100保留。",
+    "Windows原core-all-test6/21attempt失败保留。",
+    "原25early-return、原ignored和非B10个案不升级。",
+    "新eed Core lifecycle库目标不包含本14integration，不能用2340PASS填入。",
+    "没有执行新gate、native、CI dispatch/retry/cancel、ref或ledger mutation。"
+  ],
+  "review_inputs_complete": true,
+  "source_and_parser_files_are_evidence_only": true,
+  "execution_log_decode_provenance": "execution-log-decode-and-primary-provenance.json",
+  "archival_content_identity_scope": "Git hashes of raw ZIP/log/large originals are computed content IDs; existing complete 70/85-part actual Git transports are the retrieval evidence. A computed raw ID alone is not claimed individually uploaded."
+}

@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    ".github/scripts",
+    "-p",
+    "test_run_bazel*.py",
+    "-v"
+  ],
+  "cwd": "/tmp/b11-original-wrapper57-u1pksspj",
+  "started_at_utc": "2026-11-05T21:27:44.826844+00:00",
+  "environment_override": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "fixed_input_head": "0f6148ea3fbe9d1263354791d5cc63c7e66d4628",
+  "fixed_input_tree": "f717a84a856413d87a3b718b0bcae3adbd16b643",
+  "isolated_fixture_head": "147608e9ac3050b8971c0b009ddba10909ebe401",
+  "isolated_fixture_tree": "c3564ddf9e929e7e5fcf58ccb74b21e097ff27bf",
+  "python3": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "bash": "/usr/bin/bash",
+  "git": "/usr/local/bin/git",
+  "scope": "Original unmodified 57 Python wrapper tests; wrappers use the existing recording Bazel probe, no product Cargo/Bazel/native test is invoked."
+}

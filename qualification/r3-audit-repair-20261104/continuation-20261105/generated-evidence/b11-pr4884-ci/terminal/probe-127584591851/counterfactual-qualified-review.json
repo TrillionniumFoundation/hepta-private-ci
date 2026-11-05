@@ -1,0 +1,208 @@
+{
+  "terminal": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/counterfactual-terminal.json",
+    "bytes": 13407,
+    "sha256": "66aea3cd2f315f653560e41439015cf7656888ca79a80e21baeeee50551e3df5",
+    "git_blob": "02effd672f78af42af19f79a7f7bf90e1e585584"
+  },
+  "role": "FOUR_EXACT_POSITIVES_ONE_PHYSICAL_NEGATIVE_EXACT_SOURCE_RESTORE_NOT_WHOLE_B11",
+  "positive": [
+    {
+      "case": "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+      "command": {
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command.json",
+        "bytes": 2464,
+        "sha256": "7cd15ac34919d8601e70a4eac24d1856b455c00f2574ea0770abc5df6bda57c7",
+        "git_blob": "a27d14c63e3451542eee8b08e87c0eeba67bfff2"
+      },
+      "terminal": {
+        "exit_code": 0,
+        "elapsed_seconds": 30.7349999999999
+      },
+      "pair": {
+        "raw": {
+          "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/bazel-execution-logs/selected-target-test-logs/invocation-bllv549o/targets/0000/test.log",
+          "bytes": 574,
+          "sha256": "50293fd5bde99827d63a32d5283c3b26e74645c2dc9a28c46474c57236389162",
+          "git_blob": "c44eece675aa44a0a6fa682413bfbb9de3829d25"
+        },
+        "XML": {
+          "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/bazel-execution-logs/selected-target-test-logs/invocation-bllv549o/targets/0000/test.xml",
+          "bytes": 945,
+          "sha256": "70cb3dfa6e513573529e4a172d51c070afddac22820fe854d49af195e7ff5dbc",
+          "git_blob": "88efeda2ec83de43a34949212c5bc60221e4fd51"
+        },
+        "original_ESC_count": 0,
+        "original_CR_count": 0,
+        "whole_XML_system_out_equal_except_ESC_to_question_mark": true,
+        "outer_case": {
+          "name": "codex-rs\\windows-sandbox-rs\\windows-sandbox-rs-unit-tests.bat",
+          "classname": "",
+          "status": "run",
+          "duration": "0",
+          "time": "0"
+        },
+        "expected_error": null
+      }
+    },
+    {
+      "case": "acl::tests::existing_native_deny_does_not_require_write_dac",
+      "command": {
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/command.json",
+        "bytes": 2428,
+        "sha256": "c29b82a11930bbd3e04b3ac5ac52b9122e61abc26eb3354c0c54b29bfafa53c2",
+        "git_blob": "0298143dc0dc48acbae5c25ca76f521641861993"
+      },
+      "terminal": {
+        "exit_code": 0,
+        "elapsed_seconds": 15.827999999999975
+      },
+      "pair": {
+        "raw": {
+          "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/bazel-execution-logs/selected-target-test-logs/invocation-7ljtw6r6/targets/0000/test.log",
+          "bytes": 345,
+          "sha256": "8b956b8090d424edd28f45f57631639363559f80f0e9b58fa8253edcb0a38791",
+          "git_blob": "9768c926f34f6c7130f98e070b7f6b4cb95d55e1"
+        },
+        "XML": {
+          "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/bazel-execution-logs/selected-target-test-logs/invocation-7ljtw6r6/targets/0000/test.xml",
+          "bytes": 716,
+          "sha256": "cf4e45d14b83db8787f04d501148a1ac813f9d3f90a6531de7bfd1265d1fe5d0",
+          "git_blob": "411b244733894cad3fe812bc419ae65126191d27"
+        },
+        "original_ESC_count": 0,
+        "original_CR_count": 0,
+        "whole_XML_system_out_equal_except_ESC_to_question_mark": true,
+        "outer_case": {
+          "name": "codex-rs\\windows-sandbox-rs\\windows-sandbox-rs-unit-tests.bat",
+          "classname": "",
+          "status": "run",
+          "duration": "0",
+          "time": "0"
+        },
+        "expected_error": null
+      }
+    },
+    {
+      "case": "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+      "command": {
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/command.json",
+        "bytes": 2468,
+        "sha256": "9109524c1b9429f3a48d8959830ea6a4a21fc7aee879082ade327b8156fc89f5",
+        "git_blob": "93d51e4eac3f18d97c7812d2353c506b54937e81"
+      },
+      "terminal": {
+        "exit_code": 0,
+        "elapsed_seconds": 15.312999999999988
+      },
+      "pair": {
+        "raw": {
+          "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/bazel-execution-logs/selected-target-test-logs/invocation-jeaej818/targets/0000/test.log",
+          "bytes": 365,
+          "sha256": "66c15b250e06fd152ccba60dabbf992e2295d2abb32126f625e73da51b96bf78",
+          "git_blob": "b6f2f9e7ca05eba4b58a460a4dacd83bf5353ef0"
+        },
+        "XML": {
+          "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/bazel-execution-logs/selected-target-test-logs/invocation-jeaej818/targets/0000/test.xml",
+          "bytes": 736,
+          "sha256": "ebab1c23349c04966166b1980e0bb4dcc41ca9f3ee1b7977312a58437f82c4c3",
+          "git_blob": "8f90dceb41c7f99ec351fb00836f19de19306e9c"
+        },
+        "original_ESC_count": 0,
+        "original_CR_count": 0,
+        "whole_XML_system_out_equal_except_ESC_to_question_mark": true,
+        "outer_case": {
+          "name": "codex-rs\\windows-sandbox-rs\\windows-sandbox-rs-unit-tests.bat",
+          "classname": "",
+          "status": "run",
+          "duration": "0",
+          "time": "0"
+        },
+        "expected_error": null
+      }
+    },
+    {
+      "case": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "command": {
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/command.json",
+        "bytes": 2462,
+        "sha256": "ddfa52943664cecd24269b76d9674cc7f08a6ccdde53fc46d3a1354dae2b2f99",
+        "git_blob": "5e77312f9a3f92c752c7ee5e0ad5e814f21ca508"
+      },
+      "terminal": {
+        "exit_code": 0,
+        "elapsed_seconds": 11.812999999999988
+      },
+      "pair": {
+        "raw": {
+          "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/bazel-execution-logs/selected-target-test-logs/invocation-oq13a7in/targets/0000/test.log",
+          "bytes": 16871,
+          "sha256": "88934b8a11c36919505801418fecb074b22e403a71670873b68af488dbf97ab4",
+          "git_blob": "1cfa7cdc4b8a92efcba03aa6d1bab23b6c510f84"
+        },
+        "XML": {
+          "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/bazel-execution-logs/selected-target-test-logs/invocation-oq13a7in/targets/0000/test.xml",
+          "bytes": 17242,
+          "sha256": "b7e788cf73148319f9f620d3fe18ef91ad1718d26a3ebd96bb66fbc6502b509f",
+          "git_blob": "2458aeb2b42dabc337502f15fac1d86a9d068a0a"
+        },
+        "original_ESC_count": 0,
+        "original_CR_count": 0,
+        "whole_XML_system_out_equal_except_ESC_to_question_mark": true,
+        "outer_case": {
+          "name": "codex-rs\\windows-sandbox-rs\\windows-sandbox-rs-unit-tests.bat",
+          "classname": "",
+          "status": "run",
+          "duration": "0",
+          "time": "0"
+        },
+        "expected_error": null
+      }
+    }
+  ],
+  "negative_pair": {
+    "raw": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/bazel-execution-logs/failed-test-logs/invocation-xdaqr_zv/targets/0000/test.log",
+      "bytes": 2797,
+      "sha256": "32d68af1093c0d906db4407464d5b7546888674efd8d7a7814499e3ace12ced7",
+      "git_blob": "28960bed1fd0d2de9967afede52b0fa8b9e28bc9"
+    },
+    "XML": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/bazel-execution-logs/failed-test-logs/invocation-xdaqr_zv/targets/0000/test.xml",
+      "bytes": 3220,
+      "sha256": "c0e4dd61747745cd3c5fca66f8dc40ccd0fab82c583ff2f9ec56939976e11652",
+      "git_blob": "9ae0a2399fd1934f8d0bae693f7e670973c2610f"
+    },
+    "original_ESC_count": 102,
+    "original_CR_count": 0,
+    "whole_XML_system_out_equal_except_ESC_to_question_mark": true,
+    "outer_case": {
+      "name": "codex-rs\\windows-sandbox-rs\\windows-sandbox-rs-unit-tests.bat",
+      "classname": "",
+      "status": "run",
+      "duration": "0",
+      "time": "0"
+    },
+    "expected_error": "exited with error code 101"
+  },
+  "negative_physical_marker": "deny_repair_identity: directory=false returned_ok=true replacement_changed=true original_changed=false",
+  "negative_assertion": "acl_tests.rs:597:9",
+  "negative_bazel_exit": 3,
+  "positive_source_original": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-source.original",
+    "bytes": 10467,
+    "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+    "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+  },
+  "negative_source_original": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/negative-source.original",
+    "bytes": 10351,
+    "sha256": "9860f43176e5ca55cf667b245a74f2023846ca430218bc61d8215ee022fdb735",
+    "git_blob": "b02fb82fb1df7413dfb15448d16966a6ebc8ea40"
+  },
+  "only_exact_check_replaced_in_entire_original_source_bytes": true,
+  "entry_and_restored_JSON_raw_bytes_equal": true,
+  "original_test_index_lock_metadata_equal": true,
+  "limit": "Index and lock fingerprints are recorded and stable; their complete native bytes were not archived here. Hard cancellation restoration is not guaranteed.",
+  "product_B11": "OPEN"
+}

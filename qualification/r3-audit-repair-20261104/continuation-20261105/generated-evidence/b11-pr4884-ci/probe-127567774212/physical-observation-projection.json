@@ -1,0 +1,3003 @@
+{
+  "source": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/members/bazel-execution-logs/failed-test-logs/invocation-x_fkti0g/targets/0000/test.log",
+    "bytes": 142867,
+    "sha256": "7e5810166a9f55fbda1a14a21621202da12b34b0d5f068e242ff4353362d6ad9",
+    "git_blob": "a65c8e01b2decf4a211f65aadf5ad2e678ed4826"
+  },
+  "role": "PROBE_OBSERVATION_ONLY_NOT_PRODUCTION_ACCEPTANCE",
+  "complete_marker": [
+    "PROBE_OBSERVATION_ONLY complete rows=8 token_subjects=4 descendants_spawned=0 tests_do_not_qualify_isolation=true"
+  ],
+  "parsed": {
+    "row": {
+      "complete_json": [
+        {
+          "line": 324,
+          "value": {
+            "subject": "host",
+            "outside_level": "low_other_cohort",
+            "expected_token": {
+              "integrity_rid": 12288,
+              "integrity_attributes": 96,
+              "mandatory_policy": 3
+            },
+            "effective_thread_token": {
+              "integrity_rid": 12288,
+              "integrity_attributes": 96,
+              "mandatory_policy": 3
+            },
+            "inside": {
+              "read": "original",
+              "read_error": null,
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "errors": [
+                null,
+                null,
+                null,
+                null
+              ]
+            },
+            "outside": {
+              "read": "original",
+              "read_error": null,
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "errors": [
+                null,
+                null,
+                null,
+                null
+              ]
+            },
+            "access_checks": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\outside",
+                "identity": [
+                  987887743,
+                  393216,
+                  98134
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;LW)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "desired": 64,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  262144,
+                  98137
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-730690)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)S:AI(ML;;NW;;;LW)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-730690)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)",
+                "desired": 65536,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  262144,
+                  98138
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;LW)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "desired": 65536,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "line": 382,
+          "value": {
+            "subject": "current_strict",
+            "outside_level": "low_other_cohort",
+            "expected_token": {
+              "integrity_rid": 12288,
+              "integrity_attributes": 96,
+              "mandatory_policy": 3
+            },
+            "effective_thread_token": {
+              "integrity_rid": 12288,
+              "integrity_attributes": 96,
+              "mandatory_policy": 3
+            },
+            "inside": {
+              "read": "original",
+              "read_error": null,
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "errors": [
+                null,
+                null,
+                null,
+                null
+              ]
+            },
+            "outside": {
+              "read": "original",
+              "read_error": null,
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "errors": [
+                {
+                  "kind": "PermissionDenied",
+                  "code": 5,
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "kind": "PermissionDenied",
+                  "code": 5,
+                  "message": "Access is denied. (os error 5)"
+                },
+                null,
+                null
+              ]
+            },
+            "access_checks": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\outside",
+                "identity": [
+                  987887743,
+                  65536,
+                  98182
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;LW)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "desired": 64,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98185
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-730690)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)S:AI(ML;;NW;;;LW)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-730690)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)",
+                "desired": 65536,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  65536,
+                  98186
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;LW)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "desired": 65536,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "line": 456,
+          "value": {
+            "subject": "current_strict_low",
+            "outside_level": "low_other_cohort",
+            "expected_token": {
+              "integrity_rid": 4096,
+              "integrity_attributes": 96,
+              "mandatory_policy": 3
+            },
+            "effective_thread_token": {
+              "integrity_rid": 4096,
+              "integrity_attributes": 96,
+              "mandatory_policy": 3
+            },
+            "inside": {
+              "read": "original",
+              "read_error": null,
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "errors": [
+                null,
+                null,
+                null,
+                null
+              ]
+            },
+            "outside": {
+              "read": "original",
+              "read_error": null,
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "errors": [
+                {
+                  "kind": "PermissionDenied",
+                  "code": 5,
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "kind": "PermissionDenied",
+                  "code": 5,
+                  "message": "Access is denied. (os error 5)"
+                },
+                null,
+                null
+              ]
+            },
+            "access_checks": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\outside",
+                "identity": [
+                  987887743,
+                  262144,
+                  98151
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;LW)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "desired": 64,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98156
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-730690)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)S:AI(ML;;NW;;;LW)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-730690)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)",
+                "desired": 65536,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  196608,
+                  98159
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;LW)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "desired": 65536,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "line": 482,
+          "value": {
+            "subject": "full_restricting_explicit_read",
+            "outside_level": "medium",
+            "expected_token": {
+              "integrity_rid": 12288,
+              "integrity_attributes": 96,
+              "mandatory_policy": 3
+            },
+            "effective_thread_token": {
+              "integrity_rid": 12288,
+              "integrity_attributes": 96,
+              "mandatory_policy": 3
+            },
+            "inside": {
+              "read": "original",
+              "read_error": null,
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "errors": [
+                null,
+                null,
+                null,
+                null
+              ]
+            },
+            "outside": {
+              "read": "original",
+              "read_error": null,
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "errors": [
+                {
+                  "kind": "PermissionDenied",
+                  "code": 5,
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "kind": "PermissionDenied",
+                  "code": 5,
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "kind": "PermissionDenied",
+                  "code": 5,
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "kind": "PermissionDenied",
+                  "code": 5,
+                  "message": "Access is denied. (os error 5)"
+                }
+              ]
+            },
+            "access_checks": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\outside",
+                "identity": [
+                  987887743,
+                  131072,
+                  98164
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;ME)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "desired": 64,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98167
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-730690)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)S:AI(ML;;NW;;;ME)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-730690)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)",
+                "desired": 65536,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  131072,
+                  98168
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;ME)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "desired": 65536,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "line": 508,
+          "value": {
+            "subject": "full_restricting_explicit_read",
+            "outside_level": "low_other_cohort",
+            "expected_token": {
+              "integrity_rid": 12288,
+              "integrity_attributes": 96,
+              "mandatory_policy": 3
+            },
+            "effective_thread_token": {
+              "integrity_rid": 12288,
+              "integrity_attributes": 96,
+              "mandatory_policy": 3
+            },
+            "inside": {
+              "read": "original",
+              "read_error": null,
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "errors": [
+                null,
+                null,
+                null,
+                null
+              ]
+            },
+            "outside": {
+              "read": "original",
+              "read_error": null,
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "errors": [
+                {
+                  "kind": "PermissionDenied",
+                  "code": 5,
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "kind": "PermissionDenied",
+                  "code": 5,
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "kind": "PermissionDenied",
+                  "code": 5,
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "kind": "PermissionDenied",
+                  "code": 5,
+                  "message": "Access is denied. (os error 5)"
+                }
+              ]
+            },
+            "access_checks": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\outside",
+                "identity": [
+                  987887743,
+                  131072,
+                  98174
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;LW)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "desired": 64,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98189
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-730690)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)S:AI(ML;;NW;;;LW)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-730690)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)",
+                "desired": 65536,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  65536,
+                  98190
+                ],
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;LW)",
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-730690)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "desired": 65536,
+                "checks": [
+                  {
+                    "subject": "host",
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0
+                  },
+                  {
+                    "subject": "current_strict",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "current_strict_low",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  },
+                  {
+                    "subject": "full_restricting_explicit_read",
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "interleaved_not_repaired": [
+        {
+          "line": 286,
+          "raw": "PROBE_OBSERVATION_ONLY row {\"subject\":\"host\",\"outside_level\":\"medium\",\"expected_token\":{\"integrity_rid\":12288,\"integrity_attributes\":96,\"mandatory_policy\":3},\"effective_thread_token\":{\"integrity_rid\":12288,\"integrity_attributes\":96,\"mandatory_policy\":3},\"inside\":{\"read\":\"original\",\"read_error\":null,\"order\":[\"overwrite\",\"create\",\"remove_file\",\"remove_dir\"],\"errors\":[null,null,null,null]},\"outside\":{\"read\":\"original\",\"read_error\":null,\"order\":[\"overwrite\",\"create\",\"remove_file\",\"remove_dir\"],\"errors\":[null,null,null,null]},\"access_checks\":[{\"path\":\"D:\\\\tmp\\\\.tmpZ8Y3od\\\\host-medium\\\\outsidetest token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes ... \"ok,",
+          "error": "Expecting ',' delimiter: line 1 column 655 (char 654)"
+        },
+        {
+          "line": 353,
+          "raw": "PROBE_OBSERVATION_ONLY row {\"subject\":\"current_strict\",\"outside_level\":\"medium\",\"expected_token\":{\"integrity_rid\":12288,\"integrity_attributes\":96,\"mandatory_policy\":3},\"effective_thread_token\":{\"integrity_rid\":12288,\"integrity_attributes\":96,\"mandatory_policy\":3},\"inside\":{\"read\":\"original\",\"read_error\":null,\"order\":[\"overwrite\",\"create\",\"remove_file\",\"remove_dir\"],\"errors\":[null,null,null,test unified_exec::tests::finish_driver_spawn_keeps_stdin_open_when_requested ... nullok]",
+          "error": "Expecting value: line 1 column 367 (char 366)"
+        },
+        {
+          "line": 408,
+          "raw": "PROBE_OBSERVATION_ONLY row {\"subject\":\"current_strict_low\",\"outside_level\":\"medium\",\"expected_token\":{\"integrity_rid\":4096,\"integrity_attributes\":96,\"mandatory_policy\":3},\"effective_thread_token\":{\"integrity_rid\":4096,\"integrity_attributes\":96,\"mandatory_policy\":3},\"inside\":{\"read\":\"original\",\"read_error\":null,\"order\":[\"overwrite\",\"create\",\"remove_file\",\"remove_dir\"],\"errors\":[null,null,null,null]},\"outside\":{\"read\":\"original\",\"read_error\":null,\"order\":[\"overwrite\",\"create\",\"remove_file\",\"remove_dir\"],\"errors\":[{\"kind\":\"PermissionDenied\",\"code\":5,\"message\":\"Access is denied. (os error 5)\"},{\"kind\":\"test unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells ... FAILED",
+          "error": "Unterminated string starting at: line 1 column 579 (char 578)"
+        }
+      ]
+    },
+    "restoration": {
+      "complete_json": [
+        {
+          "line": 327,
+          "value": {
+            "subject": "host",
+            "outside_level": "low_other_cohort",
+            "results": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\inside",
+                "identity": [
+                  987887743,
+                  786432,
+                  98127
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\inside\\read.txt",
+                "identity": [
+                  987887743,
+                  655360,
+                  98128
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\inside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  655360,
+                  98129
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\inside\\delete.txt",
+                "identity": [
+                  987887743,
+                  655360,
+                  98132
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\inside\\delete-dir",
+                "identity": [
+                  987887743,
+                  524288,
+                  98133
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\outside",
+                "identity": [
+                  987887743,
+                  393216,
+                  98134
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\outside\\read.txt",
+                "identity": [
+                  987887743,
+                  327680,
+                  98135
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\outside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98136
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  262144,
+                  98137
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  262144,
+                  98138
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              }
+            ]
+          }
+        },
+        {
+          "line": 358,
+          "value": {
+            "subject": "current_strict",
+            "outside_level": "medium",
+            "results": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\inside",
+                "identity": [
+                  987887743,
+                  589824,
+                  98133
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\inside\\read.txt",
+                "identity": [
+                  987887743,
+                  327680,
+                  98137
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\inside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  327680,
+                  98138
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\inside\\delete.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98142
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\inside\\delete-dir",
+                "identity": [
+                  987887743,
+                  131072,
+                  98145
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\outside",
+                "identity": [
+                  987887743,
+                  131072,
+                  98147
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\outside\\read.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98148
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\outside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98149
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98150
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  131072,
+                  98151
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": false
+              }
+            ]
+          }
+        },
+        {
+          "line": 384,
+          "value": {
+            "subject": "current_strict",
+            "outside_level": "low_other_cohort",
+            "results": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\inside",
+                "identity": [
+                  987887743,
+                  65536,
+                  98177
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\inside\\read.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98178
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\inside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98179
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\inside\\delete.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98180
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\inside\\delete-dir",
+                "identity": [
+                  987887743,
+                  65536,
+                  98181
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\outside",
+                "identity": [
+                  987887743,
+                  65536,
+                  98182
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\outside\\read.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98183
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\outside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98184
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98185
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  65536,
+                  98186
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              }
+            ]
+          }
+        },
+        {
+          "line": 431,
+          "value": {
+            "subject": "current_strict_low",
+            "outside_level": "medium",
+            "results": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\inside",
+                "identity": [
+                  987887743,
+                  131072,
+                  98181
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\inside\\read.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98185
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\inside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98186
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\inside\\delete.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98188
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\inside\\delete-dir",
+                "identity": [
+                  987887743,
+                  65536,
+                  98189
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\outside",
+                "identity": [
+                  987887743,
+                  196608,
+                  98154
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\outside\\read.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98155
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\outside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98157
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98158
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  196608,
+                  98160
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              }
+            ]
+          }
+        },
+        {
+          "line": 458,
+          "value": {
+            "subject": "current_strict_low",
+            "outside_level": "low_other_cohort",
+            "results": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\inside",
+                "identity": [
+                  987887743,
+                  393216,
+                  98142
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\inside\\read.txt",
+                "identity": [
+                  987887743,
+                  1507328,
+                  98126
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\inside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  327680,
+                  98145
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\inside\\delete.txt",
+                "identity": [
+                  987887743,
+                  262144,
+                  98146
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\inside\\delete-dir",
+                "identity": [
+                  987887743,
+                  262144,
+                  98150
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\outside",
+                "identity": [
+                  987887743,
+                  262144,
+                  98151
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\outside\\read.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98152
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\outside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98153
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98156
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  196608,
+                  98159
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              }
+            ]
+          }
+        },
+        {
+          "line": 484,
+          "value": {
+            "subject": "full_restricting_explicit_read",
+            "outside_level": "medium",
+            "results": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\inside",
+                "identity": [
+                  987887743,
+                  327680,
+                  98150
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\inside\\read.txt",
+                "identity": [
+                  987887743,
+                  262144,
+                  98156
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\inside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  262144,
+                  98159
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\inside\\delete.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98162
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\inside\\delete-dir",
+                "identity": [
+                  987887743,
+                  196608,
+                  98163
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\outside",
+                "identity": [
+                  987887743,
+                  131072,
+                  98164
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\outside\\read.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98165
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\outside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98166
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98167
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  131072,
+                  98168
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              }
+            ]
+          }
+        },
+        {
+          "line": 510,
+          "value": {
+            "subject": "full_restricting_explicit_read",
+            "outside_level": "low_other_cohort",
+            "results": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\inside",
+                "identity": [
+                  987887743,
+                  262144,
+                  98163
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\inside\\read.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98170
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\inside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98171
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\inside\\delete.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98172
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\inside\\delete-dir",
+                "identity": [
+                  987887743,
+                  131072,
+                  98173
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\outside",
+                "identity": [
+                  987887743,
+                  131072,
+                  98174
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\outside\\read.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98175
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\outside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98188
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98189
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  65536,
+                  98190
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              }
+            ]
+          }
+        }
+      ],
+      "interleaved_not_repaired": [
+        {
+          "line": 297,
+          "raw": "PROBE_OBSERVATION_ONLY restoration {\"subject\":\"host\",\"outside_level\":\"medium\",\"results\":[{\"path\":\"test unified_exec::backend_selection_tests::read_only_profile_without_overrides_keeps_restricted_token_backend ... D:\\\\oktmp",
+          "error": "Unterminated string starting at: line 1 column 63 (char 62)"
+        }
+      ]
+    },
+    "finalized": {
+      "complete_json": [
+        {
+          "line": 329,
+          "value": {
+            "subject": "host",
+            "outside_level": "low_other_cohort",
+            "objects": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\inside",
+                "identity": [
+                  987887743,
+                  786432,
+                  98127
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\inside\\read.txt",
+                "identity": [
+                  987887743,
+                  655360,
+                  98128
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\inside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  655360,
+                  98129
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\inside\\delete.txt",
+                "identity": [
+                  987887743,
+                  655360,
+                  98132
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\inside\\delete-dir",
+                "identity": [
+                  987887743,
+                  524288,
+                  98133
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\outside",
+                "identity": [
+                  987887743,
+                  393216,
+                  98134
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\outside\\read.txt",
+                "identity": [
+                  987887743,
+                  327680,
+                  98135
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\outside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98136
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  262144,
+                  98137
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  262144,
+                  98138
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              }
+            ],
+            "physical_post_state": [
+              {
+                "root": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\inside",
+                "overwrite": "overwritten",
+                "overwrite_error": null,
+                "created": "created",
+                "created_error": null,
+                "deleted_file_still_named": false,
+                "file_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": false,
+                "directory_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                }
+              },
+              {
+                "root": "D:\\tmp\\.tmpZ8Y3od\\host-low_other_cohort\\outside",
+                "overwrite": "overwritten",
+                "overwrite_error": null,
+                "created": "created",
+                "created_error": null,
+                "deleted_file_still_named": false,
+                "file_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": false,
+                "directory_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "line": 360,
+          "value": {
+            "subject": "current_strict",
+            "outside_level": "medium",
+            "objects": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\inside",
+                "identity": [
+                  987887743,
+                  589824,
+                  98133
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\inside\\read.txt",
+                "identity": [
+                  987887743,
+                  327680,
+                  98137
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\inside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  327680,
+                  98138
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\inside\\delete.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98142
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\inside\\delete-dir",
+                "identity": [
+                  987887743,
+                  131072,
+                  98145
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\outside",
+                "identity": [
+                  987887743,
+                  131072,
+                  98147
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\outside\\read.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98148
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\outside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98149
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98150
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  131072,
+                  98151
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": false
+              }
+            ],
+            "physical_post_state": [
+              {
+                "root": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\inside",
+                "overwrite": "overwritten",
+                "overwrite_error": null,
+                "created": "created",
+                "created_error": null,
+                "deleted_file_still_named": false,
+                "file_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": false,
+                "directory_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                }
+              },
+              {
+                "root": "D:\\tmp\\.tmpZ8Y3od\\current_strict-medium\\outside",
+                "overwrite": "original",
+                "overwrite_error": null,
+                "created": null,
+                "created_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_file_still_named": false,
+                "file_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": false,
+                "directory_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "line": 386,
+          "value": {
+            "subject": "current_strict",
+            "outside_level": "low_other_cohort",
+            "objects": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\inside",
+                "identity": [
+                  987887743,
+                  65536,
+                  98177
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\inside\\read.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98178
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\inside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98179
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\inside\\delete.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98180
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\inside\\delete-dir",
+                "identity": [
+                  987887743,
+                  65536,
+                  98181
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\outside",
+                "identity": [
+                  987887743,
+                  65536,
+                  98182
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\outside\\read.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98183
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\outside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98184
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98185
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  65536,
+                  98186
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              }
+            ],
+            "physical_post_state": [
+              {
+                "root": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\inside",
+                "overwrite": "overwritten",
+                "overwrite_error": null,
+                "created": "created",
+                "created_error": null,
+                "deleted_file_still_named": false,
+                "file_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": false,
+                "directory_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                }
+              },
+              {
+                "root": "D:\\tmp\\.tmpZ8Y3od\\current_strict-low_other_cohort\\outside",
+                "overwrite": "original",
+                "overwrite_error": null,
+                "created": null,
+                "created_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_file_still_named": false,
+                "file_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": false,
+                "directory_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "line": 433,
+          "value": {
+            "subject": "current_strict_low",
+            "outside_level": "medium",
+            "objects": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\inside",
+                "identity": [
+                  987887743,
+                  131072,
+                  98181
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\inside\\read.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98185
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\inside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98186
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\inside\\delete.txt",
+                "identity": [
+                  987887743,
+                  65536,
+                  98188
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\inside\\delete-dir",
+                "identity": [
+                  987887743,
+                  65536,
+                  98189
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\outside",
+                "identity": [
+                  987887743,
+                  196608,
+                  98154
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\outside\\read.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98155
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\outside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98157
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98158
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  196608,
+                  98160
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              }
+            ],
+            "physical_post_state": [
+              {
+                "root": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\inside",
+                "overwrite": "overwritten",
+                "overwrite_error": null,
+                "created": "created",
+                "created_error": null,
+                "deleted_file_still_named": false,
+                "file_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": false,
+                "directory_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                }
+              },
+              {
+                "root": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-medium\\outside",
+                "overwrite": "original",
+                "overwrite_error": null,
+                "created": null,
+                "created_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_file_still_named": true,
+                "file_error": null,
+                "deleted_directory_still_named": true,
+                "directory_error": null
+              }
+            ]
+          }
+        },
+        {
+          "line": 460,
+          "value": {
+            "subject": "current_strict_low",
+            "outside_level": "low_other_cohort",
+            "objects": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\inside",
+                "identity": [
+                  987887743,
+                  393216,
+                  98142
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\inside\\read.txt",
+                "identity": [
+                  987887743,
+                  1507328,
+                  98126
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\inside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  327680,
+                  98145
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\inside\\delete.txt",
+                "identity": [
+                  987887743,
+                  262144,
+                  98146
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\inside\\delete-dir",
+                "identity": [
+                  987887743,
+                  262144,
+                  98150
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\outside",
+                "identity": [
+                  987887743,
+                  262144,
+                  98151
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\outside\\read.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98152
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\outside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98153
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98156
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  196608,
+                  98159
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              }
+            ],
+            "physical_post_state": [
+              {
+                "root": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\inside",
+                "overwrite": "overwritten",
+                "overwrite_error": null,
+                "created": "created",
+                "created_error": null,
+                "deleted_file_still_named": false,
+                "file_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": false,
+                "directory_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                }
+              },
+              {
+                "root": "D:\\tmp\\.tmpZ8Y3od\\current_strict_low-low_other_cohort\\outside",
+                "overwrite": "original",
+                "overwrite_error": null,
+                "created": null,
+                "created_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_file_still_named": false,
+                "file_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": false,
+                "directory_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "line": 486,
+          "value": {
+            "subject": "full_restricting_explicit_read",
+            "outside_level": "medium",
+            "objects": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\inside",
+                "identity": [
+                  987887743,
+                  327680,
+                  98150
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\inside\\read.txt",
+                "identity": [
+                  987887743,
+                  262144,
+                  98156
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\inside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  262144,
+                  98159
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\inside\\delete.txt",
+                "identity": [
+                  987887743,
+                  196608,
+                  98162
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\inside\\delete-dir",
+                "identity": [
+                  987887743,
+                  196608,
+                  98163
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\outside",
+                "identity": [
+                  987887743,
+                  131072,
+                  98164
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\outside\\read.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98165
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\outside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98166
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98167
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  131072,
+                  98168
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;ME)",
+                "restored_survivor": true
+              }
+            ],
+            "physical_post_state": [
+              {
+                "root": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\inside",
+                "overwrite": "overwritten",
+                "overwrite_error": null,
+                "created": "created",
+                "created_error": null,
+                "deleted_file_still_named": false,
+                "file_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": false,
+                "directory_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                }
+              },
+              {
+                "root": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-medium\\outside",
+                "overwrite": "original",
+                "overwrite_error": null,
+                "created": null,
+                "created_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_file_still_named": true,
+                "file_error": null,
+                "deleted_directory_still_named": true,
+                "directory_error": null
+              }
+            ]
+          }
+        },
+        {
+          "line": 512,
+          "value": {
+            "subject": "full_restricting_explicit_read",
+            "outside_level": "low_other_cohort",
+            "objects": [
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\inside",
+                "identity": [
+                  987887743,
+                  262144,
+                  98163
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\inside\\read.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98170
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\inside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98171
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\inside\\delete.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98172
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\inside\\delete-dir",
+                "identity": [
+                  987887743,
+                  131072,
+                  98173
+                ],
+                "pending": 1,
+                "links": 0,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": false
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\outside",
+                "identity": [
+                  987887743,
+                  131072,
+                  98174
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\outside\\read.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98175
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\outside\\overwrite.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98188
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\outside\\delete.txt",
+                "identity": [
+                  987887743,
+                  131072,
+                  98189
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              },
+              {
+                "path": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\outside\\delete-dir",
+                "identity": [
+                  987887743,
+                  65536,
+                  98190
+                ],
+                "pending": 0,
+                "links": 1,
+                "label": "S:(ML;;NW;;;LW)",
+                "restored_survivor": true
+              }
+            ],
+            "physical_post_state": [
+              {
+                "root": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\inside",
+                "overwrite": "overwritten",
+                "overwrite_error": null,
+                "created": "created",
+                "created_error": null,
+                "deleted_file_still_named": false,
+                "file_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": false,
+                "directory_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                }
+              },
+              {
+                "root": "D:\\tmp\\.tmpZ8Y3od\\full_restricting_explicit_read-low_other_cohort\\outside",
+                "overwrite": "original",
+                "overwrite_error": null,
+                "created": null,
+                "created_error": {
+                  "kind": "NotFound",
+                  "code": 2,
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_file_still_named": true,
+                "file_error": null,
+                "deleted_directory_still_named": true,
+                "directory_error": null
+              }
+            ]
+          }
+        }
+      ],
+      "interleaved_not_repaired": [
+        {
+          "line": 301,
+          "raw": "PROBE_OBSERVATION_ONLY finalized {\"test unified_exec::backend_selection_tests::workspace_write_profile_is_forced_through_elevated_broker ... subjectok\":\"",
+          "error": "Unterminated string starting at: line 1 column 120 (char 119)"
+        }
+      ]
+    }
+  },
+  "limits": "Only complete JSON is parsed; interleaved or broken lines remain unrepaired original text.",
+  "qualifies_B11": false
+}

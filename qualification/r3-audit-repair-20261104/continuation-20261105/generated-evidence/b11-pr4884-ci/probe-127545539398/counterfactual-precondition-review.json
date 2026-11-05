@@ -1,0 +1,129 @@
+{
+  "role": "ACTUAL_LAUNCHER_PRECONDITION_FAILURE_BEFORE_BAZEL_EXACT_TESTS_NOT_RUN",
+  "terminal": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/counterfactual-terminal.json",
+    "bytes": 542,
+    "sha256": "19c698b75ff54a7accdebc02554e88fe844cd395e74d873ae618123c2a6a19d4",
+    "git_blob": "93249d0325dc5f3349b0f5d462c662dcfcfeb8b3"
+  },
+  "source_entry": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/source-entry.json",
+    "bytes": 1212,
+    "sha256": "8074139d993dee8a594d49131544cf23c93a4ec702d2d801284827d6beb32853",
+    "git_blob": "ca998990ee2c40d9a9b90faca2982e068e3f147e"
+  },
+  "full_source_test_log": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/bazel-execution-logs/failed-test-logs/invocation-90mvwxrg/targets/0000/test.log",
+    "bytes": 143090,
+    "sha256": "b4c8bfdeaee03863511ff957d37bc6e398138f30e485340b0337c90aba1caf4c",
+    "git_blob": "38443e6ea57ba8b37d26de4259c68e24aaa597e0"
+  },
+  "first_exact_command": {
+    "record": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command.json",
+      "bytes": 2426,
+      "sha256": "8bdf392d12f20533e70e2ba4469725c3114026ce8427fcf1e24d8ec4e49006fc",
+      "git_blob": "91091a53399e0642db334b550bd7c016be78f322"
+    },
+    "value": {
+      "argv": [
+        "bash",
+        "./.github/scripts/run-bazel-ci.sh",
+        "--print-failed-action-summary",
+        "--print-failed-test-logs",
+        "--windows-msvc-host-platform",
+        "--remote-download-toplevel",
+        "--",
+        "test",
+        "--platforms=//:windows_x86_64_msvc",
+        "--skip_incompatible_explicit_targets",
+        "--test_tag_filters=-argument-comment-lint",
+        "--test_verbose_timeout_warnings",
+        "--test_output=all",
+        "--build_metadata=COMMIT_SHA=8fd0c14cd5853d21eb23571f67461f3fc386c01c",
+        "--build_metadata=TAG_b11_observation_only=true",
+        "--build_metadata=TAG_b11_identity_positive=true",
+        "--nocache_test_results",
+        "--flaky_test_attempts=1",
+        "--test_arg=acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+        "--test_arg=--exact",
+        "--",
+        "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+      "case": "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+      "source": {
+        "head": "8fd0c14cd5853d21eb23571f67461f3fc386c01c",
+        "head_tree": "cb105f2d902326c3c2e187f49c76d5598e6646c3",
+        "source": {
+          "bytes": 10467,
+          "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+          "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+        },
+        "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+        "tests": {
+          "bytes": 23872,
+          "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+          "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+        },
+        "status": [],
+        "index_entries": {
+          "bytes": 1183933,
+          "sha256": "b0d47be0aa7c9a3ebff30de7c9d3e3d9848ef737e8a14731b490a4d1fb541f9b",
+          "git_blob": "68a970190df948136aa1390fcf7fa6d69a6b9ad9"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "bytes": 432254,
+            "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+            "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+          },
+          "MODULE.bazel.lock": {
+            "bytes": 1740955,
+            "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+            "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+          }
+        }
+      },
+      "scope": "One exact original positive, once; the whole-target result is retained."
+    }
+  },
+  "first_exact_command_terminal": {
+    "record": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command-terminal.json",
+      "bytes": 68,
+      "sha256": "4b71defaecb9ce33babb429d30c2ec35d9a3dd70ccba15f092fc55f5e14ae0e4",
+      "git_blob": "29bd17e7857716dfd8dd4dfc09b97e12d68709cf"
+    },
+    "value": {
+      "exit_code": 1,
+      "elapsed_seconds": 0.047000000000025466
+    }
+  },
+  "first_exact_console": {
+    "record": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/console.log",
+      "bytes": 504,
+      "sha256": "756a9ae833f91603d69b5ee0e38d855073252c2585b8808c37f801cf43646c15",
+      "git_blob": "c0b38378bcf8ddee32ff284f37df8cd78e78cc18"
+    },
+    "encoding": "UTF-16LE",
+    "decoded_text": "Windows Subsystem for Linux has no installed distributions.\r\nYou can resolve this by installing a distribution with the instructions below:\r\n\r\nUse 'wsl.exe --list --online' to list available distributions\r\nand 'wsl.exe --install <Distro>' to install.\r\n"
+  },
+  "entry_before_after_raw_bytes_equal": true,
+  "positive_test_cases_executed": 0,
+  "positive_Bazel_invocations_reached": 0,
+  "remaining_exact_commands": 0,
+  "negative_source_installation_attempted": false,
+  "negative_commands": 0,
+  "helper_command_executed": false,
+  "physical_negative_qualification": false,
+  "restore_error": null,
+  "restore_flag_interpretation": "false because source was never mutated; this is not a failed restore",
+  "original_whole_result_retained": true,
+  "no_product_retry": true,
+  "limits": [
+    "The observed WSL diagnostic proves bare-bash launcher selection failed before Bazel; its exact resolved executable path was not recorded.",
+    "No exact libtest/XML or negative result exists. Original whole failure is not erased."
+  ]
+}

@@ -1,0 +1,400 @@
+BuildBuddy API key is available; using remote Bazel configuration.
+Using generic BuildBuddy configuration: buildbuddy-generic.
+INFO: Invocation ID: fad28731-f543-4d6f-8603-cbcfb5789b5f
+INFO: Streaming build results to: https://app.buildbuddy.io/invocation/fad28731-f543-4d6f-8603-cbcfb5789b5f
+INFO: Checking for file changes...
+Computing main repo mapping: 
+Loading: 
+Loading: 0 packages loaded
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (0 packages loaded, 0 targets configured)
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (0 packages loaded, 0 targets configured)
+
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (0 packages loaded, 6098 targets configured)
+
+INFO: Analyzed target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (0 packages loaded, 7938 targets configured).
+[1 / 1] no actions running
+[1,611 / 1,616] Compiling Rust bin //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests-bin (69 files); 0s local, remote-cache ... (2 actions running)
+[1,611 / 1,616] Compiling Rust bin //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests-bin (69 files); 4s local, remote-cache ... (2 actions running)
+[1,612 / 1,616] Compiling Rust bin //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests-bin (69 files); 7s local, remote-cache ... (3 actions, 1 running)
+[1,612 / 1,616] Compiling Rust bin //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests-bin (69 files); 8s local, remote-cache ... (3 actions running)
+[1,612 / 1,616] Compiling Rust bin //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests-bin (69 files); 11s local, remote-cache ... (3 actions running)
+[1,612 / 1,616] Compiling Rust bin //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests-bin (69 files); 12s local, remote-cache ... (3 actions running)
+[1,612 / 1,616] Compiling Rust bin //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests-bin (69 files); 13s local, remote-cache ... (3 actions running)
+[1,612 / 1,616] Compiling Rust bin //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests-bin (69 files); 14s local, remote-cache ... (3 actions running)
+[1,613 / 1,616] Compiling Rust bin //codex-rs/windows-sandbox-rs:codex-command-runner (71 files); 9s local, remote-cache ... (2 actions running)
+[1,615 / 1,616] [Prepa] runfiles for //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests
+FAIL: //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log)
+INFO: From Testing //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests:
+==================== Test output for //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests:
+
+running 1 test
+
+deny_repair_identity: directory=false returned_ok=true replacement_changed=true original_changed=false
+test acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object ... FAILED
+
+failures:
+
+---- acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object stdout ----
+
+thread 'acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object' (8344) panicked at windows-sandbox-rs/src\acl_tests.rs:597:9:
+assertion failed: `(left == right)`: a replacement object must not receive the queried object's deny
+
+Diff < left / right > :
+ [
+     2,
+     0,
+<    148,
+>    112,
+     0,
+<    5,
+>    4,
+     0,
+<    0,
+<    0,
+<    1,
+<    0,
+<    36,
+<    0,
+<    86,
+<    1,
+<    19,
+<    0,
+<    1,
+<    5,
+<    0,
+<    0,
+<    0,
+<    0,
+<    0,
+<    5,
+<    21,
+<    0,
+<    0,
+<    0,
+<    211,
+<    0,
+<    0,
+<    0,
+<    56,
+<    1,
+<    0,
+<    0,
+<    157,
+<    1,
+<    0,
+<    0,
+<    2,
+<    2,
+     0,
+     0,
+     0,
+     16,
+     24,
+     0,
+     255,
+     1,
+     31,
+     0,
+     1,
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5,
+     32,
+     0,
+     0,
+     0,
+     32,
+     2,
+     0,
+     0,
+     0,
+     16,
+     20,
+     0,
+     255,
+     1,
+     31,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5,
+     18,
+     0,
+     0,
+     0,
+     0,
+     16,
+     36,
+     0,
+     255,
+     1,
+     31,
+     0,
+     1,
+     5,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5,
+     21,
+     0,
+     0,
+     0,
+     57,
+     181,
+     110,
+     183,
+     114,
+     184,
+     67,
+     218,
+     112,
+     8,
+     167,
+     247,
+     244,
+     1,
+     0,
+     0,
+     0,
+     16,
+     24,
+     0,
+     169,
+     0,
+     18,
+     0,
+     1,
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5,
+     32,
+     0,
+     0,
+     0,
+     33,
+     2,
+     0,
+     0,
+ ]
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 155 filtered out; finished in 0.00s
+
+================================================================================
+INFO: Found 1 test target...
+Target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests up-to-date:
+  bazel-bin/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests.bat
+INFO: Elapsed time: 25.386s, Critical Path: 19.93s
+INFO: 7 processes: 1610 action cache hit, 2 internal, 6 local.
+INFO: Build completed, 1 test FAILED, 7 total actions
+INFO: 
+//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 0.1s
+  D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log
+
+Executed 1 out of 1 test: 1 fails locally.
+INFO: Streaming build results to: https://app.buildbuddy.io/invocation/fad28731-f543-4d6f-8603-cbcfb5789b5f
+No Bazel action failures were found in the captured console output.
+::group::Bazel test log tail for //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests
+Executing tests from //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests
+-----------------------------------------------------------------------------
+
+running 1 test
+
+deny_repair_identity: directory=false returned_ok=true replacement_changed=true original_changed=false
+test acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object ... FAILED
+
+failures:
+
+---- acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object stdout ----
+
+thread 'acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object' (8344) panicked at windows-sandbox-rs/src\acl_tests.rs:597:9:
+assertion failed: `(left == right)`: a replacement object must not receive the queried object's deny
+
+[1mDiff[0m [31m< left[0m / [32mright >[0m :
+ [
+     2,
+     0,
+[31m<    1[0m[1;48;5;52;31m48[0m[31m,[0m
+[32m>    1[0m[1;48;5;22;32m12[0m[32m,[0m
+     0,
+[31m<    [0m[1;48;5;52;31m5[0m[31m,[0m
+[32m>    [0m[1;48;5;22;32m4[0m[32m,[0m
+     0,
+[31m<    0,[0m
+[31m<    0,[0m
+[31m<    1,[0m
+[31m<    0,[0m
+[31m<    36,[0m
+[31m<    0,[0m
+[31m<    86,[0m
+[31m<    1,[0m
+[31m<    19,[0m
+[31m<    0,[0m
+[31m<    1,[0m
+[31m<    5,[0m
+[31m<    0,[0m
+[31m<    0,[0m
+[31m<    0,[0m
+[31m<    0,[0m
+[31m<    0,[0m
+[31m<    5,[0m
+[31m<    21,[0m
+[31m<    0,[0m
+[31m<    0,[0m
+[31m<    0,[0m
+[31m<    211,[0m
+[31m<    0,[0m
+[31m<    0,[0m
+[31m<    0,[0m
+[31m<    56,[0m
+[31m<    1,[0m
+[31m<    0,[0m
+[31m<    0,[0m
+[31m<    157,[0m
+[31m<    1,[0m
+[31m<    0,[0m
+[31m<    0,[0m
+[31m<    2,[0m
+[31m<    2,[0m
+     0,
+     0,
+     0,
+     16,
+     24,
+     0,
+     255,
+     1,
+     31,
+     0,
+     1,
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5,
+     32,
+     0,
+     0,
+     0,
+     32,
+     2,
+     0,
+     0,
+     0,
+     16,
+     20,
+     0,
+     255,
+     1,
+     31,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5,
+     18,
+     0,
+     0,
+     0,
+     0,
+     16,
+     36,
+     0,
+     255,
+     1,
+     31,
+     0,
+     1,
+     5,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5,
+     21,
+     0,
+     0,
+     0,
+     57,
+     181,
+     110,
+     183,
+     114,
+     184,
+     67,
+     218,
+     112,
+     8,
+     167,
+     247,
+     244,
+     1,
+     0,
+     0,
+     0,
+     16,
+     24,
+     0,
+     169,
+     0,
+     18,
+     0,
+     1,
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5,
+     32,
+     0,
+     0,
+     0,
+     33,
+     2,
+     0,
+     0,
+ ]
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 155 filtered out; finished in 0.00s
+
+::endgroup::
+Failed-test-log archive: D:\a\_temp\b11-token-mechanism-probe\acl-identity-counterfactual\bazel-execution-logs\failed-test-logs\invocation-xdaqr_zv (complete_for_selected_targets=True)
+Selected-target-log archive: D:\a\_temp\b11-token-mechanism-probe\acl-identity-counterfactual\bazel-execution-logs\selected-target-test-logs\invocation-bidy455x (complete_for_selected_targets=True)

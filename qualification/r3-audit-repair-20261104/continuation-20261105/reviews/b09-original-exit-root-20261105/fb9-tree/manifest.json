@@ -1,0 +1,38 @@
+{
+  "schema": "b09-complete-fb9-tree-identities-transport-v1",
+  "tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "leaves": 9587,
+  "original_pretty_leaf_cache": {
+    "bytes": 1528904,
+    "sha256": "643b8d3ca63d396185247bf69f0b24fcc5ea0ba386ffee42e7f37dac52c10d83"
+  },
+  "compact_raw": {
+    "bytes": 1414081,
+    "sha256": "b73c2e86f2df1f105694a227f9f6f34bc911f5fb79c80400037e384951deb71a"
+  },
+  "base64": {
+    "bytes": 440624,
+    "sha256": "4b02d068e1b41ab0c0daac076407b492ce9c6ed1f64c868b5dbebf1f40301c22"
+  },
+  "parts": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/b09-tree-transport/part-000.base64.txt",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b09-original-exit-root-20261105/fb9-tree/part-000.base64.txt",
+      "mode": "100644",
+      "bytes": 350000,
+      "sha256": "283ec3e0f3da749284b2a46bb36b39bd890007993017e4ed1595f2c3ad02b564",
+      "git_blob": "0986f9cc975d06e20646309eb8fb74951b8c9beb",
+      "offset": 0
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v9/b09-tree-transport/part-001.base64.txt",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b09-original-exit-root-20261105/fb9-tree/part-001.base64.txt",
+      "mode": "100644",
+      "bytes": 90624,
+      "sha256": "9a27a9230940954c4106e4efe95e732abec1cc3449cdd1c74e4f0e47ab8523ba",
+      "git_blob": "18e527bffa86f000a19a1aa3dda14fd91cc2a2f8",
+      "offset": 350000
+    }
+  ],
+  "decode": "Exact chunks by offset; strict base64; gzip; raw hash; JSON leaf Merkle. Includes every old fb9 leaf identity, not the full bytes of each repository source file."
+}

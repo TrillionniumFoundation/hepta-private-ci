@@ -1,0 +1,11 @@
+{
+  "scope": "Evidence postprocessing only; original unittest command was not rerun",
+  "initial_script": {
+    "bytes": 9359,
+    "sha256": "4480b44ab9f5d01160da10298db861ab33cf199ce8b8a1d774b5053c1d784fb4",
+    "blob": "050c499a9b37ea298163f4c74672c9a52189433c"
+  },
+  "observed_error": "AssertionError at finalize_history.py:36",
+  "cause": "Unanchored failure-word search matched legitimate original case names containing failure or error, despite all 57 actual terminal lines being ok.",
+  "correction": "Only terminal status/error prefixes and status suffixes are tested; full 57-name Counter and exact final OK summary remain required."
+}

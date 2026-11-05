@@ -1,0 +1,286 @@
+diff --git a/.github/workflows/hepta-windows-token-mechanism-probe.yml b/.github/workflows/hepta-windows-token-mechanism-probe.yml
+index 912e22789665b0081c83ae0fa632d2482e8b0eba..89d2eaf4bb9900f7476d49476e2657effa68327a 100644
+--- a/.github/workflows/hepta-windows-token-mechanism-probe.yml
++++ b/.github/workflows/hepta-windows-token-mechanism-probe.yml
+@@ -12,6 +12,10 @@
+       - codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs
+       - .github/workflows/hepta-windows-token-mechanism-probe.yml
+       - .github/scripts/run_b11_acl_identity_counterfactual.py
++      - codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs
++      - codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs
++      - codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs
++      - .github/scripts/run_b11_read_acl_readiness.py
+ 
+ permissions:
+   contents: read
+@@ -82,6 +86,7 @@
+           exit "${statuses[0]}"
+ 
+       - name: Check the ACL identity counterfactual and restore its source
++        id: acl_identity_counterfactual
+         if: always() && !cancelled() && steps.original_unit_target.outcome != 'skipped'
+         env:
+           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+@@ -90,6 +95,18 @@
+           set -euo pipefail
+           evidence="$(cygpath -u "${RUNNER_TEMP}")/b11-token-mechanism-probe"
+           python3 .github/scripts/run_b11_acl_identity_counterfactual.py \
++            --evidence "$(cygpath -w "$evidence")"
++
++      - name: Run the original setup helper target after exact restoration
++        id: read_acl_helper_target
++        if: always() && !cancelled() && steps.acl_identity_counterfactual.outcome == 'success'
++        env:
++          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
++        shell: bash
++        run: |
++          set -euo pipefail
++          evidence="$(cygpath -u "${RUNNER_TEMP}")/b11-token-mechanism-probe"
++          python3 .github/scripts/run_b11_read_acl_readiness.py \
+             --evidence "$(cygpath -w "$evidence")"
+ 
+       # The unchanged wrapper already retains this exact target on both failure
+diff --git a/.github/scripts/collect_bazel_failed_test_logs.py b/.github/scripts/collect_bazel_failed_test_logs.py
+index 2142eeb382664d95f77d83ac7ae3da4459601abf..e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9 100644
+--- a/.github/scripts/collect_bazel_failed_test_logs.py
++++ b/.github/scripts/collect_bazel_failed_test_logs.py
+@@ -26,6 +26,7 @@
+     "//codex-rs/core:core-all-test",
+     "//codex-rs/core:core-all-wine-exec-test",
+     "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
++    "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests",
+ )
+ 
+ 
+diff --git a/.github/scripts/run_b11_read_acl_readiness.py b/.github/scripts/run_b11_read_acl_readiness.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..6010ce9cc6da2eca95aac9ba453581f68770bbe6
+--- /dev/null
++++ b/.github/scripts/run_b11_read_acl_readiness.py
+@@ -0,0 +1,226 @@
++"""Run the existing setup-bin target only after a valid, exactly restored ACL control.
++
++This preserves the earlier whole-library failure. Passing the helper target is
++not evidence that a full-restricting token, loader or descendant boundary works.
++"""
++
++import argparse
++import hashlib
++import json
++import os
++from pathlib import Path
++import re
++import subprocess
++import time
++import types
++import xml.etree.ElementTree as ET
++
++
++TARGET = "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests"
++TARGET_PATH = "codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup-bin-unit-tests"
++CONTROL_SCRIPT = ".github/scripts/run_b11_acl_identity_counterfactual.py"
++CONTROL_BLOB = "3680db31233e47ba7fad99f31a7019c4536288bb"
++PINS = {
++    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs": "c39b298b7889dc3669e1ee7e2816f7e77568e955",
++    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6",
++    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs": "333aefdf9584ef29612ac6f9814ff34308971754",
++    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs": "e488e2a914b119ecb02cfc1a13a90009bc6120ea",
++    "codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs": "262460775ef6b5e02f0ba4485f388e1b389cc85f",
++    "codex-rs/windows-sandbox-rs/Cargo.toml": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
++    "codex-rs/windows-sandbox-rs/BUILD.bazel": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
++    "defs.bzl": "6f588ec3057fddfea35170e28e74036162ce6a23",
++    ".github/scripts/run-bazel-ci.sh": "42b59b6354b5933c8155b992519682c06d024ca1",
++    ".github/scripts/collect_bazel_failed_test_logs.py": "e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9",
++    CONTROL_SCRIPT: CONTROL_BLOB,
++}
++REQUIRED_CASES = {
++    "win::tests::payload_defaults_otel_absent",
++    "win::tests::payload_accepts_provision_only_mode",
++    "win::tests::payload_accepts_otel_settings",
++    "win::tests::write_root_refresh_replaces_stale_delete_child_grant",
++    "win::tests::write_root_refresh_checks_each_sid",
++    "win::tests::write_root_refresh_ignores_inherited_delete_child_grant",
++    "win::tests::deny_path_under_active_root_uses_only_matching_root_sid",
++    "win::tests::deny_path_outside_active_roots_falls_back_to_all_active_root_sids",
++    "win::tests::deny_path_includes_nested_active_root_sid",
++    "win::acl_tests::provision_only_locks_plain_directory_via_handle",
++    "win::read_acl_mutex::tests::existing_read_acl_mutex_is_not_a_completion_receipt",
++}
++
++
++def load_control(root):
++    path = root / CONTROL_SCRIPT
++    raw = path.read_bytes()
++    body = raw.replace(b"\r\n", b"\n")
++    blob = hashlib.sha1(b"blob " + str(len(body)).encode() + b"\0" + body).hexdigest()
++    if b"\r" in body or raw not in (body, body.replace(b"\n", b"\r\n")) or blob != CONTROL_BLOB:
++        raise RuntimeError("counterfactual guard source is not the frozen input")
++    module = types.ModuleType("b11_frozen_identity_guard")
++    module.__file__ = str(path)
++    # Execute only this hash-verified module's definitions, without its CLI or
++    # bytecode-cache writes in the checked-out source tree.
++    exec(compile(body, str(path), "exec"), module.__dict__)
++    return module
++
++
++def guard(control, root, head):
++    current = control.source_guard(root, head, control.POSITIVE, False)
++    pins = {}
++    for path, blob in PINS.items():
++        raw = (root / path).read_bytes()
++        body = control.canonical(raw, blob, path)
++        control.require(control.git(root, "show", f"HEAD:{path}") == body, f"pin is not in HEAD: {path}")
++        pins[path] = {"canonical_git_blob": blob, "raw": control.digest(raw)}
++    script = Path(__file__).resolve()
++    relative = script.relative_to(root).as_posix()
++    tracked = control.git(root, "show", f"HEAD:{relative}")
++    control.canonical(script.read_bytes(), control.digest(tracked)["git_blob"], relative)
++    return {"source": current, "pins": pins, "helper_script": control.digest(script.read_bytes())}
++
++
++def helper_artifacts(control, archive, source):
++    records = []
++    for kind in ("failed-test-logs", "selected-target-test-logs"):
++        for path in (archive / kind).glob("invocation-*/manifest.json"):
++            control.require(not path.is_symlink(), "collector manifest is a symlink")
++            manifest = json.loads(path.read_text(encoding="utf-8"))
++            if TARGET not in manifest.get("selected_targets", []):
++                continue
++            control.require(manifest.get("complete_for_selected_targets") is True and not manifest.get("errors"),
++                            "helper log/XML retention is incomplete")
++            control.require(manifest.get("source") == {"commit": source["head"], "tree": source["head_tree"],
++                            "tracked_worktree_dirty": False}, "collector source differs from the guarded helper checkout")
++            files = []
++            selected = {}
++            for row in manifest.get("files", []):
++                if row.get("target") != TARGET:
++                    continue
++                relative = Path(row["archive_relative_path"])
++                control.require(not relative.is_absolute() and ".." not in relative.parts, "unsafe helper archive path")
++                file = path.parent / relative
++                control.require(file.resolve().is_relative_to(path.parent.resolve()) and not file.is_symlink(),
++                                "helper archive member escapes its owned invocation")
++                body = file.read_bytes()
++                control.require(len(body) == row["bytes"] and hashlib.sha256(body).hexdigest() == row["sha256"],
++                                "helper archive member bytes differ from the collector manifest")
++                files.append({"path": str(file), "testlogs_relative_path": row["testlogs_relative_path"], **control.digest(body)})
++                if row["testlogs_relative_path"] in {TARGET_PATH + "/test.log", TARGET_PATH + "/test.xml"}:
++                    suffix = Path(row["testlogs_relative_path"]).suffix
++                    control.require(suffix not in selected, "duplicate helper log/XML")
++                    selected[suffix] = body
++            control.require(set(selected) == {".log", ".xml"}, "missing original helper target log/XML")
++            records.append((selected, {"manifest": {"path": str(path), **control.digest(path.read_bytes())}, "files": files}))
++    control.require(len(records) == 1, f"expected one helper target archive, got {len(records)}")
++    return records[0]
++
++
++def helper_results(control, log, xml):
++    text = control.ANSI.sub("", log.decode("utf-8", errors="strict")).replace("\r", "")
++    cases = re.findall(r"^test (\S+?)(?: - should panic)? \.\.\. (ok|FAILED|ignored)(?:,.*)?$", text, re.MULTILINE)
++    summaries = re.findall(r"^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out; finished in ([0-9.]+)s$", text, re.MULTILINE)
++    control.require(cases and summaries, "missing complete helper libtest results")
++    names = [name for name, _ in cases]
++    control.require(len(names) == len(set(names)) and all(status == "ok" for _, status in cases),
++                    "duplicate, failed or ignored helper case")
++    control.require(REQUIRED_CASES <= set(names), "an original helper anchor or the new physical mutex case did not pass")
++    totals = {sum(int(value) for value in row[1:6]) for row in summaries}
++    control.require(totals == {len(names)}, "helper batches did not cover their entire compiled roster")
++    control.require(sum(int(row[1]) for row in summaries) == len(names)
++                    and all(row[0] == "ok" and all(int(value) == 0 for value in row[2:5]) for row in summaries),
++                    "helper summaries contain failures, ignored cases, measurements or incomplete results")
++    parsed = ET.fromstring(xml)
++    outer = parsed.findall(".//testcase")
++    control.require(len(outer) == 1 and outer[0].get("status") == "run"
++                    and not parsed.findall(".//failure") and not parsed.findall(".//error")
++                    and not parsed.findall(".//skipped"), "helper outer XML did not complete successfully")
++    return {"actual_case_names": names, "libtest_summaries": summaries, "actual_named_pass_count": len(names),
++            "complete_compiled_roster_covered": True, "ignored": 0, "outer_xml_cases": len(outer)}
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument("--evidence", type=Path, required=True)
++    args = parser.parse_args()
++    if os.name != "nt":
++        raise RuntimeError("this original setup-bin gate requires native Windows")
++    root = Path(__file__).resolve().parents[2]
++    control = load_control(root)
++    original = args.evidence.resolve(strict=True)
++    control.require(original.is_relative_to(Path(os.environ["RUNNER_TEMP"]).resolve(strict=True)), "evidence is outside runner temp")
++    evidence = original / "read-acl-readiness"
++    evidence.mkdir(exist_ok=False)
++    report = {"status": "NOT_STARTED", "command_launch_attempted": False, "command_completed": False,
++              "helper_case_execution_verified": False, "helper_qualified": False,
++              "product_B11": "OPEN", "original_library_result_unchanged": True,
++              "full_read_grants_loader_or_descendants_qualified": False}
++    entry = None
++    exit_code = None
++    error = None
++    final_error = None
++    head = control.git(root, "rev-parse", "HEAD").decode().strip()
++    try:
++        previous = original / "acl-identity-counterfactual"
++        prior = json.loads((previous / "counterfactual-terminal.json").read_text(encoding="utf-8"))
++        control.require(prior.get("status") == "VALID_NEGATIVE_AND_EXACT_RESTORE"
++                        and prior.get("physical_counterfactual_qualified") is True
++                        and prior.get("restored_exact_original_bytes") is True
++                        and prior.get("error") is None and prior.get("restore_error") is None,
++                        "the preceding counterfactual did not qualify and restore exactly")
++        restored = json.loads((previous / "source-restored.json").read_text(encoding="utf-8"))
++        prior_entry = json.loads((previous / "source-entry.json").read_text(encoding="utf-8"))
++        entry = guard(control, root, head)
++        control.require(entry["source"] == prior_entry == restored, "fresh source/index/locks differ from the original exact restore")
++        control.save(evidence, "source-before.json", entry)
++        archive = evidence / "bazel-execution-logs"
++        archive.mkdir()
++        env = os.environ.copy()
++        env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(archive)
++        argv = ["bash", "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
++                "--print-failed-test-logs", "--windows-msvc-host-platform", "--remote-download-toplevel", "--", "test",
++                "--platforms=//:windows_x86_64_msvc", "--skip_incompatible_explicit_targets",
++                "--test_tag_filters=-argument-comment-lint", "--test_verbose_timeout_warnings", "--test_output=all",
++                f"--build_metadata=COMMIT_SHA={os.environ['GITHUB_SHA']}", "--build_metadata=TAG_b11_observation_only=true",
++                "--build_metadata=TAG_b11_read_acl_readiness=true", "--nocache_test_results", "--flaky_test_attempts=1", "--", TARGET]
++        control.save(evidence, "command.json", {"argv": argv, "cwd": str(root), "source": entry,
++                     "event_github_sha": os.environ["GITHUB_SHA"], "scope": "Original unfiltered setup-bin target; no test_arg, test_filter, retry or timeout increase."})
++        started = time.monotonic()
++        with (evidence / "console.log").open("wb") as output:
++            report["command_launch_attempted"] = True
++            result = subprocess.run(argv, cwd=root, env=env, stdout=output, stderr=subprocess.STDOUT, check=False)
++        exit_code = result.returncode
++        report["command_completed"] = True
++        control.save(evidence, "command-terminal.json", {"exit_code": exit_code, "elapsed_seconds": time.monotonic() - started,
++                     "console": control.digest((evidence / "console.log").read_bytes())})
++        after = guard(control, root, head)
++        control.save(evidence, "source-after.json", after)
++        control.require(after == entry, "helper execution changed source/index/locks")
++        control.require(exit_code == 0, "original setup-bin target did not pass")
++        console = control.ANSI.sub("", (evidence / "console.log").read_text(encoding="utf-8")).replace("\r", "")
++        terminals = [line.strip() for line in console.splitlines() if line.startswith(TARGET + " ")]
++        control.require(len(terminals) == 1 and re.fullmatch(re.escape(TARGET) + r"\s+PASSED in [0-9.]+s", terminals[0]) is not None,
++                        "helper target was missing, cached, flaky, skipped or ambiguous")
++        selected, retained = helper_artifacts(control, archive, entry["source"])
++        results = helper_results(control, selected[".log"], selected[".xml"])
++        report.update(status="HELPER_TARGET_PASSED", helper_case_execution_verified=True, helper_qualified=True, target_terminal=terminals[0],
++                      artifacts=retained, results=results)
++    except Exception as exc:
++        error = repr(exc)
++    finally:
++        if entry is not None:
++            try:
++                final = guard(control, root, head)
++                control.save(evidence, "source-final.json", final)
++                control.require(final == entry, "final source/index/locks differ from the helper entry")
++            except Exception as exc:
++                final_error = repr(exc)
++        if error is not None or final_error is not None:
++            report.update(status="FAILED_OR_INCOMPLETE", helper_qualified=False)
++        report.update(command_exit_code=exit_code, error=error, final_guard_error=final_error,
++                      hard_cancellation_has_no_terminal_qualification=True)
++        control.save(evidence, "terminal.json", report)
++    print(json.dumps(report, indent=2))
++    return exit_code if exit_code not in (None, 0) else (0 if report["helper_qualified"] else 1)
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())

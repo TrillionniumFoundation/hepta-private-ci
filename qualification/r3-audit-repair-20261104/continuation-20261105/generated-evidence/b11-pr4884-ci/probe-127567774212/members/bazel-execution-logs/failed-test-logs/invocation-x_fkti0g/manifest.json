@@ -1,0 +1,30 @@
+{
+  "complete_for_selected_targets": true,
+  "errors": [],
+  "files": [
+    {
+      "archive_relative_path": "targets/0000/test.log",
+      "bytes": 142867,
+      "sha256": "7e5810166a9f55fbda1a14a21621202da12b34b0d5f068e242ff4353362d6ad9",
+      "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+      "testlogs_relative_path": "codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log"
+    },
+    {
+      "archive_relative_path": "targets/0000/test.xml",
+      "bytes": 143290,
+      "sha256": "b6f25347bfa480848d9bac916e1f69dc5931e154667557276ac107d1d5de3f26",
+      "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+      "testlogs_relative_path": "codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.xml"
+    }
+  ],
+  "schema": "bazel_failed_test_logs_v1",
+  "scope": "Existing test.log/test.xml and test_attempts log/XML files under console-selected failed targets only; not a complete suite inventory.",
+  "selected_targets": [
+    "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests"
+  ],
+  "source": {
+    "commit": "cb5aba57802272d7f535cd6ee2ac3e26334dbff6",
+    "tracked_worktree_dirty": false,
+    "tree": "bf1c52a3ed14ca2bd0276ffc693dccf6c1dbbb83"
+  }
+}

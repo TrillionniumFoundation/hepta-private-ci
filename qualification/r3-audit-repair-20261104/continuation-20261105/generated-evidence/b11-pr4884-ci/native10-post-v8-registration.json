@@ -1,0 +1,1085 @@
+{
+  "schema": "b11-native10-post-v8-registration-v1",
+  "role": "ORIGINAL_WHOLE_FAILURE_PLUS_FOUR_EXACT_POSITIVES_ONE_PHYSICAL_NEGATIVE_EXACT_RESTORE_AND_HELPER_NOT_B11_CLOSURE",
+  "head": "021a59ff05ccd963bc087918db823aa86af31bb8",
+  "head_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+  "actual_checkout": "5ce73498a9e8ee843d156c43593b1bc2fede416f",
+  "actual_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+  "run_id": 42124355402,
+  "job_id": 127584591851,
+  "attempt": 1,
+  "counts": {
+    "total_named_tests": 156,
+    "passed": 147,
+    "failed": 7,
+    "ignored": 2
+  },
+  "original_bazel_exit": 3,
+  "counterfactual": {
+    "status": "VALID_NEGATIVE_AND_EXACT_RESTORE",
+    "exact_positive_cases": 4,
+    "exact_positive_attempts_each": 1,
+    "positive_counts_each": [
+      1,
+      0,
+      0,
+      155
+    ],
+    "physical_negative_cases": 1,
+    "negative_counts": [
+      0,
+      1,
+      0,
+      155
+    ],
+    "negative_raw_XML_exit": 101,
+    "negative_bazel_exit": 3,
+    "negative_physical_marker": "deny_repair_identity: directory=false returned_ok=true replacement_changed=true original_changed=false",
+    "negative_assertion": "acl_tests.rs:597:9",
+    "exact_original_source_restored": true,
+    "original_index_tests_locks_metadata_stable": true
+  },
+  "helper": {
+    "status": "HELPER_TARGET_PASSED",
+    "counts": [
+      21,
+      0,
+      0,
+      0
+    ],
+    "actual_case_names_count": 21,
+    "native_command_exit": 0,
+    "canonical_source_pins": 11,
+    "full_read_grants_loader_or_descendants_qualified": false
+  },
+  "original_archive": {
+    "artifact_id": 13461080955,
+    "bytes": 2291410,
+    "sha256": "d942127684e5864e84b6adfaaa224806ba0a13e47c6b90f7d1d511265a2da85d",
+    "git_blob": "3e79e69661a5c7488b90b6e5f3bacb05b9dbabaa",
+    "all_84_members_crc_hash_verified": true,
+    "parts": 18,
+    "manifest_blob": "a21ddfdd4fe40f576044c6ca238b2c8c8697e53e"
+  },
+  "complete_compact_logs_decoded_by_independent_root_verifier": 7,
+  "source_leaf_count": 78,
+  "policy": "Append original evidence after V8 without rewriting old receipts or treating scoped success as whole B11 closure. All seven compact originals remain in the exact archive; 77 textual members are also registered individually. The private signed download URL is excluded.",
+  "limits": [
+    "Stable recorded index and lock fingerprints are not complete archived native index/lock bytes.",
+    "Hard cancellation restoration is not guaranteed. Full restricting token, loader, ambient reads and descendant lifetime remain unqualified.",
+    "The original target and overall job remain failure. No strict outside-write/delete assertion is relaxed."
+  ],
+  "B11": "OPEN",
+  "source_ref_or_pr_mutation_by_auditor": false,
+  "native_mutation_by_auditor": false,
+  "items": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/freeze-native10.py",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/freeze-native10.py.source.txt",
+      "bytes": 19528,
+      "sha256": "148a5f7c2b13031ae46fbbab107fe4b30e6f3df19182d98d3a11542a697338b1",
+      "git_blob": "b26eebfa5db8798a76eec84aa0aa74ed0e978134",
+      "actual_create_blob_sha": "b26eebfa5db8798a76eec84aa0aa74ed0e978134",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/native10-snapshot-001/dedicated-jobs.original.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/native10-snapshot-001/dedicated-jobs.original.json",
+      "bytes": 3184,
+      "sha256": "b26d9c2ced877672e464ab550f782141b28208dfa4146a94e3265367bbd55780",
+      "git_blob": "a2a80d097c00073cee391d80c14e817fcd49645d",
+      "actual_create_blob_sha": "a2a80d097c00073cee391d80c14e817fcd49645d",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/native10-snapshot-001/manifest.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/native10-snapshot-001/manifest.json",
+      "bytes": 1494,
+      "sha256": "b6cb14bdea84b2ecc34fefa0cd63c6bb9a78673b5aec0c31da9041b51845e23c",
+      "git_blob": "54c59f87e4bc2f96e064a7c58539ddd7327113a4",
+      "actual_create_blob_sha": "54c59f87e4bc2f96e064a7c58539ddd7327113a4",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/native10-snapshot-001/registry.actual.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/native10-snapshot-001/registry.actual.json",
+      "bytes": 1964,
+      "sha256": "84d0fa101d72bd3c3f9c03a4487ec2de263e0194a02c9322892c45fae36de1bf",
+      "git_blob": "07718ce8416a7a3a98966d4f4490bbc83829d5e1",
+      "actual_create_blob_sha": "07718ce8416a7a3a98966d4f4490bbc83829d5e1",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/native10-snapshot-001/runs.original.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/native10-snapshot-001/runs.original.json",
+      "bytes": 102946,
+      "sha256": "e6130b2fd4e478197c4e8b3e4a7802d3a52ad4850fb1a1f9922889f7112978e8",
+      "git_blob": "721f373b8677891a6b615dfcb826314c1af4b7c3",
+      "actual_create_blob_sha": "721f373b8677891a6b615dfcb826314c1af4b7c3",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/actual-merge-commit.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/actual-merge-commit.json",
+      "bytes": 6729,
+      "sha256": "f1c3b3ef6c7b27079fdd444ede258fb3fc996c917b9a6d77bca824008d97339f",
+      "git_blob": "80ee15bf1ba00b7fa548095eb9011aed9870f34a",
+      "actual_create_blob_sha": "80ee15bf1ba00b7fa548095eb9011aed9870f34a",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts-manifest.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts-manifest.json",
+      "bytes": 12429,
+      "sha256": "b0f268738a7b2ad14ce9d325a69b52a718837290244ad348127e9fd895898532",
+      "git_blob": "a21ddfdd4fe40f576044c6ca238b2c8c8697e53e",
+      "actual_create_blob_sha": "a21ddfdd4fe40f576044c6ca238b2c8c8697e53e",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-000.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-000.base64",
+      "bytes": 174765,
+      "sha256": "322b18096bd06a7924b9f768c4ffddd3b0c2bee3a40b4bb60ac7bc6e211af6c7",
+      "git_blob": "261eb466770a227d380f525bcbff5e058257d4bb",
+      "actual_create_blob_sha": "261eb466770a227d380f525bcbff5e058257d4bb",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-001.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-001.base64",
+      "bytes": 174765,
+      "sha256": "59855209148eaf4835f1cc9cc6aa3cd763c96ee30b85e3fbb6e9b7674f27fa56",
+      "git_blob": "6b988d280a6915dd33d6c88a4d3605f5155e5a84",
+      "actual_create_blob_sha": "6b988d280a6915dd33d6c88a4d3605f5155e5a84",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-002.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-002.base64",
+      "bytes": 174765,
+      "sha256": "0d064bd428ad9ae75991d71a5c8071a10ad792f123c8d561be76474a05a52a1b",
+      "git_blob": "32f11762797b4ce628550a34fcb89a4af9c4565c",
+      "actual_create_blob_sha": "32f11762797b4ce628550a34fcb89a4af9c4565c",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-003.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-003.base64",
+      "bytes": 174765,
+      "sha256": "6c51d9d025622477541aed08a03c70ece5eeafe7039a343fea23e2836f511f7c",
+      "git_blob": "c5e296bb34551d5733ce18d1e693949ecb8eb67d",
+      "actual_create_blob_sha": "c5e296bb34551d5733ce18d1e693949ecb8eb67d",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-004.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-004.base64",
+      "bytes": 174765,
+      "sha256": "ff6534f4da7a299bb360cf65a0458c7d1f61ed2360730aadcdcae990e46bb6bd",
+      "git_blob": "906a7dda1a406c76c7fd6a94c597016d933f9d45",
+      "actual_create_blob_sha": "906a7dda1a406c76c7fd6a94c597016d933f9d45",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-005.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-005.base64",
+      "bytes": 174765,
+      "sha256": "419d21beb271380167bcc8bd2bb17a1c6204aea4321eade05457be9a16fdb11e",
+      "git_blob": "b07d33d7905e8b06c9d573db84923d0448319c7d",
+      "actual_create_blob_sha": "b07d33d7905e8b06c9d573db84923d0448319c7d",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-006.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-006.base64",
+      "bytes": 174765,
+      "sha256": "2ad349ae37f233b2ac52dacb7e510c069711e71ed7cb36b8012d1b80f92d80ac",
+      "git_blob": "a8b80061afe755f1d6b74baecdd8593a827847a9",
+      "actual_create_blob_sha": "a8b80061afe755f1d6b74baecdd8593a827847a9",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-007.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-007.base64",
+      "bytes": 174765,
+      "sha256": "d17ca0083637507adac444cb5d6371820924c0bc984bdeb30874d01117a19860",
+      "git_blob": "a8ec89591a9295c3c31ce314edfdd97652d428eb",
+      "actual_create_blob_sha": "a8ec89591a9295c3c31ce314edfdd97652d428eb",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-008.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-008.base64",
+      "bytes": 174765,
+      "sha256": "4908978d6e8103dcbaa7761137ba5331e4c59bd87a1b5c610c1d0cdfccaff7e6",
+      "git_blob": "dda7aa3667fe2995356396b4294f58226ef2a442",
+      "actual_create_blob_sha": "dda7aa3667fe2995356396b4294f58226ef2a442",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-009.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-009.base64",
+      "bytes": 174765,
+      "sha256": "8c0df6477a69972c5fd2525d9320306a3e14da2e2bab711ba1ede7d5684e3349",
+      "git_blob": "88faa1f8dfa75e95bf0e1256aeb135558bad8668",
+      "actual_create_blob_sha": "88faa1f8dfa75e95bf0e1256aeb135558bad8668",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-010.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-010.base64",
+      "bytes": 174765,
+      "sha256": "484582af153468287d86a8e7f0b76e84df8a53bfb28fb093ea0eed2ee1769cdc",
+      "git_blob": "fc2781746af1476dfd6aabfeb4111871b46c63af",
+      "actual_create_blob_sha": "fc2781746af1476dfd6aabfeb4111871b46c63af",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-011.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-011.base64",
+      "bytes": 174765,
+      "sha256": "52b21fe1ffdd551b048f837469b8fb3afd2332ff63301f7f5d1905f9f2c86b09",
+      "git_blob": "5a0904dfee3d0cfab7c0d7fe70c6731d35c68f03",
+      "actual_create_blob_sha": "5a0904dfee3d0cfab7c0d7fe70c6731d35c68f03",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-012.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-012.base64",
+      "bytes": 174765,
+      "sha256": "a81650386a5857a570978e481b240b4293d7f1c906c8ba6459ba48081ccb5e7c",
+      "git_blob": "5137dcbb01a9cd57a7a6305c6a8a6d244e565808",
+      "actual_create_blob_sha": "5137dcbb01a9cd57a7a6305c6a8a6d244e565808",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-013.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-013.base64",
+      "bytes": 174765,
+      "sha256": "9eee6997cec08c57e803e48dc09bfc20d59e2914623588e684934f8510cea741",
+      "git_blob": "7d6b4b9171d70c019c69044283eb9b04a079ca9c",
+      "actual_create_blob_sha": "7d6b4b9171d70c019c69044283eb9b04a079ca9c",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-014.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-014.base64",
+      "bytes": 174765,
+      "sha256": "8685d94c5692ed33e535b4909298c7f3ff1d644f0eb76114052f13b655c14bb6",
+      "git_blob": "c2c71d5803ca229efce73d2ad930c9c35ae1d6b2",
+      "actual_create_blob_sha": "c2c71d5803ca229efce73d2ad930c9c35ae1d6b2",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-015.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-015.base64",
+      "bytes": 174765,
+      "sha256": "97d36b6f786c49ef3fb0180408f8f6ddacdb224e3348f9a43e72e6a586b9f99c",
+      "git_blob": "c6d287f05bdbf302947bf2328ac4c986b0c518dd",
+      "actual_create_blob_sha": "c6d287f05bdbf302947bf2328ac4c986b0c518dd",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-016.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-016.base64",
+      "bytes": 174765,
+      "sha256": "e0300790101f221301dee9578dc307dd5257ff6d62d1f2f99cc1928261d3e1ab",
+      "git_blob": "703c0cff9f853d55ba54bd89225232b90adf28f2",
+      "actual_create_blob_sha": "703c0cff9f853d55ba54bd89225232b90adf28f2",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/archive-parts/artifact-13461080955-017.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/archive-parts/artifact-13461080955-017.base64",
+      "bytes": 84249,
+      "sha256": "205a62f63fd34df9aec1a66663ea51be514dcb39e8dad37b4ec1ac10655d140e",
+      "git_blob": "a2a0d5fa3e304b6a64e794100a504a856c80d026",
+      "actual_create_blob_sha": "a2a0d5fa3e304b6a64e794100a504a856c80d026",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/artifact-verification.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/artifact-verification.json",
+      "bytes": 26863,
+      "sha256": "9bc44a609c16730c712cbd57924b0b3490857e31e994730ae4b8797cb37f0140",
+      "git_blob": "763832ef0313835b08b3a8eaa75515a5c555c44b",
+      "actual_create_blob_sha": "763832ef0313835b08b3a8eaa75515a5c555c44b",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/counterfactual-qualified-review.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/counterfactual-qualified-review.json",
+      "bytes": 11310,
+      "sha256": "b0f04921b0242200dfb085425844257be6f2e258c3acfb7f8331232b8656289b",
+      "git_blob": "ce451a0ea2ad1aefdc115fe722ec41648485b4ff",
+      "actual_create_blob_sha": "ce451a0ea2ad1aefdc115fe722ec41648485b4ff",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/failure-classification.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/failure-classification.json",
+      "bytes": 16204,
+      "sha256": "cd56367675a637747c55a9eb25d6d28da38a2061caaa100b46f3352675978af5",
+      "git_blob": "df2d1a32bb9d4ff79edf3bc1e25d1e23203230e8",
+      "actual_create_blob_sha": "df2d1a32bb9d4ff79edf3bc1e25d1e23203230e8",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/helper-qualified-review.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/helper-qualified-review.json",
+      "bytes": 14126,
+      "sha256": "f680a5d6469a4c0a24a985bcb50c8f386cd98983ad890798f7c0c20c919cdc0e",
+      "git_blob": "e3e539ca793a511f10ae4c5eafd2ce871d475e87",
+      "actual_create_blob_sha": "e3e539ca793a511f10ae4c5eafd2ce871d475e87",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/independent-root-verification.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/independent-root-verification.json",
+      "bytes": 63887,
+      "sha256": "1fe4f9980f36c9c8dee86b5235b197bbf8f5ec235679da7c9fb5e647af43dfcc",
+      "git_blob": "a113b64b48ed88f1392a4498f3bd18e5caba9c5f",
+      "actual_create_blob_sha": "a113b64b48ed88f1392a4498f3bd18e5caba9c5f",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/independent-root-verifier.py.source.txt",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/independent-root-verifier.py.source.txt",
+      "bytes": 17332,
+      "sha256": "4d6c5183aadb952bd7dde004eac08b60b6acec1394bd447114bfbd2105237c2f",
+      "git_blob": "302d371d763fb89c2f04823d84c2d30a828d4397",
+      "actual_create_blob_sha": "302d371d763fb89c2f04823d84c2d30a828d4397",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/job.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/job.log",
+      "bytes": 486879,
+      "sha256": "f6b414ca4eb9ec2c67e852e6d40d541c5079a0393c7d364f485a4d889ef39e04",
+      "git_blob": "d21796062c324ed190a2cffc97f6a09107a93a21",
+      "actual_create_blob_sha": "d21796062c324ed190a2cffc97f6a09107a93a21",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/bazel-execution-logs/failed-test-logs/invocation-xdaqr_zv/manifest.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/bazel-execution-logs/failed-test-logs/invocation-xdaqr_zv/manifest.json",
+      "bytes": 1268,
+      "sha256": "d9a2049e4a587786bc4cd535fc2afce7485d46cc2c9f8b19a43437b33f3dc427",
+      "git_blob": "907bd1903c217f34a63918f1a4beb56ba39782b2",
+      "actual_create_blob_sha": "907bd1903c217f34a63918f1a4beb56ba39782b2",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/bazel-execution-logs/failed-test-logs/invocation-xdaqr_zv/targets/0000/test.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/bazel-execution-logs/failed-test-logs/invocation-xdaqr_zv/targets/0000/test.log",
+      "bytes": 2797,
+      "sha256": "32d68af1093c0d906db4407464d5b7546888674efd8d7a7814499e3ace12ced7",
+      "git_blob": "28960bed1fd0d2de9967afede52b0fa8b9e28bc9",
+      "actual_create_blob_sha": "28960bed1fd0d2de9967afede52b0fa8b9e28bc9",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/bazel-execution-logs/failed-test-logs/invocation-xdaqr_zv/targets/0000/test.xml",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/bazel-execution-logs/failed-test-logs/invocation-xdaqr_zv/targets/0000/test.xml",
+      "bytes": 3220,
+      "sha256": "c0e4dd61747745cd3c5fca66f8dc40ccd0fab82c583ff2f9ec56939976e11652",
+      "git_blob": "9ae0a2399fd1934f8d0bae693f7e670973c2610f",
+      "actual_create_blob_sha": "9ae0a2399fd1934f8d0bae693f7e670973c2610f",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/bazel-execution-logs/selected-target-test-logs/invocation-bidy455x/manifest.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/bazel-execution-logs/selected-target-test-logs/invocation-bidy455x/manifest.json",
+      "bytes": 4189,
+      "sha256": "3e71f4ef86faf910604f20c4e3ce4e94b41844332377952257432b5f9d250508",
+      "git_blob": "ea3d6b94ada12050479f90043cea79b2031fe10f",
+      "actual_create_blob_sha": "ea3d6b94ada12050479f90043cea79b2031fe10f",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/counterfactual-terminal.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/counterfactual-terminal.json",
+      "bytes": 13407,
+      "sha256": "66aea3cd2f315f653560e41439015cf7656888ca79a80e21baeeee50551e3df5",
+      "git_blob": "02effd672f78af42af19f79a7f7bf90e1e585584",
+      "actual_create_blob_sha": "02effd672f78af42af19f79a7f7bf90e1e585584",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/git-bash-executable.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/git-bash-executable.json",
+      "bytes": 223,
+      "sha256": "20b12bdff234470d37f66c21248ce69df1c371ecc33b51765f7a8c333f280f24",
+      "git_blob": "336c5bf676670542648cc2ef16298e47b42ff392",
+      "actual_create_blob_sha": "336c5bf676670542648cc2ef16298e47b42ff392",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/negative-command-terminal.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/negative-command-terminal.json",
+      "bytes": 65,
+      "sha256": "161439c43eba35007e6f1f8e28b78c84e36d19758d9b1f1efd8c48957082c242",
+      "git_blob": "3ca78189a90f4d7a2fcc9f76151361b8ecc0381c",
+      "actual_create_blob_sha": "3ca78189a90f4d7a2fcc9f76151361b8ecc0381c",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/negative-command.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/negative-command.json",
+      "bytes": 2456,
+      "sha256": "8536b6f670bc722357ce16166d58041da187bb242a444014e8d7559803107f36",
+      "git_blob": "f556fd10054d9986196d7ed3f1368729eac8537b",
+      "actual_create_blob_sha": "f556fd10054d9986196d7ed3f1368729eac8537b",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/negative-console.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/negative-console.log",
+      "bytes": 9169,
+      "sha256": "8c3031302b9f60f52311e26502f7e0777fb640027047ee9ef164cdf7bd6453c5",
+      "git_blob": "46d87fbd3bba6a906c783a2af5531073df67893b",
+      "actual_create_blob_sha": "46d87fbd3bba6a906c783a2af5531073df67893b",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/negative-source.original",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/negative-source.original",
+      "bytes": 10351,
+      "sha256": "9860f43176e5ca55cf667b245a74f2023846ca430218bc61d8215ee022fdb735",
+      "git_blob": "b02fb82fb1df7413dfb15448d16966a6ebc8ea40",
+      "actual_create_blob_sha": "b02fb82fb1df7413dfb15448d16966a6ebc8ea40",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/bazel-execution-logs/selected-target-test-logs/invocation-bllv549o/manifest.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/bazel-execution-logs/selected-target-test-logs/invocation-bllv549o/manifest.json",
+      "bytes": 5077,
+      "sha256": "38ac4c70b370a977863e7dd3379609f3b06265592c0aba0d8cbefbc77f912ac2",
+      "git_blob": "088c427f84a81d8c36862aa27457b3337e1ffaee",
+      "actual_create_blob_sha": "088c427f84a81d8c36862aa27457b3337e1ffaee",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/bazel-execution-logs/selected-target-test-logs/invocation-bllv549o/targets/0000/test.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/bazel-execution-logs/selected-target-test-logs/invocation-bllv549o/targets/0000/test.log",
+      "bytes": 574,
+      "sha256": "50293fd5bde99827d63a32d5283c3b26e74645c2dc9a28c46474c57236389162",
+      "git_blob": "c44eece675aa44a0a6fa682413bfbb9de3829d25",
+      "actual_create_blob_sha": "c44eece675aa44a0a6fa682413bfbb9de3829d25",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/bazel-execution-logs/selected-target-test-logs/invocation-bllv549o/targets/0000/test.xml",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/bazel-execution-logs/selected-target-test-logs/invocation-bllv549o/targets/0000/test.xml",
+      "bytes": 945,
+      "sha256": "70cb3dfa6e513573529e4a172d51c070afddac22820fe854d49af195e7ff5dbc",
+      "git_blob": "88efeda2ec83de43a34949212c5bc60221e4fd51",
+      "actual_create_blob_sha": "88efeda2ec83de43a34949212c5bc60221e4fd51",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command-terminal.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command-terminal.json",
+      "bytes": 64,
+      "sha256": "8c41d1499b51202bb85ca1d95283c7553b4391df6aef58ee9aa9344bc3d592f1",
+      "git_blob": "1602958eae702017c2728c1e8510f1543e3fd026",
+      "actual_create_blob_sha": "1602958eae702017c2728c1e8510f1543e3fd026",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command.json",
+      "bytes": 2464,
+      "sha256": "7cd15ac34919d8601e70a4eac24d1856b455c00f2574ea0770abc5df6bda57c7",
+      "git_blob": "a27d14c63e3451542eee8b08e87c0eeba67bfff2",
+      "actual_create_blob_sha": "a27d14c63e3451542eee8b08e87c0eeba67bfff2",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/console.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/console.log",
+      "bytes": 3897,
+      "sha256": "d3b86c9bdfcf808bbb1e1f90a8bbd1e25e77cf3b37678b1ad330992a5cdc52bf",
+      "git_blob": "54b0a9d0cad2255210d43a7f4cb462b32264022a",
+      "actual_create_blob_sha": "54b0a9d0cad2255210d43a7f4cb462b32264022a",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/qualification.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/qualification.json",
+      "bytes": 2727,
+      "sha256": "6455e780ce5c7c82b77139cdb72333783069e603498e9c5eb26e6692eb7fa542",
+      "git_blob": "56e8b5fc91650cedb576e8c7e14a2640ccb8e8cd",
+      "actual_create_blob_sha": "56e8b5fc91650cedb576e8c7e14a2640ccb8e8cd",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/source-after.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/source-after.json",
+      "bytes": 1212,
+      "sha256": "2d11e06356117a5622c1b8eb57ba3e0df4cac9e076305f6e19f3c0df02147877",
+      "git_blob": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "actual_create_blob_sha": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/source-before.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/source-before.json",
+      "bytes": 1212,
+      "sha256": "2d11e06356117a5622c1b8eb57ba3e0df4cac9e076305f6e19f3c0df02147877",
+      "git_blob": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "actual_create_blob_sha": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/bazel-execution-logs/selected-target-test-logs/invocation-7ljtw6r6/manifest.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/bazel-execution-logs/selected-target-test-logs/invocation-7ljtw6r6/manifest.json",
+      "bytes": 5077,
+      "sha256": "7f377d3d42b1acd085dff46dd9c63f25b818da7e14884fb970a6b4fc53c0b409",
+      "git_blob": "6ca88e187d672a5ea1de1c04b731759faa8a1cb2",
+      "actual_create_blob_sha": "6ca88e187d672a5ea1de1c04b731759faa8a1cb2",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/bazel-execution-logs/selected-target-test-logs/invocation-7ljtw6r6/targets/0000/test.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/bazel-execution-logs/selected-target-test-logs/invocation-7ljtw6r6/targets/0000/test.log",
+      "bytes": 345,
+      "sha256": "8b956b8090d424edd28f45f57631639363559f80f0e9b58fa8253edcb0a38791",
+      "git_blob": "9768c926f34f6c7130f98e070b7f6b4cb95d55e1",
+      "actual_create_blob_sha": "9768c926f34f6c7130f98e070b7f6b4cb95d55e1",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/bazel-execution-logs/selected-target-test-logs/invocation-7ljtw6r6/targets/0000/test.xml",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/bazel-execution-logs/selected-target-test-logs/invocation-7ljtw6r6/targets/0000/test.xml",
+      "bytes": 716,
+      "sha256": "cf4e45d14b83db8787f04d501148a1ac813f9d3f90a6531de7bfd1265d1fe5d0",
+      "git_blob": "411b244733894cad3fe812bc419ae65126191d27",
+      "actual_create_blob_sha": "411b244733894cad3fe812bc419ae65126191d27",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/command-terminal.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/command-terminal.json",
+      "bytes": 66,
+      "sha256": "db3b0215d5eb2c11b3e11d17604213f1ce8c8289969354dd8b5f5fef221f399d",
+      "git_blob": "aaa568303b001c9e54a7549802e7651d5dabcdb0",
+      "actual_create_blob_sha": "aaa568303b001c9e54a7549802e7651d5dabcdb0",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/command.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/command.json",
+      "bytes": 2428,
+      "sha256": "c29b82a11930bbd3e04b3ac5ac52b9122e61abc26eb3354c0c54b29bfafa53c2",
+      "git_blob": "0298143dc0dc48acbae5c25ca76f521641861993",
+      "actual_create_blob_sha": "0298143dc0dc48acbae5c25ca76f521641861993",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/console.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/console.log",
+      "bytes": 2515,
+      "sha256": "00df937bc9881c64e4b699bbff51c35c8a209cfcdac273edad0091199b7f8614",
+      "git_blob": "12896f728eed1422d6f37e781ed41d2c6c681529",
+      "actual_create_blob_sha": "12896f728eed1422d6f37e781ed41d2c6c681529",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/qualification.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/qualification.json",
+      "bytes": 2709,
+      "sha256": "9becd92185425ca88697aac685dd18c7290268b9a4a0cbff06556aca9ee9642e",
+      "git_blob": "bbebf0faf858cd5eb1ace2d81ed069d8daeb8516",
+      "actual_create_blob_sha": "bbebf0faf858cd5eb1ace2d81ed069d8daeb8516",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/source-after.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/source-after.json",
+      "bytes": 1212,
+      "sha256": "2d11e06356117a5622c1b8eb57ba3e0df4cac9e076305f6e19f3c0df02147877",
+      "git_blob": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "actual_create_blob_sha": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/source-before.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/source-before.json",
+      "bytes": 1212,
+      "sha256": "2d11e06356117a5622c1b8eb57ba3e0df4cac9e076305f6e19f3c0df02147877",
+      "git_blob": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "actual_create_blob_sha": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/bazel-execution-logs/selected-target-test-logs/invocation-jeaej818/manifest.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/bazel-execution-logs/selected-target-test-logs/invocation-jeaej818/manifest.json",
+      "bytes": 5077,
+      "sha256": "9c6e35fce278fe7de63ceb528ef3e5c37074a8873ba864cef8d4c2c2b48cea63",
+      "git_blob": "8d67d23c6d6b9d86faa7c92acd95be7947430a62",
+      "actual_create_blob_sha": "8d67d23c6d6b9d86faa7c92acd95be7947430a62",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/bazel-execution-logs/selected-target-test-logs/invocation-jeaej818/targets/0000/test.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/bazel-execution-logs/selected-target-test-logs/invocation-jeaej818/targets/0000/test.log",
+      "bytes": 365,
+      "sha256": "66c15b250e06fd152ccba60dabbf992e2295d2abb32126f625e73da51b96bf78",
+      "git_blob": "b6f2f9e7ca05eba4b58a460a4dacd83bf5353ef0",
+      "actual_create_blob_sha": "b6f2f9e7ca05eba4b58a460a4dacd83bf5353ef0",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/bazel-execution-logs/selected-target-test-logs/invocation-jeaej818/targets/0000/test.xml",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/bazel-execution-logs/selected-target-test-logs/invocation-jeaej818/targets/0000/test.xml",
+      "bytes": 736,
+      "sha256": "ebab1c23349c04966166b1980e0bb4dcc41ca9f3ee1b7977312a58437f82c4c3",
+      "git_blob": "8f90dceb41c7f99ec351fb00836f19de19306e9c",
+      "actual_create_blob_sha": "8f90dceb41c7f99ec351fb00836f19de19306e9c",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/command-terminal.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/command-terminal.json",
+      "bytes": 66,
+      "sha256": "a0462ab769f1dc161fb12f41e8bcc19b9ed909d4084ded7ea4a50245cba7289f",
+      "git_blob": "ef251b6d80a039cb6c74bfe33bd52ed4f9663c26",
+      "actual_create_blob_sha": "ef251b6d80a039cb6c74bfe33bd52ed4f9663c26",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/command.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/command.json",
+      "bytes": 2468,
+      "sha256": "9109524c1b9429f3a48d8959830ea6a4a21fc7aee879082ade327b8156fc89f5",
+      "git_blob": "93d51e4eac3f18d97c7812d2353c506b54937e81",
+      "actual_create_blob_sha": "93d51e4eac3f18d97c7812d2353c506b54937e81",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/console.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/console.log",
+      "bytes": 2535,
+      "sha256": "f00d904031f5df52fd20d3a7a1a5ba621ceb47d3b9fad53fda568452bcad179b",
+      "git_blob": "7e3cb916307cf06dcb7b1b28b139bebb1ca41ab7",
+      "actual_create_blob_sha": "7e3cb916307cf06dcb7b1b28b139bebb1ca41ab7",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/qualification.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/qualification.json",
+      "bytes": 2729,
+      "sha256": "80e74a81d8d0923e7a636f3d21522145bdd26d06464c83449ff9bbd8be5f2df5",
+      "git_blob": "427fa0e6c4239ab3d0e31f2113f566289743dabd",
+      "actual_create_blob_sha": "427fa0e6c4239ab3d0e31f2113f566289743dabd",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/source-after.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/source-after.json",
+      "bytes": 1212,
+      "sha256": "2d11e06356117a5622c1b8eb57ba3e0df4cac9e076305f6e19f3c0df02147877",
+      "git_blob": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "actual_create_blob_sha": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/source-before.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/source-before.json",
+      "bytes": 1212,
+      "sha256": "2d11e06356117a5622c1b8eb57ba3e0df4cac9e076305f6e19f3c0df02147877",
+      "git_blob": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "actual_create_blob_sha": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/bazel-execution-logs/selected-target-test-logs/invocation-oq13a7in/manifest.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/bazel-execution-logs/selected-target-test-logs/invocation-oq13a7in/manifest.json",
+      "bytes": 5082,
+      "sha256": "dc90cbb2806429115c4efddb905378ef36f491336679bc7651f1e2393aee1026",
+      "git_blob": "13bf83a5fef6283fea394b2e806e399b48dbc56d",
+      "actual_create_blob_sha": "13bf83a5fef6283fea394b2e806e399b48dbc56d",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/bazel-execution-logs/selected-target-test-logs/invocation-oq13a7in/targets/0000/test.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/bazel-execution-logs/selected-target-test-logs/invocation-oq13a7in/targets/0000/test.log",
+      "bytes": 16871,
+      "sha256": "88934b8a11c36919505801418fecb074b22e403a71670873b68af488dbf97ab4",
+      "git_blob": "1cfa7cdc4b8a92efcba03aa6d1bab23b6c510f84",
+      "actual_create_blob_sha": "1cfa7cdc4b8a92efcba03aa6d1bab23b6c510f84",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/bazel-execution-logs/selected-target-test-logs/invocation-oq13a7in/targets/0000/test.xml",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/bazel-execution-logs/selected-target-test-logs/invocation-oq13a7in/targets/0000/test.xml",
+      "bytes": 17242,
+      "sha256": "b7e788cf73148319f9f620d3fe18ef91ad1718d26a3ebd96bb66fbc6502b509f",
+      "git_blob": "2458aeb2b42dabc337502f15fac1d86a9d068a0a",
+      "actual_create_blob_sha": "2458aeb2b42dabc337502f15fac1d86a9d068a0a",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/command-terminal.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/command-terminal.json",
+      "bytes": 66,
+      "sha256": "cdfd0ffde3bfc210c41aaa2a154f22c1d9d448293952820952f52f510099594d",
+      "git_blob": "0ac738bc63ddc5b413b6739b47abcce143bb9117",
+      "actual_create_blob_sha": "0ac738bc63ddc5b413b6739b47abcce143bb9117",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/command.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/command.json",
+      "bytes": 2462,
+      "sha256": "ddfa52943664cecd24269b76d9674cc7f08a6ccdde53fc46d3a1354dae2b2f99",
+      "git_blob": "5e77312f9a3f92c752c7ee5e0ad5e814f21ca508",
+      "actual_create_blob_sha": "5e77312f9a3f92c752c7ee5e0ad5e814f21ca508",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/console.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/console.log",
+      "bytes": 19054,
+      "sha256": "50a7c05f6f089e7c7df0cddb277b652fcd7b76364ffd0d7edecdd4beac97b284",
+      "git_blob": "2cb5ece365d17805e0e8195f15dfbab2b52fd884",
+      "actual_create_blob_sha": "2cb5ece365d17805e0e8195f15dfbab2b52fd884",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/qualification.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/qualification.json",
+      "bytes": 2730,
+      "sha256": "820c22da841a5d739ad6958cd088586ba5c3062940c3a2cb261f0766c0f8ee14",
+      "git_blob": "d13ccbef8112ed023239aeddaadf166737788176",
+      "actual_create_blob_sha": "d13ccbef8112ed023239aeddaadf166737788176",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/source-after.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/source-after.json",
+      "bytes": 1212,
+      "sha256": "2d11e06356117a5622c1b8eb57ba3e0df4cac9e076305f6e19f3c0df02147877",
+      "git_blob": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "actual_create_blob_sha": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/source-before.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/source-before.json",
+      "bytes": 1212,
+      "sha256": "2d11e06356117a5622c1b8eb57ba3e0df4cac9e076305f6e19f3c0df02147877",
+      "git_blob": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "actual_create_blob_sha": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-prerequisites.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-prerequisites.json",
+      "bytes": 13283,
+      "sha256": "6a66f853e4db093f1d1572233729c1f545a5768c8f0b5f50f658dca7578e80c5",
+      "git_blob": "0d465f5eb9fabbb2409d93ab1d840eae268b28d8",
+      "actual_create_blob_sha": "0d465f5eb9fabbb2409d93ab1d840eae268b28d8",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-source.original",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-source.original",
+      "bytes": 10467,
+      "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+      "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d",
+      "actual_create_blob_sha": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/source-before-restore.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/source-before-restore.json",
+      "bytes": 1270,
+      "sha256": "636203e0d2851d3e9b5efd8765c3b68089156f524798e97a582ec12755aac96f",
+      "git_blob": "54a5dcd4fad7ed498b3c05ae6b3cb95c3d08844f",
+      "actual_create_blob_sha": "54a5dcd4fad7ed498b3c05ae6b3cb95c3d08844f",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/source-entry.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/source-entry.json",
+      "bytes": 1212,
+      "sha256": "2d11e06356117a5622c1b8eb57ba3e0df4cac9e076305f6e19f3c0df02147877",
+      "git_blob": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "actual_create_blob_sha": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/source-negative-after.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/source-negative-after.json",
+      "bytes": 1270,
+      "sha256": "636203e0d2851d3e9b5efd8765c3b68089156f524798e97a582ec12755aac96f",
+      "git_blob": "54a5dcd4fad7ed498b3c05ae6b3cb95c3d08844f",
+      "actual_create_blob_sha": "54a5dcd4fad7ed498b3c05ae6b3cb95c3d08844f",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/source-negative-before.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/source-negative-before.json",
+      "bytes": 1270,
+      "sha256": "636203e0d2851d3e9b5efd8765c3b68089156f524798e97a582ec12755aac96f",
+      "git_blob": "54a5dcd4fad7ed498b3c05ae6b3cb95c3d08844f",
+      "actual_create_blob_sha": "54a5dcd4fad7ed498b3c05ae6b3cb95c3d08844f",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/source-restored.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/acl-identity-counterfactual/source-restored.json",
+      "bytes": 1212,
+      "sha256": "2d11e06356117a5622c1b8eb57ba3e0df4cac9e076305f6e19f3c0df02147877",
+      "git_blob": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "actual_create_blob_sha": "fca173ef68072e1f948da6e63fa5cbc1d2cadae4",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/bazel-console.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/bazel-console.log",
+      "bytes": 227921,
+      "sha256": "3db588b312463a466f70b1da95ab69e04fc0c69d26d8c56f0b8f30ce37e83f7a",
+      "git_blob": "d3d98226f17725004a409a710ba5ea018f90fd04",
+      "actual_create_blob_sha": "d3d98226f17725004a409a710ba5ea018f90fd04",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/console-copy-exit-code.txt",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/console-copy-exit-code.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "git_blob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "actual_create_blob_sha": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/interpretation.txt",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/interpretation.txt",
+      "bytes": 88,
+      "sha256": "3d738017a6bbb6feeedf984d1988c262ef5f57f5f3fa9473fad1b818db5cb1a5",
+      "git_blob": "1783cdc244713974c542347cf1ecff302fe9fe99",
+      "actual_create_blob_sha": "1783cdc244713974c542347cf1ecff302fe9fe99",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/original-bazel-exit-code.txt",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/original-bazel-exit-code.txt",
+      "bytes": 2,
+      "sha256": "1121cfccd5913f0a63fec40a6ffd44ea64f9dc135c66634ba001d10bcf4302a2",
+      "git_blob": "00750edc07d6415dcc07ae0351e9397b0222b7ba",
+      "actual_create_blob_sha": "00750edc07d6415dcc07ae0351e9397b0222b7ba",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/bazel-execution-logs/selected-target-test-logs/invocation-rom_51n2/manifest.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/bazel-execution-logs/selected-target-test-logs/invocation-rom_51n2/manifest.json",
+      "bytes": 5145,
+      "sha256": "275e082fd510f5216247884df81b61d8486cce798313f3788d5e77e9fcb08983",
+      "git_blob": "376d500185f81729873596d810076576fe2c1656",
+      "actual_create_blob_sha": "376d500185f81729873596d810076576fe2c1656",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/bazel-execution-logs/selected-target-test-logs/invocation-rom_51n2/targets/0000/test.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/bazel-execution-logs/selected-target-test-logs/invocation-rom_51n2/targets/0000/test.log",
+      "bytes": 1972,
+      "sha256": "1f93a679f8de10a64361f83816ea0bd249b15e0f119527d65b7b660b6353c2db",
+      "git_blob": "634db89911adae62a9649cf2a86ffe71ba518807",
+      "actual_create_blob_sha": "634db89911adae62a9649cf2a86ffe71ba518807",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/bazel-execution-logs/selected-target-test-logs/invocation-rom_51n2/targets/0000/test.xml",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/bazel-execution-logs/selected-target-test-logs/invocation-rom_51n2/targets/0000/test.xml",
+      "bytes": 2371,
+      "sha256": "643d5503d7b5455d6bac4d688889e63dfebd0feb7da84849ff335da52332572a",
+      "git_blob": "ba759752f5b7b37aaaf5802da4d7d21ae2702ef2",
+      "actual_create_blob_sha": "ba759752f5b7b37aaaf5802da4d7d21ae2702ef2",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/command-terminal.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/command-terminal.json",
+      "bytes": 250,
+      "sha256": "6bcb1ff1244736d792aebc5f2d894b3473019084521fbe8a03d29b9c2384434c",
+      "git_blob": "2056089a2c73db94d5ce52e29f11777427c8c0c3",
+      "actual_create_blob_sha": "2056089a2c73db94d5ce52e29f11777427c8c0c3",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/command.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/command.json",
+      "bytes": 6580,
+      "sha256": "3f10591d1c6610fe8fc939b0802c6bff5699533862a79a7b908e36ce8ff38fe5",
+      "git_blob": "05dbd7627def4fefda7418ac8851f320af01b36a",
+      "actual_create_blob_sha": "05dbd7627def4fefda7418ac8851f320af01b36a",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/console.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/console.log",
+      "bytes": 5106,
+      "sha256": "d94f7a24ff0c77746557032d3d8eeb32f05dd4d689fc4f25c84f933c3f69c119",
+      "git_blob": "5aeb02a026a62f4f6167f6441b5c55752a4593b0",
+      "actual_create_blob_sha": "5aeb02a026a62f4f6167f6441b5c55752a4593b0",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/git-bash-executable.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/git-bash-executable.json",
+      "bytes": 223,
+      "sha256": "20b12bdff234470d37f66c21248ce69df1c371ecc33b51765f7a8c333f280f24",
+      "git_blob": "336c5bf676670542648cc2ef16298e47b42ff392",
+      "actual_create_blob_sha": "336c5bf676670542648cc2ef16298e47b42ff392",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/source-after.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/source-after.json",
+      "bytes": 5250,
+      "sha256": "9861981f7b179bea3b4bc4ff0c5256f141361a6a4042f6ec05b038c1d26aa3ed",
+      "git_blob": "308e70c5f4dcb71a5d3579746694bd182bf9b7a6",
+      "actual_create_blob_sha": "308e70c5f4dcb71a5d3579746694bd182bf9b7a6",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/source-before.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/source-before.json",
+      "bytes": 5250,
+      "sha256": "9861981f7b179bea3b4bc4ff0c5256f141361a6a4042f6ec05b038c1d26aa3ed",
+      "git_blob": "308e70c5f4dcb71a5d3579746694bd182bf9b7a6",
+      "actual_create_blob_sha": "308e70c5f4dcb71a5d3579746694bd182bf9b7a6",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/source-final.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/source-final.json",
+      "bytes": 5250,
+      "sha256": "9861981f7b179bea3b4bc4ff0c5256f141361a6a4042f6ec05b038c1d26aa3ed",
+      "git_blob": "308e70c5f4dcb71a5d3579746694bd182bf9b7a6",
+      "actual_create_blob_sha": "308e70c5f4dcb71a5d3579746694bd182bf9b7a6",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/terminal.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/read-acl-readiness/terminal.json",
+      "bytes": 3927,
+      "sha256": "173dae1145339e3ed2e7d487962628ba0ad9d8705e64602cbdcf46c98edcd4fe",
+      "git_blob": "1a34fd66476c74bdfa5ad70f8891ce181be1f179",
+      "actual_create_blob_sha": "1a34fd66476c74bdfa5ad70f8891ce181be1f179",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/required-case-names.txt",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/required-case-names.txt",
+      "bytes": 515,
+      "sha256": "6a2215727aafe7254ced1724c7e39937b83fdfedf706c8d9e0683173e20eba7b",
+      "git_blob": "6f291615a56c86b2d8c930c0339a520c675bfccf",
+      "actual_create_blob_sha": "6f291615a56c86b2d8c930c0339a520c675bfccf",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/source-head-tree.txt",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/source-head-tree.txt",
+      "bytes": 82,
+      "sha256": "46a3527039b9e324caeac29bf5a15a87c74ada0ba585925af891a3018a1a8745",
+      "git_blob": "acde996ab87b2de99c0ff10237b03bbcda373179",
+      "actual_create_blob_sha": "acde996ab87b2de99c0ff10237b03bbcda373179",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/source-leaves.txt",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/source-leaves.txt",
+      "bytes": 8323,
+      "sha256": "80d51ccf233d2630fcdc6b5ce38be199bf544552c22429068df4789272e338dd",
+      "git_blob": "8313a9c43bc529dce227243a61c514db1b3e2687",
+      "actual_create_blob_sha": "8313a9c43bc529dce227243a61c514db1b3e2687",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/source-status-after.txt",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/source-status-after.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "actual_create_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/b11-token-mechanism-probe/source-status-before.txt",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/b11-token-mechanism-probe/source-status-before.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "actual_create_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/bazel-execution-logs/failed-test-logs/invocation-dp0tyrq_/manifest.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/bazel-execution-logs/failed-test-logs/invocation-dp0tyrq_/manifest.json",
+      "bytes": 1273,
+      "sha256": "001664cafcbcfdcb0d163d30729b24e6841d770376a512af04ae230f410c7bce",
+      "git_blob": "032a28850a857869b9f0eca34ba52013434210ad",
+      "actual_create_blob_sha": "032a28850a857869b9f0eca34ba52013434210ad",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/bazel-execution-logs/failed-test-logs/invocation-dp0tyrq_/targets/0000/test.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/bazel-execution-logs/failed-test-logs/invocation-dp0tyrq_/targets/0000/test.log",
+      "bytes": 143080,
+      "sha256": "04aa1193f2fa3b76fe49df686b9117cce0929f6600524a923cbd664a3ac7b1fb",
+      "git_blob": "6ff9144d7eb0acf3816499a7a86b39b54b589260",
+      "actual_create_blob_sha": "6ff9144d7eb0acf3816499a7a86b39b54b589260",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/bazel-execution-logs/failed-test-logs/invocation-dp0tyrq_/targets/0000/test.xml",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/bazel-execution-logs/failed-test-logs/invocation-dp0tyrq_/targets/0000/test.xml",
+      "bytes": 143503,
+      "sha256": "e19d038b1d5a51d7276788f1a0691a0c8512ec4cd46d4f963cf42dd2dabb708a",
+      "git_blob": "b3abefc6130a1c7dc99533961f90a8d87ecc671a",
+      "actual_create_blob_sha": "b3abefc6130a1c7dc99533961f90a8d87ecc671a",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/bazel-execution-logs/selected-target-test-logs/invocation-_p4_bn8b/manifest.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/members/bazel-execution-logs/selected-target-test-logs/invocation-_p4_bn8b/manifest.json",
+      "bytes": 4126,
+      "sha256": "20a3a0bce1cb7937a14ae09ef1970ec8af94c5f7f88cfc5367c3dfc124ffbf20",
+      "git_blob": "2149d4ac8d1941889e8392bbd0fbf96ff0516a0b",
+      "actual_create_blob_sha": "2149d4ac8d1941889e8392bbd0fbf96ff0516a0b",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/physical-observation-projection.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/physical-observation-projection.json",
+      "bytes": 113305,
+      "sha256": "3d8a9a00b2a43ca9097104f9a50f61e0319a76c2a736d1adeccf631d4a0bc02c",
+      "git_blob": "7584157655ef1b8c61ff0b4f792b6ea220a71743",
+      "actual_create_blob_sha": "7584157655ef1b8c61ff0b4f792b6ea220a71743",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/terminal-api-envelopes.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/terminal-api-envelopes.json",
+      "bytes": 563874,
+      "sha256": "3604b027992d739b8c4ad54290194b462814552e5c60c84d39e27329d3c5d8fe",
+      "git_blob": "17274cb304156fe578caae5b8f62a7b54ff2232e",
+      "actual_create_blob_sha": "17274cb304156fe578caae5b8f62a7b54ff2232e",
+      "create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/terminal-review.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/terminal/probe-127584591851/terminal-review.json",
+      "bytes": 22742,
+      "sha256": "f448c980e953d93082bf085e47661db0c6a760cdc0407b369950f96040f12223",
+      "git_blob": "0c3d7f64a035f2f8740ad7376db2b0e1753483f6",
+      "actual_create_blob_sha": "0c3d7f64a035f2f8740ad7376db2b0e1753483f6",
+      "create_get_equal": true
+    }
+  ]
+}

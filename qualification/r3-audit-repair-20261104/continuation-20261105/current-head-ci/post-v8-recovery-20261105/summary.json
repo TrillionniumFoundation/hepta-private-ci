@@ -1,0 +1,621 @@
+{
+  "schema": "pr4797-recovery-one-shot-complete-api-snapshot-v1",
+  "capture": {
+    "pr_started": {
+      "current_time": "2026-11-05 21:15:05 UTC"
+    },
+    "jobs_from": "2026-11-05T21:17:06.677Z",
+    "jobs_to": "2026-11-05T21:17:08.439Z"
+  },
+  "source": {
+    "pr": 4797,
+    "head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "branch": "fix/r3-original-product-contracts-20261104",
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "merge": "3476a8c535f7090c4c868ac85148491b3fdfd983",
+    "draft": true,
+    "state": "open"
+  },
+  "run_count": 19,
+  "job_count": 55,
+  "job_status_counts": {
+    "success": 18,
+    "skipped": 2,
+    "queued": 25,
+    "cancelled": 10
+  },
+  "run_status_counts": {
+    "success": 5,
+    "skipped": 2,
+    "queued": 11,
+    "pending": 1
+  },
+  "prior_snapshot": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/snapshot-0003/summary.json",
+    "bytes": 2218,
+    "sha256": "118df543e9fb658687f2463cf08f8e37adc949f087e96f05fd9b2029a2b9e990",
+    "git_blob": "1a3875ef3700d1ac78071531ec04e91e7f9b01b4"
+  },
+  "changes_since_snapshot0003": [
+    {
+      "job_id": 127372807277,
+      "run_id": 42063947623,
+      "name": "Original recovery and authorized-read scopes (macos-15, base-merge)",
+      "before": {
+        "status": "queued",
+        "conclusion": null,
+        "started_at": "2026-11-05T16:23:34Z",
+        "completed_at": null,
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "after": {
+        "status": "completed",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-05T16:23:34Z",
+        "completed_at": "2026-11-05T18:49:11Z",
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "steps": 0
+    },
+    {
+      "job_id": 127372807741,
+      "run_id": 42063947623,
+      "name": "Original recovery and authorized-read scopes (macos-15, source-head)",
+      "before": {
+        "status": "queued",
+        "conclusion": null,
+        "started_at": "2026-11-05T16:23:35Z",
+        "completed_at": null,
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "after": {
+        "status": "completed",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-05T16:23:35Z",
+        "completed_at": "2026-11-05T18:49:11Z",
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "steps": 0
+    },
+    {
+      "job_id": 127372806812,
+      "run_id": 42063947862,
+      "name": "Owner-local and original Matrixd/Agentd controls (macos-15)",
+      "before": {
+        "status": "queued",
+        "conclusion": null,
+        "started_at": "2026-11-05T16:23:34Z",
+        "completed_at": null,
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "after": {
+        "status": "completed",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-05T16:23:34Z",
+        "completed_at": "2026-11-05T18:53:20Z",
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "steps": 0
+    },
+    {
+      "job_id": 127490874640,
+      "run_id": 42063947919,
+      "name": "Architecture convergence (source-head)",
+      "before": null,
+      "after": {
+        "status": "queued",
+        "conclusion": null,
+        "started_at": "2026-11-05T19:48:22Z",
+        "completed_at": null,
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "ubuntu-24.04-arm"
+        ]
+      },
+      "steps": 0
+    },
+    {
+      "job_id": 127490875261,
+      "run_id": 42063947919,
+      "name": "Architecture convergence (base-merge)",
+      "before": null,
+      "after": {
+        "status": "queued",
+        "conclusion": null,
+        "started_at": "2026-11-05T19:48:22Z",
+        "completed_at": null,
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "ubuntu-24.04-arm"
+        ]
+      },
+      "steps": 0
+    },
+    {
+      "job_id": 127378840863,
+      "run_id": 42063947456,
+      "name": "Build ptrcomp-sandbox aarch64-pc-windows-msvc from source",
+      "before": {
+        "status": "in_progress",
+        "conclusion": null,
+        "started_at": "2026-11-05T16:41:13Z",
+        "completed_at": null,
+        "runner_id": 1000002159,
+        "runner_name": "GitHub Actions 1000002159",
+        "labels": [
+          "windows-2025"
+        ]
+      },
+      "after": {
+        "status": "completed",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-05T16:41:13Z",
+        "completed_at": "2026-11-05T18:42:03Z",
+        "runner_id": 1000002159,
+        "runner_name": "GitHub Actions 1000002159",
+        "labels": [
+          "windows-2025"
+        ]
+      },
+      "steps": 22
+    },
+    {
+      "job_id": 127378841092,
+      "run_id": 42063947456,
+      "name": "Build release aarch64-apple-darwin",
+      "before": {
+        "status": "queued",
+        "conclusion": null,
+        "started_at": "2026-11-05T16:33:22Z",
+        "completed_at": null,
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "after": {
+        "status": "completed",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-05T16:33:22Z",
+        "completed_at": "2026-11-05T18:48:34Z",
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "steps": 0
+    },
+    {
+      "job_id": 127378841205,
+      "run_id": 42063947456,
+      "name": "Build ptrcomp-sandbox aarch64-apple-darwin",
+      "before": {
+        "status": "queued",
+        "conclusion": null,
+        "started_at": "2026-11-05T16:33:22Z",
+        "completed_at": null,
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "after": {
+        "status": "completed",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-05T16:33:22Z",
+        "completed_at": "2026-11-05T18:48:34Z",
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "steps": 0
+    },
+    {
+      "job_id": 127372806448,
+      "run_id": 42063947317,
+      "name": "Encrypted keyring closure (macos-15, non-authorizing)",
+      "before": {
+        "status": "queued",
+        "conclusion": null,
+        "started_at": "2026-11-05T16:23:34Z",
+        "completed_at": null,
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "after": {
+        "status": "completed",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-05T16:23:34Z",
+        "completed_at": "2026-11-05T18:47:12Z",
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "steps": 0
+    },
+    {
+      "job_id": 127372814716,
+      "run_id": 42063947314,
+      "name": "Original operator controls and independent OpenSSH oracle (macos-15)",
+      "before": {
+        "status": "queued",
+        "conclusion": null,
+        "started_at": "2026-11-05T16:23:35Z",
+        "completed_at": null,
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "after": {
+        "status": "completed",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-05T16:23:35Z",
+        "completed_at": "2026-11-05T18:43:08Z",
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "steps": 0
+    },
+    {
+      "job_id": 127372814787,
+      "run_id": 42063947314,
+      "name": "Original Bazel operator oracle with native placement (aarch64-apple-darwin)",
+      "before": {
+        "status": "queued",
+        "conclusion": null,
+        "started_at": "2026-11-05T16:23:35Z",
+        "completed_at": null,
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "after": {
+        "status": "completed",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-05T16:23:35Z",
+        "completed_at": "2026-11-05T18:47:12Z",
+        "runner_id": 0,
+        "runner_name": "",
+        "labels": [
+          "macos-15"
+        ]
+      },
+      "steps": 0
+    }
+  ],
+  "run_changes_since_snapshot0003": [
+    {
+      "run_id": 42063947919,
+      "name": "Hepta architecture convergence",
+      "before": {
+        "status": "pending",
+        "conclusion": null,
+        "updated_at": "2026-11-05T16:23:35Z"
+      },
+      "after": {
+        "status": "queued",
+        "conclusion": null,
+        "updated_at": "2026-11-05T19:48:22Z"
+      }
+    }
+  ],
+  "queued_jobs_all_unallocated": true,
+  "queued_requested_labels": {
+    "ubuntu-24.04": 19,
+    "ubuntu-24.04-arm": 6
+  },
+  "blocking_runs": [
+    {
+      "id": 42063948117,
+      "name": "blocking-ci",
+      "status": "pending",
+      "job_count": 0
+    },
+    {
+      "id": 42063947919,
+      "name": "Hepta architecture convergence",
+      "status": "queued",
+      "job_count": 2
+    }
+  ],
+  "complete_run_pages": [
+    {
+      "run_id": 42063947760,
+      "total_count": 2,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.336Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063947760-jobs.original-envelope.json",
+        "bytes": 14635,
+        "sha256": "6c84d62e2308c1952980a215f6dae2980c9959936afd775b31f3f6f89d37ff11",
+        "git_blob": "721d381a9be42f58b6f7ac2f5203db91806c9ca5"
+      }
+    },
+    {
+      "run_id": 42063948287,
+      "total_count": 2,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.269Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063948287-jobs.original-envelope.json",
+        "bytes": 12999,
+        "sha256": "c06ffe663c8d160cfd36550cc3a9fa08945d5a60736e76d7d5facf8977bb0358",
+        "git_blob": "b33ba8e90b402b1728259a4be0518b5ad71fbaa0"
+      }
+    },
+    {
+      "run_id": 42063947939,
+      "total_count": 1,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.069Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063947939-jobs.original-envelope.json",
+        "bytes": 3323,
+        "sha256": "a9197e1b80fc21ee367c7d7b41b7fd392e7eb43caebd574d5a9f626e285e43af",
+        "git_blob": "ddf132284affb7b23968a6b121c8bae620d8dce8"
+      }
+    },
+    {
+      "run_id": 42063947551,
+      "total_count": 1,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.087Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063947551-jobs.original-envelope.json",
+        "bytes": 3281,
+        "sha256": "05d07ebf450f708bb16c92bdabe092f7219a315677885cbbd43fb3a173936638",
+        "git_blob": "f2332761c73940965f69cb2f521025c54e86744e"
+      }
+    },
+    {
+      "run_id": 42063948228,
+      "total_count": 5,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.148Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063948228-jobs.original-envelope.json",
+        "bytes": 11621,
+        "sha256": "5771115f640c5c34a16d2c913ab5a2108c37e822bb504c476f2fc2c068325af5",
+        "git_blob": "f73309ae65979c44b7de6e9183b3725c56ddf25e"
+      }
+    },
+    {
+      "run_id": 42063947623,
+      "total_count": 6,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:08.064Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063947623-jobs.original-envelope.json",
+        "bytes": 26639,
+        "sha256": "4540ceef0b5e51bcd9dac203464176cd241594e3881b38e250dbfc3a26947165",
+        "git_blob": "60da1ceb3d5a7fe88286a33843e919a1e54378be"
+      }
+    },
+    {
+      "run_id": 42063947910,
+      "total_count": 2,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.285Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063947910-jobs.original-envelope.json",
+        "bytes": 13243,
+        "sha256": "e68aa3692e407720dde094dfa36541d919cbe08b6eaf36dc68d670f2c79633bd",
+        "git_blob": "9d62f2cdb0f146e6df02df0f8bd0c926d0b6bb69"
+      }
+    },
+    {
+      "run_id": 42063947753,
+      "total_count": 1,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.081Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063947753-jobs.original-envelope.json",
+        "bytes": 3257,
+        "sha256": "ba7bd50eb652165834e75fff7dd664c7e43beae453ecac1904293b2ce509cd8a",
+        "git_blob": "475fe1bf675ea43e91a4a28a0f1b67eaa097ddd9"
+      }
+    },
+    {
+      "run_id": 42063947862,
+      "total_count": 3,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:08.035Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063947862-jobs.original-envelope.json",
+        "bytes": 12491,
+        "sha256": "1beb73d82edad766241e152eeac4e6ff44c7c9d4ae631d51d32fbe38e6d80c06",
+        "git_blob": "1fc7958751e90ef7d87fea8848b8a07504991ac0"
+      }
+    },
+    {
+      "run_id": 42063947619,
+      "total_count": 1,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.253Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063947619-jobs.original-envelope.json",
+        "bytes": 3267,
+        "sha256": "855fc05e49d67578ddeb027c26d2d239ce5b298eec852e01e4caa9d2d4e30114",
+        "git_blob": "3f700cbbe1f15470b78d73abd3dae430c0de2970"
+      }
+    },
+    {
+      "run_id": 42063948117,
+      "total_count": 0,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.069Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063948117-jobs.original-envelope.json",
+        "bytes": 1135,
+        "sha256": "953ce5c65980373d8768a4980d3b38abd99f8e5b4f10204249e42578ec993758",
+        "git_blob": "5334f78081ad33e86f69a2fa55c7deaa723fb96b"
+      }
+    },
+    {
+      "run_id": 42063947919,
+      "total_count": 2,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.195Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063947919-jobs.original-envelope.json",
+        "bytes": 5363,
+        "sha256": "c3ba2f9ec767bbe356aaba1dd1c6f796bac40dd7694d6c0b0621dfaaa97aba55",
+        "git_blob": "83019867612680d3a0b72bc3f27e38fd46668179"
+      }
+    },
+    {
+      "run_id": 42063947456,
+      "total_count": 15,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.935Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063947456-jobs.original-envelope.json",
+        "bytes": 65311,
+        "sha256": "90af89f45ed11e7b6d08e619f5ce13c2d39fd5b3fcdd1185d4cd74a4da882369",
+        "git_blob": "6ec1ef75e951dd2c504f766cc5190d254fab612c"
+      }
+    },
+    {
+      "run_id": 42063947303,
+      "total_count": 1,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.261Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063947303-jobs.original-envelope.json",
+        "bytes": 9923,
+        "sha256": "2d6aea1ad830e3e4ac839d2c2279256d85ce6441ffa1b4953f57366e9f13b3b0",
+        "git_blob": "504f25fb8215c1ab48344e92efcc2f6359827950"
+      }
+    },
+    {
+      "run_id": 42063947506,
+      "total_count": 2,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.198Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063947506-jobs.original-envelope.json",
+        "bytes": 11395,
+        "sha256": "01fc60c5951bfa407bc62796e004720f1e45f92eeed012001091ec4017fd7aaf",
+        "git_blob": "170754d948be9d9a362bd87ae2a864216a7bb88f"
+      }
+    },
+    {
+      "run_id": 42063947317,
+      "total_count": 3,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.330Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063947317-jobs.original-envelope.json",
+        "bytes": 10953,
+        "sha256": "dd5dcbce165db82b6452ac6f533fcb20d42447068ac683fceb0ae39991af52c1",
+        "git_blob": "b03bb201dd7effbb0fbd77ae46f25d74fd696769"
+      }
+    },
+    {
+      "run_id": 42063947314,
+      "total_count": 6,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:08.439Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063947314-jobs.original-envelope.json",
+        "bytes": 18433,
+        "sha256": "88779030c07ecb5080615d632a105b6cd2199b581232f2293a32b5da36f64018",
+        "git_blob": "5b8b4068d9b88eec1cfb4bbcbbf214b3ecf30064"
+      }
+    },
+    {
+      "run_id": 42063920205,
+      "total_count": 1,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.201Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063920205-jobs.original-envelope.json",
+        "bytes": 7621,
+        "sha256": "e0d79a9543d643da2f18124b1e6b3e7d384c78e9adc1757dcc45e4f9a7c76329",
+        "git_blob": "80a50e74be36b8dea8af761357e949c7b2787648"
+      }
+    },
+    {
+      "run_id": 42063920219,
+      "total_count": 1,
+      "complete": true,
+      "started": "2026-11-05T21:17:06.677Z",
+      "finished": "2026-11-05T21:17:07.153Z",
+      "original": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/run-42063920219-jobs.original-envelope.json",
+        "bytes": 9397,
+        "sha256": "32939b9dbbbd8abc3103a0c1eda3b7a85bdafcc26d1e8cd5477a0732ce7f67de",
+        "git_blob": "9568828179b00fd059db165b9f016677a4e8e954"
+      }
+    }
+  ],
+  "limits": [
+    "This is one read-only collection of21 original connector envelopes, not a poll loop.",
+    "API job success is not named-case qualification; no success raw was refetched in this snapshot.",
+    "Cancelled jobs retain their actual API outcome; cancellation reason and actor are not inferred. No cancellation/rerun/dispatch occurred.",
+    "Queued labels describe requested scheduler labels; runner_id0/steps[] does not identify an actual executing machine.",
+    "No native controller, capacity or resource operation occurred; GitHub queue changes do not establish native memory/disk recovery.",
+    "Old B16 driver remains UNKNOWN. No new native start or replay."
+  ]
+}

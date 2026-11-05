@@ -1,0 +1,129 @@
+diff --git a/.github/scripts/run_b11_acl_identity_counterfactual.py b/.github/scripts/run_b11_acl_identity_counterfactual.py
+index 3680db31233e47ba7fad99f31a7019c4536288bb..e6a191a2d3c66c740aa3cb2ccd42c3e4fdb6880e 100644
+--- a/.github/scripts/run_b11_acl_identity_counterfactual.py
++++ b/.github/scripts/run_b11_acl_identity_counterfactual.py
+@@ -43,6 +43,14 @@
+ def digest(body):
+     return {"bytes": len(body), "sha256": hashlib.sha256(body).hexdigest(),
+             "git_blob": hashlib.sha1(b"blob " + str(len(body)).encode() + b"\0" + body).hexdigest()}
++
++
++def git_bash_record(path):
++    require(os.name == "nt", "the explicit Git Bash executable requires native Windows")
++    require(path.is_absolute() and path.name.casefold() == "bash.exe",
++            "Git Bash must be an explicit absolute Windows bash.exe path")
++    require(path.is_file(), "the workflow's explicit Git Bash executable does not exist")
++    return {"path": str(path), **digest(path.read_bytes())}
+ 
+ 
+ def save(directory, name, value):
+@@ -144,6 +152,7 @@
+ def main():
+     parser = argparse.ArgumentParser()
+     parser.add_argument("--evidence", type=Path, required=True)
++    parser.add_argument("--bash-executable", type=Path, required=True)
+     args = parser.parse_args()
+     root = Path(__file__).resolve().parents[2]
+     original = args.evidence.resolve(strict=True)
+@@ -163,6 +172,8 @@
+     entry = None
+     head = git(root, "rev-parse", "HEAD").decode().strip()
+     try:
++        bash = git_bash_record(args.bash_executable)
++        save(evidence, "git-bash-executable.json", bash)
+         entry = source_guard(root, head, POSITIVE, False)
+         save(evidence, "source-entry.json", entry)
+         require(git(root, "show", f"HEAD:{SOURCE}") == canonical(source.read_bytes(), POSITIVE, SOURCE),
+@@ -203,7 +214,7 @@
+             positive_archive.mkdir()
+             positive_env = os.environ.copy()
+             positive_env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(positive_archive)
+-            positive_argv = ["bash", "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
++            positive_argv = [bash["path"], "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
+                              "--print-failed-test-logs", "--windows-msvc-host-platform", "--remote-download-toplevel", "--", "test",
+                              "--platforms=//:windows_x86_64_msvc", "--skip_incompatible_explicit_targets",
+                              "--test_tag_filters=-argument-comment-lint", "--test_verbose_timeout_warnings", "--test_output=all",
+@@ -265,7 +276,7 @@
+         negative_archive.mkdir()
+         env = os.environ.copy()
+         env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(negative_archive)
+-        argv = ["bash", "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
++        argv = [bash["path"], "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
+                 "--print-failed-test-logs", "--windows-msvc-host-platform", "--remote-download-toplevel", "--", "test",
+                 "--platforms=//:windows_x86_64_msvc", "--skip_incompatible_explicit_targets",
+                 "--test_tag_filters=-argument-comment-lint", "--test_verbose_timeout_warnings", "--test_output=all",
+diff --git a/.github/scripts/run_b11_read_acl_readiness.py b/.github/scripts/run_b11_read_acl_readiness.py
+index 6010ce9cc6da2eca95aac9ba453581f68770bbe6..01c99717b4dfc14d86858464be4798d4351830e6 100644
+--- a/.github/scripts/run_b11_read_acl_readiness.py
++++ b/.github/scripts/run_b11_read_acl_readiness.py
+@@ -19,7 +19,7 @@
+ TARGET = "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests"
+ TARGET_PATH = "codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup-bin-unit-tests"
+ CONTROL_SCRIPT = ".github/scripts/run_b11_acl_identity_counterfactual.py"
+-CONTROL_BLOB = "3680db31233e47ba7fad99f31a7019c4536288bb"
++CONTROL_BLOB = "e6a191a2d3c66c740aa3cb2ccd42c3e4fdb6880e"
+ PINS = {
+     "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs": "c39b298b7889dc3669e1ee7e2816f7e77568e955",
+     "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6",
+@@ -140,6 +140,7 @@
+ def main():
+     parser = argparse.ArgumentParser()
+     parser.add_argument("--evidence", type=Path, required=True)
++    parser.add_argument("--bash-executable", type=Path, required=True)
+     args = parser.parse_args()
+     if os.name != "nt":
+         raise RuntimeError("this original setup-bin gate requires native Windows")
+@@ -159,6 +160,8 @@
+     final_error = None
+     head = control.git(root, "rev-parse", "HEAD").decode().strip()
+     try:
++        bash = control.git_bash_record(args.bash_executable)
++        control.save(evidence, "git-bash-executable.json", bash)
+         previous = original / "acl-identity-counterfactual"
+         prior = json.loads((previous / "counterfactual-terminal.json").read_text(encoding="utf-8"))
+         control.require(prior.get("status") == "VALID_NEGATIVE_AND_EXACT_RESTORE"
+@@ -175,7 +178,7 @@
+         archive.mkdir()
+         env = os.environ.copy()
+         env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(archive)
+-        argv = ["bash", "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
++        argv = [bash["path"], "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
+                 "--print-failed-test-logs", "--windows-msvc-host-platform", "--remote-download-toplevel", "--", "test",
+                 "--platforms=//:windows_x86_64_msvc", "--skip_incompatible_explicit_targets",
+                 "--test_tag_filters=-argument-comment-lint", "--test_verbose_timeout_warnings", "--test_output=all",
+diff --git a/.github/workflows/hepta-windows-token-mechanism-probe.yml b/.github/workflows/hepta-windows-token-mechanism-probe.yml
+index 89d2eaf4bb9900f7476d49476e2657effa68327a..8276dc655ab7d7e1e311f183e398a903a595ae9f 100644
+--- a/.github/workflows/hepta-windows-token-mechanism-probe.yml
++++ b/.github/workflows/hepta-windows-token-mechanism-probe.yml
+@@ -94,8 +94,14 @@
+         run: |
+           set -euo pipefail
+           evidence="$(cygpath -u "${RUNNER_TEMP}")/b11-token-mechanism-probe"
++          bash_executable="$BASH"
++          if [[ "$bash_executable" != *.exe ]]; then
++            bash_executable="${bash_executable}.exe"
++          fi
++          test -f "$bash_executable"
+           python3 .github/scripts/run_b11_acl_identity_counterfactual.py \
+-            --evidence "$(cygpath -w "$evidence")"
++            --evidence "$(cygpath -w "$evidence")" \
++            --bash-executable "$(cygpath -aw "$bash_executable")"
+ 
+       - name: Run the original setup helper target after exact restoration
+         id: read_acl_helper_target
+@@ -106,8 +112,14 @@
+         run: |
+           set -euo pipefail
+           evidence="$(cygpath -u "${RUNNER_TEMP}")/b11-token-mechanism-probe"
++          bash_executable="$BASH"
++          if [[ "$bash_executable" != *.exe ]]; then
++            bash_executable="${bash_executable}.exe"
++          fi
++          test -f "$bash_executable"
+           python3 .github/scripts/run_b11_read_acl_readiness.py \
+-            --evidence "$(cygpath -w "$evidence")"
++            --evidence "$(cygpath -w "$evidence")" \
++            --bash-executable "$(cygpath -aw "$bash_executable")"
+ 
+       # The unchanged wrapper already retains this exact target on both failure
+       # and console-reported success, including cached/missing evidence limits.

@@ -1,0 +1,174 @@
+{
+  "schema": "b11-env-main-merge-root-proof-v1",
+  "input_complete_tree_proofs": {
+    "common_5b": {
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "entries": 12150,
+      "leaves": 10580,
+      "directory_nodes": 1571,
+      "all_Merkle_nodes_match": true
+    },
+    "diag_855": {
+      "tree": "bfee878ac3a871fd5b374acf3c2139b48a3235c5",
+      "entries": 12156,
+      "leaves": 10586,
+      "directory_nodes": 1571,
+      "all_Merkle_nodes_match": true
+    },
+    "main_67": {
+      "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+      "entries": 12152,
+      "leaves": 10582,
+      "directory_nodes": 1571,
+      "all_Merkle_nodes_match": true
+    },
+    "old_actual_merge_cb5": {
+      "tree": "bf1c52a3ed14ca2bd0276ffc693dccf6c1dbbb83",
+      "entries": 12158,
+      "leaves": 10588,
+      "directory_nodes": 1571,
+      "all_Merkle_nodes_match": true
+    }
+  },
+  "intended_tree": {
+    "tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+    "entries": 12158,
+    "leaves": 10588,
+    "directory_nodes": 1571,
+    "all_Merkle_nodes_match": true
+  },
+  "merge_parents": [
+    "855733b0f88c82c68135b1879682358a818daa84",
+    "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+  ],
+  "three_way_common_base": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "three_way_conflicts": [
+    ".github/scripts/collect_bazel_failed_test_logs.py"
+  ],
+  "collector_union_proof": {
+    "schema": "collector-exact-union-v1",
+    "common_base": {
+      "bytes": 16260,
+      "sha256": "55353f094531a4af974c519fadca01dcd0c8be6ece1f8b10efb70d24ae2a44eb",
+      "git_blob": "2142eeb382664d95f77d83ac7ae3da4459601abf"
+    },
+    "diagnostic": {
+      "bytes": 16340,
+      "sha256": "63e5bcfc80d09578f526173b33259cd01eb343364342c9c9431233f13e25d52a",
+      "git_blob": "e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9"
+    },
+    "main": {
+      "bytes": 16303,
+      "sha256": "bb25a658988b77ef23517501afb4893a8a5f7960bd7930b6aef6041ba1274c1c",
+      "git_blob": "18701f51e4df1ef6b0fd390d2990114bf971331d"
+    },
+    "combined": {
+      "bytes": 16383,
+      "sha256": "1300d9ad784eb5df947577f349349b062d82600a6f83cba381ac652e3bfa369f",
+      "git_blob": "76a183d6a45e4a6c1493de194f8a1f6c422f0892"
+    },
+    "preserved_original11_order": true,
+    "added_targets_order": [
+      "setup helper",
+      "PTY"
+    ],
+    "all_other_bytes_equal": true,
+    "not_native_test_or_closure": true
+  },
+  "changed_paths_from_old_actual_merge_cb5": [
+    ".github/scripts/collect_bazel_failed_test_logs.py",
+    ".github/scripts/run_b11_acl_identity_counterfactual.py",
+    ".github/scripts/run_b11_read_acl_readiness.py",
+    "codex-rs/core/src/agent/control_tests.rs",
+    "codex-rs/core/src/environment_selection.rs"
+  ],
+  "changed_paths_from_diag_parent_855": [
+    ".github/scripts/collect_bazel_failed_test_logs.py",
+    ".github/scripts/run_b11_acl_identity_counterfactual.py",
+    ".github/scripts/run_b11_read_acl_readiness.py",
+    "codex-rs/core/src/agent/control_tests.rs",
+    "codex-rs/core/src/environment_selection.rs",
+    "codex-rs/core/tests/suite/approvals.rs",
+    "codex-rs/core/tests/suite/request_permissions.rs",
+    "codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs",
+    "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+    "qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md",
+    "qualification/r3-audit-repair-20261104/FOURTH_BATCH_QUALIFICATION.md",
+    "qualification/r3-audit-repair-20261104/PROJECT_DIRECTION_AND_PLAN.zh-CN.md",
+    "qualification/r3-audit-repair-20261104/fourth-evidence-index.json",
+    "qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json",
+    "qualification/r3-audit-repair-20261104/repository-inventory-20261105/RESTORE_INVENTORY.md",
+    "qualification/r3-audit-repair-20261104/repository-inventory-20261105/restore_inventory.py"
+  ],
+  "changed_paths_from_main_parent_67": [
+    ".github/scripts/collect_bazel_failed_test_logs.py",
+    ".github/scripts/run_b11_acl_identity_counterfactual.py",
+    ".github/scripts/run_b11_read_acl_readiness.py",
+    ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+    "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+    "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/token.rs",
+    "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+    "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs"
+  ],
+  "every_helper_pin_equal_to_intended_HEAD_leaf": {
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs": "c39b298b7889dc3669e1ee7e2816f7e77568e955",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs": "333aefdf9584ef29612ac6f9814ff34308971754",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs": "e488e2a914b119ecb02cfc1a13a90009bc6120ea",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs": "262460775ef6b5e02f0ba4485f388e1b389cc85f",
+    "codex-rs/windows-sandbox-rs/Cargo.toml": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+    "codex-rs/windows-sandbox-rs/BUILD.bazel": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+    "defs.bzl": "6f588ec3057fddfea35170e28e74036162ce6a23",
+    ".github/scripts/run-bazel-ci.sh": "42b59b6354b5933c8155b992519682c06d024ca1",
+    ".github/scripts/collect_bazel_failed_test_logs.py": "76a183d6a45e4a6c1493de194f8a1f6c422f0892",
+    ".github/scripts/run_b11_acl_identity_counterfactual.py": "90ae8f030ee405706217d7cb2cdc12f1a7cda443"
+  },
+  "control_positive_and_test_blob_equal_to_intended_HEAD": true,
+  "source_map": [
+    {
+      "path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+      "preimage": {
+        "bytes": 22807,
+        "sha256": "09c1e846ab95951bc08d6637f8207f03df92e4e343e2f9c294a5052483b7f397",
+        "git_blob": "e6a191a2d3c66c740aa3cb2ccd42c3e4fdb6880e"
+      },
+      "postimage": {
+        "bytes": 23767,
+        "sha256": "e2bb7cf91e20895d5f11c2479238692b2966cdc1ca188ca2f8c620cfd09c6987",
+        "git_blob": "90ae8f030ee405706217d7cb2cdc12f1a7cda443"
+      },
+      "preimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/source/.github/scripts/run_b11_acl_identity_counterfactual.py",
+      "postimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py"
+    },
+    {
+      "path": ".github/scripts/run_b11_read_acl_readiness.py",
+      "preimage": {
+        "bytes": 14425,
+        "sha256": "f5f134b21f1e4775015c2674a22b785244368964a4c8070e18fb1e3d83b8afcf",
+        "git_blob": "01c99717b4dfc14d86858464be4798d4351830e6"
+      },
+      "postimage": {
+        "bytes": 14374,
+        "sha256": "221c05297886ee4cd774d337d56beedd896540281c9c559adca290cc3727d313",
+        "git_blob": "e77b32cce112f188d16063e787baca3019e3d892"
+      },
+      "preimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/source/.github/scripts/run_b11_read_acl_readiness.py",
+      "postimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/candidate/.github/scripts/run_b11_read_acl_readiness.py"
+    }
+  ],
+  "new_native_evidence_required": true,
+  "B11": "OPEN",
+  "native9_preserved": {
+    "checkout": "cb5aba57802272d7f535cd6ee2ac3e26334dbff6",
+    "tree": "bf1c52a3ed14ca2bd0276ffc693dccf6c1dbbb83",
+    "not_relabelled_as_new_source": true
+  },
+  "actual_root_SHA_and_entries_equal": true,
+  "every_intended_leaf_Merkle_bound_to_actual_root": true,
+  "method": "Full intended leaf/Merkle recomputation bound to actual root GET, not a recursive full-tree GET."
+}

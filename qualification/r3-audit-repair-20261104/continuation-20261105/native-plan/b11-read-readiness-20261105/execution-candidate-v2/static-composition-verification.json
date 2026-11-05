@@ -1,0 +1,257 @@
+{
+  "status": "STATIC_COMPOSITION_PASSED_NO_PRODUCT_EXECUTION",
+  "observed_at_utc": "2026-11-05T18:37:24.644562+00:00",
+  "checks": {
+    "V1_files_unchanged": true,
+    "only_consumer_pin_changes_from_V1": true,
+    "all_9_control_non_main_functions_byteequal": [
+      "require",
+      "digest",
+      "save",
+      "replace_owned_source",
+      "git",
+      "canonical",
+      "source_guard",
+      "retained_log",
+      "target_terminal"
+    ],
+    "helper_consumes_same_terminal_and_restore_interfaces": true,
+    "fixed_0f_readiness_preimages_actual_API_equal": true,
+    "new_Rust_test_absent_in_fixed_0f_directory": true,
+    "workflow_and_collector_exactly_V1_posts": true,
+    "python_ast_compile_only_and_yaml_parse": true,
+    "four_stage_real_git_check_apply_matches_seven_posts": true,
+    "combined_real_reverse_check_reverse_check_apply_matches_seven_posts": true
+  },
+  "stages": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/read-readiness.patch",
+      "bytes": 11629,
+      "sha256": "4a7262dfba537f18e838121b7f3fe4065518d3c63b2e4204d35c7bd2641e3f8f",
+      "blob": "0a80cbb044a0e00fc1a59810e7174dde0501b5c7"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v1/execution.patch",
+      "bytes": 17473,
+      "sha256": "c360af6a8156eacc65b23a860d7618d418ba7de0e9554131691b3a2305985a30",
+      "blob": "b837779279832b9f6cb376c39b8663b16680c760"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/v1-to-v2-consumer-pin.delta.patch",
+      "bytes": 928,
+      "sha256": "cf715fde1e5cfcf102fb52ac55edbfbf7be588e8c0c98956a649abe70fea329a",
+      "blob": "3d4273131d8da3f93b2270f88d4474a73cda51cd"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch",
+      "bytes": 6969,
+      "sha256": "e8e9d45eb167f81b35e3d17db84d9164d6ee12d4dc3260e95e6ce951199d03ab",
+      "blob": "53ed544e11003015cf1a57b27da64b2295681fd2"
+    }
+  ],
+  "git_commands": [
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "init",
+        "-q"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/b11-readiness-combined-v2-ivvagr52",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/read-readiness.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/b11-readiness-combined-v2-ivvagr52",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/read-readiness.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/b11-readiness-combined-v2-ivvagr52",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v1/execution.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/b11-readiness-combined-v2-ivvagr52",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v1/execution.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/b11-readiness-combined-v2-ivvagr52",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/v1-to-v2-consumer-pin.delta.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/b11-readiness-combined-v2-ivvagr52",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/v1-to-v2-consumer-pin.delta.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/b11-readiness-combined-v2-ivvagr52",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/b11-readiness-combined-v2-ivvagr52",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/b11-readiness-combined-v2-ivvagr52",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/combined-seven-paths.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/b11-readiness-combined-v2-ivvagr52",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/combined-seven-paths.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/b11-readiness-combined-v2-ivvagr52",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/combined-seven-paths.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/b11-readiness-combined-v2-ivvagr52",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/combined-seven-paths.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/b11-readiness-combined-v2-ivvagr52",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "execution_counts": {
+    "added": 244,
+    "deleted": 0
+  },
+  "consumer_pin_delta_counts": {
+    "added": 1,
+    "deleted": 1
+  },
+  "combined_counts": {
+    "added": 400,
+    "deleted": 99
+  },
+  "combined_patch": {
+    "bytes": 36059,
+    "sha256": "67255b0ce2b3f66026172ecc7d7749b388dec92e6964c63d4c6d3e655c20e4e5",
+    "blob": "7353316e15b851ffb61f0da0c0e8651bc7d317a8"
+  },
+  "not_executed": [
+    "new helper runner",
+    "V3 counterfactual",
+    "Windows",
+    "Cargo",
+    "Bazel",
+    "shell workflow"
+  ],
+  "external_review_of_V3_control": "c4ff565c7d003890d6ad42420ec18e802053f467"
+}

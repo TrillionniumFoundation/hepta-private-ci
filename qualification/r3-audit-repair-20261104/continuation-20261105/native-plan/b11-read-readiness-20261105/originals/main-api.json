@@ -1,0 +1,16 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "#[cfg(target_os = \"windows\")]\nmod win;\n\n#[cfg(target_os = \"windows\")]\nfn main() -> anyhow::Result<()> {\n    win::main()\n}\n\n#[cfg(not(target_os = \"windows\"))]\nfn main() {\n    panic!(\"codex-windows-sandbox-setup is Windows-only\");\n}\n",
+    "encoding": "utf-8",
+    "sha": "262460775ef6b5e02f0ba4485f388e1b389cc85f",
+    "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/eed4d6bb61b789b19f60facc79f9e031765fa4c9/codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs",
+    "display_title": "main.rs"
+  },
+  "isError": false
+}

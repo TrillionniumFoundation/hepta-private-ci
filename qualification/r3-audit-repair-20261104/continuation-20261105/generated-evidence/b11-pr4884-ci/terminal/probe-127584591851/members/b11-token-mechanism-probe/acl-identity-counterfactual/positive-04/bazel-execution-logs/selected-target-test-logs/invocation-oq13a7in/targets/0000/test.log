@@ -1,0 +1,84 @@
+Executing tests from //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests
+-----------------------------------------------------------------------------
+
+running 1 test
+windows_boundary_diag dacl=partial_directory_before_repair path="D:\\tmp\\.tmpEAGGzN" bytes=272 ace_count=10 truncated=false
+windows_boundary_diag dacl=partial_directory_before_repair ace=0 type=1 flags=0x03 size=36 mask=Some(65536) truncated=false raw=[01, 03, 24, 00, 00, 00, 01, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_directory_before_repair ace=1 type=0 flags=0x03 size=36 mask=Some(1245631) truncated=false raw=[00, 03, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_directory_before_repair ace=2 type=0 flags=0x03 size=20 mask=Some(2032127) truncated=false raw=[00, 03, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+windows_boundary_diag dacl=partial_directory_before_repair ace=3 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+windows_boundary_diag dacl=partial_directory_before_repair ace=4 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+windows_boundary_diag dacl=partial_directory_before_repair ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+windows_boundary_diag dacl=partial_directory_before_repair ace=6 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]
+windows_boundary_diag dacl=partial_directory_before_repair ace=7 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+windows_boundary_diag dacl=partial_directory_before_repair ace=8 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+windows_boundary_diag dacl=partial_directory_before_repair ace=9 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+windows_boundary_diag dacl=partial_directory_before_repair observation_us=2522
+windows_boundary_diag dacl=partial_file_before_repair path="D:\\tmp\\.tmpEAGGzN\\existing.txt" bytes=204 ace_count=7 truncated=false
+windows_boundary_diag dacl=partial_file_before_repair ace=0 type=1 flags=0x10 size=36 mask=Some(65536) truncated=false raw=[01, 10, 24, 00, 00, 00, 01, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_file_before_repair ace=1 type=0 flags=0x10 size=36 mask=Some(1245631) truncated=false raw=[00, 10, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_file_before_repair ace=2 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+windows_boundary_diag dacl=partial_file_before_repair ace=3 type=0 flags=0x10 size=24 mask=Some(2032127) truncated=false raw=[00, 10, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+windows_boundary_diag dacl=partial_file_before_repair ace=4 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+windows_boundary_diag dacl=partial_file_before_repair ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+windows_boundary_diag dacl=partial_file_before_repair ace=6 type=0 flags=0x10 size=24 mask=Some(1179817) truncated=false raw=[00, 10, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+windows_boundary_diag dacl=partial_file_before_repair observation_us=1967
+windows_boundary_diag dacl=partial_directory_after_first_repair path="D:\\tmp\\.tmpEAGGzN" bytes=308 ace_count=11 truncated=false
+windows_boundary_diag dacl=partial_directory_after_first_repair ace=0 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_first_repair ace=1 type=1 flags=0x0b size=36 mask=Some(1074987350) truncated=false raw=[01, 0b, 24, 00, 56, 01, 13, 40, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_first_repair ace=2 type=0 flags=0x03 size=36 mask=Some(1245631) truncated=false raw=[00, 03, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_first_repair ace=3 type=0 flags=0x03 size=20 mask=Some(2032127) truncated=false raw=[00, 03, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_first_repair ace=4 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_first_repair ace=5 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_first_repair ace=6 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_first_repair ace=7 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_first_repair ace=8 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_first_repair ace=9 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_first_repair ace=10 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_first_repair observation_us=2202
+windows_boundary_diag dacl=partial_file_after_directory_repair path="D:\\tmp\\.tmpEAGGzN\\existing.txt" bytes=204 ace_count=7 truncated=false
+windows_boundary_diag dacl=partial_file_after_directory_repair ace=0 type=1 flags=0x10 size=36 mask=Some(1245526) truncated=false raw=[01, 10, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_file_after_directory_repair ace=1 type=0 flags=0x10 size=36 mask=Some(1245631) truncated=false raw=[00, 10, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_file_after_directory_repair ace=2 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+windows_boundary_diag dacl=partial_file_after_directory_repair ace=3 type=0 flags=0x10 size=24 mask=Some(2032127) truncated=false raw=[00, 10, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+windows_boundary_diag dacl=partial_file_after_directory_repair ace=4 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+windows_boundary_diag dacl=partial_file_after_directory_repair ace=5 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+windows_boundary_diag dacl=partial_file_after_directory_repair ace=6 type=0 flags=0x10 size=24 mask=Some(1179817) truncated=false raw=[00, 10, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+windows_boundary_diag dacl=partial_file_after_directory_repair observation_us=2161
+windows_boundary_diag dacl=partial_directory_after_repeat path="D:\\tmp\\.tmpEAGGzN" bytes=308 ace_count=11 truncated=false
+windows_boundary_diag dacl=partial_directory_after_repeat ace=0 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_repeat ace=1 type=1 flags=0x0b size=36 mask=Some(1074987350) truncated=false raw=[01, 0b, 24, 00, 56, 01, 13, 40, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_repeat ace=2 type=0 flags=0x03 size=36 mask=Some(1245631) truncated=false raw=[00, 03, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_repeat ace=3 type=0 flags=0x03 size=20 mask=Some(2032127) truncated=false raw=[00, 03, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_repeat ace=4 type=0 flags=0x13 size=24 mask=Some(2032127) truncated=false raw=[00, 13, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_repeat ace=5 type=0 flags=0x13 size=20 mask=Some(2032127) truncated=false raw=[00, 13, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_repeat ace=6 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_repeat ace=7 type=0 flags=0x1b size=20 mask=Some(268435456) truncated=false raw=[00, 1b, 14, 00, 00, 00, 00, 10, 01, 01, 00, 00, 00, 00, 00, 03, 00, 00, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_repeat ace=8 type=0 flags=0x13 size=24 mask=Some(1179817) truncated=false raw=[00, 13, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_repeat ace=9 type=0 flags=0x12 size=24 mask=Some(4) truncated=false raw=[00, 12, 18, 00, 04, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_repeat ace=10 type=0 flags=0x12 size=24 mask=Some(2) truncated=false raw=[00, 12, 18, 00, 02, 00, 00, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+windows_boundary_diag dacl=partial_directory_after_repeat observation_us=2461
+windows_boundary_diag dacl=partial_file_after_first_direct_repair path="D:\\tmp\\.tmpEAGGzN\\existing.txt" bytes=240 ace_count=8 truncated=false
+windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=0 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=1 type=1 flags=0x10 size=36 mask=Some(1245526) truncated=false raw=[01, 10, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=2 type=0 flags=0x10 size=36 mask=Some(1245631) truncated=false raw=[00, 10, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=3 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=4 type=0 flags=0x10 size=24 mask=Some(2032127) truncated=false raw=[00, 10, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=5 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=6 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+windows_boundary_diag dacl=partial_file_after_first_direct_repair ace=7 type=0 flags=0x10 size=24 mask=Some(1179817) truncated=false raw=[00, 10, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+windows_boundary_diag dacl=partial_file_after_first_direct_repair observation_us=1750
+windows_boundary_diag dacl=partial_file_after_repeat path="D:\\tmp\\.tmpEAGGzN\\existing.txt" bytes=240 ace_count=8 truncated=false
+windows_boundary_diag dacl=partial_file_after_repeat ace=0 type=1 flags=0x00 size=36 mask=Some(1245526) truncated=false raw=[01, 00, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_file_after_repeat ace=1 type=1 flags=0x10 size=36 mask=Some(1245526) truncated=false raw=[01, 10, 24, 00, 56, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_file_after_repeat ace=2 type=0 flags=0x10 size=36 mask=Some(1245631) truncated=false raw=[00, 10, 24, 00, bf, 01, 13, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, ab, 00, 00, 00, 10, 01, 00, 00, 75, 01, 00, 00, da, 01, 00, 00]
+windows_boundary_diag dacl=partial_file_after_repeat ace=3 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]
+windows_boundary_diag dacl=partial_file_after_repeat ace=4 type=0 flags=0x10 size=24 mask=Some(2032127) truncated=false raw=[00, 10, 18, 00, ff, 01, 1f, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 20, 02, 00, 00]
+windows_boundary_diag dacl=partial_file_after_repeat ace=5 type=0 flags=0x10 size=20 mask=Some(2032127) truncated=false raw=[00, 10, 14, 00, ff, 01, 1f, 00, 01, 01, 00, 00, 00, 00, 00, 05, 12, 00, 00, 00]
+windows_boundary_diag dacl=partial_file_after_repeat ace=6 type=0 flags=0x10 size=36 mask=Some(2032127) truncated=false raw=[00, 10, 24, 00, ff, 01, 1f, 00, 01, 05, 00, 00, 00, 00, 00, 05, 15, 00, 00, 00, 39, b5, 6e, b7, 72, b8, 43, da, 70, 08, a7, f7, f4, 01, 00, 00]
+windows_boundary_diag dacl=partial_file_after_repeat ace=7 type=0 flags=0x10 size=24 mask=Some(1179817) truncated=false raw=[00, 10, 18, 00, a9, 00, 12, 00, 01, 02, 00, 00, 00, 00, 00, 05, 20, 00, 00, 00, 21, 02, 00, 00]
+windows_boundary_diag dacl=partial_file_after_repeat observation_us=2287
+test token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 155 filtered out; finished in 0.02s
+

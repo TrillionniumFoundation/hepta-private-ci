@@ -1,0 +1,99 @@
+{
+  "schema": "b11-counterfactual-v3-independent-narrow-review-v1",
+  "decision": "STATIC_ACCEPT_OF_FOUR_EXACT_POSITIVE_SUPPLEMENT_NO_NATIVE_QUALIFICATION",
+  "created_at": "2026-11-05T18:25:48.699389+00:00",
+  "candidate": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py",
+    "bytes": 22200,
+    "sha256": "1a53b2771e795fb27a495d7c053d7afc9b0cad954f27c4802654311771319ed5",
+    "git_blob": "3680db31233e47ba7fad99f31a7019c4536288bb"
+  },
+  "manifest": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/manifest-DISABLED.json",
+    "bytes": 5728,
+    "sha256": "4d27907fa21fa83a4dbbdb87f3c564d0874212ec273083385d947cb398c2f1f8",
+    "git_blob": "4f969ff54698cae7bcd85b32aac5f65d791866e0"
+  },
+  "delta": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch",
+    "bytes": 6969,
+    "sha256": "e8e9d45eb167f81b35e3d17db84d9164d6ee12d4dc3260e95e6ce951199d03ab",
+    "git_blob": "53ed544e11003015cf1a57b27da64b2295681fd2"
+  },
+  "verification": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/acl-counterfactual-wrapper-v3-review-20261105/verification.json",
+    "bytes": 9310,
+    "sha256": "6ce35ac45294a3de18b9526008ebd41ffc046a7034d199c3f4999801c238dd7a",
+    "git_blob": "8a01a25f5ccddf268a9820ad0076e58e08e55179"
+  },
+  "previous_review": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/acl-counterfactual-wrapper-review-20261105/independent-review.json",
+    "bytes": 8607,
+    "sha256": "1092391ebface8a6bf796d1da8837ac048448e0953bc4ad4f0e05d413501bac6",
+    "git_blob": "7d5ef2f8e53b89524c0937f01d25a2cd3e83aef5"
+  },
+  "original_wrapper": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-delete-matrix/source/workspace_root_test_launcher.bat.tpl",
+    "bytes": 7627,
+    "sha256": "4d509f1a57ffb4a890a96b775468af8e2d0d83538af76d358d10628d8b442dae",
+    "git_blob": "fa18c301dd22ca9023ba2f59801a8119dfbf8a69"
+  },
+  "actual_defect": {
+    "native7_source": "b5c23d8943a0a36a14a962175cb2ec75d22d5553",
+    "native7_tree": "29316e75554590382268dafa77869fab0394a264",
+    "whole_result": "147 PASS / 7 FAIL / 2 ignored in two original libtest subinvocations, outer Bazel failure retained",
+    "old_gate_counts": {
+      "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object": 1,
+      "acl::tests::existing_native_deny_does_not_require_write_dac": 1,
+      "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write": 1,
+      "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes": 0
+    },
+    "counterfactual": "INVALID_OR_NOT_RUN before mutation; no negative execution or restoration failure",
+    "interpretation": "The fourth expected whole-line PASS was interleaved with unrelated observation output. The original line remains unmodified and is not reconstructed as a qualified result."
+  },
+  "accepted_change": [
+    "The original full-target command, console/source checks, actual0/3 exit, complete retained log/XML and failure remain intact. Any of the four required names in an original failed-test header rejects before new scopes.",
+    "Each of the same four original names is run exactly once with its complete name and --exact through the existing original Windows outer target. Each phase has a new private archive, --nocache_test_results, --flaky_test_attempts=1 and unchanged target/platform/configuration.",
+    "Every phase requires exit0, a fresh PASSED target summary, exactly one nonignored libtest PASS with155filtered and no failed-test header, plus one successful outer XML testcase. Missing/ignored/zero-case/compile/cached/flaky outcomes do not qualify.",
+    "Full-name attribution follows the fixed --exact argv and the pinned original bat direct-argument path, which bypasses its default batched invocation path. The outer XML is not mislabelled per-Rust-case XML.",
+    "Exact source/index/locks are checked before and after each positive; any new failure stops subsequent positives and the negative while source is still positive. Only after all four qualify does the unchanged negative/source mutation begin.",
+    "Nine existing non-main functions, all initial whole-target/source checks, and the entire negative/assertion/XML101/exception/finally/terminal tail are independently byte-equal. Original workflow and120-minute budget are unchanged."
+  ],
+  "original_negative_contract_preserved": {
+    "source_post": "0baeb6ec2f3bfd0964be6d014fc5d80d890ea3d7",
+    "case": "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+    "required_marker": "deny_repair_identity: directory=false returned_ok=true replacement_changed=true original_changed=false",
+    "panic": "acl_tests.rs:597:9",
+    "libtest": "0 passed;1 failed;0 ignored;155filtered",
+    "outer_xml": "actual libtest exit101 required",
+    "restoration": "Before overwrite, current owned source must be one of the two exact known images and current tracked/index/locks must match entry. Finally restores exact original LF/CRLF bytes. Unknown drift is not overwritten; hard cancellation is not guaranteed."
+  },
+  "helper_wiring_compatibility": {
+    "consumer_must_pin_actual_v3_script": "3680db31233e47ba7fad99f31a7019c4536288bb",
+    "entry_restored_schema": "unchanged",
+    "new_optional_terminal_field": "positive_scopes",
+    "helper_target_qualification": "NONE: setup-bin unfiltered target must execute independently after its own clean/restoration checks; library156 and exact positives do not qualify it",
+    "integration_review": "Author helper wiring not yet frozen/read at this review; separate delta review remains pending."
+  },
+  "reviewer_correction": {
+    "initial_parser": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/acl-counterfactual-wrapper-v3-review-20261105/reviewer-initial-parser.py.source.txt",
+      "bytes": 8315,
+      "sha256": "fe3ff659d3826df422766f8a0a63e82dc7e95715d6b4e7a6c2d5e86240117be9",
+      "git_blob": "064375946740afee054efd9c0973239f6b3652d0"
+    },
+    "reason": "Reviewer first assumed one aggregate 147/7/2 libtest summary. Original default batch wrapper actually emitted 92/0/0 plus 55/7/2, with 64/92 filtered. Revised parser verifies the two actual original summaries and sums them. Candidate and all native originals are unchanged."
+  },
+  "limits": [
+    "Four new exact positive executions and the unique negative are still pending. This is neither product PASS nor B11 closure.",
+    "Whole147/7/2 and the native7 source-unmodified INVALID remain immutable historical results. No result is relabelled or retry policy changed.",
+    "No native commands, Rust tests, new CI runs, workflow/ref mutations, capacity probes or old B16 driver actions were performed."
+  ],
+  "actions": {
+    "native_commands": 0,
+    "rust_tests": 0,
+    "new_positive_execution": 0,
+    "negative_execution": 0,
+    "ref_mutations": 0
+  }
+}

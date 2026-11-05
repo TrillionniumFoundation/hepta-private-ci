@@ -1,0 +1,160 @@
+{
+  "kind": "V3_REAL_ORIGINAL_INPUT_AND_EXACT_SOURCE_DELTA_REVIEW",
+  "AST_parse_only": true,
+  "old_non_main_functions_byte_equal": [
+    "require",
+    "digest",
+    "save",
+    "replace_owned_source",
+    "git",
+    "canonical",
+    "source_guard",
+    "retained_log",
+    "target_terminal"
+  ],
+  "old_initial_whole_source_and_console_checks_byte_equal": true,
+  "entire_negative_argv_oracle_exception_finally_terminal_tail_byte_equal": true,
+  "workflow_byte_equal": true,
+  "git_commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--",
+        ".github/scripts/run_b11_acl_identity_counterfactual.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--full-index",
+        "--binary",
+        "--no-ext-diff",
+        "--",
+        ".github/scripts/run_b11_acl_identity_counterfactual.py"
+      ],
+      "exit_code": 0,
+      "stdout": "diff --git a/.github/scripts/run_b11_acl_identity_counterfactual.py b/.github/scripts/run_b11_acl_identity_counterfactual.py\nindex 25def4386ea08bb72a7605cc113117f31fffcd1b..3680db31233e47ba7fad99f31a7019c4536288bb 100644\n--- a/.github/scripts/run_b11_acl_identity_counterfactual.py\n+++ b/.github/scripts/run_b11_acl_identity_counterfactual.py\n@@ -184,15 +184,68 @@ def main():\n         require(archive.is_relative_to(Path(os.environ[\"RUNNER_TEMP\"]).resolve(strict=True)), \"original archive is outside runner temp\")\n         positive, positive_manifest = retained_log(archive, head, entry[\"head_tree\"], False)\n         positive_text = ANSI.sub(\"\", positive[\".log\"][0].decode(\"utf-8\", errors=\"strict\")).replace(\"\\r\", \"\")\n-        for required in [CASE, \"acl::tests::existing_native_deny_does_not_require_write_dac\",\n-                         \"acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write\",\n-                         \"token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes\"]:\n-            require(len(re.findall(r\"^test \" + re.escape(required) + r\" \\.\\.\\. ok$\", positive_text, re.MULTILINE)) == 1,\n-                    f\"original target lacks one exact positive result for {required}\")\n-        require(f\"---- {CASE} stdout ----\" not in positive_text, \"new case failed in original full target\")\n+        required_cases = [CASE, \"acl::tests::existing_native_deny_does_not_require_write_dac\",\n+                          \"acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write\",\n+                          \"token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes\"]\n+        for required in required_cases:\n+            require(f\"---- {required} stdout ----\" not in positive_text,\n+                    f\"required case failed in the original whole target: {required}\")\n+        # Concurrent observation output can split a passing libtest line. Never\n+        # reconstruct it: obtain one fresh exact result for each original case.\n+        report[\"positive_scopes\"] = []\n+        for number, required in enumerate(required_cases, 1):\n+            scope = evidence / f\"positive-{number:02d}\"\n+            scope.mkdir()\n+            positive_before = source_guard(root, head, POSITIVE, False)\n+            require(positive_before == entry, \"source/index/locks changed before exact positive\")\n+            save(scope, \"source-before.json\", positive_before)\n+            positive_archive = scope / \"bazel-execution-logs\"\n+            positive_archive.mkdir()\n+            positive_env = os.environ.copy()\n+            positive_env[\"CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR\"] = str(positive_archive)\n+            positive_argv = [\"bash\", \"./.github/scripts/run-bazel-ci.sh\", \"--print-failed-action-summary\",\n+                             \"--print-failed-test-logs\", \"--windows-msvc-host-platform\", \"--remote-download-toplevel\", \"--\", \"test\",\n+                             \"--platforms=//:windows_x86_64_msvc\", \"--skip_incompatible_explicit_targets\",\n+                             \"--test_tag_filters=-argument-comment-lint\", \"--test_verbose_timeout_warnings\", \"--test_output=all\",\n+                             f\"--build_metadata=COMMIT_SHA={os.environ['GITHUB_SHA']}\",\n+                             \"--build_metadata=TAG_b11_observation_only=true\", \"--build_metadata=TAG_b11_identity_positive=true\",\n+                             \"--nocache_test_results\", \"--flaky_test_attempts=1\", f\"--test_arg={required}\", \"--test_arg=--exact\", \"--\", TARGET]\n+            save(scope, \"command.json\", {\"argv\": positive_argv, \"cwd\": str(root), \"case\": required,\n+                 \"source\": positive_before, \"scope\": \"One exact original positive, once; the whole-target result is retained.\"})\n+            positive_started = time.monotonic()\n+            with (scope / \"console.log\").open(\"wb\") as console_file:\n+                positive_result = subprocess.run(positive_argv, cwd=root, env=positive_env,\n+                                                 stdout=console_file, stderr=subprocess.STDOUT, check=False)\n+            save(scope, \"command-terminal.json\", {\"exit_code\": positive_result.returncode,\n+                 \"elapsed_seconds\": time.monotonic() - positive_started})\n+            positive_after = source_guard(root, head, POSITIVE, False)\n+            save(scope, \"source-after.json\", positive_after)\n+            require(positive_after == positive_before, \"exact positive changed source/index/locks\")\n+            require(positive_result.returncode == 0, f\"exact positive failed: {required}\")\n+            positive_summary = target_terminal((scope / \"console.log\").read_bytes(), \"PASSED\")\n+            exact, exact_manifest = retained_log(positive_archive, head, entry[\"head_tree\"], False)\n+            exact_log = ANSI.sub(\"\", exact[\".log\"][0].decode(\"utf-8\", errors=\"strict\")).replace(\"\\r\", \"\")\n+            exact_summaries = re.findall(r\"^test result: (.+)$\", exact_log, re.MULTILINE)\n+            require(len(exact_summaries) == 1 and re.fullmatch(\n+                r\"ok\\. 1 passed; 0 failed; 0 ignored; 0 measured; 155 filtered out; finished in [0-9.]+s\",\n+                exact_summaries[0]) is not None, f\"exact positive must run one nonignored original case: {required}\")\n+            require(not re.findall(r\"^---- (.+) stdout ----$\", exact_log, re.MULTILINE),\n+                    \"exact positive has a failed-test header\")\n+            exact_xml = ET.fromstring(exact[\".xml\"][0])\n+            exact_cases = exact_xml.findall(\".//testcase\")\n+            require(len(exact_cases) == 1 and exact_cases[0].get(\"status\") == \"run\"\n+                    and not exact_cases[0].findall(\"error\") and not exact_cases[0].findall(\"failure\")\n+                    and not exact_cases[0].findall(\"skipped\"), \"exact positive has a non-success outer XML result\")\n+            qualified = {\"case\": required, \"status\": \"EXACT_POSITIVE_QUALIFIED\", \"attempts\": 1,\n+                         \"target_summary\": positive_summary, \"collector_manifest\": exact_manifest,\n+                         \"files\": {k: v[1] for k, v in exact.items()}, \"source\": positive_after}\n+            save(scope, \"qualification.json\", qualified)\n+            report[\"positive_scopes\"].append(qualified)\n         save(evidence, \"positive-prerequisites.json\", {\"original_exit_code\": original_status,\n              \"original_summary\": original_summary, \"console\": digest(original_console),\n-             \"collector_manifest\": positive_manifest, \"files\": {k: v[1] for k, v in positive.items()}})\n+             \"collector_manifest\": positive_manifest, \"files\": {k: v[1] for k, v in positive.items()},\n+             \"exact_individual_scopes\": report[\"positive_scopes\"],\n+             \"scope_limit\": \"Four exact positive records supplement the unchanged whole target; no interleaved PASS is reconstructed.\"})\n \n         original_bytes = source.read_bytes()\n         positive_body = canonical(original_bytes, POSITIVE, SOURCE)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "forward_inverse_exact": true,
+  "native7_original_terminal": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127429723742/members/b11-token-mechanism-probe/acl-identity-counterfactual/counterfactual-terminal.json",
+    "bytes": 544,
+    "sha256": "9c629a4572f5659f5c5d588e9200f90a564f33fcb76fc706c68ea36aa6002b5e",
+    "git_blob": "da8ffa3044c27fc9d36e18affe1c880e8e3da2e5"
+  },
+  "native7_retained_manifest": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127429723742/members/bazel-execution-logs/failed-test-logs/invocation-6iu04t1n/manifest.json",
+    "bytes": 1273,
+    "sha256": "83fd10df31dd8513c398a3faa65914950a21071aa27842aafc06f24d91a4a04e",
+    "git_blob": "77c2a1ba243a435b3a0ed80d942b948fa06bf5dc"
+  },
+  "native7_full_log": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127429723742/members/bazel-execution-logs/failed-test-logs/invocation-6iu04t1n/targets/0000/test.log",
+    "bytes": 142855,
+    "sha256": "4a970730a11ee97899de1223a481e1c9d15fc5e377c4660d9366bc6bcddf8989",
+    "git_blob": "82393b7d6724787be8db86f569775f9b9c97f987"
+  },
+  "native7_full_XML": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127429723742/members/bazel-execution-logs/failed-test-logs/invocation-6iu04t1n/targets/0000/test.xml",
+    "bytes": 143278,
+    "sha256": "8b9f39b15cc3b8bdf433d9675ca4e299f8ca864c4a5a4c6443c7c91d63ef88bb",
+    "git_blob": "1dc674838cb2b51a2aec380a141d991998fb9e84"
+  },
+  "native7_old_four_whole_line_counts": {
+    "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object": 1,
+    "acl::tests::existing_native_deny_does_not_require_write_dac": 1,
+    "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write": 1,
+    "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes": 0
+  },
+  "native7_interleaved_line_unchanged": [
+    {
+      "line": 294,
+      "raw": "PROBE_OBSERVATION_ONLY restoration {\"subject\":\"host\",\"outside_level\":\"medium\",\"results\":[{\"path\":\"D:\\\\tmp\\\\.tmpLONURf\\\\host-medium\\\\inside\",\"identity\":[840113181,917504,98110],\"pending\":0,\"links\":1,\"label\":\"S:(ML;;NW;;;LW)\",\"restored_survivor\":true},{\"path\":\"D:\\\\tmp\\\\.tmpLONURf\\\\host-medium\\\\inside\\\\read.txt\",\"identity\":[840113181,851968,98116],\"pending\":0,\"links\":1,\"label\":\"S:(ML;;NW;;;LW)\",\"restored_survivor\":true},{\"path\":\"D:\\\\tmp\\\\.tmpLONURf\\\\host-medium\\\\test token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes ... insideok\\\\"
+    }
+  ],
+  "native7_original_failure_headers": [
+    "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+    "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+    "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+    "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+    "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+    "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+    "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+  ],
+  "actual_prior_required_case_failure_header_rejected_before_additional_scopes": {
+    "source": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/members/bazel-execution-logs/failed-test-logs/invocation-iloq9z78/targets/0000/test.log",
+      "bytes": 131855,
+      "sha256": "fcea1fd7d4a059130a34b392f5171e5db76ddfd2d0a0a0f21ebd7414641f71fc",
+      "git_blob": "d4a9dcff6525450a9c5afaacaa531a56514aa5e9"
+    },
+    "case": "acl::tests::existing_native_deny_does_not_require_write_dac",
+    "has_original_failure_header": true
+  },
+  "pure_actual_archive_parsers_only": true,
+  "main_or_project_or_native_executed": false,
+  "new_exact_positive_runs": 0,
+  "negative_runs": 0,
+  "limit": "V3's four new positive executions and the negative remain unexecuted. No corrupted PASS line is repaired or accepted."
+}

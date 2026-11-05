@@ -1,0 +1,66 @@
+BuildBuddy API key is available; using remote Bazel configuration.
+Using generic BuildBuddy configuration: buildbuddy-generic.
+INFO: Invocation ID: c7d978ac-3f58-4f44-8096-c5fe3ae9e7b9
+INFO: Streaming build results to: https://app.buildbuddy.io/invocation/c7d978ac-3f58-4f44-8096-c5fe3ae9e7b9
+INFO: Checking for file changes...
+Computing main repo mapping: 
+Loading: 
+Loading: 0 packages loaded
+Analyzing: target //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests (0 packages loaded, 0 targets configured)
+Analyzing: target //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests (0 packages loaded, 0 targets configured)
+
+Analyzing: target //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests (0 packages loaded, 6166 targets configured)
+
+INFO: Analyzed target //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests (0 packages loaded, 7910 targets configured).
+[1 / 1] no actions running
+[1,612 / 1,616] [Prepa] Compiling Rust bin //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests-bin (71 files)
+[1,612 / 1,616] Compiling Rust bin //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup (71 files); 0s local, remote-cache ... (3 actions running)
+[1,612 / 1,616] Compiling Rust bin //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup (71 files); 4s local, remote-cache ... (3 actions running)
+[1,612 / 1,616] Compiling Rust bin //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup (71 files); 6s local, remote-cache ... (3 actions running)
+[1,613 / 1,616] Compiling Rust bin //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup (71 files); 7s local, remote-cache ... (2 actions running)
+[1,616 / 1,617] Testing //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests; 0s local
+[1,616 / 1,617] Testing //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests; 10s local
+[1,616 / 1,617] Testing //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests; 40s local
+[1,616 / 1,617] Testing //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests; 49s local, remote-cache
+INFO: From Testing //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests:
+==================== Test output for //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests:
+
+running 21 tests
+test win::firewall::tests::local_policy_modify_state_accepts_effective_policy ... ok
+test win::firewall::tests::local_policy_modify_state_rejects_ineffective_policy ... ok
+test win::firewall::tests::local_policy_modify_state_rejects_partial_profile_coverage ... ok
+test win::acl_tests::provision_only_locks_plain_directory_via_handle ... ok
+test win::no_reparse_dir::tests::creates_and_opens_plain_directory_leaf ... ok
+test win::firewall::tests::production_firewall_rule_network_scopes_are_accepted_by_firewall_com ... ok
+test win::firewall::tests::configured_remote_address_literals_are_accepted_by_firewall_com ... ok
+test win::setup_runtime_bin::tests::primary_runtime_path_does_not_depend_on_local_app_data ... ok
+test win::read_acl_mutex::tests::existing_read_acl_mutex_is_not_a_completion_receipt ... ok
+test win::setup_runtime_bin::tests::runtime_paths_include_desktop_parent_and_primary_runtime_roots ... ok
+test win::tests::deny_path_includes_nested_active_root_sid ... ok
+test win::no_reparse_dir::tests::rejects_final_directory_junction ... ok
+test win::no_reparse_dir::tests::rejects_ancestor_directory_junction ... ok
+test win::tests::deny_path_under_active_root_uses_only_matching_root_sid ... ok
+test win::tests::payload_defaults_otel_absent ... ok
+test win::tests::payload_accepts_otel_settings ... ok
+test win::tests::payload_accepts_provision_only_mode ... ok
+test win::tests::deny_path_outside_active_roots_falls_back_to_all_active_root_sids ... ok
+test win::tests::write_root_refresh_ignores_inherited_delete_child_grant ... ok
+test win::tests::write_root_refresh_checks_each_sid ... ok
+test win::tests::write_root_refresh_replaces_stale_delete_child_grant ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+================================================================================
+INFO: Found 1 test target...
+Target //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests up-to-date:
+  bazel-bin/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup-bin-unit-tests.bat
+INFO: Elapsed time: 65.572s, Critical Path: 60.01s
+INFO: 10 processes: 1607 action cache hit, 1 remote cache hit, 5 internal, 5 local.
+INFO: Build completed successfully, 10 total actions
+INFO: 
+//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests PASSED in 49.5s
+
+Executed 1 out of 1 test: 1 test passes.
+INFO: 
+INFO: Streaming build results to: https://app.buildbuddy.io/invocation/c7d978ac-3f58-4f44-8096-c5fe3ae9e7b9
+Selected-target-log archive: D:\a\_temp\b11-token-mechanism-probe\read-acl-readiness\bazel-execution-logs\selected-target-test-logs\invocation-rom_51n2 (complete_for_selected_targets=True)

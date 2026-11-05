@@ -1,0 +1,40 @@
+{
+  "schema": "format-unpublished-package-regeneration-observation-v1",
+  "observed_utc": "2026-11-05T22:52:02.183993+00:00",
+  "unpublished_initial_archive": {
+    "bytes": 758916,
+    "sha256": "b254f51806600e858de1696ee1455564fde338b065b16deb12fdc6239b5a3ec2",
+    "git_blob": "e644e094bf904b5a2f57b3ba40351dcff3d5c2b5"
+  },
+  "mismatched_members": [
+    {
+      "path": "freeze_format_evidence.py",
+      "old_archive_member": {
+        "bytes": 10795,
+        "sha256": "37f6880b68d6a9dc2ce384feec91974473b2632aa6a3f2d212c1fbca99e7ea31",
+        "git_blob": "28428f0d034a7e0ed075d85b03e848a15a4e4f35"
+      },
+      "current": {
+        "bytes": 10802,
+        "sha256": "724e80a9b4bcae3e8ce14f965f7177444c5ad38dbc8f89e1a0acf7e8e874c910",
+        "git_blob": "5409fbda8a02efa8cf17517b37dc5deccbaa1ffb"
+      }
+    },
+    {
+      "path": "review.json",
+      "old_archive_member": {
+        "bytes": 4847,
+        "sha256": "2c0197f30dd5b343e4eefa8d87356b694a6108bc1f7aa5376d554949c102de5c",
+        "git_blob": "482c76c9f2d7a12086ad88d262897596a638dbef"
+      },
+      "current": {
+        "bytes": 4847,
+        "sha256": "bb451f5a97fe6ad614f01df9faaf6bcdebc40514a5a7a651d1629a0941c0fdcb",
+        "git_blob": "7a0014d6191082ce5ef21fccf65cb4e4ed37dd8b"
+      }
+    }
+  ],
+  "known_difference": "Builder destination prefix corrected and review frozen_utc regenerated; all original API/log/ZIP/XML/source candidates and verification outcomes remain byte-identical.",
+  "no_initial_archive_Git_objects_registered": true,
+  "resolution": "Fresh delivery-v2 directory, no overwritten archive paths; recompute all members and verify restored evidence independently."
+}

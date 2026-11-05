@@ -1,0 +1,69 @@
+diff --git a/codex-rs/core/src/agent/control_tests.rs b/codex-rs/core/src/agent/control_tests.rs
+index 05054632b7cd82e5e7587dbcb7aee293788e00a2..6c93451a16f833c0241bdbe55806a6af60fa6195 100644
+--- a/codex-rs/core/src/agent/control_tests.rs
++++ b/codex-rs/core/src/agent/control_tests.rs
+@@ -4696,7 +4696,10 @@
+                     "wire_api".to_string(),
+                     TomlValue::String("responses".to_string()),
+                 ),
+-                ("requires_openai_auth".to_string(), TomlValue::Boolean(false)),
++                (
++                    "requires_openai_auth".to_string(),
++                    TomlValue::Boolean(false),
++                ),
+                 ("supports_websockets".to_string(), TomlValue::Boolean(false)),
+             ])),
+         ),
+diff --git a/codex-rs/core/src/environment_selection.rs b/codex-rs/core/src/environment_selection.rs
+index 3c08e1620e800c30c47d98cc775cb20d4650ac88..18aaa1120cc8449246f363105f16acb459a00dfa 100644
+--- a/codex-rs/core/src/environment_selection.rs
++++ b/codex-rs/core/src/environment_selection.rs
+@@ -1267,7 +1267,9 @@
+                         break if std::time::Instant::now() <= deadline {
+                             Ok(status)
+                         } else {
+-                            Err(format!("isolated snapshot completed after its five-second bound: {status}"))
++                            Err(format!(
++                                "isolated snapshot completed after its five-second bound: {status}"
++                            ))
+                         };
+                     }
+                     Ok(None) => {}
+@@ -1283,17 +1285,32 @@
+             drop(child);
+             let stdout = std::fs::read(stdout_path).expect("read child stdout");
+             let stderr = std::fs::read(stderr_path).expect("read child stderr");
+-            std::io::stdout().write_all(&stdout).expect("forward child stdout");
+-            std::io::stderr().write_all(&stderr).expect("forward child stderr");
++            std::io::stdout()
++                .write_all(&stdout)
++                .expect("forward child stdout");
++            std::io::stderr()
++                .write_all(&stderr)
++                .expect("forward child stderr");
+             let stdout = String::from_utf8(stdout).expect("UTF-8 child stdout");
+             let stderr = String::from_utf8(stderr).expect("UTF-8 child stderr");
+             let status = result.expect("isolated blocking snapshot must complete");
+-            assert!(status.success(), "isolated blocking snapshot assertions failed: {status}");
++            assert!(
++                status.success(),
++                "isolated blocking snapshot assertions failed: {status}"
++            );
+             assert_eq!(stderr.lines().filter(|line| *line == STARTED).count(), 1);
+             assert_eq!(stderr.lines().filter(|line| *line == FINISHED).count(), 1);
+-            assert_eq!(stdout.lines().filter(|line| *line == "running 1 test").count(), 1);
++            assert_eq!(
++                stdout
++                    .lines()
++                    .filter(|line| *line == "running 1 test")
++                    .count(),
++                1
++            );
+             assert!(
+-                stdout.lines().any(|line| line.starts_with(&format!("test {CASE} ..."))),
++                stdout
++                    .lines()
++                    .any(|line| line.starts_with(&format!("test {CASE} ..."))),
+                 "isolated child must run the original exact case"
+             );
+             let summaries: Vec<_> = stdout

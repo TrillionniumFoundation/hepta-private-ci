@@ -1,0 +1,310 @@
+{
+  "schema": "eed-original-format-failure-verification-v1",
+  "head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+  "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+  "run_id": 42063947910,
+  "job_id": 127372805931,
+  "run_attempt": 1,
+  "job_status": "completed",
+  "job_conclusion": "failure",
+  "only_failed_step": {
+    "name": "Verify full-workspace canonical Rust format on Linux",
+    "status": "completed",
+    "conclusion": "failure",
+    "number": 13,
+    "started_at": "2026-11-05T21:51:09Z",
+    "completed_at": "2026-11-05T21:51:27Z"
+  },
+  "raw_original": {
+    "bytes": 1664686,
+    "sha256": "4326b4f407af8ddf0fc38a0ec047bdc75cc88bdbc090043c8e225f04d06a4ba0",
+    "git_blob": "18299704e47546b1561af5526208d098f50e485e"
+  },
+  "full_original_format_step": {
+    "bytes": 62795,
+    "sha256": "91062d17e04cf9c82551cdb1f1f29108b9b864199191a66d52a87139c595637f",
+    "git_blob": "02921042f93f20da14b49302f07d6f8e34196637",
+    "start_byte": 1594411,
+    "end_byte": 1657206
+  },
+  "original_formatter_diff_hunks": 4,
+  "source_rows": [
+    {
+      "logical_source_path": "codex-rs/core/src/agent/control_tests.rs",
+      "before": {
+        "bytes": 173084,
+        "sha256": "2529dca22467d72ee6f067a4f600c99ea17c8099d4010ade2a09f008cfed386d",
+        "git_blob": "05054632b7cd82e5e7587dbcb7aee293788e00a2"
+      },
+      "after": {
+        "bytes": 173143,
+        "sha256": "7fc685bb6465326bb0d62482a98dac60565539f74ef39cd6f5cbfa2dfad9167c",
+        "git_blob": "6c93451a16f833c0241bdbe55806a6af60fa6195"
+      },
+      "full_source_reconstructed_exactly_from_original_formatter_hunks": true,
+      "pure_nonwhitespace_byte_equal": false,
+      "optional_trailing_commas_added": 1,
+      "all_quoted_literal_matches_byte_equal": true
+    },
+    {
+      "logical_source_path": "codex-rs/core/src/environment_selection.rs",
+      "before": {
+        "bytes": 78458,
+        "sha256": "2357c4fc2c3750eb45ea2a940259f1d0b05175e39e040f3d8f2c0d4c35c283a2",
+        "git_blob": "3c08e1620e800c30c47d98cc775cb20d4650ac88"
+      },
+      "after": {
+        "bytes": 78785,
+        "sha256": "24d081bd8c2891840bd48e4826319a84a1ba3d12f06827c296fa6ee10f9c0eb2",
+        "git_blob": "18aaa1120cc8449246f363105f16acb459a00dfa"
+      },
+      "full_source_reconstructed_exactly_from_original_formatter_hunks": true,
+      "pure_nonwhitespace_byte_equal": true,
+      "optional_trailing_commas_added": 0,
+      "all_quoted_literal_matches_byte_equal": true
+    }
+  ],
+  "exact_formatter_derived_patch": {
+    "bytes": 3568,
+    "sha256": "b4baef3d2d639397b7ecaa9b4a06063298780ec19ad004f89a00e4342d6ef49e",
+    "git_blob": "e0348cbfde25bfbcf5fd3e6e584714dee82f3ee4"
+  },
+  "original_native_supervisor_and_protocol_artifacts": [
+    {
+      "artifact_id": 13456116767,
+      "bytes": 527,
+      "sha256": "833644afe2c65505d5a795916ee200b2d06f929da894273af7bae9d179542404",
+      "git_blob": "69eb73b14484575e1ecc7c6b3d89fa418d1b21db",
+      "CRC_and_official_digest_match": true,
+      "xml": {
+        "bytes": 1282,
+        "sha256": "3d224b246a291199f823f5855e30b99c1ee0bb1e61f8c5c00313ddd2ec776e9f",
+        "git_blob": "149d159e9e696243605379e3cdcc6462da37a1a4"
+      },
+      "cases": [
+        {
+          "classname": "codex-hepta-supervisor::signed_intent_recovery",
+          "name": "unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence",
+          "seconds": "0.020",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:47:13.1316595Z         PASS [   0.020s] codex-hepta-supervisor::signed_intent_recovery unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence",
+            "2026-11-05T21:47:13.1980004Z         PASS [   0.020s] codex-hepta-supervisor::signed_intent_recovery unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-supervisor::restart_budget",
+          "name": "unexpected_agent_crashes_back_off_and_stop_after_three_restarts",
+          "seconds": "0.072",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:47:13.1833041Z         PASS [   0.072s] codex-hepta-supervisor::restart_budget unexpected_agent_crashes_back_off_and_stop_after_three_restarts",
+            "2026-11-05T21:47:13.1976713Z         PASS [   0.072s] codex-hepta-supervisor::restart_budget unexpected_agent_crashes_back_off_and_stop_after_three_restarts"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-supervisor::restart_budget_recovery",
+          "name": "restart_budget_survives_repeated_supervisord_recovery",
+          "seconds": "0.086",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:47:13.1973508Z         PASS [   0.086s] codex-hepta-supervisor::restart_budget_recovery restart_budget_survives_repeated_supervisord_recovery",
+            "2026-11-05T21:47:13.1978646Z         PASS [   0.086s] codex-hepta-supervisor::restart_budget_recovery restart_budget_survives_repeated_supervisord_recovery"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        }
+      ]
+    },
+    {
+      "artifact_id": 13455858457,
+      "bytes": 782,
+      "sha256": "73adcb25a10e0157a6d083257f47ae62f2e472a55c9d4b4f1fcf2c763979af13",
+      "git_blob": "6aefbcb27d3dcbe1d7edc752a5bc9e935c2fe4fa",
+      "CRC_and_official_digest_match": true,
+      "xml": {
+        "bytes": 3239,
+        "sha256": "69547f970d6975a0d9d89f33f30f260d5a2eba7c6404ec9ad19c1f26c3efafe0",
+        "git_blob": "279eb51a4a9c92b64e5b4eb1b922fe65ca0559d3"
+      },
+      "cases": [
+        {
+          "classname": "codex-hepta-agent-protocol",
+          "name": "capabilities::tests::negotiation_is_intersection_with_minor_downgrade",
+          "seconds": "0.005",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:48:02.2121380Z         PASS [   0.005s] codex-hepta-agent-protocol capabilities::tests::negotiation_is_intersection_with_minor_downgrade",
+            "2026-11-05T21:48:02.2445007Z         PASS [   0.005s] codex-hepta-agent-protocol capabilities::tests::negotiation_is_intersection_with_minor_downgrade"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-agent-protocol",
+          "name": "capabilities::tests::duplicate_and_invalid_ids_are_rejected",
+          "seconds": "0.005",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:48:02.2124628Z         PASS [   0.005s] codex-hepta-agent-protocol capabilities::tests::duplicate_and_invalid_ids_are_rejected",
+            "2026-11-05T21:48:02.2443510Z         PASS [   0.005s] codex-hepta-agent-protocol capabilities::tests::duplicate_and_invalid_ids_are_rejected"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-agent-protocol",
+          "name": "objective_tests::history::history_unknown_is_nested_and_cannot_decode_as_non_admission",
+          "seconds": "0.005",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:48:02.2176548Z         PASS [   0.005s] codex-hepta-agent-protocol objective_tests::history::history_unknown_is_nested_and_cannot_decode_as_non_admission",
+            "2026-11-05T21:48:02.2446884Z         PASS [   0.005s] codex-hepta-agent-protocol objective_tests::history::history_unknown_is_nested_and_cannot_decode_as_non_admission"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-agent-protocol",
+          "name": "objective_tests::history::history_query_preserves_historical_body_and_current_outer_generation",
+          "seconds": "0.005",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:48:02.2182540Z         PASS [   0.005s] codex-hepta-agent-protocol objective_tests::history::history_query_preserves_historical_body_and_current_outer_generation",
+            "2026-11-05T21:48:02.2445965Z         PASS [   0.005s] codex-hepta-agent-protocol objective_tests::history::history_query_preserves_historical_body_and_current_outer_generation"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-agent-protocol",
+          "name": "objective_tests::objective_start_outcomes_are_strict_wire_types",
+          "seconds": "0.005",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:48:02.2224220Z         PASS [   0.005s] codex-hepta-agent-protocol objective_tests::objective_start_outcomes_are_strict_wire_types",
+            "2026-11-05T21:48:02.2448054Z         PASS [   0.005s] codex-hepta-agent-protocol objective_tests::objective_start_outcomes_are_strict_wire_types"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-agent-protocol",
+          "name": "objective_tests::signed_objective_control_request_round_trips_inside_frame_bound",
+          "seconds": "0.005",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:48:02.2229436Z         PASS [   0.005s] codex-hepta-agent-protocol objective_tests::signed_objective_control_request_round_trips_inside_frame_bound",
+            "2026-11-05T21:48:02.2448883Z         PASS [   0.005s] codex-hepta-agent-protocol objective_tests::signed_objective_control_request_round_trips_inside_frame_bound"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-agent-protocol",
+          "name": "tests::automation_effect_wire_round_trip_is_strict_and_bounded",
+          "seconds": "0.005",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:48:02.2278908Z         PASS [   0.005s] codex-hepta-agent-protocol tests::automation_effect_wire_round_trip_is_strict_and_bounded",
+            "2026-11-05T21:48:02.2449711Z         PASS [   0.005s] codex-hepta-agent-protocol tests::automation_effect_wire_round_trip_is_strict_and_bounded"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-agent-protocol",
+          "name": "tests::automation_wire_round_trip_is_strict_and_bounded",
+          "seconds": "0.006",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:48:02.2299031Z         PASS [   0.006s] codex-hepta-agent-protocol tests::automation_wire_round_trip_is_strict_and_bounded",
+            "2026-11-05T21:48:02.2450443Z         PASS [   0.006s] codex-hepta-agent-protocol tests::automation_wire_round_trip_is_strict_and_bounded"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-agent-protocol",
+          "name": "tests::capabilities_endpoint_is_additive_and_bounded",
+          "seconds": "0.005",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:48:02.2328926Z         PASS [   0.005s] codex-hepta-agent-protocol tests::capabilities_endpoint_is_additive_and_bounded",
+            "2026-11-05T21:48:02.2451225Z         PASS [   0.005s] codex-hepta-agent-protocol tests::capabilities_endpoint_is_additive_and_bounded"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-agent-protocol",
+          "name": "tests::cognitive_context_response_stays_v2_compatible_and_revalidation_is_additive",
+          "seconds": "0.005",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:48:02.2341328Z         PASS [   0.005s] codex-hepta-agent-protocol tests::cognitive_context_response_stays_v2_compatible_and_revalidation_is_additive",
+            "2026-11-05T21:48:02.2452006Z         PASS [   0.005s] codex-hepta-agent-protocol tests::cognitive_context_response_stays_v2_compatible_and_revalidation_is_additive"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-agent-protocol",
+          "name": "tests::health_wire_round_trip_is_strict_and_bounded",
+          "seconds": "0.005",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:48:02.2378862Z         PASS [   0.005s] codex-hepta-agent-protocol tests::health_wire_round_trip_is_strict_and_bounded",
+            "2026-11-05T21:48:02.2452789Z         PASS [   0.005s] codex-hepta-agent-protocol tests::health_wire_round_trip_is_strict_and_bounded"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-agent-protocol",
+          "name": "tests::host_turn_authority_binding_is_strict_and_fail_closed",
+          "seconds": "0.005",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:48:02.2392425Z         PASS [   0.005s] codex-hepta-agent-protocol tests::host_turn_authority_binding_is_strict_and_fail_closed",
+            "2026-11-05T21:48:02.2453457Z         PASS [   0.005s] codex-hepta-agent-protocol tests::host_turn_authority_binding_is_strict_and_fail_closed"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-agent-protocol",
+          "name": "tests::memory_federation_control_is_typed_strict_and_bounded",
+          "seconds": "0.005",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:48:02.2424892Z         PASS [   0.005s] codex-hepta-agent-protocol tests::memory_federation_control_is_typed_strict_and_bounded",
+            "2026-11-05T21:48:02.2454155Z         PASS [   0.005s] codex-hepta-agent-protocol tests::memory_federation_control_is_typed_strict_and_bounded"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        },
+        {
+          "classname": "codex-hepta-agent-protocol",
+          "name": "tests::run_lifecycle_wire_round_trip_is_strict_and_bounded",
+          "seconds": "0.005",
+          "junit_result": "PASS",
+          "original_raw_PASS_display_rows": [
+            "2026-11-05T21:48:02.2440701Z         PASS [   0.005s] codex-hepta-agent-protocol tests::run_lifecycle_wire_round_trip_is_strict_and_bounded",
+            "2026-11-05T21:48:02.2454855Z         PASS [   0.005s] codex-hepta-agent-protocol tests::run_lifecycle_wire_round_trip_is_strict_and_bounded"
+          ],
+          "display_duplication_explanation": "One execution and its final-status-level all summary; these are not two executions."
+        }
+      ]
+    }
+  ],
+  "original_supervisor_clippy_step": {
+    "name": "Strict Supervisor Clippy",
+    "status": "completed",
+    "conclusion": "success",
+    "number": 12,
+    "started_at": "2026-11-05T21:48:02Z",
+    "completed_at": "2026-11-05T21:51:09Z"
+  },
+  "original_checkout_immutability_step": {
+    "name": "Ensure test checkout remained immutable",
+    "status": "completed",
+    "conclusion": "success",
+    "number": 17,
+    "started_at": "2026-11-05T21:51:29Z",
+    "completed_at": "2026-11-05T21:51:29Z"
+  },
+  "local_just_test_fix_fmt": "NOT_RUN",
+  "new_candidate_native_qualification": "NOT_RUN",
+  "old_3_plus_14_results_do_not_qualify_codex_core_or_new_candidate": true,
+  "assertions_calls_time_budgets_strings_and_source_outside_formatter_hunks_unchanged": true,
+  "verifier_executes_only_evidence_reads_and_hash_XML_ZIP_reconstruction": true
+}

@@ -1,0 +1,79 @@
+{
+  "status": "HELPER_TARGET_PASSED",
+  "command_launch_attempted": true,
+  "command_completed": true,
+  "helper_case_execution_verified": true,
+  "helper_qualified": true,
+  "product_B11": "OPEN",
+  "original_library_result_unchanged": true,
+  "full_read_grants_loader_or_descendants_qualified": false,
+  "target_terminal": "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests PASSED in 49.5s",
+  "artifacts": {
+    "manifest": {
+      "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\read-acl-readiness\\bazel-execution-logs\\selected-target-test-logs\\invocation-rom_51n2\\manifest.json",
+      "bytes": 5145,
+      "sha256": "275e082fd510f5216247884df81b61d8486cce798313f3788d5e77e9fcb08983",
+      "git_blob": "376d500185f81729873596d810076576fe2c1656"
+    },
+    "files": [
+      {
+        "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\read-acl-readiness\\bazel-execution-logs\\selected-target-test-logs\\invocation-rom_51n2\\targets\\0000\\test.log",
+        "testlogs_relative_path": "codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup-bin-unit-tests/test.log",
+        "bytes": 1972,
+        "sha256": "1f93a679f8de10a64361f83816ea0bd249b15e0f119527d65b7b660b6353c2db",
+        "git_blob": "634db89911adae62a9649cf2a86ffe71ba518807"
+      },
+      {
+        "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\read-acl-readiness\\bazel-execution-logs\\selected-target-test-logs\\invocation-rom_51n2\\targets\\0000\\test.xml",
+        "testlogs_relative_path": "codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup-bin-unit-tests/test.xml",
+        "bytes": 2371,
+        "sha256": "643d5503d7b5455d6bac4d688889e63dfebd0feb7da84849ff335da52332572a",
+        "git_blob": "ba759752f5b7b37aaaf5802da4d7d21ae2702ef2"
+      }
+    ]
+  },
+  "results": {
+    "actual_case_names": [
+      "win::firewall::tests::local_policy_modify_state_accepts_effective_policy",
+      "win::firewall::tests::local_policy_modify_state_rejects_ineffective_policy",
+      "win::firewall::tests::local_policy_modify_state_rejects_partial_profile_coverage",
+      "win::acl_tests::provision_only_locks_plain_directory_via_handle",
+      "win::no_reparse_dir::tests::creates_and_opens_plain_directory_leaf",
+      "win::firewall::tests::production_firewall_rule_network_scopes_are_accepted_by_firewall_com",
+      "win::firewall::tests::configured_remote_address_literals_are_accepted_by_firewall_com",
+      "win::setup_runtime_bin::tests::primary_runtime_path_does_not_depend_on_local_app_data",
+      "win::read_acl_mutex::tests::existing_read_acl_mutex_is_not_a_completion_receipt",
+      "win::setup_runtime_bin::tests::runtime_paths_include_desktop_parent_and_primary_runtime_roots",
+      "win::tests::deny_path_includes_nested_active_root_sid",
+      "win::no_reparse_dir::tests::rejects_final_directory_junction",
+      "win::no_reparse_dir::tests::rejects_ancestor_directory_junction",
+      "win::tests::deny_path_under_active_root_uses_only_matching_root_sid",
+      "win::tests::payload_defaults_otel_absent",
+      "win::tests::payload_accepts_otel_settings",
+      "win::tests::payload_accepts_provision_only_mode",
+      "win::tests::deny_path_outside_active_roots_falls_back_to_all_active_root_sids",
+      "win::tests::write_root_refresh_ignores_inherited_delete_child_grant",
+      "win::tests::write_root_refresh_checks_each_sid",
+      "win::tests::write_root_refresh_replaces_stale_delete_child_grant"
+    ],
+    "libtest_summaries": [
+      [
+        "ok",
+        "21",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0.03"
+      ]
+    ],
+    "actual_named_pass_count": 21,
+    "complete_compiled_roster_covered": true,
+    "ignored": 0,
+    "outer_xml_cases": 1
+  },
+  "command_exit_code": 0,
+  "error": null,
+  "final_guard_error": null,
+  "hard_cancellation_has_no_terminal_qualification": true
+}

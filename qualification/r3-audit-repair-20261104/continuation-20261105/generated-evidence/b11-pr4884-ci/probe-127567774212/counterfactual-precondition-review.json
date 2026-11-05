@@ -1,0 +1,143 @@
+{
+  "role": "ACTUAL_TOOLCHAIN_ENVIRONMENT_PRECONDITION_FAILURE_BEFORE_BAZEL_EXACT_TESTS_NOT_RUN",
+  "terminal": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/members/b11-token-mechanism-probe/acl-identity-counterfactual/counterfactual-terminal.json",
+    "bytes": 542,
+    "sha256": "19c698b75ff54a7accdebc02554e88fe844cd395e74d873ae618123c2a6a19d4",
+    "git_blob": "93249d0325dc5f3349b0f5d462c662dcfcfeb8b3"
+  },
+  "source_entry": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/members/b11-token-mechanism-probe/acl-identity-counterfactual/source-entry.json",
+    "bytes": 1212,
+    "sha256": "47026f12fbe938a79df936ae640b5507c1b2fb0cdca32adc33e3ad8ba7ec3c24",
+    "git_blob": "0b6423c7cc7bbc84f64632e7c572167e303532f0"
+  },
+  "full_source_test_log": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/members/bazel-execution-logs/failed-test-logs/invocation-x_fkti0g/targets/0000/test.log",
+    "bytes": 142867,
+    "sha256": "7e5810166a9f55fbda1a14a21621202da12b34b0d5f068e242ff4353362d6ad9",
+    "git_blob": "a65c8e01b2decf4a211f65aadf5ad2e678ed4826"
+  },
+  "first_exact_command": {
+    "record": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command.json",
+      "bytes": 2464,
+      "sha256": "f4395f462384a2335d3d1a61fc4c55246b63a4eea2f765e91cd6927d2f28898e",
+      "git_blob": "63f7cdd023c746b519295acbc89e0a2b633b70b1"
+    },
+    "value": {
+      "argv": [
+        "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+        "./.github/scripts/run-bazel-ci.sh",
+        "--print-failed-action-summary",
+        "--print-failed-test-logs",
+        "--windows-msvc-host-platform",
+        "--remote-download-toplevel",
+        "--",
+        "test",
+        "--platforms=//:windows_x86_64_msvc",
+        "--skip_incompatible_explicit_targets",
+        "--test_tag_filters=-argument-comment-lint",
+        "--test_verbose_timeout_warnings",
+        "--test_output=all",
+        "--build_metadata=COMMIT_SHA=cb5aba57802272d7f535cd6ee2ac3e26334dbff6",
+        "--build_metadata=TAG_b11_observation_only=true",
+        "--build_metadata=TAG_b11_identity_positive=true",
+        "--nocache_test_results",
+        "--flaky_test_attempts=1",
+        "--test_arg=acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+        "--test_arg=--exact",
+        "--",
+        "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+      "case": "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+      "source": {
+        "head": "cb5aba57802272d7f535cd6ee2ac3e26334dbff6",
+        "head_tree": "bf1c52a3ed14ca2bd0276ffc693dccf6c1dbbb83",
+        "source": {
+          "bytes": 10467,
+          "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+          "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+        },
+        "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+        "tests": {
+          "bytes": 23872,
+          "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+          "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+        },
+        "status": [],
+        "index_entries": {
+          "bytes": 1183933,
+          "sha256": "3115d221a9bcf383e35d194408c12a08677fb6efebcacf4533f36c866d356c0c",
+          "git_blob": "92fea08e93b6e246323f223cf947e2a6896bd43e"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "bytes": 432254,
+            "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+            "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+          },
+          "MODULE.bazel.lock": {
+            "bytes": 1740955,
+            "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+            "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+          }
+        }
+      },
+      "scope": "One exact original positive, once; the whole-target result is retained."
+    }
+  },
+  "first_exact_command_terminal": {
+    "record": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command-terminal.json",
+      "bytes": 67,
+      "sha256": "23bb5d631938b8dc37553cf921003709f1fc81e59041eb6e027f65abadff63b7",
+      "git_blob": "e8418d05c5de9f13519b354b4985c8a2a04c4a70"
+    },
+    "value": {
+      "exit_code": 1,
+      "elapsed_seconds": 0.03100000000000591
+    }
+  },
+  "first_exact_console": {
+    "record": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/console.log",
+      "bytes": 106,
+      "sha256": "5689fd36a75644de43e3140f2e619ba738deacb78177791b52a9aec68a808f21",
+      "git_blob": "515f43ba6b5cd9e2aa90ccceedd875391808bda6"
+    },
+    "encoding": "UTF-8",
+    "decoded_text": "Missing required native Windows toolchain environment: UniversalCRTSdkDir VCToolsInstallDir WindowsSdkDir\n"
+  },
+  "entry_before_after_raw_bytes_equal": true,
+  "positive_test_cases_executed": 0,
+  "positive_Bazel_invocations_reached": 0,
+  "remaining_exact_commands": 0,
+  "negative_source_installation_attempted": false,
+  "negative_commands": 0,
+  "helper_command_executed": false,
+  "physical_negative_qualification": false,
+  "restore_error": null,
+  "restore_flag_interpretation": "false because source was never mutated; this is not a failed restore",
+  "original_whole_result_retained": true,
+  "no_product_retry": true,
+  "explicit_git_bash": {
+    "record": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/members/b11-token-mechanism-probe/acl-identity-counterfactual/git-bash-executable.json",
+      "bytes": 223,
+      "sha256": "20b12bdff234470d37f66c21248ce69df1c371ecc33b51765f7a8c333f280f24",
+      "git_blob": "336c5bf676670542648cc2ef16298e47b42ff392"
+    },
+    "value": {
+      "path": "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+      "bytes": 2449886,
+      "sha256": "5490d0da5e7cf9d92068cc48fcc590f2bcf8564add8ff91c3b5fe541eb2d72e3",
+      "git_blob": "a649cdd8e6212060c14460e07661dd2fb46d35bb"
+    }
+  },
+  "limits": [
+    "The explicit Git Bash launcher reached the original wrapper, whose unchanged environment guard rejected three mixed-case SDK keys before Bazel. Native Python uppercase key propagation is an evidence-supported inference, pending an actual repaired native run.",
+    "No exact libtest/XML or negative result exists. Original whole failure is not erased."
+  ]
+}

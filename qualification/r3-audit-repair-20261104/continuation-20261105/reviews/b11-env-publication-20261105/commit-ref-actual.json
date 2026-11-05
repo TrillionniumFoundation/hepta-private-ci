@@ -1,0 +1,81 @@
+{
+  "observed_utc": "2026-11-05T22:46:44.759Z",
+  "leases": [
+    {
+      "ref": "refs/heads/fix/r3-original-product-contracts-20261104",
+      "node_id": "REF_kwDOTrgxoNoANXJlZnMvaGVhZHMvZml4L3IzLW9yaWdpbmFsLXByb2R1Y3QtY29udHJhY3RzLTIwMjYxMTA0",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/fix/r3-original-product-contracts-20261104",
+      "object": {
+        "sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "type": "commit",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      }
+    },
+    {
+      "ref": "refs/heads/diag/b11-token-mechanism-observations-20261105",
+      "node_id": "REF_kwDOTrgxoNoAOXJlZnMvaGVhZHMvZGlhZy9iMTEtdG9rZW4tbWVjaGFuaXNtLW9ic2VydmF0aW9ucy0yMDI2MTEwNQ",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/diag/b11-token-mechanism-observations-20261105",
+      "object": {
+        "sha": "855733b0f88c82c68135b1879682358a818daa84",
+        "type": "commit",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/855733b0f88c82c68135b1879682358a818daa84"
+      }
+    }
+  ],
+  "created": {
+    "sha": "021a59ff05ccd963bc087918db823aa86af31bb8"
+  },
+  "commit_actual": {
+    "sha": "021a59ff05ccd963bc087918db823aa86af31bb8",
+    "node_id": "C_kwDOTrgxoNoAKDAyMWE1OWZmMDVjY2Q5NjNiYzA4NzkxOGRiODIzYWE4NmFmMzFiYjg",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/021a59ff05ccd963bc087918db823aa86af31bb8",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/021a59ff05ccd963bc087918db823aa86af31bb8",
+    "author": {
+      "name": "Franksudoman",
+      "email": "273670192+Franksudoman@users.noreply.github.com",
+      "date": "2026-11-05T22:46:41Z"
+    },
+    "committer": {
+      "name": "Franksudoman",
+      "email": "273670192+Franksudoman@users.noreply.github.com",
+      "date": "2026-11-05T22:46:41Z"
+    },
+    "tree": {
+      "sha": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/36ca349de7f4c7c5a2914cf1960a81d8621350fa"
+    },
+    "message": "fix(ci): preserve Windows SDK environment casing and sync product candidate\n\nRestore the eight mixed-case SDK environment names expected by the unchanged native Windows Bazel wrapper from their actual inherited values. Keep the original three mixed-case required names, reject missing or conflicting values, preserve optional absence, and share this construction across all three diagnostic subprocesses. Original commands, budgets, guards, source restoration and test rosters remain unchanged.\n\nMerge the reviewed product candidate 67cc5c28. Resolve the sole collector conflict by retaining both the existing setup-helper target and the new PTY target. Rebind the helper's two source pins to the exact merged collector and control script; all eleven pins match this HEAD tree.\n\nNative9 remains an original pre-Bazel environment-guard failure with 147/7/2 in the preceding whole-library run. Cloud mechanism and source review do not qualify Windows behavior. B11 and whole-candidate acceptance remain open.",
+    "parents": [
+      {
+        "sha": "855733b0f88c82c68135b1879682358a818daa84",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/855733b0f88c82c68135b1879682358a818daa84",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/855733b0f88c82c68135b1879682358a818daa84"
+      },
+      {
+        "sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "update_ref": {
+    "success": true
+  },
+  "ref_actual": {
+    "ref": "refs/heads/diag/b11-token-mechanism-observations-20261105",
+    "node_id": "REF_kwDOTrgxoNoAOXJlZnMvaGVhZHMvZGlhZy9iMTEtdG9rZW4tbWVjaGFuaXNtLW9ic2VydmF0aW9ucy0yMDI2MTEwNQ",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/diag/b11-token-mechanism-observations-20261105",
+    "object": {
+      "sha": "021a59ff05ccd963bc087918db823aa86af31bb8",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/021a59ff05ccd963bc087918db823aa86af31bb8"
+    }
+  }
+}

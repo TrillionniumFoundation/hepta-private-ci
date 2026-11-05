@@ -1,0 +1,769 @@
+{
+  "schema": "root-recovered-actual-git-trees-and-b07-source-bridge-v1",
+  "actual_observed_utc": "2026-11-05 21:20:13 UTC",
+  "proof": {
+    "observed_utc": "2026-11-05 21:18:21 UTC",
+    "trees": {
+      "recovery-diag-tree": {
+        "tree": "f717a84a856413d87a3b718b0bcae3adbd16b643",
+        "leaves": 10584,
+        "verified_tree_nodes": 1571,
+        "entries": 12154
+      },
+      "recovery-main-tree": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "leaves": 10582,
+        "verified_tree_nodes": 1571,
+        "entries": 12152
+      },
+      "recovery-5b-tree": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "leaves": 10580,
+        "verified_tree_nodes": 1571,
+        "entries": 12150
+      },
+      "recovery-e78-tree": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "leaves": 10580,
+        "verified_tree_nodes": 1571,
+        "entries": 12150
+      },
+      "recovery-audit-continuation-tree": {
+        "tree": "5e060597b950bf6fa601aee17250f80e4924a4db",
+        "leaves": 1772,
+        "verified_tree_nodes": 293,
+        "entries": 2064
+      }
+    },
+    "audit_v8_composed": {
+      "tree": "c592f5edf3969f5fc8bf5100b532c2823c4f8f8a",
+      "leaves": 12352,
+      "verified_tree_nodes": 1864,
+      "entries": 14215
+    }
+  },
+  "source_rows": [
+    {
+      "path": "codex-rs/codex-mcp/src/binding.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__binding.rs.source.txt",
+        "bytes": 11804,
+        "sha256": "dbf388038db00379c8f50f9fc3cf34946d7e01b6c92e6466530ec9b9e6f65d4e",
+        "git_blob": "de0238af78e06046a110877513ff172a3a44ff85"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/codex-mcp/src/binding.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "de0238af78e06046a110877513ff172a3a44ff85",
+        "size": 11804,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/de0238af78e06046a110877513ff172a3a44ff85"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/codex-mcp/src/binding.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "de0238af78e06046a110877513ff172a3a44ff85",
+        "size": 11804,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/de0238af78e06046a110877513ff172a3a44ff85"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/codex-mcp/src/binding.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "de0238af78e06046a110877513ff172a3a44ff85",
+        "size": 11804,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/de0238af78e06046a110877513ff172a3a44ff85"
+      }
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__binding_tests.rs.source.txt",
+        "bytes": 13600,
+        "sha256": "972f394f14572afc9d88fd9f1eb7c613c68802a1edfde35c77e3e612a92dc036",
+        "git_blob": "a95d1913cd11a8426e56c3b1d030641d9c287220"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+        "size": 13600,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/a95d1913cd11a8426e56c3b1d030641d9c287220"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+        "size": 13600,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/a95d1913cd11a8426e56c3b1d030641d9c287220"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+        "size": 13600,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/a95d1913cd11a8426e56c3b1d030641d9c287220"
+      }
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/catalog.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__catalog.rs.source.txt",
+        "bytes": 19481,
+        "sha256": "7f4d75faf9c63e34f873b0dfc8fde0373c456ac4e0a39511684d9658e35b0ad0",
+        "git_blob": "5d3d473c049d9344c4498390ae141dcf44b1d3fe"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/codex-mcp/src/catalog.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5d3d473c049d9344c4498390ae141dcf44b1d3fe",
+        "size": 19481,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/5d3d473c049d9344c4498390ae141dcf44b1d3fe"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/codex-mcp/src/catalog.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5d3d473c049d9344c4498390ae141dcf44b1d3fe",
+        "size": 19481,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/5d3d473c049d9344c4498390ae141dcf44b1d3fe"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/codex-mcp/src/catalog.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5d3d473c049d9344c4498390ae141dcf44b1d3fe",
+        "size": 19481,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/5d3d473c049d9344c4498390ae141dcf44b1d3fe"
+      }
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/connection_manager/tool_catalog.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__connection_manager__tool_catalog.rs.source.txt",
+        "bytes": 17286,
+        "sha256": "dbb0d154f570637679baf29e72cec930c34c85bd4735e4038f228ba8bc0b99af",
+        "git_blob": "1cda1d902fd31897b3de6b9dd629dce8741b6c75"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/codex-mcp/src/connection_manager/tool_catalog.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1cda1d902fd31897b3de6b9dd629dce8741b6c75",
+        "size": 17286,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/1cda1d902fd31897b3de6b9dd629dce8741b6c75"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/codex-mcp/src/connection_manager/tool_catalog.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1cda1d902fd31897b3de6b9dd629dce8741b6c75",
+        "size": 17286,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/1cda1d902fd31897b3de6b9dd629dce8741b6c75"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/codex-mcp/src/connection_manager/tool_catalog.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1cda1d902fd31897b3de6b9dd629dce8741b6c75",
+        "size": 17286,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/1cda1d902fd31897b3de6b9dd629dce8741b6c75"
+      }
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/runtime.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__runtime.rs.source.txt",
+        "bytes": 40360,
+        "sha256": "cf1762c1ca527915de437477642d9421559e2da178f0718ba2da087c9fd7f476",
+        "git_blob": "0ff4d56a281d00936d0e26fef67ea85315d577e1"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/codex-mcp/src/runtime.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0ff4d56a281d00936d0e26fef67ea85315d577e1",
+        "size": 40360,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/0ff4d56a281d00936d0e26fef67ea85315d577e1"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/codex-mcp/src/runtime.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0ff4d56a281d00936d0e26fef67ea85315d577e1",
+        "size": 40360,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/0ff4d56a281d00936d0e26fef67ea85315d577e1"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/codex-mcp/src/runtime.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0ff4d56a281d00936d0e26fef67ea85315d577e1",
+        "size": 40360,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/0ff4d56a281d00936d0e26fef67ea85315d577e1"
+      }
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/tools.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__codex-mcp__src__tools.rs.source.txt",
+        "bytes": 11037,
+        "sha256": "3df721059290b134cef2bae1f174f6562d2b53f0f80280c69f5ab337a99eeb74",
+        "git_blob": "51d3f05aac817325392f2cac6c684c936db7af22"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/codex-mcp/src/tools.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "51d3f05aac817325392f2cac6c684c936db7af22",
+        "size": 11037,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/51d3f05aac817325392f2cac6c684c936db7af22"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/codex-mcp/src/tools.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "51d3f05aac817325392f2cac6c684c936db7af22",
+        "size": 11037,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/51d3f05aac817325392f2cac6c684c936db7af22"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/codex-mcp/src/tools.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "51d3f05aac817325392f2cac6c684c936db7af22",
+        "size": 11037,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/51d3f05aac817325392f2cac6c684c936db7af22"
+      }
+    },
+    {
+      "path": "codex-rs/core-plugins/src/executor_hooks.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core-plugins__src__executor_hooks.rs.source.txt",
+        "bytes": 4222,
+        "sha256": "fbdc87934d9dae73014f626dd079989986c1b1e8bcc8d068cb6f1d4fc555463a",
+        "git_blob": "58d1ea62663bf64c346e981bf2aa3267e44fb0f5"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/core-plugins/src/executor_hooks.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "58d1ea62663bf64c346e981bf2aa3267e44fb0f5",
+        "size": 4222,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/58d1ea62663bf64c346e981bf2aa3267e44fb0f5"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/core-plugins/src/executor_hooks.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "58d1ea62663bf64c346e981bf2aa3267e44fb0f5",
+        "size": 4222,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/58d1ea62663bf64c346e981bf2aa3267e44fb0f5"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/core-plugins/src/executor_hooks.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "58d1ea62663bf64c346e981bf2aa3267e44fb0f5",
+        "size": 4222,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/58d1ea62663bf64c346e981bf2aa3267e44fb0f5"
+      }
+    },
+    {
+      "path": "codex-rs/core/src/hook_mcp_executor.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__src__hook_mcp_executor.rs.source.txt",
+        "bytes": 3100,
+        "sha256": "21c841f114dbd06925ea444bde1adcb00f5720c6d96849b722aaa4f72fa2564f",
+        "git_blob": "6eca59da7d93ae157af653e8ce19159bfa728dc8"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/core/src/hook_mcp_executor.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6eca59da7d93ae157af653e8ce19159bfa728dc8",
+        "size": 3100,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/6eca59da7d93ae157af653e8ce19159bfa728dc8"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/core/src/hook_mcp_executor.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6eca59da7d93ae157af653e8ce19159bfa728dc8",
+        "size": 3100,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/6eca59da7d93ae157af653e8ce19159bfa728dc8"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/core/src/hook_mcp_executor.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6eca59da7d93ae157af653e8ce19159bfa728dc8",
+        "size": 3100,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/6eca59da7d93ae157af653e8ce19159bfa728dc8"
+      }
+    },
+    {
+      "path": "codex-rs/core/src/hook_runtime.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__src__hook_runtime.rs.source.txt",
+        "bytes": 43465,
+        "sha256": "9afb40589d3a6d3132a5fb85cf3691c7b110353a34aebd921cd954eb13f52dfa",
+        "git_blob": "c520135afdd384df148c184baa57568766eb3abc"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/core/src/hook_runtime.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c520135afdd384df148c184baa57568766eb3abc",
+        "size": 43465,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/c520135afdd384df148c184baa57568766eb3abc"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/core/src/hook_runtime.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c520135afdd384df148c184baa57568766eb3abc",
+        "size": 43465,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/c520135afdd384df148c184baa57568766eb3abc"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/core/src/hook_runtime.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c520135afdd384df148c184baa57568766eb3abc",
+        "size": 43465,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/c520135afdd384df148c184baa57568766eb3abc"
+      }
+    },
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__src__session__mod.rs.source.txt",
+        "bytes": 215824,
+        "sha256": "a666d5f63dddd2a197827082087692819a841cfa2d30943ab3a19a7ba983ba39",
+        "git_blob": "b71bc56687973debf2b8615da036e60a436e3c08"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/core/src/session/mod.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b71bc56687973debf2b8615da036e60a436e3c08",
+        "size": 215824,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/b71bc56687973debf2b8615da036e60a436e3c08"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/core/src/session/mod.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b71bc56687973debf2b8615da036e60a436e3c08",
+        "size": 215824,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/b71bc56687973debf2b8615da036e60a436e3c08"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/core/src/session/mod.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b71bc56687973debf2b8615da036e60a436e3c08",
+        "size": 215824,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/b71bc56687973debf2b8615da036e60a436e3c08"
+      }
+    },
+    {
+      "path": "codex-rs/core/src/session/token_budget.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__src__session__token_budget.rs.source.txt",
+        "bytes": 4038,
+        "sha256": "f9c347e376132956947694439e7d24020d9ada86dbd5fc1143c9477d6192f686",
+        "git_blob": "747d8cf5bc9a57e15e8954d3d761f94223ae528a"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/core/src/session/token_budget.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "747d8cf5bc9a57e15e8954d3d761f94223ae528a",
+        "size": 4038,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/747d8cf5bc9a57e15e8954d3d761f94223ae528a"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/core/src/session/token_budget.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "747d8cf5bc9a57e15e8954d3d761f94223ae528a",
+        "size": 4038,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/747d8cf5bc9a57e15e8954d3d761f94223ae528a"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/core/src/session/token_budget.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "747d8cf5bc9a57e15e8954d3d761f94223ae528a",
+        "size": 4038,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/747d8cf5bc9a57e15e8954d3d761f94223ae528a"
+      }
+    },
+    {
+      "path": "codex-rs/core/src/tools/lifecycle.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__src__tools__lifecycle.rs.source.txt",
+        "bytes": 16576,
+        "sha256": "c1026ea7a0e66865d48e6ce271eeba983eff63aa4d7d249f9e086df7f0b83719",
+        "git_blob": "d67baea1b193f3eff145030c902be6961f165ffc"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/core/src/tools/lifecycle.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d67baea1b193f3eff145030c902be6961f165ffc",
+        "size": 16576,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d67baea1b193f3eff145030c902be6961f165ffc"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/core/src/tools/lifecycle.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d67baea1b193f3eff145030c902be6961f165ffc",
+        "size": 16576,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d67baea1b193f3eff145030c902be6961f165ffc"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/core/src/tools/lifecycle.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d67baea1b193f3eff145030c902be6961f165ffc",
+        "size": 16576,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d67baea1b193f3eff145030c902be6961f165ffc"
+      }
+    },
+    {
+      "path": "codex-rs/core/tests/common/lib.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__common__lib.rs.source.txt",
+        "bytes": 22506,
+        "sha256": "5418ece8bb498ed07b87e99e1faa9a8c86944a40cfe20d519e4d60ecbec54f24",
+        "git_blob": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/core/tests/common/lib.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "29ed4875e0674d534efc39a23b96995eb3790ce6",
+        "size": 22506,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/29ed4875e0674d534efc39a23b96995eb3790ce6"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/core/tests/common/lib.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "29ed4875e0674d534efc39a23b96995eb3790ce6",
+        "size": 22506,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/29ed4875e0674d534efc39a23b96995eb3790ce6"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/core/tests/common/lib.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "29ed4875e0674d534efc39a23b96995eb3790ce6",
+        "size": 22506,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/29ed4875e0674d534efc39a23b96995eb3790ce6"
+      }
+    },
+    {
+      "path": "codex-rs/core/tests/suite/code_mode.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__suite__code_mode.rs.source.txt",
+        "bytes": 213008,
+        "sha256": "b053267b92afa19a861d800814e43c8a33e4ea2f823fb26e0a4eb89c6853eba2",
+        "git_blob": "d1970f7853bcd5777ef96881b457525b7abfa92a"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/core/tests/suite/code_mode.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d1970f7853bcd5777ef96881b457525b7abfa92a",
+        "size": 213008,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d1970f7853bcd5777ef96881b457525b7abfa92a"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/core/tests/suite/code_mode.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d1970f7853bcd5777ef96881b457525b7abfa92a",
+        "size": 213008,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d1970f7853bcd5777ef96881b457525b7abfa92a"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/core/tests/suite/code_mode.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d1970f7853bcd5777ef96881b457525b7abfa92a",
+        "size": 213008,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d1970f7853bcd5777ef96881b457525b7abfa92a"
+      }
+    },
+    {
+      "path": "codex-rs/core/tests/suite/hooks_executor.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__suite__hooks_executor.rs.source.txt",
+        "bytes": 14976,
+        "sha256": "db64962784e6e067f13e1a4f1b9458893fc084e8713e8d48b3f0d093043cb130",
+        "git_blob": "d664d41c9a7ca66d1a9b47445b36f2754bf6fece"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/core/tests/suite/hooks_executor.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d664d41c9a7ca66d1a9b47445b36f2754bf6fece",
+        "size": 14976,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d664d41c9a7ca66d1a9b47445b36f2754bf6fece"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/core/tests/suite/hooks_executor.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d664d41c9a7ca66d1a9b47445b36f2754bf6fece",
+        "size": 14976,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d664d41c9a7ca66d1a9b47445b36f2754bf6fece"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/core/tests/suite/hooks_executor.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d664d41c9a7ca66d1a9b47445b36f2754bf6fece",
+        "size": 14976,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d664d41c9a7ca66d1a9b47445b36f2754bf6fece"
+      }
+    },
+    {
+      "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__suite__hooks_mcp.rs.source.txt",
+        "bytes": 44872,
+        "sha256": "b5a7a405723e233c14ab3e73213f8010f53c862df1328a92ae92c32f7e9ba73b",
+        "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+        "size": 44872,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/4fd06489fb864fb74d1b457f5eb39cc279c23ec0"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+        "size": 44872,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/4fd06489fb864fb74d1b457f5eb39cc279c23ec0"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+        "size": 44872,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/4fd06489fb864fb74d1b457f5eb39cc279c23ec0"
+      }
+    },
+    {
+      "path": "codex-rs/core/tests/suite/mod.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__suite__mod.rs.source.txt",
+        "bytes": 4895,
+        "sha256": "6cfc926f1fb4417554b75f337372fd714fdd3769b0db9db1398bc8a0ffc9938e",
+        "git_blob": "17145f671a76a894ab374ca299a67cf1a43e9c55"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/core/tests/suite/mod.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+        "size": 4895,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/17145f671a76a894ab374ca299a67cf1a43e9c55"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/core/tests/suite/mod.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+        "size": 4895,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/17145f671a76a894ab374ca299a67cf1a43e9c55"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/core/tests/suite/mod.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "17145f671a76a894ab374ca299a67cf1a43e9c55",
+        "size": 4895,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/17145f671a76a894ab374ca299a67cf1a43e9c55"
+      }
+    },
+    {
+      "path": "codex-rs/core/tests/suite/rmcp_client.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__suite__rmcp_client.rs.source.txt",
+        "bytes": 146845,
+        "sha256": "78fbb2b9cef8a4dd64dab34123e28524c0964ee11058fef8bb2f4fa1dcff04ee",
+        "git_blob": "3897f4396696ba94ce93c7be8f29b3c65a0f5de8"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/core/tests/suite/rmcp_client.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3897f4396696ba94ce93c7be8f29b3c65a0f5de8",
+        "size": 146845,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/3897f4396696ba94ce93c7be8f29b3c65a0f5de8"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/core/tests/suite/rmcp_client.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3897f4396696ba94ce93c7be8f29b3c65a0f5de8",
+        "size": 146845,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/3897f4396696ba94ce93c7be8f29b3c65a0f5de8"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/core/tests/suite/rmcp_client.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3897f4396696ba94ce93c7be8f29b3c65a0f5de8",
+        "size": 146845,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/3897f4396696ba94ce93c7be8f29b3c65a0f5de8"
+      }
+    },
+    {
+      "path": "codex-rs/core/tests/suite/token_budget.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__core__tests__suite__token_budget.rs.source.txt",
+        "bytes": 61980,
+        "sha256": "71d164c4ddd7bf3feb3ef8c7bef7ff150ed28db936680a0d1752844b6287d706",
+        "git_blob": "e7fb29f3b32eafc364022be4405a6edf736f9afd"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/core/tests/suite/token_budget.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e7fb29f3b32eafc364022be4405a6edf736f9afd",
+        "size": 61980,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/e7fb29f3b32eafc364022be4405a6edf736f9afd"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/core/tests/suite/token_budget.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e7fb29f3b32eafc364022be4405a6edf736f9afd",
+        "size": 61980,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/e7fb29f3b32eafc364022be4405a6edf736f9afd"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/core/tests/suite/token_budget.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e7fb29f3b32eafc364022be4405a6edf736f9afd",
+        "size": 61980,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/e7fb29f3b32eafc364022be4405a6edf736f9afd"
+      }
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/bin/test_stdio_server.rs",
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/source/codex-rs__rmcp-client__src__bin__test_stdio_server.rs.source.txt",
+        "bytes": 40654,
+        "sha256": "ea08de179afeb0a8ca089497ed790a108044414e7ca455ab955c0e50191700ba",
+        "git_blob": "5ebd161921b9064444841d631835d4f51f78813e"
+      },
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "path": "codex-rs/rmcp-client/src/bin/test_stdio_server.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5ebd161921b9064444841d631835d4f51f78813e",
+        "size": 40654,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/5ebd161921b9064444841d631835d4f51f78813e"
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "path": "codex-rs/rmcp-client/src/bin/test_stdio_server.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5ebd161921b9064444841d631835d4f51f78813e",
+        "size": 40654,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/5ebd161921b9064444841d631835d4f51f78813e"
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "path": "codex-rs/rmcp-client/src/bin/test_stdio_server.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5ebd161921b9064444841d631835d4f51f78813e",
+        "size": 40654,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/5ebd161921b9064444841d631835d4f51f78813e"
+      }
+    }
+  ],
+  "actual_source_tree_count": 3,
+  "scope": "Full recursive API trees recomputed across every directory; audit composed from unchanged 5b siblings and actual continuation subtree."
+}

@@ -1,0 +1,750 @@
+{
+  "schema": "b07-gnu-e78-22-original-cases-v1",
+  "command": {
+    "argv": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate",
+      "-p",
+      "codex-core",
+      "-p",
+      "codex-linux-sandbox"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs",
+    "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "started_at": "2026-11-05T14:07:58.749428+00:00",
+    "extra_environment": {},
+    "attempt": 1,
+    "cargo_profile": "dev-small",
+    "nextest_profile": "local",
+    "retries": 0
+  },
+  "overall_actual_scope": {
+    "exit_code": 100,
+    "selected": 3967,
+    "passed": 3962,
+    "failed": 5,
+    "original_ignored": 10,
+    "retries": 0
+  },
+  "full_raw": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.stdout",
+    "bytes": 11059831,
+    "sha256": "a06d2a7c73589c76300a3a6886f37affcd8609f8cb41499e6704a9762a20aeb4",
+    "git_blob": "e611358b8bdcd77bb3eb7cb68c0067a0438368b7"
+  },
+  "full_xml": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.junit.xml",
+    "bytes": 839106,
+    "sha256": "dba2abf1ada37ea47ed8bb5910956094ad5519652df72256cce723e26d84d071",
+    "git_blob": "575da9b27fcf5e423b2fa23b9f872e0b07eacade"
+  },
+  "program": {
+    "binary_id": "codex-core::all",
+    "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-86d2a13ddb92a398",
+    "bytes": 284061712,
+    "sha256": "a90ad304bf6324a2f4bf81f01312d857c803ec313c8d5d9675291ee972102c19",
+    "git_blob": "dbc205f780b9dd8ef3dea25aa73196f713740f4f",
+    "mode": 448,
+    "executable": true
+  },
+  "source_ordinary_head_index_locks_equal_before_after": true,
+  "ordinary_head_actual": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "input_records": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects-command.json",
+      "bytes": 575,
+      "sha256": "b985724f819c23de598ca8063bfa46c9a59e173ae6ebdb6faac3a31f1c164471",
+      "git_blob": "00671e4113db85f99f4f0a4a544e58c00a446878"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects-status.json",
+      "bytes": 1247,
+      "sha256": "d883fe7676b050bfcadded0b3a75db506ff9354058ac884382718dd2d971cdca",
+      "git_blob": "8faa4dea902b6c31d41ada7c46cd66b5f6b06692"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects-review.json",
+      "bytes": 881193,
+      "sha256": "6931a8ad888925471da6e8d03aa8ecafec46e152c20440972ce420604e8b47f4",
+      "git_blob": "f0a55073f44cab2ca4cd7013f28ed4341f9e68fc"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects-before-source-guard.json",
+      "bytes": 111405,
+      "sha256": "27915d1da4d100219044e27a45823eb1bacf05a8e09f3382df9a798715d17029",
+      "git_blob": "3533527795df6f5f2dbb874a8e162f21b87a2cc0"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects-after-source-guard.json",
+      "bytes": 111404,
+      "sha256": "ed5de4a70e67655724cbdd60e29bf1beea840ff88006ea3b461bf9f892e2a292",
+      "git_blob": "1df85a3e2ea1c38c1e0746d78d2116dc18d3daad"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/project-catalog-selection.json",
+      "bytes": 694242,
+      "sha256": "8dbb2f04777e25467f8c5cee177a0ab8c4936ace156fb22f1a125c2a625137e4",
+      "git_blob": "8e93d34a9de7382ef1eff1c759fe283c10d81801"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/metadata-binding.json",
+      "bytes": 1284,
+      "sha256": "efbfbb05e4f7e40670f6f7aaaac03f173af582f93ea17d13063440e6e3af0486",
+      "git_blob": "b0f06b589911fbe2e9e18ac1ba535f9a7d510278"
+    }
+  ],
+  "cases": [
+    {
+      "test": "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-01.original-block.txt",
+        "bytes": 336,
+        "sha256": "9bd3ce5997e8400a04572daff821c5725e1c7768cab444e0c3e8dbbc9cc409c2",
+        "git_blob": "ca51992c6086f69da580bfbc037e20fb6cb72f18"
+      },
+      "raw_start_line": 29061,
+      "raw_end_line_inclusive": 29069,
+      "raw_byte_start": 1399217,
+      "raw_byte_end_exclusive": 1399553,
+      "junit_attributes": {
+        "name": "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.248-05:00",
+        "time": "0.342"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_executor::executor_stop_hook_stops_after_disconnection\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.248-05:00\" time=\"0.342\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-02.original-block.txt",
+        "bytes": 328,
+        "sha256": "941c0267b335fd892c21f17c8641f3511b81d564b13525d7d0a10f01789c20f2",
+        "git_blob": "49adf0c1f36026e9d875a984d7e5e84bb2988bb3"
+      },
+      "raw_start_line": 29025,
+      "raw_end_line_inclusive": 29033,
+      "raw_byte_start": 1397787,
+      "raw_byte_end_exclusive": 1398115,
+      "junit_attributes": {
+        "name": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.184-05:00",
+        "time": "0.372"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_executor::executor_stop_hook_runs_after_attachment\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.184-05:00\" time=\"0.372\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-03.original-block.txt",
+        "bytes": 342,
+        "sha256": "a878651da1dcd026d3263d3f9e81af6d2dfe6f1a9b0d2b98d1c8b4161cefb581",
+        "git_blob": "2f559182ac336998fdc61a59e80b55365582e6a4"
+      },
+      "raw_start_line": 25499,
+      "raw_end_line_inclusive": 25507,
+      "raw_byte_start": 1220799,
+      "raw_byte_end_exclusive": 1221141,
+      "junit_attributes": {
+        "name": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:09.621-05:00",
+        "time": "0.279"
+      },
+      "junit_fragment": "<testcase name=\"suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:09.621-05:00\" time=\"0.279\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-04.original-block.txt",
+        "bytes": 356,
+        "sha256": "4bee26bab8909d0dd87b32a04d0fd05521256d4f4586a02f8920592ad1aa3e7c",
+        "git_blob": "9c86dea4c41700eae78a8a24806322cfc0a627ce"
+      },
+      "raw_start_line": 28998,
+      "raw_end_line_inclusive": 29006,
+      "raw_byte_start": 1396683,
+      "raw_byte_end_exclusive": 1397039,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.271-05:00",
+        "time": "0.248"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.271-05:00\" time=\"0.248\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-05.original-block.txt",
+        "bytes": 346,
+        "sha256": "3082737e87e099c09eddad93f648025187b268c3c746b16c0e9db3d9898cc5c1",
+        "git_blob": "071db46ef1916a1e400dda94aececff939846e62"
+      },
+      "raw_start_line": 28989,
+      "raw_end_line_inclusive": 28997,
+      "raw_byte_start": 1396337,
+      "raw_byte_end_exclusive": 1396683,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.273-05:00",
+        "time": "0.230"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.273-05:00\" time=\"0.230\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-06.original-block.txt",
+        "bytes": 372,
+        "sha256": "fe19f12bfc59d1768c433a0204394c0f040930feb9fe66724417d36178c3841d",
+        "git_blob": "f1cbf4ada275c1f707cb53ce39baa24e1c2b3a0c"
+      },
+      "raw_start_line": 29034,
+      "raw_end_line_inclusive": 29042,
+      "raw_byte_start": 1398115,
+      "raw_byte_end_exclusive": 1398487,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.280-05:00",
+        "time": "0.288"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.280-05:00\" time=\"0.288\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-07.original-block.txt",
+        "bytes": 340,
+        "sha256": "a83f9614073127c35fa2e52e28300a8390aeed6167dbfc3eb22503c820d4ff39",
+        "git_blob": "5f48c829b4e61133f1ebc1e8bd91a98806501ace"
+      },
+      "raw_start_line": 29007,
+      "raw_end_line_inclusive": 29015,
+      "raw_byte_start": 1397039,
+      "raw_byte_end_exclusive": 1397379,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.322-05:00",
+        "time": "0.218"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.322-05:00\" time=\"0.218\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-08.original-block.txt",
+        "bytes": 366,
+        "sha256": "53a234d300960b62e1c2bf53f7e42f9d1d006bee70b6ed7e025aca494e6117ea",
+        "git_blob": "e8817b030fd38a1d227b40b7205ea8936a9f49ff"
+      },
+      "raw_start_line": 29043,
+      "raw_end_line_inclusive": 29051,
+      "raw_byte_start": 1398487,
+      "raw_byte_end_exclusive": 1398853,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.336-05:00",
+        "time": "0.239"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.336-05:00\" time=\"0.239\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-09.original-block.txt",
+        "bytes": 371,
+        "sha256": "db61e4b3c6b6a5c926907e5df14fe1628df81e434d56844756e9d36c34ed2b6c",
+        "git_blob": "5f36520c66f4d978e10ee3468ef1321b0cf9fbfb"
+      },
+      "raw_start_line": 29106,
+      "raw_end_line_inclusive": 29115,
+      "raw_byte_start": 1400911,
+      "raw_byte_end_exclusive": 1401282,
+      "junit_attributes": {
+        "name": "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.169-05:00",
+        "time": "0.538"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.169-05:00\" time=\"0.538\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-10.original-block.txt",
+        "bytes": 354,
+        "sha256": "b37ae963b657b99a336c743f5f0dc1ab3fe46dd356fc88c350481ac929cc8384",
+        "git_blob": "82a71263ada60542e774f324e80bfe87c41d414b"
+      },
+      "raw_start_line": 29116,
+      "raw_end_line_inclusive": 29124,
+      "raw_byte_start": 1401282,
+      "raw_byte_end_exclusive": 1401636,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.299-05:00",
+        "time": "0.440"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.299-05:00\" time=\"0.440\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-11.original-block.txt",
+        "bytes": 364,
+        "sha256": "d384b277ef393daa8d50b373cf3c08922121ba67d5e3ffa7e6b4d111f88b80f5",
+        "git_blob": "ef1651a38364d3667e9ab0b5f786fa681f29ddb7"
+      },
+      "raw_start_line": 29052,
+      "raw_end_line_inclusive": 29060,
+      "raw_byte_start": 1398853,
+      "raw_byte_end_exclusive": 1399217,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.340-05:00",
+        "time": "0.243"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.340-05:00\" time=\"0.243\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-12.original-block.txt",
+        "bytes": 354,
+        "sha256": "8a211251867b7ff2f5115bdfe885c453a918517e65001e9e52a3ac31717a56f8",
+        "git_blob": "9259112a6a43dbafa9fa083be100fa6dece7bbd4"
+      },
+      "raw_start_line": 29070,
+      "raw_end_line_inclusive": 29078,
+      "raw_byte_start": 1399553,
+      "raw_byte_end_exclusive": 1399907,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.342-05:00",
+        "time": "0.254"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.342-05:00\" time=\"0.254\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-13.original-block.txt",
+        "bytes": 380,
+        "sha256": "dd47e25801fe7adaf14e7f582f7c790de6df72c21e86a3fc0b7e2ae8476dff5d",
+        "git_blob": "47f9a1484d0f3b2a7a5adf5c01259422c7b9f3fc"
+      },
+      "raw_start_line": 29134,
+      "raw_end_line_inclusive": 29142,
+      "raw_byte_start": 1401960,
+      "raw_byte_end_exclusive": 1402340,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.346-05:00",
+        "time": "0.417"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.346-05:00\" time=\"0.417\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-14.original-block.txt",
+        "bytes": 380,
+        "sha256": "3cbb1497591ba459201402723747e59954fb3187a172ad0e87020ec34acf0927",
+        "git_blob": "623a2520689ee015d785645cfd11d5ac65b5aa96"
+      },
+      "raw_start_line": 29152,
+      "raw_end_line_inclusive": 29160,
+      "raw_byte_start": 1402692,
+      "raw_byte_end_exclusive": 1403072,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.397-05:00",
+        "time": "0.395"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.397-05:00\" time=\"0.395\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-15.original-block.txt",
+        "bytes": 392,
+        "sha256": "1cacefb285c1a69b1b4b55e37bacc395d474a5f440da99cd3f6bb4944684e2f5",
+        "git_blob": "e7d87c5c86b087d4bedc2295aae522a601e1de93"
+      },
+      "raw_start_line": 29170,
+      "raw_end_line_inclusive": 29178,
+      "raw_byte_start": 1403410,
+      "raw_byte_end_exclusive": 1403802,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.398-05:00",
+        "time": "0.416"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.398-05:00\" time=\"0.416\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-16.original-block.txt",
+        "bytes": 386,
+        "sha256": "3140b4289cd6c27480452ef44b0cefdfca33bace9138be390385645d7e2b9e9a",
+        "git_blob": "20f0841126afe68968ad9c9354198111231a2ec6"
+      },
+      "raw_start_line": 29235,
+      "raw_end_line_inclusive": 29243,
+      "raw_byte_start": 1406000,
+      "raw_byte_end_exclusive": 1406386,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.484-05:00",
+        "time": "0.397"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.484-05:00\" time=\"0.397\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-17.original-block.txt",
+        "bytes": 382,
+        "sha256": "00fc0c7b80d2ac0470431a5d5b5b99d6fd8667cd300eb91cef8fcb3408ffc91b",
+        "git_blob": "9349be8054b6b7d7a04e19f1519804ede521675c"
+      },
+      "raw_start_line": 29271,
+      "raw_end_line_inclusive": 29279,
+      "raw_byte_start": 1407410,
+      "raw_byte_end_exclusive": 1407792,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.503-05:00",
+        "time": "0.417"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.503-05:00\" time=\"0.417\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-18.original-block.txt",
+        "bytes": 332,
+        "sha256": "41bdaeb0fe0be6c7818dbccf3f68a0519d2b06e5872ba98e0a2cb6e1e9c6a6ff",
+        "git_blob": "ec40fa6192c36f71dae602d99f23e8319595aded"
+      },
+      "raw_start_line": 29298,
+      "raw_end_line_inclusive": 29306,
+      "raw_byte_start": 1408478,
+      "raw_byte_end_exclusive": 1408810,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.540-05:00",
+        "time": "0.420"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.540-05:00\" time=\"0.420\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-19.original-block.txt",
+        "bytes": 376,
+        "sha256": "41fa27521b8496e53a93ee6b72c2fa74cca9c059417d61265c85ca04f7ca2197",
+        "git_blob": "de9afc8eededd35cc3bda21ca1cf988560c60b99"
+      },
+      "raw_start_line": 29280,
+      "raw_end_line_inclusive": 29288,
+      "raw_byte_start": 1407792,
+      "raw_byte_end_exclusive": 1408168,
+      "junit_attributes": {
+        "name": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:19.520-05:00",
+        "time": "0.420"
+      },
+      "junit_fragment": "<testcase name=\"suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:19.520-05:00\" time=\"0.420\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-20.original-block.txt",
+        "bytes": 374,
+        "sha256": "f13bf8c0bec043c13c6b5a5e33e546887f849b92f4e653efd79969fc9be916f4",
+        "git_blob": "0f2da14fea40b699ba587cf4b2f6bddcc7c29605"
+      },
+      "raw_start_line": 48003,
+      "raw_end_line_inclusive": 48011,
+      "raw_byte_start": 10563736,
+      "raw_byte_end_exclusive": 10564110,
+      "junit_attributes": {
+        "name": "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:29.501-05:00",
+        "time": "0.209"
+      },
+      "junit_fragment": "<testcase name=\"suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:29.501-05:00\" time=\"0.209\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-21.original-block.txt",
+        "bytes": 374,
+        "sha256": "c7d2516e7909b3fb003fe828c93b870a61512df47dd1f0e7f13d1647c0086689",
+        "git_blob": "c2c57f8be6865a63ce3ac9a76d2d17345a254d02"
+      },
+      "raw_start_line": 48213,
+      "raw_end_line_inclusive": 48221,
+      "raw_byte_start": 10922628,
+      "raw_byte_end_exclusive": 10923002,
+      "junit_attributes": {
+        "name": "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:29.650-05:00",
+        "time": "0.208"
+      },
+      "junit_fragment": "<testcase name=\"suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:29.650-05:00\" time=\"0.208\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    },
+    {
+      "test": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+      "binary": "codex-core::all",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "result": "PASS_WITH_NO_OBSERVED_EARLY_RETURN",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-22.original-block.txt",
+        "bytes": 346,
+        "sha256": "054c9ee625e0a608ab5287c357d633efb51b9b799f9569ea4c9a5f4cb5f54030",
+        "git_blob": "33b2252f4f97159ef8c7bef481fbf45c55276477"
+      },
+      "raw_start_line": 48303,
+      "raw_end_line_inclusive": 48311,
+      "raw_byte_start": 10926732,
+      "raw_byte_end_exclusive": 10927078,
+      "junit_attributes": {
+        "name": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-05T09:08:29.810-05:00",
+        "time": "0.243"
+      },
+      "junit_fragment": "<testcase name=\"suite::token_budget::token_budget_context_injects_plain_thread_hint_text\" classname=\"codex-core::all\" timestamp=\"2026-11-05T09:08:29.810-05:00\" time=\"0.243\">\n        </testcase>\n        ",
+      "early_messages_checked": [
+        "Skipping test because it cannot execute when network is disabled in a Codex sandbox.",
+        "Skipping test in the Wine-exec test environment:",
+        "Skipping test because it requires a remote test environment.",
+        "skipping capability test: unprivileged user namespaces are unavailable"
+      ]
+    }
+  ],
+  "limits": [
+    "The original full project command is NONPASS100; these22 named results do not convert it to PASS.",
+    "No network/Wine/remote/capability skip messages occur in these complete captured blocks; existing macro/source branches are preserved.",
+    "The actual ordinary HEAD remains the recorded cabc value; working tree e78 is independently guarded."
+  ]
+}

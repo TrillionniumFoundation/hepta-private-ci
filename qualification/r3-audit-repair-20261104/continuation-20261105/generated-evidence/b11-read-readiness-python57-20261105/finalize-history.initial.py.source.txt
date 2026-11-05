@@ -1,0 +1,128 @@
+"""Freeze existing cloud gate outputs; never run a test or alter the candidate."""
+
+from collections import Counter
+from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+import re
+
+
+ROOT = Path(__file__).resolve().parent
+BASE = ROOT.parent
+V1 = BASE / "cloud-script-regression-v1"
+V2 = BASE / "cloud-script-regression-v2"
+PREFIX = "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105"
+
+
+def identity(path):
+    body = path.read_bytes()
+    return {"bytes": len(body), "sha256": hashlib.sha256(body).hexdigest(),
+            "blob": hashlib.sha1(b"blob " + str(len(body)).encode() + b"\0" + body).hexdigest()}
+
+
+def record(path):
+    return {"local_file": str(path), **identity(path)}
+
+
+source = json.loads((V1 / "source-map.json").read_text())
+expected = json.loads((V2 / "original-case-roster.json").read_text())["names"]
+assert len(expected) == len(set(expected)) == 57
+first = (V1 / "stderr.original").read_text()
+second = (V2 / "stderr.original").read_text()
+actual = re.findall(r"^\S+ \(([^\n)]+)\) \.\.\. ok$", second, re.MULTILINE)
+assert Counter(actual) == Counter(expected)
+assert re.search(r"\nRan 57 tests in ([0-9.]+)s\n\nOK\n$", second)
+assert not re.search(r"skipped|FAIL|ERROR|expected failure|unexpected success", second, re.IGNORECASE)
+first_failures = re.findall(r"^FAIL: .+$", first, re.MULTILINE)
+first_unique = sorted(set(re.findall(r"^FAIL: \S+ \((test_run_bazel_ci\.[^\n)]+)\)", first, re.MULTILINE)))
+assert len(first_failures) == 4 and len(first_unique) == 3
+assert "Ran 57 tests in 4.330s" in first and "FAILED (failures=4)" in first
+terminal = json.loads((V2 / "command-terminal.json").read_text())
+result = json.loads((V2 / "result.json").read_text())
+assert terminal["exit_code"] == result["exit_code"] == 0
+assert result["source_before_after_equal"] and result["semantic_index_before_after_equal"] and result["final_status"] == ""
+before = json.loads((V2 / "source-before.json").read_text())
+after = json.loads((V2 / "source-after.json").read_text())
+assert before == after and len(before) == 13
+for row in source["files"]:
+    assert identity(Path(row["local_file"])) == {key: row[key] for key in ("bytes", "sha256", "blob")}
+
+review = {
+    "schema": "b11-read-readiness-existing-python57-two-attempt-history-v1",
+    "observed_at_utc": datetime.now(timezone.utc).isoformat(),
+    "decision": "EXISTING_57_CLOUD_PYTHON_GATE_PASSED_ON_SECOND_ISOLATED_ATTEMPT_WITH_FIRST_FAILURE_PRESERVED",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "fixed_source_head": source["fixed_source_head"], "fixed_source_tree": source["fixed_source_tree"],
+    "source_input_count": 13, "original_test_files": 5, "original_test_cases": 57,
+    "only_product_input_delta": {"path": ".github/scripts/collect_bazel_failed_test_logs.py",
+                                  "pre": "2142eeb382664d95f77d83ac7ae3da4459601abf",
+                                  "post": "e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9",
+                                  "change": "Append existing setup-bin target after original 11 retained targets; no PTY entry or test change."},
+    "attempt_count": 2, "original_test_source_changes": 0, "product_source_changes_between_attempts": 0,
+    "attempt_1": {
+        "command": record(V1 / "command.json"), "full_stdout": record(V1 / "stdout.original"), "full_stderr": record(V1 / "stderr.original"),
+        "summary": "Ran 57 tests in 4.330s; FAILED (failures=4)",
+        "failure_occurrences": first_failures, "unique_failed_case_names": first_unique,
+        "unique_failed_case_count": 3, "passed_named_cases": len(re.findall(r"^\S+ \([^)]+\) \.\.\. ok$", first, re.MULTILINE)),
+        "observed_failure_endpoint": "Permission denied executing original run-bazel-query-ci.sh and run_bazel_with_buildbuddy.py.",
+        "mode_observation": record(V1 / "post-run-mode-observation.json"),
+        "before": "All 13 contents and exact original Git modes verified before the test; six executable files were 0755.",
+        "after": "All 13 content identities unchanged; all six original executable paths subsequently observed as 0644.",
+        "outer_verifier_exit_code_observed": 1,
+        "outer_verifier_error": "Post-run source_snapshot expected-mode assertion failed before writing result.json.",
+        "child_exit_code_not_independently_persisted": True,
+        "mode_change_cause": "UNKNOWN. Workspace synchronization was a hypothesis, not traced or independently established.",
+        "not_a_pass_and_not_overwritten": True},
+    "attempt_2": {
+        "command": record(V2 / "command.json"), "actual_terminal": record(V2 / "command-terminal.json"), "result": record(V2 / "result.json"),
+        "full_stdout": record(V2 / "stdout.original"), "full_stderr": record(V2 / "stderr.original"),
+        "execution_location": "Fresh, exclusively owned /tmp projection copied from identical fixed inputs; complete command ran within one cloud exec response.",
+        "actual_exit_code": 0, "passed": 57, "failed": 0, "errors": 0, "skipped": 0,
+        "unittest_seconds": float(re.search(r"Ran 57 tests in ([0-9.]+)s", second).group(1)),
+        "command_elapsed_seconds": terminal["elapsed_seconds"],
+        "all_actual_name_counts_equal_original_57": True, "actual_case_names": actual,
+        "source_content_and_original_mode_before_after_equal": True, "semantic_index_before_after_equal": True,
+        "final_git_status": "", "internal_retries": 0,
+        "raw_result_reruns_field_scope": "The raw field reruns=0 describes this invocation's lack of internal replay; this history correctly records two gate invocations overall."},
+    "git_context": "Existing collector tests require HEAD/tree. Each projection has its own local detached fixture identity, not the full 0f checkout. No repository/PR/remote ref was changed.",
+    "complete_raw_is_not_junit": "unittest wrote verbose stderr and no JUnit/XML; no XML qualification is claimed.",
+    "source_map": record(V1 / "source-map.json"),
+    "candidate_manifest": record(BASE / "execution-candidate-v2/manifest.json"),
+    "candidate_actual_publication_map": record(BASE / "execution-candidate-v2/publication-map.json"),
+    "combined_patch": record(BASE / "execution-candidate-v2/combined-seven-paths.patch"),
+    "independent_execution_review": "98bb1d8298fa07e27bdc299d990c4bc9ee0af278",
+    "root_publication_report": {"head": "2338281bac08ff68b85dc2146c04a35598e6cbb4", "tree": "515be77c425a74381a0aa45d06dcb497fd37ec16",
+                                "reported_by": "root message: published at 21:29:20 UTC; not independently re-fetched by this gate author"},
+    "scope_limits": ["Cloud Linux Python/Bash wrapper regression only; the existing test-owned recording Bazel program is not a product build.",
+                     "No Rust/Cargo/product Bazel/Windows/native helper test was run here.",
+                     "No B11 token, loader, Full read ACL, descendant, library156 or setup-bin physical qualification follows from this 57-case result.",
+                     "The old 0f INVALID_NOT_RUN counterfactual and first cloud permission failures remain separate immutable history."]}
+(ROOT / "review.json").write_text(json.dumps(review, indent=2) + "\n")
+
+files = []
+def add(path, archive_name, role):
+    files.append({"local_file": str(path), "repo_path": PREFIX + "/" + archive_name, "role": role, **identity(path)})
+
+
+add(ROOT / "review.json", "review.json", "two-attempt-result-and-boundaries")
+add(ROOT / "finalize_history.py", "finalize-history.py.source.txt", "evidence-projection-source")
+add(V1 / "source-map.json", "fixed-source-map.json", "fixed-0f-thirteen-inputs-plus-one-candidate-collector")
+for path in sorted((V1 / "originals").glob("fixed-tree-*.json")):
+    add(path, "fixed-git-trees/" + path.name, "normalized-complete-tree-API-response-with-fixed-object-identity")
+for number, directory, names in [
+    (1, V1, ["run_existing_gate.py", "command.json", "isolated-git-setup.json", "source-before.json", "original-case-roster.json", "stdout.original", "stderr.original", "post-run-mode-observation.json"]),
+    (2, V2, ["run_existing_gate.py", "command.json", "command-terminal.json", "result.json", "isolated-git-setup.json", "source-before.json", "source-after.json", "original-case-roster.json", "stdout.original", "stderr.original"]),
+]:
+    for name in names:
+        add(directory / name, f"attempt-{number}/" + (name + ".source.txt" if name.endswith(".py") else name), "complete-original-gate-record")
+for row in source["files"]:
+    path = Path(row["local_file"])
+    add(path, "fixed-inputs/" + row["repository_path"] + ".source.txt", "fixed-test-or-dependency-source")
+    files[-1]["archived_logical_source_path"] = row["repository_path"]
+    files[-1]["original_mode"] = row["mode"]
+    files[-1]["original_0f_blob"] = row["original_0f_blob"]
+assert all(row["bytes"] < 480000 for row in files)
+(ROOT / "registry-plan.json").write_text(json.dumps({"schema": "b11-readiness-python57-history-registry-plan-v1", "repo_prefix": PREFIX, "files": files}, indent=2) + "\n")
+print(json.dumps({"review": identity(ROOT / "review.json"), "items": len(files), "unique_blobs": len(set(row["blob"] for row in files)),
+                  "actual_original_names": len(actual), "source_equal": before == after}))

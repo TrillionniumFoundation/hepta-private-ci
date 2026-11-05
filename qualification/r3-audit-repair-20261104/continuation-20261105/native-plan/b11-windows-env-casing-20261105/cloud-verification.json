@@ -1,0 +1,233 @@
+{
+  "schema": "b11-env-casing-cloud-mechanism-and-roundtrip-v1",
+  "status": "CLOUD_MECHANISM_STATIC_ACCEPT_WINDOWS_PENDING",
+  "native_run": {
+    "run_id": 42119482548,
+    "job_id": 127567774212,
+    "head": "855733b0f88c82c68135b1879682358a818daa84"
+  },
+  "original_job": {
+    "bytes": 448899,
+    "sha256": "9d3d36d14e016a35f9a64630ac1709a79575c21fe3536b431b215801a6c7236b",
+    "git_blob": "1031f8ebe6a51a254fcfad3e5b5eaf364170cc50"
+  },
+  "actual_counterfactual_step_recorded_toolchain_keys": [
+    {
+      "line": 2717,
+      "name": "INCLUDE",
+      "value_sha256": "68b35147fe0b2cfde9837e8f5c69422e694c3b946ebadb48ff2f1e092496a843"
+    },
+    {
+      "line": 2718,
+      "name": "LIB",
+      "value_sha256": "08fda1f5d8a7c3751b1de64730dbda1e06ed80cfb7f78dafd5895fba235340ba"
+    },
+    {
+      "line": 2719,
+      "name": "LIBPATH",
+      "value_sha256": "a935440d4fef79555ce24e237f2423a3da02456fe7a848a80b02019dd102496f"
+    },
+    {
+      "line": 2721,
+      "name": "UCRTVersion",
+      "value_sha256": "e4e615dec45d078c9a9dcf37106bc9b6c55d048b70819549c4cbe86bebce5300"
+    },
+    {
+      "line": 2722,
+      "name": "UniversalCRTSdkDir",
+      "value_sha256": "0e76bb8315c1e506481f52a6c23449d04695efad6a68de1e58e530609ea6886b"
+    },
+    {
+      "line": 2723,
+      "name": "VCINSTALLDIR",
+      "value_sha256": "d4dbf74e22e0b3ffe613b4a1ca6be6ea7071965030e60afa4f71395815d94058"
+    },
+    {
+      "line": 2724,
+      "name": "VCToolsInstallDir",
+      "value_sha256": "b1e41be8645e51180fb661117b3387d8010636632ce57854ce823af178711190"
+    },
+    {
+      "line": 2725,
+      "name": "WindowsLibPath",
+      "value_sha256": "8449d7d3cba26a5dddc714f4f0005c4dc43f67696fd533709058d70c7fda553c"
+    },
+    {
+      "line": 2726,
+      "name": "WindowsSdkBinPath",
+      "value_sha256": "58dad93459348535bb55d17efd563bc380159688cd6381fab50aa29c6d25afc1"
+    },
+    {
+      "line": 2727,
+      "name": "WindowsSdkDir",
+      "value_sha256": "0e76bb8315c1e506481f52a6c23449d04695efad6a68de1e58e530609ea6886b"
+    },
+    {
+      "line": 2728,
+      "name": "WindowsSDKLibVersion",
+      "value_sha256": "a1553143e04d14b316d8ac5e2cac747f544f9219fa9bb4c60f709f8965b3ffd6"
+    },
+    {
+      "line": 2729,
+      "name": "WindowsSDKVersion",
+      "value_sha256": "a1553143e04d14b316d8ac5e2cac747f544f9219fa9bb4c60f709f8965b3ffd6"
+    }
+  ],
+  "interpreter_version": {
+    "actual_resolved_executable_and_sys_version": "NOT_RECORDED",
+    "recorded_PATH_contains": "C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64",
+    "primary_code_used": "CPython tagged v3.12.10; not a claim that actual child version was independently measured"
+  },
+  "primary_sources": [
+    {
+      "url": "https://github.com/python/cpython/blob/v3.12.10/Lib/os.py",
+      "bytes": 40821,
+      "sha256": "54c43a1fc69c979c70d8f7d097174cee163bfe59937723ee353043dd4a0211e1",
+      "git_blob": "465742d318440a54a9698b626b0aec905170a842"
+    },
+    {
+      "url": "https://github.com/python/cpython/blob/v3.12.10/Modules/_winapi.c",
+      "bytes": 78816,
+      "sha256": "9f231ff4d286683f3df9ec925cdfc375ae951609d9ea39ddb6529f4649ebfd78",
+      "git_blob": "ac3ee113ffda71283c03c440ee237de0042455e1"
+    },
+    {
+      "url": "https://docs.python.org/3.12/library/os.html#os.environ",
+      "fact": "Windows environment mapping normalizes keys to uppercase"
+    }
+  ],
+  "mechanism": "Actual CPython v3.12.10 _Environ/_createenviron definitions executed with the 12 original step SDK values; copy uppercases eight names. Original unchanged Bash guard exactly reproduces native106B failure with old mapping; corrected mapping passes that same extracted guard and forwards all12 action/host names.",
+  "old_extracted_guard": {
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "Missing required native Windows toolchain environment: UniversalCRTSdkDir VCToolsInstallDir WindowsSdkDir\n",
+    "equals_original_native_console_bytes": true
+  },
+  "corrected_extracted_guard": {
+    "exit_code": 0,
+    "stdout": "declare -a post_config_bazel_args=([0]=\"--action_env=INCLUDE\" [1]=\"--host_action_env=INCLUDE\" [2]=\"--action_env=LIB\" [3]=\"--host_action_env=LIB\" [4]=\"--action_env=LIBPATH\" [5]=\"--host_action_env=LIBPATH\" [6]=\"--action_env=UCRTVersion\" [7]=\"--host_action_env=UCRTVersion\" [8]=\"--action_env=UniversalCRTSdkDir\" [9]=\"--host_action_env=UniversalCRTSdkDir\" [10]=\"--action_env=VCINSTALLDIR\" [11]=\"--host_action_env=VCINSTALLDIR\" [12]=\"--action_env=VCToolsInstallDir\" [13]=\"--host_action_env=VCToolsInstallDir\" [14]=\"--action_env=WindowsLibPath\" [15]=\"--host_action_env=WindowsLibPath\" [16]=\"--action_env=WindowsSdkBinPath\" [17]=\"--host_action_env=WindowsSdkBinPath\" [18]=\"--action_env=WindowsSdkDir\" [19]=\"--host_action_env=WindowsSdkDir\" [20]=\"--action_env=WindowsSDKLibVersion\" [21]=\"--host_action_env=WindowsSDKLibVersion\" [22]=\"--action_env=WindowsSDKVersion\" [23]=\"--host_action_env=WindowsSDKVersion\")\n",
+    "stderr": ""
+  },
+  "all_existing_values_preserved": true,
+  "inherited_mapping_not_mutated": true,
+  "optional_absent_names_not_created": true,
+  "required_negative_controls": [
+    {
+      "name": "UniversalCRTSdkDir",
+      "mode": "missing",
+      "rejected": true
+    },
+    {
+      "name": "UniversalCRTSdkDir",
+      "mode": "empty",
+      "rejected": true
+    },
+    {
+      "name": "VCToolsInstallDir",
+      "mode": "missing",
+      "rejected": true
+    },
+    {
+      "name": "VCToolsInstallDir",
+      "mode": "empty",
+      "rejected": true
+    },
+    {
+      "name": "WindowsSdkDir",
+      "mode": "missing",
+      "rejected": true
+    },
+    {
+      "name": "WindowsSdkDir",
+      "mode": "empty",
+      "rejected": true
+    }
+  ],
+  "conflicting_aliases_rejected": true,
+  "equal_aliases_collapse_without_value_change": true,
+  "alias_limit": "Only aliases present in the copied mapping can be checked; earlier OS/Python normalization has already collapsed any pre-import duplicates.",
+  "git_patch_commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/full.patch"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/full.patch"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/full.patch"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/full.patch"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "complete_apply_postimage_and_reverse_preimage_bytes_equal": true,
+  "scope_limits": [
+    "Cloud Bash tests only the frozen guard fragment; no project targets, Bazel, Rust or Windows process ran.",
+    "Actual Windows subprocess behavior and all four positives, one negative, exact restore and helper target still require the original native workflow.",
+    "No B11 closure; all source assertions, retries, target rosters, budgets and source custody guards remain unchanged."
+  ],
+  "sources": [
+    {
+      "path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+      "preimage": {
+        "bytes": 22807,
+        "sha256": "09c1e846ab95951bc08d6637f8207f03df92e4e343e2f9c294a5052483b7f397",
+        "git_blob": "e6a191a2d3c66c740aa3cb2ccd42c3e4fdb6880e"
+      },
+      "postimage": {
+        "bytes": 23767,
+        "sha256": "e2bb7cf91e20895d5f11c2479238692b2966cdc1ca188ca2f8c620cfd09c6987",
+        "git_blob": "90ae8f030ee405706217d7cb2cdc12f1a7cda443"
+      },
+      "preimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/source/.github/scripts/run_b11_acl_identity_counterfactual.py",
+      "postimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py"
+    },
+    {
+      "path": ".github/scripts/run_b11_read_acl_readiness.py",
+      "preimage": {
+        "bytes": 14425,
+        "sha256": "f5f134b21f1e4775015c2674a22b785244368964a4c8070e18fb1e3d83b8afcf",
+        "git_blob": "01c99717b4dfc14d86858464be4798d4351830e6"
+      },
+      "postimage": {
+        "bytes": 14374,
+        "sha256": "221c05297886ee4cd774d337d56beedd896540281c9c559adca290cc3727d313",
+        "git_blob": "e77b32cce112f188d16063e787baca3019e3d892"
+      },
+      "preimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/source/.github/scripts/run_b11_read_acl_readiness.py",
+      "postimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/candidate/.github/scripts/run_b11_read_acl_readiness.py"
+    }
+  ]
+}

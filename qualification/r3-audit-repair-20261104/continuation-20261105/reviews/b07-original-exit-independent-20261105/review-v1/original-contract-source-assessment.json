@@ -1,0 +1,85 @@
+{
+  "schema": "b07-original-negative-semantics-v1",
+  "requirements": [
+    {
+      "requirement": "unconfigured server and unlisted tool rejected",
+      "tests": [
+        "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+        "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable"
+      ],
+      "source": "binding_tests.rs:156-199 checks None for unconfigured/unlisted, hidden model tool not exposed, matching configured hook permitted. hooks_mcp.rs:936-978 keeps real5s and asserts missing-server output never enters prompt.",
+      "precision": "Unavailable hook transport is rejected; the ordinary user turn intentionally continues. This is not an unauthorized tool call success."
+    },
+    {
+      "requirement": "server allowlist and denylist both rejected before transport",
+      "tests": [
+        "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters"
+      ],
+      "source": "hooks_mcp.rs:722-807 loops enabled_tools=[echo] and disabled_tools=[thread_hint], requires Failed/error-not-available, absent physical marker and absent prompt hint in both branches. Actual test server writes the marker at entry before validating metadata. ToolFilter rejects either exclusion before exact calls map capture."
+    },
+    {
+      "requirement": "executor environment mismatch and disconnection do not call old hook",
+      "tests": [
+        "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+        "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+        "suite::hooks_executor::executor_stop_hook_runs_after_attachment"
+      ],
+      "source": "The real mock tools/call request count is0 before attachment and1 after a real attached call; disconnect/mismatch both retain1 after another actual turn. Mismatch has another ready executor, refreshes server environment, verifies one capability root remains. Matching binding call succeeds while another-environment returns None."
+    },
+    {
+      "requirement": "stale catalog and captured-client authority preserved",
+      "tests": [
+        "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+        "binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh",
+        "binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes",
+        "binding::tests::prepared_call_is_rejected_after_catalog_refresh",
+        "binding::tests::stale_prepared_call_does_not_run_preparation",
+        "binding::tests::preparation_holds_catalog_authority_until_it_finishes"
+      ],
+      "source": "Prepared call keeps captured client/config/permission/environment/plugin and connection lifetime. Closed client errors rather than rerouting. Revision advance rejects before transport. Stale preparation atomic marker staysfalse. A live preparation blocks revision writer until finished and then releases it.",
+      "production": "binding.rs:308-350 obtains the revision read guard, rejects mismatch before prepare(), and retains it through actual client execution; tool_catalog.rs captures permitted tools under a read guard and increments revision under a write guard."
+    },
+    {
+      "requirement": "governed hooks and TokenBudget do not bypass tool policy",
+      "tests": [
+        "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+        "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+        "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+        "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server"
+      ],
+      "source": "Real stdio server configured and ready; marker path passed to transport. Both HeptaGovernance and active tool policy leave physical marker absent and inject no server output. Plain TokenBudget control proves real matching threadId/text while hidden tool is not exposed to model. Session full-context production explicitly gates the notes/thread_hint call."
+    },
+    {
+      "requirement": "original remaining Hook/MCP/CodeMode behavior and metadata assertions",
+      "tests": [
+        "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+        "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+        "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+        "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+        "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+        "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+        "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+        "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+        "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+        "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters",
+        "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+        "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+        "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+        "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+        "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+        "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names",
+        "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+        "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+        "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+        "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server",
+        "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+        "suite::token_budget::token_budget_context_injects_plain_thread_hint_text"
+      ],
+      "source": "Permission allow executes ECHO while deny surfaces rejection; both exactly one hook input and no Guardian sampling. Pre hooks block or rewrite original input and preserve original attempted-call metadata; post hooks assert complete tool payload/context/transcript. Hidden MCP hook receives thread metadata without model exposure. CodeMode catches actual exec_command handler error and excludes no-exception success path."
+    }
+  ],
+  "separate_mutation_negative_claim": false,
+  "precision": "The required negative behavior is asserted inside the original passing cases. No separate new mutation-negative run is invented or required by the frozen B07 exit.",
+  "budget_contract": "Existing executor hook wait10s and negative5s; MCP configured hook5s/server startup10s, specific existing waits5/15s. Keep all original helper/harness budgets. No universal invented Hook deadline.",
+  "source_limits": "Preserved full files include all relevant test bodies and production capture/filter/runtime paths. The review does not establish an all-source security proof beyond these original exits."
+}

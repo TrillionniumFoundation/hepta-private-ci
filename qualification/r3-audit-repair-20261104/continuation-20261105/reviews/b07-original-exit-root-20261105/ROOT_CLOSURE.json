@@ -1,0 +1,482 @@
+{
+  "schema": "b07-root-original-contract-closure-v1",
+  "verified_utc": "2026-11-05T21:30:16.719824+00:00",
+  "decision": "CLOSED_SCOPED",
+  "original_exit_condition_zh": "binding、原 Hook executor、MCP、TokenBudget 用例通过；未配置 server、allow/deny list、环境错配和陈旧目录负控均拒绝。",
+  "frozen_28_names_exactly_covered": true,
+  "source_equality": {
+    "complete_files": [
+      {
+        "path": "codex-rs/codex-mcp/src/binding.rs",
+        "bytes": 11804,
+        "sha256": "dbf388038db00379c8f50f9fc3cf34946d7e01b6c92e6466530ec9b9e6f65d4e",
+        "git_blob": "de0238af78e06046a110877513ff172a3a44ff85"
+      },
+      {
+        "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+        "bytes": 13600,
+        "sha256": "972f394f14572afc9d88fd9f1eb7c613c68802a1edfde35c77e3e612a92dc036",
+        "git_blob": "a95d1913cd11a8426e56c3b1d030641d9c287220"
+      },
+      {
+        "path": "codex-rs/codex-mcp/src/catalog.rs",
+        "bytes": 19481,
+        "sha256": "7f4d75faf9c63e34f873b0dfc8fde0373c456ac4e0a39511684d9658e35b0ad0",
+        "git_blob": "5d3d473c049d9344c4498390ae141dcf44b1d3fe"
+      },
+      {
+        "path": "codex-rs/codex-mcp/src/connection_manager/tool_catalog.rs",
+        "bytes": 17286,
+        "sha256": "dbb0d154f570637679baf29e72cec930c34c85bd4735e4038f228ba8bc0b99af",
+        "git_blob": "1cda1d902fd31897b3de6b9dd629dce8741b6c75"
+      },
+      {
+        "path": "codex-rs/codex-mcp/src/runtime.rs",
+        "bytes": 40360,
+        "sha256": "cf1762c1ca527915de437477642d9421559e2da178f0718ba2da087c9fd7f476",
+        "git_blob": "0ff4d56a281d00936d0e26fef67ea85315d577e1"
+      },
+      {
+        "path": "codex-rs/codex-mcp/src/tools.rs",
+        "bytes": 11037,
+        "sha256": "3df721059290b134cef2bae1f174f6562d2b53f0f80280c69f5ab337a99eeb74",
+        "git_blob": "51d3f05aac817325392f2cac6c684c936db7af22"
+      },
+      {
+        "path": "codex-rs/core-plugins/src/executor_hooks.rs",
+        "bytes": 4222,
+        "sha256": "fbdc87934d9dae73014f626dd079989986c1b1e8bcc8d068cb6f1d4fc555463a",
+        "git_blob": "58d1ea62663bf64c346e981bf2aa3267e44fb0f5"
+      },
+      {
+        "path": "codex-rs/core/src/hook_mcp_executor.rs",
+        "bytes": 3100,
+        "sha256": "21c841f114dbd06925ea444bde1adcb00f5720c6d96849b722aaa4f72fa2564f",
+        "git_blob": "6eca59da7d93ae157af653e8ce19159bfa728dc8"
+      },
+      {
+        "path": "codex-rs/core/src/hook_runtime.rs",
+        "bytes": 43465,
+        "sha256": "9afb40589d3a6d3132a5fb85cf3691c7b110353a34aebd921cd954eb13f52dfa",
+        "git_blob": "c520135afdd384df148c184baa57568766eb3abc"
+      },
+      {
+        "path": "codex-rs/core/src/session/mod.rs",
+        "bytes": 215824,
+        "sha256": "a666d5f63dddd2a197827082087692819a841cfa2d30943ab3a19a7ba983ba39",
+        "git_blob": "b71bc56687973debf2b8615da036e60a436e3c08"
+      },
+      {
+        "path": "codex-rs/core/src/session/token_budget.rs",
+        "bytes": 4038,
+        "sha256": "f9c347e376132956947694439e7d24020d9ada86dbd5fc1143c9477d6192f686",
+        "git_blob": "747d8cf5bc9a57e15e8954d3d761f94223ae528a"
+      },
+      {
+        "path": "codex-rs/core/src/tools/lifecycle.rs",
+        "bytes": 16576,
+        "sha256": "c1026ea7a0e66865d48e6ce271eeba983eff63aa4d7d249f9e086df7f0b83719",
+        "git_blob": "d67baea1b193f3eff145030c902be6961f165ffc"
+      },
+      {
+        "path": "codex-rs/core/tests/common/lib.rs",
+        "bytes": 22506,
+        "sha256": "5418ece8bb498ed07b87e99e1faa9a8c86944a40cfe20d519e4d60ecbec54f24",
+        "git_blob": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+      },
+      {
+        "path": "codex-rs/core/tests/suite/code_mode.rs",
+        "bytes": 213008,
+        "sha256": "b053267b92afa19a861d800814e43c8a33e4ea2f823fb26e0a4eb89c6853eba2",
+        "git_blob": "d1970f7853bcd5777ef96881b457525b7abfa92a"
+      },
+      {
+        "path": "codex-rs/core/tests/suite/hooks_executor.rs",
+        "bytes": 14976,
+        "sha256": "db64962784e6e067f13e1a4f1b9458893fc084e8713e8d48b3f0d093043cb130",
+        "git_blob": "d664d41c9a7ca66d1a9b47445b36f2754bf6fece"
+      },
+      {
+        "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+        "bytes": 44872,
+        "sha256": "b5a7a405723e233c14ab3e73213f8010f53c862df1328a92ae92c32f7e9ba73b",
+        "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0"
+      },
+      {
+        "path": "codex-rs/core/tests/suite/mod.rs",
+        "bytes": 4895,
+        "sha256": "6cfc926f1fb4417554b75f337372fd714fdd3769b0db9db1398bc8a0ffc9938e",
+        "git_blob": "17145f671a76a894ab374ca299a67cf1a43e9c55"
+      },
+      {
+        "path": "codex-rs/core/tests/suite/rmcp_client.rs",
+        "bytes": 146845,
+        "sha256": "78fbb2b9cef8a4dd64dab34123e28524c0964ee11058fef8bb2f4fa1dcff04ee",
+        "git_blob": "3897f4396696ba94ce93c7be8f29b3c65a0f5de8"
+      },
+      {
+        "path": "codex-rs/core/tests/suite/token_budget.rs",
+        "bytes": 61980,
+        "sha256": "71d164c4ddd7bf3feb3ef8c7bef7ff150ed28db936680a0d1752844b6287d706",
+        "git_blob": "e7fb29f3b32eafc364022be4405a6edf736f9afd"
+      },
+      {
+        "path": "codex-rs/rmcp-client/src/bin/test_stdio_server.rs",
+        "bytes": 40654,
+        "sha256": "ea08de179afeb0a8ca089497ed790a108044414e7ca455ab955c0e50191700ba",
+        "git_blob": "5ebd161921b9064444841d631835d4f51f78813e"
+      }
+    ],
+    "actual_tree_proof": {
+      "observed_utc": "2026-11-05 21:18:21 UTC",
+      "trees": {
+        "recovery-diag-tree": {
+          "tree": "f717a84a856413d87a3b718b0bcae3adbd16b643",
+          "leaves": 10584,
+          "verified_tree_nodes": 1571,
+          "entries": 12154
+        },
+        "recovery-main-tree": {
+          "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+          "leaves": 10582,
+          "verified_tree_nodes": 1571,
+          "entries": 12152
+        },
+        "recovery-5b-tree": {
+          "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+          "leaves": 10580,
+          "verified_tree_nodes": 1571,
+          "entries": 12150
+        },
+        "recovery-e78-tree": {
+          "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+          "leaves": 10580,
+          "verified_tree_nodes": 1571,
+          "entries": 12150
+        },
+        "recovery-audit-continuation-tree": {
+          "tree": "5e060597b950bf6fa601aee17250f80e4924a4db",
+          "leaves": 1772,
+          "verified_tree_nodes": 293,
+          "entries": 2064
+        }
+      },
+      "audit_v8_composed": {
+        "tree": "c592f5edf3969f5fc8bf5100b532c2823c4f8f8a",
+        "leaves": 12352,
+        "verified_tree_nodes": 1864,
+        "entries": 14215
+      }
+    }
+  },
+  "gnu": {
+    "complete_raw": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.stdout",
+      "bytes": 11059831,
+      "sha256": "a06d2a7c73589c76300a3a6886f37affcd8609f8cb41499e6704a9762a20aeb4",
+      "git_blob": "e611358b8bdcd77bb3eb7cb68c0067a0438368b7"
+    },
+    "complete_xml": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1/original-owning-projects.junit.xml",
+      "bytes": 839106,
+      "sha256": "dba2abf1ada37ea47ed8bb5910956094ad5519652df72256cce723e26d84d071",
+      "git_blob": "575da9b27fcf5e423b2fa23b9f872e0b07eacade"
+    },
+    "command": {
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate",
+        "-p",
+        "codex-core",
+        "-p",
+        "codex-linux-sandbox"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs",
+      "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "started_at": "2026-11-05T14:07:58.749428+00:00",
+      "extra_environment": {},
+      "attempt": 1,
+      "cargo_profile": "dev-small",
+      "nextest_profile": "local",
+      "retries": 0
+    },
+    "cases": [
+      {
+        "name": "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1399217,
+          1399553
+        ],
+        "seconds": "0.342"
+      },
+      {
+        "name": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1397787,
+          1398115
+        ],
+        "seconds": "0.372"
+      },
+      {
+        "name": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1220799,
+          1221141
+        ],
+        "seconds": "0.279"
+      },
+      {
+        "name": "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1396683,
+          1397039
+        ],
+        "seconds": "0.248"
+      },
+      {
+        "name": "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1396337,
+          1396683
+        ],
+        "seconds": "0.230"
+      },
+      {
+        "name": "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1398115,
+          1398487
+        ],
+        "seconds": "0.288"
+      },
+      {
+        "name": "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1397039,
+          1397379
+        ],
+        "seconds": "0.218"
+      },
+      {
+        "name": "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1398487,
+          1398853
+        ],
+        "seconds": "0.239"
+      },
+      {
+        "name": "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1400911,
+          1401282
+        ],
+        "seconds": "0.538"
+      },
+      {
+        "name": "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1401282,
+          1401636
+        ],
+        "seconds": "0.440"
+      },
+      {
+        "name": "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1398853,
+          1399217
+        ],
+        "seconds": "0.243"
+      },
+      {
+        "name": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1399553,
+          1399907
+        ],
+        "seconds": "0.254"
+      },
+      {
+        "name": "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1401960,
+          1402340
+        ],
+        "seconds": "0.417"
+      },
+      {
+        "name": "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1402692,
+          1403072
+        ],
+        "seconds": "0.395"
+      },
+      {
+        "name": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1403410,
+          1403802
+        ],
+        "seconds": "0.416"
+      },
+      {
+        "name": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1406000,
+          1406386
+        ],
+        "seconds": "0.397"
+      },
+      {
+        "name": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1407410,
+          1407792
+        ],
+        "seconds": "0.417"
+      },
+      {
+        "name": "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1408478,
+          1408810
+        ],
+        "seconds": "0.420"
+      },
+      {
+        "name": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          1407792,
+          1408168
+        ],
+        "seconds": "0.420"
+      },
+      {
+        "name": "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          10563736,
+          10564110
+        ],
+        "seconds": "0.209"
+      },
+      {
+        "name": "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          10922628,
+          10923002
+        ],
+        "seconds": "0.208"
+      },
+      {
+        "name": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+        "result": "PASS_NO_OBSERVED_EARLY_RETURN",
+        "raw_range": [
+          10926732,
+          10927078
+        ],
+        "seconds": "0.243"
+      }
+    ],
+    "original_whole_scope": {
+      "exit_code": 100,
+      "selected": 3967,
+      "passed": 3962,
+      "failed": 5,
+      "original_ignored": 10,
+      "retries": 0
+    },
+    "source_index_locks_guard_equal": true,
+    "ordinary_head_actual": "cabcb40d36e116beaa65750e1f674c52035da785"
+  },
+  "windows": {
+    "run": 41999114842,
+    "job": 127339255880,
+    "artifact": 13431285250,
+    "source": {
+      "commit": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+      "tracked_worktree_dirty": false,
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35"
+    },
+    "complete_archive": {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-win-shard2-127339255880/artifact-13431285250/artifact.zip",
+      "bytes": 4967167,
+      "sha256": "d0dd2347f5be91ae1f445d21e892ea5d4559499dc8e2f71554ce0ce2bb93ba85",
+      "git_blob": "9b9fa486d7b33d003f9139ebce829f7afa982122"
+    },
+    "complete_job": {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-win-shard2-127339255880/job.log",
+      "bytes": 463383,
+      "sha256": "1b7114b1ff639cc2cd5d38e5d53326e16796ffb1516fef1e960d8df371c3de65",
+      "git_blob": "e5519cc76138d773f491c7ea42655448655c0dc9"
+    },
+    "all_archive_members_crc_verified": true,
+    "archive_member_count": 54,
+    "target_member_exact_matches": {
+      "log": [
+        "selected-target-test-logs/invocation-pj7csqys/targets/0002/test.log"
+      ],
+      "xml": [
+        "selected-target-test-logs/invocation-pj7csqys/targets/0002/test.xml"
+      ],
+      "collector": [
+        "selected-target-test-logs/invocation-pj7csqys/manifest.json"
+      ]
+    },
+    "complete_target_roster": 193,
+    "binding_cases": [
+      "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+      "binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh",
+      "binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes",
+      "binding::tests::prepared_call_is_rejected_after_catalog_refresh",
+      "binding::tests::stale_prepared_call_does_not_run_preparation",
+      "binding::tests::preparation_holds_catalog_authority_until_it_finishes"
+    ],
+    "outer_xml_is_not_per_Rust_case_xml": true,
+    "collector_limits_verbatim": "NOT_REPORTED does not mean filtered or skipped. An absent cached marker does not prove local execution or an independent remote execution. Files are existing local records for a console-reported target; their binding to this invocation is not independently established. Bazel config expansion and per-case filtering must be checked separately. Checkout identity is recorded at collection time, not at test start."
+  },
+  "manual_source_review": [
+    "Original six binding bodies and helper: hidden model tool excluded; unconfigured server/unlisted tool/environment mismatch rejected; captured client/config/lifetime preserved; stale catalog rejected before preparation; revision read lock held through preparation.",
+    "Original Hook executor bodies: before-attach zero actual calls; attached exact metadata; disconnect and mismatched ready environment leave call count unchanged, original5s/10s budgets.",
+    "Original Hook MCP and TokenBudget negative bodies: actual ready server, allowlist/denylist and active policy reject before the transport marker and inject no output. Missing-server hook failure deliberately permits the normal user turn to continue.",
+    "Original CodeMode handler-error body: actual exception text and attempted call metadata checked, no-exception success absent; original Windows ignore remains."
+  ],
+  "limits": [
+    "This closes only the unchanged B07 original contract; Q01 historical collection planning is not a new exit.",
+    "No new eed GNU or new Windows binding execution. Byte-identical relevant20files bridge the two historical native sources to current eed.",
+    "The original GNU owning-project scope has5FAIL/exit100; B15 whole-candidate/platform gates remain open.",
+    "Windows18Hook cfg exclusion and CodeMode original ignore are not Windows passes.",
+    "No new native command, test retry, product change, capacity poll or original-record edit."
+  ]
+}

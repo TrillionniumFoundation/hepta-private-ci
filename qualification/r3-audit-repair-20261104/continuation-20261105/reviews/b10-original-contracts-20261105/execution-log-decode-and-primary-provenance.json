@@ -1,0 +1,116 @@
+{
+  "schema": "b10-original-execution-log-decode-and-primary-provenance-v1",
+  "verified_at_utc": "2026-11-05T22:11:32.362302+00:00",
+  "action": "Cloud read-only evidence decompression/decoding, not a product test or native gate",
+  "parent_original_zip": {
+    "transport_member": "research-audit/published-5b633-ci-20261105/terminal/main-win-shard4-127339256056/artifact-13430354553/artifact.zip",
+    "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/windows-originals/artifact-13430354553/artifact.zip",
+    "bytes": 5452583,
+    "sha256": "21ecf40e7ebebf10fd2abe08caa6f598c5557fbb89eb8a62f11a109e8e9130c4",
+    "git_blob": "d870ccfd79e1db966f93bc3fbba72a9f7070a1c4"
+  },
+  "compressed_original_zip_member": {
+    "member": "execution-log-test-test-windows-shard-3207.zst",
+    "crc32": "190b22d6",
+    "bytes": 5033996,
+    "sha256": "a23d3675623add6540970a89b9924e116b81da1e61dfa62ccb458be2700e6aa8",
+    "git_blob": "bb7e0f710a818905b5467aee6dd161c79d3eda6b"
+  },
+  "decoder": {
+    "library": "python-zstandard",
+    "version": "0.25.0",
+    "eof": true,
+    "unused_data_bytes": 0,
+    "unconsumed_tail_bytes": 0
+  },
+  "derived_uncompressed_compact": {
+    "bytes": 30370252,
+    "sha256": "167c61c24b5781a9339bb1a48c7d00894e6b9e898a55e8d2cce7daacec016bf3",
+    "git_blob": "db1fa5eff40efa9d845c6096c488d4c4bebbd8a3"
+  },
+  "complete_varint_delimited_protobuf_stream_bytes_consumed": 30370252,
+  "complete_entry_count": 89920,
+  "selected_frames": 42,
+  "real_test_actions": 21,
+  "separate_XML_generation_actions": 21,
+  "all42_original_frame_bytes_and_offsets_equal_projection": true,
+  "fixed_runtime_version_original_job_lines": [
+    {
+      "line": 1001,
+      "original_line": "2026-11-05T15:30:16.7202678Z 2026/11/05 15:30:16 Downloading https://releases.bazel.build/9.3.0/release/bazel-9.3.0-windows-x86_64.exe..."
+    },
+    {
+      "line": 1003,
+      "original_line": "2026-11-05T15:30:19.0698132Z Starting local Bazel server (9.3.0) and connecting to it..."
+    }
+  ],
+  "official_primary": {
+    "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/protobuf/spawn.proto",
+    "repository": "bazelbuild/bazel",
+    "version_ref": "9.3.0",
+    "fixed_blob": "19f68f22a4d62c4fd1aa28fd1c7c0217aa6a7cb0",
+    "bytes": 15857,
+    "sha256": "110f4b5e020b72fe3d51f6aa69d6ecc31d6f20ee57c194827da48a8184675e7a",
+    "git_blob": "19f68f22a4d62c4fd1aa28fd1c7c0217aa6a7cb0",
+    "original_GitHub_tool_response": {
+      "bytes": 16720,
+      "sha256": "f2aeea6ca3d86ac2d2a7ab0e7473021feab3ac12e40995e403f35bdcf0aefb3d",
+      "git_blob": "95dec224020826f8a122050a83c927729706f730"
+    },
+    "response_content_equals_entire_primary_bytes": true,
+    "schema_lines": {
+      "args": {
+        "line": 367,
+        "text": "    repeated string args = 1;"
+      },
+      "env_vars": {
+        "line": 370,
+        "text": "    repeated EnvironmentVariable env_vars = 2;"
+      },
+      "target_label": {
+        "line": 385,
+        "text": "    string target_label = 7;"
+      },
+      "mnemonic": {
+        "line": 388,
+        "text": "    string mnemonic = 8;"
+      },
+      "exit_code": {
+        "line": 391,
+        "text": "    int32 exit_code = 9;"
+      },
+      "status": {
+        "line": 394,
+        "text": "    string status = 10;"
+      },
+      "runner": {
+        "line": 397,
+        "text": "    string runner = 11;"
+      },
+      "cache_hit": {
+        "line": 400,
+        "text": "    bool cache_hit = 12;"
+      },
+      "timeout_millis": {
+        "line": 417,
+        "text": "    int64 timeout_millis = 17;"
+      },
+      "ExecLogEntry_spawn": {
+        "line": 450,
+        "text": "    Spawn spawn = 7;"
+      }
+    },
+    "scope": "Exact official 9.3.0 source blob, independently hashed; no unverified tag-to-commit claim"
+  },
+  "parser_source": {
+    "bytes": 10829,
+    "sha256": "c03848c5c458696f2b118f239130d1419f375c221a52b981708907f188eb77c7",
+    "git_blob": "9de49e5ea92341279ea993f9be97fbf5a1c7d1d1"
+  },
+  "verifier_source": {
+    "bytes": 6180,
+    "sha256": "ee58483e05c3acc42b1e4ee7905b423f34edaa7a19bef4c94e5b7b657fc77fad",
+    "git_blob": "f60e2d2ccfa7f4896f1bc5a3d2098cc8dde661db"
+  },
+  "new_native_execution": false
+}

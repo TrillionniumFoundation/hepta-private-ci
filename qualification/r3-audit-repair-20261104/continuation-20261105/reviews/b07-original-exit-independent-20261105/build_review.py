@@ -1,0 +1,261 @@
+import collections
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import re
+import xml.etree.ElementTree as ET
+import zipfile
+
+ROOT = Path('/workspace/scratch/07dd58cc9630')
+BASE = ROOT / 'ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1'
+OUT = BASE / 'review-v1'
+OUT.mkdir(exist_ok=True)
+ROG = ROOT / 'ci-audit/core-wait-span-20261105/project-nonpass-complete-v1/decoded-verified-v1'
+ANSI = re.compile(r'\x1b\[[0-?]*[ -/]*[@-~]')
+
+def ident(body):
+    return {'bytes':len(body),'sha256':hashlib.sha256(body).hexdigest(),
+            'git_blob':hashlib.sha1(f'blob {len(body)}\0'.encode()+body).hexdigest()}
+
+def pin(path):
+    return {'path':str(path),**ident(path.read_bytes())}
+
+def load(path):
+    return json.loads(path.read_text())
+
+def save(name,value):
+    p=OUT/name
+    p.write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n')
+    return pin(p)
+
+def tree_sha(leaves):
+    root={}
+    for path,leaf in leaves.items():
+        cur=root
+        parts=path.split('/')
+        for part in parts[:-1]:cur=cur.setdefault(part,{})
+        cur[parts[-1]]=(leaf['mode'],leaf['sha'])
+    def recurse(node):
+        rows=[]
+        for name,value in node.items():
+            directory=isinstance(value,dict)
+            mode,sha=('40000',recurse(value)) if directory else value
+            rows.append((name.encode()+(b'/' if directory else b''),mode.encode()+b' '+name.encode()+b'\0'+bytes.fromhex(sha)))
+        body=b''.join(x[1] for x in sorted(rows))
+        return hashlib.sha1(f'tree {len(body)}\0'.encode()+body).hexdigest()
+    return recurse(root)
+
+source_inputs=[ROOT/'hepta-audit-fifth/inputs/product-5b-full-leaf-manifest.json',
+               ROOT/'hepta-audit-fifth/core-musl-initial-source-binding.json',
+               ROOT/'hepta-audit-fifth/inputs/integrated-14-path-candidate-v2.json']
+five,e78,eed=[load(x) for x in source_inputs]
+maps={'5b':{x['path']:dict(x) for x in five['leaves']}}
+assert tree_sha(maps['5b'])==five['tree']
+maps['e78']={k:dict(v) for k,v in maps['5b'].items()}
+for change in e78['exact_changes']:
+    assert maps['e78'][change['path']]['sha']==change['pre']
+    maps['e78'][change['path']]['sha']=change['post']
+assert tree_sha(maps['e78'])==e78['candidate_tree']
+maps['eed']={k:dict(v) for k,v in maps['5b'].items()}
+for change in eed['changes']:
+    assert maps['eed'].get(change['path'],{}).get('sha')==change['before_sha']
+    maps['eed'][change['path']]={k:change[k] for k in ('path','mode','type','sha')}
+assert tree_sha(maps['eed'])==eed['tree']
+sources=[]
+source_text={}
+for p in sorted((BASE/'source').glob('*.source.txt')):
+    logical=p.name.removesuffix('.source.txt').replace('__','/')
+    source_text[logical]=p.read_text()
+    identity=pin(p)
+    assert identity['git_blob']==maps['5b'][logical]['sha']
+    assert all(maps[k][logical]['sha']==maps['5b'][logical]['sha'] and maps[k][logical]['mode']==maps['5b'][logical]['mode'] for k in maps)
+    api=p.with_name(p.name+'.fetch.json')
+    if api.exists():assert load(api)['structuredContent']['content'].encode()==p.read_bytes()
+    sources.append({'logical_source_path':logical,'complete_source':identity,'mode':maps['5b'][logical]['mode'],
+                    '5b_e78_eed_byte_identical':True,'existing_fetch_response':pin(api) if api.exists() else None})
+assert len(sources)==20,len(sources)
+bridge=save('source-leaf-bridge.json',{'schema':'b07-complete-source-leaf-bridge-v1',
+    'inputs':[pin(p) for p in source_inputs],
+    'whole_trees_independently_recomputed':{k:{'tree':tree_sha(v),'leaves':len(v)} for k,v in maps.items()},
+    'published_commits':{'5b':'5b6331250ff459033bd44d1a95daec70131277cc','eed':'eed4d6bb61b789b19f60facc79f9e031765fa4c9'},
+    'sources':sources,
+    'limit':'Complete relevant files are preserved and all20 leaves match5b/e78/eed. This is source equality, not an eed GNU or new platform execution claim. Only the cited relevant regions were manually reviewed in larger omnibus source files.'})
+
+contract_path=ROOT/'hepta-audit-fourth/inputs/seven-pending-manifest.json'
+contract=load(contract_path)
+exit_row=next(x for x in contract['original_exit_conditions'] if x['id']=='B07')
+names=contract['case_index']['B07']
+assert len(names)==28 and len({x['test'] for x in names})==28
+projection_path=ROOT/'ci-audit/published-eed4d6-ci-20261105/six-exit-scope-review-v1/scope-projection.json'
+projection=[x for x in load(projection_path)['cases'] if x['blocker']=='B07']
+assert collections.Counter((x['binary'],x['test']) for x in names)==collections.Counter((x['binary'],x['test']) for x in projection)
+
+raw_path=ROG/'original-owning-projects.stdout'
+raw=raw_path.read_bytes()
+raw_lines=raw.splitlines(keepends=True)
+offsets=[0]
+for line in raw_lines:offsets.append(offsets[-1]+len(line))
+xml_path=ROG/'original-owning-projects.junit.xml'
+xml=ET.parse(xml_path).getroot()
+xml_rows=list(xml.iter('testcase'))
+assert len(xml_rows)==3967
+xml_map={(x.attrib['classname'],x.attrib['name']):x for x in xml_rows}
+assert len(xml_map)==3967
+review=load(ROG/'original-owning-projects-review.json')
+command=load(ROG/'original-owning-projects-command.json')
+status=load(ROG/'original-owning-projects-status.json')
+before=load(ROG/'original-owning-projects-before-source-guard.json')
+after=load(ROG/'original-owning-projects-after-source-guard.json')
+for k in ('source_tree','ordinary_head','ordinary_index','locks'):assert before[k]==after[k]
+assert before['source_tree']==tree_sha(maps['e78'])
+assert not before['unexpected_untracked'] and not after['unexpected_untracked']
+assert command['retries']==0 and command['attempt']==1 and review['programs_helpers_stable'] is True
+assert status['exit_code']==100 and status['argv']==command['argv']
+assert all(ident(raw)[k]==status['stdout'][k] for k in ('bytes','sha256','git_blob'))
+selection=load(ROG/'project-catalog-selection.json')
+gnu=[]
+early_patterns=['Skipping test because it cannot execute when network is disabled in a Codex sandbox.',
+                'Skipping test in the Wine-exec test environment:',
+                'Skipping test because it requires a remote test environment.',
+                'skipping capability test: unprivileged user namespaces are unavailable']
+for number,row in enumerate([x for x in projection if x['linux_rog_e78_actual_scope'] is not None],1):
+    scope=row['linux_rog_e78_actual_scope']
+    assert scope['result']=='PASS' and scope['observed_early_returns']==[]
+    start,end=scope['raw_start_line'],scope['raw_end_line']
+    block=b''.join(raw_lines[start-1:end])
+    text=ANSI.sub('',block.decode()).replace('\r','')
+    assert len(re.findall(r'^        PASS \[ *[0-9.]+s\] '+re.escape(row['binary'])+r' '+re.escape(row['test'])+r'$',text,re.MULTILINE))==1
+    assert len(re.findall(r'^    test '+re.escape(row['test'])+r' \.\.\. ok$',text,re.MULTILINE))==1
+    assert 'running 1 test' in text and '1 passed; 0 failed; 0 ignored' in text
+    assert not any(s in text for s in early_patterns)
+    jr=xml_map[(row['binary'],row['test'])]
+    assert not any(x.tag in ('failure','error','skipped') for x in jr)
+    p=OUT/f'gnu-{number:02d}.original-block.txt';p.write_bytes(block)
+    gnu.append({'test':row['test'],'binary':row['binary'],'source_tree':tree_sha(maps['e78']),
+                'result':'PASS_WITH_NO_OBSERVED_EARLY_RETURN','raw_block':pin(p),
+                'raw_start_line':start,'raw_end_line_inclusive':end,'raw_byte_start':offsets[start-1],
+                'raw_byte_end_exclusive':offsets[end],'junit_attributes':dict(jr.attrib),
+                'junit_fragment':ET.tostring(jr,encoding='unicode'),'early_messages_checked':early_patterns})
+assert len(gnu)==22
+assert {x['binary'] for x in gnu}=={'codex-core::all'}
+program=next(x for x in selection['programs'] if x['binary_id']=='codex-core::all')
+gnu_evidence=save('gnu-22-case-evidence.json',{'schema':'b07-gnu-e78-22-original-cases-v1','command':command,
+    'overall_actual_scope':{'exit_code':100,'selected':3967,'passed':3962,'failed':5,'original_ignored':10,'retries':0},
+    'full_raw':pin(raw_path),'full_xml':pin(xml_path),'program':program,
+    'source_ordinary_head_index_locks_equal_before_after':True,'ordinary_head_actual':before['ordinary_head'],
+    'input_records':[pin(ROG/n) for n in ['original-owning-projects-command.json','original-owning-projects-status.json',
+        'original-owning-projects-review.json','original-owning-projects-before-source-guard.json',
+        'original-owning-projects-after-source-guard.json','project-catalog-selection.json','metadata-binding.json']],
+    'cases':gnu,'limits':['The original full project command is NONPASS100; these22 named results do not convert it to PASS.',
+        'No network/Wine/remote/capability skip messages occur in these complete captured blocks; existing macro/source branches are preserved.',
+        'The actual ordinary HEAD remains the recorded cabc value; working tree e78 is independently guarded.']})
+
+windows_review_path=ROOT/'research-audit/published-5b633-ci-20261105/main-windows-four-shard-projection-v2/review.json'
+windows_review=load(windows_review_path)
+archive_record=next(x for x in windows_review['archives'] if x['job_id']==127339255880)
+archive_path=Path(archive_record['archive']['local_file'])
+archive_bytes=archive_path.read_bytes()
+assert ident(archive_bytes)['sha256']==archive_record['archive']['sha256'] and len(archive_bytes)==archive_record['archive']['bytes']
+prefix='selected-target-test-logs/invocation-pj7csqys/'
+with zipfile.ZipFile(archive_path) as z:
+    for member,name in [('manifest.json','windows-binding-collector.original.json'),('targets/0002/test.log','windows-binding-test.original.log'),('targets/0002/test.xml','windows-binding-test.original.xml')]:
+        assert z.read(prefix+member)==(BASE/'originals'/name).read_bytes()
+collector_path=BASE/'originals/windows-binding-collector.original.json'
+collector=load(collector_path)
+assert collector['source']=={'commit':'9063c52a063b6f26c48e9418f6d8dbd14e9e06ff','tree':tree_sha(maps['5b']),'tracked_worktree_dirty':False}
+assert collector['complete_for_selected_targets'] is True and not collector['errors']
+target='//codex-rs/codex-mcp:codex-mcp-unit-tests'
+log_path=BASE/'originals/windows-binding-test.original.log'
+wxml_path=BASE/'originals/windows-binding-test.original.xml'
+wraw=log_path.read_bytes()
+wxraw=wxml_path.read_bytes()
+for suffix,body in [('.log',wraw),('.xml',wxraw)]:
+    matching=[x for x in collector['files'] if x['target']==target and x['testlogs_relative_path']=='codex-rs/codex-mcp/codex-mcp-unit-tests/test'+suffix]
+    assert len(matching)==1 and matching[0]['bytes']==len(body) and matching[0]['sha256']==ident(body)['sha256']
+wx=ET.fromstring(wxraw)
+wcases=wx.findall('.//testcase')
+assert len(wcases)==1 and wcases[0].get('status')=='run'
+assert not any(c.tag in ('failure','error','skipped') for c in wcases[0])
+assert wx.find('.//system-out').text.encode()==wraw
+wtext=ANSI.sub('',wraw.decode()).replace('\r','')
+summaries=re.findall(r'^test result: ok\. ([0-9]+) passed; 0 failed; 0 ignored; 0 measured; ([0-9]+) filtered out; finished in ([0-9.]+)s$',wtext,re.MULTILINE)
+assert summaries==[('80','113','7.01'),('85','108','0.07'),('28','165','0.05')]
+assert sum(int(s[0]) for s in summaries)==193
+assert not any(s in wtext for s in early_patterns)
+binding=[]
+for row in projection:
+    if not row['test'].startswith('binding::tests::'):continue
+    exact='test '+row['test']+' ... ok'
+    matching=[(i+1,line) for i,line in enumerate(wtext.splitlines()) if line==exact]
+    assert len(matching)==1
+    assert row['windows_5b_same_source_final_row']['member_sha256']==ident(wraw)['sha256']
+    binding.append({'test':row['test'],'binary':row['binary'],'result':'PASS','line':matching[0][0],
+                    'physical_line':exact,'source_tree':tree_sha(maps['5b']),
+                    'early_return_review':'All six complete test bodies and shared test_step inspected; no early-return/ignore/platform-skip branches.'})
+assert len(binding)==6
+assert collections.Counter(x['test'] for x in gnu+binding)==collections.Counter(x['test'] for x in names)
+job_log_path=Path(archive_record['job_log']['local_file'])
+assert ident(job_log_path.read_bytes())['sha256']==archive_record['job_log']['sha256']
+job_lines=job_log_path.read_bytes().splitlines(keepends=True)
+command_excerpt=b''.join(job_lines[924:971])
+command_excerpt_path=OUT/'windows-original-command.original-block.txt';command_excerpt_path.write_bytes(command_excerpt)
+summary_lines=[{'line':i+1,'text':line} for i,line in enumerate(job_log_path.read_text().splitlines()) if target+' ' in line and 'PASSED in 53.7s' in line]
+assert len(summary_lines)==1
+windows_evidence=save('windows-6-binding-evidence.json',{'schema':'b07-windows-5b-six-binding-originals-v1',
+    'run_id':windows_review['run_id'],'run_attempt':windows_review['run_attempt'],'job_id':127339255880,
+    'artifact_id':archive_record['artifact_id'],'full_archive':pin(archive_path),'complete_job_log':pin(job_log_path),
+    'original_command_block':pin(command_excerpt_path),'command_block_lines':[925,971],
+    'complete_target_log':pin(log_path),'complete_target_xml':pin(wxml_path),'collector':pin(collector_path),
+    'source':collector['source'],'target':target,'original_target_summary':summary_lines,
+    'outer_xml_attributes':dict(wcases[0].attrib),'xml_system_out_equals_entire_log':True,
+    'original_libtest_subinvocations':summaries,'complete_target_passes':193,'binding_cases':binding,
+    'collector_retention':collector['retention'],
+    'limits':['Outer XML is one wrapper testcase; six named Rust results are proved by complete original stdout plus complete source bodies.',
+              'Retained collector provenance limits are preserved verbatim: checkout identity was captured at collection time, and lack of a cached marker alone is not an independent local or remote execution attestation.',
+              'No new eed Windows binding execution or GNU binding execution is claimed.']})
+
+requirements=[
+ {'requirement':'unconfigured server and unlisted tool rejected','tests':['binding::tests::configured_hook_call_preserves_model_and_environment_boundaries','suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable'],
+  'source':'binding_tests.rs:156-199 checks None for unconfigured/unlisted, hidden model tool not exposed, matching configured hook permitted. hooks_mcp.rs:936-978 keeps real5s and asserts missing-server output never enters prompt.',
+  'precision':'Unavailable hook transport is rejected; the ordinary user turn intentionally continues. This is not an unauthorized tool call success.'},
+ {'requirement':'server allowlist and denylist both rejected before transport','tests':['suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters'],
+  'source':'hooks_mcp.rs:722-807 loops enabled_tools=[echo] and disabled_tools=[thread_hint], requires Failed/error-not-available, absent physical marker and absent prompt hint in both branches. Actual test server writes the marker at entry before validating metadata. ToolFilter rejects either exclusion before exact calls map capture.'},
+ {'requirement':'executor environment mismatch and disconnection do not call old hook','tests':['suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment','suite::hooks_executor::executor_stop_hook_stops_after_disconnection','suite::hooks_executor::executor_stop_hook_runs_after_attachment'],
+  'source':'The real mock tools/call request count is0 before attachment and1 after a real attached call; disconnect/mismatch both retain1 after another actual turn. Mismatch has another ready executor, refreshes server environment, verifies one capability root remains. Matching binding call succeeds while another-environment returns None.'},
+ {'requirement':'stale catalog and captured-client authority preserved','tests':[x['test'] for x in binding],
+  'source':'Prepared call keeps captured client/config/permission/environment/plugin and connection lifetime. Closed client errors rather than rerouting. Revision advance rejects before transport. Stale preparation atomic marker staysfalse. A live preparation blocks revision writer until finished and then releases it.',
+  'production':'binding.rs:308-350 obtains the revision read guard, rejects mismatch before prepare(), and retains it through actual client execution; tool_catalog.rs captures permitted tools under a read guard and increments revision under a write guard.'},
+ {'requirement':'governed hooks and TokenBudget do not bypass tool policy','tests':['suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport','suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport','suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server','suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server'],
+  'source':'Real stdio server configured and ready; marker path passed to transport. Both HeptaGovernance and active tool policy leave physical marker absent and inject no server output. Plain TokenBudget control proves real matching threadId/text while hidden tool is not exposed to model. Session full-context production explicitly gates the notes/thread_hint call.'},
+ {'requirement':'original remaining Hook/MCP/CodeMode behavior and metadata assertions','tests':[x['test'] for x in gnu],
+  'source':'Permission allow executes ECHO while deny surfaces rejection; both exactly one hook input and no Guardian sampling. Pre hooks block or rewrite original input and preserve original attempted-call metadata; post hooks assert complete tool payload/context/transcript. Hidden MCP hook receives thread metadata without model exposure. CodeMode catches actual exec_command handler error and excludes no-exception success path.'}
+]
+assertions=save('original-contract-source-assessment.json',{'schema':'b07-original-negative-semantics-v1','requirements':requirements,
+    'separate_mutation_negative_claim':False,
+    'precision':'The required negative behavior is asserted inside the original passing cases. No separate new mutation-negative run is invented or required by the frozen B07 exit.',
+    'budget_contract':exit_row['budget_contract'],
+    'source_limits':'Preserved full files include all relevant test bodies and production capture/filter/runtime paths. The review does not establish an all-source security proof beyond these original exits.'})
+report={
+ 'schema':'b07-original-exit-independent-review-v1','created_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+ 'recommendation':'CLOSED_SCOPED_ELIGIBLE_FOR_ROOT_DECISION','not_a_ledger_status_mutation':True,
+ 'original_exit':exit_row,'original_exit_source':pin(contract_path),'frozen_name_projection':pin(projection_path),
+ 'actual_28_case_union':{'GNU_e78_original_core_integration':22,'Windows_5b_original_mcp_binding':6,'unique_frozen_original_names':28,'duplicates':0,'all_named_business_assertions_reached':True},
+ 'evidence':{'source_bridge':bridge,'gnu_22':gnu_evidence,'windows_binding_6':windows_evidence,'negative_semantics':assertions},
+ 'frozen_exact_names':[x['test'] for x in names],
+ 'platform_precision':{'GNU_e78':'22 actual original cases,0retries, no recorded early return, program/source/index/locks bound; entire project stillexit100.',
+    'Windows_5b':'6 binding actual named PASS within original193-case MCP unit target; full raw/XML/collector/artifact and source bridge preserved.',
+    'Windows_unavailable_cases':'18Hook module cases are cfg-not-Windows, CodeMode original Windows ignore; neither is called Windows PASS.',
+    'Windows_token_budget_supplement':'The three TokenBudget names have separately recorded5b Windows source rows in prior complete projection; the28-name main union does not need to borrow them.',
+    'eed_new_execution':'No eed GNU or new binding execution claimed. All20 relevant complete source files are byte-identical across5b/e78/eed.',
+    'original_48_failure_platform_mapping':[{'test':x['test'],'platforms':x['original_failure_platforms']} for x in projection if x['original_failure_platforms']],
+    'gate_limit':'B07 original exit does not add an explicit five-platform or new-head whole-workspace gate. Q01 is historical collection planning, not a new exit. B15 and any separately explicit original platform/full gates remain OPEN.'},
+ 'no_early_return_basis':['GNU22 complete immediate-success blocks each contain the exact named libtest PASS,1passed0failed0ignored and fresh JUnitPASS. All known network/Wine skip strings from preserved source are absent.',
+    'Windows six test bodies/test_step contain no skip or silent success branch; each actual exact line is present once in complete193-case stdout also embedded byte-for-byte in XML.'],
+ 'reviewer_correction':{'initial_parser':pin(BASE/'reviewer-initial-parser.py.source.txt'),'issue':'The first cloud reviewer parser incorrectly required unindented libtest lines in nextest success-output. The complete original blocks use exactly four leading spaces. It rejected the first block before producing a conclusion.','correction':'Match the actual four-space prefix exactly and independently require the eight-space nextest PASS header with the same binary and test name. No trimming, interleaved-line reconstruction, original-file mutation, or native execution occurred.'},
+ 'limits':['Original full project5FAIL, direct parallel failure,25other early returns, resource refusals and old B16driverUNKNOWN are unchanged.',
+    'Collector provenance limitations remain verbatim; original native/platform/source attribution is not expanded.',
+    'This is a scoped recommendation, not a ledger mutation or whole candidate PASS. Root decides final closure.'],
+ 'actions':{'new_native_commands':0,'tests':0,'test_retries':0,'source_changes':0,'ref_changes':0}}
+review_pin=save('independent-review.json',report)
+print(json.dumps({'review':review_pin,'bridge':bridge,'gnu':gnu_evidence,'windows':windows_evidence,'source_files':len(sources),'cases':len(gnu)+len(binding)},ensure_ascii=False))

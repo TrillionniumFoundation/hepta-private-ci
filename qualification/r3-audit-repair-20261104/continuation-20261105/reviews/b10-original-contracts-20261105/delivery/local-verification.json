@@ -1,0 +1,12 @@
+{
+  "schema": "b10-cloud-evidence-restore-verification-v1",
+  "command": "python3 research-audit/b10-original-contracts-20261105/delivery/verify_bundle.py.source.txt --manifest research-audit/b10-original-contracts-20261105/delivery/transport-manifest.json --parts research-audit/b10-original-contracts-20261105/delivery/parts --output research-audit/b10-original-contracts-20261105/delivery/verified-restored",
+  "tool_result": {
+    "chunk_id": "e2eae9",
+    "wall_time_seconds": 0.145748321,
+    "exit_code": 0,
+    "original_token_count": 75,
+    "output": "{\"result\": \"ALL_MEMBER_BYTES_VERIFIED\", \"part_count\": 6, \"member_count\": 191, \"member_bytes\": 9193305, \"archive\": {\"bytes\": 1808196, \"sha256\": \"cdd91a5d68cf920b8da75069fb554493ff0afe86de1d5e5ccfc86b1c67fcb8ad\", \"git_blob\": \"46eee4333cbcf6c58443056e4340c0df40d385b7\"}, \"new_native_execution\": false}\n"
+  },
+  "qualification": "Read-only archive decoding; no native or product test"
+}

@@ -1,0 +1,287 @@
+{
+  "schema": "b11-diagnostic-pr-native9-terminal-review-v1",
+  "role": "ORIGINAL_WHOLE_RESULT_PLUS_TOOLCHAIN_ENVIRONMENT_PRECONDITION_FAILURE_NOT_B11_CLOSURE",
+  "head": "855733b0f88c82c68135b1879682358a818daa84",
+  "head_tree": "bfee878ac3a871fd5b374acf3c2139b48a3235c5",
+  "run_id": 42119482548,
+  "job_id": 127567774212,
+  "run_attempt": 1,
+  "conclusion": "failure",
+  "started_at": "2026-11-05T22:22:59Z",
+  "completed_at": "2026-11-05T22:28:01Z",
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-11-05T22:23:00Z",
+      "completed_at": "2026-11-05T22:23:01Z"
+    },
+    {
+      "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-11-05T22:23:01Z",
+      "completed_at": "2026-11-05T22:23:21Z"
+    },
+    {
+      "name": "Prepare original native MSVC Bazel environment",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-11-05T22:23:21Z",
+      "completed_at": "2026-11-05T22:23:44Z"
+    },
+    {
+      "name": "Run the original outer Windows sandbox unit target",
+      "status": "completed",
+      "conclusion": "failure",
+      "number": 4,
+      "started_at": "2026-11-05T22:23:44Z",
+      "completed_at": "2026-11-05T22:27:53Z"
+    },
+    {
+      "name": "Check the ACL identity counterfactual and restore its source",
+      "status": "completed",
+      "conclusion": "failure",
+      "number": 5,
+      "started_at": "2026-11-05T22:27:53Z",
+      "completed_at": "2026-11-05T22:27:54Z"
+    },
+    {
+      "name": "Run the original setup helper target after exact restoration",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 6,
+      "started_at": "2026-11-05T22:27:54Z",
+      "completed_at": "2026-11-05T22:27:54Z"
+    },
+    {
+      "name": "Upload complete observation and original failure evidence",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-11-05T22:27:54Z",
+      "completed_at": "2026-11-05T22:27:56Z"
+    },
+    {
+      "name": "Check for a clean worktree",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-11-05T22:27:56Z",
+      "completed_at": "2026-11-05T22:27:56Z"
+    },
+    {
+      "name": "Post Prepare original native MSVC Bazel environment",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 15,
+      "started_at": "2026-11-05T22:27:56Z",
+      "completed_at": "2026-11-05T22:27:57Z"
+    },
+    {
+      "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 16,
+      "started_at": "2026-11-05T22:27:57Z",
+      "completed_at": "2026-11-05T22:27:59Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 17,
+      "started_at": "2026-11-05T22:27:59Z",
+      "completed_at": "2026-11-05T22:27:59Z"
+    }
+  ],
+  "actual_checkout_commit": "cb5aba57802272d7f535cd6ee2ac3e26334dbff6",
+  "actual_checkout_tree": "bf1c52a3ed14ca2bd0276ffc693dccf6c1dbbb83",
+  "source_leaves": {
+    ".github/workflows/hepta-windows-token-mechanism-probe.yml": "100644 blob 8276dc655ab7d7e1e311f183e398a903a595ae9f",
+    "codex-rs/windows-sandbox-rs/BUILD.bazel": "100644 blob 8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+    "codex-rs/windows-sandbox-rs/Cargo.toml": "100644 blob aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+    "codex-rs/windows-sandbox-rs/build.rs": "100644 blob 6ba79e6c75deb87067ced02e824eaf7faf79346d",
+    "codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.manifest": "100644 blob 14807962f83a2a89109ae22557d82a8cbb7d761b",
+    "codex-rs/windows-sandbox-rs/sandbox_smoketests.py": "100644 blob f6689587f5ce73fa35529f491d01b675aeffe43a",
+    "codex-rs/windows-sandbox-rs/src/acl.rs": "100644 blob 53c7053c5880da13640f3bd777998b6998da6d47",
+    "codex-rs/windows-sandbox-rs/src/acl_deny.rs": "100644 blob da5346c220c41cf0c83f62b596132c74c02284d8",
+    "codex-rs/windows-sandbox-rs/src/acl_tests.rs": "100644 blob ec0264a7615097bec1b554cb60918b4f4662eec2",
+    "codex-rs/windows-sandbox-rs/src/allow.rs": "100644 blob 5a10261d0c5e82f5987df16c86680d68e7a6d705",
+    "codex-rs/windows-sandbox-rs/src/audit.rs": "100644 blob 5dd2a5846683f1d2e599b36fed9286c256e5184a",
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/main.rs": "100644 blob 9fe70c87508e6b171eaa434ffd2bfba7b43e38ba",
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs": "100644 blob 41d1e5c8ca2d13f54ca7d3a2eeb3eea6c26bb49f",
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/cwd_junction.rs": "100644 blob 7ddd391c3498c611b47c15b858d59b2eda1cce41",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs": "100644 blob 262460775ef6b5e02f0ba4485f388e1b389cc85f",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs": "100644 blob c39b298b7889dc3669e1ee7e2816f7e77568e955",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/firewall.rs": "100644 blob bf2476dd123ca52cbf4e4064bc7b5a366efb275a",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/no_reparse_dir.rs": "100644 blob 93d983f12f027d43dc959b6d0fea324bbdeed7c4",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/no_reparse_dir_tests.rs": "100644 blob 4d8f987f5111b7d9b691349f5490c04fc2584de1",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs": "100644 blob 9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs": "100644 blob 333aefdf9584ef29612ac6f9814ff34308971754",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/sandbox_users.rs": "100644 blob 0c7aa2198855f5f64767e03fb488555d15084255",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/setup_runtime_bin.rs": "100644 blob 176ef07504e17139120a3420ffff2578c3eafa44",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/setup_runtime_bin_tests.rs": "100644 blob ad8aa7c3e46fd05403649f7abb5422d513e6a77f",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs": "100644 blob e488e2a914b119ecb02cfc1a13a90009bc6120ea",
+    "codex-rs/windows-sandbox-rs/src/cap.rs": "100644 blob 41b33b63fda6f9bbc648fef98e5c9065f8f17b5e",
+    "codex-rs/windows-sandbox-rs/src/conpty/mod.rs": "100644 blob c09e8fe656f0322d82bd47248a24583518b9c6bb",
+    "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs": "100644 blob 6f05793ec6ee043a933073ada3a1bf9122de5a73",
+    "codex-rs/windows-sandbox-rs/src/deny_read_acl.rs": "100644 blob dd3bc350e48299fe5a99e8d45eba61a239e5a186",
+    "codex-rs/windows-sandbox-rs/src/deny_read_resolver.rs": "100644 blob 498ceabfd0b72d0c4788dc9195f1b32617854d51",
+    "codex-rs/windows-sandbox-rs/src/deny_read_state.rs": "100644 blob fd073a4d45c781f0441839708f92e32d0831556c",
+    "codex-rs/windows-sandbox-rs/src/desktop.rs": "100644 blob 0b01f011119bef623bc9e46e710caa371520380d",
+    "codex-rs/windows-sandbox-rs/src/desktop_tests.rs": "100644 blob 5bbb7af6b9ffb86704e86ebcf0895f71e571166b",
+    "codex-rs/windows-sandbox-rs/src/dpapi.rs": "100644 blob 3a90704127e2fd7c71131492aa0d25f70dfba114",
+    "codex-rs/windows-sandbox-rs/src/elevated/ipc_framed.rs": "100644 blob fca07f73c3501cc034e969f71d870ff1b31aff90",
+    "codex-rs/windows-sandbox-rs/src/elevated/mod.rs": "100644 blob 3c8084bb623452c61bfcbf5e4467417d2263d03d",
+    "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs": "100644 blob 90ad2dbc93ea7673fa4e4711877371dab6eec117",
+    "codex-rs/windows-sandbox-rs/src/elevated/runner_pipe.rs": "100644 blob c8ae092c4a00fc3e029be48cb77cc78db4580d87",
+    "codex-rs/windows-sandbox-rs/src/elevated_impl.rs": "100644 blob 1de7889c1f9f083807a6e7cc0e47a54635112970",
+    "codex-rs/windows-sandbox-rs/src/env.rs": "100644 blob bdf7a76ab2efa345664b6467aed6e7550a80be0d",
+    "codex-rs/windows-sandbox-rs/src/helper_materialization.rs": "100644 blob 7532d191ead69f010f17ef48a8e0b90d2bca3e71",
+    "codex-rs/windows-sandbox-rs/src/hide_users.rs": "100644 blob b91944002294555847f3574c7d3952f45196bf36",
+    "codex-rs/windows-sandbox-rs/src/identity.rs": "100644 blob 860877dff2effb728d446d1a6d7db66073cf2ace",
+    "codex-rs/windows-sandbox-rs/src/lib.rs": "100644 blob 11778af7beb645b36401807cf3e31a0dd4deddc0",
+    "codex-rs/windows-sandbox-rs/src/logging.rs": "100644 blob 7108a1de3691b9682c60eb5e5bcb50010cfee4af",
+    "codex-rs/windows-sandbox-rs/src/path_normalization.rs": "100644 blob 1735b745a28dc92b2c78e6f61fd70fa878042352",
+    "codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs": "100644 blob 38110a69239e9707a324f2d4cf4a1fad932b4132",
+    "codex-rs/windows-sandbox-rs/src/process.rs": "100644 blob 4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+    "codex-rs/windows-sandbox-rs/src/resolved_permissions.rs": "100644 blob 0e28b9d3dc169a61e8c00c9ae63cecef7afd3e06",
+    "codex-rs/windows-sandbox-rs/src/sandbox_utils.rs": "100644 blob 1dfd7683021065d8e2899ce589b3f55c8999aebb",
+    "codex-rs/windows-sandbox-rs/src/setup.rs": "100644 blob 890755d01ca24f5ede1960582eacb9714633a0db",
+    "codex-rs/windows-sandbox-rs/src/setup_error.rs": "100644 blob d9104602bc19af88101fbb5b44f839a1d799c174",
+    "codex-rs/windows-sandbox-rs/src/spawn_prep.rs": "100644 blob 2385bdbd3202fd2f14a090174b269791976d04c4",
+    "codex-rs/windows-sandbox-rs/src/ssh_config_dependencies.rs": "100644 blob ae6d82d560190e99d84b2f147df7e2f40a656e4b",
+    "codex-rs/windows-sandbox-rs/src/stdio_bridge.rs": "100644 blob 3ad722ba8db4eae79918aa79f14e102ea8cdb634",
+    "codex-rs/windows-sandbox-rs/src/stdio_bridge_tests.rs": "100644 blob c13632b84a1e25d906dd46e2570a9f6273774604",
+    "codex-rs/windows-sandbox-rs/src/token.rs": "100644 blob b22acb5556f6af3b4c250a2441f161ee448ea1c1",
+    "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs": "100644 blob 7a7008f9becf09578ca953c849401eda93eb94b2",
+    "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs": "100644 blob 2a384792e8ba88518c26943716e8c3a39a523f9b",
+    "codex-rs/windows-sandbox-rs/src/token_tests.rs": "100644 blob 042858ce22b784d7809612e2d80e35d29b559f1a",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs": "100644 blob 5390daefe0f872866764cb567ad13f22c0675cf4",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backend_selection_tests.rs": "100644 blob a1bddbf65927be4bd5f927d9836ae8c4ba0ef320",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs": "100644 blob 138b0be7904e691f931382de7237cca72beb2c0a",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated_tests.rs": "100644 blob a5187eb15c9bc3ddef3cd1b08a449ca6a2ea2e99",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs": "100644 blob 6fbf819c921a0097cd306e9de9ba9c965ecf0163",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backends/mod.rs": "100644 blob 9d2aaa9070bb269c766b404a3bdeb365fc29955b",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backends/windows_common.rs": "100644 blob f37829e950567b4f0f64217a894f078436f877fb",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs": "100644 blob d8511f92f9fbd9d58061238dbf3181152c74ccbc",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs": "100644 blob c98f3e5d217ada48732e1686129806d0dd52169e",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs": "100644 blob aea1ff8476ab8ce33642677a36b1609054888a4e",
+    "codex-rs/windows-sandbox-rs/src/wfp.rs": "100644 blob 9291b6eb994d640828a16493e5b558339ed73156",
+    "codex-rs/windows-sandbox-rs/src/wfp/filter_specs.rs": "100644 blob d86df4ac1eff0c9cc2cc567817a9cdc8584f78cc",
+    "codex-rs/windows-sandbox-rs/src/wfp_setup.rs": "100644 blob 688878583b017ef029a9b54b8fdf5e806a7d94ad",
+    "codex-rs/windows-sandbox-rs/src/winutil.rs": "100644 blob 45378b4bb527ce2b202913ab3b21aad9ef4b1828",
+    "codex-rs/windows-sandbox-rs/src/workspace_acl.rs": "100644 blob 7143212b54c088e317ef5acbc729060e68237e68",
+    "codex-rs/windows-sandbox-rs/src/wrapper.rs": "100644 blob 9729db1b840ceecaa7de2a27be0a7f4fb9792313",
+    "codex-rs/windows-sandbox-rs/src/wrapper_tests.rs": "100644 blob 207361d4c60f8559d51e1842743c6f6c69bc5618",
+    "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs": "100644 blob 346155207c2c726eca0d0e4d761f530b45bbf64e"
+  },
+  "captured_leaf_changes_from_native8": [
+    {
+      "path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "before": "100644 blob 89d2eaf4bb9900f7476d49476e2657effa68327a",
+      "after": "100644 blob 8276dc655ab7d7e1e311f183e398a903a595ae9f"
+    }
+  ],
+  "captured_source_leaf_count": 78,
+  "original_clean_source_before_after": true,
+  "original_bazel_exit": 3,
+  "console_copy_exit": 0,
+  "final_clean_worktree_step_success": true,
+  "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+  "summaries": [
+    "test result: ok. 92 passed; 0 failed; 0 ignored; 0 measured; 64 filtered out; finished in 1.04s",
+    "test result: FAILED. 55 passed; 7 failed; 2 ignored; 0 measured; 92 filtered out; finished in 0.23s"
+  ],
+  "outer_target_xml": {
+    "root": "testsuites",
+    "case": {
+      "name": "codex-rs\\windows-sandbox-rs\\windows-sandbox-rs-unit-tests.bat",
+      "classname": "",
+      "status": "run",
+      "duration": "56",
+      "time": "56"
+    },
+    "errors": [
+      {
+        "message": "exited with error code 1"
+      }
+    ],
+    "scope": "Original outer bat target XML; not individual libtest qualification."
+  },
+  "combined_disjoint_counts": {
+    "total_named_tests": 156,
+    "passed": 147,
+    "failed": 7,
+    "ignored": 2
+  },
+  "count_limit": "Two disjoint libtest groups in one original target attempt, not retries. Job wrapper-tail repeats are not extra executions.",
+  "failure_classification": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/failure-classification.json",
+    "bytes": 16131,
+    "sha256": "03a509201844371dd14e1cf68a6def09cec91c4dad95a5054ca9243f7f250996",
+    "git_blob": "a06ba925ac0d4c244cad4ae4d654dc344dfe6f1c"
+  },
+  "physical_observations": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/physical-observation-projection.json",
+    "bytes": 110814,
+    "sha256": "aa5c7a00ddfdc2d9df214c18cb4e0195b315dc0a3bc3052fe5a4497afdde547d",
+    "git_blob": "d8f40d5000a6d9d6b5cce46b7c13df7b13ceddfd"
+  },
+  "counterfactual_precondition": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/counterfactual-precondition-review.json",
+    "bytes": 7075,
+    "sha256": "991304adba51f0fa8914e6c82848a2715321ceb32184e125f3f61b39bd30b455",
+    "git_blob": "b9c92c2606130fd58a8eab73b7e19f78a71e55a7"
+  },
+  "counterfactual_status": "INVALID_OR_NOT_RUN",
+  "exact_test_cases_executed": 0,
+  "negative_executed": false,
+  "source_mutation_attempted": false,
+  "helper_executed": false,
+  "B11_status": "OPEN",
+  "evidence": {
+    "job_log": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/job.log",
+      "bytes": 448899,
+      "sha256": "9d3d36d14e016a35f9a64630ac1709a79575c21fe3536b431b215801a6c7236b",
+      "git_blob": "1031f8ebe6a51a254fcfad3e5b5eaf364170cc50"
+    },
+    "full_test_log": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/members/bazel-execution-logs/failed-test-logs/invocation-x_fkti0g/targets/0000/test.log",
+      "bytes": 142867,
+      "sha256": "7e5810166a9f55fbda1a14a21621202da12b34b0d5f068e242ff4353362d6ad9",
+      "git_blob": "a65c8e01b2decf4a211f65aadf5ad2e678ed4826"
+    },
+    "target_level_xml": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/members/bazel-execution-logs/failed-test-logs/invocation-x_fkti0g/targets/0000/test.xml",
+      "bytes": 143290,
+      "sha256": "b6f25347bfa480848d9bac916e1f69dc5931e154667557276ac107d1d5de3f26",
+      "git_blob": "9e226a4894085a8eac41984a0a462f0c25f81340"
+    },
+    "API": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/terminal-api-envelopes.json",
+      "bytes": 521112,
+      "sha256": "0e3fc352eb68241d8f790f4bd38edf90aba112f087f88a97ed28e0fa7bb25c9c",
+      "git_blob": "509f2a3aea5d12055067e761602e9b33a4efab6e"
+    },
+    "archive_verification": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/artifact-verification.json",
+      "bytes": 6590,
+      "sha256": "fcc84e6e5fa9359809e44ffbe48b961217a0f522858341e22161ece415db0e18",
+      "git_blob": "867cd6e1942f8407baf943d8a40f5df1336a6f10"
+    },
+    "archive_parts_manifest": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127567774212/archive-parts-manifest.json",
+      "bytes": 11165,
+      "sha256": "15f7fb2f705ca257c12b31b602d0132daea6a8b1f4ab583876ee9aa5e41ac9ed",
+      "git_blob": "d6198b3e262ef4a97b81f1bff5357f9b663c3997"
+    }
+  },
+  "native_or_ref_mutation_by_auditor": false
+}

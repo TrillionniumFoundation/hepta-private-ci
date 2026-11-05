@@ -1,0 +1,219 @@
+{
+  "schema": "b11-counterfactual-v3-independent-static-verification-v1",
+  "manifest": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/manifest-DISABLED.json",
+    "bytes": 5728,
+    "sha256": "4d27907fa21fa83a4dbbdb87f3c564d0874212ec273083385d947cb398c2f1f8",
+    "git_blob": "4f969ff54698cae7bcd85b32aac5f65d791866e0"
+  },
+  "preimage": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/source/.github/scripts/run_b11_acl_identity_counterfactual.py",
+    "bytes": 17774,
+    "sha256": "6e199582d277e44f1796dcf64c39bb0fe3f263f060ab79da1bf682fff5866b1f",
+    "git_blob": "25def4386ea08bb72a7605cc113117f31fffcd1b"
+  },
+  "postimage": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py",
+    "bytes": 22200,
+    "sha256": "1a53b2771e795fb27a495d7c053d7afc9b0cad954f27c4802654311771319ed5",
+    "git_blob": "3680db31233e47ba7fad99f31a7019c4536288bb"
+  },
+  "patch": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch",
+    "bytes": 6969,
+    "sha256": "e8e9d45eb167f81b35e3d17db84d9164d6ee12d4dc3260e95e6ce951199d03ab",
+    "git_blob": "53ed544e11003015cf1a57b27da64b2295681fd2"
+  },
+  "unchanged_workflow": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/unchanged/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+    "bytes": 5072,
+    "sha256": "2cd28bdbca3557a2294aa1f2edec49d4e8250b968b8bd1747fb1744750ea5de9",
+    "git_blob": "912e22789665b0081c83ae0fa632d2482e8b0eba"
+  },
+  "old_non_main_functions_byte_equal": [
+    "require",
+    "digest",
+    "save",
+    "replace_owned_source",
+    "git",
+    "canonical",
+    "source_guard",
+    "retained_log",
+    "target_terminal"
+  ],
+  "initial_whole_source_console_prefix_byte_equal": true,
+  "entire_negative_exception_finally_terminal_tail_byte_equal": true,
+  "whole_workflow_byte_equal": true,
+  "original_120_minute_job_budget_unchanged": true,
+  "native7_inputs": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127429723742/members/bazel-execution-logs/failed-test-logs/invocation-6iu04t1n/targets/0000/test.log",
+      "bytes": 142855,
+      "sha256": "4a970730a11ee97899de1223a481e1c9d15fc5e377c4660d9366bc6bcddf8989",
+      "git_blob": "82393b7d6724787be8db86f569775f9b9c97f987"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127429723742/members/bazel-execution-logs/failed-test-logs/invocation-6iu04t1n/targets/0000/test.xml",
+      "bytes": 143278,
+      "sha256": "8b9f39b15cc3b8bdf433d9675ca4e299f8ca864c4a5a4c6443c7c91d63ef88bb",
+      "git_blob": "1dc674838cb2b51a2aec380a141d991998fb9e84"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127429723742/members/b11-token-mechanism-probe/acl-identity-counterfactual/counterfactual-terminal.json",
+      "bytes": 544,
+      "sha256": "9c629a4572f5659f5c5d588e9200f90a564f33fcb76fc706c68ea36aa6002b5e",
+      "git_blob": "da8ffa3044c27fc9d36e18affe1c880e8e3da2e5"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127429723742/members/bazel-execution-logs/failed-test-logs/invocation-6iu04t1n/manifest.json",
+      "bytes": 1273,
+      "sha256": "83fd10df31dd8513c398a3faa65914950a21071aa27842aafc06f24d91a4a04e",
+      "git_blob": "77c2a1ba243a435b3a0ed80d942b948fa06bf5dc"
+    }
+  ],
+  "native7_old_exact_line_counts": {
+    "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object": 1,
+    "acl::tests::existing_native_deny_does_not_require_write_dac": 1,
+    "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write": 1,
+    "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes": 0
+  },
+  "native7_original_failure_headers": [
+    "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+    "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+    "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+    "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+    "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+    "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+    "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+  ],
+  "native7_interleaved_line_preserved": [
+    {
+      "line": 294,
+      "text": "PROBE_OBSERVATION_ONLY restoration {\"subject\":\"host\",\"outside_level\":\"medium\",\"results\":[{\"path\":\"D:\\\\tmp\\\\.tmpLONURf\\\\host-medium\\\\inside\",\"identity\":[840113181,917504,98110],\"pending\":0,\"links\":1,\"label\":\"S:(ML;;NW;;;LW)\",\"restored_survivor\":true},{\"path\":\"D:\\\\tmp\\\\.tmpLONURf\\\\host-medium\\\\inside\\\\read.txt\",\"identity\":[840113181,851968,98116],\"pending\":0,\"links\":1,\"label\":\"S:(ML;;NW;;;LW)\",\"restored_survivor\":true},{\"path\":\"D:\\\\tmp\\\\.tmpLONURf\\\\host-medium\\\\test token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes ... insideok\\\\"
+    }
+  ],
+  "native7_original_scope": {
+    "passed": 147,
+    "failed": 7,
+    "ignored": 2,
+    "source_mutated": false,
+    "counterfactual_status": "INVALID_OR_NOT_RUN",
+    "actual_original_libtest_subinvocations": [
+      [
+        "ok",
+        "92",
+        "0",
+        "0",
+        "64",
+        "1.04"
+      ],
+      [
+        "FAILED",
+        "55",
+        "7",
+        "2",
+        "92",
+        "0.21"
+      ]
+    ]
+  },
+  "reviewer_correction": {
+    "initial_parser": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/acl-counterfactual-wrapper-v3-review-20261105/reviewer-initial-parser.py.source.txt",
+      "bytes": 8315,
+      "sha256": "fe3ff659d3826df422766f8a0a63e82dc7e95715d6b4e7a6c2d5e86240117be9",
+      "git_blob": "064375946740afee054efd9c0973239f6b3652d0"
+    },
+    "reason": "Reviewer first assumed one aggregate 147/7/2 libtest summary. Original default batch wrapper actually emitted 92/0/0 plus 55/7/2, with 64/92 filtered. Revised parser verifies the two actual original summaries and sums them. Candidate and all native originals are unchanged."
+  },
+  "prior_actual_required_case_failure": {
+    "input": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127383345954/members/bazel-execution-logs/failed-test-logs/invocation-iloq9z78/targets/0000/test.log",
+      "bytes": 131855,
+      "sha256": "fcea1fd7d4a059130a34b392f5171e5db76ddfd2d0a0a0f21ebd7414641f71fc",
+      "git_blob": "d4a9dcff6525450a9c5afaacaa531a56514aa5e9"
+    },
+    "case": "acl::tests::existing_native_deny_does_not_require_write_dac",
+    "original_failure_header_present": true
+  },
+  "private_cloud_git_roundtrip": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--",
+        ".github/scripts/run_b11_acl_identity_counterfactual.py"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "forward_and_reverse_bytes_exact": true,
+  "actions": {
+    "native_commands": 0,
+    "rust_tests": 0,
+    "new_positive_execution": 0,
+    "negative_execution": 0,
+    "ref_mutations": 0
+  },
+  "limits": [
+    "The new four positive scopes and negative remain unexecuted. No interleaved PASS record was repaired or accepted.",
+    "The XML is the outer Bazel testcase, not four per-Rust-case XMLs. Exact name attribution follows the fixed full-name --exact command and strict one-case libtest summary.",
+    "This review does not qualify the independent setup helper target or close original B11 failures."
+  ]
+}

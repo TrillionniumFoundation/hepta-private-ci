@@ -1,0 +1,173 @@
+{
+  "schema": "b07-original-exit-independent-review-v1",
+  "created_at": "2026-11-05T18:34:00.548819+00:00",
+  "recommendation": "CLOSED_SCOPED_ELIGIBLE_FOR_ROOT_DECISION",
+  "not_a_ledger_status_mutation": true,
+  "original_exit": {
+    "id": "B07",
+    "name": "Hook 元数据与工具可见性",
+    "frozen_ledger_exit_condition_zh": "binding、原 Hook executor、MCP、TokenBudget 用例通过；未配置 server、allow/deny list、环境错配和陈旧目录负控均拒绝。",
+    "budget_contract": "Existing executor hook wait10s and negative5s; MCP configured hook5s/server startup10s, specific existing waits5/15s. Keep all original helper/harness budgets. No universal invented Hook deadline."
+  },
+  "original_exit_source": {
+    "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fourth/inputs/seven-pending-manifest.json",
+    "bytes": 145618,
+    "sha256": "626391a3932d1cafa2209d7a367bdb002b4beba652b5a006a45933e463b78059",
+    "git_blob": "6f8f5bbc43a627f280766457ccdae46cef93a9c9"
+  },
+  "frozen_name_projection": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/six-exit-scope-review-v1/scope-projection.json",
+    "bytes": 164271,
+    "sha256": "9259036086d3b1e6b3d4d76019bac5c85e1a70260f3dd9e8b45a50a276cc6264",
+    "git_blob": "bccf80541a0ae5d620dccc672a2aed91739af4a4"
+  },
+  "actual_28_case_union": {
+    "GNU_e78_original_core_integration": 22,
+    "Windows_5b_original_mcp_binding": 6,
+    "unique_frozen_original_names": 28,
+    "duplicates": 0,
+    "all_named_business_assertions_reached": true
+  },
+  "evidence": {
+    "source_bridge": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/source-leaf-bridge.json",
+      "bytes": 17699,
+      "sha256": "fa7831ae6dd4e567308ac4c89a14435c950b9a2949e6dff7b25260321c4d60bc",
+      "git_blob": "9c9f89e62445d550bb69af5f061e98ecfc4ad4be"
+    },
+    "gnu_22": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/gnu-22-case-evidence.json",
+      "bytes": 40285,
+      "sha256": "e664ea9c7a27b82832f98d1deb8869f9f448f72973956d4b2733bcd76070b364",
+      "git_blob": "11dca0847f71d3b6b9b27fc6b7fe4fd120e62fd8"
+    },
+    "windows_binding_6": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/windows-6-binding-evidence.json",
+      "bytes": 9996,
+      "sha256": "0adf60cad54c442a87a952210e1ace89e46ac756b0c90e4d4d579957eb0a37ab",
+      "git_blob": "daacceb022b06a6219b9ab0271f5cf97dfa9055c"
+    },
+    "negative_semantics": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/original-contract-source-assessment.json",
+      "bytes": 7329,
+      "sha256": "f19a8c7a56b160922a3c88514b8858530474be05d5c3a6240128731cd908d57c",
+      "git_blob": "ccfbe624ca796e467a33a3c8cf1d15aad0b84fd3"
+    }
+  },
+  "frozen_exact_names": [
+    "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+    "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+    "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+    "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+    "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+    "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+    "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+    "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+    "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+    "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters",
+    "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+    "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+    "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+    "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+    "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+    "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names",
+    "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+    "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+    "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+    "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server",
+    "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+    "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+    "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+    "binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh",
+    "binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes",
+    "binding::tests::prepared_call_is_rejected_after_catalog_refresh",
+    "binding::tests::stale_prepared_call_does_not_run_preparation",
+    "binding::tests::preparation_holds_catalog_authority_until_it_finishes"
+  ],
+  "platform_precision": {
+    "GNU_e78": "22 actual original cases,0retries, no recorded early return, program/source/index/locks bound; entire project stillexit100.",
+    "Windows_5b": "6 binding actual named PASS within original193-case MCP unit target; full raw/XML/collector/artifact and source bridge preserved.",
+    "Windows_unavailable_cases": "18Hook module cases are cfg-not-Windows, CodeMode original Windows ignore; neither is called Windows PASS.",
+    "Windows_token_budget_supplement": "The three TokenBudget names have separately recorded5b Windows source rows in prior complete projection; the28-name main union does not need to borrow them.",
+    "eed_new_execution": "No eed GNU or new binding execution claimed. All20 relevant complete source files are byte-identical across5b/e78/eed.",
+    "original_48_failure_platform_mapping": [
+      {
+        "test": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+        "platforms": [
+          "linux-gnu",
+          "linux-musl",
+          "macos-arm",
+          "macos-intel"
+        ]
+      },
+      {
+        "test": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+        "platforms": [
+          "linux-gnu",
+          "linux-musl",
+          "macos-arm",
+          "macos-intel"
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+        "platforms": [
+          "linux-gnu",
+          "linux-musl",
+          "macos-arm",
+          "macos-intel"
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+        "platforms": [
+          "macos-arm",
+          "macos-intel"
+        ]
+      },
+      {
+        "test": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+        "platforms": [
+          "linux-gnu",
+          "linux-musl",
+          "macos-arm",
+          "macos-intel"
+        ]
+      },
+      {
+        "test": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+        "platforms": [
+          "macos-arm",
+          "macos-intel"
+        ]
+      }
+    ],
+    "gate_limit": "B07 original exit does not add an explicit five-platform or new-head whole-workspace gate. Q01 is historical collection planning, not a new exit. B15 and any separately explicit original platform/full gates remain OPEN."
+  },
+  "no_early_return_basis": [
+    "GNU22 complete immediate-success blocks each contain the exact named libtest PASS,1passed0failed0ignored and fresh JUnitPASS. All known network/Wine skip strings from preserved source are absent.",
+    "Windows six test bodies/test_step contain no skip or silent success branch; each actual exact line is present once in complete193-case stdout also embedded byte-for-byte in XML."
+  ],
+  "reviewer_correction": {
+    "initial_parser": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/reviewer-initial-parser.py.source.txt",
+      "bytes": 21334,
+      "sha256": "9111c265d8e6ccf796db1063babd82dc601bd05daba56b3ebd6a47c21939531d",
+      "git_blob": "64f86cc263a2435f0172bca2234000840c9ce9e7"
+    },
+    "issue": "The first cloud reviewer parser incorrectly required unindented libtest lines in nextest success-output. The complete original blocks use exactly four leading spaces. It rejected the first block before producing a conclusion.",
+    "correction": "Match the actual four-space prefix exactly and independently require the eight-space nextest PASS header with the same binary and test name. No trimming, interleaved-line reconstruction, original-file mutation, or native execution occurred."
+  },
+  "limits": [
+    "Original full project5FAIL, direct parallel failure,25other early returns, resource refusals and old B16driverUNKNOWN are unchanged.",
+    "Collector provenance limitations remain verbatim; original native/platform/source attribution is not expanded.",
+    "This is a scoped recommendation, not a ledger mutation or whole candidate PASS. Root decides final closure."
+  ],
+  "actions": {
+    "new_native_commands": 0,
+    "tests": 0,
+    "test_retries": 0,
+    "source_changes": 0,
+    "ref_changes": 0
+  }
+}

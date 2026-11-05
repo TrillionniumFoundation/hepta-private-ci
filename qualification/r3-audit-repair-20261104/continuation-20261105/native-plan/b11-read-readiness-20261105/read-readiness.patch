@@ -1,0 +1,286 @@
+diff --git a/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs b/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs
+index 1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d..c39b298b7889dc3669e1ee7e2816f7e77568e955 100644
+--- a/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs
++++ b/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs
+@@ -38,11 +38,8 @@
+ use std::ffi::c_void;
+ use std::io::Write;
+ use std::os::windows::io::AsRawHandle;
+-use std::os::windows::process::CommandExt;
+ use std::path::Path;
+ use std::path::PathBuf;
+-use std::process::Command;
+-use std::process::Stdio;
+ use std::sync::mpsc;
+ use windows_sys::Win32::Foundation::GetLastError;
+ use windows_sys::Win32::Foundation::HLOCAL;
+@@ -74,7 +71,6 @@
+ mod setup_runtime_bin;
+ use no_reparse_dir::open_or_create_no_reparse;
+ use read_acl_mutex::acquire_read_acl_mutex;
+-use read_acl_mutex::read_acl_mutex_exists;
+ use sandbox_users::commit_setup_marker;
+ use sandbox_users::prepare_setup_marker;
+ use sandbox_users::provision_sandbox_users;
+@@ -161,24 +157,6 @@
+         }
+     }
+     Ok(sid_strs)
+-}
+-
+-fn spawn_read_acl_helper(payload: &Payload, _log: &mut dyn Write) -> Result<()> {
+-    let mut read_payload = payload.clone();
+-    read_payload.mode = SetupMode::ReadAclsOnly;
+-    read_payload.refresh_only = true;
+-    let payload_json = serde_json::to_vec(&read_payload)?;
+-    let payload_b64 = BASE64.encode(payload_json);
+-    let exe = std::env::current_exe().context("locate setup helper")?;
+-    Command::new(&exe)
+-        .arg(payload_b64)
+-        .stdin(Stdio::null())
+-        .stdout(Stdio::null())
+-        .stderr(Stdio::null())
+-        .creation_flags(0x08000000) // CREATE_NO_WINDOW
+-        .spawn()
+-        .context("spawn read ACL helper")?;
+-    Ok(())
+ }
+ 
+ struct ReadAclSubjects<'a> {
+@@ -529,14 +507,8 @@
+ }
+ 
+ fn run_read_acl_only(payload: &Payload, log: &mut dyn Write) -> Result<()> {
+-    let _read_acl_guard = match acquire_read_acl_mutex()? {
+-        Some(guard) => guard,
+-        None => {
+-            log_line(log, "read ACL helper already running; skipping")?;
+-            return Ok(());
+-        }
+-    };
+-    log_line(log, "read-acl-only mode: applying read ACLs")?;
++    let _read_acl_guard = acquire_read_acl_mutex()?;
++    log_line(log, "applying read ACLs for the current setup request")?;
+     let sandbox_group_sid = resolve_sandbox_users_group_sid()?;
+     let sandbox_group_psid = sid_bytes_to_psid(&sandbox_group_sid)?;
+     let mut refresh_errors: Vec<String> = Vec::new();
+@@ -583,9 +555,7 @@
+             log,
+             &format!("read ACL run completed with errors: {refresh_errors:?}"),
+         )?;
+-        if payload.refresh_only {
+-            anyhow::bail!("read ACL run had errors");
+-        }
++        anyhow::bail!("read ACL run had errors");
+     }
+     log_line(log, "read ACL run completed")?;
+     Ok(())
+@@ -789,9 +759,8 @@
+         configure_offline_sandbox_network(payload, &offline_sid_str, log)?;
+     }
+ 
+-    // Deny-read ACEs must be present before the sandboxed command starts. Apply
+-    // them synchronously here instead of delegating them to the background
+-    // helper used for read grants.
++    // Deny-read ACEs must be present before the sandboxed command starts.
++    // Keep them synchronous before the read-grant stage below.
+     let applied_deny_read_paths = unsafe {
+         sync_persistent_deny_read_acls(
+             &payload.codex_home,
+@@ -809,35 +778,11 @@
+     }
+ 
+     if payload.read_roots.is_empty() {
+-        log_line(log, "no read roots to grant; skipping read ACL helper")?;
++        log_line(log, "no read roots to grant; skipping read ACL stage")?;
+     } else {
+-        match read_acl_mutex_exists() {
+-            Ok(true) => {
+-                log_line(log, "read ACL helper already running; skipping spawn")?;
+-            }
+-            Ok(false) => {
+-                spawn_read_acl_helper(payload, log).map_err(|err| {
+-                    anyhow::Error::new(SetupFailure::new(
+-                        SetupErrorCode::HelperReadAclHelperSpawnFailed,
+-                        format!("spawn read ACL helper failed: {err}"),
+-                    ))
+-                })?;
+-            }
+-            Err(err) => {
+-                log_line(
+-                    log,
+-                    &format!("read ACL mutex check failed: {err}; spawning anyway"),
+-                )?;
+-                spawn_read_acl_helper(payload, log).map_err(|spawn_err| {
+-                    anyhow::Error::new(SetupFailure::new(
+-                        SetupErrorCode::HelperReadAclHelperSpawnFailed,
+-                        format!(
+-                            "spawn read ACL helper failed after mutex error {err}: {spawn_err}"
+-                        ),
+-                    ))
+-                })?;
+-            }
+-        }
++        // Returning from full setup must include this request's read ACL work.
++        // An existing mutex is not a receipt for this request's roots.
++        run_read_acl_only(payload, log)?;
+     }
+ 
+     if refresh_only {
+@@ -1009,7 +954,7 @@
+         log_line(
+             log,
+             &format!(
+-                "setup refresh: processed {} write roots (read roots delegated); errors={:?}",
++                "setup refresh: processed {} write roots after read ACL stage; errors={:?}",
+                 payload.write_roots.len(),
+                 refresh_errors
+             ),
+diff --git a/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs b/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs
+index a96b6a502474a8bab3baa7842f36dfa814c9cc37..9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6 100644
+--- a/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs
++++ b/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs
+@@ -1,14 +1,12 @@
++use anyhow::Context;
+ use anyhow::Result;
+ use codex_windows_sandbox::to_wide;
+ use std::ffi::OsStr;
+ use windows_sys::Win32::Foundation::CloseHandle;
+ use windows_sys::Win32::Foundation::ERROR_ALREADY_EXISTS;
+-use windows_sys::Win32::Foundation::ERROR_FILE_NOT_FOUND;
+ use windows_sys::Win32::Foundation::GetLastError;
+ use windows_sys::Win32::Foundation::HANDLE;
+ use windows_sys::Win32::System::Threading::CreateMutexW;
+-use windows_sys::Win32::System::Threading::MUTEX_ALL_ACCESS;
+-use windows_sys::Win32::System::Threading::OpenMutexW;
+ use windows_sys::Win32::System::Threading::ReleaseMutex;
+ 
+ const READ_ACL_MUTEX_NAME: &str = "Local\\CodexSandboxReadAcl";
+@@ -26,36 +24,33 @@
+     }
+ }
+ 
+-pub(super) fn read_acl_mutex_exists() -> Result<bool> {
+-    let name = to_wide(OsStr::new(READ_ACL_MUTEX_NAME));
+-    let handle = unsafe { OpenMutexW(MUTEX_ALL_ACCESS, 0, name.as_ptr()) };
+-    if handle == 0 {
+-        let err = unsafe { GetLastError() };
+-        if err == ERROR_FILE_NOT_FOUND {
+-            return Ok(false);
+-        }
+-        return Err(anyhow::anyhow!("OpenMutexW failed: {err}"));
+-    }
+-    unsafe {
+-        CloseHandle(handle);
+-    }
+-    Ok(true)
++pub(super) fn acquire_read_acl_mutex() -> Result<ReadAclMutexGuard> {
++    acquire_named_read_acl_mutex(OsStr::new(READ_ACL_MUTEX_NAME))
+ }
+ 
+-pub(super) fn acquire_read_acl_mutex() -> Result<Option<ReadAclMutexGuard>> {
+-    let name = to_wide(OsStr::new(READ_ACL_MUTEX_NAME));
+-    let handle = unsafe { CreateMutexW(std::ptr::null_mut(), 1, name.as_ptr()) };
++fn acquire_named_read_acl_mutex(name: &OsStr) -> Result<ReadAclMutexGuard> {
++    let name = to_wide(name);
++    // SAFETY: name is NUL-terminated and valid for this call. The new handle
++    // cannot be inherited, and only a newly created mutex is initially owned.
++    let handle = unsafe { CreateMutexW(std::ptr::null(), /*binitialowner*/ 1, name.as_ptr()) };
++    let error = unsafe { GetLastError() };
+     if handle == 0 {
+-        return Err(anyhow::anyhow!("CreateMutexW failed: {}", unsafe {
+-            GetLastError()
+-        }));
++        return Err(std::io::Error::from_raw_os_error(error as i32))
++            .context("CreateMutexW failed for read ACL preparation");
+     }
+-    let err = unsafe { GetLastError() };
+-    if err == ERROR_ALREADY_EXISTS {
++    if error == ERROR_ALREADY_EXISTS {
++        // Opening an existing object does not acquire it or prove that any
++        // earlier request completed. Close this non-owning handle and fail.
+         unsafe {
+             CloseHandle(handle);
+         }
+-        return Ok(None);
++        return Err(std::io::Error::from_raw_os_error(error as i32)).context(
++            "read ACL preparation mutex already exists; current request is not ready",
++        );
+     }
+-    Ok(Some(ReadAclMutexGuard { handle }))
++    Ok(ReadAclMutexGuard { handle })
+ }
++
++#[cfg(test)]
++#[path = "read_acl_mutex_tests.rs"]
++mod tests;
+diff --git a/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs b/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..333aefdf9584ef29612ac6f9814ff34308971754
+--- /dev/null
++++ b/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs
+@@ -0,0 +1,64 @@
++use super::acquire_named_read_acl_mutex;
++use anyhow::Context;
++use anyhow::Result;
++use codex_windows_sandbox::to_wide;
++use pretty_assertions::assert_eq;
++use std::ffi::OsStr;
++use std::os::windows::io::FromRawHandle;
++use std::os::windows::io::OwnedHandle;
++use std::os::windows::io::RawHandle;
++use windows_sys::Win32::Foundation::ERROR_ALREADY_EXISTS;
++use windows_sys::Win32::System::Threading::MUTEX_ALL_ACCESS;
++use windows_sys::Win32::System::Threading::OpenMutexW;
++
++#[test]
++fn existing_read_acl_mutex_is_not_a_completion_receipt() -> Result<()> {
++    let temp = tempfile::tempdir()?;
++    let unique = temp.path().file_name().expect("owned temporary directory");
++    let name = format!("Local\\CodexSandboxReadAclTest-{}", unique.to_string_lossy());
++    let name = OsStr::new(&name);
++    let first = acquire_named_read_acl_mutex(name)?;
++
++    let competing = acquire_named_read_acl_mutex(name)
++        .err()
++        .expect("an existing mutex must not report readiness");
++    assert_eq!(
++        competing
++            .downcast_ref::<std::io::Error>()
++            .and_then(std::io::Error::raw_os_error),
++        Some(ERROR_ALREADY_EXISTS as i32)
++    );
++    assert_eq!(
++        competing.to_string(),
++        "read ACL preparation mutex already exists; current request is not ready"
++    );
++
++    let wide_name = to_wide(name);
++    // SAFETY: the live owner's name is NUL-terminated and valid for the call.
++    let retained =
++        unsafe { OpenMutexW(MUTEX_ALL_ACCESS, /*binherithandle*/ 0, wide_name.as_ptr()) };
++    if retained == 0 {
++        return Err(std::io::Error::last_os_error()).context("retain owned test mutex");
++    }
++    // SAFETY: OpenMutexW returned a new valid handle owned solely by this value.
++    let retained = unsafe { OwnedHandle::from_raw_handle(retained as RawHandle) };
++    drop(first);
++
++    let released_but_retained = acquire_named_read_acl_mutex(name)
++        .err()
++        .expect("an unowned existing object still is not a completion receipt");
++    assert_eq!(
++        released_but_retained
++            .downcast_ref::<std::io::Error>()
++            .and_then(std::io::Error::raw_os_error),
++        Some(ERROR_ALREADY_EXISTS as i32)
++    );
++    assert_eq!(
++        released_but_retained.to_string(),
++        "read ACL preparation mutex already exists; current request is not ready"
++    );
++
++    drop(retained);
++    let _after_last_handle_closes = acquire_named_read_acl_mutex(name)?;
++    Ok(())
++}

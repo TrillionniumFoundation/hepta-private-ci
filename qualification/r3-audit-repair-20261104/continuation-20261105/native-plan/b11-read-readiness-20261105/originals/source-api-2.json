@@ -1,0 +1,16 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "use super::DELETE;\nuse super::FILE_GENERIC_EXECUTE;\nuse super::FILE_GENERIC_READ;\nuse super::FILE_GENERIC_WRITE;\nuse super::GRANT_ACCESS;\nuse super::SetupMode;\nuse super::lock_sandbox_dir;\nuse super::resolve_sid;\n\n#[test]\nfn provision_only_locks_plain_directory_via_handle() {\n    let temp = tempfile::tempdir().expect(\"tempdir\");\n    let sandbox_bin = temp.path().join(\".sandbox-bin\");\n    let real_user = std::env::var(\"USERNAME\").unwrap_or_else(|_| \"Administrators\".to_string());\n    let real_sid = resolve_sid(&real_user).expect(\"resolve real user SID\");\n\n    lock_sandbox_dir(\n        &sandbox_bin,\n        &real_user,\n        &real_sid,\n        GRANT_ACCESS,\n        FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,\n        FILE_GENERIC_READ | FILE_GENERIC_WRITE | FILE_GENERIC_EXECUTE | DELETE,\n        SetupMode::ProvisionOnly,\n    )\n    .expect(\"lock sandbox bin via no-reparse handle\");\n\n    assert!(sandbox_bin.is_dir());\n}\n",
+    "encoding": "utf-8",
+    "sha": "e488e2a914b119ecb02cfc1a13a90009bc6120ea",
+    "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/eed4d6bb61b789b19f60facc79f9e031765fa4c9/codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs",
+    "display_title": "win_acl_tests.rs"
+  },
+  "isError": false
+}

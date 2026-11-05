@@ -1,0 +1,130 @@
+{
+  "source": {
+    "head": "5ce73498a9e8ee843d156c43593b1bc2fede416f",
+    "head_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+    "source": {
+      "bytes": 10467,
+      "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+      "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+    },
+    "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+    "tests": {
+      "bytes": 23872,
+      "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+      "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+    },
+    "status": [],
+    "index_entries": {
+      "bytes": 1183933,
+      "sha256": "9f3792f02f2e903e25ab4ab5ffbdf530602a5a1dab07c45bd33fc9711568e49f",
+      "git_blob": "c8f6f3963ed5288471c09c99a695ff168f5aee25"
+    },
+    "locks": {
+      "codex-rs/Cargo.lock": {
+        "bytes": 432254,
+        "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+        "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+      },
+      "MODULE.bazel.lock": {
+        "bytes": 1740955,
+        "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+        "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+      }
+    }
+  },
+  "pins": {
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs": {
+      "canonical_git_blob": "c39b298b7889dc3669e1ee7e2816f7e77568e955",
+      "raw": {
+        "bytes": 47223,
+        "sha256": "1466b8f2a12bc2f3421f6b31cb43c0cc7d937551dd363b623511c4966e50f84b",
+        "git_blob": "3711041869ae93950edf384dcbbda60b291adbb1"
+      }
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs": {
+      "canonical_git_blob": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6",
+      "raw": {
+        "bytes": 2016,
+        "sha256": "9c6467b2618884fa05e59df291120f831b4446d75456425f0894bae104673ef1",
+        "git_blob": "8b1d023604cb14ada7f58872f82fa6c9aa7e0ef9"
+      }
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs": {
+      "canonical_git_blob": "333aefdf9584ef29612ac6f9814ff34308971754",
+      "raw": {
+        "bytes": 2489,
+        "sha256": "3046d8c579748d604dabba7b1c1d5fc0a5503ae08627960c8a07b397a33f7431",
+        "git_blob": "60613f9f6aea40f84d88d7602d4ee2c2e5ff8521"
+      }
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs": {
+      "canonical_git_blob": "e488e2a914b119ecb02cfc1a13a90009bc6120ea",
+      "raw": {
+        "bytes": 957,
+        "sha256": "6538bee442832ebd1a0d9e77f30a73a5d9111963098ea1ea162e9f379051f2b1",
+        "git_blob": "7dcb3b06339acd84d7828a85a3b920454517a29b"
+      }
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs": {
+      "canonical_git_blob": "262460775ef6b5e02f0ba4485f388e1b389cc85f",
+      "raw": {
+        "bytes": 243,
+        "sha256": "fdad18a5f411f2a28cfb6c8148963fffc6b3f40d28805fdcc3531083309098c5",
+        "git_blob": "4a7fe44505b3c52b4322ee051d7c80f1650f7812"
+      }
+    },
+    "codex-rs/windows-sandbox-rs/Cargo.toml": {
+      "canonical_git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "raw": {
+        "bytes": 2534,
+        "sha256": "55a168023f0f03cd64d1767fb1cb03f8d061753558a0656424be0f9f628f2e4e",
+        "git_blob": "efd11cf38d93ce0c084792582dcf39abaabbacdf"
+      }
+    },
+    "codex-rs/windows-sandbox-rs/BUILD.bazel": {
+      "canonical_git_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+      "raw": {
+        "bytes": 2614,
+        "sha256": "659ee0c40ba0781920677fd5ba1750e3d5ac8750f279f35d8968c206620ba86a",
+        "git_blob": "31528721a67d519056a1d12939ff378f8e3de4d4"
+      }
+    },
+    "defs.bzl": {
+      "canonical_git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "raw": {
+        "bytes": 35386,
+        "sha256": "22eaf0e2f909b007faf90f2b1700a9b3175106d59889cb3dfc65191bf71fb50e",
+        "git_blob": "cf46a9d25894434a80e069fa3514f9226a0ce2b7"
+      }
+    },
+    ".github/scripts/run-bazel-ci.sh": {
+      "canonical_git_blob": "42b59b6354b5933c8155b992519682c06d024ca1",
+      "raw": {
+        "bytes": 17968,
+        "sha256": "be11ab6b34a1378df46c695c9b91a2f572c87b4ed10e2f16840b6b4e951624a6",
+        "git_blob": "516afb2a9db7f34266e529248f9468caeb83b8af"
+      }
+    },
+    ".github/scripts/collect_bazel_failed_test_logs.py": {
+      "canonical_git_blob": "76a183d6a45e4a6c1493de194f8a1f6c422f0892",
+      "raw": {
+        "bytes": 16761,
+        "sha256": "62b4cfd8b2299488c1bcd886f4c15d0b759eae657c766f27b4e3ede2566e6254",
+        "git_blob": "f1025c5e5e48292aeba13b2107173794c02b8425"
+      }
+    },
+    ".github/scripts/run_b11_acl_identity_counterfactual.py": {
+      "canonical_git_blob": "90ae8f030ee405706217d7cb2cdc12f1a7cda443",
+      "raw": {
+        "bytes": 24138,
+        "sha256": "13b456e376127695dbb86e055addbd79cf83430ee95972c1f7da0ec21000c76e",
+        "git_blob": "9bc4086209241117fe2d39b165b7bef07a5cc144"
+      }
+    }
+  },
+  "helper_script": {
+    "bytes": 14602,
+    "sha256": "b36e41d33f58b0e640154b60e6e27f06a8ec76f6cb5039bfd98fcb192fb428b1",
+    "git_blob": "5fe4b408446fae2aeb2fbe59f4de7da7fe300601"
+  }
+}

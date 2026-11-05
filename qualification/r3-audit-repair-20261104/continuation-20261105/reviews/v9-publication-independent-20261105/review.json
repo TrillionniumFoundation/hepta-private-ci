@@ -1,0 +1,538 @@
+{
+  "schema": "v9-documents-independent-publication-review-v1",
+  "review_scope": "Current four documents, original 23-item exits, exact product/diagnostic pins, actual root closure bytes, and relative repository links; not new product testing.",
+  "document_recorded_utc": "2026-11-05T23:09:27.012373+00:00",
+  "result": "STATIC_PUBLICATION_ACCEPT",
+  "documents": [
+    {
+      "name": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "bytes": 15729,
+      "sha256": "3b261aa29d86213d95538598f8c4e93dec9acb8f6544287ecb5d095f7a445e6b",
+      "git_blob": "aaa0602beacdf422e4d2525dc8a8f22b51486cae"
+    },
+    {
+      "name": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "bytes": 25789,
+      "sha256": "c576ca7dbe1f585b2c1a86a770923a8972f26b41ba34a2187bf9f3fc66b90e83",
+      "git_blob": "4b5f581302cab6d347eb4c0d6c7ace25eb3ece71"
+    },
+    {
+      "name": "continuation-blocker-progress-v7.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/continuation-blocker-progress-v7.json",
+      "bytes": 111721,
+      "sha256": "64bf918279cdd67c182f85df62016ba1542b207b57b5c35edac7afa042d50e52",
+      "git_blob": "081fbfb2fe2c1a2eee35b43258512fd721be6d29"
+    },
+    {
+      "name": "LATEST.md",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.md",
+      "bytes": 958,
+      "sha256": "13922ed81db9ded6c3aa88e53d6b30f76c76fe183cc4d158682b6ac224f8e59f",
+      "git_blob": "6e7c3793c9b2de434f723f7b6d3c1f927c0bced4"
+    }
+  ],
+  "prior_ledger": {
+    "bytes": 80889,
+    "sha256": "a92faebb5fc3a9b3e01ae5821961906bde831820d0e309e5db80ed64adfa1bc3",
+    "git_blob": "494886ab8f1da9ad87cc778cfdd893ab3c70b798"
+  },
+  "registered_evidence_plan": {
+    "bytes": 376269,
+    "sha256": "6897281af26fcaf366d38d245d1eab7b0363ed14c8a1c4b992f9260f58e4d5ec",
+    "git_blob": "5f0f790ecb588127a24ef0c96271f2937261b1dc",
+    "entries_observed": 551
+  },
+  "audit_V8_leaf_catalog": {
+    "bytes": 1992166,
+    "sha256": "9aae7eb825a230d7bb1c941b65aadec5654847d74b8ce03b7fede961fe2594d2",
+    "git_blob": "74cdadb188be1022de000dd9fb5e66f8deb7cc78"
+  },
+  "all23_ids_and_exit_conditions_byte_equal": true,
+  "counts": {
+    "CLOSED_SCOPED": 15,
+    "OPEN": 7,
+    "SCIENTIFIC_HOLD": 1
+  },
+  "only_closure_transitions": [
+    {
+      "id": "B07",
+      "from": "OPEN",
+      "to": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B09",
+      "from": "OPEN",
+      "to": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B10",
+      "from": "OPEN",
+      "to": "CLOSED_SCOPED"
+    },
+    {
+      "id": "B20",
+      "from": "OPEN",
+      "to": "CLOSED_SCOPED"
+    }
+  ],
+  "whole_candidate_qualified": false,
+  "all_blockers_closed": false,
+  "product": {
+    "pr": 4797,
+    "draft": true,
+    "head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "merge": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+    "merge_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "parent": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "exact_changed_paths_from_parent": 3,
+    "cumulative_changed_paths_from_5b": 15,
+    "leaf_count": 10582,
+    "whole_candidate_qualified": false,
+    "root_publication": "reviews/main-format-retention-publication-20261105/commit-ref-actual.json"
+  },
+  "diagnostic_source": {
+    "head": "021a59ff05ccd963bc087918db823aa86af31bb8",
+    "tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+    "parents": [
+      "855733b0f88c82c68135b1879682358a818daa84",
+      "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+    ],
+    "actual_merge": "5ce73498a9e8ee843d156c43593b1bc2fede416f",
+    "actual_merge_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+    "actual_merge_parents": [
+      "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "021a59ff05ccd963bc087918db823aa86af31bb8"
+    ],
+    "product_B11": "OPEN"
+  },
+  "native10_observation_as_documented": {
+    "run": 42124355402,
+    "job": 127584591851,
+    "attempt": 1,
+    "status_at_first_frozen_snapshot": "in_progress",
+    "actually_started_at": "2026-11-05T22:47:55Z",
+    "runner_id": 1000005390,
+    "source_head": "021a59ff05ccd963bc087918db823aa86af31bb8",
+    "terminal_qualification": "ORIGINAL_CONTROL_RESTORE_AND_HELPER_QUALIFIED_WHOLE_STILL_FAILED",
+    "latest_complete_API_observation": {
+      "observed_utc": "2026-11-05T22:57:41.058Z",
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-11-05T22:55:52Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-05T22:47:56Z",
+          "completed_at": "2026-11-05T22:47:57Z"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-05T22:47:57Z",
+          "completed_at": "2026-11-05T22:48:13Z"
+        },
+        {
+          "name": "Prepare original native MSVC Bazel environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-05T22:48:13Z",
+          "completed_at": "2026-11-05T22:48:34Z"
+        },
+        {
+          "name": "Run the original outer Windows sandbox unit target",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 4,
+          "started_at": "2026-11-05T22:48:34Z",
+          "completed_at": "2026-11-05T22:52:40Z"
+        },
+        {
+          "name": "Check the ACL identity counterfactual and restore its source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-05T22:52:40Z",
+          "completed_at": "2026-11-05T22:54:28Z"
+        },
+        {
+          "name": "Run the original setup helper target after exact restoration",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-05T22:54:28Z",
+          "completed_at": "2026-11-05T22:55:45Z"
+        },
+        {
+          "name": "Upload complete observation and original failure evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-05T22:55:45Z",
+          "completed_at": "2026-11-05T22:55:47Z"
+        },
+        {
+          "name": "Check for a clean worktree",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-05T22:55:47Z",
+          "completed_at": "2026-11-05T22:55:47Z"
+        },
+        {
+          "name": "Post Prepare original native MSVC Bazel environment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-11-05T22:55:47Z",
+          "completed_at": "2026-11-05T22:55:48Z"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-11-05T22:55:48Z",
+          "completed_at": "2026-11-05T22:55:50Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-11-05T22:55:50Z",
+          "completed_at": "2026-11-05T22:55:50Z"
+        }
+      ],
+      "receipt": "reviews/b11-env-publication-20261105/native10-terminal-jobs.original.json",
+      "API_step_success_not_substitute_for_raw_positive_negative_restore_helper_validation": true
+    },
+    "root_original_verification": {
+      "receipt": "reviews/b11-native10-root-20261105/ROOT_VERIFICATION.json",
+      "actual_git_blob": "a113b64b48ed88f1392a4498f3bd18e5caba9c5f",
+      "whole": {
+        "passed": 147,
+        "failed": 7,
+        "ignored": 2
+      },
+      "exact_positive": 4,
+      "physical_negative": 1,
+      "negative_assertion": "acl_tests.rs:597:9",
+      "negative_XML_exit": 101,
+      "exact_original_source_restore": true,
+      "helper_actual_cases": 21,
+      "helper_ignored": 0,
+      "helper_filtered": 0,
+      "all84_members_full_CRC": true,
+      "all7_compact_logs_fully_parsed": true,
+      "actual_local_noncache_test_actions": 7,
+      "separate_XML_actions": 7,
+      "original_target_timeout_millis": 300000,
+      "B11": "OPEN"
+    }
+  },
+  "relative_links": [
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "continuation-blocker-progress-v7.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/continuation-blocker-progress-v7.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "CONTINUATION_PROGRESS_V7.zh-CN.md",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/CONTINUATION_PROGRESS_V7.zh-CN.md"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "evidence-index-v8-registered.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/evidence-index-v8-registered.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/b07-original-exit-root-20261105/ROOT_CLOSURE.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b07-original-exit-root-20261105/ROOT_CLOSURE.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/b09-original-exit-root-20261105/ROOT_CLOSURE.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b09-original-exit-root-20261105/ROOT_CLOSURE.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/b10-original-exit-root-20261105/ROOT_CLOSURE.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b10-original-exit-root-20261105/ROOT_CLOSURE.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/b20-original-exit-root-20261105/ROOT_CLOSURE.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b20-original-exit-root-20261105/ROOT_CLOSURE.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/b10-original-contracts-20261105/fourteen-contracts.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b10-original-contracts-20261105/fourteen-contracts.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/b10-original-contracts-20261105/REVIEW.zh-CN.md",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b10-original-contracts-20261105/REVIEW.zh-CN.md"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/b11-env-publication-20261105/commit-ref-actual.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-env-publication-20261105/commit-ref-actual.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/b11-env-publication-20261105/root-tree-proof.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-env-publication-20261105/root-tree-proof.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/b11-env-publication-20261105/actual-merge-commit.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-env-publication-20261105/actual-merge-commit.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "native-plan/b11-git-bash-launcher-20261105/full.patch",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-git-bash-launcher-20261105/full.patch"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "native-plan/b11-windows-env-casing-20261105/full.patch",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-windows-env-casing-20261105/full.patch"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/b11-env-casing-independent-20261105/review.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-env-casing-independent-20261105/review.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/b11-native7-root-20261105/ROOT_VERIFICATION.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-native7-root-20261105/ROOT_VERIFICATION.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/b11-native8-root-20261105/ROOT_VERIFICATION.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-native8-root-20261105/ROOT_VERIFICATION.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "generated-evidence/b11-pr4884-ci/native9-post-v8-registration.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/native9-post-v8-registration.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/b11-env-publication-20261105/native10-terminal-jobs.original.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-env-publication-20261105/native10-terminal-jobs.original.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/b11-native10-root-20261105/ROOT_VERIFICATION.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-native10-root-20261105/ROOT_VERIFICATION.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "current-head-ci/cut-20261105T2221/summary.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/cut-20261105T2221/summary.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "current-head-ci/cut-20261105T2221/transport-manifest.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/cut-20261105T2221/transport-manifest.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "reviews/main-format-retention-publication-20261105/root-tree-proof.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/main-format-retention-publication-20261105/root-tree-proof.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "current-head-ci/format-correction-20261105/delivery-v2/registry.actual.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/format-correction-20261105/delivery-v2/registry.actual.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "current-head-ci/cut-67cc-20261105T2248/summary.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/cut-67cc-20261105T2248/summary.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "current-head-ci/cut-67cc-20261105T2248/transport-manifest.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/cut-67cc-20261105T2248/transport-manifest.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "current-head-ci/post-v8-recovery-20261105/old-ci-auth-cancel-observation.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/post-v8-recovery-20261105/old-ci-auth-cancel-observation.json"
+    },
+    {
+      "from": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "link": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/CONTINUATION_PROGRESS_V8.zh-CN.md"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "continuation-blocker-progress-v7.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/continuation-blocker-progress-v7.json"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "../CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "../CURRENT_AUDIT_PROGRESS.zh-CN.md",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/CURRENT_AUDIT_PROGRESS.zh-CN.md"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/CONTINUATION_PROGRESS_V8.zh-CN.md"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "continuation-blocker-progress-v7.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/continuation-blocker-progress-v7.json"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "reviews/canonical-product-direction-bridge-v1.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/canonical-product-direction-bridge-v1.json"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "reviews/original-exit-selection-5b/selection-checklist.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/original-exit-selection-5b/selection-checklist.json"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "reviews/b07-original-exit-root-20261105/ROOT_CLOSURE.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b07-original-exit-root-20261105/ROOT_CLOSURE.json"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "reviews/b09-original-exit-root-20261105/ROOT_CLOSURE.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b09-original-exit-root-20261105/ROOT_CLOSURE.json"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "reviews/b10-original-exit-root-20261105/ROOT_CLOSURE.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b10-original-exit-root-20261105/ROOT_CLOSURE.json"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "reviews/b20-original-exit-root-20261105/ROOT_CLOSURE.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b20-original-exit-root-20261105/ROOT_CLOSURE.json"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "current-head-ci/cut-67cc-20261105T2248/transport-manifest.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/cut-67cc-20261105T2248/transport-manifest.json"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "reviews/b11-env-publication-20261105/commit-ref-actual.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-env-publication-20261105/commit-ref-actual.json"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "reviews/b11-native8-root-20261105/ROOT_VERIFICATION.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-native8-root-20261105/ROOT_VERIFICATION.json"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "reviews/pr4855-refused-commit-reuse/REVIEW.zh-CN.md",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pr4855-refused-commit-reuse/REVIEW.zh-CN.md"
+    },
+    {
+      "from": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "link": "reviews/b21-intel-current-followup/independent-review.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-intel-current-followup/independent-review.json"
+    },
+    {
+      "from": "LATEST.md",
+      "link": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md"
+    },
+    {
+      "from": "LATEST.md",
+      "link": "CONTINUATION_PROGRESS_V8.zh-CN.md",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/CONTINUATION_PROGRESS_V8.zh-CN.md"
+    },
+    {
+      "from": "LATEST.md",
+      "link": "continuation-blocker-progress-v7.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/continuation-blocker-progress-v7.json"
+    },
+    {
+      "from": "LATEST.md",
+      "link": "evidence-index-v9-registered.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/evidence-index-v9-registered.json"
+    },
+    {
+      "from": "LATEST.md",
+      "link": "evidence-index-v8-registered.json",
+      "resolved_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/evidence-index-v8-registered.json"
+    }
+  ],
+  "relative_link_count": 51,
+  "broken_links": [],
+  "single_allowed_forthcoming_index": "qualification/r3-audit-repair-20261104/continuation-20261105/evidence-index-v9-registered.json",
+  "scope_review_zh": [
+    "四项新增闭合均绑定原退出句和实际root回执；历史整轮失败、ignore、early return、attempt以及原48平台待验没有改写。",
+    "B10旧3请求修正为4的已审oracle差异明确写出，未宣称旧全部请求数字节不变。",
+    "B20负源404后的精确重建、旧GNU/current lib信号差异、真实stdio关闭与独立Windows动作均明确保留。",
+    "B11依旧OPEN；API步骤success与物理负控、精确恢复、helper及whole资格分开。",
+    "Linux原64GB/32GiB/jobs4、full→scoped fix→fmt顺序、旧driver UNKNOWN及禁止无新容量依据启动均保留。",
+    "研究D−B采用门、Root/Current/FinalUse正常入口及外部实际接受均保持独立。"
+  ],
+  "first_review_finding": "Current B02 latest text and five maintenance gates referenced the prior eed head; final review requires these current instructions follow 67cc while preserving historical source facts.",
+  "new_native_execution": false,
+  "source_ref_modified": false,
+  "blocker_ledger_modified_by_reviewer": false,
+  "expected_frozen_document_blobs_verified": {
+    "CONTINUATION_PROGRESS_V8.zh-CN.md": "aaa0602beacdf422e4d2525dc8a8f22b51486cae",
+    "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V6.zh-CN.md": "4b5f581302cab6d347eb4c0d6c7ace25eb3ece71",
+    "continuation-blocker-progress-v7.json": "081fbfb2fe2c1a2eee35b43258512fd721be6d29",
+    "LATEST.md": "6e7c3793c9b2de434f723f7b6d3c1f927c0bced4"
+  },
+  "native10_root_receipt_identity": {
+    "bytes": 63887,
+    "sha256": "1fe4f9980f36c9c8dee86b5235b197bbf8f5ec235679da7c9fb5e647af43dfcc",
+    "git_blob": "a113b64b48ed88f1392a4498f3bd18e5caba9c5f"
+  },
+  "native10_asserted_scope_matches_root_receipt": true,
+  "resolved_review_findings": [
+    "Current B02 text and five maintenance gates now name 67cc; historical source facts remain unchanged.",
+    "Previously unregistered native10 terminal API link is now bound to an actual create-and-full-GET byte-equal registration included in the evidence plan."
+  ],
+  "native10_limits_retained": [
+    "The physical negative reached file replacement only, not the directory negative.",
+    "Original whole 147/7/2 remains a failure and B11 remains OPEN.",
+    "Source/index/lock consistency is based on original recorded metadata; full index and lock bytes are not archived in the native10 receipt.",
+    "Hard cancellation does not guarantee finally restoration; helper INFINITE wait and Command.status gained no deadline.",
+    "PATH Python 3.12.10 is not measurement of the actual interpreter executable or sys.version."
+  ]
+}

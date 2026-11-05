@@ -1,0 +1,2527 @@
+{
+  "schema": "b09-source-leaf-bridge/v1",
+  "trees": [
+    {
+      "label": "fb9",
+      "tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+      "leaves": 9587,
+      "merkle_nodes_recomputed": 1301,
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/fb9-leaves.json",
+        "bytes": 1528904,
+        "sha256": "643b8d3ca63d396185247bf69f0b24fcc5ea0ba386ffee42e7f37dac52c10d83",
+        "git_blob": "52efb56eb5d6b450b5ef3ec324c21e15af1b8dd2"
+      }
+    },
+    {
+      "label": "5b",
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "leaves": 10580,
+      "merkle_nodes_recomputed": 1571,
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/recovery-2113/trees/5b-leaves.json",
+        "bytes": 1606273,
+        "sha256": "1958049ce5552eb171f39fbf1c3ea3774d65eb6513ae9b58ba220220cd79648f",
+        "git_blob": "3d8216c1f62cd2487564171408845d8c4c1d902f"
+      }
+    },
+    {
+      "label": "e78",
+      "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "leaves": 10580,
+      "merkle_nodes_recomputed": 1571,
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/recovery-2113/trees/e78-leaves.json",
+        "bytes": 1606273,
+        "sha256": "cc7d92dd84defdb84e7851c6fbb4fe8ef3f878552e20ceb2645332d1021cdc84",
+        "git_blob": "7e7b8c1c93ac728cf5bc972e62fd491e15b277a2"
+      }
+    },
+    {
+      "label": "eed",
+      "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+      "leaves": 10582,
+      "merkle_nodes_recomputed": 1571,
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/recovery-2113/trees/eed-leaves.json",
+        "bytes": 1606633,
+        "sha256": "15daf96a99621f17fdd156e21cfc88bc777705e939f32814ca68eb66e998603c",
+        "git_blob": "9d64e7a3f6929b396447a90063c915f5a3134ab9"
+      }
+    }
+  ],
+  "complete_source_files": [
+    {
+      "logical_path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__turn_recover.rs.source.txt",
+        "bytes": 35436,
+        "sha256": "5272864c814ae433c971bcb875658742c9552d1324a78e94013148497182d729",
+        "git_blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/tests/suite/v2/thread_inject_items.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__thread_inject_items.rs.source.txt",
+        "bytes": 15361,
+        "sha256": "0c4537e8cebd69819885945635d2a5e7ff8b5fd8053f32edb34aa22ebaa4d783",
+        "git_blob": "20415effba70adf60c2f28ee3eaaf1ac8288e665"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "20415effba70adf60c2f28ee3eaaf1ac8288e665"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "20415effba70adf60c2f28ee3eaaf1ac8288e665"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "20415effba70adf60c2f28ee3eaaf1ac8288e665"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "20415effba70adf60c2f28ee3eaaf1ac8288e665"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/tests/suite/abort_tasks.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__tests__suite__abort_tasks.rs.source.txt",
+        "bytes": 16433,
+        "sha256": "c5ab67dfcd914f148be37b5d0abdb2738983adc1c7a761eb90a45c2963f2e122",
+        "git_blob": "bd4c8c8057d8626d0265ba61d54d705d6b844baf"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bd4c8c8057d8626d0265ba61d54d705d6b844baf"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bd4c8c8057d8626d0265ba61d54d705d6b844baf"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bd4c8c8057d8626d0265ba61d54d705d6b844baf"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bd4c8c8057d8626d0265ba61d54d705d6b844baf"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/src/session/tests.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__tests.rs.source.txt",
+        "bytes": 497370,
+        "sha256": "88b10066b3c14589ad5c4894a83390f4cd41e2ecb976d6656cef4a51ba097791",
+        "git_blob": "e8be921f4bd2194559f2c55051a3a2201e5d4789"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e8be921f4bd2194559f2c55051a3a2201e5d4789"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e8be921f4bd2194559f2c55051a3a2201e5d4789"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e8be921f4bd2194559f2c55051a3a2201e5d4789"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e8be921f4bd2194559f2c55051a3a2201e5d4789"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/src/session/turn_input_tests.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__turn_input_tests.rs.source.txt",
+        "bytes": 79599,
+        "sha256": "9936425b02cee64be3632e707c8e5609868934393b419eb917ec6ba541774351",
+        "git_blob": "d7d9b493ac07c79d0e2c935c7a6df6c0ebada6d0"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d7d9b493ac07c79d0e2c935c7a6df6c0ebada6d0"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d7d9b493ac07c79d0e2c935c7a6df6c0ebada6d0"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d7d9b493ac07c79d0e2c935c7a6df6c0ebada6d0"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d7d9b493ac07c79d0e2c935c7a6df6c0ebada6d0"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/src/session/mod.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__mod.rs.source.txt",
+        "bytes": 215824,
+        "sha256": "a666d5f63dddd2a197827082087692819a841cfa2d30943ab3a19a7ba983ba39",
+        "git_blob": "b71bc56687973debf2b8615da036e60a436e3c08"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b71bc56687973debf2b8615da036e60a436e3c08"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b71bc56687973debf2b8615da036e60a436e3c08"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b71bc56687973debf2b8615da036e60a436e3c08"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b71bc56687973debf2b8615da036e60a436e3c08"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/src/session/turn_input.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__turn_input.rs.source.txt",
+        "bytes": 41654,
+        "sha256": "7959e38afd075c5cad233a7d1ba59b3406b1de96d9076e444a51ce8ac33b9841",
+        "git_blob": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/src/tasks/mod.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__tasks__mod.rs.source.txt",
+        "bytes": 176503,
+        "sha256": "0161b0acb05df2f9d153090cfd258f8ace71f7a3510d98ec6a55be5baabdf426",
+        "git_blob": "2ee949fb477313003f6eb02961e5cebf50432613"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2ee949fb477313003f6eb02961e5cebf50432613"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2ee949fb477313003f6eb02961e5cebf50432613"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2ee949fb477313003f6eb02961e5cebf50432613"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2ee949fb477313003f6eb02961e5cebf50432613"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__src__request_processors__turn_processor.rs.source.txt",
+        "bytes": 72090,
+        "sha256": "431f5bdcafe0845d4e383b024a80ad410c03776347195ca28560847d2b06ad77",
+        "git_blob": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__src__request_processors__thread_processor.rs.source.txt",
+        "bytes": 253831,
+        "sha256": "834d91f0e5a59865e1515f0c6cccd08eeeed2e4537e66d49ab6f9937f6c89181",
+        "git_blob": "87fa49fcb4c95021ab347ed510bf7645e381e5cc"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "87fa49fcb4c95021ab347ed510bf7645e381e5cc"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "87fa49fcb4c95021ab347ed510bf7645e381e5cc"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "87fa49fcb4c95021ab347ed510bf7645e381e5cc"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "87fa49fcb4c95021ab347ed510bf7645e381e5cc"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/src/thread_state.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__src__thread_state.rs.source.txt",
+        "bytes": 22695,
+        "sha256": "d6af02611b001c06cd33f4e4c7ed964518b4361a7e5c94bc1f27e4e6102cf40c",
+        "git_blob": "3795638cdd36d377afcbf4d7026d15d77dbf64ca"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3795638cdd36d377afcbf4d7026d15d77dbf64ca"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3795638cdd36d377afcbf4d7026d15d77dbf64ca"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3795638cdd36d377afcbf4d7026d15d77dbf64ca"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3795638cdd36d377afcbf4d7026d15d77dbf64ca"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/src/request_processors.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__src__request_processors.rs.source.txt",
+        "bytes": 34067,
+        "sha256": "3e4f2337d90e445e55233fc16fc9ce6141b7fc823f9157ef7dcb249b0e0b6630",
+        "git_blob": "9ac1871bfa5d174caee1afecdcc86fab2657d847"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9ac1871bfa5d174caee1afecdcc86fab2657d847"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9ac1871bfa5d174caee1afecdcc86fab2657d847"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9ac1871bfa5d174caee1afecdcc86fab2657d847"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9ac1871bfa5d174caee1afecdcc86fab2657d847"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/tests/common/lib.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__common__lib.rs.source.txt",
+        "bytes": 2802,
+        "sha256": "09ab94bc0980fff7813494fba5a4516d72175ea3b3f5a5409ca8fe29dd3eee15",
+        "git_blob": "7b545e94f3b1e4cd6bed840c57cd0539467e772c"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7b545e94f3b1e4cd6bed840c57cd0539467e772c"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7b545e94f3b1e4cd6bed840c57cd0539467e772c"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7b545e94f3b1e4cd6bed840c57cd0539467e772c"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7b545e94f3b1e4cd6bed840c57cd0539467e772c"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/tests/common/test_app_server.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__common__test_app_server.rs.source.txt",
+        "bytes": 82176,
+        "sha256": "1b925012501380979ed975981726d419ba2c64dfa729d1bd6359bda01846337a",
+        "git_blob": "4d9f37e14bbc1b04d4129728dbf2dce9dbed0457"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4d9f37e14bbc1b04d4129728dbf2dce9dbed0457"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4d9f37e14bbc1b04d4129728dbf2dce9dbed0457"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4d9f37e14bbc1b04d4129728dbf2dce9dbed0457"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4d9f37e14bbc1b04d4129728dbf2dce9dbed0457"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/tests/common/mock_model_server.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__common__mock_model_server.rs.source.txt",
+        "bytes": 2493,
+        "sha256": "d9fd5cfc5d391cec9c4d55b39436123b525f0a0ddf7e0006883bb10ecd084e3c",
+        "git_blob": "d70736cf50dd44712a4451661f4e5de29f2d13ca"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d70736cf50dd44712a4451661f4e5de29f2d13ca"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d70736cf50dd44712a4451661f4e5de29f2d13ca"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d70736cf50dd44712a4451661f4e5de29f2d13ca"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d70736cf50dd44712a4451661f4e5de29f2d13ca"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/tests/common/responses.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__common__responses.rs.source.txt",
+        "bytes": 4362,
+        "sha256": "3bf3aff8aa362c49796a36ed5385e9d0cb73d0c059af46bb3ba3071481bc6940",
+        "git_blob": "3e726309e1786f3e0651692227803db1327b6707"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3e726309e1786f3e0651692227803db1327b6707"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3e726309e1786f3e0651692227803db1327b6707"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3e726309e1786f3e0651692227803db1327b6707"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3e726309e1786f3e0651692227803db1327b6707"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/tests/suite/v2/mod.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__mod.rs.source.txt",
+        "bytes": 2637,
+        "sha256": "9226ee9bc5defc4f867edc72a109411837d61ded66a46effe4324787e6b5766d",
+        "git_blob": "292716a6afb22a2f6885f539dbc3169735727c09"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "292716a6afb22a2f6885f539dbc3169735727c09"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "292716a6afb22a2f6885f539dbc3169735727c09"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "292716a6afb22a2f6885f539dbc3169735727c09"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "292716a6afb22a2f6885f539dbc3169735727c09"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/tests/common/lib.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__tests__common__lib.rs.source.txt",
+        "bytes": 22506,
+        "sha256": "5418ece8bb498ed07b87e99e1faa9a8c86944a40cfe20d519e4d60ecbec54f24",
+        "git_blob": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/tests/suite/mod.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__tests__suite__mod.rs.source.txt",
+        "bytes": 4895,
+        "sha256": "6cfc926f1fb4417554b75f337372fd714fdd3769b0db9db1398bc8a0ffc9938e",
+        "git_blob": "17145f671a76a894ab374ca299a67cf1a43e9c55"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "17145f671a76a894ab374ca299a67cf1a43e9c55"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "17145f671a76a894ab374ca299a67cf1a43e9c55"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "17145f671a76a894ab374ca299a67cf1a43e9c55"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "17145f671a76a894ab374ca299a67cf1a43e9c55"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/src/codex_thread.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__codex_thread.rs.source.txt",
+        "bytes": 49604,
+        "sha256": "bd552252887317518d7eeb77fd80f3c8744729a2f2f3708d0487cac4f5597475",
+        "git_blob": "0d96d2b722eb1ade7b4974ffee1fbb729847508b"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0d96d2b722eb1ade7b4974ffee1fbb729847508b"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0d96d2b722eb1ade7b4974ffee1fbb729847508b"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0d96d2b722eb1ade7b4974ffee1fbb729847508b"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0d96d2b722eb1ade7b4974ffee1fbb729847508b"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/src/session/turn_suspension.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__turn_suspension.rs.source.txt",
+        "bytes": 19038,
+        "sha256": "5f5da2f8d0d2b50530f06b0d5e2b41626c9036a4429cebc4174196f304d96c26",
+        "git_blob": "403a208f3a953bcc7e2c8bcf1ae91c19bdcee5e6"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "403a208f3a953bcc7e2c8bcf1ae91c19bdcee5e6"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "403a208f3a953bcc7e2c8bcf1ae91c19bdcee5e6"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "403a208f3a953bcc7e2c8bcf1ae91c19bdcee5e6"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "403a208f3a953bcc7e2c8bcf1ae91c19bdcee5e6"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/tests/common/test_codex.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__tests__common__test_codex.rs.source.txt",
+        "bytes": 49262,
+        "sha256": "318fb9469c3f65839f7384c29414b14f9f3617400e65829a47de9ad964fd28da",
+        "git_blob": "efaaf61844b49a1e42e9d630b306733d06647094"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "efaaf61844b49a1e42e9d630b306733d06647094"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "efaaf61844b49a1e42e9d630b306733d06647094"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "efaaf61844b49a1e42e9d630b306733d06647094"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "efaaf61844b49a1e42e9d630b306733d06647094"
+        }
+      }
+    }
+  ],
+  "unchanged_workspace_build_inputs": [
+    {
+      "path": "MODULE.bazel.lock",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1904db189003cb0b559f71958518e33a45fb6bb7"
+      }
+    },
+    {
+      "path": "apps/hepta-browser/servo-worker/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bb551f132bd34466c3df714448a2cd978f065454"
+      }
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/Cargo.lock",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a81705d67053d743fc899ab201b34f8c0997ff2f"
+      }
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b0158ee32edeb1036380c1c4f5bb7d4fdc8331d6"
+      }
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/core/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1ecb853d7b238c19529bc5be4cb2b691d6e1a53d"
+      }
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f909a64900b40af8cab70e4935718bd5efafcff5"
+      }
+    },
+    {
+      "path": "apps/hepta-control-ui/rust/web/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e8dd66f61e21ac418e4384479395e8eb953decd9"
+      }
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "71fc8fa78b5afa076835b29790a5e6b0bd772558"
+      }
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4713741651affd053bb8ae5aa8b5d76831c15c0e"
+      }
+    },
+    {
+      "path": "codex-rs/agent-graph-store/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "15d116823b73afa82021f3ca55a28ce25e9044aa"
+      }
+    },
+    {
+      "path": "codex-rs/agent-identity/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "36d5eb41fd694a9eb283cbd6af4bc0977fa36c80"
+      }
+    },
+    {
+      "path": "codex-rs/analytics/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8546427469212f824055765ffe79dd174aab3f7f"
+      }
+    },
+    {
+      "path": "codex-rs/ansi-escape/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "edb5b6e514cc2d36596a5dce7e9f6963cc2def8d"
+      }
+    },
+    {
+      "path": "codex-rs/app-server-client/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cfe7a3d47f690470979c4386d5a89e640a4270d0"
+      }
+    },
+    {
+      "path": "codex-rs/app-server-daemon/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fee57321978f8033232071940d85e5a1b8942b51"
+      }
+    },
+    {
+      "path": "codex-rs/app-server-protocol-noop-macros/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "93a24b070beffa187ab27f331e35cdcefe21c4b8"
+      }
+    },
+    {
+      "path": "codex-rs/app-server-protocol/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "da3876496ae9b90bdf3cea620b5a2eac6324e239"
+      }
+    },
+    {
+      "path": "codex-rs/app-server-test-client/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "901afb70d00f16e004913c764337d92afc82808b"
+      }
+    },
+    {
+      "path": "codex-rs/app-server-transport/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7beaa4e42b225d14975aa6cc3368d66b13a03470"
+      }
+    },
+    {
+      "path": "codex-rs/app-server/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7008939cb5c05ba76d39d76e063108f2dc0e449c"
+      }
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8dd43051c7e4087c3c7213f05799db1b43dbe759"
+      }
+    },
+    {
+      "path": "codex-rs/apply-patch/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8e1d7f651f47a76de2a6ed6226aa2ec1a55cf5d6"
+      }
+    },
+    {
+      "path": "codex-rs/arg0/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a28f6a0bbd75e744e13ad9af22713192f6e6802d"
+      }
+    },
+    {
+      "path": "codex-rs/async-utils/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "093bbe0972b4a4fce1f8a7ef87b3c1f04f5b9ca0"
+      }
+    },
+    {
+      "path": "codex-rs/aws-auth/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6bb5a69ae9dbf82efcf6b637e30d521e19a8ecfe"
+      }
+    },
+    {
+      "path": "codex-rs/backend-client/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "512d9606170bd8fcdc12c98d82dda43e47910a65"
+      }
+    },
+    {
+      "path": "codex-rs/build-info/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f9cc3d040fb872382d7801e7720f41447f62e1f9"
+      }
+    },
+    {
+      "path": "codex-rs/bwrap/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ed7010c8fdaea270f028ceb9a053e60c278d2b4c"
+      }
+    },
+    {
+      "path": "codex-rs/chatgpt/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "04b9cb7df6786401aa2c2cbad225cc40a26d277d"
+      }
+    },
+    {
+      "path": "codex-rs/cli/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d2360ef42c5a8c8a9ffe3231f85220597847f0ab"
+      }
+    },
+    {
+      "path": "codex-rs/cloud-config/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ecb33d34beb89a3112cbd316e6bcf672b089a833"
+      }
+    },
+    {
+      "path": "codex-rs/cloud-tasks-client/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8efd78cb22d0b6458e9ec9138f0df03590f75d75"
+      }
+    },
+    {
+      "path": "codex-rs/cloud-tasks-mock-client/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b249b654e02f36360389a12ccc14bffb787b9726"
+      }
+    },
+    {
+      "path": "codex-rs/cloud-tasks/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "12bd6fdf7fd03e8b9c16de911f4ca69d625fba90"
+      }
+    },
+    {
+      "path": "codex-rs/code-mode-host/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "685397aadfa0a681dcad1b2f84f3b9ae8964186a"
+      }
+    },
+    {
+      "path": "codex-rs/code-mode-protocol/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cad10b47ebf4e577d9d9278703424f266ba6cc71"
+      }
+    },
+    {
+      "path": "codex-rs/code-mode-runtime/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e3708b657ebd5e05a289acffea1dccb2061db4fd"
+      }
+    },
+    {
+      "path": "codex-rs/code-mode/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0ef5079bebb7f523b4b5557ec07e46d3c5230465"
+      }
+    },
+    {
+      "path": "codex-rs/codex-api/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "01cacbe2b4608ab8ea0853ce21e1b11768f9eb80"
+      }
+    },
+    {
+      "path": "codex-rs/codex-backend-openapi-models/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7baf01935d36ad701d79d0c6e7e9ece0b056142f"
+      }
+    },
+    {
+      "path": "codex-rs/codex-client/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bc67e383a83d13d9a841ef3017ff4fc58284d4c3"
+      }
+    },
+    {
+      "path": "codex-rs/codex-experimental-api-macros/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2e148a21d782b2ca20f5c81fc4ea896523d4d80d"
+      }
+    },
+    {
+      "path": "codex-rs/codex-home/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a8fa625dcfc1a38ebfc0bbdd18ec57ce7c1e625b"
+      }
+    },
+    {
+      "path": "codex-rs/codex-mcp/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6134f2126db203999727d05f61921836dfed06b7"
+      }
+    },
+    {
+      "path": "codex-rs/collaboration-mode-templates/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2c17b1fd2ad989bda8a38e80dee1c5380f887c03"
+      }
+    },
+    {
+      "path": "codex-rs/config/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "37a1c32439b633761727924dc9e762ae0781658d"
+      }
+    },
+    {
+      "path": "codex-rs/connectors/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ac3ce9241c2d6f4deb3ac09ced64087fd51b29b3"
+      }
+    },
+    {
+      "path": "codex-rs/context-fragments/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ca84916ce99b61eef9f5b02cf7dd102c399e5732"
+      }
+    },
+    {
+      "path": "codex-rs/core-api/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b82d5ee4802d68b29f574bc8ebee1334cf751caa"
+      }
+    },
+    {
+      "path": "codex-rs/core-plugins/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0899163accb0edc3e98b27b9b9fdfd86adab46ae"
+      }
+    },
+    {
+      "path": "codex-rs/core/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d"
+      }
+    },
+    {
+      "path": "codex-rs/core/tests/common/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a4851eb1d9ef3f9bc0d1535f84e937bfb82aaf93"
+      }
+    },
+    {
+      "path": "codex-rs/diagnostics/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2eb2125a102e121ed5a51d8dad3013c7cc258cf0"
+      }
+    },
+    {
+      "path": "codex-rs/exec-server-protocol/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9dac711e1a0f404be080113747997690e9cf4a49"
+      }
+    },
+    {
+      "path": "codex-rs/exec-server/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "455df9eedc14b77ac3779899087cd8391b153b37"
+      }
+    },
+    {
+      "path": "codex-rs/exec-server/tests/support/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "85ad347b6c5494746f3f017096c7c6a8f4392435"
+      }
+    },
+    {
+      "path": "codex-rs/exec/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "eebecc9ff1bb3b0cd3e914f510fce599e1cf3cf0"
+      }
+    },
+    {
+      "path": "codex-rs/execpolicy/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "42040222336513132da0b6a274bcd3fc80589f99"
+      }
+    },
+    {
+      "path": "codex-rs/ext/agent/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6c3f10a43319a122e2da129e31ba34aa4f1df49a"
+      }
+    },
+    {
+      "path": "codex-rs/ext/connectors/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1aead727731475bc9590ac90efb37c2ae7adef64"
+      }
+    },
+    {
+      "path": "codex-rs/ext/extension-api/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c6eb90ec97d6fae953e8899edca318c492d5138c"
+      }
+    },
+    {
+      "path": "codex-rs/ext/git-attribution/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e96d0dbcd577bcc0645f3f6175bbe31429f87159"
+      }
+    },
+    {
+      "path": "codex-rs/ext/goal/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "22ee1794fdf1341819bb8041882b84124ef2362e"
+      }
+    },
+    {
+      "path": "codex-rs/ext/guardian-v2/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ebe48e99b3927ba3d4f407a21e662dbe93bdbce8"
+      }
+    },
+    {
+      "path": "codex-rs/ext/hepta-governance/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "229991524ea3a5219054f2b36b87c7708a2d93a6"
+      }
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2d17c6481dbe0d75bd057e2edc9e3ee46de88c73"
+      }
+    },
+    {
+      "path": "codex-rs/ext/hepta-prompt/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "152fea264155931b3994e98e3c754b8f79c57718"
+      }
+    },
+    {
+      "path": "codex-rs/ext/history-notes/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "08fb92dd74557893eb7cf6fa989e798d72a92660"
+      }
+    },
+    {
+      "path": "codex-rs/ext/image-generation/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ad10b2b0a640744ce3986a22990cc46aa24b89b3"
+      }
+    },
+    {
+      "path": "codex-rs/ext/items/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4d58b29bc7004171361e4828e1dda712815ad8d1"
+      }
+    },
+    {
+      "path": "codex-rs/ext/mcp/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e639081358ca76910ed744f5abc426f60a65a74e"
+      }
+    },
+    {
+      "path": "codex-rs/ext/memories/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e283140b15ef1547c642310138fc8b04c4ce7607"
+      }
+    },
+    {
+      "path": "codex-rs/ext/queue/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "007cbbbde0e7cdd4c067d70e5b3d40f40f1d6187"
+      }
+    },
+    {
+      "path": "codex-rs/ext/skills/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "256d0aaa8710fff8d7a9d5c8eba242cd282b868e"
+      }
+    },
+    {
+      "path": "codex-rs/ext/web-search/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "84d5a8cad1ec4749e3cea6aa6a9a86eb7178523b"
+      }
+    },
+    {
+      "path": "codex-rs/external-agent-migration/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3db739977ce9e94f66a3c4c9f22ce869610fa910"
+      }
+    },
+    {
+      "path": "codex-rs/features/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "95be6c400dd0d22ca7304146714a2678164fb38b"
+      }
+    },
+    {
+      "path": "codex-rs/feedback/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8a01696952358c792d622afe675b609b8b315138"
+      }
+    },
+    {
+      "path": "codex-rs/file-search/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e235898982f6eba908c5c0751eae91a5b25cdb1a"
+      }
+    },
+    {
+      "path": "codex-rs/file-system/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "382eacb43d3353b2046806f91ba0f976866c9282"
+      }
+    },
+    {
+      "path": "codex-rs/file-watcher/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "afb14fcde634f5478f4d6f981c52bf982b03b0f0"
+      }
+    },
+    {
+      "path": "codex-rs/git-utils/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ca3a6f8e8070e94ded8d0aeb0ae899fbde48dab7"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ca7afd5c2905cdc02666b0cb20c1f6238a84dbba"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d94042bddf8fcf785e2963a3acc90afcab3dbd69"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-authbus-p1-3-qualification/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "49874f52adebb338f8fd7038ac84fb13d3be8157"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-authbus/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5b14273ea4ff6ff2e71dda151560ae6ba7f90dba"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-automation/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4a5f0fa0db6a0f27d685012c89f87d0406f2f41b"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fc8435728a0eeae5c1a2292b8ef33d2ae5c55e90"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5231fed894f15b6e5ba6255523709067ea656e3d"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-codex-adapter/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0af5dc81a2488f2b273f79c13ef281db2be048c2"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-read/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9804ca394a12c4bf31f01031853d7e52c73dbb75"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-store/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "34598e61d6aaff043e048907b48967086d6ecc83"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-types/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c836b15097ff4812e735e3feff1d552a87c2cae8"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-types/fuzz/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "83047ff105ece6cf2aaa92324558729f37589a9c"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "60bc6fb1ee73f31eac3a152db40be10b52b495e3"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2ce0fb9520b8440a9b20a441d2c7bcbc4529dba0"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-contracts/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8023be1ce2392a3bfe8f80ff7c8e82d964a9d17b"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "37cd75393a4ef4164d96ba827a3531f37d668d15"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-evidence/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7d5a851797a8c8fdc9c14382418158f9c9789dad"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-fleet/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "139c0d4836edca041d2bdf6c56b63a5cbd035867"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d89bf7c4764cdaaa4b040a447a295965ea0142c5"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a528782994c4a05247c2b826022e02875ab6b965"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-inferd/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4b7d6a9e0a775e3da69a873d3d92ff643662731a"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c9096b1f1c77b27b7b94d7be86e4679212960295"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "162205d6bc62834e1b04fed33dd67f5955f218d1"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-intuition/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "26e2f53c1c2a33d5ab30e56ff504d2c52779bfc5"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-kg/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "892dbf28b9bc2ecdf0fe72c79eff19294140c198"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "725a63c9f2475ad632c7c189fd9ca271702a8899"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1d76cad44498e9538cefff1e20202482520257ff"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-matrix-protocol/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8312e8b0a739d033976c0058a25e5850e3af66a9"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1a8864fd643349c4db345b0e2dfbcb4a4d53719a"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-matrix-store/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "211f8fb711d2c91d1421da930c067c28b61315b0"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c7b4306766955aafb24d1f66c55803a35c2aee96"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-memory-federation/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "49113a3bccd7a2f56b18459924d3ec9151cbf980"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "913ad075e730da2b3bbff7fcfa153c457141a944"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-memory/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "048e31020125843c2265a8bc0db256fa504d92af"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-native-gateway/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1902d731437c9338fdcd5c376749e42354bb6c70"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-ndu/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7a5740c65e0eafe56d9207e4ba9da07f1787c983"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-neuron/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dbd650a75e7ebe47d2642bc653468355d42cd2e3"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-objective/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "39085cf5d2edb3766cd1c17cd721d17389ed93cc"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-operations/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "af2e656fcacea8db6ea84d8bdc8715f3aa62e739"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-operator-acceptance/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1350905df103388fc9d5154e10dc714a0a6cb566"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-paths/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2c16f5b19d830d4370d9d1b294fd97eae6b8d1af"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "07cb9e40d44990874991620f89af8c0078575de1"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-prompt-optimizer/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f463e790c182452434287c7ccba68dd78a7c69ca"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6a22394b289e2af3a7a65d6be3473b6187af77a4"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-runtime/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "83f681ba2fc42402c78aa8ef33889b2b7191bf33"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-shadow-qualification/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "91b8dfb7204a5244374b81ee3ce12b5d08af8e0d"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3a5c9f790aca3e0ee660d69d6d8f592b28e76abc"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-types/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "753e54835f933be4bf647417b2fb4c90a5e55181"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-wire/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ab9372f8287d8596794c1ea63d49217b45fd6759"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-wire/fuzz/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1afca1ef1eb80fe9eeb6e0c94eefa2f8069f6244"
+      }
+    },
+    {
+      "path": "codex-rs/history/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bd938d2c2ea45333b8f040f41399674a28e54644"
+      }
+    },
+    {
+      "path": "codex-rs/hooks/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0cdf84418a713110811febd88c5ec8c4e3a0cbfa"
+      }
+    },
+    {
+      "path": "codex-rs/http-client/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2d54ca7158900eda362091c71e8d1bd742459d4c"
+      }
+    },
+    {
+      "path": "codex-rs/install-context/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ee84ad2962acf57a698e399b38dbc0a03c51bd11"
+      }
+    },
+    {
+      "path": "codex-rs/keyring-store/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c11c321f3dc61076cf8ecdea8d444de3742b84f7"
+      }
+    },
+    {
+      "path": "codex-rs/linux-sandbox/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0f7c68a152a75cfc2f0369dc098dcf2b996185f2"
+      }
+    },
+    {
+      "path": "codex-rs/lmstudio/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e84bcfed51c3683e87ea7ae2e0a7809aade43a76"
+      }
+    },
+    {
+      "path": "codex-rs/login/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3716a96d32fe54767230a1982b62ad2e3a90abac"
+      }
+    },
+    {
+      "path": "codex-rs/mcp-server/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e32d5c6c9cc8e569a49396e085191811835cfdb7"
+      }
+    },
+    {
+      "path": "codex-rs/mcp-server/tests/common/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "515aa01b5a4a098a6f49cad9d5e4ad3cbbe54f77"
+      }
+    },
+    {
+      "path": "codex-rs/memories/read/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2c0c5f2c954ceb8b986057bdd929badca4ecd64d"
+      }
+    },
+    {
+      "path": "codex-rs/memories/write/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bf031a6a164f5a098757efdb6c791d9e2705ca50"
+      }
+    },
+    {
+      "path": "codex-rs/message-history/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "176b9579097499b050e24823217eec93502c004b"
+      }
+    },
+    {
+      "path": "codex-rs/model-provider-info/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "827dd8744b54ffcaa98673c0c262f5265b717ebf"
+      }
+    },
+    {
+      "path": "codex-rs/model-provider/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "377dc7a5c258538df7c52e0f821169fbfc1fa09a"
+      }
+    },
+    {
+      "path": "codex-rs/models-manager/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2655bb2e7fd80fc1737549d6b5b4a78f607643a9"
+      }
+    },
+    {
+      "path": "codex-rs/network-proxy/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "82407b00d104568250c63f87be6aea8113199e44"
+      }
+    },
+    {
+      "path": "codex-rs/ollama/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "29c0852092c0ebdb9846f50f91384e4720f15d71"
+      }
+    },
+    {
+      "path": "codex-rs/otel/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6efa93043db5e52f6ec45212435b377ca847d9ad"
+      }
+    },
+    {
+      "path": "codex-rs/plugin/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3e55f55c332a06a99a9f6415f2235c3d18cd4fb1"
+      }
+    },
+    {
+      "path": "codex-rs/process-hardening/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "60a5729ff57a961dd9ccc145f8ae7171fe0b3176"
+      }
+    },
+    {
+      "path": "codex-rs/prompts/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6302d49e2ff3e1e67722a3fc891a7e6e90a72362"
+      }
+    },
+    {
+      "path": "codex-rs/protocol/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "221275fe73543cc9cd5d882514855204d673353e"
+      }
+    },
+    {
+      "path": "codex-rs/response-debug-context/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fcdb6c9630c4d04da55b9c64318e4c111afce441"
+      }
+    },
+    {
+      "path": "codex-rs/responses-api-proxy/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "05d638843f64eacad298a79011798f3a2ef924f7"
+      }
+    },
+    {
+      "path": "codex-rs/rmcp-client/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ca861a7e8b1cc6dbb81ca510853afd4dae27f6d2"
+      }
+    },
+    {
+      "path": "codex-rs/rollout-trace/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b368c9acc5ffc3a0ba3a27ae7ea1ab48e38baa31"
+      }
+    },
+    {
+      "path": "codex-rs/rollout/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1bb4b54f146488e737a3d5bdaeef9dc1510d0b03"
+      }
+    },
+    {
+      "path": "codex-rs/sandboxing/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2c0885729b4ea05f0b597b37823f4758839ecb62"
+      }
+    },
+    {
+      "path": "codex-rs/secrets/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "98b354a658ca59131bf4a50da168c5bf84ca0940"
+      }
+    },
+    {
+      "path": "codex-rs/shell-command/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "999295ec314a37a523f65bd050e8b95453cc7c77"
+      }
+    },
+    {
+      "path": "codex-rs/shell-escalation/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "92ae8b033f3c38edb1609e6347084be6dd9fdc47"
+      }
+    },
+    {
+      "path": "codex-rs/skills/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7342975aaea0e3ecc61da41f145674cd154a12c9"
+      }
+    },
+    {
+      "path": "codex-rs/state/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "02cb82d778fc02859a42c0658597799ad00f5559"
+      }
+    },
+    {
+      "path": "codex-rs/stdio-to-uds/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6b5c037d755d4dc8006424aa836b29036cea8185"
+      }
+    },
+    {
+      "path": "codex-rs/terminal-detection/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9b1bf3a51663289c68b61f566201df8d05e385cf"
+      }
+    },
+    {
+      "path": "codex-rs/test-binary-support/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "12d995b9720b942daf802ce30c2976b3f36e7371"
+      }
+    },
+    {
+      "path": "codex-rs/third_party/anymap2-compat/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b740f56ff6a142577a8d7a438228112c7e4dafba"
+      }
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/Cargo.lock",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7b700a64bf4111dc8ee687aaaf574d89bc4bb6b8"
+      }
+    },
+    {
+      "path": "codex-rs/third_party/aws-config-1.12.0/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8829d8e5d41683bfee991b72c4ab26018bf18f17"
+      }
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "301678c52804a965f5184e89e39bdce3b57d1e1b"
+      }
+    },
+    {
+      "path": "codex-rs/third_party/imbl-6.1.0/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5a3f10354681eb382046da6e29bc272803405610"
+      }
+    },
+    {
+      "path": "codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ec944af3c8131d63933922d45ebff49d36abff38"
+      }
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/Cargo.lock",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0ae5fa1d1bd188431f6709c81f513b8bff6f733d"
+      }
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0f651874f7d5ac004568d6f8b041e2d3b8895885"
+      }
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/Cargo.lock",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a307c6a2dc05a15b9178ebb79749e1f01cfc17be"
+      }
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7088dc696477279578bcb853e43400dd196a1a26"
+      }
+    },
+    {
+      "path": "codex-rs/thread-manager-sample/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9e857ad0bc7fa670089008eeddf7d593a4a6f45f"
+      }
+    },
+    {
+      "path": "codex-rs/thread-store/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f79e8d6c81eb4eac00149b45121fa052cdecef64"
+      }
+    },
+    {
+      "path": "codex-rs/tools/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e621bb830bb4d564c772f5e558c57919de8b32db"
+      }
+    },
+    {
+      "path": "codex-rs/tui/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "95db9bee4158d69882f480f6b0842c47a510ca59"
+      }
+    },
+    {
+      "path": "codex-rs/uds/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f09bb594ff764f48e9a8bda321e90b9cea16d195"
+      }
+    },
+    {
+      "path": "codex-rs/utils/absolute-path/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7c5b4840d15d81deed1d1ea30c0b269d399772bc"
+      }
+    },
+    {
+      "path": "codex-rs/utils/approval-presets/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6efd2c482b4386b505a15d96bf60504050633e61"
+      }
+    },
+    {
+      "path": "codex-rs/utils/audio/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "90540228a6bf5608329d2f2773225271229b9813"
+      }
+    },
+    {
+      "path": "codex-rs/utils/build-identity/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d21f6b0fff86daef23570d5c583edbf18eeecafb"
+      }
+    },
+    {
+      "path": "codex-rs/utils/cache/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3c120c032e8d595a7675f0474ab6d91b0b52a59e"
+      }
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8c88938d071d4533d3f849053fe4f820a399979a"
+      }
+    },
+    {
+      "path": "codex-rs/utils/cli/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9d330c5ce6badd0d15e6c401cd777fb3d13c8d08"
+      }
+    },
+    {
+      "path": "codex-rs/utils/elapsed/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7ba5e6ae6614fddadaa1ba1e1f8299ffc251d78f"
+      }
+    },
+    {
+      "path": "codex-rs/utils/fuzzy-match/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "704386e74f6924a016c30bfbaa6447b093f70be0"
+      }
+    },
+    {
+      "path": "codex-rs/utils/home-dir/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2d2de0230e38004d562b8ab5546888cd5da74851"
+      }
+    },
+    {
+      "path": "codex-rs/utils/image/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7ba28f49962a5ec0e35aad82ce2b93cfeffbfa09"
+      }
+    },
+    {
+      "path": "codex-rs/utils/json-to-toml/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "57a28696c8fc2148525480511551b256b35d8b02"
+      }
+    },
+    {
+      "path": "codex-rs/utils/oss/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "78cc0cb2f8ed60f3d4b8a3bb007b348d700024ac"
+      }
+    },
+    {
+      "path": "codex-rs/utils/output-truncation/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "17176c9f5643b3a4f1d5a678a25076094cb7441d"
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-uri/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5bb6328139c7fe2f7759e7edf34be0de9e2f0371"
+      }
+    },
+    {
+      "path": "codex-rs/utils/path-utils/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4714f58d7f1b829b3e074e65040c2de789d6bf4d"
+      }
+    },
+    {
+      "path": "codex-rs/utils/plugins/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1a4576d59d0fcf04a54236f57976e42683c266a6"
+      }
+    },
+    {
+      "path": "codex-rs/utils/pty/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2a27ab72ea290862887abfc857c86efe6fad12c1"
+      }
+    },
+    {
+      "path": "codex-rs/utils/readiness/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "076651d5227baa047d95a42e9e8795c65dc0bc52"
+      }
+    },
+    {
+      "path": "codex-rs/utils/redacted-string/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "39f60d8eb109312fba4b052e69649b1c9382a1a4"
+      }
+    },
+    {
+      "path": "codex-rs/utils/rustls-provider/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "af79eff69252fc01244e2ae721b5a263c1d2fc4c"
+      }
+    },
+    {
+      "path": "codex-rs/utils/sandbox-summary/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ab6df005dac274f638a16c387779458950525728"
+      }
+    },
+    {
+      "path": "codex-rs/utils/sleep-inhibitor/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f2abb6df2110e7f3de215cb34a0cd627c0345649"
+      }
+    },
+    {
+      "path": "codex-rs/utils/stream-parser/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6eb5fb9a8747b95cb3dbd113f4ebfcda53b8fed5"
+      }
+    },
+    {
+      "path": "codex-rs/utils/string/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8710cffe4697ae4cce6e97d6bac35566db426672"
+      }
+    },
+    {
+      "path": "codex-rs/utils/template/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f24caec190455f3ac685004fc1f6e474ee8f8ed9"
+      }
+    },
+    {
+      "path": "codex-rs/v8-poc/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a34a1306f1082b3347543749cbfd9a05eee7cb91"
+      }
+    },
+    {
+      "path": "codex-rs/websocket-client/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "19baf9842b591c6aba15d5253f124a737d0d1cdf"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd"
+      }
+    },
+    {
+      "path": "codex-rs/workload-identity/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b64177282accbb1975aa7adbe2411ace4da52662"
+      }
+    },
+    {
+      "path": "qualification/hnmf-adversarial-reference/Cargo.lock",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "910b568e2eb1c903dccf2e03e3f4ecb3ba75847a"
+      }
+    },
+    {
+      "path": "qualification/hnmf-adversarial-reference/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3c0ddaa8aca3ae679a7b0c4f46fe95d46addbb6b"
+      }
+    },
+    {
+      "path": "qualification/hnmf-contract-reference/Cargo.lock",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "37a7fc8ab7893ad0adfe40e184df4cbaf1acfd05"
+      }
+    },
+    {
+      "path": "qualification/hnmf-contract-reference/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6c907ba9e975e1caa184d446bb620435b1856f64"
+      }
+    },
+    {
+      "path": "qualification/hnmf-reference/Cargo.lock",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0bca7785bf1abdbf3f9011f8d7ab411a6119ee64"
+      }
+    },
+    {
+      "path": "qualification/hnmf-reference/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c7154a0846379d29c5ddcd4d2818bc51475e693f"
+      }
+    },
+    {
+      "path": "qualification/lane-f-shadow/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "43dc51eacda9f66278485063c5593de09297afbc"
+      }
+    },
+    {
+      "path": "tools/argument-comment-lint/Cargo.lock",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1795ff683b86672de2bd2a48a41b4274e3f63d2a"
+      }
+    },
+    {
+      "path": "tools/argument-comment-lint/Cargo.toml",
+      "leaf": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "db02b392f3a5e3f584c0a7e882ae76499af2ab12"
+      }
+    }
+  ],
+  "limits": [
+    "These leaf equalities preserve the reviewed B09 tests and production paths; they do not relabel the fb9 native execution as an eed whole-tree run.",
+    "Source contents are complete, while human semantic review concentrates on the exact original cases and their direct handlers/terminalization paths."
+  ]
+}

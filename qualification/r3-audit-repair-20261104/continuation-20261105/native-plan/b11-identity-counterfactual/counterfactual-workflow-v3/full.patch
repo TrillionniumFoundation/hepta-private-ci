@@ -1,0 +1,80 @@
+diff --git a/.github/scripts/run_b11_acl_identity_counterfactual.py b/.github/scripts/run_b11_acl_identity_counterfactual.py
+index 25def4386ea08bb72a7605cc113117f31fffcd1b..3680db31233e47ba7fad99f31a7019c4536288bb 100644
+--- a/.github/scripts/run_b11_acl_identity_counterfactual.py
++++ b/.github/scripts/run_b11_acl_identity_counterfactual.py
+@@ -184,15 +184,68 @@ def main():
+         require(archive.is_relative_to(Path(os.environ["RUNNER_TEMP"]).resolve(strict=True)), "original archive is outside runner temp")
+         positive, positive_manifest = retained_log(archive, head, entry["head_tree"], False)
+         positive_text = ANSI.sub("", positive[".log"][0].decode("utf-8", errors="strict")).replace("\r", "")
+-        for required in [CASE, "acl::tests::existing_native_deny_does_not_require_write_dac",
+-                         "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+-                         "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes"]:
+-            require(len(re.findall(r"^test " + re.escape(required) + r" \.\.\. ok$", positive_text, re.MULTILINE)) == 1,
+-                    f"original target lacks one exact positive result for {required}")
+-        require(f"---- {CASE} stdout ----" not in positive_text, "new case failed in original full target")
++        required_cases = [CASE, "acl::tests::existing_native_deny_does_not_require_write_dac",
++                          "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
++                          "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes"]
++        for required in required_cases:
++            require(f"---- {required} stdout ----" not in positive_text,
++                    f"required case failed in the original whole target: {required}")
++        # Concurrent observation output can split a passing libtest line. Never
++        # reconstruct it: obtain one fresh exact result for each original case.
++        report["positive_scopes"] = []
++        for number, required in enumerate(required_cases, 1):
++            scope = evidence / f"positive-{number:02d}"
++            scope.mkdir()
++            positive_before = source_guard(root, head, POSITIVE, False)
++            require(positive_before == entry, "source/index/locks changed before exact positive")
++            save(scope, "source-before.json", positive_before)
++            positive_archive = scope / "bazel-execution-logs"
++            positive_archive.mkdir()
++            positive_env = os.environ.copy()
++            positive_env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(positive_archive)
++            positive_argv = ["bash", "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
++                             "--print-failed-test-logs", "--windows-msvc-host-platform", "--remote-download-toplevel", "--", "test",
++                             "--platforms=//:windows_x86_64_msvc", "--skip_incompatible_explicit_targets",
++                             "--test_tag_filters=-argument-comment-lint", "--test_verbose_timeout_warnings", "--test_output=all",
++                             f"--build_metadata=COMMIT_SHA={os.environ['GITHUB_SHA']}",
++                             "--build_metadata=TAG_b11_observation_only=true", "--build_metadata=TAG_b11_identity_positive=true",
++                             "--nocache_test_results", "--flaky_test_attempts=1", f"--test_arg={required}", "--test_arg=--exact", "--", TARGET]
++            save(scope, "command.json", {"argv": positive_argv, "cwd": str(root), "case": required,
++                 "source": positive_before, "scope": "One exact original positive, once; the whole-target result is retained."})
++            positive_started = time.monotonic()
++            with (scope / "console.log").open("wb") as console_file:
++                positive_result = subprocess.run(positive_argv, cwd=root, env=positive_env,
++                                                 stdout=console_file, stderr=subprocess.STDOUT, check=False)
++            save(scope, "command-terminal.json", {"exit_code": positive_result.returncode,
++                 "elapsed_seconds": time.monotonic() - positive_started})
++            positive_after = source_guard(root, head, POSITIVE, False)
++            save(scope, "source-after.json", positive_after)
++            require(positive_after == positive_before, "exact positive changed source/index/locks")
++            require(positive_result.returncode == 0, f"exact positive failed: {required}")
++            positive_summary = target_terminal((scope / "console.log").read_bytes(), "PASSED")
++            exact, exact_manifest = retained_log(positive_archive, head, entry["head_tree"], False)
++            exact_log = ANSI.sub("", exact[".log"][0].decode("utf-8", errors="strict")).replace("\r", "")
++            exact_summaries = re.findall(r"^test result: (.+)$", exact_log, re.MULTILINE)
++            require(len(exact_summaries) == 1 and re.fullmatch(
++                r"ok\. 1 passed; 0 failed; 0 ignored; 0 measured; 155 filtered out; finished in [0-9.]+s",
++                exact_summaries[0]) is not None, f"exact positive must run one nonignored original case: {required}")
++            require(not re.findall(r"^---- (.+) stdout ----$", exact_log, re.MULTILINE),
++                    "exact positive has a failed-test header")
++            exact_xml = ET.fromstring(exact[".xml"][0])
++            exact_cases = exact_xml.findall(".//testcase")
++            require(len(exact_cases) == 1 and exact_cases[0].get("status") == "run"
++                    and not exact_cases[0].findall("error") and not exact_cases[0].findall("failure")
++                    and not exact_cases[0].findall("skipped"), "exact positive has a non-success outer XML result")
++            qualified = {"case": required, "status": "EXACT_POSITIVE_QUALIFIED", "attempts": 1,
++                         "target_summary": positive_summary, "collector_manifest": exact_manifest,
++                         "files": {k: v[1] for k, v in exact.items()}, "source": positive_after}
++            save(scope, "qualification.json", qualified)
++            report["positive_scopes"].append(qualified)
+         save(evidence, "positive-prerequisites.json", {"original_exit_code": original_status,
+              "original_summary": original_summary, "console": digest(original_console),
+-             "collector_manifest": positive_manifest, "files": {k: v[1] for k, v in positive.items()}})
++             "collector_manifest": positive_manifest, "files": {k: v[1] for k, v in positive.items()},
++             "exact_individual_scopes": report["positive_scopes"],
++             "scope_limit": "Four exact positive records supplement the unchanged whole target; no interleaved PASS is reconstructed."})
+ 
+         original_bytes = source.read_bytes()
+         positive_body = canonical(original_bytes, POSITIVE, SOURCE)

@@ -1,0 +1,303 @@
+{
+  "schema": "b09-lossless-case-source-excerpts/v1",
+  "role": "Byte-exact extracts, not replacement full originals",
+  "members": [
+    {
+      "name": "raw-case-blocks/01-thread_inject_items_adds_raw_response_items_after_a_turn.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/01-thread_inject_items_adds_raw_response_items_after_a_turn.log",
+      "bytes": 17847,
+      "sha256": "9d2aa130169497345370cdfc25fc5e2dbd5e870bdfb09ddcc769826230c4d1ce",
+      "git_blob": "02899b11fd6423526ab9975b5a14a3f0bae3a842"
+    },
+    {
+      "name": "raw-case-blocks/02-cold_resume_explicit_cwd_override_is_fail_closed_for_recovery.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/02-cold_resume_explicit_cwd_override_is_fail_closed_for_recovery.log",
+      "bytes": 12596,
+      "sha256": "67944dadb8d344574105ce316604be61992e56793c6c66cf485c8b7878d2957e",
+      "git_blob": "1b5f750620b99ee2f3273fa9447a253eb106e028"
+    },
+    {
+      "name": "raw-case-blocks/03-cold_paginated_sigkill_recovery_uses_canonical_context_tail.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/03-cold_paginated_sigkill_recovery_uses_canonical_context_tail.log",
+      "bytes": 18391,
+      "sha256": "028557fa8165284db00276b8f47b7a7168f5dfb5a41c9cbbb3d40c9676c550e0",
+      "git_blob": "087f2c364c18112d591f59bcb01be36f82eb6db3"
+    },
+    {
+      "name": "raw-case-blocks/04-cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/04-cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery.log",
+      "bytes": 12656,
+      "sha256": "819f2b3639ff507e5ed1cabdb0ccafcf91acea96d103f7b82733918d178cda8a",
+      "git_blob": "e16040c957b717728892d9e14f1c48d30aa2dab7"
+    },
+    {
+      "name": "raw-case-blocks/05-cold_sigkill_after_provider_output_is_not_recoverable.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/05-cold_sigkill_after_provider_output_is_not_recoverable.log",
+      "bytes": 16208,
+      "sha256": "637b7cdfb63539f48cdc6882230355cf93c95e9efd66c1ec26a603fabe5e1dcb",
+      "git_blob": "778df8c3ff38dfc6abf2ad91027c292a9ecf091c"
+    },
+    {
+      "name": "raw-case-blocks/06-recover_rejects_busy_completed_and_cross_thread_turns.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/06-recover_rejects_busy_completed_and_cross_thread_turns.log",
+      "bytes": 24906,
+      "sha256": "1697ad31442d8429e21954f84913e5b99942b1a42aa9bdb32d707fbd4d4106d3",
+      "git_blob": "612b7fef16ac7c314f49d4b06823d1c8c135411d"
+    },
+    {
+      "name": "raw-case-blocks/07-same_process_ephemeral_interrupted_turn_recovers_from_listener_state.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/07-same_process_ephemeral_interrupted_turn_recovers_from_listener_state.log",
+      "bytes": 14466,
+      "sha256": "057e0844b344a3289d693140fbd1aa8d481d72b426f0f8fc0fcc26f443486e1a",
+      "git_blob": "4f515eba89521131d9452007e6b342c2f3792435"
+    },
+    {
+      "name": "raw-case-blocks/08-turn_recover_requires_hepta_turn_recovery_feature.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/08-turn_recover_requires_hepta_turn_recovery_feature.log",
+      "bytes": 5364,
+      "sha256": "b2e3e6bfdda2a5a6ba371fc33fc45bf7209e2577c340f96077f7b4f7d1fa5938",
+      "git_blob": "e4988dcd47cf8ddd92442a0a5e2d5d7959edd1ad"
+    },
+    {
+      "name": "raw-case-blocks/09-cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/09-cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input.log",
+      "bytes": 32864,
+      "sha256": "674c80ad6f98a557f4978307f16d9a4e290f64482beeb0a803283687df0f913f",
+      "git_blob": "b2592239180362eed873258255492056438bbd57"
+    },
+    {
+      "name": "raw-case-blocks/10-root_turn_suspension_preserves_unfinished_turn_history.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/10-root_turn_suspension_preserves_unfinished_turn_history.log",
+      "bytes": 350,
+      "sha256": "0fd76d6aa95e5aa5b994c5452ce14ca37c0bc24c7b63888a1ce91fc314cb18f1",
+      "git_blob": "bf89e5f12ccff47c4fe1ca89d09cbf843eda7a36"
+    },
+    {
+      "name": "raw-case-blocks/11-panicking_session_task_is_converted_to_terminal_error_and_releases_slot.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/11-panicking_session_task_is_converted_to_terminal_error_and_releases_slot.log",
+      "bytes": 621,
+      "sha256": "3ce2eee487fbcb4221853ef80cefff011cbe2a14092a0cc3b19061bd4f406741",
+      "git_blob": "17c22f4b1e04ac9eef04f9d9979ffea450e613b7"
+    },
+    {
+      "name": "raw-case-blocks/12-cancelled_finish_owner_keeps_terminalizer_alive.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/12-cancelled_finish_owner_keeps_terminalizer_alive.log",
+      "bytes": 323,
+      "sha256": "8ddfd29233f45d318ae3c95cf5762c676c2fbda654377e47e9172c978edc4f7b",
+      "git_blob": "8cb9bb63e8de13a4bbc492a5fd471310700eea78"
+    },
+    {
+      "name": "raw-case-blocks/13-panicking_finish_terminalizer_retains_fence.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/13-panicking_finish_terminalizer_retains_fence.log",
+      "bytes": 569,
+      "sha256": "7447e707492c29aaf20a5400e7733a28de2ac96bf1ad3f800bbaa4af04f7db40",
+      "git_blob": "7605b30e3b80f95c938749445e1444ac3dfdc6cd"
+    },
+    {
+      "name": "raw-case-blocks/14-hung_finish_terminalizer_watchdog_retains_fence.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/14-hung_finish_terminalizer_watchdog_retains_fence.log",
+      "bytes": 323,
+      "sha256": "1a8b36035ad376206204e0beb02cb8d52bd5a3c24c645907e32419371c8381ab",
+      "git_blob": "364573aff18895fdecfdd01ac2dae7610dd16c66"
+    },
+    {
+      "name": "raw-case-blocks/15-cancelled_abort_owner_keeps_terminalizer_alive.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/15-cancelled_abort_owner_keeps_terminalizer_alive.log",
+      "bytes": 321,
+      "sha256": "e3ff4fcf12fc517947a69e6e6b39e392f9494357cfbb3f2ab13eb252a37d68cc",
+      "git_blob": "2b783ebeb23e028141646a3541437304704ce5f9"
+    },
+    {
+      "name": "raw-case-blocks/16-panicking_abort_terminalizer_retains_fence.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/16-panicking_abort_terminalizer_retains_fence.log",
+      "bytes": 559,
+      "sha256": "b94993770a2e58f4b10980e7b3f19117b874919b15f2cd2cc897e1e3645e8828",
+      "git_blob": "74dda2261e40030b40ebc14892f2b290d1f44305"
+    },
+    {
+      "name": "raw-case-blocks/17-cancelled_suspend_caller_keeps_writer_handoff_alive.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/17-cancelled_suspend_caller_keeps_writer_handoff_alive.log",
+      "bytes": 331,
+      "sha256": "354d4506d59d2ad4db03b14c8721fa232a36b6966f88ee67ad6824ba55e96ac6",
+      "git_blob": "7968c6aa22ae9fde35228371546f8da28b9a5773"
+    },
+    {
+      "name": "raw-case-blocks/18-steer_only_requires_active_turn.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/18-steer_only_requires_active_turn.log",
+      "bytes": 315,
+      "sha256": "9c873a07c696f4c1c58c67a91b7db9f2539e794034cbb4881eae23adb30e5e3a",
+      "git_blob": "5face18dd19013d61a8271872e0984c0ee9d846b"
+    },
+    {
+      "name": "raw-case-blocks/19-steer_only_enforces_expected_turn_id.log",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/19-steer_only_enforces_expected_turn_id.log",
+      "bytes": 325,
+      "sha256": "51a737bd232cc59cb4821e92646d7da08a37b2e0ab969fe643c9a946b3266e0f",
+      "git_blob": "871ba8137187630022db7ab34ad427dff01d0fab"
+    },
+    {
+      "name": "source-excerpts/01-thread_inject_items_adds_raw_response_items_after_a_turn.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/01-thread_inject_items_adds_raw_response_items_after_a_turn.rs.source.txt",
+      "bytes": 4639,
+      "sha256": "0e8cfad1fec83d4fc80c34cb6a8b8deea9500176ca1426b35187ac8285a6a668",
+      "git_blob": "2c6cd3ef319fa99b5609368b34c6268085f5aef9"
+    },
+    {
+      "name": "source-excerpts/02-cold_resume_explicit_cwd_override_is_fail_closed_for_recovery.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/02-cold_resume_explicit_cwd_override_is_fail_closed_for_recovery.rs.source.txt",
+      "bytes": 2452,
+      "sha256": "ef0659daa6b8c3c68f399c78c556678fedc23f6b242f90080c3458f788781a9f",
+      "git_blob": "6f7af28ac66821920ec54e3000d8d23da4b9bc39"
+    },
+    {
+      "name": "source-excerpts/03-cold_paginated_sigkill_recovery_uses_canonical_context_tail.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/03-cold_paginated_sigkill_recovery_uses_canonical_context_tail.rs.source.txt",
+      "bytes": 3521,
+      "sha256": "456df287e2dd724110e9ef26448714504cf5e2909bc36d3050498384a75a5984",
+      "git_blob": "7d0b607f00c842fe2b7bc79b4d01f5db10d4df80"
+    },
+    {
+      "name": "source-excerpts/04-cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/04-cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery.rs.source.txt",
+      "bytes": 2712,
+      "sha256": "d14dfa0031a68a1a26bd0a665112d96a75010c1a117681cbfd4ae40f5589b6ac",
+      "git_blob": "52fb8d81c421454230ea04d6e41d45e29fa88c35"
+    },
+    {
+      "name": "source-excerpts/05-cold_sigkill_after_provider_output_is_not_recoverable.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/05-cold_sigkill_after_provider_output_is_not_recoverable.rs.source.txt",
+      "bytes": 1681,
+      "sha256": "b51f14364a4311b7cc641b75b008f339ea7c4679cea2c1f5263e18b0d22a1262",
+      "git_blob": "5163451de01971d9b60d83396be55b64ffeb28a1"
+    },
+    {
+      "name": "source-excerpts/06-recover_rejects_busy_completed_and_cross_thread_turns.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/06-recover_rejects_busy_completed_and_cross_thread_turns.rs.source.txt",
+      "bytes": 3137,
+      "sha256": "fe0de2fb61be3d1a7ad81ded3c9223396d43253c67f78e34065686977da8f27e",
+      "git_blob": "9b9f649a3c596fd4e5e595fadcebf90d4f8f6f7a"
+    },
+    {
+      "name": "source-excerpts/07-same_process_ephemeral_interrupted_turn_recovers_from_listener_state.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/07-same_process_ephemeral_interrupted_turn_recovers_from_listener_state.rs.source.txt",
+      "bytes": 2589,
+      "sha256": "bad6176bb374445aaea2e27157f0b726c51e5f55e1474b9bbecb345c3efa1af5",
+      "git_blob": "519ab7933538a3ae8e28df72036914f6fba9d750"
+    },
+    {
+      "name": "source-excerpts/08-turn_recover_requires_hepta_turn_recovery_feature.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/08-turn_recover_requires_hepta_turn_recovery_feature.rs.source.txt",
+      "bytes": 895,
+      "sha256": "039ff70ad4ba97bc2d2ff46605a0ef40e75f2fa3bca15241d1dcccc9c91a8084",
+      "git_blob": "a491ad80a4e02350e5b3aa9fba8c33e9ba27c7b8"
+    },
+    {
+      "name": "source-excerpts/09-cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/09-cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input.rs.source.txt",
+      "bytes": 6919,
+      "sha256": "2ba10c43975fae773fae9e085a4b6b219644fc352a85479b17a9367997bf28ec",
+      "git_blob": "54149cf4b3727329581eff13917d190ed7cd5117"
+    },
+    {
+      "name": "source-excerpts/10-root_turn_suspension_preserves_unfinished_turn_history.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/10-root_turn_suspension_preserves_unfinished_turn_history.rs.source.txt",
+      "bytes": 8412,
+      "sha256": "d76d85cc8b46a01d8679531ece4f1085ab20be1a975e2a2f095ab25f813afeb8",
+      "git_blob": "f0cddc38432cc3c297bfd69b3c4c7412c1b4da4c"
+    },
+    {
+      "name": "source-excerpts/11-panicking_session_task_is_converted_to_terminal_error_and_releases_slot.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/11-panicking_session_task_is_converted_to_terminal_error_and_releases_slot.rs.source.txt",
+      "bytes": 1150,
+      "sha256": "521b9d3c2bf0baf233c0cf6906cd234100c526a8f11cc832056c87b18525249a",
+      "git_blob": "e57b0d97e00623d83e00a5a70578d89cede19efa"
+    },
+    {
+      "name": "source-excerpts/12-cancelled_finish_owner_keeps_terminalizer_alive.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/12-cancelled_finish_owner_keeps_terminalizer_alive.rs.source.txt",
+      "bytes": 4110,
+      "sha256": "38a97027c89ef0a54aa45606921d1528c628e11b0f871fe7fb59fcb343b09754",
+      "git_blob": "b060079d4900b62c76f3a138336a3e61b7dc24d7"
+    },
+    {
+      "name": "source-excerpts/13-panicking_finish_terminalizer_retains_fence.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/13-panicking_finish_terminalizer_retains_fence.rs.source.txt",
+      "bytes": 2364,
+      "sha256": "56ab7ddde4478ebfb83f5f1e12f0b119447d036a97e152341a1851050430067d",
+      "git_blob": "6d71858a0cd88b1a0f3b7727188c109fcf78597f"
+    },
+    {
+      "name": "source-excerpts/14-hung_finish_terminalizer_watchdog_retains_fence.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/14-hung_finish_terminalizer_watchdog_retains_fence.rs.source.txt",
+      "bytes": 2908,
+      "sha256": "86559659a326b22f7e7b1c9217d3a8c871d1fd6890f7cf6a1485cb66c0f1e3d1",
+      "git_blob": "f5ba2c4c74e4a88df21679bafd9f1faa1588dba6"
+    },
+    {
+      "name": "source-excerpts/15-cancelled_abort_owner_keeps_terminalizer_alive.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/15-cancelled_abort_owner_keeps_terminalizer_alive.rs.source.txt",
+      "bytes": 1732,
+      "sha256": "9bdb6fd812688164eaf1c9e97f363f1c41167cca0e3c4cd0405c0423c49a7be2",
+      "git_blob": "cd36fe606e00debd5d741dcd824841af54fc9df8"
+    },
+    {
+      "name": "source-excerpts/16-panicking_abort_terminalizer_retains_fence.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/16-panicking_abort_terminalizer_retains_fence.rs.source.txt",
+      "bytes": 900,
+      "sha256": "e590ac1e9c57666b28bec5d4d915bf2be514366ad6adface3d2faeaef5c85259",
+      "git_blob": "86a76e5d5d0bfb9824b03613ff7a0eb0639f6420"
+    },
+    {
+      "name": "source-excerpts/17-cancelled_suspend_caller_keeps_writer_handoff_alive.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/17-cancelled_suspend_caller_keeps_writer_handoff_alive.rs.source.txt",
+      "bytes": 2850,
+      "sha256": "628891fa094897290c37ff923254e21120516a064808d96997dd9da7e24b562b",
+      "git_blob": "65dc37b1f95ac027f137734f08570dc0ed012edb"
+    },
+    {
+      "name": "source-excerpts/18-steer_only_requires_active_turn.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/18-steer_only_requires_active_turn.rs.source.txt",
+      "bytes": 520,
+      "sha256": "cb237d7b6487d03f172612751de3805ea18eb7ec33ebe4d2e6202000e560c85d",
+      "git_blob": "604b872c41d4519123b40a9b4b07b163bf85e240"
+    },
+    {
+      "name": "source-excerpts/19-steer_only_enforces_expected_turn_id.rs.source.txt",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-excerpts/19-steer_only_enforces_expected_turn_id.rs.source.txt",
+      "bytes": 1194,
+      "sha256": "7ac09cc3a3a0cc49ac15ad5d5f971ad4699d1ce141e1f59549d01b2857a54c66",
+      "git_blob": "457b9ce2cea903b6c45de4cbfba9a9a7507c9c4c"
+    },
+    {
+      "name": "source-case-excerpt-index.json",
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-case-excerpt-index.json",
+      "bytes": 14962,
+      "sha256": "85a17c070b3af133d6d533b123916f5d1fbf4a2c92b7de6ffe3f3e05bb1aaae9",
+      "git_blob": "147d9dc031054faf6fa7faad533f5d0b9a33f7db"
+    }
+  ],
+  "member_count": 39,
+  "original_member_bytes": 228982,
+  "gzip": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/case-extract-transport-v1/case-extracts.tar.gz",
+    "bytes": 22355,
+    "sha256": "4d3fc537f53cc7b0dff2cd57f9ef59d9f275e513351ecfba71473ca132c5d5e2",
+    "git_blob": "daffb78619b532d6e3baeb04a8de219f1024f6e8"
+  },
+  "parts": [
+    {
+      "offset": 0,
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/case-extract-transport-v1/part-000.base64.txt",
+      "bytes": 29808,
+      "sha256": "581440c9a81710add68679820bf611dcd34e77554773663f64f0a365a2180d84",
+      "git_blob": "0831898302bad6671a92f03c275653b38aa336fc"
+    }
+  ],
+  "all_members_reopened_equal": true,
+  "full_original_archive": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/fb9-original-archive-manifest.json",
+    "bytes": 15530,
+    "sha256": "d2fd9bf1709f29946f852bc42938a23c47091851c945db9440c90547695e7401",
+    "git_blob": "87873969544e952a8fcff9ad771f834ffc856537"
+  }
+}

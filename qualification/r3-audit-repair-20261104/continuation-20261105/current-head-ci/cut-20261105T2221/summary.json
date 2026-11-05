@@ -1,0 +1,92 @@
+{
+  "schema": "main-eed-actual-job-collection-20261105T2221-v1",
+  "collection_finished_utc": "2026-11-05T22:23:15.808308+00:00",
+  "request_started_utc_range": [
+    "2026-11-05T22:21:18.920Z",
+    "2026-11-05T22:21:48.810Z"
+  ],
+  "complete_API_files": 23,
+  "workflow_run_count": 19,
+  "job_count": 55,
+  "counts": {
+    "success": 35,
+    "cancelled": 10,
+    "queued": 4,
+    "in_progress": 3,
+    "skipped": 2,
+    "failure": 1
+  },
+  "limits": [
+    "Bounded API collection, not one atomic server snapshot",
+    "API success is not a case-level business acceptance",
+    "Five workflow failure conclusions do not imply five failed test jobs; this collection has one failed format job, and ten cancelled jobs",
+    "No dispatch/retry/cancel or native/resource action"
+  ],
+  "failed_jobs": [
+    {
+      "id": 127372805931,
+      "run": "42063947910",
+      "run_name": "Hepta Supervisor P0 Cross-Platform Restart Qualification",
+      "name": "Restart and signed recovery (ubuntu-24.04)",
+      "completed_at": "2026-11-05T21:51:31Z",
+      "failed_steps": [
+        {
+          "name": "Verify full-workspace canonical Rust format on Linux",
+          "number": 13,
+          "status": "completed",
+          "conclusion": "failure"
+        }
+      ]
+    }
+  ],
+  "queued_jobs": [
+    {
+      "id": 127378841082,
+      "run": "42063947456",
+      "name": "Build release aarch64-unknown-linux-gnu",
+      "runner_id": 0,
+      "steps": []
+    },
+    {
+      "id": 127378841404,
+      "run": "42063947456",
+      "name": "Build ptrcomp-sandbox aarch64-unknown-linux-musl",
+      "runner_id": 0,
+      "steps": []
+    },
+    {
+      "id": 127490874640,
+      "run": "42063947919",
+      "name": "Architecture convergence (source-head)",
+      "runner_id": 0,
+      "steps": []
+    },
+    {
+      "id": 127490875261,
+      "run": "42063947919",
+      "name": "Architecture convergence (base-merge)",
+      "runner_id": 0,
+      "steps": []
+    }
+  ],
+  "in_progress_jobs": [
+    {
+      "id": 127378841322,
+      "run": "42063947456",
+      "name": "Build release x86_64-unknown-linux-musl",
+      "runner_id": 1000005168
+    },
+    {
+      "id": 127372805190,
+      "run": "42063947551",
+      "name": "Original memory and Agentd libraries (source head)",
+      "runner_id": 1000004876
+    },
+    {
+      "id": 127372808624,
+      "run": "42063948228",
+      "name": "Rust UI foundation / source-head",
+      "runner_id": 1000004957
+    }
+  ]
+}

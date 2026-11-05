@@ -1,0 +1,39 @@
+BuildBuddy API key is available; using remote Bazel configuration.
+Using generic BuildBuddy configuration: buildbuddy-generic.
+INFO: Invocation ID: 4830534d-b585-41e1-a333-057c673f1316
+INFO: Streaming build results to: https://app.buildbuddy.io/invocation/4830534d-b585-41e1-a333-057c673f1316
+INFO: Checking for file changes...
+Computing main repo mapping: 
+Loading: 
+Loading: 0 packages loaded
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (0 packages loaded, 0 targets configured)
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (0 packages loaded, 0 targets configured)
+
+Analyzing: target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (0 packages loaded, 5683 targets configured)
+
+INFO: Analyzed target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (0 packages loaded, 7938 targets configured).
+[1 / 1] no actions running
+[1,616 / 1,617] Testing //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests; 0s local, remote-cache
+INFO: From Testing //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests:
+==================== Test output for //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests:
+
+running 1 test
+test acl::tests::existing_native_deny_does_not_require_write_dac ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 155 filtered out; finished in 0.00s
+
+================================================================================
+INFO: Found 1 test target...
+Target //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests up-to-date:
+  bazel-bin/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests.bat
+INFO: Elapsed time: 7.551s, Critical Path: 1.05s
+INFO: 3 processes: 1614 action cache hit, 2 internal, 2 local.
+INFO: Build completed successfully, 3 total actions
+INFO: 
+//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              PASSED in 0.1s
+  WARNING: //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+
+Executed 1 out of 1 test: 1 test passes.
+INFO: 
+INFO: Streaming build results to: https://app.buildbuddy.io/invocation/4830534d-b585-41e1-a333-057c673f1316
+Selected-target-log archive: D:\a\_temp\b11-token-mechanism-probe\acl-identity-counterfactual\positive-02\bazel-execution-logs\selected-target-test-logs\invocation-7ljtw6r6 (complete_for_selected_targets=True)

@@ -1,0 +1,127 @@
+{
+  "complete_case_inventory": false,
+  "complete_for_selected_targets": true,
+  "errors": [],
+  "files": [
+    {
+      "archive_relative_path": "targets/0000/test.log",
+      "bytes": 16871,
+      "sha256": "88934b8a11c36919505801418fecb074b22e403a71670873b68af488dbf97ab4",
+      "source_mtime_ns": 1793919231092059500,
+      "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+      "testlogs_relative_path": "codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log"
+    },
+    {
+      "archive_relative_path": "targets/0000/test.xml",
+      "bytes": 17242,
+      "sha256": "b7e788cf73148319f9f620d3fe18ef91ad1718d26a3ebd96bb66fbc6502b509f",
+      "source_mtime_ns": 1793919231276239700,
+      "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+      "testlogs_relative_path": "codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.xml"
+    }
+  ],
+  "retention": {
+    "console_bytes": 18776,
+    "console_sha256": "4dd93106728e990f56753a8983cd523be80f6de1672fc1f45be1f56e2b66c1f3",
+    "limitations": "NOT_REPORTED does not mean filtered or skipped. An absent cached marker does not prove local execution or an independent remote execution. Files are existing local records for a console-reported target; their binding to this invocation is not independently established. Bazel config expansion and per-case filtering must be checked separately. Checkout identity is recorded at collection time, not at test start.",
+    "selection_errors": [],
+    "targets": {
+      "//codex-rs/app-server:app-server-all-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/app-server:app-server-all-wine-exec-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/app-server:app-server-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/codex-mcp:codex-mcp-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/core:core-all-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/core:core-all-wine-exec-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/core:core-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/ext/queue:queue-queue_service-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/tui:tui-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/utils/pty:pty-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests": {
+        "cached_marker": false,
+        "collect_existing_logs": true,
+        "status": "PASSED",
+        "summary_lines": [
+          "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              PASSED in 0.1s"
+        ]
+      }
+    },
+    "wrapper_requested_selection_flags": [
+      "--test_tag_filters=-argument-comment-lint",
+      "--nocache_test_results",
+      "--flaky_test_attempts=1",
+      "--config=ci-windows"
+    ]
+  },
+  "schema": "bazel_selected_target_logs_v1",
+  "scope": "Existing local test.log/test.xml and test_attempts log/XML records for the allowlisted targets reported PASSED or FLAKY in this console; not failed-target-only evidence or a complete case/attempt inventory.",
+  "selected_targets": [
+    "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests"
+  ],
+  "source": {
+    "commit": "5ce73498a9e8ee843d156c43593b1bc2fede416f",
+    "tracked_worktree_dirty": false,
+    "tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa"
+  }
+}

@@ -1,0 +1,126 @@
+name: Windows token mechanisms (observations only)
+
+on:
+  pull_request:
+    paths:
+      - codex-rs/windows-sandbox-rs/src/acl_deny.rs
+      - codex-rs/windows-sandbox-rs/src/acl_tests.rs
+      - codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs
+      - codex-rs/windows-sandbox-rs/src/token.rs
+      - codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs
+      - codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs
+      - codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs
+      - .github/workflows/hepta-windows-token-mechanism-probe.yml
+      - .github/scripts/run_b11_acl_identity_counterfactual.py
+      - codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs
+      - codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs
+      - codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs
+      - .github/scripts/run_b11_read_acl_readiness.py
+
+permissions:
+  contents: read
+
+jobs:
+  token-mechanism-observations:
+    name: Windows token observations with original strict assertions
+    runs-on: windows-latest
+    timeout-minutes: 120
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Prepare original native MSVC Bazel environment
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+
+      - name: Run the original outer Windows sandbox unit target
+        id: original_unit_target
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$(cygpath -u "${RUNNER_TEMP}")/b11-token-mechanism-probe"
+          mkdir -p "$evidence"
+          git rev-parse HEAD 'HEAD^{tree}' > "$evidence/source-head-tree.txt"
+          git status --porcelain=v1 > "$evidence/source-status-before.txt"
+          git ls-tree -r HEAD -- codex-rs/windows-sandbox-rs .github/workflows/hepta-windows-token-mechanism-probe.yml > "$evidence/source-leaves.txt"
+          cat > "$evidence/required-case-names.txt" <<'CASES'
+          token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes
+          token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces
+          unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots
+          token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells
+          unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells
+          token::integrity_probe::integrity_mechanism_probe_observation_only
+          CASES
+          printf '%s\n' 'PROBE_OBSERVATION_ONLY: probe success is fixture validity, not isolation qualification.' > "$evidence/interpretation.txt"
+          set +e
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- \
+            test \
+            --platforms=//:windows_x86_64_msvc \
+            --skip_incompatible_explicit_targets \
+            --test_tag_filters=-argument-comment-lint \
+            --test_verbose_timeout_warnings \
+            --test_output=all \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            --build_metadata=TAG_b11_observation_only=true \
+            -- \
+            //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests \
+            2>&1 | tee "$evidence/bazel-console.log"
+          statuses=("${PIPESTATUS[@]}")
+          set -e
+          printf '%s\n' "${statuses[0]}" > "$evidence/original-bazel-exit-code.txt"
+          printf '%s\n' "${statuses[1]}" > "$evidence/console-copy-exit-code.txt"
+          git status --porcelain=v1 > "$evidence/source-status-after.txt"
+          exit "${statuses[0]}"
+
+      - name: Check the ACL identity counterfactual and restore its source
+        id: acl_identity_counterfactual
+        if: always() && !cancelled() && steps.original_unit_target.outcome != 'skipped'
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$(cygpath -u "${RUNNER_TEMP}")/b11-token-mechanism-probe"
+          python3 .github/scripts/run_b11_acl_identity_counterfactual.py \
+            --evidence "$(cygpath -w "$evidence")"
+
+      - name: Run the original setup helper target after exact restoration
+        id: read_acl_helper_target
+        if: always() && !cancelled() && steps.acl_identity_counterfactual.outcome == 'success'
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$(cygpath -u "${RUNNER_TEMP}")/b11-token-mechanism-probe"
+          python3 .github/scripts/run_b11_read_acl_readiness.py \
+            --evidence "$(cygpath -w "$evidence")"
+
+      # The unchanged wrapper already retains this exact target on both failure
+      # and console-reported success, including cached/missing evidence limits.
+      - name: Upload complete observation and original failure evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: windows-token-mechanism-observations-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/b11-token-mechanism-probe
+            ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: error
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree

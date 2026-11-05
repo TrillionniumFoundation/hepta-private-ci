@@ -1,0 +1,280 @@
+"""Freeze native10 originals; this verifier launches no product or native command."""
+from pathlib import Path
+import base64
+import hashlib
+import json
+import re
+import xml.etree.ElementTree as ET
+import zipfile
+
+
+ROOT = Path(__file__).resolve().parent
+DIRECTORY = ROOT / "terminal/probe-127584591851"
+HEAD = "021a59ff05ccd963bc087918db823aa86af31bb8"
+CHECKOUT = "5ce73498a9e8ee843d156c43593b1bc2fede416f"
+TREE = "36ca349de7f4c7c5a2914cf1960a81d8621350fa"
+
+
+def identity(body):
+    return {"bytes": len(body), "sha256": hashlib.sha256(body).hexdigest(),
+            "git_blob": hashlib.sha1(b"blob " + str(len(body)).encode() + b"\0" + body).hexdigest()}
+
+
+def record(path):
+    return {"local_path": str(path), **identity(path.read_bytes())}
+
+
+def load(path):
+    return json.loads(path.read_bytes())
+
+
+def write(name, value):
+    path = DIRECTORY / name
+    path.write_bytes((json.dumps(value, indent=2, ensure_ascii=False) + "\n").encode())
+    return record(path)
+
+
+def unwrap(envelope):
+    assert not envelope.get("isError", False)
+    value = envelope.get("structuredContent") or json.loads(next(x["text"] for x in envelope["content"] if x["type"] == "text"))
+    return json.loads(value["content"])
+
+
+def xml_pair(path, expected_error=None):
+    raw = path.read_bytes()
+    xml = ET.fromstring(path.with_suffix(".xml").read_bytes())
+    assert len(xml.findall(".//testcase")) == 1
+    assert [x.get("message") for x in xml.findall(".//error")] == ([] if expected_error is None else [expected_error])
+    assert not xml.findall(".//failure") and not xml.findall(".//skipped")
+    assert b"\r" not in raw
+    assert xml.find(".//system-out").text.encode() == raw.replace(b"\x1b", b"?")
+    return {"raw": record(path), "XML": record(path.with_suffix(".xml")),
+            "original_ESC_count": raw.count(b"\x1b"), "original_CR_count": 0,
+            "whole_XML_system_out_equal_except_ESC_to_question_mark": True,
+            "outer_case": xml.find(".//testcase").attrib, "expected_error": expected_error}
+
+
+def one_log(scope, kind):
+    path, = (scope / "bazel-execution-logs" / kind).glob("*/targets/0000/test.log")
+    return path
+
+
+envelope = load(DIRECTORY / "terminal-api-envelopes.json")
+run = unwrap(envelope["run"])
+job, = [j for j in unwrap(envelope["jobs"])["jobs"] if j["id"] == 127584591851]
+artifact, = [a for a in unwrap(envelope["artifacts"])["artifacts"] if a["id"] == 13461080955]
+assert run["id"] == 42124355402 and run["run_attempt"] == 1 and run["head_sha"] == HEAD
+assert run["status"] == job["status"] == "completed" and run["conclusion"] == job["conclusion"] == "failure"
+assert (DIRECTORY / "job.log").read_bytes() == envelope["log"]["structuredContent"]["content"].encode()
+merge = unwrap(load(DIRECTORY / "actual-merge-commit.json"))
+assert merge["sha"] == CHECKOUT and merge["tree"]["sha"] == TREE
+assert [p["sha"] for p in merge["parents"]] == ["67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed", HEAD]
+base = DIRECTORY / "members/b11-token-mechanism-probe"
+assert (base / "source-head-tree.txt").read_text().splitlines() == [CHECKOUT, TREE]
+assert all((base / f"source-status-{side}.txt").read_bytes() == b"" for side in ("before", "after"))
+assert int((base / "original-bazel-exit-code.txt").read_text()) == 3
+assert int((base / "console-copy-exit-code.txt").read_text()) == 0
+leaves = {}
+for line in (base / "source-leaves.txt").read_text().splitlines():
+    metadata, path = line.split("\t")
+    mode, kind, sha = metadata.split()
+    leaves[path] = {"mode": mode, "type": kind, "sha": sha}
+assert len(leaves) == 78
+steps = {s["name"]: s for s in job["steps"]}
+assert steps["Run the original outer Windows sandbox unit target"]["conclusion"] == "failure"
+for name in ["Check the ACL identity counterfactual and restore its source", "Run the original setup helper target after exact restoration", "Check for a clean worktree"]:
+    assert steps[name]["conclusion"] == "success"
+
+whole_path = one_log(DIRECTORY / "members", "failed-test-logs")
+whole = whole_path.read_bytes().decode()
+summaries = re.findall(r"^test result: .+$", whole, re.M)
+assert summaries == ["test result: ok. 92 passed; 0 failed; 0 ignored; 0 measured; 64 filtered out; finished in 1.04s",
+                     "test result: FAILED. 55 passed; 7 failed; 2 ignored; 0 measured; 92 filtered out; finished in 0.23s"]
+prior = load(ROOT / "terminal/probe-127567774212/failure-classification.json")
+prior_classes = {r["case"]: r["classification"] for r in prior["failures"]}
+headers = list(re.finditer(r"^---- (\S+) stdout ----$", whole, re.M))
+assert len(headers) == 7 and {m[1] for m in headers} == set(prior_classes)
+failures = []
+for index, match in enumerate(headers):
+    end = headers[index + 1].start() if index + 1 < len(headers) else len(whole)
+    block = whole[match.start():end].split("\nfailures:\n")[0]
+    case = match[1]
+    if "deny_writes_and_deletes_under_broad_identity_aces" in case:
+        assert "token_tests.rs:434:5" in block and "PermissionDenied" in block
+    elif "workspace_capability_delete_routes_require_the_capability" in case:
+        assert "token_tests.rs:479:5" in block
+        assert "route: Neither, file_deleted: true, directory_deleted: true" in block
+        assert "host_native_errors=[[None, None], [None, None], [None, None], [None, None]]" in block
+    elif "legacy_delete_routes_require_workspace_capability" in case:
+        assert "delete_permission_tests.rs:69:9" in block and "host_cmd_status=exit code: 0" in block
+        assert "route: Neither, file_deleted: true, directory_deleted: true" in block
+    else:
+        assert "tests.rs:62:10" in block and "test lock poisoned: PoisonError" in block
+    failures.append({"case": case, "line": whole.count("\n", 0, match.start()) + 1,
+                     "classification": prior_classes[case], "original_block": block})
+classification = write("failure-classification.json", {"source": record(whole_path), "count": 7, "failures": failures,
+    "same_failed_names_as_native9": True, "new_product_failure_names": [],
+    "scope": "One strict outside-delete failure, two ordinary-host Neither precondition failures, four lock-poison consequences. No relaxed assertion or product success is inferred."})
+
+cf = base / "acl-identity-counterfactual"
+terminal = load(cf / "counterfactual-terminal.json")
+entry = load(cf / "source-entry.json")
+assert terminal["status"] == "VALID_NEGATIVE_AND_EXACT_RESTORE" and terminal["product_B11"] == "OPEN"
+assert all(terminal[k] is True for k in ["physical_counterfactual_qualified", "physical_oracle_reached", "restored_exact_original_bytes", "source_mutated", "source_mutation_attempted", "original_target_exit_code_unchanged"])
+assert terminal["error"] is None and terminal["restore_error"] is None and terminal["hard_cancellation_restore_guaranteed"] is False
+assert entry["head"] == CHECKOUT and entry["head_tree"] == TREE and entry["status"] == []
+assert (cf / "source-entry.json").read_bytes() == (cf / "source-restored.json").read_bytes()
+positive = (cf / "positive-source.original").read_bytes()
+negative = (cf / "negative-source.original").read_bytes()
+check = b'    ensure!(\n        actual == expected,\n        "deny repair path no longer identifies the retained object: {}",\n        path.display()\n    );'
+assert identity(positive) == entry["source"]
+assert identity(positive.replace(b"\r\n", b"\n"))["git_blob"] == entry["source_canonical_git_blob"] == "da5346c220c41cf0c83f62b596132c74c02284d8"
+assert positive.replace(b"\r\n", b"\n").count(check) == 1
+assert positive.replace(check.replace(b"\n", b"\r\n"), b"    let _ = actual == expected;", 1) == negative
+assert identity(negative.replace(b"\r\n", b"\n"))["git_blob"] == "0baeb6ec2f3bfd0964be6d014fc5d80d890ea3d7"
+expected_negative = {**entry, "source": identity(negative), "source_canonical_git_blob": "0baeb6ec2f3bfd0964be6d014fc5d80d890ea3d7", "status": [" M codex-rs/windows-sandbox-rs/src/acl_deny.rs"]}
+assert all(load(cf / f) == expected_negative for f in ["source-negative-before.json", "source-negative-after.json", "source-before-restore.json"])
+cases = ["acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+         "acl::tests::existing_native_deny_does_not_require_write_dac",
+         "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+         "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes"]
+positive_reviews = []
+for index, case in enumerate(cases, 1):
+    scope = cf / f"positive-{index:02}"
+    assert load(scope / "source-before.json") == load(scope / "source-after.json") == entry
+    command, end = load(scope / "command.json"), load(scope / "command-terminal.json")
+    assert command["source"] == entry and command["case"] == case and end["exit_code"] == 0
+    assert all(a in command["argv"] for a in ["--nocache_test_results", "--flaky_test_attempts=1", "--test_arg=--exact", "--test_arg=" + case])
+    path = one_log(scope, "selected-target-test-logs")
+    raw = path.read_bytes().decode()
+    assert raw.splitlines().count(f"test {case} ... ok") == 1
+    assert re.findall(r"^test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out;", raw, re.M) == [("1", "0", "0", "0", "155")]
+    qualification = load(scope / "qualification.json")
+    assert terminal["positive_scopes"][index - 1] == qualification
+    assert qualification["attempts"] == 1 and qualification["status"] == "EXACT_POSITIVE_QUALIFIED"
+    positive_reviews.append({"case": case, "command": record(scope / "command.json"), "terminal": end, "pair": xml_pair(path)})
+negative_path = one_log(cf, "failed-test-logs")
+negative_text = negative_path.read_bytes().decode()
+marker = "deny_repair_identity: directory=false returned_ok=true replacement_changed=true original_changed=false"
+assert negative_text.splitlines().count(marker) == 1
+assert "acl_tests.rs:597:9" in negative_text and "a replacement object must not receive the queried object's deny" in negative_text
+assert re.findall(r"^test result: FAILED\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out;", negative_text, re.M) == [("0", "1", "0", "0", "155")]
+assert load(cf / "negative-command.json")["source"] == expected_negative
+assert load(cf / "negative-command-terminal.json")["exit_code"] == 3
+counterfactual_review = write("counterfactual-qualified-review.json", {"terminal": record(cf / "counterfactual-terminal.json"),
+    "role": "FOUR_EXACT_POSITIVES_ONE_PHYSICAL_NEGATIVE_EXACT_SOURCE_RESTORE_NOT_WHOLE_B11",
+    "positive": positive_reviews, "negative_pair": xml_pair(negative_path, "exited with error code 101"),
+    "negative_physical_marker": marker, "negative_assertion": "acl_tests.rs:597:9", "negative_bazel_exit": 3,
+    "positive_source_original": record(cf / "positive-source.original"), "negative_source_original": record(cf / "negative-source.original"),
+    "only_exact_check_replaced_in_entire_original_source_bytes": True,
+    "entry_and_restored_JSON_raw_bytes_equal": True, "original_test_index_lock_metadata_equal": True,
+    "limit": "Index and lock fingerprints are recorded and stable; their complete native bytes were not archived here. Hard cancellation restoration is not guaranteed.",
+    "product_B11": "OPEN"})
+
+helper = base / "read-acl-readiness"
+ht = load(helper / "terminal.json")
+hs = load(helper / "source-before.json")
+assert ht["status"] == "HELPER_TARGET_PASSED" and ht["helper_qualified"] and ht["original_library_result_unchanged"]
+assert ht["full_read_grants_loader_or_descendants_qualified"] is False and ht["error"] is None and ht["final_guard_error"] is None
+assert hs == load(helper / "source-after.json") == load(helper / "source-final.json") and hs["source"] == entry
+assert len(hs["pins"]) == 11
+helper_path = one_log(helper, "selected-target-test-logs")
+helper_raw = helper_path.read_bytes().decode()
+names = re.findall(r"^test (\S+) \.\.\. ok$", helper_raw, re.M)
+assert len(names) == len(set(names)) == 21 and names == ht["results"]["actual_case_names"]
+assert "win::read_acl_mutex::tests::existing_read_acl_mutex_is_not_a_completion_receipt" in names
+assert re.findall(r"^test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out;", helper_raw, re.M) == [("21", "0", "0", "0", "0")]
+hc = load(helper / "command.json")
+assert hc["source"] == hs and load(helper / "command-terminal.json")["exit_code"] == 0
+assert not any(a.startswith(("--test_arg", "--test_filter", "--test_timeout")) for a in hc["argv"])
+helper_review = write("helper-qualified-review.json", {"terminal": record(helper / "terminal.json"), "pair": xml_pair(helper_path),
+    "command": hc, "command_terminal": load(helper / "command-terminal.json"), "actual_21_case_names": names,
+    "before_after_final_source_metadata_equal": True, "all_11_source_pins": hs["pins"],
+    "product_B11": "OPEN", "full_read_grants_loader_or_descendants_qualified": False})
+
+observations = {}
+for kind in ("row", "restoration", "finalized"):
+    good, bad = [], []
+    prefix = "PROBE_OBSERVATION_ONLY " + kind + " "
+    for number, line in enumerate(whole.splitlines(), 1):
+        if prefix not in line:
+            continue
+        try:
+            good.append({"line": number, "value": json.loads(line.split(prefix, 1)[1])})
+        except json.JSONDecodeError as error:
+            bad.append({"line": number, "raw": line, "error": str(error)})
+    observations[kind] = {"complete_json": good, "interleaved_not_repaired": bad}
+complete = "PROBE_OBSERVATION_ONLY complete rows=8 token_subjects=4 descendants_spawned=0 tests_do_not_qualify_isolation=true"
+assert whole.splitlines().count(complete) == 1
+projection = write("physical-observation-projection.json", {"source": record(whole_path), "complete_marker": complete,
+    "parsed": observations, "limits": "Only complete JSON is parsed. Interleaved lines remain unrepaired originals.", "qualifies_B11": False})
+
+archive_path = DIRECTORY / "artifact.zip"
+archive = archive_path.read_bytes()
+assert len(archive) == artifact["size_in_bytes"] == 2291410
+assert artifact["digest"] == "sha256:" + identity(archive)["sha256"]
+assert identity(archive)["sha256"] == "d942127684e5864e84b6adfaaa224806ba0a13e47c6b90f7d1d511265a2da85d"
+verification = load(DIRECTORY / "artifact-verification.json")
+assert len(verification["members"]) == 84
+with zipfile.ZipFile(archive_path) as zipped:
+    assert zipped.testzip() is None and len(zipped.infolist()) == 84
+    assert len({i.filename for i in zipped.infolist()}) == 84
+    for row in verification["members"]:
+        body = zipped.read(row["path"])
+        assert identity(body) == {k: row[k] for k in ("bytes", "sha256", "git_blob")}
+        assert body == (DIRECTORY / "members" / row["path"]).read_bytes()
+        assert f"{zipped.getinfo(row['path']).CRC:08x}" == row["crc32"]
+part_directory = DIRECTORY / "archive-parts"
+part_directory.mkdir(exist_ok=True)
+parts = []
+for number, offset in enumerate(range(0, len(archive), 131072)):
+    raw = archive[offset:offset + 131072]
+    path = part_directory / f"artifact-13461080955-{number:03}.base64"
+    encoded = base64.b64encode(raw) + b"\n"
+    if path.exists():
+        assert path.read_bytes() == encoded
+    else:
+        path.write_bytes(encoded)
+    parts.append({"sequence": number, "offset": offset, "raw": identity(raw), "encoded": record(path)})
+assert b"".join(base64.b64decode(Path(p["encoded"]["local_path"]).read_bytes().strip(), validate=True) for p in parts) == archive
+parts_record = write("archive-parts-manifest.json", {"schema": "original-github-artifact-chunks-v1",
+    "run_id": run["id"], "job_id": job["id"], "artifact_id": artifact["id"], "official_digest": artifact["digest"],
+    "original_archive": record(archive_path), "roundtrip_original_bytes_verified": True,
+    "member_crc_and_hash_verification": record(DIRECTORY / "artifact-verification.json"), "parts": parts,
+    "git_upload_qualification": "Computed identities until separate actual create+GET map is written."})
+
+# The independent root verifier fully decoded all seven compact logs. Preserve its exact receipt;
+# bind every compressed input here without repeating an already completed independent decode.
+independent_path = DIRECTORY / "independent-root-verification.json"
+independent = load(independent_path)
+assert independent["run"] == run["id"] and independent["job"] == job["id"]
+assert independent["head"] == HEAD and independent["actual_checkout"] == CHECKOUT and independent["actual_tree"] == TREE
+assert independent["archive"] == identity(archive) and independent["B11"] == "OPEN"
+assert len(independent["complete7_compact_logs"]) == 7
+for row in independent["complete7_compact_logs"]:
+    assert identity((DIRECTORY / row["file"]).read_bytes()) == row["compressed"]
+    actual, = [a for a in row["actions"] if a["role"] == "actual_test"]
+    assert actual["runner"] == "local" and not actual["cache_hit"] and actual["timeout_millis"] == 300000
+assert independent["helper11_canonical_pins_equal_to_published_merge"] == hs["pins"]
+review = write("terminal-review.json", {"schema": "b11-diagnostic-pr-native10-terminal-review-v1",
+    "role": "ORIGINAL_WHOLE_FAILURE_PLUS_QUALIFIED_ACL_COUNTERFACTUAL_AND_HELPER_NOT_B11_CLOSURE",
+    "head": HEAD, "head_tree": TREE, "run_id": run["id"], "job_id": job["id"], "run_attempt": 1,
+    "conclusion": job["conclusion"], "started_at": job["started_at"], "completed_at": job["completed_at"], "steps": job["steps"],
+    "actual_checkout_commit": CHECKOUT, "actual_checkout_tree": TREE, "source_leaves": leaves,
+    "captured_source_leaf_count": 78, "original_clean_source_before_after": True, "original_bazel_exit": 3,
+    "console_copy_exit": 0, "final_clean_worktree_step_success": True, "summaries": summaries,
+    "combined_disjoint_counts": {"total_named_tests": 156, "passed": 147, "failed": 7, "ignored": 2},
+    "count_limit": "Two disjoint libtest groups in one original target attempt, not retries. Four later exact positives and one intended negative are separate controls.",
+    "whole_pair": xml_pair(whole_path, "exited with error code 1"), "failure_classification": classification,
+    "physical_observations": projection, "counterfactual": counterfactual_review, "helper": helper_review,
+    "four_exact_positives_qualified": True, "one_physical_negative_qualified": True, "exact_restoration_observed": True,
+    "helper_unfiltered_21_cases_qualified": True, "independent_root_full_compact_verification": record(independent_path),
+    "evidence": {"job_log": record(DIRECTORY / "job.log"), "API": record(DIRECTORY / "terminal-api-envelopes.json"),
+                 "actual_merge": record(DIRECTORY / "actual-merge-commit.json"), "archive_verification": record(DIRECTORY / "artifact-verification.json"),
+                 "archive_parts_manifest": parts_record},
+    "limits": ["Stable recorded index and lock fingerprints are not complete archived native index/lock bytes.",
+               "Hard cancellation restoration is not guaranteed. Full restricting token, loader, ambient reads and descendant lifetime remain unqualified.",
+               "The original target and overall job remain failure. No strict outside-write/delete assertion is relaxed."],
+    "B11_status": "OPEN", "native_or_ref_mutation_by_auditor": False})
+print(json.dumps({"review": review, "counterfactual": counterfactual_review, "helper": helper_review,
+    "projection_counts": {k: {n: len(v) for n, v in row.items()} for k, row in observations.items()}, "archive_parts": len(parts)}, indent=2))

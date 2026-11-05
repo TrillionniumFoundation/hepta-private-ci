@@ -1,0 +1,26 @@
+{
+  "tree": "bf1c52a3ed14ca2bd0276ffc693dccf6c1dbbb83",
+  "entries": 12158,
+  "leaves": 10588,
+  "directory_nodes": 1571,
+  "all_Merkle_nodes_match": true,
+  "observed_api_utc": "2026-11-05T22:12:35.444Z",
+  "base": {
+    "tree": "cb105f2d902326c3c2e187f49c76d5598e6646c3",
+    "entries": 12158,
+    "leaves": 10588,
+    "directory_nodes": 1571,
+    "all_Merkle_nodes_match": true
+  },
+  "all_root_siblings_except_dot_github_unchanged": true,
+  "complete_actual_dot_github_subtree_untruncated": true,
+  "every_intended_leaf_equal_to_actual_tree": true,
+  "changed_paths": [
+    ".github/scripts/run_b11_acl_identity_counterfactual.py",
+    ".github/scripts/run_b11_read_acl_readiness.py",
+    ".github/workflows/hepta-windows-token-mechanism-probe.yml"
+  ],
+  "new_paths": [],
+  "removed_paths": [],
+  "composition": "actual root + actual .github subtree + unchanged base siblings bound by SHA"
+}

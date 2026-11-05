@@ -1,0 +1,1337 @@
+{
+  "schema": "b09-original-cases/v1",
+  "original_exit": "原注入、idle-steer、suspension、8 个 turn_recover 原用例（含特性门负控）和 panic/cancel/watchdog 负控通过。",
+  "literal_original_contract_sources": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/original-ledger.json",
+      "bytes": 18043,
+      "sha256": "fe4df69c269364623f53a9bef80da76756775187eec1f829683eb46badec3486",
+      "git_blob": "63518e970668e3a77ade10ae0230b99bc728f726"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/original-case-map.json",
+      "bytes": 210235,
+      "sha256": "9240a665e03a550b1b9f369c967591dc83bbd1c30be79fde32feb9e409f05a4e",
+      "git_blob": "c9265a2edc78d3e78e6ef137cf90498194a5bf5c"
+    }
+  ],
+  "source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "native_job": "1a1a9f68261-fc05-3a71",
+  "host": {
+    "host_alias": "rog",
+    "uname": [
+      "Linux",
+      "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+      "7.0.0-42-generic",
+      "#42-Ubuntu SMP PREEMPT_DYNAMIC Thu Oct 15 08:06:44 UTC 2026",
+      "x86_64"
+    ],
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n",
+    "target": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105",
+    "source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "initial_free_bytes": 48333479936,
+    "cargo_profile": "dev-small",
+    "nextest_profile": "local",
+    "environment_policy_changed": false
+  },
+  "original_command": {
+    "argv": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs",
+    "source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "started_at": "2026-11-05T04:35:49.292397+00:00",
+    "attempt": 1,
+    "cargo_profile": "dev-small",
+    "nextest_profile": "local",
+    "disk_before": {
+      "total": 1005867986944,
+      "used": 948429373440,
+      "free": 47191040000
+    }
+  },
+  "exact_original_case_count": 19,
+  "cases": [
+    {
+      "position": 1,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn",
+      "result": "PASS",
+      "seconds": "0.480",
+      "junit_attributes": {
+        "name": "suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn",
+        "classname": "codex-app-server::all",
+        "timestamp": "2026-11-04T23:38:59.183-05:00",
+        "time": "0.480"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/01-thread_inject_items_adds_raw_response_items_after_a_turn.log",
+        "bytes": 17847,
+        "sha256": "9d2aa130169497345370cdfc25fc5e2dbd5e870bdfb09ddcc769826230c4d1ce",
+        "git_blob": "02899b11fd6423526ab9975b5a14a3f0bae3a842",
+        "byte_offset": 23994647,
+        "end_byte_offset_exclusive": 24012494,
+        "first_line": 205682,
+        "last_line": 205737
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-app-server::all",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-828a7c4f37edd91e",
+        "bytes": 365292176,
+        "sha256": "e710363d62d17f65cbc6ad8e789b1289002597c9a8bb98daf08d5c57fa9ced12"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__thread_inject_items.rs.source.txt",
+        "start_line": 272,
+        "end_line": 403,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/01-thread_inject_items_adds_raw_response_items_after_a_turn.rs.source.txt",
+        "bytes": 4639,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/01-thread_inject_items_adds_raw_response_items_after_a_turn.rs.source.txt",
+          "bytes": 4639,
+          "sha256": "0e8cfad1fec83d4fc80c34cb6a8b8deea9500176ca1426b35187ac8285a6a668",
+          "git_blob": "2c6cd3ef319fa99b5609368b34c6268085f5aef9"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 2,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery",
+      "result": "PASS",
+      "seconds": "0.619",
+      "junit_attributes": {
+        "name": "suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery",
+        "classname": "codex-app-server::all",
+        "timestamp": "2026-11-04T23:39:22.803-05:00",
+        "time": "0.619"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/02-cold_resume_explicit_cwd_override_is_fail_closed_for_recovery.log",
+        "bytes": 12596,
+        "sha256": "67944dadb8d344574105ce316604be61992e56793c6c66cf485c8b7878d2957e",
+        "git_blob": "1b5f750620b99ee2f3273fa9447a253eb106e028",
+        "byte_offset": 27367657,
+        "end_byte_offset_exclusive": 27380253,
+        "first_line": 214400,
+        "last_line": 214439
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-app-server::all",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-828a7c4f37edd91e",
+        "bytes": 365292176,
+        "sha256": "e710363d62d17f65cbc6ad8e789b1289002597c9a8bb98daf08d5c57fa9ced12"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__turn_recover.rs.source.txt",
+        "start_line": 448,
+        "end_line": 516,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/02-cold_resume_explicit_cwd_override_is_fail_closed_for_recovery.rs.source.txt",
+        "bytes": 2452,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/02-cold_resume_explicit_cwd_override_is_fail_closed_for_recovery.rs.source.txt",
+          "bytes": 2452,
+          "sha256": "ef0659daa6b8c3c68f399c78c556678fedc23f6b242f90080c3458f788781a9f",
+          "git_blob": "6f7af28ac66821920ec54e3000d8d23da4b9bc39"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 3,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail",
+      "result": "PASS",
+      "seconds": "0.725",
+      "junit_attributes": {
+        "name": "suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail",
+        "classname": "codex-app-server::all",
+        "timestamp": "2026-11-04T23:39:22.526-05:00",
+        "time": "0.725"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/03-cold_paginated_sigkill_recovery_uses_canonical_context_tail.log",
+        "bytes": 18391,
+        "sha256": "028557fa8165284db00276b8f47b7a7168f5dfb5a41c9cbbb3d40c9676c550e0",
+        "git_blob": "087f2c364c18112d591f59bcb01be36f82eb6db3",
+        "byte_offset": 27337014,
+        "end_byte_offset_exclusive": 27355405,
+        "first_line": 214307,
+        "last_line": 214361
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-app-server::all",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-828a7c4f37edd91e",
+        "bytes": 365292176,
+        "sha256": "e710363d62d17f65cbc6ad8e789b1289002597c9a8bb98daf08d5c57fa9ced12"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__turn_recover.rs.source.txt",
+        "start_line": 568,
+        "end_line": 667,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/03-cold_paginated_sigkill_recovery_uses_canonical_context_tail.rs.source.txt",
+        "bytes": 3521,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/03-cold_paginated_sigkill_recovery_uses_canonical_context_tail.rs.source.txt",
+          "bytes": 3521,
+          "sha256": "456df287e2dd724110e9ef26448714504cf5e2909bc36d3050498384a75a5984",
+          "git_blob": "7d0b607f00c842fe2b7bc79b4d01f5db10d4df80"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 4,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery",
+      "result": "PASS",
+      "seconds": "0.599",
+      "junit_attributes": {
+        "name": "suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery",
+        "classname": "codex-app-server::all",
+        "timestamp": "2026-11-04T23:39:23.251-05:00",
+        "time": "0.599"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/04-cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery.log",
+        "bytes": 12656,
+        "sha256": "819f2b3639ff507e5ed1cabdb0ccafcf91acea96d103f7b82733918d178cda8a",
+        "git_blob": "e16040c957b717728892d9e14f1c48d30aa2dab7",
+        "byte_offset": 27380253,
+        "end_byte_offset_exclusive": 27392909,
+        "first_line": 214440,
+        "last_line": 214479
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-app-server::all",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-828a7c4f37edd91e",
+        "bytes": 365292176,
+        "sha256": "e710363d62d17f65cbc6ad8e789b1289002597c9a8bb98daf08d5c57fa9ced12"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__turn_recover.rs.source.txt",
+        "start_line": 370,
+        "end_line": 446,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/04-cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery.rs.source.txt",
+        "bytes": 2712,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/04-cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery.rs.source.txt",
+          "bytes": 2712,
+          "sha256": "d14dfa0031a68a1a26bd0a665112d96a75010c1a117681cbfd4ae40f5589b6ac",
+          "git_blob": "52fb8d81c421454230ea04d6e41d45e29fa88c35"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 5,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+      "result": "PASS",
+      "seconds": "0.613",
+      "junit_attributes": {
+        "name": "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+        "classname": "codex-app-server::all",
+        "timestamp": "2026-11-04T23:39:23.387-05:00",
+        "time": "0.613"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/05-cold_sigkill_after_provider_output_is_not_recoverable.log",
+        "bytes": 16208,
+        "sha256": "637b7cdfb63539f48cdc6882230355cf93c95e9efd66c1ec26a603fabe5e1dcb",
+        "git_blob": "778df8c3ff38dfc6abf2ad91027c292a9ecf091c",
+        "byte_offset": 27392909,
+        "end_byte_offset_exclusive": 27409117,
+        "first_line": 214480,
+        "last_line": 214530
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-app-server::all",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-828a7c4f37edd91e",
+        "bytes": 365292176,
+        "sha256": "e710363d62d17f65cbc6ad8e789b1289002597c9a8bb98daf08d5c57fa9ced12"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__turn_recover.rs.source.txt",
+        "start_line": 518,
+        "end_line": 566,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/05-cold_sigkill_after_provider_output_is_not_recoverable.rs.source.txt",
+        "bytes": 1681,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/05-cold_sigkill_after_provider_output_is_not_recoverable.rs.source.txt",
+          "bytes": 1681,
+          "sha256": "b51f14364a4311b7cc641b75b008f339ea7c4679cea2c1f5263e18b0d22a1262",
+          "git_blob": "5163451de01971d9b60d83396be55b64ffeb28a1"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 6,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns",
+      "result": "PASS",
+      "seconds": "0.612",
+      "junit_attributes": {
+        "name": "suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns",
+        "classname": "codex-app-server::all",
+        "timestamp": "2026-11-04T23:39:23.850-05:00",
+        "time": "0.612"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/06-recover_rejects_busy_completed_and_cross_thread_turns.log",
+        "bytes": 24906,
+        "sha256": "1697ad31442d8429e21954f84913e5b99942b1a42aa9bdb32d707fbd4d4106d3",
+        "git_blob": "612b7fef16ac7c314f49d4b06823d1c8c135411d",
+        "byte_offset": 27469325,
+        "end_byte_offset_exclusive": 27494231,
+        "first_line": 214724,
+        "last_line": 214795
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-app-server::all",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-828a7c4f37edd91e",
+        "bytes": 365292176,
+        "sha256": "e710363d62d17f65cbc6ad8e789b1289002597c9a8bb98daf08d5c57fa9ced12"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__turn_recover.rs.source.txt",
+        "start_line": 89,
+        "end_line": 173,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/06-recover_rejects_busy_completed_and_cross_thread_turns.rs.source.txt",
+        "bytes": 3137,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/06-recover_rejects_busy_completed_and_cross_thread_turns.rs.source.txt",
+          "bytes": 3137,
+          "sha256": "fe0de2fb61be3d1a7ad81ded3c9223396d43253c67f78e34065686977da8f27e",
+          "git_blob": "9b9f649a3c596fd4e5e595fadcebf90d4f8f6f7a"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 7,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state",
+      "result": "PASS",
+      "seconds": "0.409",
+      "junit_attributes": {
+        "name": "suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state",
+        "classname": "codex-app-server::all",
+        "timestamp": "2026-11-04T23:39:24.000-05:00",
+        "time": "0.409"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/07-same_process_ephemeral_interrupted_turn_recovers_from_listener_state.log",
+        "bytes": 14466,
+        "sha256": "057e0844b344a3289d693140fbd1aa8d481d72b426f0f8fc0fcc26f443486e1a",
+        "git_blob": "4f515eba89521131d9452007e6b342c2f3792435",
+        "byte_offset": 27421995,
+        "end_byte_offset_exclusive": 27436461,
+        "first_line": 214578,
+        "last_line": 214627
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-app-server::all",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-828a7c4f37edd91e",
+        "bytes": 365292176,
+        "sha256": "e710363d62d17f65cbc6ad8e789b1289002597c9a8bb98daf08d5c57fa9ced12"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__turn_recover.rs.source.txt",
+        "start_line": 669,
+        "end_line": 737,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/07-same_process_ephemeral_interrupted_turn_recovers_from_listener_state.rs.source.txt",
+        "bytes": 2589,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/07-same_process_ephemeral_interrupted_turn_recovers_from_listener_state.rs.source.txt",
+          "bytes": 2589,
+          "sha256": "bad6176bb374445aaea2e27157f0b726c51e5f55e1474b9bbecb345c3efa1af5",
+          "git_blob": "519ab7933538a3ae8e28df72036914f6fba9d750"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 8,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature",
+      "result": "PASS",
+      "seconds": "0.236",
+      "junit_attributes": {
+        "name": "suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature",
+        "classname": "codex-app-server::all",
+        "timestamp": "2026-11-04T23:39:24.148-05:00",
+        "time": "0.236"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/08-turn_recover_requires_hepta_turn_recovery_feature.log",
+        "bytes": 5364,
+        "sha256": "b2e3e6bfdda2a5a6ba371fc33fc45bf7209e2577c340f96077f7b4f7d1fa5938",
+        "git_blob": "e4988dcd47cf8ddd92442a0a5e2d5d7959edd1ad",
+        "byte_offset": 27416631,
+        "end_byte_offset_exclusive": 27421995,
+        "first_line": 214557,
+        "last_line": 214577
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-app-server::all",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-828a7c4f37edd91e",
+        "bytes": 365292176,
+        "sha256": "e710363d62d17f65cbc6ad8e789b1289002597c9a8bb98daf08d5c57fa9ced12"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__turn_recover.rs.source.txt",
+        "start_line": 65,
+        "end_line": 87,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/08-turn_recover_requires_hepta_turn_recovery_feature.rs.source.txt",
+        "bytes": 895,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/08-turn_recover_requires_hepta_turn_recovery_feature.rs.source.txt",
+          "bytes": 895,
+          "sha256": "039ff70ad4ba97bc2d2ff46605a0ef40e75f2fa3bca15241d1dcccc9c91a8084",
+          "git_blob": "a491ad80a4e02350e5b3aa9fba8c33e9ba27c7b8"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 9,
+      "classname": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input",
+      "result": "PASS",
+      "seconds": "1.011",
+      "junit_attributes": {
+        "name": "suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input",
+        "classname": "codex-app-server::all",
+        "timestamp": "2026-11-04T23:39:23.423-05:00",
+        "time": "1.011"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/09-cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input.log",
+        "bytes": 32864,
+        "sha256": "674c80ad6f98a557f4978307f16d9a4e290f64482beeb0a803283687df0f913f",
+        "git_blob": "b2592239180362eed873258255492056438bbd57",
+        "byte_offset": 27436461,
+        "end_byte_offset_exclusive": 27469325,
+        "first_line": 214628,
+        "last_line": 214723
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-app-server::all",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-828a7c4f37edd91e",
+        "bytes": 365292176,
+        "sha256": "e710363d62d17f65cbc6ad8e789b1289002597c9a8bb98daf08d5c57fa9ced12"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__turn_recover.rs.source.txt",
+        "start_line": 175,
+        "end_line": 368,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/09-cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input.rs.source.txt",
+        "bytes": 6919,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/09-cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input.rs.source.txt",
+          "bytes": 6919,
+          "sha256": "2ba10c43975fae773fae9e085a4b6b219644fc352a85479b17a9367997bf28ec",
+          "git_blob": "54149cf4b3727329581eff13917d190ed7cd5117"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 10,
+      "classname": "codex-core::all",
+      "name": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+      "result": "PASS",
+      "seconds": "0.502",
+      "junit_attributes": {
+        "name": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+        "classname": "codex-core::all",
+        "timestamp": "2026-11-04T23:36:09.330-05:00",
+        "time": "0.502"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/10-root_turn_suspension_preserves_unfinished_turn_history.log",
+        "bytes": 350,
+        "sha256": "0fd76d6aa95e5aa5b994c5452ce14ca37c0bc24c7b63888a1ce91fc314cb18f1",
+        "git_blob": "bf89e5f12ccff47c4fe1ca89d09cbf843eda7a36",
+        "byte_offset": 2266048,
+        "end_byte_offset_exclusive": 2266398,
+        "first_line": 48359,
+        "last_line": 48367
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-core::all",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-916220dd7febbd0c",
+        "bytes": 284376560,
+        "sha256": "4c62e88f00028e2e9b08cf22ad8a848e7fc8aab3a889c370da9e77dd74d35b01"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__tests__suite__abort_tasks.rs.source.txt",
+        "start_line": 75,
+        "end_line": 288,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/10-root_turn_suspension_preserves_unfinished_turn_history.rs.source.txt",
+        "bytes": 8412,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/10-root_turn_suspension_preserves_unfinished_turn_history.rs.source.txt",
+          "bytes": 8412,
+          "sha256": "d76d85cc8b46a01d8679531ece4f1085ab20be1a975e2a2f095ab25f813afeb8",
+          "git_blob": "f0cddc38432cc3c297bfd69b3c4c7412c1b4da4c"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 11,
+      "classname": "codex-core",
+      "name": "session::tests::panicking_session_task_is_converted_to_terminal_error_and_releases_slot",
+      "result": "PASS",
+      "seconds": "0.056",
+      "junit_attributes": {
+        "name": "session::tests::panicking_session_task_is_converted_to_terminal_error_and_releases_slot",
+        "classname": "codex-core",
+        "timestamp": "2026-11-04T23:36:04.577-05:00",
+        "time": "0.056"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/11-panicking_session_task_is_converted_to_terminal_error_and_releases_slot.log",
+        "bytes": 621,
+        "sha256": "3ce2eee487fbcb4221853ef80cefff011cbe2a14092a0cc3b19061bd4f406741",
+        "git_blob": "17c22f4b1e04ac9eef04f9d9979ffea450e613b7",
+        "byte_offset": 1840981,
+        "end_byte_offset_exclusive": 1841602,
+        "first_line": 40038,
+        "last_line": 40051
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-core",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_core-0e85c4443c0cd5a4",
+        "bytes": 308703536,
+        "sha256": "1a03f2450027ec9a892ff5f5cc6144490f19bfdfe1911142f084bb6274b2b15a"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__tests.rs.source.txt",
+        "start_line": 11052,
+        "end_line": 11084,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/11-panicking_session_task_is_converted_to_terminal_error_and_releases_slot.rs.source.txt",
+        "bytes": 1150,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/11-panicking_session_task_is_converted_to_terminal_error_and_releases_slot.rs.source.txt",
+          "bytes": 1150,
+          "sha256": "521b9d3c2bf0baf233c0cf6906cd234100c526a8f11cc832056c87b18525249a",
+          "git_blob": "e57b0d97e00623d83e00a5a70578d89cede19efa"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 12,
+      "classname": "codex-core",
+      "name": "session::tests::cancelled_finish_owner_keeps_terminalizer_alive",
+      "result": "PASS",
+      "seconds": "0.076",
+      "junit_attributes": {
+        "name": "session::tests::cancelled_finish_owner_keeps_terminalizer_alive",
+        "classname": "codex-core",
+        "timestamp": "2026-11-04T23:36:04.249-05:00",
+        "time": "0.076"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/12-cancelled_finish_owner_keeps_terminalizer_alive.log",
+        "bytes": 323,
+        "sha256": "8ddfd29233f45d318ae3c95cf5762c676c2fbda654377e47e9172c978edc4f7b",
+        "git_blob": "8cb9bb63e8de13a4bbc492a5fd471310700eea78",
+        "byte_offset": 1811046,
+        "end_byte_offset_exclusive": 1811369,
+        "first_line": 39321,
+        "last_line": 39329
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-core",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_core-0e85c4443c0cd5a4",
+        "bytes": 308703536,
+        "sha256": "1a03f2450027ec9a892ff5f5cc6144490f19bfdfe1911142f084bb6274b2b15a"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__tests.rs.source.txt",
+        "start_line": 12069,
+        "end_line": 12185,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/12-cancelled_finish_owner_keeps_terminalizer_alive.rs.source.txt",
+        "bytes": 4110,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/12-cancelled_finish_owner_keeps_terminalizer_alive.rs.source.txt",
+          "bytes": 4110,
+          "sha256": "38a97027c89ef0a54aa45606921d1528c628e11b0f871fe7fb59fcb343b09754",
+          "git_blob": "b060079d4900b62c76f3a138336a3e61b7dc24d7"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 13,
+      "classname": "codex-core",
+      "name": "session::tests::panicking_finish_terminalizer_retains_fence",
+      "result": "PASS",
+      "seconds": "0.169",
+      "junit_attributes": {
+        "name": "session::tests::panicking_finish_terminalizer_retains_fence",
+        "classname": "codex-core",
+        "timestamp": "2026-11-04T23:36:04.576-05:00",
+        "time": "0.169"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/13-panicking_finish_terminalizer_retains_fence.log",
+        "bytes": 569,
+        "sha256": "7447e707492c29aaf20a5400e7733a28de2ac96bf1ad3f800bbaa4af04f7db40",
+        "git_blob": "7605b30e3b80f95c938749445e1444ac3dfdc6cd",
+        "byte_offset": 1850440,
+        "end_byte_offset_exclusive": 1851009,
+        "first_line": 40273,
+        "last_line": 40286
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-core",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_core-0e85c4443c0cd5a4",
+        "bytes": 308703536,
+        "sha256": "1a03f2450027ec9a892ff5f5cc6144490f19bfdfe1911142f084bb6274b2b15a"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__tests.rs.source.txt",
+        "start_line": 12187,
+        "end_line": 12254,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/13-panicking_finish_terminalizer_retains_fence.rs.source.txt",
+        "bytes": 2364,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/13-panicking_finish_terminalizer_retains_fence.rs.source.txt",
+          "bytes": 2364,
+          "sha256": "56ab7ddde4478ebfb83f5f1e12f0b119447d036a97e152341a1851050430067d",
+          "git_blob": "6d71858a0cd88b1a0f3b7727188c109fcf78597f"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 14,
+      "classname": "codex-core",
+      "name": "session::tests::hung_finish_terminalizer_watchdog_retains_fence",
+      "result": "PASS",
+      "seconds": "4.069",
+      "junit_attributes": {
+        "name": "session::tests::hung_finish_terminalizer_watchdog_retains_fence",
+        "classname": "codex-core",
+        "timestamp": "2026-11-04T23:36:04.503-05:00",
+        "time": "4.069"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/14-hung_finish_terminalizer_watchdog_retains_fence.log",
+        "bytes": 323,
+        "sha256": "1a8b36035ad376206204e0beb02cb8d52bd5a3c24c645907e32419371c8381ab",
+        "git_blob": "364573aff18895fdecfdd01ac2dae7610dd16c66",
+        "byte_offset": 2167023,
+        "end_byte_offset_exclusive": 2167346,
+        "first_line": 46488,
+        "last_line": 46496
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-core",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_core-0e85c4443c0cd5a4",
+        "bytes": 308703536,
+        "sha256": "1a03f2450027ec9a892ff5f5cc6144490f19bfdfe1911142f084bb6274b2b15a"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__tests.rs.source.txt",
+        "start_line": 12256,
+        "end_line": 12336,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/14-hung_finish_terminalizer_watchdog_retains_fence.rs.source.txt",
+        "bytes": 2908,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/14-hung_finish_terminalizer_watchdog_retains_fence.rs.source.txt",
+          "bytes": 2908,
+          "sha256": "86559659a326b22f7e7b1c9217d3a8c871d1fd6890f7cf6a1485cb66c0f1e3d1",
+          "git_blob": "f5ba2c4c74e4a88df21679bafd9f1faa1588dba6"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 15,
+      "classname": "codex-core",
+      "name": "session::tests::cancelled_abort_owner_keeps_terminalizer_alive",
+      "result": "PASS",
+      "seconds": "0.189",
+      "junit_attributes": {
+        "name": "session::tests::cancelled_abort_owner_keeps_terminalizer_alive",
+        "classname": "codex-core",
+        "timestamp": "2026-11-04T23:36:04.235-05:00",
+        "time": "0.189"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/15-cancelled_abort_owner_keeps_terminalizer_alive.log",
+        "bytes": 321,
+        "sha256": "e3ff4fcf12fc517947a69e6e6b39e392f9494357cfbb3f2ab13eb252a37d68cc",
+        "git_blob": "2b783ebeb23e028141646a3541437304704ce5f9",
+        "byte_offset": 1822262,
+        "end_byte_offset_exclusive": 1822583,
+        "first_line": 39593,
+        "last_line": 39601
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-core",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_core-0e85c4443c0cd5a4",
+        "bytes": 308703536,
+        "sha256": "1a03f2450027ec9a892ff5f5cc6144490f19bfdfe1911142f084bb6274b2b15a"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__tests.rs.source.txt",
+        "start_line": 12529,
+        "end_line": 12576,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/15-cancelled_abort_owner_keeps_terminalizer_alive.rs.source.txt",
+        "bytes": 1732,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/15-cancelled_abort_owner_keeps_terminalizer_alive.rs.source.txt",
+          "bytes": 1732,
+          "sha256": "9bdb6fd812688164eaf1c9e97f363f1c41167cca0e3c4cd0405c0423c49a7be2",
+          "git_blob": "cd36fe606e00debd5d741dcd824841af54fc9df8"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 16,
+      "classname": "codex-core",
+      "name": "session::tests::panicking_abort_terminalizer_retains_fence",
+      "result": "PASS",
+      "seconds": "0.167",
+      "junit_attributes": {
+        "name": "session::tests::panicking_abort_terminalizer_retains_fence",
+        "classname": "codex-core",
+        "timestamp": "2026-11-04T23:36:04.576-05:00",
+        "time": "0.167"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/16-panicking_abort_terminalizer_retains_fence.log",
+        "bytes": 559,
+        "sha256": "b94993770a2e58f4b10980e7b3f19117b874919b15f2cd2cc897e1e3645e8828",
+        "git_blob": "74dda2261e40030b40ebc14892f2b290d1f44305",
+        "byte_offset": 1849881,
+        "end_byte_offset_exclusive": 1850440,
+        "first_line": 40259,
+        "last_line": 40272
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-core",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_core-0e85c4443c0cd5a4",
+        "bytes": 308703536,
+        "sha256": "1a03f2450027ec9a892ff5f5cc6144490f19bfdfe1911142f084bb6274b2b15a"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__tests.rs.source.txt",
+        "start_line": 13002,
+        "end_line": 13023,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/16-panicking_abort_terminalizer_retains_fence.rs.source.txt",
+        "bytes": 900,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/16-panicking_abort_terminalizer_retains_fence.rs.source.txt",
+          "bytes": 900,
+          "sha256": "e590ac1e9c57666b28bec5d4d915bf2be514366ad6adface3d2faeaef5c85259",
+          "git_blob": "86a76e5d5d0bfb9824b03613ff7a0eb0639f6420"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 17,
+      "classname": "codex-core",
+      "name": "session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive",
+      "result": "PASS",
+      "seconds": "0.085",
+      "junit_attributes": {
+        "name": "session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive",
+        "classname": "codex-core",
+        "timestamp": "2026-11-04T23:36:04.256-05:00",
+        "time": "0.085"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/17-cancelled_suspend_caller_keeps_writer_handoff_alive.log",
+        "bytes": 331,
+        "sha256": "354d4506d59d2ad4db03b14c8721fa232a36b6966f88ee67ad6824ba55e96ac6",
+        "git_blob": "7968c6aa22ae9fde35228371546f8da28b9a5773",
+        "byte_offset": 1814217,
+        "end_byte_offset_exclusive": 1814548,
+        "first_line": 39404,
+        "last_line": 39412
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-core",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_core-0e85c4443c0cd5a4",
+        "bytes": 308703536,
+        "sha256": "1a03f2450027ec9a892ff5f5cc6144490f19bfdfe1911142f084bb6274b2b15a"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__tests.rs.source.txt",
+        "start_line": 11644,
+        "end_line": 11726,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/17-cancelled_suspend_caller_keeps_writer_handoff_alive.rs.source.txt",
+        "bytes": 2850,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/17-cancelled_suspend_caller_keeps_writer_handoff_alive.rs.source.txt",
+          "bytes": 2850,
+          "sha256": "628891fa094897290c37ff923254e21120516a064808d96997dd9da7e24b562b",
+          "git_blob": "65dc37b1f95ac027f137734f08570dc0ed012edb"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 18,
+      "classname": "codex-core",
+      "name": "session::turn_input::tests::steer_only_requires_active_turn",
+      "result": "PASS",
+      "seconds": "0.070",
+      "junit_attributes": {
+        "name": "session::turn_input::tests::steer_only_requires_active_turn",
+        "classname": "codex-core",
+        "timestamp": "2026-11-04T23:36:05.348-05:00",
+        "time": "0.070"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/18-steer_only_requires_active_turn.log",
+        "bytes": 315,
+        "sha256": "9c873a07c696f4c1c58c67a91b7db9f2539e794034cbb4881eae23adb30e5e3a",
+        "git_blob": "5face18dd19013d61a8271872e0984c0ee9d846b",
+        "byte_offset": 1905163,
+        "end_byte_offset_exclusive": 1905478,
+        "first_line": 41673,
+        "last_line": 41681
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-core",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_core-0e85c4443c0cd5a4",
+        "bytes": 308703536,
+        "sha256": "1a03f2450027ec9a892ff5f5cc6144490f19bfdfe1911142f084bb6274b2b15a"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__turn_input_tests.rs.source.txt",
+        "start_line": 2168,
+        "end_line": 2187,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/18-steer_only_requires_active_turn.rs.source.txt",
+        "bytes": 520,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/18-steer_only_requires_active_turn.rs.source.txt",
+          "bytes": 520,
+          "sha256": "cb237d7b6487d03f172612751de3805ea18eb7ec33ebe4d2e6202000e560c85d",
+          "git_blob": "604b872c41d4519123b40a9b4b07b163bf85e240"
+        }
+      },
+      "no_observed_early_return": true
+    },
+    {
+      "position": 19,
+      "classname": "codex-core",
+      "name": "session::turn_input::tests::steer_only_enforces_expected_turn_id",
+      "result": "PASS",
+      "seconds": "0.092",
+      "junit_attributes": {
+        "name": "session::turn_input::tests::steer_only_enforces_expected_turn_id",
+        "classname": "codex-core",
+        "timestamp": "2026-11-04T23:36:05.346-05:00",
+        "time": "0.092"
+      },
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/19-steer_only_enforces_expected_turn_id.log",
+        "bytes": 325,
+        "sha256": "51a737bd232cc59cb4821e92646d7da08a37b2e0ab969fe643c9a946b3266e0f",
+        "git_blob": "871ba8137187630022db7ab34ad427dff01d0fab",
+        "byte_offset": 1908465,
+        "end_byte_offset_exclusive": 1908790,
+        "first_line": 41763,
+        "last_line": 41771
+      },
+      "original_program_before_and_after": {
+        "binary_id": "codex-core",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_core-0e85c4443c0cd5a4",
+        "bytes": 308703536,
+        "sha256": "1a03f2450027ec9a892ff5f5cc6144490f19bfdfe1911142f084bb6274b2b15a"
+      },
+      "original_catalog_detail": {
+        "ignored": false,
+        "filter-match": {
+          "status": "matches"
+        }
+      },
+      "source_excerpt": {
+        "source_file": "ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__turn_input_tests.rs.source.txt",
+        "start_line": 2189,
+        "end_line": 2228,
+        "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/19-steer_only_enforces_expected_turn_id.rs.source.txt",
+        "bytes": 1194,
+        "identity": {
+          "path": "ci-audit/b09-original-exit-review-20261105/source-excerpts/19-steer_only_enforces_expected_turn_id.rs.source.txt",
+          "bytes": 1194,
+          "sha256": "7ac09cc3a3a0cc49ac15ad5d5f971ad4699d1ce141e1f59549d01b2857a54c66",
+          "git_blob": "457b9ce2cea903b6c45de4cbfba9a9a7507c9c4c"
+        }
+      },
+      "no_observed_early_return": true
+    }
+  ],
+  "enclosing_full_result": {
+    "selected": 19506,
+    "passed": 19490,
+    "failed": 16,
+    "ignored_catalog": 57,
+    "observed_early_returns": 25,
+    "exit_code": 100,
+    "whole_passed": false
+  },
+  "program_count": 321,
+  "helper_count": 33,
+  "programs_and_helpers_stable": true,
+  "source_guards": [
+    {
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/fb9-originals/small/1-initial-source-guard.json",
+        "bytes": 962,
+        "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90",
+        "git_blob": "05d7fa345012e63bae0d75d198d43ac6fff3337c"
+      },
+      "original": {
+        "expected_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "actual_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "ordinary_index": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+          "bytes": 1222758,
+          "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+            "bytes": 413768,
+            "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+          },
+          "MODULE.bazel.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+            "bytes": 1738619,
+            "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+          }
+        },
+        "untracked_source_paths": [],
+        "allowed_untracked_source_paths": []
+      }
+    },
+    {
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/fb9-originals/small/10-final-source-guard.json",
+        "bytes": 962,
+        "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90",
+        "git_blob": "05d7fa345012e63bae0d75d198d43ac6fff3337c"
+      },
+      "original": {
+        "expected_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "actual_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "ordinary_index": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+          "bytes": 1222758,
+          "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+            "bytes": 413768,
+            "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+          },
+          "MODULE.bazel.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+            "bytes": 1738619,
+            "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+          }
+        },
+        "untracked_source_paths": [],
+        "allowed_untracked_source_paths": []
+      }
+    },
+    {
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/fb9-originals/small/2-full-workspace-normal-six-helper-build-before-source-guard.json",
+        "bytes": 962,
+        "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90",
+        "git_blob": "05d7fa345012e63bae0d75d198d43ac6fff3337c"
+      },
+      "original": {
+        "expected_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "actual_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "ordinary_index": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+          "bytes": 1222758,
+          "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+            "bytes": 413768,
+            "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+          },
+          "MODULE.bazel.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+            "bytes": 1738619,
+            "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+          }
+        },
+        "untracked_source_paths": [],
+        "allowed_untracked_source_paths": []
+      }
+    },
+    {
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/fb9-originals/small/3-full-workspace-normal-six-helper-build-after-source-guard.json",
+        "bytes": 962,
+        "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90",
+        "git_blob": "05d7fa345012e63bae0d75d198d43ac6fff3337c"
+      },
+      "original": {
+        "expected_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "actual_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "ordinary_index": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+          "bytes": 1222758,
+          "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+            "bytes": 413768,
+            "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+          },
+          "MODULE.bazel.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+            "bytes": 1738619,
+            "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+          }
+        },
+        "untracked_source_paths": [],
+        "allowed_untracked_source_paths": []
+      }
+    },
+    {
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/fb9-originals/small/4-workspace-metadata-before-source-guard.json",
+        "bytes": 962,
+        "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90",
+        "git_blob": "05d7fa345012e63bae0d75d198d43ac6fff3337c"
+      },
+      "original": {
+        "expected_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "actual_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "ordinary_index": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+          "bytes": 1222758,
+          "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+            "bytes": 413768,
+            "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+          },
+          "MODULE.bazel.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+            "bytes": 1738619,
+            "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+          }
+        },
+        "untracked_source_paths": [],
+        "allowed_untracked_source_paths": []
+      }
+    },
+    {
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/fb9-originals/small/5-workspace-metadata-after-source-guard.json",
+        "bytes": 962,
+        "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90",
+        "git_blob": "05d7fa345012e63bae0d75d198d43ac6fff3337c"
+      },
+      "original": {
+        "expected_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "actual_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "ordinary_index": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+          "bytes": 1222758,
+          "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+            "bytes": 413768,
+            "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+          },
+          "MODULE.bazel.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+            "bytes": 1738619,
+            "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+          }
+        },
+        "untracked_source_paths": [],
+        "allowed_untracked_source_paths": []
+      }
+    },
+    {
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/fb9-originals/small/6-full-workspace-catalog-before-source-guard.json",
+        "bytes": 962,
+        "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90",
+        "git_blob": "05d7fa345012e63bae0d75d198d43ac6fff3337c"
+      },
+      "original": {
+        "expected_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "actual_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "ordinary_index": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+          "bytes": 1222758,
+          "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+            "bytes": 413768,
+            "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+          },
+          "MODULE.bazel.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+            "bytes": 1738619,
+            "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+          }
+        },
+        "untracked_source_paths": [],
+        "allowed_untracked_source_paths": []
+      }
+    },
+    {
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/fb9-originals/small/7-full-workspace-catalog-after-source-guard.json",
+        "bytes": 962,
+        "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90",
+        "git_blob": "05d7fa345012e63bae0d75d198d43ac6fff3337c"
+      },
+      "original": {
+        "expected_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "actual_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "ordinary_index": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+          "bytes": 1222758,
+          "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+            "bytes": 413768,
+            "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+          },
+          "MODULE.bazel.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+            "bytes": 1738619,
+            "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+          }
+        },
+        "untracked_source_paths": [],
+        "allowed_untracked_source_paths": []
+      }
+    },
+    {
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/fb9-originals/small/8-full-workspace-before-source-guard.json",
+        "bytes": 962,
+        "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90",
+        "git_blob": "05d7fa345012e63bae0d75d198d43ac6fff3337c"
+      },
+      "original": {
+        "expected_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "actual_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "ordinary_index": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+          "bytes": 1222758,
+          "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+            "bytes": 413768,
+            "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+          },
+          "MODULE.bazel.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+            "bytes": 1738619,
+            "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+          }
+        },
+        "untracked_source_paths": [],
+        "allowed_untracked_source_paths": []
+      }
+    },
+    {
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/fb9-originals/small/9-full-workspace-after-source-guard.json",
+        "bytes": 962,
+        "sha256": "bd036d63257a24e64c069e916be7e654f3643510223863f73d98fb7486c42e90",
+        "git_blob": "05d7fa345012e63bae0d75d198d43ac6fff3337c"
+      },
+      "original": {
+        "expected_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "actual_source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+        "head": "cabcb40d36e116beaa65750e1f674c52035da785",
+        "ordinary_index": {
+          "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/.git/index",
+          "bytes": 1222758,
+          "sha256": "c41b4d7645b2b88431ed024e9cc683e31d43fafe7290280eaf0bae656fd6a922"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/Cargo.lock",
+            "bytes": 413768,
+            "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+          },
+          "MODULE.bazel.lock": {
+            "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/MODULE.bazel.lock",
+            "bytes": 1738619,
+            "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3"
+          }
+        },
+        "untracked_source_paths": [],
+        "allowed_untracked_source_paths": []
+      }
+    }
+  ],
+  "source_bridge": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source-leaf-bridge-v1.json",
+    "bytes": 69372,
+    "sha256": "fb77e79ecfb39b4ad8aa0ac24e47cf290c6b1ac0153fd4183076c5c0fa3a77c1",
+    "git_blob": "154ba0fd9a259bd30654d9a8dc6984cd7ffc7c50"
+  }
+}

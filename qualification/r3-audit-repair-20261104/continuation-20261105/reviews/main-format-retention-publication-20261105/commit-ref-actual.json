@@ -1,0 +1,64 @@
+{
+  "observed_utc": "2026-11-05T22:41:09.278Z",
+  "lease": {
+    "ref": "refs/heads/fix/r3-original-product-contracts-20261104",
+    "node_id": "REF_kwDOTrgxoNoANXJlZnMvaGVhZHMvZml4L3IzLW9yaWdpbmFsLXByb2R1Y3QtY29udHJhY3RzLTIwMjYxMTA0",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/fix/r3-original-product-contracts-20261104",
+    "object": {
+      "sha": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/eed4d6bb61b789b19f60facc79f9e031765fa4c9"
+    }
+  },
+  "created": {
+    "sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+  },
+  "commit_actual": {
+    "sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "node_id": "C_kwDOTrgxoNoAKDY3Y2M1YzI4YzRhZGY4MmY2ZWY5N2MzNGExOGI4YjEzZjNhYzI3ZWQ",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "author": {
+      "name": "Franksudoman",
+      "email": "273670192+Franksudoman@users.noreply.github.com",
+      "date": "2026-11-05T22:41:07Z"
+    },
+    "committer": {
+      "name": "Franksudoman",
+      "email": "273670192+Franksudoman@users.noreply.github.com",
+      "date": "2026-11-05T22:41:07Z"
+    },
+    "tree": {
+      "sha": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+    },
+    "message": "fix: apply canonical Rust formatting and retain original PTY logs\n\nApply the four Rust 1.95 formatter hunks from the original failed Supervisor job to two test files. This changes whitespace and one optional tuple trailing comma; original calls, assertions and time budgets remain intact.\n\nAppend the existing PTY unit-test target to selected successful-log retention so future original runs preserve available logs. Existing target order, copy/error handling, tests and CI gates are unchanged.\n\nLocal full test, scoped fix and fmt remain pending the original capacity gate. This publication does not claim a native formatter pass, resolution of the Intel drain failure, or whole-candidate qualification.",
+    "parents": [
+      {
+        "sha": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/eed4d6bb61b789b19f60facc79f9e031765fa4c9"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "update_ref": {
+    "success": true
+  },
+  "ref_actual": {
+    "ref": "refs/heads/fix/r3-original-product-contracts-20261104",
+    "node_id": "REF_kwDOTrgxoNoANXJlZnMvaGVhZHMvZml4L3IzLW9yaWdpbmFsLXByb2R1Y3QtY29udHJhY3RzLTIwMjYxMTA0",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/fix/r3-original-product-contracts-20261104",
+    "object": {
+      "sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+    }
+  }
+}

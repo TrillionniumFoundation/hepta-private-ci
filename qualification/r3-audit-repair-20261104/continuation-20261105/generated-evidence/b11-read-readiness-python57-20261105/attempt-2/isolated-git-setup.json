@@ -1,0 +1,137 @@
+[
+  {
+    "argv": [
+      "git",
+      "-c",
+      "core.autocrlf=false",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "init",
+      "--quiet",
+      "--object-format=sha1"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "-c",
+      "core.autocrlf=false",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "add",
+      "--all",
+      "--",
+      "."
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "-c",
+      "core.autocrlf=false",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "write-tree"
+    ],
+    "exit_code": 0,
+    "stdout": "c3564ddf9e929e7e5fcf58ccb74b21e097ff27bf\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "-c",
+      "core.autocrlf=false",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "-c",
+      "user.name=Qualification Fixture",
+      "-c",
+      "user.email=qualification-fixture@example.invalid",
+      "commit-tree",
+      "c3564ddf9e929e7e5fcf58ccb74b21e097ff27bf"
+    ],
+    "exit_code": 0,
+    "stdout": "147608e9ac3050b8971c0b009ddba10909ebe401\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "-c",
+      "core.autocrlf=false",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "rev-parse",
+      "HEAD",
+      "HEAD^{tree}"
+    ],
+    "exit_code": 0,
+    "stdout": "147608e9ac3050b8971c0b009ddba10909ebe401\nc3564ddf9e929e7e5fcf58ccb74b21e097ff27bf\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "-c",
+      "core.autocrlf=false",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "ls-files",
+      "--stage"
+    ],
+    "exit_code": 0,
+    "stdout": "100644 e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9 0\t.github/scripts/collect_bazel_failed_test_logs.py\n100755 75de9b9f4ccf8a39ffc7acb152bf68e74e757dcf 0\t.github/scripts/run-argument-comment-lint-bazel.sh\n100755 42b59b6354b5933c8155b992519682c06d024ca1 0\t.github/scripts/run-bazel-ci.sh\n100755 39fa04c47de0dbe9aec1a7c23ec4d1ab645db822 0\t.github/scripts/run-bazel-query-ci.sh\n100755 21a5fdf0e7afcde4b6141229e95fcff8f6a7e763 0\t.github/scripts/run_bazel_with_buildbuddy.py\n100644 ed8276016bcf8ff7738c1769907ae1c145438add 0\t.github/scripts/test_run_bazel_ci.py\n100644 7084bf40d39f024f06347b8588e4ef3024e2f7a3 0\t.github/scripts/test_run_bazel_clippy_targets.py\n100644 d6a51de52362a910645fd97d4857f00372abdeea 0\t.github/scripts/test_run_bazel_native_msvc_toolchain.py\n100755 12b503d6d70fce2268bebe4a475e64c34b3dc504 0\t.github/scripts/test_run_bazel_windows_fallback.py\n100644 3c8c83d39328ed5bde888cadafe73888c6d77b74 0\t.github/scripts/test_run_bazel_with_buildbuddy.py\n100644 1f9970fdbd25413e7a4e9a98519ba44a735158d4 0\tBUILD.bazel\n100644 a21061a8b741fc724edb580e229eb86d9debdc4f 0\tMODULE.bazel\n100755 991f5825e070ffd42c92dcc18cb724e099e6fdcd 0\tscripts/list-bazel-clippy-targets.sh\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "-c",
+      "core.autocrlf=false",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "-c",
+      "core.autocrlf=false",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "ls-files",
+      "--stage"
+    ],
+    "exit_code": 0,
+    "stdout": "100644 e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9 0\t.github/scripts/collect_bazel_failed_test_logs.py\n100755 75de9b9f4ccf8a39ffc7acb152bf68e74e757dcf 0\t.github/scripts/run-argument-comment-lint-bazel.sh\n100755 42b59b6354b5933c8155b992519682c06d024ca1 0\t.github/scripts/run-bazel-ci.sh\n100755 39fa04c47de0dbe9aec1a7c23ec4d1ab645db822 0\t.github/scripts/run-bazel-query-ci.sh\n100755 21a5fdf0e7afcde4b6141229e95fcff8f6a7e763 0\t.github/scripts/run_bazel_with_buildbuddy.py\n100644 ed8276016bcf8ff7738c1769907ae1c145438add 0\t.github/scripts/test_run_bazel_ci.py\n100644 7084bf40d39f024f06347b8588e4ef3024e2f7a3 0\t.github/scripts/test_run_bazel_clippy_targets.py\n100644 d6a51de52362a910645fd97d4857f00372abdeea 0\t.github/scripts/test_run_bazel_native_msvc_toolchain.py\n100755 12b503d6d70fce2268bebe4a475e64c34b3dc504 0\t.github/scripts/test_run_bazel_windows_fallback.py\n100644 3c8c83d39328ed5bde888cadafe73888c6d77b74 0\t.github/scripts/test_run_bazel_with_buildbuddy.py\n100644 1f9970fdbd25413e7a4e9a98519ba44a735158d4 0\tBUILD.bazel\n100644 a21061a8b741fc724edb580e229eb86d9debdc4f 0\tMODULE.bazel\n100755 991f5825e070ffd42c92dcc18cb724e099e6fdcd 0\tscripts/list-bazel-clippy-targets.sh\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "git",
+      "-c",
+      "core.autocrlf=false",
+      "-c",
+      "core.hooksPath=/dev/null",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=all"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

@@ -1,0 +1,612 @@
+{
+  "schema": "b11-readiness-python57-two-attempt-actual-registry-v1",
+  "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+  "repo_prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105",
+  "scope": "Existing 57 cloud Python wrapper tests on fixed 0f inputs plus collector e15b; both attempts retained; no Windows/Rust/native qualification.",
+  "unique_blob_objects": 36,
+  "items": 40,
+  "files": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-gate-history-v1/review.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/review.json",
+      "role": "two-attempt-result-and-boundaries",
+      "bytes": 16600,
+      "sha256": "ab04387cc4d0ffc02a6c5718a574f93b6f3b7b44f71d3ea1714c7c106e863b36",
+      "blob": "09e6b7c657642bd698886c1065bdf1297fbc5b0e",
+      "verification": {
+        "blob": "09e6b7c657642bd698886c1065bdf1297fbc5b0e",
+        "actual_create_sha": "09e6b7c657642bd698886c1065bdf1297fbc5b0e",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:18.647Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-gate-history-v1/finalize_history.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/finalize-history.py.source.txt",
+      "role": "evidence-projection-source",
+      "bytes": 9720,
+      "sha256": "ad1dd6edef229cb7912ecd70b02b87de35fcea0edaf3c62f20a6638676a12110",
+      "blob": "5f07a26d7c5d97d7bd94a26dd627fc6792aefb57",
+      "verification": {
+        "blob": "5f07a26d7c5d97d7bd94a26dd627fc6792aefb57",
+        "actual_create_sha": "5f07a26d7c5d97d7bd94a26dd627fc6792aefb57",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:25.035Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-gate-history-v1/finalize_history.initial.py.source.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/finalize-history.initial.py.source.txt",
+      "role": "preserved-initial-evidence-parser",
+      "bytes": 9359,
+      "sha256": "4480b44ab9f5d01160da10298db861ab33cf199ce8b8a1d774b5053c1d784fb4",
+      "blob": "050c499a9b37ea298163f4c74672c9a52189433c",
+      "verification": {
+        "blob": "050c499a9b37ea298163f4c74672c9a52189433c",
+        "actual_create_sha": "050c499a9b37ea298163f4c74672c9a52189433c",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:25.604Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-gate-history-v1/parser-correction.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/parser-correction.json",
+      "role": "postprocessing-only-correction-no-test-rerun",
+      "bytes": 646,
+      "sha256": "4c5ba9c104f42151d399028d48f1087d6d901afb76e707e51ef928ba5d499b9d",
+      "blob": "8cc9cddda0d595dc2f92b1b804a5ac5a1567b013",
+      "verification": {
+        "blob": "8cc9cddda0d595dc2f92b1b804a5ac5a1567b013",
+        "actual_create_sha": "8cc9cddda0d595dc2f92b1b804a5ac5a1567b013",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:25.068Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source-map.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-source-map.json",
+      "role": "fixed-0f-thirteen-inputs-plus-one-candidate-collector",
+      "bytes": 9322,
+      "sha256": "a63c3c25f16cd7fd8fc42237422abfa24a3f5c6bbad8d039bf99da50b945c655",
+      "blob": "73d7339ea31975da10e715872ae2f4685c144fa7",
+      "verification": {
+        "blob": "73d7339ea31975da10e715872ae2f4685c144fa7",
+        "actual_create_sha": "73d7339ea31975da10e715872ae2f4685c144fa7",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:25.029Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/originals/fixed-tree-github-scripts.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-git-trees/fixed-tree-github-scripts.json",
+      "role": "normalized-complete-tree-API-response-with-fixed-object-identity",
+      "bytes": 11970,
+      "sha256": "eea2ad53f926b58b9738d0a6e04baf1a461a805d1f45f7c2e337f4fa403c3906",
+      "blob": "f85fba3780db7c89ed96b91e0ec7a24d8efe41f5",
+      "verification": {
+        "blob": "f85fba3780db7c89ed96b91e0ec7a24d8efe41f5",
+        "actual_create_sha": "f85fba3780db7c89ed96b91e0ec7a24d8efe41f5",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:25.015Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/originals/fixed-tree-github.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-git-trees/fixed-tree-github.json",
+      "role": "normalized-complete-tree-API-response-with-fixed-object-identity",
+      "bytes": 4064,
+      "sha256": "4656cf8af806e135f3db0530e108b48d3e36753de5364bacb53ad6fcd638ea59",
+      "blob": "fc7c0bf2b98ebd3e460398d6f2ac34dce32cb1f0",
+      "verification": {
+        "blob": "fc7c0bf2b98ebd3e460398d6f2ac34dce32cb1f0",
+        "actual_create_sha": "fc7c0bf2b98ebd3e460398d6f2ac34dce32cb1f0",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:25.056Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/originals/fixed-tree-root-scripts.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-git-trees/fixed-tree-root-scripts.json",
+      "role": "normalized-complete-tree-API-response-with-fixed-object-identity",
+      "bytes": 46764,
+      "sha256": "63ecb9f27af23eaff522f282997a542ceb832bd2542bfd21ab4558c063daf8d8",
+      "blob": "be3d75dba92f1b7f3455582c5b2a81a356394e8b",
+      "verification": {
+        "blob": "be3d75dba92f1b7f3455582c5b2a81a356394e8b",
+        "actual_create_sha": "be3d75dba92f1b7f3455582c5b2a81a356394e8b",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:33.726Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/originals/fixed-tree-root.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-git-trees/fixed-tree-root.json",
+      "role": "normalized-complete-tree-API-response-with-fixed-object-identity",
+      "bytes": 15715,
+      "sha256": "28b90d744d88e620005f39c98ae5722b071fa36d849153208679cc006935d7f3",
+      "blob": "2388820babe60d97a40601e6daaec55c45b14ad5",
+      "verification": {
+        "blob": "2388820babe60d97a40601e6daaec55c45b14ad5",
+        "actual_create_sha": "2388820babe60d97a40601e6daaec55c45b14ad5",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:33.683Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/run_existing_gate.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-1/run_existing_gate.py.source.txt",
+      "role": "complete-original-gate-record",
+      "bytes": 5658,
+      "sha256": "3375756f1c35351cbad9699c973746034572f0b62bd3c3ae0072da262a85745b",
+      "blob": "389a4ed35542ae667d4ad014a81af11a604874a9",
+      "verification": {
+        "blob": "389a4ed35542ae667d4ad014a81af11a604874a9",
+        "actual_create_sha": "389a4ed35542ae667d4ad014a81af11a604874a9",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:33.718Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/command.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-1/command.json",
+      "role": "complete-original-gate-record",
+      "bytes": 977,
+      "sha256": "16adafa00abaa022ca2cc3806d2e8f8beb03fe32ac1bbcc369b3eea86b3148b7",
+      "blob": "1ac443a9f5ae8d5ee33a2df9bed060a45be859e3",
+      "verification": {
+        "blob": "1ac443a9f5ae8d5ee33a2df9bed060a45be859e3",
+        "actual_create_sha": "1ac443a9f5ae8d5ee33a2df9bed060a45be859e3",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:33.767Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/isolated-git-setup.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-1/isolated-git-setup.json",
+      "role": "complete-original-gate-record",
+      "bytes": 3142,
+      "sha256": "8440fb34165a54916b9f19db9c8524a76479a7bde47aeecde99b81c04790d650",
+      "blob": "6d0f4a172b69876f688aed2f157d7cfc53b39212",
+      "verification": {
+        "blob": "6d0f4a172b69876f688aed2f157d7cfc53b39212",
+        "actual_create_sha": "6d0f4a172b69876f688aed2f157d7cfc53b39212",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:34.306Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source-before.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-1/source-before.json",
+      "role": "complete-original-gate-record",
+      "bytes": 3300,
+      "sha256": "da261b2b513409033cf9f35e4669c7fd1e22e68bb15fe77ecb2b2637b6a86c62",
+      "blob": "4dd85a00d977167a4d4d8d691f19c3fce09c9759",
+      "verification": {
+        "blob": "4dd85a00d977167a4d4d8d691f19c3fce09c9759",
+        "actual_create_sha": "4dd85a00d977167a4d4d8d691f19c3fce09c9759",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:33.630Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/original-case-roster.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-1/original-case-roster.json",
+      "role": "complete-original-gate-record",
+      "bytes": 6972,
+      "sha256": "7295a7a571fe67a58681b15087520a035a3a1e36785774a95eefabc7f215c04f",
+      "blob": "d80d685df26f3ff01c246b1b3cf43da221552342",
+      "verification": {
+        "blob": "d80d685df26f3ff01c246b1b3cf43da221552342",
+        "actual_create_sha": "d80d685df26f3ff01c246b1b3cf43da221552342",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:40.766Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/stdout.original",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-1/stdout.original",
+      "role": "complete-original-gate-record",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "verification": {
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "actual_create_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:40.814Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/stderr.original",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-1/stderr.original",
+      "role": "complete-original-gate-record",
+      "bytes": 15510,
+      "sha256": "1556c1e16008d0eb64a15eef55f480c9646500f2a2b61460df6ff60814bbd734",
+      "blob": "b35aa7db4c0aa43bb1f013737948bc51f0ab4d2c",
+      "verification": {
+        "blob": "b35aa7db4c0aa43bb1f013737948bc51f0ab4d2c",
+        "actual_create_sha": "b35aa7db4c0aa43bb1f013737948bc51f0ab4d2c",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:40.832Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/post-run-mode-observation.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-1/post-run-mode-observation.json",
+      "role": "complete-original-gate-record",
+      "bytes": 6749,
+      "sha256": "659fe49b8b866d1500319ceba1f6a6d5527d7299d6e1ab26ea931e6daf5f5612",
+      "blob": "e93bdb80736cf4dae7193dd7aa2a1ee967da338d",
+      "verification": {
+        "blob": "e93bdb80736cf4dae7193dd7aa2a1ee967da338d",
+        "actual_create_sha": "e93bdb80736cf4dae7193dd7aa2a1ee967da338d",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:40.974Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v2/run_existing_gate.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-2/run_existing_gate.py.source.txt",
+      "role": "complete-original-gate-record",
+      "bytes": 6133,
+      "sha256": "865e4f6317e274a0fdcad40ab6beb576750f30b186abd04c4ffc9cbe4ebc6a87",
+      "blob": "2bc9dccdbb924329eec6db684d5afae39608a4a0",
+      "verification": {
+        "blob": "2bc9dccdbb924329eec6db684d5afae39608a4a0",
+        "actual_create_sha": "2bc9dccdbb924329eec6db684d5afae39608a4a0",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:40.850Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v2/command.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-2/command.json",
+      "role": "complete-original-gate-record",
+      "bytes": 905,
+      "sha256": "f37a302c5b2f7a882f0138745020f7f8b7d74cc3ca44774970795c1ec62b298a",
+      "blob": "dc84011b8015392c68969e20ee9134beb929e7ec",
+      "verification": {
+        "blob": "dc84011b8015392c68969e20ee9134beb929e7ec",
+        "actual_create_sha": "dc84011b8015392c68969e20ee9134beb929e7ec",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:40.708Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v2/command-terminal.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-2/command-terminal.json",
+      "role": "complete-original-gate-record",
+      "bytes": 409,
+      "sha256": "fe34247a6fee3951b1783083e1ff62ba65750280065892eb33d89ad2cacfb2ce",
+      "blob": "157510f067755db607fde18b52956bdb35ccaa41",
+      "verification": {
+        "blob": "157510f067755db607fde18b52956bdb35ccaa41",
+        "actual_create_sha": "157510f067755db607fde18b52956bdb35ccaa41",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:47.503Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v2/result.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-2/result.json",
+      "role": "complete-original-gate-record",
+      "bytes": 1015,
+      "sha256": "d66e90fb728f1ff496b701b7a46b89dd835e85a97b4bb817513e7298779e8515",
+      "blob": "04f3404431d6a92f6fc6c4f21039ec95bf992df8",
+      "verification": {
+        "blob": "04f3404431d6a92f6fc6c4f21039ec95bf992df8",
+        "actual_create_sha": "04f3404431d6a92f6fc6c4f21039ec95bf992df8",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:47.162Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v2/isolated-git-setup.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-2/isolated-git-setup.json",
+      "role": "complete-original-gate-record",
+      "bytes": 4813,
+      "sha256": "4c40a233da365785a40682e09b3ee43b45ceba93a0dfd051b72293fd11543313",
+      "blob": "4cd352122f06e64be3a1c2528cb3a5977cc84198",
+      "verification": {
+        "blob": "4cd352122f06e64be3a1c2528cb3a5977cc84198",
+        "actual_create_sha": "4cd352122f06e64be3a1c2528cb3a5977cc84198",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:47.201Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v2/source-before.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-2/source-before.json",
+      "role": "complete-original-gate-record",
+      "bytes": 3300,
+      "sha256": "da261b2b513409033cf9f35e4669c7fd1e22e68bb15fe77ecb2b2637b6a86c62",
+      "blob": "4dd85a00d977167a4d4d8d691f19c3fce09c9759",
+      "verification": {
+        "blob": "4dd85a00d977167a4d4d8d691f19c3fce09c9759",
+        "actual_create_sha": "4dd85a00d977167a4d4d8d691f19c3fce09c9759",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:33.630Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v2/source-after.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-2/source-after.json",
+      "role": "complete-original-gate-record",
+      "bytes": 3300,
+      "sha256": "da261b2b513409033cf9f35e4669c7fd1e22e68bb15fe77ecb2b2637b6a86c62",
+      "blob": "4dd85a00d977167a4d4d8d691f19c3fce09c9759",
+      "verification": {
+        "blob": "4dd85a00d977167a4d4d8d691f19c3fce09c9759",
+        "actual_create_sha": "4dd85a00d977167a4d4d8d691f19c3fce09c9759",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:33.630Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v2/original-case-roster.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-2/original-case-roster.json",
+      "role": "complete-original-gate-record",
+      "bytes": 6972,
+      "sha256": "7295a7a571fe67a58681b15087520a035a3a1e36785774a95eefabc7f215c04f",
+      "blob": "d80d685df26f3ff01c246b1b3cf43da221552342",
+      "verification": {
+        "blob": "d80d685df26f3ff01c246b1b3cf43da221552342",
+        "actual_create_sha": "d80d685df26f3ff01c246b1b3cf43da221552342",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:40.766Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v2/stdout.original",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-2/stdout.original",
+      "role": "complete-original-gate-record",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "verification": {
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "actual_create_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:40.814Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v2/stderr.original",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/attempt-2/stderr.original",
+      "role": "complete-original-gate-record",
+      "bytes": 10418,
+      "sha256": "a7930df7a8fb79204986371edf5573e4a57cd17873f54ce8a3c171787b548af1",
+      "blob": "e9b41de6dad6a56e9e147213ffd66787f1b3314f",
+      "verification": {
+        "blob": "e9b41de6dad6a56e9e147213ffd66787f1b3314f",
+        "actual_create_sha": "e9b41de6dad6a56e9e147213ffd66787f1b3314f",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:47.154Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source/.github/scripts/test_run_bazel_clippy_targets.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-inputs/.github/scripts/test_run_bazel_clippy_targets.py.source.txt",
+      "role": "fixed-test-or-dependency-source",
+      "bytes": 2952,
+      "sha256": "2249aa908329f2312e0ceebac42cc063db7437f1017afb0d8fded3e783bde29d",
+      "blob": "7084bf40d39f024f06347b8588e4ef3024e2f7a3",
+      "archived_logical_source_path": ".github/scripts/test_run_bazel_clippy_targets.py",
+      "original_mode": "100644",
+      "original_0f_blob": "7084bf40d39f024f06347b8588e4ef3024e2f7a3",
+      "verification": {
+        "blob": "7084bf40d39f024f06347b8588e4ef3024e2f7a3",
+        "actual_create_sha": "7084bf40d39f024f06347b8588e4ef3024e2f7a3",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:47.222Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source/.github/scripts/test_run_bazel_with_buildbuddy.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-inputs/.github/scripts/test_run_bazel_with_buildbuddy.py.source.txt",
+      "role": "fixed-test-or-dependency-source",
+      "bytes": 11353,
+      "sha256": "ab50f8efa2b4687e9f74df1a769a16fed5994bd6b3acc55eeb6564d60ca0903f",
+      "blob": "3c8c83d39328ed5bde888cadafe73888c6d77b74",
+      "archived_logical_source_path": ".github/scripts/test_run_bazel_with_buildbuddy.py",
+      "original_mode": "100644",
+      "original_0f_blob": "3c8c83d39328ed5bde888cadafe73888c6d77b74",
+      "verification": {
+        "blob": "3c8c83d39328ed5bde888cadafe73888c6d77b74",
+        "actual_create_sha": "3c8c83d39328ed5bde888cadafe73888c6d77b74",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:47.278Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source/.github/scripts/test_run_bazel_ci.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-inputs/.github/scripts/test_run_bazel_ci.py.source.txt",
+      "role": "fixed-test-or-dependency-source",
+      "bytes": 33989,
+      "sha256": "83dfc9788189aa2279dbc4be8ad0aacca31c9c63c0d2cd3b58e386784b7cc80d",
+      "blob": "ed8276016bcf8ff7738c1769907ae1c145438add",
+      "archived_logical_source_path": ".github/scripts/test_run_bazel_ci.py",
+      "original_mode": "100644",
+      "original_0f_blob": "ed8276016bcf8ff7738c1769907ae1c145438add",
+      "verification": {
+        "blob": "ed8276016bcf8ff7738c1769907ae1c145438add",
+        "actual_create_sha": "ed8276016bcf8ff7738c1769907ae1c145438add",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:54.135Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source/.github/scripts/test_run_bazel_native_msvc_toolchain.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-inputs/.github/scripts/test_run_bazel_native_msvc_toolchain.py.source.txt",
+      "role": "fixed-test-or-dependency-source",
+      "bytes": 5401,
+      "sha256": "ad71693c007c32c2270f8f0469e8375b2fe04bc6f346a4213d25546820255eab",
+      "blob": "d6a51de52362a910645fd97d4857f00372abdeea",
+      "archived_logical_source_path": ".github/scripts/test_run_bazel_native_msvc_toolchain.py",
+      "original_mode": "100644",
+      "original_0f_blob": "d6a51de52362a910645fd97d4857f00372abdeea",
+      "verification": {
+        "blob": "d6a51de52362a910645fd97d4857f00372abdeea",
+        "actual_create_sha": "d6a51de52362a910645fd97d4857f00372abdeea",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:53.061Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source/.github/scripts/run-bazel-ci.sh",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-inputs/.github/scripts/run-bazel-ci.sh.source.txt",
+      "role": "fixed-test-or-dependency-source",
+      "bytes": 17448,
+      "sha256": "0136e087ddfac7c01bdacb03357d0353d328dea3b8cd86caf94e64bf10706482",
+      "blob": "42b59b6354b5933c8155b992519682c06d024ca1",
+      "archived_logical_source_path": ".github/scripts/run-bazel-ci.sh",
+      "original_mode": "100755",
+      "original_0f_blob": "42b59b6354b5933c8155b992519682c06d024ca1",
+      "verification": {
+        "blob": "42b59b6354b5933c8155b992519682c06d024ca1",
+        "actual_create_sha": "42b59b6354b5933c8155b992519682c06d024ca1",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:54.796Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source/.github/scripts/run_bazel_with_buildbuddy.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-inputs/.github/scripts/run_bazel_with_buildbuddy.py.source.txt",
+      "role": "fixed-test-or-dependency-source",
+      "bytes": 14442,
+      "sha256": "656fa9f508bb339da949a359a457f02fa3979449ae1761b0084494cf38e83a0e",
+      "blob": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+      "archived_logical_source_path": ".github/scripts/run_bazel_with_buildbuddy.py",
+      "original_mode": "100755",
+      "original_0f_blob": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+      "verification": {
+        "blob": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+        "actual_create_sha": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:51.306Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source/.github/scripts/run-bazel-query-ci.sh",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-inputs/.github/scripts/run-bazel-query-ci.sh.source.txt",
+      "role": "fixed-test-or-dependency-source",
+      "bytes": 1160,
+      "sha256": "d65c12f6eeb9daaac6db34e7f023918b577c1338a2e3e78648bba848b2c8f2b5",
+      "blob": "39fa04c47de0dbe9aec1a7c23ec4d1ab645db822",
+      "archived_logical_source_path": ".github/scripts/run-bazel-query-ci.sh",
+      "original_mode": "100755",
+      "original_0f_blob": "39fa04c47de0dbe9aec1a7c23ec4d1ab645db822",
+      "verification": {
+        "blob": "39fa04c47de0dbe9aec1a7c23ec4d1ab645db822",
+        "actual_create_sha": "39fa04c47de0dbe9aec1a7c23ec4d1ab645db822",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:50.371Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source/.github/scripts/test_run_bazel_windows_fallback.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-inputs/.github/scripts/test_run_bazel_windows_fallback.py.source.txt",
+      "role": "fixed-test-or-dependency-source",
+      "bytes": 12458,
+      "sha256": "5ca1594d20fc73b23c338cda70626365abfaedc0837a3094ae5fa2ecc6d5250b",
+      "blob": "12b503d6d70fce2268bebe4a475e64c34b3dc504",
+      "archived_logical_source_path": ".github/scripts/test_run_bazel_windows_fallback.py",
+      "original_mode": "100755",
+      "original_0f_blob": "12b503d6d70fce2268bebe4a475e64c34b3dc504",
+      "verification": {
+        "blob": "12b503d6d70fce2268bebe4a475e64c34b3dc504",
+        "actual_create_sha": "12b503d6d70fce2268bebe4a475e64c34b3dc504",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:33:55.409Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source/.github/scripts/run-argument-comment-lint-bazel.sh",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-inputs/.github/scripts/run-argument-comment-lint-bazel.sh.source.txt",
+      "role": "fixed-test-or-dependency-source",
+      "bytes": 2783,
+      "sha256": "768be06a3b61451ed03c21129f96f6cb51890510af8a913ae9d0ee6adae2b87e",
+      "blob": "75de9b9f4ccf8a39ffc7acb152bf68e74e757dcf",
+      "archived_logical_source_path": ".github/scripts/run-argument-comment-lint-bazel.sh",
+      "original_mode": "100755",
+      "original_0f_blob": "75de9b9f4ccf8a39ffc7acb152bf68e74e757dcf",
+      "verification": {
+        "blob": "75de9b9f4ccf8a39ffc7acb152bf68e74e757dcf",
+        "actual_create_sha": "75de9b9f4ccf8a39ffc7acb152bf68e74e757dcf",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:34:01.642Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source/BUILD.bazel",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-inputs/BUILD.bazel.source.txt",
+      "role": "fixed-test-or-dependency-source",
+      "bytes": 3007,
+      "sha256": "9f52120fc9ae4e2ac2a4df1c9e5e2dd698b50298b4ba31b774bd44467fe44e7c",
+      "blob": "1f9970fdbd25413e7a4e9a98519ba44a735158d4",
+      "archived_logical_source_path": "BUILD.bazel",
+      "original_mode": "100644",
+      "original_0f_blob": "1f9970fdbd25413e7a4e9a98519ba44a735158d4",
+      "verification": {
+        "blob": "1f9970fdbd25413e7a4e9a98519ba44a735158d4",
+        "actual_create_sha": "1f9970fdbd25413e7a4e9a98519ba44a735158d4",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:34:01.551Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source/MODULE.bazel",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-inputs/MODULE.bazel.source.txt",
+      "role": "fixed-test-or-dependency-source",
+      "bytes": 22949,
+      "sha256": "7a254eea81ecc408797788e56aacf0a3ac5a285b6ba0b0dbfe6a9ca57d1db1ae",
+      "blob": "a21061a8b741fc724edb580e229eb86d9debdc4f",
+      "archived_logical_source_path": "MODULE.bazel",
+      "original_mode": "100644",
+      "original_0f_blob": "a21061a8b741fc724edb580e229eb86d9debdc4f",
+      "verification": {
+        "blob": "a21061a8b741fc724edb580e229eb86d9debdc4f",
+        "actual_create_sha": "a21061a8b741fc724edb580e229eb86d9debdc4f",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:34:01.624Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source/scripts/list-bazel-clippy-targets.sh",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-inputs/scripts/list-bazel-clippy-targets.sh.source.txt",
+      "role": "fixed-test-or-dependency-source",
+      "bytes": 2032,
+      "sha256": "52ad8b152f9d6cab3413779e0cfc004ae577a62bb9eff44634f85b4c7d96acdb",
+      "blob": "991f5825e070ffd42c92dcc18cb724e099e6fdcd",
+      "archived_logical_source_path": "scripts/list-bazel-clippy-targets.sh",
+      "original_mode": "100755",
+      "original_0f_blob": "991f5825e070ffd42c92dcc18cb724e099e6fdcd",
+      "verification": {
+        "blob": "991f5825e070ffd42c92dcc18cb724e099e6fdcd",
+        "actual_create_sha": "991f5825e070ffd42c92dcc18cb724e099e6fdcd",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:34:01.544Z"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source/.github/scripts/collect_bazel_failed_test_logs.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-read-readiness-python57-20261105/fixed-inputs/.github/scripts/collect_bazel_failed_test_logs.py.source.txt",
+      "role": "fixed-test-or-dependency-source",
+      "bytes": 16340,
+      "sha256": "63e5bcfc80d09578f526173b33259cd01eb343364342c9c9431233f13e25d52a",
+      "blob": "e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9",
+      "archived_logical_source_path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "original_mode": "100644",
+      "original_0f_blob": "2142eeb382664d95f77d83ac7ae3da4459601abf",
+      "verification": {
+        "blob": "e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9",
+        "actual_create_sha": "e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9",
+        "actual_GET_bytes_equal": true,
+        "observed_at_utc": "2026-11-05T21:34:01.574Z"
+      }
+    }
+  ],
+  "all_actual_create_and_GET_byte_equal": true,
+  "remote_refs_changed_by_this_author": false,
+  "root_registry_not_modified": true
+}

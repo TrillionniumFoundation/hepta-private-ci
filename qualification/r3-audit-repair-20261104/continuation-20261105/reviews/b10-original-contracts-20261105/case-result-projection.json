@@ -1,0 +1,1062 @@
+{
+  "schema": "b10-exact-original-results-v1",
+  "frozen_14_cases": [
+    {
+      "blocker_id": "B10",
+      "binary": "codex-core::all",
+      "test": "suite::agent_websocket::websocket_model_switch_to_responses_lite_omits_top_level_tools",
+      "case_origin": "original_failure_snapshot",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "separate_wine_target": "//codex-rs/core:core-all-wine-exec-test",
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "new_head_observations": [],
+      "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+      "historical_scope_reference": {
+        "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+        "blocker_id": "B10",
+        "test": "suite::agent_websocket::websocket_model_switch_to_responses_lite_omits_top_level_tools"
+      },
+      "historical_outcome_not_transferred": true
+    },
+    {
+      "blocker_id": "B10",
+      "binary": "codex-core::all",
+      "test": "suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm",
+      "case_origin": "original_failure_snapshot",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "separate_wine_target": "//codex-rs/core:core-all-wine-exec-test",
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "new_head_observations": [],
+      "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+      "historical_scope_reference": {
+        "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+        "blocker_id": "B10",
+        "test": "suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm"
+      },
+      "historical_outcome_not_transferred": true
+    },
+    {
+      "blocker_id": "B10",
+      "binary": "codex-core::all",
+      "test": "suite::agent_websocket::websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm",
+      "case_origin": "original_failure_snapshot",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "separate_wine_target": "//codex-rs/core:core-all-wine-exec-test",
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "new_head_observations": [],
+      "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+      "historical_scope_reference": {
+        "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+        "blocker_id": "B10",
+        "test": "suite::agent_websocket::websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm"
+      },
+      "historical_outcome_not_transferred": true
+    },
+    {
+      "blocker_id": "B10",
+      "binary": "codex-core::all",
+      "test": "suite::agent_websocket::websocket_v2_next_turn_uses_updated_service_tier",
+      "case_origin": "original_failure_snapshot",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "separate_wine_target": "//codex-rs/core:core-all-wine-exec-test",
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "new_head_observations": [],
+      "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+      "historical_scope_reference": {
+        "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+        "blocker_id": "B10",
+        "test": "suite::agent_websocket::websocket_v2_next_turn_uses_updated_service_tier"
+      },
+      "historical_outcome_not_transferred": true
+    },
+    {
+      "blocker_id": "B10",
+      "binary": "codex-core::all",
+      "test": "suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation",
+      "case_origin": "original_failure_snapshot",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "separate_wine_target": "//codex-rs/core:core-all-wine-exec-test",
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "new_head_observations": [],
+      "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+      "historical_scope_reference": {
+        "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+        "blocker_id": "B10",
+        "test": "suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation"
+      },
+      "historical_outcome_not_transferred": true
+    },
+    {
+      "blocker_id": "B10",
+      "binary": "codex-core::all",
+      "test": "suite::compact_remote::remote_compact_v2_reuses_compaction_trigger_for_followups",
+      "case_origin": "original_failure_snapshot",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "separate_wine_target": "//codex-rs/core:core-all-wine-exec-test",
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "new_head_observations": [],
+      "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+      "historical_scope_reference": {
+        "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+        "blocker_id": "B10",
+        "test": "suite::compact_remote::remote_compact_v2_reuses_compaction_trigger_for_followups"
+      },
+      "historical_outcome_not_transferred": true
+    },
+    {
+      "blocker_id": "B10",
+      "binary": "codex-core::all",
+      "test": "suite::compact_remote::remote_mid_turn_compact_v2_sends_turn_state_over_websocket",
+      "case_origin": "original_failure_snapshot",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "separate_wine_target": "//codex-rs/core:core-all-wine-exec-test",
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "new_head_observations": [],
+      "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+      "historical_scope_reference": {
+        "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+        "blocker_id": "B10",
+        "test": "suite::compact_remote::remote_mid_turn_compact_v2_sends_turn_state_over_websocket"
+      },
+      "historical_outcome_not_transferred": true
+    },
+    {
+      "blocker_id": "B10",
+      "binary": "codex-core::all",
+      "test": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread",
+      "case_origin": "original_failure_snapshot",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "separate_wine_target": "//codex-rs/core:core-all-wine-exec-test",
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "new_head_observations": [],
+      "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+      "historical_scope_reference": {
+        "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+        "blocker_id": "B10",
+        "test": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread"
+      },
+      "historical_outcome_not_transferred": true
+    },
+    {
+      "blocker_id": "B10",
+      "binary": "codex-core::all",
+      "test": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread",
+      "case_origin": "original_failure_snapshot",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "separate_wine_target": "//codex-rs/core:core-all-wine-exec-test",
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "new_head_observations": [],
+      "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+      "historical_scope_reference": {
+        "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+        "blocker_id": "B10",
+        "test": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread"
+      },
+      "historical_outcome_not_transferred": true
+    },
+    {
+      "blocker_id": "B10",
+      "binary": "codex-core::all",
+      "test": "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state",
+      "case_origin": "original_failure_snapshot",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "separate_wine_target": "//codex-rs/core:core-all-wine-exec-test",
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "new_head_observations": [],
+      "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+      "historical_scope_reference": {
+        "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+        "blocker_id": "B10",
+        "test": "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state"
+      },
+      "historical_outcome_not_transferred": true
+    },
+    {
+      "blocker_id": "B10",
+      "binary": "codex-core::all",
+      "test": "suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after",
+      "case_origin": "original_turn_state_regression",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "separate_wine_target": "//codex-rs/core:core-all-wine-exec-test",
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "new_head_observations": [],
+      "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+      "historical_scope_reference": {
+        "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+        "blocker_id": "B10",
+        "test": "suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after"
+      },
+      "historical_outcome_not_transferred": true
+    },
+    {
+      "blocker_id": "B10",
+      "binary": "codex-core::all",
+      "test": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+      "case_origin": "original_turn_state_regression",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "separate_wine_target": "//codex-rs/core:core-all-wine-exec-test",
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "new_head_observations": [],
+      "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+      "historical_scope_reference": {
+        "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+        "blocker_id": "B10",
+        "test": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after"
+      },
+      "historical_outcome_not_transferred": true
+    },
+    {
+      "blocker_id": "B10",
+      "binary": "codex-core::all",
+      "test": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+      "case_origin": "original_turn_state_regression",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "separate_wine_target": "//codex-rs/core:core-all-wine-exec-test",
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "new_head_observations": [],
+      "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+      "historical_scope_reference": {
+        "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+        "blocker_id": "B10",
+        "test": "suite::turn_state::websocket_turn_state_is_stable_within_turn"
+      },
+      "historical_outcome_not_transferred": true
+    },
+    {
+      "blocker_id": "B10",
+      "binary": "codex-core::all",
+      "test": "suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting",
+      "case_origin": "new_reconnection_control",
+      "bazel_target": "//codex-rs/core:core-all-test",
+      "separate_wine_target": "//codex-rs/core:core-all-wine-exec-test",
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "new_head_observations": [],
+      "state": "AWAITING_PARENT_PUBLICATION_CONFIRMATION",
+      "historical_scope_reference": {
+        "catalog_blob": "2850ea7566e9a9d41878b36baaffc26dfb1ac81b",
+        "blocker_id": "B10",
+        "test": "suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting"
+      },
+      "historical_outcome_not_transferred": true
+    }
+  ],
+  "gnu_complete_stdout_identity": {
+    "bytes": 11059831,
+    "sha256": "a06d2a7c73589c76300a3a6886f37affcd8609f8cb41499e6704a9762a20aeb4",
+    "git_blob": "e611358b8bdcd77bb3eb7cb68c0067a0438368b7"
+  },
+  "gnu_complete_xml_identity": {
+    "bytes": 839106,
+    "sha256": "dba2abf1ada37ea47ed8bb5910956094ad5519652df72256cce723e26d84d071",
+    "git_blob": "575da9b27fcf5e423b2fa23b9f872e0b07eacade"
+  },
+  "gnu_original_command": {
+    "argv": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate",
+      "-p",
+      "codex-core",
+      "-p",
+      "codex-linux-sandbox"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs",
+    "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "started_at": "2026-11-05T14:07:58.749428+00:00",
+    "extra_environment": {},
+    "attempt": 1,
+    "cargo_profile": "dev-small",
+    "nextest_profile": "local",
+    "retries": 0
+  },
+  "gnu_cases": {
+    "client::tests::websocket_connection_identity_binds_provider_and_stable_handshake_semantics": {
+      "binary": "codex-core",
+      "result": "PASS",
+      "raw_start_line": 1516,
+      "raw_end_line": 1524,
+      "raw_start_byte": 68513,
+      "raw_end_byte": 68890,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/client__tests__websocket_connection_identity_binds_provider_and_stable_handshake_semantics.log.txt",
+      "bytes": 377,
+      "sha256": "32b6f2ac25977f5a154abfb9785fa448527882de5c90f5a902551457e0d5fc21",
+      "git_blob": "7ed8510926066ed1938fd5ef883d58201be0a521",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "client::tests::websocket_connection_identity_binds_provider_and_stable_handshake_semantics",
+          "classname": "codex-core",
+          "timestamp": "2026-11-05T09:08:00.466-05:00",
+          "time": "0.011"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/client__tests__websocket_connection_identity_binds_provider_and_stable_handshake_semantics.xml",
+        "bytes": 215,
+        "sha256": "476dd20816da571e30b8b1219f7c72a414a512ac154003f97ebd77c5ac329e59",
+        "git_blob": "f82d64247e6d5345ff4839f1bfb24c335e45796e"
+      }
+    },
+    "client::tests::websocket_connection_reuse_keeps_dynamic_metadata_in_wire_and_recovery_identity": {
+      "binary": "codex-core",
+      "result": "PASS",
+      "raw_start_line": 1543,
+      "raw_end_line": 1551,
+      "raw_start_byte": 69524,
+      "raw_end_byte": 69909,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/client__tests__websocket_connection_reuse_keeps_dynamic_metadata_in_wire_and_recovery_identity.log.txt",
+      "bytes": 385,
+      "sha256": "5226b95a4148730b5cbf5fe7293bf0c8169e37e0b233ee7471615bb0bba64453",
+      "git_blob": "23465b9ec0f7ceb0d4e60fe17ad920f88cf79f95",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "client::tests::websocket_connection_reuse_keeps_dynamic_metadata_in_wire_and_recovery_identity",
+          "classname": "codex-core",
+          "timestamp": "2026-11-05T09:08:00.466-05:00",
+          "time": "0.013"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/client__tests__websocket_connection_reuse_keeps_dynamic_metadata_in_wire_and_recovery_identity.xml",
+        "bytes": 219,
+        "sha256": "c5af8b6b6038c6c1ef692baa7bd1cf2741e22b76ce18ce4fa502047c6c27fb22",
+        "git_blob": "0e25941dbf7c7e61b9baccdef1156f7dba158674"
+      }
+    },
+    "suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm": {
+      "binary": "codex-core::all",
+      "result": "PASS",
+      "raw_start_line": 23390,
+      "raw_end_line": 23403,
+      "raw_start_byte": 1107120,
+      "raw_end_byte": 1108072,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/suite__agent_websocket__websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm.log.txt",
+      "bytes": 952,
+      "sha256": "a7f587bcf169a82ed3be52b96292e2c0283e0c4883bd55e4e863e449b913d896",
+      "git_blob": "d513e031f11c52e45d0cb815de289f5dc7b5dcd4",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm",
+          "classname": "codex-core::all",
+          "timestamp": "2026-11-05T09:08:06.003-05:00",
+          "time": "0.162"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/suite__agent_websocket__websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm.xml",
+        "bytes": 215,
+        "sha256": "d952d6853d3758529538c3c573fb57ed9096c78905b5fbffe18589bbfc9f9665",
+        "git_blob": "0552b16b494029925200acdc71990eeb05cbe255"
+      }
+    },
+    "suite::agent_websocket::websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm": {
+      "binary": "codex-core::all",
+      "result": "PASS",
+      "raw_start_line": 23404,
+      "raw_end_line": 23417,
+      "raw_start_byte": 1108072,
+      "raw_end_byte": 1109038,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/suite__agent_websocket__websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm.log.txt",
+      "bytes": 966,
+      "sha256": "44c996808133133f609ffd743f33a053782fa87acf9959ade5918d7ea1c0b4d2",
+      "git_blob": "b401b125f2bf3795b2af461360218817a6ed0826",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "suite::agent_websocket::websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm",
+          "classname": "codex-core::all",
+          "timestamp": "2026-11-05T09:08:06.015-05:00",
+          "time": "0.173"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/suite__agent_websocket__websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm.xml",
+        "bytes": 222,
+        "sha256": "8cf6abe6d2eb6b261e5a5bd2c56357862b0650337161b831da880b30461445a5",
+        "git_blob": "4a6778c0197858637f1006347cbb6777c84f563a"
+      }
+    },
+    "suite::agent_websocket::websocket_model_switch_to_responses_lite_omits_top_level_tools": {
+      "binary": "codex-core::all",
+      "result": "PASS",
+      "raw_start_line": 23418,
+      "raw_end_line": 23433,
+      "raw_start_byte": 1109038,
+      "raw_end_byte": 1110221,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/suite__agent_websocket__websocket_model_switch_to_responses_lite_omits_top_level_tools.log.txt",
+      "bytes": 1183,
+      "sha256": "8459c6791ce71083c7f23b0f147f6e53faab94b1ed8f5703b5fc67041c5e168f",
+      "git_blob": "e689379aa8bdab63b4e42f8cac16715e44e81ce7",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "suite::agent_websocket::websocket_model_switch_to_responses_lite_omits_top_level_tools",
+          "classname": "codex-core::all",
+          "timestamp": "2026-11-05T09:08:05.985-05:00",
+          "time": "0.268"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/suite__agent_websocket__websocket_model_switch_to_responses_lite_omits_top_level_tools.xml",
+        "bytes": 216,
+        "sha256": "1c484b43429a37b95dc5400803f62f88e53508d5f76730a56c2fc4f235278236",
+        "git_blob": "b2262131116feb13f3551a726bfffbed7d12fc87"
+      }
+    },
+    "suite::agent_websocket::websocket_v2_next_turn_uses_updated_service_tier": {
+      "binary": "codex-core::all",
+      "result": "PASS",
+      "raw_start_line": 23461,
+      "raw_end_line": 23476,
+      "raw_start_byte": 1111617,
+      "raw_end_byte": 1112844,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/suite__agent_websocket__websocket_v2_next_turn_uses_updated_service_tier.log.txt",
+      "bytes": 1227,
+      "sha256": "20624fe1f29e8fd6ee6181e651af69d780d06cc19b649f91de3af5c50d17cce8",
+      "git_blob": "c9d7b02c7149054181d04dd4bc0efdd940f7a238",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "suite::agent_websocket::websocket_v2_next_turn_uses_updated_service_tier",
+          "classname": "codex-core::all",
+          "timestamp": "2026-11-05T09:08:06.017-05:00",
+          "time": "0.263"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/suite__agent_websocket__websocket_v2_next_turn_uses_updated_service_tier.xml",
+        "bytes": 202,
+        "sha256": "13d1b8485fc36d71e795781e116e619bafff76f371896deaee190631b779c319",
+        "git_blob": "0aca5f6e992345dab1d7faa64bcb01a34aeb8531"
+      }
+    },
+    "suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation": {
+      "binary": "codex-core::all",
+      "result": "PASS",
+      "raw_start_line": 27201,
+      "raw_end_line": 27209,
+      "raw_start_byte": 1310406,
+      "raw_end_byte": 1310796,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/suite__compact__remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation.log.txt",
+      "bytes": 390,
+      "sha256": "6910e4dc465e2a25ea0711ae950f3779a06a766aceddd4b56c84761685e46afb",
+      "git_blob": "ed83587132dc188603eb4dc7ae10ddcbf444ed7b",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation",
+          "classname": "codex-core::all",
+          "timestamp": "2026-11-05T09:08:14.097-05:00",
+          "time": "0.752"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/suite__compact__remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation.xml",
+        "bytes": 224,
+        "sha256": "bed704929071bb5be1d28cb9442eded2e899ab890a88834b665bf30e70875a72",
+        "git_blob": "fac0f774b4318d801c90f0bebd3fc54eb66d6052"
+      }
+    },
+    "suite::compact_remote::remote_compact_v2_reuses_compaction_trigger_for_followups": {
+      "binary": "codex-core::all",
+      "result": "PASS",
+      "raw_start_line": 27442,
+      "raw_end_line": 27450,
+      "raw_start_byte": 1320530,
+      "raw_end_byte": 1320892,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/suite__compact_remote__remote_compact_v2_reuses_compaction_trigger_for_followups.log.txt",
+      "bytes": 362,
+      "sha256": "fbdb4ca6d201c8a2dc4bd9cae11aeebdc27f964cfa2c71fa0d9cd643c0104e06",
+      "git_blob": "7408c656eb8fb69ff89441f6724b29c772412ab2",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "suite::compact_remote::remote_compact_v2_reuses_compaction_trigger_for_followups",
+          "classname": "codex-core::all",
+          "timestamp": "2026-11-05T09:08:14.769-05:00",
+          "time": "0.756"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/suite__compact_remote__remote_compact_v2_reuses_compaction_trigger_for_followups.xml",
+        "bytes": 210,
+        "sha256": "f4f2d893de1174f6719ab198c39f4107eeafb48755f3de17115e2e9aa49a1ce5",
+        "git_blob": "a00a603d2759bce5baeb64afcbeb455dec266649"
+      }
+    },
+    "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread": {
+      "binary": "codex-core::all",
+      "result": "PASS",
+      "raw_start_line": 28364,
+      "raw_end_line": 28381,
+      "raw_start_byte": 1364854,
+      "raw_end_byte": 1366459,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/suite__git_enrichment__ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state__test_case_1_system_background_thread.log.txt",
+      "bytes": 1605,
+      "sha256": "fd469df31e1a0dd86896e83a1cd4a7e1b727af81efca7a6f389ac2483ffa832b",
+      "git_blob": "0ceb91c25d06b3ff33379a2756cd6dc13a972d62",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread",
+          "classname": "codex-core::all",
+          "timestamp": "2026-11-05T09:08:16.611-05:00",
+          "time": "1.392"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/suite__git_enrichment__ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state__test_case_1_system_background_thread.xml",
+        "bytes": 258,
+        "sha256": "5a7b02b9f13d61eb8c7613f4a584f98fd31127944b6309754a271f64394a279b",
+        "git_blob": "fef76cc0f7bcc1eb6558a1211c192d2a887ebe05"
+      }
+    },
+    "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread": {
+      "binary": "codex-core::all",
+      "result": "PASS",
+      "raw_start_line": 28382,
+      "raw_end_line": 28399,
+      "raw_start_byte": 1366459,
+      "raw_end_byte": 1368066,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/suite__git_enrichment__ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state__test_case_2_ambient_background_thread.log.txt",
+      "bytes": 1607,
+      "sha256": "ac2a8fad503b1e1ce3947ddd55c0c67c1fe034b9058c9f74701a4f99bad1d2b9",
+      "git_blob": "3eb4615ee9e54ddc784ce4eea6d89172d7b8e2b7",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread",
+          "classname": "codex-core::all",
+          "timestamp": "2026-11-05T09:08:16.612-05:00",
+          "time": "1.403"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/suite__git_enrichment__ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state__test_case_2_ambient_background_thread.xml",
+        "bytes": 259,
+        "sha256": "8f87d1e1740ddfd32c5c3aedc506b115114dc6ecfc79b9620a436ab6d9b97807",
+        "git_blob": "27fee1cbef22088b069e2538f816a91b4b06805e"
+      }
+    },
+    "suite::compact_remote::remote_mid_turn_compact_v2_sends_turn_state_over_websocket": {
+      "binary": "codex-core::all",
+      "result": "PASS",
+      "raw_start_line": 28627,
+      "raw_end_line": 28646,
+      "raw_start_byte": 1381381,
+      "raw_end_byte": 1383211,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/suite__compact_remote__remote_mid_turn_compact_v2_sends_turn_state_over_websocket.log.txt",
+      "bytes": 1830,
+      "sha256": "399c86d6afc894c860cee856cb5c50b8d04698e6fe8298f2f4af2e3b9983884a",
+      "git_blob": "6c81f397c4926dea4d82cc14583baa255a11b6ff",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "suite::compact_remote::remote_mid_turn_compact_v2_sends_turn_state_over_websocket",
+          "classname": "codex-core::all",
+          "timestamp": "2026-11-05T09:08:15.046-05:00",
+          "time": "3.591"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/suite__compact_remote__remote_mid_turn_compact_v2_sends_turn_state_over_websocket.xml",
+        "bytes": 211,
+        "sha256": "b545956afc16fb957f95f3a78ef729c2b09f9ed21e3c8defdd54eb645760e8a4",
+        "git_blob": "cc91d758ab1904b1e991ba065db6c6f00742260b"
+      }
+    },
+    "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state": {
+      "binary": "codex-core::all",
+      "result": "PASS",
+      "raw_start_line": 30495,
+      "raw_end_line": 30510,
+      "raw_start_byte": 1460526,
+      "raw_end_byte": 1461799,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/suite__git_enrichment__startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state.log.txt",
+      "bytes": 1273,
+      "sha256": "edbfaea38191be2e68ee303d4b9c379a1fa5f7157c2ecfaca7479375936e5a67",
+      "git_blob": "22b6cdf332d25456ac1a1703d98fae4218800c16",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state",
+          "classname": "codex-core::all",
+          "timestamp": "2026-11-05T09:08:16.820-05:00",
+          "time": "5.381"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/suite__git_enrichment__startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state.xml",
+        "bytes": 224,
+        "sha256": "f21619df0aeb8e5ad165edb1d23a740f14b5b8512e472da2807ceb07344b48a9",
+        "git_blob": "413f5a012752baf467ef35748aca00b626e30c1f"
+      }
+    },
+    "suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after": {
+      "binary": "codex-core::all",
+      "result": "PASS",
+      "raw_start_line": 48915,
+      "raw_end_line": 48923,
+      "raw_start_byte": 10951334,
+      "raw_end_byte": 10951690,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/suite__turn_state__responses_turn_state_persists_within_turn_and_resets_after.log.txt",
+      "bytes": 356,
+      "sha256": "4c17610e0d6a3a4bfcba81227d38ecf0a567cdc3b28ddd9b6f0c3d3ea205aea6",
+      "git_blob": "037616578c3940f55f30fa916547e8d42cf27896",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after",
+          "classname": "codex-core::all",
+          "timestamp": "2026-11-05T09:08:30.604-05:00",
+          "time": "0.525"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/suite__turn_state__responses_turn_state_persists_within_turn_and_resets_after.xml",
+        "bytes": 207,
+        "sha256": "8532589961db16efebf7451f96edd40fb5e0ca2b32e9ef18cf1105f0a1f7936f",
+        "git_blob": "06bce0b4619e1ce7b4d53828fa3de6347802b100"
+      }
+    },
+    "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after": {
+      "binary": "codex-core::all",
+      "result": "PASS",
+      "raw_start_line": 48933,
+      "raw_end_line": 48950,
+      "raw_start_byte": 10952046,
+      "raw_end_byte": 10953644,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/suite__turn_state__websocket_turn_state_persists_within_turn_and_resets_after.log.txt",
+      "bytes": 1598,
+      "sha256": "3559ba4bf2de6c60638316fd95f01e8640f7b65d9f3a120d053037fda29f4610",
+      "git_blob": "8b1a07a325953fe83449f50200f7e3d5c88616be",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+          "classname": "codex-core::all",
+          "timestamp": "2026-11-05T09:08:30.646-05:00",
+          "time": "0.502"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/suite__turn_state__websocket_turn_state_persists_within_turn_and_resets_after.xml",
+        "bytes": 207,
+        "sha256": "7088b3de10702350c1d8e33a4d2cd84be572f66a2058e56f71bd94eb3e9e46f1",
+        "git_blob": "240a22c4eb76915f19c31db26bbbb2b0fa6fb7a1"
+      }
+    },
+    "suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting": {
+      "binary": "codex-core::all",
+      "result": "PASS",
+      "raw_start_line": 48987,
+      "raw_end_line": 49000,
+      "raw_start_byte": 10954914,
+      "raw_end_byte": 10955583,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/suite__turn_state__websocket_turn_state_survives_permission_change_by_reconnecting.log.txt",
+      "bytes": 669,
+      "sha256": "ecb4d5787dfb953b6a4490a0572faf4ca7ee2491fbee93de921a97a31c9515d5",
+      "git_blob": "25d3882d1b9de3c140973d160963e50586f521af",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting",
+          "classname": "codex-core::all",
+          "timestamp": "2026-11-05T09:08:30.663-05:00",
+          "time": "0.548"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/suite__turn_state__websocket_turn_state_survives_permission_change_by_reconnecting.xml",
+        "bytes": 212,
+        "sha256": "349e3665addca4c8fa78b29dc92108c3233df2985b7a4cd87c3d6af6cecb794b",
+        "git_blob": "13790dffa4ac060da286b5df7b4697c74995ca9e"
+      }
+    },
+    "suite::turn_state::websocket_turn_state_is_stable_within_turn": {
+      "binary": "codex-core::all",
+      "result": "PASS",
+      "raw_start_line": 49001,
+      "raw_end_line": 49018,
+      "raw_start_byte": 10955583,
+      "raw_end_byte": 10957141,
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-exact-blocks/suite__turn_state__websocket_turn_state_is_stable_within_turn.log.txt",
+      "bytes": 1558,
+      "sha256": "c4cdc515500e87abbf338cd4ff708a9f0ad3abb60ff656e9058a3a33f14f460f",
+      "git_blob": "a6d0f4fd5cbed22274f45bb9ae8e65c4334c7673",
+      "observed_early_return_lines": [],
+      "junit": {
+        "attributes": {
+          "name": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+          "classname": "codex-core::all",
+          "timestamp": "2026-11-05T09:08:30.606-05:00",
+          "time": "0.610"
+        },
+        "terminal_nodes": [],
+        "derived_serialization": true,
+        "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-junit-derived-nodes/suite__turn_state__websocket_turn_state_is_stable_within_turn.xml",
+        "bytes": 191,
+        "sha256": "17fca7238c09606e3de82597561177caad386444af23d723cac35a565ef2233e",
+        "git_blob": "82979084043d02ad453282e33b8a1a479d9c5d93"
+      }
+    }
+  },
+  "windows_original_attempts_including_retry": {
+    "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after": [
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_10_of_16/test.log",
+        "line": 83,
+        "physical_line": "test suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after ... ok",
+        "status": "ok",
+        "role": "final",
+        "source_member_identity": {
+          "bytes": 8620,
+          "sha256": "6863f9d501a115998e469f38b8e816013880db144a4df6657c8808dfb29a5438",
+          "git_blob": "06d4ecc2ac75aa20f16007a7c71d112078c53e00"
+        }
+      }
+    ],
+    "suite::turn_state::websocket_turn_state_is_stable_within_turn": [
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_11_of_16/test.log",
+        "line": 68,
+        "physical_line": "test suite::turn_state::websocket_turn_state_is_stable_within_turn ... ok",
+        "status": "ok",
+        "role": "final",
+        "source_member_identity": {
+          "bytes": 6942,
+          "sha256": "f3c4525e267aa360ce66295bff182f46544d06e3a21e758353b65ffada7515a0",
+          "git_blob": "2ab9551ab0c2b1e1975f176e9f87ed41d7d86209"
+        }
+      }
+    ],
+    "suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting": [
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_11_of_16/test.log",
+        "line": 69,
+        "physical_line": "test suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting ... ok",
+        "status": "ok",
+        "role": "final",
+        "source_member_identity": {
+          "bytes": 6942,
+          "sha256": "f3c4525e267aa360ce66295bff182f46544d06e3a21e758353b65ffada7515a0",
+          "git_blob": "2ab9551ab0c2b1e1975f176e9f87ed41d7d86209"
+        }
+      }
+    ],
+    "suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm": [
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_13_of_16/test.log",
+        "line": 6,
+        "physical_line": "test suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm ... ok",
+        "status": "ok",
+        "role": "final",
+        "source_member_identity": {
+          "bytes": 6874,
+          "sha256": "39bbadca468bffd342225b0e1542f9b352d63e78b31aa7f61092ec1b65617afc",
+          "git_blob": "364b5e5984f721c51557f86019ed4965b2d54020"
+        }
+      },
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_13_of_16/test_attempts/attempt_1.log",
+        "line": 6,
+        "physical_line": "test suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm ... ok",
+        "status": "ok",
+        "role": "attempt",
+        "source_member_identity": {
+          "bytes": 7225,
+          "sha256": "df49cf8be8313837d5c3887c06e0ea8131d4eb0fbc4a774526d38f5f9b6745d5",
+          "git_blob": "e210e5e87d91e790526415d73e3714a1aa5058ee"
+        }
+      }
+    ],
+    "suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation": [
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_13_of_16/test.log",
+        "line": 26,
+        "physical_line": "test suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation ... ok",
+        "status": "ok",
+        "role": "final",
+        "source_member_identity": {
+          "bytes": 6874,
+          "sha256": "39bbadca468bffd342225b0e1542f9b352d63e78b31aa7f61092ec1b65617afc",
+          "git_blob": "364b5e5984f721c51557f86019ed4965b2d54020"
+        }
+      },
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_13_of_16/test_attempts/attempt_1.log",
+        "line": 27,
+        "physical_line": "test suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation ... ok",
+        "status": "ok",
+        "role": "attempt",
+        "source_member_identity": {
+          "bytes": 7225,
+          "sha256": "df49cf8be8313837d5c3887c06e0ea8131d4eb0fbc4a774526d38f5f9b6745d5",
+          "git_blob": "e210e5e87d91e790526415d73e3714a1aa5058ee"
+        }
+      }
+    ],
+    "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state": [
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_13_of_16/test.log",
+        "line": 39,
+        "physical_line": "test suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state ... ok",
+        "status": "ok",
+        "role": "final",
+        "source_member_identity": {
+          "bytes": 6874,
+          "sha256": "39bbadca468bffd342225b0e1542f9b352d63e78b31aa7f61092ec1b65617afc",
+          "git_blob": "364b5e5984f721c51557f86019ed4965b2d54020"
+        }
+      },
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_13_of_16/test_attempts/attempt_1.log",
+        "line": 41,
+        "physical_line": "test suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state ... ok",
+        "status": "ok",
+        "role": "attempt",
+        "source_member_identity": {
+          "bytes": 7225,
+          "sha256": "df49cf8be8313837d5c3887c06e0ea8131d4eb0fbc4a774526d38f5f9b6745d5",
+          "git_blob": "e210e5e87d91e790526415d73e3714a1aa5058ee"
+        }
+      }
+    ],
+    "suite::agent_websocket::websocket_model_switch_to_responses_lite_omits_top_level_tools": [
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_15_of_16/test.log",
+        "line": 7,
+        "physical_line": "test suite::agent_websocket::websocket_model_switch_to_responses_lite_omits_top_level_tools ... ok",
+        "status": "ok",
+        "role": "final",
+        "source_member_identity": {
+          "bytes": 7688,
+          "sha256": "8b520ca9d6f41e8f66242dcf0e550ae163eacd5ff033113d37319e0b9aeda563",
+          "git_blob": "f9de342daaff9bd8d3e068ded51b165907871184"
+        }
+      }
+    ],
+    "suite::compact_remote::remote_mid_turn_compact_v2_sends_turn_state_over_websocket": [
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_15_of_16/test.log",
+        "line": 28,
+        "physical_line": "test suite::compact_remote::remote_mid_turn_compact_v2_sends_turn_state_over_websocket ... ok",
+        "status": "ok",
+        "role": "final",
+        "source_member_identity": {
+          "bytes": 7688,
+          "sha256": "8b520ca9d6f41e8f66242dcf0e550ae163eacd5ff033113d37319e0b9aeda563",
+          "git_blob": "f9de342daaff9bd8d3e068ded51b165907871184"
+        }
+      }
+    ],
+    "suite::agent_websocket::websocket_v2_next_turn_uses_updated_service_tier": [
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_1_of_16/test.log",
+        "line": 7,
+        "physical_line": "test suite::agent_websocket::websocket_v2_next_turn_uses_updated_service_tier ... ok",
+        "status": "ok",
+        "role": "final",
+        "source_member_identity": {
+          "bytes": 6509,
+          "sha256": "b6ad3fba208adc70f966a45a50a30ab2b9f5fa12105e0bb0c459bbea5aa26349",
+          "git_blob": "affdd48f541f8ef6c0a6e86da40354f23a4d6deb"
+        }
+      }
+    ],
+    "suite::agent_websocket::websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm": [
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_3_of_16/test.log",
+        "line": 6,
+        "physical_line": "test suite::agent_websocket::websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm ... ok",
+        "status": "ok",
+        "role": "final",
+        "source_member_identity": {
+          "bytes": 6595,
+          "sha256": "2f0f17a15d6dfa2365aab1f6e122587ec64250f02c27ce2b5b00e488e0a53388",
+          "git_blob": "a26743f86e238709458ebb5ade1c726ba1c9ea7e"
+        }
+      }
+    ],
+    "suite::compact_remote::remote_compact_v2_reuses_compaction_trigger_for_followups": [
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_6_of_16/test.log",
+        "line": 25,
+        "physical_line": "test suite::compact_remote::remote_compact_v2_reuses_compaction_trigger_for_followups ... ok",
+        "status": "ok",
+        "role": "final",
+        "source_member_identity": {
+          "bytes": 6425,
+          "sha256": "f25a6d12cc5be24c07d8cae795d88c01e332b754e90556b84df00b5351b56121",
+          "git_blob": "47798f70e4a615edd10ca4c81075503f8cfd8d2f"
+        }
+      }
+    ],
+    "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread": [
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_8_of_16/test.log",
+        "line": 30,
+        "physical_line": "test suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread ... ok",
+        "status": "ok",
+        "role": "final",
+        "source_member_identity": {
+          "bytes": 6644,
+          "sha256": "414bc09292d3361c59961d2a468654bdf5f88726e73232e3cedb854f900e0f00",
+          "git_blob": "ff5cdf66b44401fcfeeec872851e8389d208bc5a"
+        }
+      }
+    ],
+    "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread": [
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_8_of_16/test.log",
+        "line": 31,
+        "physical_line": "test suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread ... ok",
+        "status": "ok",
+        "role": "final",
+        "source_member_identity": {
+          "bytes": 6644,
+          "sha256": "414bc09292d3361c59961d2a468654bdf5f88726e73232e3cedb854f900e0f00",
+          "git_blob": "ff5cdf66b44401fcfeeec872851e8389d208bc5a"
+        }
+      }
+    ],
+    "suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after": [
+      {
+        "member": "failed-test-logs/invocation-9pjbepm8/targets/0000/shard_9_of_16/test.log",
+        "line": 77,
+        "physical_line": "test suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after ... ok",
+        "status": "ok",
+        "role": "final",
+        "source_member_identity": {
+          "bytes": 7910,
+          "sha256": "bc0278500f311e4a3f1edab91776711eb6fc3ac230b87a6bca788636e29ab153",
+          "git_blob": "5686add3e5a5c88d2c925e3ef434600edd0c524c"
+        }
+      }
+    ]
+  },
+  "windows_case_xml_is_wrapper_not_individual_testcases": true,
+  "new_native_execution": false
+}

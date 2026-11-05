@@ -1,0 +1,39 @@
+{
+  "schema": "b16-retained-identity-inquiry-verification-v1",
+  "task_request_key": "hepta-ai395-b16-driver-v7-20261105-v1",
+  "result": "UNKNOWN_IDENTITY_BINDING_UNCHANGED",
+  "retained_identity_snapshot": {
+    "host": "ai395",
+    "inventory_complete": true,
+    "declared_total": 2463,
+    "actual_count": 2463,
+    "unique_ids": 2463,
+    "provided_fields": [
+      "created_unix_ms",
+      "execution_mode",
+      "host",
+      "id",
+      "launch_state"
+    ],
+    "status_authoritative": false,
+    "whole_original_response": {
+      "bytes": 369646,
+      "sha256": "2f5c78c6555e20cdd81aad0afc184445a9444cc8be88325a36ef5ffb65c4aa20",
+      "git_blob": "828005d16eec01a8f5fb0ead50e10fff7e926476"
+    }
+  },
+  "prior_partial_inquiry": {
+    "records": 384,
+    "declared_total": 2462,
+    "inventory_complete": false,
+    "inventory_change_errors_retained": 2
+  },
+  "conclusion_zh": "完整 retained identity 清单只提供创建时间、执行模式、host、id、launch_state；没有 idempotency key、argv、cwd、fingerprint，无法唯一绑定此前三次启动超时而未得到 job id 的 B16 driver。这既不能证明未执行，也不能据此重放。",
+  "request_envelope_limit": "The filtered-list original artifact retains its complete response; no absent request envelope is fabricated. Every returned row explicitly identifies ai395.",
+  "no_native_start": true,
+  "no_unknown_process_status_or_stdout_read": true,
+  "no_capacity_query": true,
+  "no_process_cancellation": true,
+  "no_retry_or_replay": true,
+  "blocker_ledger_modified": false
+}

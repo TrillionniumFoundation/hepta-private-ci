@@ -1,0 +1,264 @@
+{
+  "fixed_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+  "fixed_tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+  "sources": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "role": "Full/read-only helper and exact preimage",
+      "fixed_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "fixed_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/eed4d6bb61b789b19f60facc79f9e031765fa4c9/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "binding_original_api": "originals/binding-api-0.json",
+      "bytes": 47955,
+      "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3",
+      "blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "role": "named mutex exact preimage",
+      "fixed_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "fixed_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/eed4d6bb61b789b19f60facc79f9e031765fa4c9/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "binding_original_api": "originals/source-api-1.json",
+      "bytes": 1913,
+      "sha256": "89d689e0c0a07ff8b68d719f6ffb23df86a22598df37d57f6d70360ca738e695",
+      "blob": "a96b6a502474a8bab3baa7842f36dfa814c9cc37"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs",
+      "role": "original physical provision-only helper control, unchanged",
+      "fixed_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "fixed_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/eed4d6bb61b789b19f60facc79f9e031765fa4c9/codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs",
+      "binding_original_api": "originals/source-api-2.json",
+      "bytes": 928,
+      "sha256": "445eed000f1e4c9865d880354262ed547b49aafbc5db01812366d21a0d1d27cc",
+      "blob": "e488e2a914b119ecb02cfc1a13a90009bc6120ea"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/setup.rs",
+      "role": "actual root selection, outer waits, singleflight and original controls",
+      "fixed_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "fixed_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/eed4d6bb61b789b19f60facc79f9e031765fa4c9/codex-rs/windows-sandbox-rs/src/setup.rs",
+      "binding_original_api": "originals/binding-api-1.json",
+      "bytes": 83794,
+      "sha256": "1fa3bfafe7eb75d3ff009bc7ed741689ee9cf25595f7a5433538c325b1254b09",
+      "blob": "890755d01ca24f5ede1960582eacb9714633a0db"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/identity.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/identity.rs",
+      "role": "initial setup plus mandatory refresh before returning credentials",
+      "fixed_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "fixed_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/eed4d6bb61b789b19f60facc79f9e031765fa4c9/codex-rs/windows-sandbox-rs/src/identity.rs",
+      "binding_original_api": "originals/binding-api-1.json",
+      "bytes": 14244,
+      "sha256": "7849ccc56947c1b26b4f9e6f7795d16ff5ae09c7d670d9beff01efdb24641245",
+      "blob": "860877dff2effb728d446d1a6d7db66073cf2ace"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+      "role": "normal elevated spawn caller",
+      "fixed_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "fixed_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/eed4d6bb61b789b19f60facc79f9e031765fa4c9/codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+      "binding_original_api": "originals/binding-api-1.json",
+      "bytes": 27058,
+      "sha256": "f14b7c8ecbcf7e6b4571d4d1506b3b93844a6327f1f6dffd275be01b09234bea",
+      "blob": "2385bdbd3202fd2f14a090174b269791976d04c4"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-full-restricting-caller-20261105/source/codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "role": "normal elevated capture caller",
+      "fixed_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "fixed_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/eed4d6bb61b789b19f60facc79f9e031765fa4c9/codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "binding_original_api": "originals/binding-api-1.json",
+      "bytes": 12135,
+      "sha256": "9998482ac3ecbb420b33bbc50cfc9d87697d7a05efd786361c9deff8e7ba9e02",
+      "blob": "1de7889c1f9f083807a6e7cc0e47a54635112970"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup_error.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/source/codex-rs/windows-sandbox-rs/src/setup_error.rs",
+      "role": "unchanged error codes and serialization",
+      "fixed_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "fixed_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/eed4d6bb61b789b19f60facc79f9e031765fa4c9/codex-rs/windows-sandbox-rs/src/setup_error.rs",
+      "binding_original_api": "originals/source-api-3.json",
+      "bytes": 11408,
+      "sha256": "0325efd3abefe50de8eef5e7cf59f2572388b1f8f18365431c69b766a4eb1e35",
+      "blob": "d9104602bc19af88101fbb5b44f839a1d799c174"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs",
+      "role": "Windows-only module registration",
+      "fixed_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "fixed_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/eed4d6bb61b789b19f60facc79f9e031765fa4c9/codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs",
+      "binding_original_api": "originals/main-api.json",
+      "bytes": 231,
+      "sha256": "5aa17a3bde3f2ad869037f0829139dfb338d1346ef9eea577b577febbda8a632",
+      "blob": "262460775ef6b5e02f0ba4485f388e1b389cc85f"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/source/codex-rs/windows-sandbox-rs/Cargo.toml",
+      "role": "existing bin and dependency declarations",
+      "fixed_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "fixed_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/eed4d6bb61b789b19f60facc79f9e031765fa4c9/codex-rs/windows-sandbox-rs/Cargo.toml",
+      "binding_original_api": "originals/crate-api.json",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+      "blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/BUILD.bazel",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/source/codex-rs/windows-sandbox-rs/BUILD.bazel",
+      "role": "existing Windows-only binary test compatibility",
+      "fixed_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "fixed_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/eed4d6bb61b789b19f60facc79f9e031765fa4c9/codex-rs/windows-sandbox-rs/BUILD.bazel",
+      "binding_original_api": "originals/crate-api.json",
+      "bytes": 2556,
+      "sha256": "187e93c5a9a244c752dee5ed15202b361d593d9d651f850a1bda5d69969a7702",
+      "blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865"
+    },
+    {
+      "path": "defs.bzl",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/source/defs.bzl",
+      "role": "existing bin-unit-tests and source glob registration",
+      "fixed_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "fixed_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/eed4d6bb61b789b19f60facc79f9e031765fa4c9/defs.bzl",
+      "binding_original_api": "originals/defs-api.json",
+      "bytes": 34630,
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+      "blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+    }
+  ],
+  "anchors": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d",
+      "start_line": 166,
+      "end_line": 184,
+      "meaning": "old detached same-executable, inherited environment/current-directory, no credential override",
+      "exact_excerpt": "fn spawn_read_acl_helper(payload: &Payload, _log: &mut dyn Write) -> Result<()> {\n    let mut read_payload = payload.clone();\n    read_payload.mode = SetupMode::ReadAclsOnly;\n    read_payload.refresh_only = true;\n    let payload_json = serde_json::to_vec(&read_payload)?;\n    let payload_b64 = BASE64.encode(payload_json);\n    let exe = std::env::current_exe().context(\"locate setup helper\")?;\n    Command::new(&exe)\n        .arg(payload_b64)\n        .stdin(Stdio::null())\n        .stdout(Stdio::null())\n        .stderr(Stdio::null())\n        .creation_flags(0x08000000) // CREATE_NO_WINDOW\n        .spawn()\n        .context(\"spawn read ACL helper\")?;\n    Ok(())\n}\n\n",
+      "excerpt_identity": {
+        "bytes": 666,
+        "sha256": "544478c895f12d3f71b38575384bb6b27a58a5fda1794a2707b2b69ea0705ad4",
+        "blob": "9a5352b710bf3517bfae5a5f56a7a950a8157f98"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d",
+      "start_line": 509,
+      "end_line": 531,
+      "meaning": "marker commit follows successful Full/ProvisionOnly body",
+      "exact_excerpt": "fn run_setup(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<()> {\n    let writes_setup_marker = !payload.refresh_only && payload.mode != SetupMode::ReadAclsOnly;\n    if writes_setup_marker {\n        prepare_setup_marker(&payload.codex_home, &payload.real_user)?;\n    }\n    match payload.mode {\n        SetupMode::ReadAclsOnly => run_read_acl_only(payload, log),\n        SetupMode::ProvisionOnly => run_provision_only(payload, log, sbx_dir),\n        SetupMode::Full => run_setup_full(payload, log, sbx_dir),\n    }?;\n    if writes_setup_marker {\n        commit_setup_marker(\n            &payload.codex_home,\n            &payload.offline_username,\n            &payload.online_username,\n            &payload.proxy_ports,\n            payload.allow_local_binding,\n        )?;\n    }\n    Ok(())\n}\n\n",
+      "excerpt_identity": {
+        "bytes": 809,
+        "sha256": "6de4d704a935ab9499fac6c61f750160826c65ee61d908c34afdef227e591419",
+        "blob": "3e50a12006c7112cda3bb70636c60ecb04a86957"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d",
+      "start_line": 531,
+      "end_line": 594,
+      "meaning": "old already-existing success plus refresh-only recorded-error failure",
+      "exact_excerpt": "fn run_read_acl_only(payload: &Payload, log: &mut dyn Write) -> Result<()> {\n    let _read_acl_guard = match acquire_read_acl_mutex()? {\n        Some(guard) => guard,\n        None => {\n            log_line(log, \"read ACL helper already running; skipping\")?;\n            return Ok(());\n        }\n    };\n    log_line(log, \"read-acl-only mode: applying read ACLs\")?;\n    let sandbox_group_sid = resolve_sandbox_users_group_sid()?;\n    let sandbox_group_psid = sid_bytes_to_psid(&sandbox_group_sid)?;\n    let mut refresh_errors: Vec<String> = Vec::new();\n    if !payload.read_roots.is_empty() {\n        let users_sid = resolve_sid(\"Users\")?;\n        let users_psid = sid_bytes_to_psid(&users_sid)?;\n        let auth_sid = resolve_sid(\"Authenticated Users\")?;\n        let auth_psid = sid_bytes_to_psid(&auth_sid)?;\n        let everyone_sid = resolve_sid(\"Everyone\")?;\n        let everyone_psid = sid_bytes_to_psid(&everyone_sid)?;\n        let rx_psids = vec![users_psid, auth_psid, everyone_psid];\n        let subjects = ReadAclSubjects {\n            sandbox_group_psid,\n            rx_psids: &rx_psids,\n        };\n        apply_read_acls(\n            &payload.read_roots,\n            &subjects,\n            log,\n            &mut refresh_errors,\n            FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,\n            \"read\",\n            OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE,\n        )?;\n        unsafe {\n            if !users_psid.is_null() {\n                LocalFree(users_psid as HLOCAL);\n            }\n            if !auth_psid.is_null() {\n                LocalFree(auth_psid as HLOCAL);\n            }\n            if !everyone_psid.is_null() {\n                LocalFree(everyone_psid as HLOCAL);\n            }\n        }\n    }\n    unsafe {\n        if !sandbox_group_psid.is_null() {\n            LocalFree(sandbox_group_psid as HLOCAL);\n        }\n    }\n    if !refresh_errors.is_empty() {\n        log_line(\n            log,\n            &format!(\"read ACL run completed with errors: {refresh_errors:?}\"),\n        )?;\n        if payload.refresh_only {\n            anyhow::bail!(\"read ACL run had errors\");\n        }\n    }\n    log_line(log, \"read ACL run completed\")?;\n    Ok(())\n}\n\n",
+      "excerpt_identity": {
+        "bytes": 2178,
+        "sha256": "e68700cc2114497f3e5e840b640e705d75de339e685ff26e14e9594d30972b9f",
+        "blob": "69b60efbf201cdbcf1fdf4fcd10391f2a1f91256"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+      "blob": "890755d01ca24f5ede1960582eacb9714633a0db",
+      "start_line": 105,
+      "end_line": 184,
+      "meaning": "existing same-process exact-payload result sharing; not a cross-process completion receipt",
+      "exact_excerpt": "struct SetupFlight {\n    result: Mutex<Option<Result<(), SharedSetupError>>>,\n    completed: Condvar,\n}\n\nimpl SetupFlight {\n    fn pending() -> Self {\n        Self {\n            result: Mutex::new(None),\n            completed: Condvar::new(),\n        }\n    }\n\n    fn complete(&self, result: Result<(), SharedSetupError>) {\n        *self\n            .result\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner) = Some(result);\n        self.completed.notify_all();\n    }\n\n    fn wait(&self) -> Result<()> {\n        let mut result = self\n            .result\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner);\n        while result.is_none() {\n            result = self\n                .completed\n                .wait(result)\n                .unwrap_or_else(std::sync::PoisonError::into_inner);\n        }\n        match result.clone() {\n            Some(result) => result.map_err(SharedSetupError::into_error),\n            None => Err(anyhow!(\"setup flight completed without a result\")),\n        }\n    }\n}\n\nstatic SETUP_FLIGHTS: OnceLock<Mutex<HashMap<String, Arc<SetupFlight>>>> = OnceLock::new();\n\nfn run_setup_singleflight(key: String, run: impl FnOnce() -> Result<()>) -> Result<()> {\n    let flights = SETUP_FLIGHTS.get_or_init(|| Mutex::new(HashMap::new()));\n    let (flight, is_leader) = {\n        let mut flights = flights\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner);\n        match flights.get(&key) {\n            Some(flight) => (Arc::clone(flight), false),\n            None => {\n                let flight = Arc::new(SetupFlight::pending());\n                flights.insert(key.clone(), Arc::clone(&flight));\n                (flight, true)\n            }\n        }\n    };\n\n    if !is_leader {\n        return flight.wait();\n    }\n\n    let result = run();\n    let shared_result = match &result {\n        Ok(()) => Ok(()),\n        Err(error) => Err(SharedSetupError::from_error(error)),\n    };\n    flight.complete(shared_result);\n    let mut flights = flights\n        .lock()\n        .unwrap_or_else(std::sync::PoisonError::into_inner);\n    if flights\n        .get(&key)\n        .is_some_and(|current| Arc::ptr_eq(current, &flight))\n    {\n        flights.remove(&key);\n    }\n    result\n}\n\n",
+      "excerpt_identity": {
+        "bytes": 2294,
+        "sha256": "2077b53f0d367f19f623400191da5d005a1b38879ceb475edcfc7e5e8cf82144",
+        "blob": "d49968f2aaa6a513bd6b98cc60dc01ec1abf18f2"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+      "blob": "890755d01ca24f5ede1960582eacb9714633a0db",
+      "start_line": 322,
+      "end_line": 531,
+      "meaning": "Full refresh creates payload, waits helper and propagates nonzero error report",
+      "exact_excerpt": "fn run_setup_refresh_inner(\n    request: SandboxSetupRequest<'_>,\n    overrides: SetupRootOverrides,\n    offline_proxy_settings_override: Option<&OfflineProxySettings>,\n) -> Result<()> {\n    if !request.permissions.is_enforceable_by_windows_sandbox() {\n        anyhow::bail!(\"unsupported filesystem permissions for Windows sandbox setup\");\n    }\n    let (read_roots, write_roots) = build_payload_roots(&request, &overrides);\n    let deny_read_paths = build_payload_deny_read_paths(overrides.deny_read_paths);\n    let deny_write_paths = build_payload_deny_write_paths(&request, overrides.deny_write_paths);\n    let offline_proxy_settings =\n        offline_proxy_settings_for_request(&request, offline_proxy_settings_override);\n    let payload = ElevationPayload {\n        version: SETUP_VERSION,\n        offline_username: OFFLINE_USERNAME.to_string(),\n        online_username: ONLINE_USERNAME.to_string(),\n        codex_home: request.codex_home.to_path_buf(),\n        command_cwd: request.command_cwd.to_path_buf(),\n        read_roots,\n        write_roots,\n        deny_read_paths,\n        deny_write_paths,\n        proxy_ports: offline_proxy_settings.proxy_ports,\n        allow_local_binding: offline_proxy_settings.allow_local_binding,\n        otel: None,\n        real_user: std::env::var(\"USERNAME\").unwrap_or_else(|_| \"Administrators\".to_string()),\n        mode: SetupMode::Full,\n        refresh_only: true,\n    };\n    let json = serde_json::to_vec(&payload)?;\n    let b64 = BASE64_STANDARD.encode(json);\n    run_setup_singleflight(b64.clone(), || {\n        run_setup_refresh_payload(&b64, request.codex_home)\n    })\n}\n\nfn run_setup_refresh_payload(b64: &str, codex_home: &Path) -> Result<()> {\n    let exe = find_setup_exe();\n    let sbx_dir = sandbox_dir(codex_home);\n    let log_path = current_log_file_path(&sbx_dir);\n    let cleared_report = match clear_setup_error_report(codex_home) {\n        Ok(()) => true,\n        Err(err) => {\n            log_note(\n                &format!(\"setup refresh: failed to clear setup_error.json before launch: {err}\"),\n                Some(&sbx_dir),\n            );\n            false\n        }\n    };\n    // Refresh should never request elevation; ensure verb isn't set and we don't trigger UAC.\n    let mut cmd = Command::new(&exe);\n    cmd.arg(b64)\n        .stdin(Stdio::null())\n        .stdout(Stdio::null())\n        .stderr(Stdio::null());\n    let cwd = std::env::current_dir().unwrap_or_else(|_| codex_home.to_path_buf());\n    log_note(\n        &format!(\n            \"setup refresh: spawning {} (cwd={}, payload_len={})\",\n            exe.display(),\n            cwd.display(),\n            b64.len()\n        ),\n        Some(&sbx_dir),\n    );\n    let status = cmd.status().map_err(|err| {\n        let message = format!(\n            \"setup refresh failed to launch helper: helper={}, cwd={}, log={}, error={err}\",\n            exe.display(),\n            cwd.display(),\n            log_path.display()\n        );\n        log_note(&format!(\"setup refresh: {message}\"), Some(&sbx_dir));\n        failure(SetupErrorCode::OrchestratorHelperLaunchFailed, message)\n    })?;\n    if !status.success() {\n        log_note(\n            &format!(\"setup refresh: exited with status {status:?}\"),\n            Some(&sbx_dir),\n        );\n        return Err(report_helper_failure(\n            codex_home,\n            cleared_report,\n            status.code(),\n        ));\n    }\n    if let Err(err) = clear_setup_error_report(codex_home) {\n        log_note(\n            &format!(\"setup refresh: failed to clear setup_error.json after success: {err}\"),\n            Some(&sbx_dir),\n        );\n    }\n    Ok(())\n}\n\n#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]\npub struct SetupMarker {\n    pub version: u32,\n    pub offline_username: String,\n    pub online_username: String,\n    #[serde(default)]\n    pub created_at: Option<String>,\n    #[serde(default)]\n    pub proxy_ports: Vec<u16>,\n    #[serde(default)]\n    pub allow_local_binding: bool,\n}\n\nimpl SetupMarker {\n    pub fn version_matches(&self) -> bool {\n        self.version == SETUP_VERSION\n    }\n\n    pub(crate) fn offline_proxy_settings(&self) -> OfflineProxySettings {\n        OfflineProxySettings {\n            proxy_ports: self.proxy_ports.clone(),\n            allow_local_binding: self.allow_local_binding,\n        }\n    }\n\n    pub(crate) fn request_mismatch_reason(\n        &self,\n        network_identity: SandboxNetworkIdentity,\n        offline_proxy_settings: &OfflineProxySettings,\n    ) -> Option<String> {\n        if !network_identity.uses_offline_identity() {\n            return None;\n        }\n        if self.proxy_ports == offline_proxy_settings.proxy_ports\n            && self.allow_local_binding == offline_proxy_settings.allow_local_binding\n        {\n            return None;\n        }\n        Some(format!(\n            \"offline firewall settings changed (stored_ports={:?}, desired_ports={:?}, stored_allow_local_binding={}, desired_allow_local_binding={})\",\n            self.proxy_ports,\n            offline_proxy_settings.proxy_ports,\n            self.allow_local_binding,\n            offline_proxy_settings.allow_local_binding\n        ))\n    }\n}\n\n#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]\npub struct SandboxUserRecord {\n    pub username: String,\n    /// DPAPI-encrypted password blob, base64 encoded.\n    pub password: String,\n}\n\n#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]\npub struct SandboxUsersFile {\n    pub version: u32,\n    pub offline: SandboxUserRecord,\n    pub online: SandboxUserRecord,\n}\n\nimpl SandboxUsersFile {\n    pub fn version_matches(&self) -> bool {\n        self.version == SETUP_VERSION\n    }\n}\n\nfn is_elevated() -> Result<bool> {\n    unsafe {\n        let mut administrators_group: *mut c_void = std::ptr::null_mut();\n        let ok = AllocateAndInitializeSid(\n            &SECURITY_NT_AUTHORITY,\n            2,\n            SECURITY_BUILTIN_DOMAIN_RID,\n            DOMAIN_ALIAS_RID_ADMINS,\n            0,\n            0,\n            0,\n            0,\n            0,\n            0,\n            &mut administrators_group,\n        );\n        if ok == 0 {\n            return Err(anyhow!(\n                \"AllocateAndInitializeSid failed: {}\",\n                GetLastError()\n            ));\n        }\n        let mut is_member = 0i32;\n        let check = CheckTokenMembership(0, administrators_group, &mut is_member as *mut _);\n        FreeSid(administrators_group as *mut _);\n        if check == 0 {\n            return Err(anyhow!(\"CheckTokenMembership failed: {}\", GetLastError()));\n        }\n        Ok(is_member != 0)\n    }\n}\n\nfn canonical_existing(paths: &[PathBuf]) -> Vec<PathBuf> {\n    paths\n        .iter()\n        .filter_map(|p| {\n            if !p.exists() {\n                return None;\n            }\n            Some(dunce::canonicalize(p).unwrap_or_else(|_| p.clone()))\n        })\n        .collect()\n}\n\n",
+      "excerpt_identity": {
+        "bytes": 6885,
+        "sha256": "5843074ff229d5e3e9db0ea43dd1d6ffc9565a084d5c25b75cda00b674a1244b",
+        "blob": "6d47b6e459a1674f4c1880105de893737d88b61e"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+      "blob": "890755d01ca24f5ede1960582eacb9714633a0db",
+      "start_line": 865,
+      "end_line": 1021,
+      "meaning": "original initial Command.status and elevated INFINITE, marker check and structured error handling",
+      "exact_excerpt": "fn report_helper_failure(\n    codex_home: &Path,\n    cleared_report: bool,\n    exit_code: Option<i32>,\n) -> anyhow::Error {\n    let exit_detail = format!(\"setup helper exited with status {exit_code:?}\");\n    if !cleared_report {\n        return failure(SetupErrorCode::OrchestratorHelperExitNonzero, exit_detail);\n    }\n    match read_setup_error_report(codex_home) {\n        Ok(Some(report)) => anyhow::Error::new(SetupFailure::from_report(report)),\n        Ok(None) => failure(SetupErrorCode::OrchestratorHelperExitNonzero, exit_detail),\n        Err(err) => failure(\n            SetupErrorCode::OrchestratorHelperReportReadFailed,\n            format!(\"{exit_detail}; failed to read setup_error.json: {err}\"),\n        ),\n    }\n}\n\nfn verify_setup_completed(codex_home: &Path) -> Result<()> {\n    if sandbox_setup_is_complete(codex_home) {\n        Ok(())\n    } else {\n        Err(failure(\n            SetupErrorCode::OrchestratorHelperIncomplete,\n            \"setup helper exited successfully before setup completed\",\n        ))\n    }\n}\n\nfn run_setup_exe(\n    payload: &ElevationPayload,\n    needs_elevation: bool,\n    codex_home: &Path,\n) -> Result<()> {\n    let payload_json = serde_json::to_string(payload).map_err(|err| {\n        failure(\n            SetupErrorCode::OrchestratorPayloadSerializeFailed,\n            format!(\"failed to serialize elevation payload: {err}\"),\n        )\n    })?;\n    let payload_b64 = BASE64_STANDARD.encode(payload_json.as_bytes());\n    run_setup_singleflight(payload_b64.clone(), || {\n        run_setup_exe_payload(&payload_b64, needs_elevation, codex_home)\n    })\n}\n\nfn run_setup_exe_payload(\n    payload_b64: &str,\n    needs_elevation: bool,\n    codex_home: &Path,\n) -> Result<()> {\n    use windows_sys::Win32::System::Threading::GetExitCodeProcess;\n    use windows_sys::Win32::System::Threading::INFINITE;\n    use windows_sys::Win32::System::Threading::WaitForSingleObject;\n    use windows_sys::Win32::UI::Shell::SEE_MASK_NOASYNC;\n    use windows_sys::Win32::UI::Shell::SEE_MASK_NOCLOSEPROCESS;\n    use windows_sys::Win32::UI::Shell::SHELLEXECUTEINFOW;\n    use windows_sys::Win32::UI::Shell::ShellExecuteExW;\n    let exe = find_setup_exe();\n    let cleared_report = match clear_setup_error_report(codex_home) {\n        Ok(()) => true,\n        Err(err) => {\n            log_note(\n                &format!(\n                    \"setup orchestrator: failed to clear setup_error.json before launch: {err}\"\n                ),\n                Some(&sandbox_dir(codex_home)),\n            );\n            false\n        }\n    };\n\n    if !needs_elevation {\n        let status = Command::new(&exe)\n            .arg(payload_b64)\n            .creation_flags(0x08000000) // CREATE_NO_WINDOW\n            .stdin(Stdio::null())\n            .stdout(Stdio::null())\n            .stderr(Stdio::null())\n            .status()\n            .map_err(|err| {\n                failure(\n                    SetupErrorCode::OrchestratorHelperLaunchFailed,\n                    format!(\"failed to launch setup helper (non-elevated): {err}\"),\n                )\n            })?;\n        if !status.success() {\n            return Err(report_helper_failure(\n                codex_home,\n                cleared_report,\n                status.code(),\n            ));\n        }\n        verify_setup_completed(codex_home)?;\n        if let Err(err) = clear_setup_error_report(codex_home) {\n            log_note(\n                &format!(\n                    \"setup orchestrator: failed to clear setup_error.json after success: {err}\"\n                ),\n                Some(&sandbox_dir(codex_home)),\n            );\n        }\n        return Ok(());\n    }\n\n    let exe_w = crate::winutil::to_wide(&exe);\n    let params = quote_arg(payload_b64);\n    let params_w = crate::winutil::to_wide(params);\n    let verb_w = crate::winutil::to_wide(\"runas\");\n    let mut sei: SHELLEXECUTEINFOW = unsafe { std::mem::zeroed() };\n    sei.cbSize = std::mem::size_of::<SHELLEXECUTEINFOW>() as u32;\n    // Sandbox setup runs on a Tokio worker without a Windows message loop.\n    // ShellExecuteEx requires synchronous activation on such threads.\n    sei.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_NOASYNC;\n    sei.lpVerb = verb_w.as_ptr();\n    sei.lpFile = exe_w.as_ptr();\n    sei.lpParameters = params_w.as_ptr();\n    // Hide the window for the elevated helper.\n    sei.nShow = 0; // SW_HIDE\n    let ok = unsafe { ShellExecuteExW(&mut sei) };\n    if ok == 0 || sei.hProcess == 0 {\n        let last_error = unsafe { GetLastError() };\n        let code = if last_error == ERROR_CANCELLED {\n            SetupErrorCode::OrchestratorHelperLaunchCanceled\n        } else {\n            SetupErrorCode::OrchestratorHelperLaunchFailed\n        };\n        return Err(failure(\n            code,\n            format!(\"ShellExecuteExW failed to launch setup helper: {last_error}\"),\n        ));\n    }\n    unsafe {\n        WaitForSingleObject(sei.hProcess, INFINITE);\n        let mut code: u32 = 1;\n        GetExitCodeProcess(sei.hProcess, &mut code);\n        CloseHandle(sei.hProcess);\n        if code != 0 {\n            return Err(report_helper_failure(\n                codex_home,\n                cleared_report,\n                Some(code as i32),\n            ));\n        }\n    }\n    verify_setup_completed(codex_home)?;\n    if let Err(err) = clear_setup_error_report(codex_home) {\n        log_note(\n            &format!(\"setup orchestrator: failed to clear setup_error.json after success: {err}\"),\n            Some(&sandbox_dir(codex_home)),\n        );\n    }\n    Ok(())\n}\n\n",
+      "excerpt_identity": {
+        "bytes": 5532,
+        "sha256": "0ad79cecf13dc0d59502840d497242c5f5910ea33617e75ce58bd8476650c818",
+        "blob": "d38901dabfb94bf79ae8c04537d57e1c09514db2"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+      "blob": "890755d01ca24f5ede1960582eacb9714633a0db",
+      "start_line": 1146,
+      "end_line": 1205,
+      "meaning": "unchanged readable root selection/exclusions and deny filtering",
+      "exact_excerpt": "fn build_payload_roots(\n    request: &SandboxSetupRequest<'_>,\n    overrides: &SetupRootOverrides,\n) -> (Vec<PathBuf>, Vec<PathBuf>) {\n    let write_roots = effective_write_roots_for_setup(\n        request.permissions,\n        request.command_cwd,\n        request.env_map,\n        request.codex_home,\n        overrides.write_roots.as_deref(),\n    );\n    let mut read_roots = if let Some(roots) = overrides.read_roots.as_deref() {\n        // An explicit override is the split policy's complete readable set. Keep only the\n        // helper/platform roots the elevated setup needs; do not re-add legacy cwd/full-read roots.\n        let mut read_roots = gather_helper_read_roots(request.codex_home);\n        if overrides.read_roots_include_platform_defaults {\n            read_roots.extend(\n                WINDOWS_PLATFORM_DEFAULT_READ_ROOTS\n                    .iter()\n                    .map(PathBuf::from),\n            );\n        }\n        read_roots.extend(roots.iter().cloned());\n        canonical_existing(&read_roots)\n    } else {\n        gather_read_roots(\n            request.command_cwd,\n            request.permissions,\n            request.env_map,\n            request.codex_home,\n        )\n    };\n    read_roots = expand_user_profile_root(read_roots);\n    read_roots = filter_user_profile_root(read_roots);\n    read_roots = filter_user_profile_root_exclusions(read_roots);\n    read_roots = filter_ssh_config_dependency_roots(read_roots);\n    let write_root_set: HashSet<PathBuf> = write_roots.iter().cloned().collect();\n    let deny_read_keys: Vec<String> = overrides\n        .deny_read_paths\n        .as_deref()\n        .unwrap_or_default()\n        .iter()\n        .map(|path| canonical_path_key(path))\n        .collect();\n    read_roots.retain(|root| {\n        if write_root_set.contains(root) {\n            return false;\n        }\n        if deny_read_keys.is_empty() {\n            return true;\n        }\n        let root_key = canonical_path_key(root);\n        !deny_read_keys\n            .iter()\n            .any(|denied| Path::new(&root_key).starts_with(denied))\n    });\n    (read_roots, write_roots)\n}\n\n",
+      "excerpt_identity": {
+        "bytes": 2121,
+        "sha256": "a34f82f14a96b12feb1c5f3251dbabff31268e2e6033b7a3e4cd96166f401fa8",
+        "blob": "4a55c3ce0ae02874125538c71954e82279c36d72"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/identity.rs",
+      "blob": "860877dff2effb728d446d1a6d7db66073cf2ace",
+      "start_line": 146,
+      "end_line": 259,
+      "meaning": "normal caller always refreshes before returning credentials",
+      "exact_excerpt": "pub fn require_logon_sandbox_creds(\n    permissions: &ResolvedWindowsSandboxPermissions,\n    command_cwd: &Path,\n    env_map: &HashMap<String, String>,\n    codex_home: &Path,\n    read_roots_override: Option<&[PathBuf]>,\n    read_roots_include_platform_defaults: bool,\n    write_roots_override: Option<&[PathBuf]>,\n    deny_read_paths_override: &[PathBuf],\n    deny_write_paths_override: &[PathBuf],\n    proxy_enforced: bool,\n    proxy_settings_mode: crate::WindowsSandboxProxySettingsMode,\n) -> Result<SandboxCreds> {\n    let sandbox_dir = crate::setup::sandbox_dir(codex_home);\n    let needed_read = read_roots_override\n        .map(<[PathBuf]>::to_vec)\n        .unwrap_or_else(|| gather_read_roots(command_cwd, permissions, env_map, codex_home));\n    let needed_write = write_roots_override\n        .map(<[PathBuf]>::to_vec)\n        .unwrap_or_else(|| gather_write_roots_for_permissions(permissions, command_cwd, env_map));\n    let network_identity = SandboxNetworkIdentity::from_permissions(permissions, proxy_enforced);\n    let marker = load_marker(codex_home)?;\n    let desired_offline_proxy_settings = desired_offline_proxy_settings(\n        marker.as_ref(),\n        proxy_settings_mode,\n        env_map,\n        network_identity,\n    );\n    // NOTE: Do not add CODEX_HOME/.sandbox to `needed_write`; it must remain non-writable by the\n    // restricted capability token. The setup helper's `lock_sandbox_dir` is responsible for\n    // granting the sandbox group access to this directory without granting the capability SID.\n    let mut setup_reason: Option<String> = None;\n\n    let mut identity = match marker {\n        Some(marker) if marker.version_matches() => {\n            if let Some(reason) =\n                marker.request_mismatch_reason(network_identity, &desired_offline_proxy_settings)\n            {\n                setup_reason = Some(reason);\n                None\n            } else {\n                let selected = select_identity(network_identity, codex_home)?;\n                if selected.is_none() {\n                    setup_reason = Some(\n                        \"sandbox users missing or incompatible with marker version\".to_string(),\n                    );\n                }\n                selected\n            }\n        }\n        _ => {\n            setup_reason = Some(\"sandbox setup marker missing or incompatible\".to_string());\n            None\n        }\n    };\n\n    if identity.is_none() {\n        if let Some(reason) = &setup_reason {\n            crate::logging::log_note(\n                &format!(\"sandbox setup required: {reason}\"),\n                Some(&sandbox_dir),\n            );\n        } else {\n            crate::logging::log_note(\"sandbox setup required\", Some(&sandbox_dir));\n        }\n        run_elevated_setup_with_proxy_settings(\n            crate::setup::SandboxSetupRequest {\n                permissions,\n                command_cwd,\n                env_map,\n                codex_home,\n                proxy_enforced,\n            },\n            crate::setup::SetupRootOverrides {\n                read_roots: Some(needed_read.clone()),\n                read_roots_include_platform_defaults,\n                write_roots: Some(needed_write.clone()),\n                deny_read_paths: Some(deny_read_paths_override.to_vec()),\n                deny_write_paths: Some(deny_write_paths_override.to_vec()),\n            },\n            &desired_offline_proxy_settings,\n        )?;\n        identity = select_identity(network_identity, codex_home)?;\n    }\n    // Always refresh ACLs (non-elevated) for current roots via the setup binary.\n    run_setup_refresh_with_overrides_and_proxy_settings(\n        crate::setup::SandboxSetupRequest {\n            permissions,\n            command_cwd,\n            env_map,\n            codex_home,\n            proxy_enforced,\n        },\n        crate::setup::SetupRootOverrides {\n            read_roots: Some(needed_read),\n            read_roots_include_platform_defaults,\n            write_roots: Some(needed_write),\n            deny_read_paths: Some(deny_read_paths_override.to_vec()),\n            deny_write_paths: Some(deny_write_paths_override.to_vec()),\n        },\n        &desired_offline_proxy_settings,\n    )?;\n    let identity = identity.ok_or_else(|| {\n        anyhow!(\n            \"Windows sandbox setup is missing or out of date; rerun the sandbox setup with elevation\"\n        )\n    })?;\n    Ok(SandboxCreds {\n        username: identity.username,\n        password: identity.password,\n    })\n}\n\n",
+      "excerpt_identity": {
+        "bytes": 4482,
+        "sha256": "ef452501141fa88f5e32d245aaa143960a31bd5664c6289c3527c428098aa3d7",
+        "blob": "d33568032641c52c09ef6974f3f63903e20aa1cb"
+      }
+    }
+  ],
+  "windows_sys_0_52_api": {
+    "cached_original_api": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-threading-0.52.0.json",
+    "display_url": "https://github.com/microsoft/windows-rs/blob/0.52.0/crates/libs/sys/src/Windows/Win32/System/Threading/mod.rs",
+    "full_source": {
+      "bytes": 136501,
+      "sha256": "6258ef99d17078002020644540a608a89cdf20436daefa3970a65348e6793c1c",
+      "blob": "6ee2c4ad6120e5a3ad34c87e67d6d9187304d9ac"
+    },
+    "exact_signatures": [
+      "::windows_targets::link!(\"kernel32.dll\" \"system\" #[doc = \"Required features: `\\\"Win32_Foundation\\\"`, `\\\"Win32_Security\\\"`\"] fn CreateMutexW(lpmutexattributes : *const super::super::Security:: SECURITY_ATTRIBUTES, binitialowner : super::super::Foundation:: BOOL, lpname : ::windows_sys::core::PCWSTR) -> super::super::Foundation:: HANDLE);",
+      "::windows_targets::link!(\"kernel32.dll\" \"system\" #[doc = \"Required features: `\\\"Win32_Foundation\\\"`\"] fn OpenMutexW(dwdesiredaccess : SYNCHRONIZATION_ACCESS_RIGHTS, binherithandle : super::super::Foundation:: BOOL, lpname : ::windows_sys::core::PCWSTR) -> super::super::Foundation:: HANDLE);",
+      "::windows_targets::link!(\"kernel32.dll\" \"system\" #[doc = \"Required features: `\\\"Win32_Foundation\\\"`\"] fn ReleaseMutex(hmutex : super::super::Foundation:: HANDLE) -> super::super::Foundation:: BOOL);"
+    ]
+  },
+  "official_api_original": {
+    "local_file": "originals/mutex-official-api.json",
+    "bytes": 15220,
+    "sha256": "e67f083a553a3048ab79ec0b8024c60ca78d9e073da0053fe782e7a58c0107a4",
+    "blob": "9d98d861b340984c55b71ac1aac2fabac79089ac"
+  }
+}

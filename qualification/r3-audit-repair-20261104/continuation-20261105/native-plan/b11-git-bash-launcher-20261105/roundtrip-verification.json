@@ -1,0 +1,72 @@
+{
+  "role": "CLOUD_ISOLATED_GIT_ROUNDTRIP_AND_YAML_STRUCTURE_ONLY",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/tmp/b11-shell-roundtrip-21081j1r",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/full.patch"
+      ],
+      "cwd": "/tmp/b11-shell-roundtrip-21081j1r",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/full.patch"
+      ],
+      "cwd": "/tmp/b11-shell-roundtrip-21081j1r",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/full.patch"
+      ],
+      "cwd": "/tmp/b11-shell-roundtrip-21081j1r",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/full.patch"
+      ],
+      "cwd": "/tmp/b11-shell-roundtrip-21081j1r",
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "all_three_postimages_exact": true,
+  "all_three_preimages_exact_after_reverse": true,
+  "yaml_only_two_run_scalars_change": [
+    "Check the ACL identity counterfactual and restore its source",
+    "Run the original setup helper target after exact restoration"
+  ],
+  "all_other_workflow_fields_equal": true,
+  "executed_project_tests_or_windows_commands": false
+}

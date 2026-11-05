@@ -1,0 +1,110 @@
+{
+  "base_head": "0f6148ea3fbe9d1263354791d5cc63c7e66d4628",
+  "base_tree": "f717a84a856413d87a3b718b0bcae3adbd16b643",
+  "files": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "cohort": "readiness-rust-0a80",
+      "preimage": {
+        "bytes": 47955,
+        "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3",
+        "blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d"
+      },
+      "postimage": {
+        "bytes": 45950,
+        "sha256": "56fc08023e586ee8faa88dc630d2b946080a7779773da406918c13f5697b0d01",
+        "blob": "c39b298b7889dc3669e1ee7e2816f7e77568e955"
+      },
+      "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "cohort": "readiness-rust-0a80",
+      "preimage": {
+        "bytes": 1913,
+        "sha256": "89d689e0c0a07ff8b68d719f6ffb23df86a22598df37d57f6d70360ca738e695",
+        "blob": "a96b6a502474a8bab3baa7842f36dfa814c9cc37"
+      },
+      "postimage": {
+        "bytes": 1960,
+        "sha256": "38f994940b12741210bc9b4cd3d648ed9a53378c638f2671154d0777d13b2598",
+        "blob": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6"
+      },
+      "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+      "cohort": "readiness-rust-0a80",
+      "preimage": null,
+      "postimage": {
+        "bytes": 2425,
+        "sha256": "c8076fe5e2946b273186654da298fd08d0d885317273a56eb1c80e424023bb18",
+        "blob": "333aefdf9584ef29612ac6f9814ff34308971754"
+      },
+      "local_preimage": null,
+      "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs"
+    },
+    {
+      "path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "cohort": "execution-v2",
+      "preimage": {
+        "bytes": 5072,
+        "sha256": "2cd28bdbca3557a2294aa1f2edec49d4e8250b968b8bd1747fb1744750ea5de9",
+        "blob": "912e22789665b0081c83ae0fa632d2482e8b0eba"
+      },
+      "postimage": {
+        "bytes": 5929,
+        "sha256": "c2d9c91b0bf724613a075dae881b84523074858728bd06a01f8a39f88c4d4dc6",
+        "blob": "89d2eaf4bb9900f7476d49476e2657effa68327a"
+      },
+      "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml"
+    },
+    {
+      "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "cohort": "execution-v2",
+      "preimage": {
+        "bytes": 16260,
+        "sha256": "55353f094531a4af974c519fadca01dcd0c8be6ece1f8b10efb70d24ae2a44eb",
+        "blob": "2142eeb382664d95f77d83ac7ae3da4459601abf"
+      },
+      "postimage": {
+        "bytes": 16340,
+        "sha256": "63e5bcfc80d09578f526173b33259cd01eb343364342c9c9431233f13e25d52a",
+        "blob": "e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9"
+      },
+      "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/.github/scripts/collect_bazel_failed_test_logs.py",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/scripts/collect_bazel_failed_test_logs.py"
+    },
+    {
+      "path": ".github/scripts/run_b11_read_acl_readiness.py",
+      "cohort": "execution-v2",
+      "preimage": null,
+      "postimage": {
+        "bytes": 14222,
+        "sha256": "09d4b076ee3f9f1232457612ab2f5549bdb5e16bd980a061094de8b10aeb1398",
+        "blob": "6010ce9cc6da2eca95aac9ba453581f68770bbe6"
+      },
+      "local_preimage": null,
+      "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/scripts/run_b11_read_acl_readiness.py"
+    },
+    {
+      "path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+      "cohort": "counterfactual-v3-3680",
+      "preimage": {
+        "bytes": 17774,
+        "sha256": "6e199582d277e44f1796dcf64c39bb0fe3f263f060ab79da1bf682fff5866b1f",
+        "blob": "25def4386ea08bb72a7605cc113117f31fffcd1b"
+      },
+      "postimage": {
+        "bytes": 22200,
+        "sha256": "1a53b2771e795fb27a495d7c053d7afc9b0cad954f27c4802654311771319ed5",
+        "blob": "3680db31233e47ba7fad99f31a7019c4536288bb"
+      },
+      "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/.github/scripts/run_b11_acl_identity_counterfactual.py",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py"
+    }
+  ]
+}

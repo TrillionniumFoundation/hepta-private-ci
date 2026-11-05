@@ -1,0 +1,39 @@
+{
+  "schema": "b11-helper-execution-v2-independent-actual-registry-v1",
+  "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+  "repo_prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-helper-execution-v2-independent-20261105",
+  "files": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b11-helper-execution-v2-independent-20261105/independent-review.json",
+      "name": "independent-review.json",
+      "bytes": 16571,
+      "sha256": "8799d3d8b03611a9263fb4bcb8fde0338294536e87e64d5df10dbddacffe37fd",
+      "git_blob": "98bb1d8298fa07e27bdc299d990c4bc9ee0af278",
+      "actual_create_get": true,
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-helper-execution-v2-independent-20261105/independent-review.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b11-helper-execution-v2-independent-20261105/verification.json",
+      "name": "verification.json",
+      "bytes": 17016,
+      "sha256": "6dd944fd2077f9bd7592d7554a5c5c7cc2d95659183a9e7eaf61b6eeea97e829",
+      "git_blob": "03b89bdf8716ea79fb8029d1580054b73b1957b8",
+      "actual_create_get": true,
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-helper-execution-v2-independent-20261105/verification.json"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/b11-helper-execution-v2-independent-20261105/verify_review.py",
+      "name": "verify_review.py",
+      "bytes": 10856,
+      "sha256": "cf582fd7c0bf129aed157da548dd9ce4ddb67d699cab4dc4c704b48a109f5a31",
+      "git_blob": "d01d2f61246727b7914faab8160483e69080d44c",
+      "actual_create_get": true,
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-helper-execution-v2-independent-20261105/verify_review.py"
+    }
+  ],
+  "decision": "STATIC_ACCEPT_NO_NATIVE_QUALIFICATION",
+  "limits": [
+    "No candidate CLI, Rust/Bazel/Windows tests, native process or ref action executed.",
+    "Original library outcome and B11 OPEN remain; new helper and counterfactual original scopes still require actual native outcomes."
+  ]
+}

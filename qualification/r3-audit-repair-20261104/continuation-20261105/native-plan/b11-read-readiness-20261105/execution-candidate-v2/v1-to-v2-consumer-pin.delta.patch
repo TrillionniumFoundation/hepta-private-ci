@@ -1,0 +1,13 @@
+diff --git a/.github/scripts/run_b11_read_acl_readiness.py b/.github/scripts/run_b11_read_acl_readiness.py
+index bef8a8553c0267b6d49c4364deb8363aa6ce32bd..6010ce9cc6da2eca95aac9ba453581f68770bbe6 100644
+--- a/.github/scripts/run_b11_read_acl_readiness.py
++++ b/.github/scripts/run_b11_read_acl_readiness.py
+@@ -19,7 +19,7 @@
+ TARGET = "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests"
+ TARGET_PATH = "codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup-bin-unit-tests"
+ CONTROL_SCRIPT = ".github/scripts/run_b11_acl_identity_counterfactual.py"
+-CONTROL_BLOB = "25def4386ea08bb72a7605cc113117f31fffcd1b"
++CONTROL_BLOB = "3680db31233e47ba7fad99f31a7019c4536288bb"
+ PINS = {
+     "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs": "c39b298b7889dc3669e1ee7e2816f7e77568e955",
+     "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6",

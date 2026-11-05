@@ -1,0 +1,420 @@
+{
+  "schema": "hepta.static_proposal.read_acl_readiness_execution.v2",
+  "frozen_at_utc": "2026-11-05T18:39:03.776484+00:00",
+  "status": "FROZEN_V3_CONSUMER_STATIC_ONLY_PENDING_INDEPENDENT_EXECUTION_REVIEW_AND_WINDOWS",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "head": "0f6148ea3fbe9d1263354791d5cc63c7e66d4628",
+    "tree": "f717a84a856413d87a3b718b0bcae3adbd16b643",
+    "pull_request": 4884
+  },
+  "required_rust_proposal": {
+    "patch": "0a80cbb044a0e00fc1a59810e7174dde0501b5c7",
+    "manifest": "3c41554c5584b237f5c32996017d09a89cc9372c",
+    "actual_publication_map": "60e0d0042a8777173e437b67dbc4868333530a54",
+    "independent_static_review": "70d1033e41854c4a881113a2ac3df01004837e90"
+  },
+  "files": [
+    {
+      "path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "cohort": "execution-v2",
+      "preimage": {
+        "bytes": 5072,
+        "sha256": "2cd28bdbca3557a2294aa1f2edec49d4e8250b968b8bd1747fb1744750ea5de9",
+        "blob": "912e22789665b0081c83ae0fa632d2482e8b0eba"
+      },
+      "postimage": {
+        "bytes": 5929,
+        "sha256": "c2d9c91b0bf724613a075dae881b84523074858728bd06a01f8a39f88c4d4dc6",
+        "blob": "89d2eaf4bb9900f7476d49476e2657effa68327a"
+      },
+      "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml"
+    },
+    {
+      "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "cohort": "execution-v2",
+      "preimage": {
+        "bytes": 16260,
+        "sha256": "55353f094531a4af974c519fadca01dcd0c8be6ece1f8b10efb70d24ae2a44eb",
+        "blob": "2142eeb382664d95f77d83ac7ae3da4459601abf"
+      },
+      "postimage": {
+        "bytes": 16340,
+        "sha256": "63e5bcfc80d09578f526173b33259cd01eb343364342c9c9431233f13e25d52a",
+        "blob": "e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9"
+      },
+      "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/.github/scripts/collect_bazel_failed_test_logs.py",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/scripts/collect_bazel_failed_test_logs.py"
+    },
+    {
+      "path": ".github/scripts/run_b11_read_acl_readiness.py",
+      "cohort": "execution-v2",
+      "preimage": null,
+      "postimage": {
+        "bytes": 14222,
+        "sha256": "09d4b076ee3f9f1232457612ab2f5549bdb5e16bd980a061094de8b10aeb1398",
+        "blob": "6010ce9cc6da2eca95aac9ba453581f68770bbe6"
+      },
+      "local_preimage": null,
+      "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/scripts/run_b11_read_acl_readiness.py"
+    }
+  ],
+  "patch": {
+    "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/execution.patch",
+    "role": "execution.patch",
+    "bytes": 17473,
+    "sha256": "e9c2957e24d08e1b058497e0a940dcefad5efcaf681686b61919c85622a9aa7c",
+    "blob": "dae12bbc83b3cccb6c8f05010eebde901c2a19fd"
+  },
+  "counterfactual_dependency": {
+    "path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+    "bytes": 22200,
+    "sha256": "1a53b2771e795fb27a495d7c053d7afc9b0cad954f27c4802654311771319ed5",
+    "blob": "3680db31233e47ba7fad99f31a7019c4536288bb",
+    "required_V3_patch": {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch",
+      "role": "full.patch",
+      "bytes": 6969,
+      "sha256": "e8e9d45eb167f81b35e3d17db84d9164d6ee12d4dc3260e95e6ce951199d03ab",
+      "blob": "53ed544e11003015cf1a57b27da64b2295681fd2"
+    },
+    "V3_manifest": {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/manifest-DISABLED.json",
+      "role": "manifest-DISABLED.json",
+      "bytes": 5728,
+      "sha256": "4d27907fa21fa83a4dbbdb87f3c564d0874212ec273083385d947cb398c2f1f8",
+      "blob": "4f969ff54698cae7bcd85b32aac5f65d791866e0"
+    },
+    "V3_actual_publication_map": {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/github-readback-map.json",
+      "role": "github-readback-map.json",
+      "bytes": 2564,
+      "sha256": "881ff240006d3c5fa9f345718e17fa485c15ce9030cc75406363d0de59d3c2ac",
+      "blob": "5392123bfe154f349b3b33d546658a6891724738"
+    },
+    "independent_review_actual_blob": "c4ff565c7d003890d6ad42420ec18e802053f467",
+    "explicit_consumer_pin_delta": {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/v1-to-v2-consumer-pin.delta.patch",
+      "role": "v1-to-v2-consumer-pin.delta.patch",
+      "bytes": 928,
+      "sha256": "cf715fde1e5cfcf102fb52ac55edbfbf7be588e8c0c98956a649abe70fea329a",
+      "blob": "3d4273131d8da3f93b2270f88d4474a73cda51cd"
+    },
+    "all_nine_non_main_functions_and_terminal_restore_interface_unchanged": true,
+    "new_positive_scopes_field_not_used_as_a_substitute_for_valid_restored_terminal": true
+  },
+  "static_verification": {
+    "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/static-composition-verification.json",
+    "role": "static-composition-verification.json",
+    "bytes": 8675,
+    "sha256": "c3fc95f0c9da3bf76b2ef363901613ac05c86f4cbec03fdf17aca3182d37b471",
+    "blob": "d1fbda54cd10725ab80042d7b394570fee159c82"
+  },
+  "fixed_source_evidence": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v1/originals/api-0.json",
+      "bytes": 5729,
+      "sha256": "1555c64ad0cf0accf7660928293f0b810175fe82b3527f4651ff45b43a28bf34",
+      "blob": "b29e38776a71bdacd9c6dc61d8726e0c2f9d92bb"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v1/originals/api-1.json",
+      "bytes": 19133,
+      "sha256": "8d33db29e1367b63434c706b81d3e0a380c7f144ff3b9b720cc52b4322bd58fe",
+      "blob": "df1cd4d92a96c5430b030b6f45b9b0d49702797f"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v1/originals/api-2.json",
+      "bytes": 17476,
+      "sha256": "f1338eaca4d70ba63ebd53714bb4160af6d49810f68098658ac8da90f567aa97",
+      "blob": "753ee0d33e480c7f42e3a9e4eb73b19fa37e3d2f"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v1/originals/api-wrapper.json",
+      "bytes": 18873,
+      "sha256": "9aced8234cb33f93df0021c5f6e643ff6d6f592d7f7b1433010f2d5dac774d61",
+      "blob": "8484d10ccba72c3c86fbfd0e2371760936dda990"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v1/originals/api-script-directory.json",
+      "bytes": 100047,
+      "sha256": "e91098817b7f75539511bb92f74e3cb6d93cc4b8135862755251b96b22ab49eb",
+      "blob": "cad426ed777be002ecffe962fec9e749ae8e4999"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/originals/api-readiness-preimage-0.json",
+      "role": "api-readiness-preimage-0.json",
+      "bytes": 50109,
+      "sha256": "1af9a30df481d2e00f6a6242af1d3b0029c1d013eee62fee5469d883efe7f06b",
+      "blob": "a5ca391c14c44697a7694a7c2948f608783f0e07"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/originals/api-readiness-preimage-1.json",
+      "role": "api-readiness-preimage-1.json",
+      "bytes": 2460,
+      "sha256": "620299d237c8c0465df83ee86ae8f898bfa59d60857f03a4c206ad9f172b3737",
+      "blob": "bc19002534926d33d0c0afe963d0986dfa9d6b84"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/originals/api-readiness-preimage-2.json",
+      "role": "api-readiness-preimage-2.json",
+      "bytes": 21673,
+      "sha256": "773e9e17b1cee16bae424fda011735b5863735ca0ec92a10efb7f4023821664b",
+      "blob": "5dbe2b0e2649fb872ddced8c302479507d61440b"
+    }
+  ],
+  "workflow_changes": {
+    "new_target": "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests",
+    "old_library_target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+    "old_library_compiled_case_count": 156,
+    "old_library_original_failure_and_exit_preserved": true,
+    "old_counterfactual_command_and_oracle_and_restoration_preserved": true,
+    "job_timeout_minutes": 120,
+    "runner": "windows-latest",
+    "helper_requires_counterfactual_step_success_and_valid_exact_restoration_receipts": true,
+    "trigger_paths_added": [
+      "      - codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "      - codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "      - codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+      "      - .github/scripts/run_b11_read_acl_readiness.py"
+    ],
+    "collector_original_11_order_and_all_function_bodies_unchanged": true,
+    "collector_only_added_target": "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests",
+    "pty_retention_change_included": false
+  },
+  "guard_contract": [
+    "Original full tracked/untracked worktree and staged-index guards run again before helper.",
+    "Fresh complete index entries and raw lock hashes must equal original counterfactual entry and exact restoration.",
+    "All explicit source pins are checked against canonical LF and actual HEAD; original working-tree CRLF bytes are retained.",
+    "The ordinary index identity is semantic path/mode/OID/stage, not a claim about automatically refreshed stat cache bytes.",
+    "No helper launch after missing, invalid, errored or incompletely restored counterfactual, source drift or lock/index drift.",
+    "No source write or retry is performed by the new helper runner.",
+    "Complete new console, actual exit, command and before/after/final source receipts are independent of earlier target evidence."
+  ],
+  "helper_runtime_requirements": {
+    "unfiltered_existing_target": true,
+    "new_test_cases": 0,
+    "extra_flags": [
+      "--build_metadata=TAG_b11_read_acl_readiness=true",
+      "--nocache_test_results",
+      "--flaky_test_attempts=1"
+    ],
+    "no_test_arg_or_test_filter_or_test_timeout_added": true,
+    "original_incompatible_skip_flag_preserved_but_skipped_result_unqualified": true,
+    "required_named_source_anchors": [
+      "win::acl_tests::provision_only_locks_plain_directory_via_handle",
+      "win::read_acl_mutex::tests::existing_read_acl_mutex_is_not_a_completion_receipt",
+      "win::tests::deny_path_includes_nested_active_root_sid",
+      "win::tests::deny_path_outside_active_roots_falls_back_to_all_active_root_sids",
+      "win::tests::deny_path_under_active_root_uses_only_matching_root_sid",
+      "win::tests::payload_accepts_otel_settings",
+      "win::tests::payload_accepts_provision_only_mode",
+      "win::tests::payload_defaults_otel_absent",
+      "win::tests::write_root_refresh_checks_each_sid",
+      "win::tests::write_root_refresh_ignores_inherited_delete_child_grant",
+      "win::tests::write_root_refresh_replaces_stale_delete_child_grant"
+    ],
+    "required_names_are_not_a_preclaimed_complete_runtime_roster": true,
+    "all_compiled_roster_members_must_be_covered_by_unique_ok_names_across_original_launcher_batches": true,
+    "missing_cached_flaky_ignored_failed_duplicate_or_ambiguous_result_rejected": true,
+    "own_new_archive_current_source_manifest_log_xml_and_member_hashes_required": true,
+    "hard_cancel_does_not_produce_completed_qualification": true,
+    "build_cache_is_not_disabled_or_counted_as_a_test_pass": true,
+    "source_anchors_are_10_old_and_1_previously_prepared_readiness_control": true
+  },
+  "existing_script_regression_gate": {
+    "command": "python3 -m unittest discover -s .github/scripts -p 'test_run_bazel*.py' -v",
+    "source": {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/a-hygiene-independent-review-20261105/fmt-postimages/.github/scripts/test_run_bazel_ci.py",
+      "bytes": 33989,
+      "sha256": "83dfc9788189aa2279dbc4be8ad0aacca31c9c63c0d2cd3b58e386784b7cc80d",
+      "blob": "ed8276016bcf8ff7738c1769907ae1c145438add"
+    },
+    "relevant_original_case_names": [
+      "test_failure_archives_all_selected_shards_and_attempts_without_truncation",
+      "test_collector_accepts_root_link_but_refuses_traversal_and_external_links",
+      "test_collector_failure_keeps_original_bazel_status_and_tail",
+      "test_success_does_not_collect_failed_test_logs",
+      "test_success_retains_reported_targets_and_preserves_status_scope",
+      "test_missing_selected_logs_preserve_success_and_failure_status",
+      "test_conflicting_selected_summaries_do_not_read_existing_logs"
+    ],
+    "not_run_for_this_candidate": true
+  },
+  "prior_observation": {
+    "source": "0f6148ea3fbe9d1263354791d5cc63c7e66d4628",
+    "original_library": "147 PASS / 7 FAIL / 2 ignored",
+    "counterfactual": "INVALID_NOT_RUN before any source mutation; interleaved original prerequisite output",
+    "origin": "root/architecture actual observation; not a new independent rerun in this package",
+    "not_valid_negative_and_not_helper_qualification": true
+  },
+  "limits": [
+    "No Cargo/Bazel/Windows/native execution, no ref/PR mutation, no workflow dispatch or retry.",
+    "The separately compiled setup-bin target is not qualified by the library's 156-case result.",
+    "Readiness proposal preserves original roots, privileges, token, write/deny behavior, builtin-RX/missing-root shortcuts.",
+    "Readiness still inherits original INFINITE/no-local-deadline parent waits and busy legitimate concurrency can explicitly fail.",
+    "Helper tests do not establish real Full read ACL completeness, restricted read SID, loader, descendant custody or B11 isolation.",
+    "Missing logs or a failing guard remain explicit evidence gaps, not passed scopes."
+  ],
+  "preserved_V1": {
+    "manifest": {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v1/manifest.json",
+      "role": "manifest.json",
+      "bytes": 11327,
+      "sha256": "50a9e67f70b726327751d84ffe079a1f6adcf522df2a1dbac248b3f68776b817",
+      "blob": "c7a92a329f3c007d8b1603874733db8b18d5e42a"
+    },
+    "actual_publication_map": {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v1/publication-map.json",
+      "role": "publication-map.json",
+      "bytes": 9274,
+      "sha256": "ff649ae7a072ae5218b29db51a35c55ccb491157182dacf9aebddab232a5f243",
+      "blob": "b9bc0f02090abec911c1eb484d95f38d4ef90658"
+    },
+    "all_16_original_objects_actual_create_GET_equal": true,
+    "scope": "0f with 25def counterfactual; source, documents and receipts not rewritten."
+  },
+  "V1_static_checks_preserved": {
+    "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v1/static-verification.json",
+    "role": "static-verification.json",
+    "bytes": 4465,
+    "sha256": "97f10ca48ddd24d44f4ed026d0339506d4c5c3314d9f2be8479a45aed02b2d06",
+    "blob": "fde12c886137a3a081c9da0f2e26926c0ab15f03"
+  },
+  "combined_delivery": {
+    "patch": {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/combined-seven-paths.patch",
+      "role": "combined-seven-paths.patch",
+      "bytes": 36059,
+      "sha256": "67255b0ce2b3f66026172ecc7d7749b388dec92e6964c63d4c6d3e655c20e4e5",
+      "blob": "7353316e15b851ffb61f0da0c0e8651bc7d317a8"
+    },
+    "source_map": {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/combined-source-map.json",
+      "role": "combined-source-map.json",
+      "bytes": 5794,
+      "sha256": "2ae582071b7c6e9f8cc089ca2de1a705a5a1ddea358bc96e05c08d0d3ef48da0",
+      "blob": "08ec8d621383b6853a3e1cc7f540e2940c11c317"
+    },
+    "files": [
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+        "cohort": "readiness-rust-0a80",
+        "preimage": {
+          "bytes": 47955,
+          "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3",
+          "blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d"
+        },
+        "postimage": {
+          "bytes": 45950,
+          "sha256": "56fc08023e586ee8faa88dc630d2b946080a7779773da406918c13f5697b0d01",
+          "blob": "c39b298b7889dc3669e1ee7e2816f7e77568e955"
+        },
+        "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+        "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+        "cohort": "readiness-rust-0a80",
+        "preimage": {
+          "bytes": 1913,
+          "sha256": "89d689e0c0a07ff8b68d719f6ffb23df86a22598df37d57f6d70360ca738e695",
+          "blob": "a96b6a502474a8bab3baa7842f36dfa814c9cc37"
+        },
+        "postimage": {
+          "bytes": 1960,
+          "sha256": "38f994940b12741210bc9b4cd3d648ed9a53378c638f2671154d0777d13b2598",
+          "blob": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6"
+        },
+        "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+        "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+        "cohort": "readiness-rust-0a80",
+        "preimage": null,
+        "postimage": {
+          "bytes": 2425,
+          "sha256": "c8076fe5e2946b273186654da298fd08d0d885317273a56eb1c80e424023bb18",
+          "blob": "333aefdf9584ef29612ac6f9814ff34308971754"
+        },
+        "local_preimage": null,
+        "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs"
+      },
+      {
+        "path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+        "cohort": "execution-v2",
+        "preimage": {
+          "bytes": 5072,
+          "sha256": "2cd28bdbca3557a2294aa1f2edec49d4e8250b968b8bd1747fb1744750ea5de9",
+          "blob": "912e22789665b0081c83ae0fa632d2482e8b0eba"
+        },
+        "postimage": {
+          "bytes": 5929,
+          "sha256": "c2d9c91b0bf724613a075dae881b84523074858728bd06a01f8a39f88c4d4dc6",
+          "blob": "89d2eaf4bb9900f7476d49476e2657effa68327a"
+        },
+        "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+        "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml"
+      },
+      {
+        "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+        "cohort": "execution-v2",
+        "preimage": {
+          "bytes": 16260,
+          "sha256": "55353f094531a4af974c519fadca01dcd0c8be6ece1f8b10efb70d24ae2a44eb",
+          "blob": "2142eeb382664d95f77d83ac7ae3da4459601abf"
+        },
+        "postimage": {
+          "bytes": 16340,
+          "sha256": "63e5bcfc80d09578f526173b33259cd01eb343364342c9c9431233f13e25d52a",
+          "blob": "e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9"
+        },
+        "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/.github/scripts/collect_bazel_failed_test_logs.py",
+        "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/scripts/collect_bazel_failed_test_logs.py"
+      },
+      {
+        "path": ".github/scripts/run_b11_read_acl_readiness.py",
+        "cohort": "execution-v2",
+        "preimage": null,
+        "postimage": {
+          "bytes": 14222,
+          "sha256": "09d4b076ee3f9f1232457612ab2f5549bdb5e16bd980a061094de8b10aeb1398",
+          "blob": "6010ce9cc6da2eca95aac9ba453581f68770bbe6"
+        },
+        "local_preimage": null,
+        "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/scripts/run_b11_read_acl_readiness.py"
+      },
+      {
+        "path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+        "cohort": "counterfactual-v3-3680",
+        "preimage": {
+          "bytes": 17774,
+          "sha256": "6e199582d277e44f1796dcf64c39bb0fe3f263f060ab79da1bf682fff5866b1f",
+          "blob": "25def4386ea08bb72a7605cc113117f31fffcd1b"
+        },
+        "postimage": {
+          "bytes": 22200,
+          "sha256": "1a53b2771e795fb27a495d7c053d7afc9b0cad954f27c4802654311771319ed5",
+          "blob": "3680db31233e47ba7fad99f31a7019c4536288bb"
+        },
+        "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/.github/scripts/run_b11_acl_identity_counterfactual.py",
+        "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py"
+      }
+    ],
+    "path_count": 7,
+    "added_lines": 400,
+    "deleted_lines": 99,
+    "independent_cohorts": [
+      "readiness Rust 3 paths: 96+/92-",
+      "execution 3 paths: 244+/0-",
+      "counterfactual V3 1 path: 60+/7-"
+    ],
+    "real_isolated_sequential_and_full_patch_application_produced_all_7_identical_postimages": true,
+    "source_refs_and_original_lockfiles_untouched": true,
+    "not_a_published_commit_or_an_executed_source": true
+  },
+  "no_new_native_or_parser_tests_added_for_this_wiring": true,
+  "required_independent_review": "CI agent reviews final execution V2 and exact composition; no launch/ref action by this author."
+}

@@ -1,0 +1,346 @@
+{
+  "schema": "b11-helper-execution-v2-independent-verification-v1",
+  "observed_at": "2026-11-05T18:41:13.559996+00:00",
+  "status": "STATIC_ACCEPT_NO_NATIVE_EXECUTION",
+  "source_files": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "preimage": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+        "bytes": 47955,
+        "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3",
+        "git_blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d"
+      },
+      "postimage": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+        "bytes": 45950,
+        "sha256": "56fc08023e586ee8faa88dc630d2b946080a7779773da406918c13f5697b0d01",
+        "git_blob": "c39b298b7889dc3669e1ee7e2816f7e77568e955"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "preimage": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+        "bytes": 1913,
+        "sha256": "89d689e0c0a07ff8b68d719f6ffb23df86a22598df37d57f6d70360ca738e695",
+        "git_blob": "a96b6a502474a8bab3baa7842f36dfa814c9cc37"
+      },
+      "postimage": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+        "bytes": 1960,
+        "sha256": "38f994940b12741210bc9b4cd3d648ed9a53378c638f2671154d0777d13b2598",
+        "git_blob": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+        "bytes": 2425,
+        "sha256": "c8076fe5e2946b273186654da298fd08d0d885317273a56eb1c80e424023bb18",
+        "git_blob": "333aefdf9584ef29612ac6f9814ff34308971754"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "preimage": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+        "bytes": 5072,
+        "sha256": "2cd28bdbca3557a2294aa1f2edec49d4e8250b968b8bd1747fb1744750ea5de9",
+        "git_blob": "912e22789665b0081c83ae0fa632d2482e8b0eba"
+      },
+      "postimage": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+        "bytes": 5929,
+        "sha256": "c2d9c91b0bf724613a075dae881b84523074858728bd06a01f8a39f88c4d4dc6",
+        "git_blob": "89d2eaf4bb9900f7476d49476e2657effa68327a"
+      }
+    },
+    {
+      "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "preimage": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/.github/scripts/collect_bazel_failed_test_logs.py",
+        "bytes": 16260,
+        "sha256": "55353f094531a4af974c519fadca01dcd0c8be6ece1f8b10efb70d24ae2a44eb",
+        "git_blob": "2142eeb382664d95f77d83ac7ae3da4459601abf"
+      },
+      "postimage": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/scripts/collect_bazel_failed_test_logs.py",
+        "bytes": 16340,
+        "sha256": "63e5bcfc80d09578f526173b33259cd01eb343364342c9c9431233f13e25d52a",
+        "git_blob": "e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9"
+      }
+    },
+    {
+      "path": ".github/scripts/run_b11_read_acl_readiness.py",
+      "preimage": null,
+      "postimage": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/scripts/run_b11_read_acl_readiness.py",
+        "bytes": 14222,
+        "sha256": "09d4b076ee3f9f1232457612ab2f5549bdb5e16bd980a061094de8b10aeb1398",
+        "git_blob": "6010ce9cc6da2eca95aac9ba453581f68770bbe6"
+      }
+    },
+    {
+      "path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+      "preimage": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/source/.github/scripts/run_b11_acl_identity_counterfactual.py",
+        "bytes": 17774,
+        "sha256": "6e199582d277e44f1796dcf64c39bb0fe3f263f060ab79da1bf682fff5866b1f",
+        "git_blob": "25def4386ea08bb72a7605cc113117f31fffcd1b"
+      },
+      "postimage": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py",
+        "bytes": 22200,
+        "sha256": "1a53b2771e795fb27a495d7c053d7afc9b0cad954f27c4802654311771319ed5",
+        "git_blob": "3680db31233e47ba7fad99f31a7019c4536288bb"
+      }
+    }
+  ],
+  "physical_input_pins": [
+    {
+      "logical_source": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "bytes": 45950,
+      "sha256": "56fc08023e586ee8faa88dc630d2b946080a7779773da406918c13f5697b0d01",
+      "git_blob": "c39b298b7889dc3669e1ee7e2816f7e77568e955"
+    },
+    {
+      "logical_source": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "bytes": 1960,
+      "sha256": "38f994940b12741210bc9b4cd3d648ed9a53378c638f2671154d0777d13b2598",
+      "git_blob": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6"
+    },
+    {
+      "logical_source": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+      "bytes": 2425,
+      "sha256": "c8076fe5e2946b273186654da298fd08d0d885317273a56eb1c80e424023bb18",
+      "git_blob": "333aefdf9584ef29612ac6f9814ff34308971754"
+    },
+    {
+      "logical_source": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs",
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs",
+      "bytes": 928,
+      "sha256": "445eed000f1e4c9865d880354262ed547b49aafbc5db01812366d21a0d1d27cc",
+      "git_blob": "e488e2a914b119ecb02cfc1a13a90009bc6120ea"
+    },
+    {
+      "logical_source": "codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs",
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs",
+      "bytes": 231,
+      "sha256": "5aa17a3bde3f2ad869037f0829139dfb338d1346ef9eea577b577febbda8a632",
+      "git_blob": "262460775ef6b5e02f0ba4485f388e1b389cc85f"
+    },
+    {
+      "logical_source": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/source/codex-rs/windows-sandbox-rs/Cargo.toml",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd"
+    },
+    {
+      "logical_source": "codex-rs/windows-sandbox-rs/BUILD.bazel",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/source/codex-rs/windows-sandbox-rs/BUILD.bazel",
+      "bytes": 2556,
+      "sha256": "187e93c5a9a244c752dee5ed15202b361d593d9d651f850a1bda5d69969a7702",
+      "git_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865"
+    },
+    {
+      "logical_source": "defs.bzl",
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/source/defs.bzl",
+      "bytes": 34630,
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+      "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+    },
+    {
+      "logical_source": ".github/scripts/run-bazel-ci.sh",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/macos-bash-empty-array-20261105/candidate/.github/scripts/run-bazel-ci.sh",
+      "bytes": 17448,
+      "sha256": "0136e087ddfac7c01bdacb03357d0353d328dea3b8cd86caf94e64bf10706482",
+      "git_blob": "42b59b6354b5933c8155b992519682c06d024ca1"
+    },
+    {
+      "logical_source": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/scripts/collect_bazel_failed_test_logs.py",
+      "bytes": 16340,
+      "sha256": "63e5bcfc80d09578f526173b33259cd01eb343364342c9c9431233f13e25d52a",
+      "git_blob": "e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9"
+    },
+    {
+      "logical_source": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py",
+      "bytes": 22200,
+      "sha256": "1a53b2771e795fb27a495d7c053d7afc9b0cad954f27c4802654311771319ed5",
+      "git_blob": "3680db31233e47ba7fad99f31a7019c4536288bb"
+    }
+  ],
+  "checks": {
+    "combined_seven_paths_real_git_forward_and_reverse_exact": true,
+    "original_whole_library_step_byte_semantics_preserved": true,
+    "all_existing_workflow_steps_preserved_except_counterfactual_id": true,
+    "workflow_120min_preserved": true,
+    "collector_only_one_helper_retention_line": true,
+    "all_collector_functions_byte_equal": true,
+    "consumer_pin_is_actual_V3_3680": true,
+    "consumer_only_one_pin_change_from_V1": true,
+    "three_readiness_postimages_byte_equal_prior_review": true,
+    "required_11_helper_anchors_match_original_and_new_source_tests": true,
+    "valid_counterfactual_and_exact_source_restoration_required_before_command": true,
+    "unfiltered_original_helper_target_with_no_timeout_increase": true,
+    "explicit_no_cache_one_attempt": true,
+    "helper_final_guard_error_is_not_PASS": true
+  },
+  "helper_argv_static": [
+    "bash",
+    "./.github/scripts/run-bazel-ci.sh",
+    "--print-failed-action-summary",
+    "--print-failed-test-logs",
+    "--windows-msvc-host-platform",
+    "--remote-download-toplevel",
+    "--",
+    "test",
+    "--platforms=//:windows_x86_64_msvc",
+    "--skip_incompatible_explicit_targets",
+    "--test_tag_filters=-argument-comment-lint",
+    "--test_verbose_timeout_warnings",
+    "--test_output=all",
+    "<dynamic GITHUB_SHA build metadata>",
+    "--build_metadata=TAG_b11_observation_only=true",
+    "--build_metadata=TAG_b11_read_acl_readiness=true",
+    "--nocache_test_results",
+    "--flaky_test_attempts=1",
+    "--",
+    "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests"
+  ],
+  "required_helper_anchors": [
+    "win::acl_tests::provision_only_locks_plain_directory_via_handle",
+    "win::read_acl_mutex::tests::existing_read_acl_mutex_is_not_a_completion_receipt",
+    "win::tests::deny_path_includes_nested_active_root_sid",
+    "win::tests::deny_path_outside_active_roots_falls_back_to_all_active_root_sids",
+    "win::tests::deny_path_under_active_root_uses_only_matching_root_sid",
+    "win::tests::payload_accepts_otel_settings",
+    "win::tests::payload_accepts_provision_only_mode",
+    "win::tests::payload_defaults_otel_absent",
+    "win::tests::write_root_refresh_checks_each_sid",
+    "win::tests::write_root_refresh_ignores_inherited_delete_child_grant",
+    "win::tests::write_root_refresh_replaces_stale_delete_child_grant"
+  ],
+  "cloud_git_commands": [
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "init",
+        "-q"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/ci-audit/b11-helper-execution-v2-independent-20261105/isolated-reconstruction-v1",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/combined-seven-paths.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/ci-audit/b11-helper-execution-v2-independent-20261105/isolated-reconstruction-v1",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/combined-seven-paths.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/ci-audit/b11-helper-execution-v2-independent-20261105/isolated-reconstruction-v1",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/combined-seven-paths.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/ci-audit/b11-helper-execution-v2-independent-20261105/isolated-reconstruction-v1",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/combined-seven-paths.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/ci-audit/b11-helper-execution-v2-independent-20261105/isolated-reconstruction-v1",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "inputs": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/manifest.json",
+      "bytes": 23195,
+      "sha256": "ed153a0eb0f76ab7a6127be30f44d39db28fbdf96d0c093dae062eff9c461de2",
+      "git_blob": "7c04f47dd3ebe95aa5049ae307675aade6a633c5"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/execution.patch",
+      "bytes": 17473,
+      "sha256": "e9c2957e24d08e1b058497e0a940dcefad5efcaf681686b61919c85622a9aa7c",
+      "git_blob": "dae12bbc83b3cccb6c8f05010eebde901c2a19fd"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/combined-seven-paths.patch",
+      "bytes": 36059,
+      "sha256": "67255b0ce2b3f66026172ecc7d7749b388dec92e6964c63d4c6d3e655c20e4e5",
+      "git_blob": "7353316e15b851ffb61f0da0c0e8651bc7d317a8"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/v1-to-v2-consumer-pin.delta.patch",
+      "bytes": 928,
+      "sha256": "cf715fde1e5cfcf102fb52ac55edbfbf7be588e8c0c98956a649abe70fea329a",
+      "git_blob": "3d4273131d8da3f93b2270f88d4474a73cda51cd"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/combined-source-map.json",
+      "bytes": 5794,
+      "sha256": "2ae582071b7c6e9f8cc089ca2de1a705a5a1ddea358bc96e05c08d0d3ef48da0",
+      "git_blob": "08ec8d621383b6853a3e1cc7f540e2940c11c317"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/execution-candidate-v2/static-composition-verification.json",
+      "bytes": 8675,
+      "sha256": "c3fc95f0c9da3bf76b2ef363901613ac05c86f4cbec03fdf17aca3182d37b471",
+      "git_blob": "d1fbda54cd10725ab80042d7b394570fee159c82"
+    }
+  ],
+  "limits": [
+    "This script parses source and performs isolated cloud Git reconstruction only; no candidate CLI, Rust, Bazel, Windows, tests, or workflow execution.",
+    "The11 anchors are source expectations, not a claimed native compiled roster. Actual helper result and full named roster remain pending.",
+    "Existing whole-library failures, hard-cancellation limits and B11 OPEN are preserved."
+  ]
+}

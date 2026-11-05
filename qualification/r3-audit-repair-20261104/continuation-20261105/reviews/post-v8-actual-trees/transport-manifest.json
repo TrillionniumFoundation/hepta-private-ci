@@ -1,0 +1,29 @@
+{
+  "schema": "hepta-actual-tree-lossless-transport-v1",
+  "source": "Complete actual Git tree GET identities: no URLs/sizes, every returned path/mode/type/SHA, with 3 actual nonrecursive audit ancestors. Independently recomputed every directory Merkle hash.",
+  "raw": {
+    "bytes": 1100328,
+    "sha256": "2725347011c31028c5c56f62f121e56fee98a4345a5154d482ef08bfe726b19b"
+  },
+  "base64": {
+    "bytes": 617664,
+    "sha256": "e1e1dc76eca90bce82b917b172d52b900db798078deea412e232292c41678f70"
+  },
+  "parts": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-v8-actual-trees/actual-trees-compact.part-000.base64.txt",
+      "offset": 0,
+      "bytes": 350000,
+      "sha256": "0152cdeb7c37864995166671cdb01caf8d979d1367afd28e792d80d8a146bf3d",
+      "git_blob": "c838a7e5c73c93a66a31810d5fabcef63a6fff34"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-v8-actual-trees/actual-trees-compact.part-001.base64.txt",
+      "offset": 350000,
+      "bytes": 267664,
+      "sha256": "4ef110e32fdd09c611956a2df8b192d938c73649b5df68902c1f996f127df515",
+      "git_blob": "bcddbb5a2e16205c1bb1fba01fcc4d51a8b4cdee"
+    }
+  ],
+  "decode": "Concatenate exact chunk bytes in offset order; strict base64 decode; gzip decompress; verify raw bytes/SHA256; run sibling verifier. This is a new reconstructed identity cache, not an exact recovery of any lost old receipt."
+}

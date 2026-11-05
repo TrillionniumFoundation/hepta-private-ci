@@ -1,0 +1,770 @@
+{
+  "schema": "b20-original-exit-independent-verification-v1",
+  "original_exit_condition_zh": "确定性旧源同握手错误、新源对照及原真实AppServer关闭/断连断言全部通过。",
+  "evidence_action": "READ_ONLY_EXISTING_ORIGINALS_AND_ISOLATED_SOURCE_PATCH_CHECK",
+  "native_custody": {
+    "pinned_original_files": [
+      {
+        "retrieval": "original-app-statuses.read-multiple.original-tool-response.json",
+        "native_path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/app-remote-original-negative-status.json",
+        "native_version": "2050:53531264:1811:1793808288663508993:1793808288663508993",
+        "bytes": 1811,
+        "sha256": "fc4df71fe7dc83f35f945c83180fab01452155cfd1a44aaf032eb78030c734a4",
+        "git_blob": "6937948583ce26f9f615209c5bf64fc6aa6c19f7"
+      },
+      {
+        "retrieval": "original-app-statuses.read-multiple.original-tool-response.json",
+        "native_path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/app-native-results.json",
+        "native_version": "2050:53531265:13878:1793808758866979263:1793808758866979263",
+        "bytes": 13878,
+        "sha256": "318f4e0dcffc4eba0a1ee8c3a0948f1ccc5fa961ebfe111c4dc0e86d50b1fd05",
+        "git_blob": "10bff97c12d3f7ba535a6605deff5fad03cbe81f"
+      },
+      {
+        "retrieval": "original-app-xml-manifests.read-multiple.original-tool-response.json",
+        "native_path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/app-remote-original-negative.junit.xml",
+        "native_version": "2050:53531263:1498:1793808288640070362:1793808288640070362",
+        "bytes": 1498,
+        "sha256": "1c8a7dfd0535c67c642de8416758108f063b4f4abcc4efa6bf4fcff8cb95f9f7",
+        "git_blob": "6191d81c137e665d81702fde6ab62f389c8abb83"
+      },
+      {
+        "retrieval": "original-app-xml-manifests.read-multiple.original-tool-response.json",
+        "native_path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/app-remote-fixed-originals.junit.xml",
+        "native_version": "2050:53531275:4455:1793808747140339483:1793808747140339483",
+        "bytes": 4455,
+        "sha256": "04a5b61c8fb144125225c5b4b3c71f132805f24d563f2589f77b9d4eabb88752",
+        "git_blob": "7cfab6ab1a95651526e4d317db9848c1ebe86cc1"
+      },
+      {
+        "retrieval": "original-app-xml-manifests.read-multiple.original-tool-response.json",
+        "native_path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/app-remote-regression-only-manifest.json",
+        "native_version": "2050:53531258:13769:1793808025457686006:1793808025457686006",
+        "bytes": 13769,
+        "sha256": "1c0372e805643c0ce7504c4ac546ed8eda4a89669f328b06d81c51d2a4ad4700",
+        "git_blob": "95e9240e94cb6940577ca829269e0e4f9ab5a8d7"
+      },
+      {
+        "retrieval": "original-app-xml-manifests.read-multiple.original-tool-response.json",
+        "native_path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/app-remote-final-manifest.json",
+        "native_version": "2050:53531272:13760:1793808662282688130:1793808662282688130",
+        "bytes": 13760,
+        "sha256": "ca5c78db2290f3bc5d7b18a3030a6447ac4f467cbaf961fa3bfee1482bb68c0b",
+        "git_blob": "3650807c97eade9c056c8a0214bd8dde1f57638b"
+      },
+      {
+        "retrieval": "original-app-xml-manifests.read-multiple.original-tool-response.json",
+        "native_path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/native-host-toolchain-receipt.json",
+        "native_version": "2050:53531254:1417:1793808021091214171:1793808021091214171",
+        "bytes": 1417,
+        "sha256": "d31edd2d899a57ab35a82b7891761813feafd1da672ad3653a197f45cfd834d4",
+        "git_blob": "30452da5080ec5125b82fa1250325a03ca8ee6df"
+      },
+      {
+        "retrieval": "original-app-extra-statuses.read-multiple.original-tool-response.json",
+        "native_path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/app-remote-fixed-originals-status.json",
+        "native_version": "2050:53531276:6411:1793808747165038379:1793808747165038379",
+        "bytes": 6411,
+        "sha256": "ed9afa78eb62c8e7a593ea3af76d5152bcf825be20db22aba3d6d91422581c35",
+        "git_blob": "e9203c3fcc06ff8c939b003614906384affd00c4"
+      },
+      {
+        "retrieval": "original-app-extra-statuses.read-multiple.original-tool-response.json",
+        "native_path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/app-remote-baseline-proof.json",
+        "native_version": "2050:53531266:2044:1793808288664013189:1793808288664013189",
+        "bytes": 2044,
+        "sha256": "2f25831354cab8a98b6b2de009814f8e6d41506a786d4ec117796a2f61461226",
+        "git_blob": "5d5427dded7e1982aee19cdec92043f50c0677c5"
+      },
+      {
+        "retrieval": "app-remote-original-negative.log.binary-read.original-tool-response.json",
+        "native_path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/app-remote-original-negative.log",
+        "native_version": "2050:53531261:25042:1793808288637014357:1793808288637014357",
+        "bytes": 25042,
+        "sha256": "08dc5cbabb1f471433018b2da0680aad603a82195c8e76b37b8bae8ea4ec1ab7",
+        "git_blob": "e16c97c14b90a2f97cdba8f23d397110f1623a71"
+      },
+      {
+        "retrieval": "app-remote-fixed-originals.log.binary-read.original-tool-response.json",
+        "native_path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/app-remote-fixed-originals.log",
+        "native_version": "2050:53531274:19525:1793808747113431281:1793808747113431281",
+        "bytes": 19525,
+        "sha256": "4b061e7d0000ea65332f717d19d5441461286f8559f1b50de2de77d4d7c864f7",
+        "git_blob": "6a827dfd82c78f4651ce36a413ef9949b627250e"
+      },
+      {
+        "native_path": "/home/qian-qi/work/hepta-audit-20261104-1230-hookmetadata-evidence/app-remote-regression-only-after-e729.patch",
+        "native_version": "2050:53531259:119086:1793808025508190238:1793808025508190238",
+        "complete_chunks": 2,
+        "bytes": 119086,
+        "sha256": "cb4d858d4398d4d82d254c0c208cd46a00bc98988f87eac29d49a7595ac37abe",
+        "git_blob": "0276685c5f70164e6c54040de5dc7b063aa7520d"
+      }
+    ],
+    "known_hygiene_job": {
+      "job_id": "1a1a774e5e5-fc05-2b81",
+      "full_stdout": {
+        "bytes": 27701,
+        "sha256": "defc52b83b20607ba30d379f5589b9de71b139ea663ee001a3eda422adae86d9",
+        "git_blob": "b2f8a79d1886b89755f168134b0288552df99609"
+      },
+      "role": "Existing owned hygiene job identifies the prior worktree context; it is not relabeled as the negative/fixed test process."
+    },
+    "read_multiple_atomic_snapshot": false
+  },
+  "negative": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-app-server",
+      "--test",
+      "all",
+      "-E",
+      "test(suite::v2::remote_control::connected_backend_handles_models_lookup_before_websocket_initialize) | test(suite::v2::remote_control::models_http_request_is_not_a_websocket_upgrade)",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--test-threads",
+      "4"
+    ],
+    "source_tree": "0ec7ee504e4450a6a959a437a54363d8634100a9",
+    "source_stage": "app-remote-regression-only",
+    "started_unix": 1793808025.5311344,
+    "exit_code": 100,
+    "total_elapsed_seconds_including_compile": 263.10779550590087,
+    "junit_test_duration_seconds": 0.11,
+    "raw": {
+      "bytes": 25042,
+      "sha256": "08dc5cbabb1f471433018b2da0680aad603a82195c8e76b37b8bae8ea4ec1ab7",
+      "git_blob": "e16c97c14b90a2f97cdba8f23d397110f1623a71"
+    },
+    "junit": {
+      "bytes": 1498,
+      "sha256": "1c8a7dfd0535c67c642de8416758108f063b4f4abcc4efa6bf4fcff8cb95f9f7",
+      "git_blob": "6191d81c137e665d81702fde6ab62f389c8abb83"
+    },
+    "cases": [
+      {
+        "name": "suite::v2::remote_control::connected_backend_handles_models_lookup_before_websocket_initialize",
+        "result": "FAIL",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::connected_backend_handles_models_lookup_before_websocket_initialize",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:04:48.280-05:00",
+          "time": "0.087"
+        },
+        "failure": {
+          "message": "Error: WebSocket protocol error: No \"Connection: upgrade\" header",
+          "type": "test failure with exit code 101"
+        }
+      },
+      {
+        "name": "suite::v2::remote_control::models_http_request_is_not_a_websocket_upgrade",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::models_http_request_is_not_a_websocket_upgrade",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:04:48.280-05:00",
+          "time": "0.089"
+        },
+        "failure": null
+      }
+    ],
+    "selection_exclusions_are_filtered_not_ignored": 1016,
+    "selected_ignored_or_early_return": 0
+  },
+  "fixed": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-app-server",
+      "--test",
+      "all",
+      "-E",
+      "test(suite::v2::remote_control::) | test(suite::v2::remote_control::connected_backend_handles_models_lookup_before_websocket_initialize) | test(suite::v2::remote_control::models_http_request_is_not_a_websocket_upgrade) | test(suite::v2::remote_control::http_fixture_rejects_eof_before_request_headers_complete) | test(suite::v2::remote_control::stdio_eof_exits_with_remote_control_connection)",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--test-threads",
+      "4"
+    ],
+    "source_tree": "98e7be301dec58f14d51738221e4445e3a06d900",
+    "source_stage": "app-remote-final",
+    "started_unix": 1793808662.356305,
+    "exit_code": 0,
+    "total_elapsed_seconds_including_compile": 84.78270104597323,
+    "junit_test_duration_seconds": 4.592,
+    "raw": {
+      "bytes": 19525,
+      "sha256": "4b061e7d0000ea65332f717d19d5441461286f8559f1b50de2de77d4d7c864f7",
+      "git_blob": "6a827dfd82c78f4651ce36a413ef9949b627250e"
+    },
+    "junit": {
+      "bytes": 4455,
+      "sha256": "04a5b61c8fb144125225c5b4b3c71f132805f24d563f2589f77b9d4eabb88752",
+      "git_blob": "7cfab6ab1a95651526e4d317db9848c1ebe86cc1"
+    },
+    "cases": [
+      {
+        "name": "suite::v2::remote_control::connected_backend_handles_models_lookup_before_websocket_initialize",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::connected_backend_handles_models_lookup_before_websocket_initialize",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:22.542-05:00",
+          "time": "0.037"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::http_fixture_rejects_eof_before_request_headers_complete",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::http_fixture_rejects_eof_before_request_headers_complete",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:22.542-05:00",
+          "time": "0.041"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::explicit_remote_control_startup_fails_when_disabled_by_requirements",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::explicit_remote_control_startup_fails_when_disabled_by_requirements",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:22.542-05:00",
+          "time": "0.628"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::disable_waits_for_in_flight_durable_enable",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::disable_waits_for_in_flight_durable_enable",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:22.542-05:00",
+          "time": "1.278"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::listen_off_honors_persisted_remote_control_enable",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::listen_off_honors_persisted_remote_control_enable",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:22.583-05:00",
+          "time": "1.335"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::listen_off_ignores_persisted_enable_when_disabled_by_requirements",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::listen_off_ignores_persisted_enable_when_disabled_by_requirements",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:23.170-05:00",
+          "time": "1.005"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::models_http_request_is_not_a_websocket_upgrade",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::models_http_request_is_not_a_websocket_upgrade",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:24.175-05:00",
+          "time": "0.036"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::listen_off_exits_without_persisted_remote_control_enable",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::listen_off_exits_without_persisted_remote_control_enable",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:22.579-05:00",
+          "time": "1.711"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::managed_requirements_allow_remote_control_true_does_not_enable_or_block_it",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::managed_requirements_allow_remote_control_true_does_not_enable_or_block_it",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:23.820-05:00",
+          "time": "0.696"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::managed_requirements_reject_all_remote_control_rpcs",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::managed_requirements_reject_all_remote_control_rpcs",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:23.919-05:00",
+          "time": "0.670"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::pairing_start_works_after_ephemeral_enable",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::pairing_start_works_after_ephemeral_enable",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:24.211-05:00",
+          "time": "1.092"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::remote_control_client_management_works_while_disabled",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::remote_control_client_management_works_while_disabled",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:24.290-05:00",
+          "time": "1.075"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::remote_control_disable_returns_disabled_status",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::remote_control_disable_returns_disabled_status",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:24.516-05:00",
+          "time": "0.900"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::remote_control_enable_returns_connecting_status",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::remote_control_enable_returns_connecting_status",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:24.589-05:00",
+          "time": "1.045"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::remote_control_status_read_returns_disabled_status",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::remote_control_status_read_returns_disabled_status",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:25.416-05:00",
+          "time": "0.753"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::remote_control_status_read_returns_connecting_status_after_enable",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::remote_control_status_read_returns_connecting_status_after_enable",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:25.365-05:00",
+          "time": "1.058"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::remote_control_pairing_start_returns_pairing_artifacts",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::remote_control_pairing_start_returns_pairing_artifacts",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:25.303-05:00",
+          "time": "1.360"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::rpc_updates_durable_preference_but_ephemeral_does_not",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::rpc_updates_durable_preference_but_ephemeral_does_not",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:25.633-05:00",
+          "time": "1.230"
+        },
+        "failure": null
+      },
+      {
+        "name": "suite::v2::remote_control::stdio_eof_exits_with_remote_control_connection",
+        "result": "PASS",
+        "junit_attributes": {
+          "name": "suite::v2::remote_control::stdio_eof_exits_with_remote_control_connection",
+          "classname": "codex-app-server::all",
+          "timestamp": "2026-11-04T11:12:26.170-05:00",
+          "time": "0.944"
+        },
+        "failure": null
+      }
+    ],
+    "selection_exclusions_are_filtered_not_ignored": 1000,
+    "selected_ignored_or_early_return": 0
+  },
+  "source": {
+    "old_source_trees": {
+      "negative": {
+        "tree": "0ec7ee504e4450a6a959a437a54363d8634100a9",
+        "leaves": 9499,
+        "all_original_manifest_leaves_applied": 47
+      },
+      "fixed": {
+        "tree": "98e7be301dec58f14d51738221e4445e3a06d900",
+        "leaves": 9499,
+        "all_original_manifest_leaves_applied": 47
+      }
+    },
+    "old_whole_source_only_difference": [
+      "codex-rs/app-server/tests/suite/v2/remote_control.rs"
+    ],
+    "negative_source": {
+      "bytes": 51810,
+      "sha256": "8da73f1fd863edd9b8b69a9b2a4d8d059431071f651a6ecc0fb0ebf384df3dae",
+      "git_blob": "9cf0d41be64c6fc2ecca8661e6aa071551f109dc"
+    },
+    "fixed_source": {
+      "bytes": 54158,
+      "sha256": "0b47589519b840f641fcbe42342d81edafff4065b30265aa1f913cb98799d165",
+      "git_blob": "10a523727b458839c4c2899596f01338e871248e"
+    },
+    "negative_recovery": "Direct GET returned 404. Exact local reconstruction from actual e729 source plus exact original negative patch; reconstructed bytes match original negative manifest. Not relabeled as original Git GET.",
+    "negative_reconstruction_steps": [
+      {
+        "argv": [
+          "git",
+          "init",
+          "-q"
+        ],
+        "exit_code": 0
+      },
+      {
+        "argv": [
+          "git",
+          "apply",
+          "--check",
+          "/workspace/scratch/07dd58cc9630/ci-audit/b20-original-path-inquiry-20261105/derived/remote_control.negative-extracted.patch"
+        ],
+        "exit_code": 0
+      },
+      {
+        "argv": [
+          "git",
+          "apply",
+          "/workspace/scratch/07dd58cc9630/ci-audit/b20-original-path-inquiry-20261105/derived/remote_control.negative-extracted.patch"
+        ],
+        "exit_code": 0
+      },
+      {
+        "argv": [
+          "git",
+          "apply",
+          "--reverse",
+          "--check",
+          "/workspace/scratch/07dd58cc9630/ci-audit/b20-original-path-inquiry-20261105/derived/remote_control.negative-extracted.patch"
+        ],
+        "exit_code": 0
+      },
+      {
+        "argv": [
+          "git",
+          "apply",
+          "--reverse",
+          "/workspace/scratch/07dd58cc9630/ci-audit/b20-original-path-inquiry-20261105/derived/remote_control.negative-extracted.patch"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "old18_test_function_bodies_unchanged": [
+      "managed_requirements_reject_all_remote_control_rpcs",
+      "managed_requirements_allow_remote_control_true_does_not_enable_or_block_it",
+      "explicit_remote_control_startup_fails_when_disabled_by_requirements",
+      "listen_off_honors_persisted_remote_control_enable",
+      "listen_off_ignores_persisted_enable_when_disabled_by_requirements",
+      "listen_off_exits_without_persisted_remote_control_enable",
+      "remote_control_disable_returns_disabled_status",
+      "remote_control_status_read_returns_disabled_status",
+      "remote_control_enable_returns_connecting_status",
+      "stdio_eof_exits_with_remote_control_connection",
+      "connected_backend_handles_models_lookup_before_websocket_initialize",
+      "models_http_request_is_not_a_websocket_upgrade",
+      "disable_waits_for_in_flight_durable_enable",
+      "rpc_updates_durable_preference_but_ephemeral_does_not",
+      "remote_control_status_read_returns_connecting_status_after_enable",
+      "remote_control_pairing_start_returns_pairing_artifacts",
+      "pairing_start_works_after_ephemeral_enable",
+      "remote_control_client_management_works_while_disabled"
+    ],
+    "original_stdio_function_unchanged_from_base": true,
+    "new_EOF_test": "suite::v2::remote_control::http_fixture_rejects_eof_before_request_headers_complete",
+    "original_10s_and_30s_budgets_unchanged": true,
+    "selected_tests_have_no_skip_macros_or_early_Ok_return": true,
+    "current_complete_roots": {
+      "5b": {
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "leaves": 10580,
+        "complete_Git_Merkle_recomputed": true
+      },
+      "e78": {
+        "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "leaves": 10580,
+        "complete_Git_Merkle_recomputed": true
+      },
+      "eed": {
+        "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "leaves": 10582,
+        "complete_Git_Merkle_recomputed": true
+      },
+      "67cc": {
+        "commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+        "leaves": 10582,
+        "complete_Git_Merkle_recomputed": true,
+        "custody": "Root's full intended leaf tree recomputes to the actually fetched Git root. It is not mislabeled as a recursive Git GET."
+      }
+    },
+    "complete_source_files": [
+      {
+        "path": "codex-rs/app-server/src/lib.rs",
+        "old": {
+          "bytes": 78693,
+          "sha256": "9f655b1ad313370d2df83b8fa8a1764cb48198b2fd0ddf5c377ebb0ba40a3512",
+          "git_blob": "8d03e3021ba76ed18e478bbc1451d354b3ef701f"
+        },
+        "5b_e78_eed": {
+          "bytes": 78648,
+          "sha256": "0f6371ae5795963a451be0a9e9af7c55898644e817533bbe0597c275a992bdaf",
+          "git_blob": "484970198d5a8c71f0d4bf8e92fa0e8a2780f45e"
+        },
+        "full_bytes_equal": false
+      },
+      {
+        "path": "codex-rs/app-server/src/request_processors/remote_control_processor.rs",
+        "old": {
+          "bytes": 6372,
+          "sha256": "32f066fae3d1212b8c6f5e578864cc12b84e3181742897b5b6ef0cfd30687631",
+          "git_blob": "73833c6df4599b26c82b7e3b2bd24d7bd98a3cc2"
+        },
+        "5b_e78_eed": {
+          "bytes": 6372,
+          "sha256": "32f066fae3d1212b8c6f5e578864cc12b84e3181742897b5b6ef0cfd30687631",
+          "git_blob": "73833c6df4599b26c82b7e3b2bd24d7bd98a3cc2"
+        },
+        "full_bytes_equal": true
+      },
+      {
+        "path": "codex-rs/app-server/src/transport.rs",
+        "old": {
+          "bytes": 8721,
+          "sha256": "0245a0e377833def981d77767b5f269eb43c96ff47400f15d964a982d7b56019",
+          "git_blob": "62b3da44cd80f6efcdb9f6a674b8b0a648cc8d0d"
+        },
+        "5b_e78_eed": {
+          "bytes": 8721,
+          "sha256": "0245a0e377833def981d77767b5f269eb43c96ff47400f15d964a982d7b56019",
+          "git_blob": "62b3da44cd80f6efcdb9f6a674b8b0a648cc8d0d"
+        },
+        "full_bytes_equal": true
+      },
+      {
+        "path": "codex-rs/app-server/tests/common/lib.rs",
+        "old": {
+          "bytes": 2802,
+          "sha256": "09ab94bc0980fff7813494fba5a4516d72175ea3b3f5a5409ca8fe29dd3eee15",
+          "git_blob": "7b545e94f3b1e4cd6bed840c57cd0539467e772c"
+        },
+        "5b_e78_eed": {
+          "bytes": 2802,
+          "sha256": "09ab94bc0980fff7813494fba5a4516d72175ea3b3f5a5409ca8fe29dd3eee15",
+          "git_blob": "7b545e94f3b1e4cd6bed840c57cd0539467e772c"
+        },
+        "full_bytes_equal": true
+      },
+      {
+        "path": "codex-rs/app-server/tests/common/mock_model_server.rs",
+        "old": {
+          "bytes": 2493,
+          "sha256": "d9fd5cfc5d391cec9c4d55b39436123b525f0a0ddf7e0006883bb10ecd084e3c",
+          "git_blob": "d70736cf50dd44712a4451661f4e5de29f2d13ca"
+        },
+        "5b_e78_eed": {
+          "bytes": 2493,
+          "sha256": "d9fd5cfc5d391cec9c4d55b39436123b525f0a0ddf7e0006883bb10ecd084e3c",
+          "git_blob": "d70736cf50dd44712a4451661f4e5de29f2d13ca"
+        },
+        "full_bytes_equal": true
+      },
+      {
+        "path": "codex-rs/app-server/tests/common/responses.rs",
+        "old": {
+          "bytes": 4362,
+          "sha256": "3bf3aff8aa362c49796a36ed5385e9d0cb73d0c059af46bb3ba3071481bc6940",
+          "git_blob": "3e726309e1786f3e0651692227803db1327b6707"
+        },
+        "5b_e78_eed": {
+          "bytes": 4362,
+          "sha256": "3bf3aff8aa362c49796a36ed5385e9d0cb73d0c059af46bb3ba3071481bc6940",
+          "git_blob": "3e726309e1786f3e0651692227803db1327b6707"
+        },
+        "full_bytes_equal": true
+      },
+      {
+        "path": "codex-rs/app-server/tests/common/test_app_server.rs",
+        "old": {
+          "bytes": 82176,
+          "sha256": "1b925012501380979ed975981726d419ba2c64dfa729d1bd6359bda01846337a",
+          "git_blob": "4d9f37e14bbc1b04d4129728dbf2dce9dbed0457"
+        },
+        "5b_e78_eed": {
+          "bytes": 82176,
+          "sha256": "1b925012501380979ed975981726d419ba2c64dfa729d1bd6359bda01846337a",
+          "git_blob": "4d9f37e14bbc1b04d4129728dbf2dce9dbed0457"
+        },
+        "full_bytes_equal": true
+      },
+      {
+        "path": "codex-rs/app-server-transport/src/transport/remote_control/websocket.rs",
+        "old_and_5b_e78_eed": {
+          "bytes": 140371,
+          "sha256": "57665d2bd38a9c2c1d015ee8e520fea3d3e375c89294314ae776697865c2c467",
+          "git_blob": "4ae6ea14f2a44c4a0a76c19050851d977466c370"
+        },
+        "full_bytes_equal": true
+      },
+      {
+        "path": "codex-rs/app-server-transport/src/transport/stdio.rs",
+        "old_and_5b_e78_eed": {
+          "bytes": 4021,
+          "sha256": "ffb372ec8a369b307ad3c0fb3d7af19982098360df12ed4158fe5180beb0a91b",
+          "git_blob": "2d30296cd07430d98c02ec0e4e6f7b7380af80f4"
+        },
+        "full_bytes_equal": true
+      },
+      {
+        "path": "codex-rs/app-server/src/main.rs",
+        "old_and_5b_e78_eed": {
+          "bytes": 4959,
+          "sha256": "e7f7128eba53906ebf9da2bf0d9a48ddd51198a0d213620510d8ccdeb5749765",
+          "git_blob": "4d5ab3f122bf836faf8729d39e946da0065ec466"
+        },
+        "full_bytes_equal": true
+      },
+      {
+        "path": "codex-rs/utils/cargo-bin/src/lib.rs",
+        "old_and_5b_e78_eed": {
+          "bytes": 8343,
+          "sha256": "18e920c75e67fa7862293fd9c00afce3864b5ac0a602bcf8b07d51cb64f6c300",
+          "git_blob": "c180a3e2c01b555ba96c9a87f8354ef9d0c38d3e"
+        },
+        "full_bytes_equal": true
+      }
+    ],
+    "unchanged_subtrees": [
+      {
+        "prefix": "codex-rs/app-server-transport/",
+        "entire_subtree_unchanged_leaf_count": 29
+      },
+      {
+        "prefix": "codex-rs/app-server-protocol/",
+        "entire_subtree_unchanged_leaf_count": 1045
+      },
+      {
+        "prefix": "codex-rs/state/",
+        "entire_subtree_unchanged_leaf_count": 111
+      },
+      {
+        "prefix": "codex-rs/utils/cargo-bin/",
+        "entire_subtree_unchanged_leaf_count": 6
+      },
+      {
+        "prefix": "codex-rs/app-server/tests/common/",
+        "entire_subtree_unchanged_leaf_count": 16
+      }
+    ],
+    "app_server_subtree_5b_e78_eed_equal": {
+      "leaf_count": 252
+    },
+    "production_lib_exception": {
+      "old_blob": "8d03e3021ba76ed18e478bbc1451d354b3ef701f",
+      "current_blob": "484970198d5a8c71f0d4bf8e92fa0e8a2780f45e",
+      "exact_diff": "derived/bridge-codex-rs__app-server__src__lib.rs.patch",
+      "classification": "B23 signal subscription implementation changed, so whole lib/binary is not byte identical to old GNU. Original stdio ConnectionClosed handling is byte identical; signal path is disabled for Stdio by the unchanged !single_client_mode guard. Listen-off signal branch is not claimed identical.",
+      "current_Windows_bridge": "Entire app-server subtree including changed lib is identical across 5b/e78/eed; separate original 5b Windows target evidence is retained."
+    }
+  },
+  "windows_supplement": {
+    "job_id": 127339255880,
+    "artifact_id": 13431285250,
+    "checkout_merge": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+    "final_original_names": 19,
+    "full_raw_and_XML_pairs": 16,
+    "literal_raw_XML_equal_pairs": 15,
+    "only_ESC_to_question_mark_count": 8,
+    "actual_test_actions": 16,
+    "wrapper_xml_actions": 16,
+    "all_original_actions_local_noncache_exit0": true,
+    "original_timeout_millis": 900000,
+    "complete_upstream_ZIP_and_compact_reopened_this_verifier_run": true,
+    "upstream_complete_entries": 87246,
+    "target_terminal_original_line": "2026-11-05T15:50:40.8024087Z //codex-rs/app-server:app-server-all-test                                PASSED in 57.2s",
+    "whole_job_pass": false
+  },
+  "host_receipt": {
+    "captured_unix": 1793808020.9810665,
+    "source_tree": "8940f5715bc1e3b58fa10e318e24afffe78c29b8",
+    "configured_host": "desktop",
+    "worktree": "/home/qian-qi/worktrees/hepta-audit-20261104-1230-hookmetadata",
+    "uname": {
+      "system": "Linux",
+      "node": "qian-qi",
+      "release": "7.0.0-38-generic",
+      "version": "#38~24.04.4-Ubuntu SMP PREEMPT_DYNAMIC Mon Sep 14 16:37:11 UTC 2",
+      "machine": "x86_64",
+      "processor": "x86_64"
+    },
+    "rustc_vV": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n",
+    "active_toolchain": "1.95.0-x86_64-unknown-linux-gnu (overridden by '/home/qian-qi/worktrees/hepta-audit-20261104-1230-hookmetadata/codex-rs/rust-toolchain.toml')\n",
+    "rust_toolchain_path": "/home/qian-qi/worktrees/hepta-audit-20261104-1230-hookmetadata/codex-rs/rust-toolchain.toml",
+    "rust_toolchain_sha256": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64",
+    "rust_toolchain_text": "[toolchain]\nchannel = \"1.95.0\"\ncomponents = [\"clippy\", \"rustfmt\", \"rust-src\"]\n",
+    "cargo_target_dir": "/home/qian-qi/work/hepta-audit-native-target-20261103",
+    "cargo_incremental": "0",
+    "cargo_build_jobs": "4",
+    "scope": "read-only receipt for the existing serial native lane; no independent Windows/macOS qualification"
+  },
+  "recommendation": "ORIGINAL_B20_EXIT_EVIDENCE_SATISFIED_PENDING_ROOT_REVIEW",
+  "native_execution_started": false,
+  "source_ref_modified": false,
+  "blocker_ledger_modified": false,
+  "whole_candidate_qualified": false,
+  "platform_limits": [
+    "Original historical 48-case GNU/musl platform rows are retained, not relabeled by Windows evidence.",
+    "This is the recovered original GNU causal contrast and original 19-case behavior scope plus separate 5b Windows supplement; no current-head full workspace pass.",
+    "B23 current lib differs in signal registration; original stdio branch and its disabled signal guard remain byte identical. Final Unix signal CI remains separate.",
+    "Original fixed GNU successful cases have PASS rows and JUnit but no --success-output immediate; complete case source has no skip macros/early Ok returns. Do not invent successful-case captured stdout."
+  ]
+}

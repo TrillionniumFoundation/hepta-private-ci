@@ -1,0 +1,119 @@
+{
+  "schema": "b11-native7-root-original-verification-v2",
+  "verified_utc": "2026-11-05T21:25:38.149660+00:00",
+  "recovery_note": "The earlier unregistered root v1 receipt was lost with temporary files. This is a new verification of preserved originals, not reconstruction of the missing receipt.",
+  "run": 42079845181,
+  "job": 127429723742,
+  "head": "0f6148ea3fbe9d1263354791d5cc63c7e66d4628",
+  "actual_merge": "b5c23d8943a0a36a14a962175cb2ec75d22d5553",
+  "tree": "29316e75554590382268dafa77869fab0394a264",
+  "parents": [
+    "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "0f6148ea3fbe9d1263354791d5cc63c7e66d4628"
+  ],
+  "archive": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127429723742/artifact-13442075776.zip",
+    "bytes": 2044355,
+    "sha256": "fdd7ecce25df2f5319c397b0320dcde17871a7dc97486ea604f7d46f77674861",
+    "git_blob": "157db197fce2d640c4b0713cbf779f2128bedf47"
+  },
+  "official_digest_match": true,
+  "all_16_members_original_crc_hash_bytes_verified": true,
+  "full_job_log": {
+    "bytes": 445124,
+    "sha256": "d21045a3b0e169ededd2052307d880bd65f7c3b539abeb66e9fb00cab6b41249",
+    "git_blob": "ae4b3b186f745d22982a76086f49a8b2d0f553e1"
+  },
+  "actual_source_leaves_verified": 77,
+  "source_entry": {
+    "head": "b5c23d8943a0a36a14a962175cb2ec75d22d5553",
+    "head_tree": "29316e75554590382268dafa77869fab0394a264",
+    "source": {
+      "bytes": 10467,
+      "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+      "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+    },
+    "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+    "tests": {
+      "bytes": 23872,
+      "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+      "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+    },
+    "status": [],
+    "index_entries": {
+      "bytes": 1183712,
+      "sha256": "4f0bd7b77405204d568aa48a4c5291f1633f5ba8e3d9865041bfd25726bb3d7e",
+      "git_blob": "7fcdf66eee97d3339d72f9cd3aaac741664e4e29"
+    },
+    "locks": {
+      "codex-rs/Cargo.lock": {
+        "bytes": 432254,
+        "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+        "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+      },
+      "MODULE.bazel.lock": {
+        "bytes": 1740955,
+        "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+        "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+      }
+    }
+  },
+  "index_and_lock_receipts_reconstructed_from_full_bytes": false,
+  "whole_result": {
+    "pass": 147,
+    "fail": 7,
+    "ignored": 2,
+    "libtest_batches": [
+      [
+        "ok",
+        "92",
+        "0",
+        "0",
+        "0",
+        "64",
+        "1.04"
+      ],
+      [
+        "FAILED",
+        "55",
+        "7",
+        "2",
+        "0",
+        "92",
+        "0.21"
+      ]
+    ],
+    "failed_headers": [
+      "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+      "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+      "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+      "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+      "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+    ],
+    "original_bazel_exit": 3,
+    "outer_bat_exit": 1
+  },
+  "counterfactual_terminal_original": {
+    "status": "INVALID_OR_NOT_RUN",
+    "physical_counterfactual_qualified": false,
+    "physical_oracle_reached": false,
+    "product_B11": "OPEN",
+    "restored_exact_original_bytes": false,
+    "error": "RuntimeError('original target lacks one exact positive result for token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes')",
+    "restore_error": null,
+    "source_mutated": false,
+    "source_mutation_attempted": false,
+    "original_target_exit_code_unchanged": true,
+    "hard_cancellation_restore_guaranteed": false
+  },
+  "required_intact_PASS_counts": {
+    "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object": 1,
+    "acl::tests::existing_native_deny_does_not_require_write_dac": 1,
+    "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write": 1,
+    "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes": 0
+  },
+  "interleaved_raw_line_unchanged": "PROBE_OBSERVATION_ONLY restoration {\"subject\":\"host\",\"outside_level\":\"medium\",\"results\":[{\"path\":\"D:\\\\tmp\\\\.tmpLONURf\\\\host-medium\\\\inside\",\"identity\":[840113181,917504,98110],\"pending\":0,\"links\":1,\"label\":\"S:(ML;;NW;;;LW)\",\"restored_survivor\":true},{\"path\":\"D:\\\\tmp\\\\.tmpLONURf\\\\host-medium\\\\inside\\\\read.txt\",\"identity\":[840113181,851968,98116],\"pending\":0,\"links\":1,\"label\":\"S:(ML;;NW;;;LW)\",\"restored_survivor\":true},{\"path\":\"D:\\\\tmp\\\\.tmpLONURf\\\\host-medium\\\\test token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes ... insideok\\\\",
+  "scope": "INVALID precondition, no negative and no source mutation. False restored flag means no mutation was attempted, not a restore failure. No PASS line reconstructed; B11 remains OPEN."
+}

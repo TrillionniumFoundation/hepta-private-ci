@@ -1,0 +1,78 @@
+"""Verify B10 evidence only. Never executes any restored source or product."""
+
+import argparse
+import base64
+import gzip
+import hashlib
+import io
+import json
+import tarfile
+from pathlib import Path
+
+
+def identity(data):
+    return {
+        "bytes": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "git_blob": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest(),
+    }
+
+
+def matches(data, expected):
+    actual = identity(data)
+    assert all(actual[key] == expected[key] for key in actual), (actual, expected)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--parts", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    assert not args.output.exists(), "Output must be a new evidence directory"
+    manifest = json.loads(args.manifest.read_bytes())
+    metadata_path = args.manifest.parent / manifest["member_manifest"]["name"]
+    matches(metadata_path.read_bytes(), manifest["member_manifest"])
+    metadata = json.loads(metadata_path.read_bytes())
+    chunks = []
+    offset = 0
+    for index, part in enumerate(manifest["parts"], 1):
+        assert index == part["index"] and offset == part["compressed_offset"]
+        encoded = (args.parts / part["name"]).read_bytes()
+        matches(encoded, part["file"])
+        assert encoded.endswith(b"\n") and b"\n" not in encoded[:-1]
+        chunk = base64.b64decode(encoded[:-1], validate=True)
+        matches(chunk, part["decoded_chunk"])
+        chunks.append(chunk)
+        offset += len(chunk)
+    assert len(chunks) == manifest["part_count"]
+    archive = b"".join(chunks)
+    matches(archive, manifest["archive"])
+    raw_tar = gzip.decompress(archive)
+    matches(raw_tar, manifest["uncompressed_tar"])
+    expected = {row["member"]: row for row in metadata["files"]}
+    assert len(expected) == metadata["member_count"] == len(metadata["files"])
+    verified = []
+    with tarfile.open(fileobj=io.BytesIO(raw_tar), mode="r:") as tar:
+        members = tar.getmembers()
+        assert len(members) == len(expected)
+        assert len({member.name for member in members}) == len(members)
+        for member in members:
+            path = Path(member.name)
+            assert member.isfile() and not path.is_absolute() and ".." not in path.parts
+            assert member.name in expected
+            body = tar.extractfile(member).read()
+            matches(body, expected[member.name])
+            verified.append((path, body))
+    assert sum(len(body) for _, body in verified) == metadata["original_member_bytes"]
+    args.output.mkdir(parents=True)
+    for path, body in verified:
+        target = args.output / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open("xb") as stream:
+            stream.write(body)
+    print(json.dumps({"result": "ALL_MEMBER_BYTES_VERIFIED", "part_count": len(chunks), "member_count": len(verified), "member_bytes": sum(len(body) for _, body in verified), "archive": identity(archive), "new_native_execution": False}))
+
+
+if __name__ == "__main__":
+    main()

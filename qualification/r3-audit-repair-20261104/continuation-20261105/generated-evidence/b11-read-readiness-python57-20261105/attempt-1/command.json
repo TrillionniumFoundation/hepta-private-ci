@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    ".github/scripts",
+    "-p",
+    "test_run_bazel*.py",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/cloud-script-regression-v1/source",
+  "started_at_utc": "2026-11-05T21:25:07.327220+00:00",
+  "environment_override": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "fixed_input_head": "0f6148ea3fbe9d1263354791d5cc63c7e66d4628",
+  "fixed_input_tree": "f717a84a856413d87a3b718b0bcae3adbd16b643",
+  "isolated_fixture_head": "06ff4f1cd817560f8f9459e82caeb46934a08840",
+  "isolated_fixture_tree": "c3564ddf9e929e7e5fcf58ccb74b21e097ff27bf",
+  "python3": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "bash": "/usr/bin/bash",
+  "git": "/usr/local/bin/git",
+  "scope": "Original unmodified 57 Python wrapper tests; wrappers use the existing recording Bazel probe, no product Cargo/Bazel/native test is invoked."
+}

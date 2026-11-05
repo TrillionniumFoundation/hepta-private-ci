@@ -1,0 +1,170 @@
+{
+  "schema": "b11-read-readiness-independent-byte-verification-v1",
+  "observed_utc": "2026-11-05T18:09:46.703140+00:00",
+  "result": "PASS_STATIC_ONLY",
+  "author_manifest": {
+    "bytes": 16741,
+    "sha256": "1ad864f7a8a628a5153eb644065799f811787cb70ed638eadcc2fa68d09dc0fa",
+    "blob": "3c41554c5584b237f5c32996017d09a89cc9372c"
+  },
+  "source_evidence": {
+    "bytes": 40723,
+    "sha256": "67c3efcfc6a64676371319e78798cb650588d53d0e11280869ff25c99f6be31b",
+    "blob": "4c6c98f723b329513cbd318f23676e17518aaf4f"
+  },
+  "patch": {
+    "bytes": 11629,
+    "sha256": "4a7262dfba537f18e838121b7f3fe4065518d3c63b2e4204d35c7bd2641e3f8f",
+    "blob": "0a80cbb044a0e00fc1a59810e7174dde0501b5c7"
+  },
+  "three_paths": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "preimage": {
+        "bytes": 47955,
+        "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3",
+        "blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d"
+      },
+      "postimage": {
+        "bytes": 45950,
+        "sha256": "56fc08023e586ee8faa88dc630d2b946080a7779773da406918c13f5697b0d01",
+        "blob": "c39b298b7889dc3669e1ee7e2816f7e77568e955"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "preimage": {
+        "bytes": 1913,
+        "sha256": "89d689e0c0a07ff8b68d719f6ffb23df86a22598df37d57f6d70360ca738e695",
+        "blob": "a96b6a502474a8bab3baa7842f36dfa814c9cc37"
+      },
+      "postimage": {
+        "bytes": 1960,
+        "sha256": "38f994940b12741210bc9b4cd3d648ed9a53378c638f2671154d0777d13b2598",
+        "blob": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "bytes": 2425,
+        "sha256": "c8076fe5e2946b273186654da298fd08d0d885317273a56eb1c80e424023bb18",
+        "blob": "333aefdf9584ef29612ac6f9814ff34308971754"
+      }
+    }
+  ],
+  "full_source_files_checked": 12,
+  "exact_source_excerpts_checked": 8,
+  "api_originals_checked": 10,
+  "source_anchor_end_line_convention": "exclusive",
+  "reviewer_input_corrections": "Two cloud-only reviewer input adapters stopped before patch application: use the author exclusive end line, and read the already-unwrapped Windows-sys payload. Exact full-source bytes/SHA/blob guards remain required. Both preliminary scripts and the correction record are retained; no candidate or native change occurred.",
+  "windows_sys_052_full_body_and_three_signatures_checked": true,
+  "equal_regions": [
+    {
+      "name": "Payload and SetupMode",
+      "equal": true,
+      "bytes": 777,
+      "sha256": "01bd10a060c331c34654a584f90f4473eb33af14e03560aa2a557ecf1197a830",
+      "blob": "6b5d7260ad7ba45442fdbb312f7517e8f8c288f7"
+    },
+    {
+      "name": "ReadAclSubjects and unchanged per-root read operations",
+      "equal": true,
+      "bytes": 3034,
+      "sha256": "b0901ac7a6819326c243180be475a3e477df03788eb1f16107359ee5380d34d1",
+      "blob": "c36146960fd022f6f7bb0e19f08375aabbc120e3"
+    },
+    {
+      "name": "Directory helper, real_main and setup marker ordering",
+      "equal": true,
+      "bytes": 8388,
+      "sha256": "65a7199ef397b697bd9f3a81485705d8e498c54a0c1bc54939d76a71c93cfbb6",
+      "blob": "bf7586e64475bf766ad3e6df1c01df9e913c17e3"
+    },
+    {
+      "name": "Provision-only and common account/network operations",
+      "equal": true,
+      "bytes": 5399,
+      "sha256": "625f8c65e04abeea970550602e125bc8be3a9f71c01b9fb51e96febb3a5a40aa",
+      "blob": "a2dda5c280e3e3c50958522ba6788b16e931d679"
+    },
+    {
+      "name": "Read SID/mask/inheritance and cleanup",
+      "equal": true,
+      "bytes": 1424,
+      "sha256": "c4c402515422590ee7017d1f48e47b612948222bebc0a38c3a8d91609905c72d",
+      "blob": "05e6f7c70c48f51ea9d34cebf25369fabd51b6f9"
+    },
+    {
+      "name": "All existing helper test bodies",
+      "equal": true,
+      "bytes": 12138,
+      "sha256": "db47aa2ace0cbfba0dcfbc8a68b5b5cbf83638974b8bd9cb9df85a0819b8327e",
+      "blob": "0f0fcbfd79c00eb363175cd5fcd84016b43df595"
+    },
+    {
+      "name": "Remaining Full runtime/write/deny stages, except progress wording",
+      "equal": true,
+      "bytes": 19134,
+      "sha256": "e205cd02f1aa4660bc3276dbbe7cbd5ffc5aa496d1686270f6984b8a22366d6d",
+      "blob": "97ae15c15b7b528535857e80a3b232c31ddb9302"
+    }
+  ],
+  "production_mutex_name_and_drop_exact": true,
+  "new_controls": 1,
+  "isolated_cloud_git_patch_roundtrip_commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/read-readiness.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/read-readiness.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/read-readiness.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/read-readiness.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "isolated_postimages_exact": true,
+  "restored_preimages_exact": true,
+  "native_or_product_tests": 0,
+  "shared_source_index_target_or_refs_changed": false
+}

@@ -1,0 +1,151 @@
+#!/usr/bin/env python3
+"""Cloud-only byte and source-contract checks for the frozen readiness patch."""
+from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+import re
+import subprocess
+import tempfile
+
+ROOT = Path('/workspace/scratch/07dd58cc9630')
+AUTHOR = ROOT / 'research-audit/b11-read-readiness-20261105'
+OUT = ROOT / 'ci-audit/b11-read-readiness-independent-20261105'
+
+
+def pin(raw):
+    return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
+            'blob': hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()}
+
+
+def check(path, expected):
+    raw = Path(path).read_bytes()
+    got = pin(raw)
+    assert all(got[k] == expected[k] for k in got), (str(path), got, expected)
+    return raw
+
+
+def region(text, start, end):
+    assert text.count(start) == 1, start
+    return text.split(start, 1)[1].split(end, 1)[0]
+
+
+def main():
+    OUT.mkdir(parents=True, exist_ok=True)
+    manifest_bytes = (AUTHOR / 'manifest.json').read_bytes()
+    assert pin(manifest_bytes)['blob'] == '3c41554c5584b237f5c32996017d09a89cc9372c'
+    manifest = json.loads(manifest_bytes)
+    evidence_bytes = check(AUTHOR / 'source-evidence.json', manifest['evidence']['source_evidence'])
+    evidence = json.loads(evidence_bytes)
+    assert evidence['fixed_head'] == manifest['source']['head']
+    assert evidence['fixed_tree'] == manifest['source']['tree']
+    assert manifest['source']['head'] == 'eed4d6bb61b789b19f60facc79f9e031765fa4c9'
+    assert manifest['source']['tree'] == 'ca1c4671ef6b2773280d01b5d76c6166252f5856'
+    patch = check(AUTHOR / 'read-readiness.patch', manifest['patch'])
+    rows = manifest['source']['files']
+    assert len(rows) == 3
+    pre = {}; post = {}; input_pins = []
+    for row in rows:
+        if row['preimage'] is not None:
+            pre[row['path']] = check(row['local_preimage'], row['preimage'])
+        post[row['path']] = check(row['local_postimage'], row['postimage'])
+        input_pins.append({k: row[k] for k in ('path', 'preimage', 'postimage')})
+    sources = {}
+    for row in evidence['sources']:
+        sources[row['path']] = check(row['local_file'], row)
+    assert len(sources) == 12
+    for row in evidence['anchors']:
+        raw = sources[row['path']].decode().splitlines(keepends=True)
+        excerpt = ''.join(raw[row['start_line']-1:row['end_line']])
+        assert excerpt == row['exact_excerpt'], row['meaning']
+        assert pin(excerpt.encode()) == row['excerpt_identity']
+    for row in manifest['evidence']['original_api_files']:
+        check(AUTHOR / row['local_file'], row)
+    threading_api = json.loads(Path(evidence['windows_sys_0_52_api']['cached_original_api']).read_text())
+    threading_source = threading_api['structuredContent']['content'].encode()
+    assert pin(threading_source) == evidence['windows_sys_0_52_api']['full_source']
+    for signature in evidence['windows_sys_0_52_api']['exact_signatures']:
+        assert signature in threading_source.decode()
+
+    name = 'codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs'
+    old = pre[name].decode(); new = post[name].decode()
+    regions = [
+        ('Payload and SetupMode', '#[derive(Debug, Clone, Deserialize, Serialize)]', 'fn log_line('),
+        ('ReadAclSubjects and unchanged per-root read operations', 'struct ReadAclSubjects', 'fn lock_sandbox_dir('),
+        ('Directory helper, real_main and setup marker ordering', 'fn lock_sandbox_dir(', 'fn run_read_acl_only('),
+        ('Provision-only and common account/network operations', 'fn provision_and_hide_sandbox_users(', 'fn run_setup_full('),
+        ('Read SID/mask/inheritance and cleanup', '    let sandbox_group_sid = resolve_sandbox_users_group_sid()?;', '    if !refresh_errors.is_empty() {'),
+        ('All existing helper test bodies', '#[cfg(test)]\n#[path = "win_acl_tests.rs"]', '\0END'),
+    ]
+    equal_regions = []
+    for label, start, end in regions:
+        a = region(old, start, end); b = region(new, start, end)
+        assert a == b, label
+        equal_regions.append({'name': label, 'equal': True, **pin(a.encode())})
+    a = region(old, '    if refresh_only {\n        setup_runtime_bin::', '\0END')
+    b = region(new, '    if refresh_only {\n        setup_runtime_bin::', '\0END')
+    b = b.replace('setup refresh: processed {} write roots after read ACL stage; errors={:?}',
+                  'setup refresh: processed {} write roots (read roots delegated); errors={:?}')
+    assert a == b
+    equal_regions.append({'name': 'Remaining Full runtime/write/deny stages, except progress wording', 'equal': True, **pin(a.encode())})
+    mutex_path = 'codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs'
+    old_mutex = pre[mutex_path].decode(); new_mutex = post[mutex_path].decode()
+    assert old_mutex.split('const READ_ACL_MUTEX_NAME:', 1)[1].split('pub(super) fn ', 1)[0] == new_mutex.split('const READ_ACL_MUTEX_NAME:', 1)[1].split('pub(super) fn ', 1)[0]
+    assert 'run_read_acl_only(payload, log)?;' in new
+    assert 'spawn_read_acl_helper' not in new
+    assert 'read_acl_mutex_exists' not in new_mutex
+    assert 'Result<ReadAclMutexGuard>' in new_mutex
+    assert 'if error == ERROR_ALREADY_EXISTS' in new_mutex
+    assert 'std::io::Error::from_raw_os_error(error as i32)' in new_mutex
+    new_test = post['codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs'].decode()
+    assert len(re.findall(r'#\[test\]', new_test)) == 1
+    assert 'existing_read_acl_mutex_is_not_a_completion_receipt' in new_test
+    assert 'drop(first);' in new_test and 'drop(retained);' in new_test
+    assert 'OwnedHandle::from_raw_handle' in new_test
+    assert 'std::process' not in new_test and 'std::env::set_var' not in new_test
+
+    commands = []
+    with tempfile.TemporaryDirectory(prefix='isolated-readiness-', dir=OUT) as d:
+        work = Path(d)
+        init = subprocess.run(['git', 'init', '-q', str(work)], capture_output=True, text=True)
+        assert init.returncode == 0, init.stderr
+        for path, raw in pre.items():
+            target = work / path; target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(raw)
+        for args in [
+            ['--check', '--whitespace=error-all'], ['--whitespace=error-all'],
+            ['--reverse', '--check', '--whitespace=error-all'], ['--reverse', '--whitespace=error-all'],
+        ]:
+            cmd = ['git', 'apply', *args, str(AUTHOR / 'read-readiness.patch')]
+            r = subprocess.run(cmd, cwd=work, capture_output=True, text=True)
+            commands.append({'argv': cmd, 'exit_code': r.returncode, 'stdout': r.stdout, 'stderr': r.stderr})
+            assert r.returncode == 0, commands[-1]
+            if args == ['--whitespace=error-all']:
+                for path, raw in post.items(): assert (work / path).read_bytes() == raw
+        for path, raw in pre.items(): assert (work / path).read_bytes() == raw
+        for path in set(post)-set(pre): assert not (work/path).exists()
+    assert (AUTHOR / 'manifest.json').read_bytes() == manifest_bytes
+    for row in rows: check(row['local_postimage'], row['postimage'])
+    result = {
+        'schema': 'b11-read-readiness-independent-byte-verification-v1',
+        'observed_utc': datetime.now(timezone.utc).isoformat(),
+        'result': 'PASS_STATIC_ONLY',
+        'author_manifest': pin(manifest_bytes), 'source_evidence': pin(evidence_bytes),
+        'patch': pin(patch), 'three_paths': input_pins,
+        'full_source_files_checked': 12, 'exact_source_excerpts_checked': len(evidence['anchors']),
+        'api_originals_checked': len(manifest['evidence']['original_api_files']),
+        'windows_sys_052_full_body_and_three_signatures_checked': True,
+        'equal_regions': equal_regions,
+        'production_mutex_name_and_drop_exact': True,
+        'new_controls': 1,
+        'isolated_cloud_git_patch_roundtrip_commands': commands,
+        'isolated_postimages_exact': True, 'restored_preimages_exact': True,
+        'native_or_product_tests': 0, 'shared_source_index_target_or_refs_changed': False,
+    }
+    output = OUT / 'static-verification.json'
+    assert not output.exists()
+    output.write_text(json.dumps(result, ensure_ascii=False, indent=2)+'\n')
+    print(json.dumps({'file': str(output), **pin(output.read_bytes())}))
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+<testsuite name="codex-rs\windows-sandbox-rs\windows-sandbox-rs-unit-tests.bat" tests="1" failures="0" errors="1">
+<testcase name="codex-rs\windows-sandbox-rs\windows-sandbox-rs-unit-tests.bat" classname="" status="run" duration="0" time="0"><error message="exited with error code 101"></error></testcase>
+<system-out><![CDATA[Executing tests from //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests
+-----------------------------------------------------------------------------
+
+running 1 test
+
+deny_repair_identity: directory=false returned_ok=true replacement_changed=true original_changed=false
+test acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object ... FAILED
+
+failures:
+
+---- acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object stdout ----
+
+thread 'acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object' (8344) panicked at windows-sandbox-rs/src\acl_tests.rs:597:9:
+assertion failed: `(left == right)`: a replacement object must not receive the queried object's deny
+
+?[1mDiff?[0m ?[31m< left?[0m / ?[32mright >?[0m :
+ [
+     2,
+     0,
+?[31m<    1?[0m?[1;48;5;52;31m48?[0m?[31m,?[0m
+?[32m>    1?[0m?[1;48;5;22;32m12?[0m?[32m,?[0m
+     0,
+?[31m<    ?[0m?[1;48;5;52;31m5?[0m?[31m,?[0m
+?[32m>    ?[0m?[1;48;5;22;32m4?[0m?[32m,?[0m
+     0,
+?[31m<    0,?[0m
+?[31m<    0,?[0m
+?[31m<    1,?[0m
+?[31m<    0,?[0m
+?[31m<    36,?[0m
+?[31m<    0,?[0m
+?[31m<    86,?[0m
+?[31m<    1,?[0m
+?[31m<    19,?[0m
+?[31m<    0,?[0m
+?[31m<    1,?[0m
+?[31m<    5,?[0m
+?[31m<    0,?[0m
+?[31m<    0,?[0m
+?[31m<    0,?[0m
+?[31m<    0,?[0m
+?[31m<    0,?[0m
+?[31m<    5,?[0m
+?[31m<    21,?[0m
+?[31m<    0,?[0m
+?[31m<    0,?[0m
+?[31m<    0,?[0m
+?[31m<    211,?[0m
+?[31m<    0,?[0m
+?[31m<    0,?[0m
+?[31m<    0,?[0m
+?[31m<    56,?[0m
+?[31m<    1,?[0m
+?[31m<    0,?[0m
+?[31m<    0,?[0m
+?[31m<    157,?[0m
+?[31m<    1,?[0m
+?[31m<    0,?[0m
+?[31m<    0,?[0m
+?[31m<    2,?[0m
+?[31m<    2,?[0m
+     0,
+     0,
+     0,
+     16,
+     24,
+     0,
+     255,
+     1,
+     31,
+     0,
+     1,
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5,
+     32,
+     0,
+     0,
+     0,
+     32,
+     2,
+     0,
+     0,
+     0,
+     16,
+     20,
+     0,
+     255,
+     1,
+     31,
+     0,
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5,
+     18,
+     0,
+     0,
+     0,
+     0,
+     16,
+     36,
+     0,
+     255,
+     1,
+     31,
+     0,
+     1,
+     5,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5,
+     21,
+     0,
+     0,
+     0,
+     57,
+     181,
+     110,
+     183,
+     114,
+     184,
+     67,
+     218,
+     112,
+     8,
+     167,
+     247,
+     244,
+     1,
+     0,
+     0,
+     0,
+     16,
+     24,
+     0,
+     169,
+     0,
+     18,
+     0,
+     1,
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     5,
+     32,
+     0,
+     0,
+     0,
+     33,
+     2,
+     0,
+     0,
+ ]
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 155 filtered out; finished in 0.00s
+
+]]></system-out>
+</testsuite>
+</testsuites>

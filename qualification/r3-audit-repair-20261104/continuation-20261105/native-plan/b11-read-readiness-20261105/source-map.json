@@ -1,0 +1,47 @@
+{
+  "base_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+  "base_tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+  "files": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "preimage": {
+        "bytes": 47955,
+        "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3",
+        "blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d"
+      },
+      "postimage": {
+        "bytes": 45950,
+        "sha256": "56fc08023e586ee8faa88dc630d2b946080a7779773da406918c13f5697b0d01",
+        "blob": "c39b298b7889dc3669e1ee7e2816f7e77568e955"
+      },
+      "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "preimage": {
+        "bytes": 1913,
+        "sha256": "89d689e0c0a07ff8b68d719f6ffb23df86a22598df37d57f6d70360ca738e695",
+        "blob": "a96b6a502474a8bab3baa7842f36dfa814c9cc37"
+      },
+      "postimage": {
+        "bytes": 1960,
+        "sha256": "38f994940b12741210bc9b4cd3d648ed9a53378c638f2671154d0777d13b2598",
+        "blob": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6"
+      },
+      "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "bytes": 2425,
+        "sha256": "c8076fe5e2946b273186654da298fd08d0d885317273a56eb1c80e424023bb18",
+        "blob": "333aefdf9584ef29612ac6f9814ff34308971754"
+      },
+      "local_preimage": null,
+      "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs"
+    }
+  ]
+}

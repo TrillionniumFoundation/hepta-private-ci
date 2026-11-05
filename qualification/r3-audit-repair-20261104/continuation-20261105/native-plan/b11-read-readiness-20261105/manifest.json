@@ -1,0 +1,293 @@
+{
+  "schema": "hepta.static_proposal.read_acl_readiness.v1",
+  "frozen_at_utc": "2026-11-05T18:06:15.766582+00:00",
+  "status": "STATIC_CANDIDATE_NOT_APPLIED_NOT_COMPILED_NOT_EXECUTED",
+  "original_blocker": "B11",
+  "original_exit_condition_and_status_modified": false,
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+    "scope": "three exact preimage paths; relevant inherited 5b source is independently rebound to fixed eed",
+    "files": [
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+        "preimage": {
+          "bytes": 47955,
+          "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3",
+          "blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d"
+        },
+        "postimage": {
+          "bytes": 45950,
+          "sha256": "56fc08023e586ee8faa88dc630d2b946080a7779773da406918c13f5697b0d01",
+          "blob": "c39b298b7889dc3669e1ee7e2816f7e77568e955"
+        },
+        "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+        "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+        "preimage": {
+          "bytes": 1913,
+          "sha256": "89d689e0c0a07ff8b68d719f6ffb23df86a22598df37d57f6d70360ca738e695",
+          "blob": "a96b6a502474a8bab3baa7842f36dfa814c9cc37"
+        },
+        "postimage": {
+          "bytes": 1960,
+          "sha256": "38f994940b12741210bc9b4cd3d648ed9a53378c638f2671154d0777d13b2598",
+          "blob": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6"
+        },
+        "local_preimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+        "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+        "preimage": null,
+        "postimage": {
+          "bytes": 2425,
+          "sha256": "c8076fe5e2946b273186654da298fd08d0d885317273a56eb1c80e424023bb18",
+          "blob": "333aefdf9584ef29612ac6f9814ff34308971754"
+        },
+        "local_preimage": null,
+        "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs"
+      }
+    ]
+  },
+  "patch": {
+    "local_file": "read-readiness.patch",
+    "bytes": 11629,
+    "sha256": "4a7262dfba537f18e838121b7f3fe4065518d3c63b2e4204d35c7bd2641e3f8f",
+    "blob": "0a80cbb044a0e00fc1a59810e7174dde0501b5c7",
+    "paths": 3,
+    "added": 96,
+    "removed": 92,
+    "changed": 188
+  },
+  "purpose": "Make Full setup await the current request's existing read ACL stage, reject an existing mutex without a completion receipt, and propagate every recorded read-stage error.",
+  "intentional_behavior_changes": [
+    "Full read roots nonempty: replace detached same-executable child with a synchronous call to the existing run_read_acl_only implementation at the same phase position.",
+    "An existing named mutex returns an anyhow error with actual io::Error raw_os_error 183 instead of Option::None or successful skip. The newly opened non-owner handle is closed.",
+    "Recorded read ACL errors now fail initial Full and explicitly non-refresh ReadAclsOnly as well as refresh. The existing detailed log and generic error text are retained.",
+    "The Full progress log accurately describes the completed read stage rather than delegation."
+  ],
+  "preserved": {
+    "read_acl_operations_masks_sids_and_inheritance": "exact source-region byte equality; FILE_GENERIC_READ|FILE_GENERIC_EXECUTE to the original sandbox group with original OI|CI flags",
+    "rootset": "unchanged build_payload_roots, helper/platform roots, canonical-existing behavior, profile/SSH exclusions, write-root removal and deny-read filtering",
+    "existing_shortcuts": "missing-root skip and builtin/group RX checks deliberately remain; no full-restricting read-SID proof is inferred",
+    "token_and_access_masks": "no token source, token flags, restricting SID, read-cap or four write/delete denial oracle change",
+    "other_stages": "deny-read remains before the read stage; original runtime/write/deny-write operations and existing tests are unchanged apart from one truthful progress log",
+    "wire_and_errors": "SetupMode, Payload, SetupErrorCode and error-report serialization unchanged; historical HelperReadAclHelperSpawnFailed variant retained",
+    "dependencies_and_targets": "no Cargo, BUILD, lock, workflow, environment, feature or target declaration change",
+    "thread_and_handle": "production named mutex, default descriptor, noninheritance, guard ReleaseMutex/CloseHandle unchanged; guard is acquired and dropped in the same synchronous setup thread"
+  },
+  "original_waits_and_compatibility": {
+    "initial_non_elevated": "Command.status has no local timeout; unchanged",
+    "initial_elevated": "WaitForSingleObject(INFINITE); unchanged",
+    "refresh": "Command.status has no local timeout; unchanged",
+    "same_process_identical_payload": "existing B64-keyed singleflight/Condvar unchanged; no independent timeout",
+    "cross_process_or_different_payload": "session-wide fixed mutex is not keyed by read roots; legitimate concurrency may now fail explicitly instead of reporting an unproved success",
+    "mutex_existing_without_owner": "also rejected; an object retained by another handle does not attest to completion of this request",
+    "new_bounded_readiness_claim": false,
+    "new_timeout_wait_retry": false,
+    "possible_startup_delay": true,
+    "rollback": "none added; earlier provision/ACL effects may already exist when this stage fails"
+  },
+  "actual_caller_chain": [
+    "spawn_prep::prepare_elevated_spawn_context_for_permissions / elevated_impl capture path",
+    "identity::require_logon_sandbox_creds: optional initial setup then mandatory current-roots refresh",
+    "setup::{run_setup_exe_payload,run_setup_refresh_payload}: wait existing helper and propagate nonzero",
+    "setup_main::win::run_setup: successful mode body precedes initial marker commit",
+    "setup_main::win::run_setup_full: synchronously run_read_acl_only for nonempty roots",
+    "run_read_acl_only: acquire current mutex ownership, perform unchanged read operations, reject collected errors"
+  ],
+  "new_physical_control": {
+    "exact_source_name": "win::read_acl_mutex::tests::existing_read_acl_mutex_is_not_a_completion_receipt",
+    "target": "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests",
+    "source_file": {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "bytes": 2425,
+        "sha256": "c8076fe5e2946b273186654da298fd08d0d885317273a56eb1c80e424023bb18",
+        "blob": "333aefdf9584ef29612ac6f9814ff34308971754"
+      },
+      "local_preimage": null,
+      "local_postimage": "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/candidate/codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs"
+    },
+    "execution": "NOT_RUN",
+    "scope": "one test thread, actual isolated named Win32 mutex; no subprocess, global environment or production-name mutation",
+    "stages": [
+      "actual initial owner acquired",
+      "competing acquisition must return OS 183 and explicit not-ready error",
+      "retain independent handle then drop owner",
+      "released but retained object must still return OS 183 and not-ready error",
+      "close last retained handle then actual owner acquisition succeeds"
+    ],
+    "ownership": "existing guard owns only newly created mutex; independent OpenMutexW handle owned by std OwnedHandle; all drops stay in test thread",
+    "does_not_prove": [
+      "cross-process payload completion",
+      "read ACL success for actual Full",
+      "read SID authorization",
+      "loader operation",
+      "process descendants lifecycle"
+    ]
+  },
+  "existing_control_map": {
+    "library_target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+    "library_selected_source_names": [
+      "setup::tests::setup_completion_requires_ready_artifacts",
+      "setup::tests::identical_setup_requests_share_one_in_flight_run",
+      "setup::tests::report_helper_failure_uses_setup_error_report_when_clear_succeeded",
+      "setup::tests::report_helper_failure_ignores_setup_error_report_when_clear_failed",
+      "setup::tests::setup_refresh_skips_profiles_without_managed_filesystem_permissions",
+      "setup::tests::setup_refresh_preserves_workspace_scoped_deny_read_paths",
+      "setup::tests::setup_refresh_rejects_invalid_deny_read_globs",
+      "setup::tests::gather_read_roots_includes_helper_bin_dir",
+      "setup::tests::workspace_write_roots_remain_readable",
+      "setup::tests::build_payload_roots_preserves_helper_roots_when_read_override_is_provided",
+      "setup::tests::build_payload_roots_replaces_full_read_policy_when_read_override_is_provided",
+      "setup::tests::full_read_roots_preserve_legacy_platform_defaults"
+    ],
+    "helper_target": "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests",
+    "helper_selected_source_names": [
+      "win::tests::payload_defaults_otel_absent",
+      "win::tests::payload_accepts_provision_only_mode",
+      "win::tests::payload_accepts_otel_settings",
+      "win::tests::write_root_refresh_replaces_stale_delete_child_grant",
+      "win::tests::write_root_refresh_checks_each_sid",
+      "win::tests::write_root_refresh_ignores_inherited_delete_child_grant",
+      "win::tests::deny_path_under_active_root_uses_only_matching_root_sid",
+      "win::tests::deny_path_outside_active_roots_falls_back_to_all_active_root_sids",
+      "win::tests::deny_path_includes_nested_active_root_sid",
+      "win::acl_tests::provision_only_locks_plain_directory_via_handle"
+    ],
+    "helper_selected_names_are_entire_runtime_catalog": false,
+    "original_singleflight_waiter_check_seconds": 5,
+    "all_old_helper_inline_bodies_byteequal": true,
+    "new_actual_runs_in_this_review": 0
+  },
+  "pending_native_gate": {
+    "platform": "actual Windows native runner with source, toolchain, helper binaries, complete case log and before/after identity bound",
+    "cargo_existing_entrypoint": "just test -p codex-windows-sandbox",
+    "cargo_scope_note": "do not add --lib; the new module belongs to codex-windows-sandbox-setup bin, not library",
+    "bazel_existing_targets": [
+      "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests",
+      "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests"
+    ],
+    "bazel_invocation": "reuse original Windows runner/configuration/budgets; this proposal adds no workflow or execution arguments",
+    "catalog_requirement": "actual unfiltered helper catalog must include the new exact name and retain the original helper roster; selected names above are anchors, not an invented complete runtime count",
+    "qualifying_output": "actual new-case body plus complete original helper/library status, skips/retries/cache/early-return retained; wrapper success alone insufficient",
+    "remaining_end_to_end_acceptance": [
+      "initial Full completes the actual requested read stage before marker/credentials",
+      "refresh does likewise before spawn",
+      "actual ACL query/set errors fail preparation",
+      "actual concurrent distinct requests report explicit non-readiness without a success claim"
+    ],
+    "full_B11_unchanged_requirements": [
+      "outside read and loader",
+      "allowed-root legitimate write/delete",
+      "all four forbidden write/delete routes",
+      "host negative controls",
+      "normal caller and descendant/process/Job custody"
+    ]
+  },
+  "scope_open": [
+    "No full-restricting token, finite read-root owner, per-session grant lifetime or new SpawnRequest fields.",
+    "Builtin/group RX and missing-root shortcuts remain. Completed operations are not a proof that a restricting read SID can read each object.",
+    "No protection against path replacement, concurrent ACL writers or per-request root-set drift after return.",
+    "No rollback or removal of earlier partial grants/provisioning.",
+    "No new cancellation, helper process kill, descendant lifetime, preserve_descendants or Job BREAKAWAY_OK repair.",
+    "No production throughput, bounded startup or legitimate cross-process concurrency qualification.",
+    "The independent ACL V3/19d2 diagnostic branch and running native jobs are not changed."
+  ],
+  "static_validation": {
+    "receipt": {
+      "local_file": "static-verification.json",
+      "bytes": 12497,
+      "sha256": "d5e624623ec34d8a00c98e9d5ddda81ca85e612340818bef5ae9569519ad3ade",
+      "blob": "8c998bd6fc83e85c1ed6f4ede1296f111eb66459"
+    },
+    "git_check_apply_inverse_commands": 4,
+    "all_exit_codes_zero": true,
+    "postimages_checked": 3,
+    "original_preimages_restored": 2,
+    "new_path_removed_on_inverse": true,
+    "rust_fmt_or_compile": false,
+    "windows_or_project_tests": false
+  },
+  "evidence": {
+    "source_evidence": {
+      "local_file": "source-evidence.json",
+      "bytes": 40723,
+      "sha256": "67c3efcfc6a64676371319e78798cb650588d53d0e11280869ff25c99f6be31b",
+      "blob": "4c6c98f723b329513cbd318f23676e17518aaf4f"
+    },
+    "official_api": [
+      "https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-createmutexw",
+      "https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-releasemutex"
+    ],
+    "original_api_files": [
+      {
+        "local_file": "originals/binding-api-0.json",
+        "bytes": 11651,
+        "sha256": "807ad208a22deca83537ffcaaa3bc18863f1369db1fbe081c0a0e21d1b757b97",
+        "blob": "b6a5949701a6d2dd38a36be6061fa3ff07dc68b8"
+      },
+      {
+        "local_file": "originals/binding-api-1.json",
+        "bytes": 116397,
+        "sha256": "29fb1d20621f3f946f039ac4eb83df113da5fb5c0c3a9c420e9089ecf65c5d78",
+        "blob": "4acb4cd4c06c925b414c3b54c188ce9b60eabc57"
+      },
+      {
+        "local_file": "originals/crate-api.json",
+        "bytes": 18606,
+        "sha256": "a2aa018085d88eb5f23483b9619e8dc674747a89e8eef2de0ad091acf513aa0d",
+        "blob": "b427ea98d4fa5bf7aeb0a0100be6a573a3612d67"
+      },
+      {
+        "local_file": "originals/defs-api.json",
+        "bytes": 36225,
+        "sha256": "a9f32180027162b8ce5a652646f65058dbd674fc119b7746732f1b2de2824146",
+        "blob": "f560b2f612a94ee20de4bbb3b3a36f60a393fd91"
+      },
+      {
+        "local_file": "originals/main-api.json",
+        "bytes": 704,
+        "sha256": "4dcfbebf6055e1ded31c144958c1ed72f6a1c0f23fb6283b2d1d8bd987f3e82a",
+        "blob": "158b05e2cdbcdee76ef425795cba89ef940976e7"
+      },
+      {
+        "local_file": "originals/mutex-official-api.json",
+        "bytes": 15220,
+        "sha256": "e67f083a553a3048ab79ec0b8024c60ca78d9e073da0053fe782e7a58c0107a4",
+        "blob": "9d98d861b340984c55b71ac1aac2fabac79089ac"
+      },
+      {
+        "local_file": "originals/source-api-0.json",
+        "bytes": 21672,
+        "sha256": "0aca1778d09929d79c7a6ad0f9ed4b61bf07ae5e0c96fcd6f48397d1f4bf8cb1",
+        "blob": "a2a100a6691998dadaf80d772d7c16c84bc874db"
+      },
+      {
+        "local_file": "originals/source-api-1.json",
+        "bytes": 2459,
+        "sha256": "f105e07a47f15713d41cc7fe7088723e44947076ef1e6d02a219d7a3702cd62b",
+        "blob": "d700c3e36f6df8ac3b89d0af18ce3cef1c374fcf"
+      },
+      {
+        "local_file": "originals/source-api-2.json",
+        "bytes": 1440,
+        "sha256": "f72bcbf9fc7970a933453d7e36496845cfe85efa4763a342e8fd90618e1d10ef",
+        "blob": "6480bd209cb8a647abc5fa651d3637d856c11229"
+      },
+      {
+        "local_file": "originals/source-api-3.json",
+        "bytes": 12303,
+        "sha256": "519e900f1902ecfc9123b836dce79453ef21ed882e7c445797777049d0d7ea2e",
+        "blob": "40b2432b0d80c174d47741a895f4d5c6b17e7e6d"
+      }
+    ]
+  },
+  "archive_note": "Preserve proposed Rust source bytes but use .rs.source.txt when registering them as passive qualification evidence. Patch remains .patch. Actual create/GET publication is recorded separately."
+}

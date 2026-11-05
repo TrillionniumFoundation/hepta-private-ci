@@ -1,0 +1,102 @@
+{
+  "schema": "b11-identity-counterfactual-windows-harness-candidate-v3",
+  "status": "DISABLED_UNAPPLIED_PENDING_INDEPENDENT_REVIEW_AND_NATIVE",
+  "base": {
+    "head": "0f6148ea3fbe9d1263354791d5cc63c7e66d4628",
+    "head_tree": "f717a84a856413d87a3b718b0bcae3adbd16b643",
+    "actual_prior_checkout": "b5c23d8943a0a36a14a962175cb2ec75d22d5553",
+    "actual_prior_tree": "29316e75554590382268dafa77869fab0394a264"
+  },
+  "paths": [
+    {
+      "repository_path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+      "mode": "100644",
+      "preimage": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/source/.github/scripts/run_b11_acl_identity_counterfactual.py",
+        "bytes": 17774,
+        "sha256": "6e199582d277e44f1796dcf64c39bb0fe3f263f060ab79da1bf682fff5866b1f",
+        "git_blob": "25def4386ea08bb72a7605cc113117f31fffcd1b"
+      },
+      "postimage": {
+        "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py",
+        "bytes": 22200,
+        "sha256": "1a53b2771e795fb27a495d7c053d7afc9b0cad954f27c4802654311771319ed5",
+        "git_blob": "3680db31233e47ba7fad99f31a7019c4536288bb"
+      }
+    }
+  ],
+  "patch": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch",
+    "bytes": 6969,
+    "sha256": "e8e9d45eb167f81b35e3d17db84d9164d6ee12d4dc3260e95e6ce951199d03ab",
+    "git_blob": "53ed544e11003015cf1a57b27da64b2295681fd2"
+  },
+  "change_counts": {
+    "paths": 1,
+    "added": 60,
+    "removed": 7
+  },
+  "unchanged_workflow": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/unchanged/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+    "bytes": 5072,
+    "sha256": "2cd28bdbca3557a2294aa1f2edec49d4e8250b968b8bd1747fb1744750ea5de9",
+    "git_blob": "912e22789665b0081c83ae0fa632d2482e8b0eba"
+  },
+  "actual_defect": "Native7 original whole target remained 147P/7F/2I. Concurrent observation output split a PASS record; V2 rejected before any source mutation or negative command. That original INVALID result remains immutable.",
+  "required_original_cases": [
+    "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+    "acl::tests::existing_native_deny_does_not_require_write_dac",
+    "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+    "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes"
+  ],
+  "protocol": [
+    "Preserve the original full-target command, selected tests, raw log/XML, ordinary 0/3 exit, no-cache predicate and exact current source guards. A required case present in any original failed-test header stops before all new scopes.",
+    "Do not reconstruct or accept interleaved PASS text. In the same job run each of the four original cases once with its full name plus --exact, same original wrapper/target/platform/configuration, --nocache_test_results and --flaky_test_attempts=1. No multi-filter assumption, retry or additional test is introduced.",
+    "Each exact positive has its own newly created evidence/archive directory, full console/log/XML, command/exit, source/index/locks guards, one nonignored PASS/zero FAIL/155 filtered libtest summary and successful outer XML. A missing name yields zero tests and is rejected.",
+    "Any exact-positive failure stops remaining scopes and the negative without changing source. Original whole-target failure remains visible and is never replaced by these qualification records.",
+    "Only after all four exact positives qualify, run the original frozen negative and finally tail unchanged: physical replacement marker, macro597:9, original assertion, XML101, precise one-case failure, then guarded exact restore.",
+    "The 120-minute original job budget, Rust source/tests, all access controls, and existing helper functions/terminal/source-restored interfaces remain unchanged."
+  ],
+  "positive_terminal": {
+    "ordinary_bazel_exit": 0,
+    "target": "noncached PASSED",
+    "selected_name": "one exact full name per command",
+    "libtest": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "filtered_out": 155
+    },
+    "outer_XML": "one status=run testcase with no error/failure/skipped",
+    "attempts_each": 1
+  },
+  "negative_change": "None: full original tail byte-equal, including argv/marker/597/XML101/finally/source restoration and terminal.",
+  "future_helper_interface": {
+    "unchanged_functions": [
+      "require",
+      "digest",
+      "save",
+      "replace_owned_source",
+      "git",
+      "canonical",
+      "source_guard",
+      "retained_log",
+      "target_terminal"
+    ],
+    "source_entry_and_source_restored_schema_unchanged": true,
+    "new_optional_terminal_field": "positive_scopes",
+    "consumer_source_pin_requires_explicit_update": true
+  },
+  "scope_limits": [
+    "No exact positive or negative execution in this preparation.",
+    "The old full result is preserved, not retried or repaired in evidence.",
+    "This does not repair strict-token outside deletion or the ordinary-host Neither failures.",
+    "No native host, project source, ref or PR mutation by this author."
+  ],
+  "static_validation": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/static-verification.json",
+    "bytes": 13771,
+    "sha256": "66586b870bb6af0522c864241f50b1f9eaabd0b2610b53c9486f0e371021c149",
+    "git_blob": "8e46b5e46ebdc34a0ab1321ad9e90986922ddd6d"
+  }
+}

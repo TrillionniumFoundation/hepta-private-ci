@@ -1,0 +1,13 @@
+{
+  "schema": "b09-root-verifier-initial-attempt-v1",
+  "command": [
+    "python3",
+    "hepta-audit-fifth/verify_b09_original_contract_root_v1.py"
+  ],
+  "observed_exit_code": 1,
+  "failure": "AssertionError at root tree Merkle assertion; Git API directory mode 040000 was incorrectly serialized with the leading 0 instead of Git tree mode 40000.",
+  "product_or_native_test_run": false,
+  "initial_source_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/verify_b09_original_contract_root_initial_v0.py.source.txt",
+  "source_originals_changed": false,
+  "closure_written_by_initial_attempt": false
+}

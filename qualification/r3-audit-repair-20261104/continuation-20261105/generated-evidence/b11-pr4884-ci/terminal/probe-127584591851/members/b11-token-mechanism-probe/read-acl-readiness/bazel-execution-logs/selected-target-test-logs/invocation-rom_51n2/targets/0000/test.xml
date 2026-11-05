@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+<testsuite name="codex-rs\windows-sandbox-rs\codex-windows-sandbox-setup-bin-unit-tests.bat" tests="1" failures="0" errors="0">
+<testcase name="codex-rs\windows-sandbox-rs\codex-windows-sandbox-setup-bin-unit-tests.bat" classname="" status="run" duration="49" time="49"></testcase>
+<system-out><![CDATA[Executing tests from //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests
+-----------------------------------------------------------------------------
+
+running 21 tests
+test win::firewall::tests::local_policy_modify_state_accepts_effective_policy ... ok
+test win::firewall::tests::local_policy_modify_state_rejects_ineffective_policy ... ok
+test win::firewall::tests::local_policy_modify_state_rejects_partial_profile_coverage ... ok
+test win::acl_tests::provision_only_locks_plain_directory_via_handle ... ok
+test win::no_reparse_dir::tests::creates_and_opens_plain_directory_leaf ... ok
+test win::firewall::tests::production_firewall_rule_network_scopes_are_accepted_by_firewall_com ... ok
+test win::firewall::tests::configured_remote_address_literals_are_accepted_by_firewall_com ... ok
+test win::setup_runtime_bin::tests::primary_runtime_path_does_not_depend_on_local_app_data ... ok
+test win::read_acl_mutex::tests::existing_read_acl_mutex_is_not_a_completion_receipt ... ok
+test win::setup_runtime_bin::tests::runtime_paths_include_desktop_parent_and_primary_runtime_roots ... ok
+test win::tests::deny_path_includes_nested_active_root_sid ... ok
+test win::no_reparse_dir::tests::rejects_final_directory_junction ... ok
+test win::no_reparse_dir::tests::rejects_ancestor_directory_junction ... ok
+test win::tests::deny_path_under_active_root_uses_only_matching_root_sid ... ok
+test win::tests::payload_defaults_otel_absent ... ok
+test win::tests::payload_accepts_otel_settings ... ok
+test win::tests::payload_accepts_provision_only_mode ... ok
+test win::tests::deny_path_outside_active_roots_falls_back_to_all_active_root_sids ... ok
+test win::tests::write_root_refresh_ignores_inherited_delete_child_grant ... ok
+test win::tests::write_root_refresh_checks_each_sid ... ok
+test win::tests::write_root_refresh_replaces_stale_delete_child_grant ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+]]></system-out>
+</testsuite>
+</testsuites>

@@ -1,0 +1,50 @@
+{
+  "schema": "pr4797-one-shot-recovery-snapshot-actual-registry-v1",
+  "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+  "repo_prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/post-v8-recovery-20261105",
+  "files": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/summary.json",
+      "bytes": 19944,
+      "sha256": "36c3f12035536326eb394f24eb50d82845857fee7efc9c44813d123b0ece7259",
+      "git_blob": "1d6d8717c43f39b950eec5cc6fe659118251b4dc",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/post-v8-recovery-20261105/summary.json",
+      "actual_create_get": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/immutable-transport-v1/manifest.json",
+      "bytes": 9291,
+      "sha256": "e35accd30132e01ee358a29fd80d697fbe4a1ff42f40c7baf2193dd25cf300de",
+      "git_blob": "d969125451898c43c6692ea2ebf91d6e76ed34a9",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/post-v8-recovery-20261105/immutable-transport-v1/manifest.json",
+      "actual_create_get": true
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/pr4797-recovery-20261105/snapshot-v1/immutable-transport-v1/part-000.base64.txt",
+      "bytes": 215316,
+      "sha256": "bab96c3570d67512cbb8fa10cdf5850a643b07c2d9182a40052de40b00bbd6f4",
+      "git_blob": "b6b7300cd904c98a5767bb0d7a3b35b56c406f24",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/post-v8-recovery-20261105/immutable-transport-v1/part-000.base64.txt",
+      "actual_create_get": true
+    }
+  ],
+  "scope": {
+    "source_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "runs": 19,
+    "jobs": 55,
+    "success": 18,
+    "queued": 25,
+    "cancelled": 10,
+    "skipped": 2,
+    "running": 0,
+    "failure": 0
+  },
+  "transport": {
+    "original_records": 22,
+    "original_bytes": 1037957
+  },
+  "limits": [
+    "One read-only GitHub collection. No native/controller/resource query, cancellation, retry or dispatch.",
+    "This adds API state, not test-case or machine-capacity qualification."
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "main_ref": {
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/fix/r3-original-product-contracts-20261104",
+    "observed_utc": "2026-11-05T22:37:57.269Z",
+    "response": {
+      "ref": "refs/heads/fix/r3-original-product-contracts-20261104",
+      "node_id": "REF_kwDOTrgxoNoANXJlZnMvaGVhZHMvZml4L3IzLW9yaWdpbmFsLXByb2R1Y3QtY29udHJhY3RzLTIwMjYxMTA0",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/fix/r3-original-product-contracts-20261104",
+      "object": {
+        "sha": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+        "type": "commit",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/eed4d6bb61b789b19f60facc79f9e031765fa4c9"
+      }
+    }
+  },
+  "main_parent": {
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "observed_utc": "2026-11-05T22:37:57.293Z",
+    "response": {
+      "sha": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "node_id": "C_kwDOTrgxoNoAKGVlZDRkNmJiNjFiNzg5YjE5ZjYwZmFjYzc5ZjllMDMxNzY1ZmE0Yzk",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T16:22:42Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T16:22:42Z"
+      },
+      "tree": {
+        "sha": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/ca1c4671ef6b2773280d01b5d76c6166252f5856"
+      },
+      "message": "fix: repair original platform CI failures and lossless evidence packaging\n\nIsolate the tracing test in its owned same-binary child; compare statfs magic without GNU/musl type loss; use nonlogin approval fixtures and a local Responses provider for the original resume case; resolve the Windows assert_eq import; give the real lease-expiry fixture bounded setup time.\n\nReplace the oversized audit inventory with a typed transport index and a verifier that restores all original bytes from the existing archive. Keep production permission and expiry checks, original assertions, all lockfiles and CI gates unchanged.\n\nThe combined tree still requires original platform tests, the full workspace gate and final hygiene. No whole-project qualification or Windows token-boundary closure is claimed.",
+      "parents": [
+        {
+          "sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/5b6331250ff459033bd44d1a95daec70131277cc",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/5b6331250ff459033bd44d1a95daec70131277cc"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    }
+  },
+  "diag_ref_before_main_update": {
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/diag/b11-token-mechanism-observations-20261105",
+    "observed_utc": "2026-11-05T22:37:57.318Z",
+    "response": {
+      "ref": "refs/heads/diag/b11-token-mechanism-observations-20261105",
+      "node_id": "REF_kwDOTrgxoNoAOXJlZnMvaGVhZHMvZGlhZy9iMTEtdG9rZW4tbWVjaGFuaXNtLW9ic2VydmF0aW9ucy0yMDI2MTEwNQ",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/diag/b11-token-mechanism-observations-20261105",
+      "object": {
+        "sha": "855733b0f88c82c68135b1879682358a818daa84",
+        "type": "commit",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/855733b0f88c82c68135b1879682358a818daa84"
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "scope": "reviewer cloud source-locator only",
+  "initial_cloud_script_exit": 1,
+  "initial_assumption": "end_line inclusive",
+  "actual_author_anchor_convention": "end_line exclusive",
+  "evidence": "All eight exact excerpts occur once in their pinned full source; source start is start_line and the next source line is end_line.",
+  "initial_script": {
+    "bytes": 8344,
+    "sha256": "9cf51b2e2aed67e67d8703edf3c8c43fc157b931446215cf5579c3c85eaeda45",
+    "blob": "e899ec88fa61913f305d728cedb5aa24e040b6c5"
+  },
+  "candidate_source_changed": false,
+  "native_or_product_tests": 0,
+  "second_cloud_script_exit": 1,
+  "second_correction": "The cached Windows-sys file already stores the structured payload at top level; unwrap either shape, then require the exact full-source bytes/SHA/blob."
+}

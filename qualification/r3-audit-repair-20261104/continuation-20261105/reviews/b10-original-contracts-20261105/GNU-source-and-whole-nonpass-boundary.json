@@ -1,0 +1,162 @@
+{
+  "source_tree_equal_before_after": true,
+  "ordinary_index_exact_before_after_equal": true,
+  "Cargo_and_MODULE_locks_exact_before_after_equal": true,
+  "unexpected_untracked_empty": true,
+  "guards": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-original-guards/original-owning-projects-command.json",
+      "bytes": 575,
+      "sha256": "b985724f819c23de598ca8063bfa46c9a59e173ae6ebdb6faac3a31f1c164471",
+      "git_blob": "00671e4113db85f99f4f0a4a544e58c00a446878"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-original-guards/original-owning-projects-status.json",
+      "bytes": 1247,
+      "sha256": "d883fe7676b050bfcadded0b3a75db506ff9354058ac884382718dd2d971cdca",
+      "git_blob": "8faa4dea902b6c31d41ada7c46cd66b5f6b06692"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-original-guards/original-owning-projects-before-source-guard.json",
+      "bytes": 111405,
+      "sha256": "27915d1da4d100219044e27a45823eb1bacf05a8e09f3382df9a798715d17029",
+      "git_blob": "3533527795df6f5f2dbb874a8e162f21b87a2cc0"
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/gnu-original-guards/original-owning-projects-after-source-guard.json",
+      "bytes": 111404,
+      "sha256": "ed5de4a70e67655724cbdd60e29bf1beea840ff88006ea3b461bf9f892e2a292",
+      "git_blob": "1df85a3e2ea1c38c1e0746d78d2116dc18d3daad"
+    }
+  ],
+  "programs_from_original_catalog": [
+    {
+      "binary_id": "codex-core",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_core-af661b73601d816a",
+      "bytes": 308350704,
+      "sha256": "60e7611e2438d6245ac4598a9f35a17bd486d183182b1e86c98d67670e1491ca",
+      "git_blob": "f5a5fdeac69ef67579fd794a9c38a291e28c9f38",
+      "mode": 448,
+      "executable": true
+    },
+    {
+      "binary_id": "codex-core::all",
+      "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-86d2a13ddb92a398",
+      "bytes": 284061712,
+      "sha256": "a90ad304bf6324a2f4bf81f01312d857c803ec313c8d5d9675291ee972102c19",
+      "git_blob": "dbc205f780b9dd8ef3dea25aa73196f713740f4f",
+      "mode": 448,
+      "executable": true
+    }
+  ],
+  "original_review_programs_helpers_stable": true,
+  "original_ignored_count": 10,
+  "original_whole_scope_counts": {
+    "PASS": 3962,
+    "FAIL": 5
+  },
+  "original_scope_exit_code": 100,
+  "all_25_original_early_return_records": [
+    {
+      "line": 22876,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 22977,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 23513,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 23533,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 29233,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 30300,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 30392,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 30430,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 30547,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44403,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44430,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44441,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44531,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44542,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44601,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44612,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44623,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44634,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44645,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44656,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44667,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 44678,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 45853,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 49455,
+      "text": "    Skipping test because it requires a remote test environment."
+    },
+    {
+      "line": 51060,
+      "text": "    skipping capability test: unprivileged user namespaces are unavailable"
+    }
+  ],
+  "B10_intersection_of_early_return_or_ignored_names": []
+}

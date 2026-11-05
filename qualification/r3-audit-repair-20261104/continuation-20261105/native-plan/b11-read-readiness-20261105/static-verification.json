@@ -1,0 +1,264 @@
+{
+  "kind": "isolated-source-and-git-patch-verification",
+  "observed_at_utc": "2026-11-05T18:01:03.108728+00:00",
+  "base_head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+  "base_tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+  "patch": {
+    "bytes": 11629,
+    "sha256": "4a7262dfba537f18e838121b7f3fe4065518d3c63b2e4204d35c7bd2641e3f8f",
+    "blob": "0a80cbb044a0e00fc1a59810e7174dde0501b5c7"
+  },
+  "diff": {
+    "paths": 3,
+    "added": 96,
+    "removed": 92,
+    "changed": 188
+  },
+  "directory_bindings": {
+    "source-api-0.json": {
+      "entries": 7,
+      "paths": {
+        "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/firewall.rs": "bf2476dd123ca52cbf4e4064bc7b5a366efb275a",
+        "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/no_reparse_dir.rs": "93d983f12f027d43dc959b6d0fea324bbdeed7c4",
+        "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/no_reparse_dir_tests.rs": "4d8f987f5111b7d9b691349f5490c04fc2584de1",
+        "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs": "a96b6a502474a8bab3baa7842f36dfa814c9cc37",
+        "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/sandbox_users.rs": "0c7aa2198855f5f64767e03fb488555d15084255",
+        "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/setup_runtime_bin.rs": "176ef07504e17139120a3420ffff2578c3eafa44",
+        "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/setup_runtime_bin_tests.rs": "ad8aa7c3e46fd05403649f7abb5422d513e6a77f"
+      }
+    },
+    "binding-api-0.json": {
+      "entries": 4,
+      "paths": {
+        "codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs": "262460775ef6b5e02f0ba4485f388e1b389cc85f",
+        "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d",
+        "codex-rs/windows-sandbox-rs/src/bin/setup_main/win": "85df8b1e37289d3bcf56a1dea71e8dae7e935667",
+        "codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs": "e488e2a914b119ecb02cfc1a13a90009bc6120ea"
+      }
+    },
+    "binding-api-1.json": {
+      "entries": 44,
+      "paths": {
+        "codex-rs/windows-sandbox-rs/src/acl.rs": "53c7053c5880da13640f3bd777998b6998da6d47",
+        "codex-rs/windows-sandbox-rs/src/acl_deny.rs": "8f73a1a58176a1a15b3476c008cb3682b24f6579",
+        "codex-rs/windows-sandbox-rs/src/acl_tests.rs": "2e16c9e370368fd4b75e346dd2aac7e632b19975",
+        "codex-rs/windows-sandbox-rs/src/allow.rs": "5a10261d0c5e82f5987df16c86680d68e7a6d705",
+        "codex-rs/windows-sandbox-rs/src/audit.rs": "5dd2a5846683f1d2e599b36fed9286c256e5184a",
+        "codex-rs/windows-sandbox-rs/src/bin": "5345f83992946d3e4fdee1447012bcd11f6684bf",
+        "codex-rs/windows-sandbox-rs/src/cap.rs": "41b33b63fda6f9bbc648fef98e5c9065f8f17b5e",
+        "codex-rs/windows-sandbox-rs/src/conpty": "72ec7262aad4b85529cbfe683bf59d14e394d812",
+        "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs": "6f05793ec6ee043a933073ada3a1bf9122de5a73",
+        "codex-rs/windows-sandbox-rs/src/deny_read_acl.rs": "dd3bc350e48299fe5a99e8d45eba61a239e5a186",
+        "codex-rs/windows-sandbox-rs/src/deny_read_resolver.rs": "498ceabfd0b72d0c4788dc9195f1b32617854d51",
+        "codex-rs/windows-sandbox-rs/src/deny_read_state.rs": "fd073a4d45c781f0441839708f92e32d0831556c",
+        "codex-rs/windows-sandbox-rs/src/desktop.rs": "0b01f011119bef623bc9e46e710caa371520380d",
+        "codex-rs/windows-sandbox-rs/src/desktop_tests.rs": "5bbb7af6b9ffb86704e86ebcf0895f71e571166b",
+        "codex-rs/windows-sandbox-rs/src/dpapi.rs": "3a90704127e2fd7c71131492aa0d25f70dfba114",
+        "codex-rs/windows-sandbox-rs/src/elevated": "613b5c200238650e6989a52ce9df50544685475d",
+        "codex-rs/windows-sandbox-rs/src/elevated_impl.rs": "1de7889c1f9f083807a6e7cc0e47a54635112970",
+        "codex-rs/windows-sandbox-rs/src/env.rs": "bdf7a76ab2efa345664b6467aed6e7550a80be0d",
+        "codex-rs/windows-sandbox-rs/src/helper_materialization.rs": "7532d191ead69f010f17ef48a8e0b90d2bca3e71",
+        "codex-rs/windows-sandbox-rs/src/hide_users.rs": "b91944002294555847f3574c7d3952f45196bf36",
+        "codex-rs/windows-sandbox-rs/src/identity.rs": "860877dff2effb728d446d1a6d7db66073cf2ace",
+        "codex-rs/windows-sandbox-rs/src/lib.rs": "11778af7beb645b36401807cf3e31a0dd4deddc0",
+        "codex-rs/windows-sandbox-rs/src/logging.rs": "7108a1de3691b9682c60eb5e5bcb50010cfee4af",
+        "codex-rs/windows-sandbox-rs/src/path_normalization.rs": "1735b745a28dc92b2c78e6f61fd70fa878042352",
+        "codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs": "38110a69239e9707a324f2d4cf4a1fad932b4132",
+        "codex-rs/windows-sandbox-rs/src/process.rs": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+        "codex-rs/windows-sandbox-rs/src/resolved_permissions.rs": "0e28b9d3dc169a61e8c00c9ae63cecef7afd3e06",
+        "codex-rs/windows-sandbox-rs/src/sandbox_utils.rs": "1dfd7683021065d8e2899ce589b3f55c8999aebb",
+        "codex-rs/windows-sandbox-rs/src/setup.rs": "890755d01ca24f5ede1960582eacb9714633a0db",
+        "codex-rs/windows-sandbox-rs/src/setup_error.rs": "d9104602bc19af88101fbb5b44f839a1d799c174",
+        "codex-rs/windows-sandbox-rs/src/spawn_prep.rs": "2385bdbd3202fd2f14a090174b269791976d04c4",
+        "codex-rs/windows-sandbox-rs/src/ssh_config_dependencies.rs": "ae6d82d560190e99d84b2f147df7e2f40a656e4b",
+        "codex-rs/windows-sandbox-rs/src/stdio_bridge.rs": "3ad722ba8db4eae79918aa79f14e102ea8cdb634",
+        "codex-rs/windows-sandbox-rs/src/stdio_bridge_tests.rs": "c13632b84a1e25d906dd46e2570a9f6273774604",
+        "codex-rs/windows-sandbox-rs/src/token.rs": "8945d75fe172679479b738e6266cac99a6f7ed16",
+        "codex-rs/windows-sandbox-rs/src/token_tests.rs": "042858ce22b784d7809612e2d80e35d29b559f1a",
+        "codex-rs/windows-sandbox-rs/src/unified_exec": "eac00ac7f159e845e1d7284dd0a9f2d22d59d046",
+        "codex-rs/windows-sandbox-rs/src/wfp.rs": "9291b6eb994d640828a16493e5b558339ed73156",
+        "codex-rs/windows-sandbox-rs/src/wfp": "08f9d53caaa3a7ee3f462ea195fb1cf0d6c9eb40",
+        "codex-rs/windows-sandbox-rs/src/wfp_setup.rs": "688878583b017ef029a9b54b8fdf5e806a7d94ad",
+        "codex-rs/windows-sandbox-rs/src/winutil.rs": "45378b4bb527ce2b202913ab3b21aad9ef4b1828",
+        "codex-rs/windows-sandbox-rs/src/workspace_acl.rs": "7143212b54c088e317ef5acbc729060e68237e68",
+        "codex-rs/windows-sandbox-rs/src/wrapper.rs": "9729db1b840ceecaa7de2a27be0a7f4fb9792313",
+        "codex-rs/windows-sandbox-rs/src/wrapper_tests.rs": "207361d4c60f8559d51e1842743c6f6c69bc5618"
+      }
+    }
+  },
+  "preserved_source_regions": [
+    {
+      "name": "Payload and SetupMode wire schema",
+      "equal": true,
+      "bytes": 824,
+      "sha256": "21bd6f9992bcbb2ae684810426b2ecef2cee2a6f965a259a2a1c614e0683b1e8",
+      "blob": "8d0c5a18dc95952504c98ceea895591519a0df4e"
+    },
+    {
+      "name": "read roots, RX shortcuts, per-root ACL operations and error collection",
+      "equal": true,
+      "bytes": 3056,
+      "sha256": "ab2012126d3a27fd3beae2a19720b979ed2fcdb130d9acea5acd98cc7f96fcc3",
+      "blob": "1d77d94247f0a736d65711ee42860f7c66050640"
+    },
+    {
+      "name": "directory ACL helper, actual entrypoint and marker order",
+      "equal": true,
+      "bytes": 8408,
+      "sha256": "89786d0a65be2338cae1ee1ff02173032e031c36091bd8ffc74eeda812072982",
+      "blob": "4f135c4454eafc1f26c9e2e7e6b5b1e4a1fa6b00"
+    },
+    {
+      "name": "provision-only and common provisioning operations",
+      "equal": true,
+      "bytes": 5435,
+      "sha256": "346349c74d62d9abaabb470e151caa9f21a4f1fd531e63139fe5f8a1b010b57e",
+      "blob": "ebc4bb5bf8814f9019f6727da2cbb10eede9fa4c"
+    },
+    {
+      "name": "read ACL SID resolution, masks, inheritance, actual operation and cleanup",
+      "equal": true,
+      "bytes": 1487,
+      "sha256": "c6eb4008117e737dfcc18ea6b0421e4db61a9087cc8b0a7cf39eb2f198fe5945",
+      "blob": "7fcf4c56e4c1091dddddc4105b61c9564ad1a294"
+    },
+    {
+      "name": "remaining Full runtime/write/deny operations and all original helper tests, excluding only truthful progress log",
+      "equal": true,
+      "bytes": 19183,
+      "sha256": "ea767fa4b6043b252eaabdc8d55a5a702de0e63bb1a68bd3c536c719853a6f36",
+      "blob": "5c8fd993ecae6ae0904d2919920f903ed348d752"
+    }
+  ],
+  "all_original_win_rs_inline_test_names_byte_preserved": [
+    "payload_defaults_otel_absent",
+    "payload_accepts_provision_only_mode",
+    "payload_accepts_otel_settings",
+    "write_root_refresh_replaces_stale_delete_child_grant",
+    "write_root_refresh_checks_each_sid",
+    "write_root_refresh_ignores_inherited_delete_child_grant",
+    "deny_path_under_active_root_uses_only_matching_root_sid",
+    "deny_path_outside_active_roots_falls_back_to_all_active_root_sids",
+    "deny_path_includes_nested_active_root_sid"
+  ],
+  "all_original_win_rs_test_region": {
+    "bytes": 12179,
+    "sha256": "f0ab5ea6608ce02980b663dbe78bfd4296e1c9c4ceed8396324dbfdf373a39a2",
+    "blob": "d657e22078d77dbb0a897b44e186176bb884c017"
+  },
+  "new_test_names": [
+    "existing_read_acl_mutex_is_not_a_completion_receipt"
+  ],
+  "mutex_guard_body_and_production_name_preserved": true,
+  "git_commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/read-readiness.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/read-readiness.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/read-readiness.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/research-audit/b11-read-readiness-20261105/read-readiness.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "roundtrip": [
+    {
+      "phase": "applied",
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "identity": {
+        "bytes": 45950,
+        "sha256": "56fc08023e586ee8faa88dc630d2b946080a7779773da406918c13f5697b0d01",
+        "blob": "c39b298b7889dc3669e1ee7e2816f7e77568e955"
+      }
+    },
+    {
+      "phase": "applied",
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "identity": {
+        "bytes": 1960,
+        "sha256": "38f994940b12741210bc9b4cd3d648ed9a53378c638f2671154d0777d13b2598",
+        "blob": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6"
+      }
+    },
+    {
+      "phase": "applied",
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+      "identity": {
+        "bytes": 2425,
+        "sha256": "c8076fe5e2946b273186654da298fd08d0d885317273a56eb1c80e424023bb18",
+        "blob": "333aefdf9584ef29612ac6f9814ff34308971754"
+      }
+    },
+    {
+      "phase": "restored",
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "identity": {
+        "bytes": 47955,
+        "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3",
+        "blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d"
+      }
+    },
+    {
+      "phase": "restored",
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "identity": {
+        "bytes": 1913,
+        "sha256": "89d689e0c0a07ff8b68d719f6ffb23df86a22598df37d57f6d70360ca738e695",
+        "blob": "a96b6a502474a8bab3baa7842f36dfa814c9cc37"
+      }
+    },
+    {
+      "phase": "restored",
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+      "identity": null
+    }
+  ],
+  "rust_formatted": false,
+  "rust_compiled": false,
+  "project_or_windows_tests_executed": false,
+  "shared_source_index_target_or_refs_changed": false,
+  "limitations": [
+    "This verifies patch bytes and named preserved regions, not Rust typechecking or runtime behavior.",
+    "The new actual Win32 mutex control is source only and has not executed.",
+    "Library tests alone do not select the setup-binary test module."
+  ]
+}

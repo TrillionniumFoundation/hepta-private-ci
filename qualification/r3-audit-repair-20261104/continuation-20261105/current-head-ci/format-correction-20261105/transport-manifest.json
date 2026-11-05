@@ -1,0 +1,39 @@
+{
+  "schema": "complete-eed-format-transport-v2",
+  "encoding": "base64(gzip(UTF-8 JSON with base64-preserved member bytes))",
+  "member_count": 37,
+  "total_original_member_bytes": 2720489,
+  "uncompressed_archive": {
+    "bytes": 3637183,
+    "sha256": "e98ae075fcedc8733673acf958bc1d1e0e6362f166b0aae9f2703da324780391",
+    "git_blob": "13a36492884cc3068b7ce4fcdc9ade3617f4cb01"
+  },
+  "gzip_archive": {
+    "bytes": 570519,
+    "sha256": "75a3e884c79156e298a87d8ff51390ce314cc12c6e9ab34c0d4bfdd11f04818e",
+    "git_blob": "dd20c067051901662d9cd0dbf0922308c571edff"
+  },
+  "base64_archive": {
+    "bytes": 760692,
+    "sha256": "ba72fb8f82a2473d4b8d13057194e490e6ccd1c7831ac761482628da22667f14",
+    "git_blob": "c307c1a0db9d58636628c467b2b39c8a6894ab77"
+  },
+  "parts": [
+    {
+      "file": "complete-originals.part-000.base64.txt",
+      "offset": 0,
+      "bytes": 400000,
+      "sha256": "d3487ba61bc8a7c5abedab6075c4ce9f447bfbbfcf27e7b79edef5578dc191f3",
+      "git_blob": "9505d8689d2a410003287805d56a13bfa0b1cc82"
+    },
+    {
+      "file": "complete-originals.part-001.base64.txt",
+      "offset": 400000,
+      "bytes": 360692,
+      "sha256": "79d991cd7200fc40e3f42e3df07a61a656d908b2380840c54b31d5ae7ebff956",
+      "git_blob": "dc9f7b6f7ac53d776b8e33168c70019a93e2cb1d"
+    }
+  ],
+  "decode": "Concatenate parts in listed order; base64 decode; gzip decompress; parse JSON; decode each content_base64 member; verify bytes/sha256/git_blob for every member.",
+  "original_log_retrieval_time_caveat": "Separate API fetch wall-clock unavailable; original job/source/API times and full decoded-text retrieval verification retained."
+}

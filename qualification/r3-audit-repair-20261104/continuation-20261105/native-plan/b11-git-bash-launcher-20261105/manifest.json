@@ -1,0 +1,156 @@
+{
+  "schema": "b11-native8-explicit-git-bash-repair-v1",
+  "status": "STATIC_CANDIDATE_NOT_WINDOWS_EXECUTED",
+  "scope": "Three workflow/harness paths only; no Rust source, test, token, ACL, dependency, lock, default or product policy change.",
+  "base": {
+    "diagnostic_head": "2338281bac08ff68b85dc2146c04a35598e6cbb4",
+    "diagnostic_tree": "515be77c425a74381a0aa45d06dcb497fd37ec16",
+    "actual_tested_merge_commit": "8fd0c14cd5853d21eb23571f67461f3fc386c01c",
+    "actual_tested_tree": "cb105f2d902326c3c2e187f49c76d5598e6646c3",
+    "preimage_basis": "Frozen V3 counterfactual + readiness execution V2, exactly published together by root in diagnostic head233; native8 source-leaves independently confirms workflow89d2 and readiness source posts."
+  },
+  "actual_failure": {
+    "run_id": 42113095723,
+    "job_id": 127545539398,
+    "attempt": 1,
+    "original_full_target": {
+      "passed": 147,
+      "failed": 7,
+      "ignored": 2,
+      "exit_code": 3
+    },
+    "first_exact_launcher": {
+      "argv0": "bash",
+      "exit_code": 1,
+      "elapsed_seconds": 0.047000000000025466,
+      "console_encoding": "UTF-16LE",
+      "message": "Windows Subsystem for Linux has no installed distributions.",
+      "exact_resolved_executable_path": "NOT_RECORDED"
+    },
+    "exact_cases_executed": 0,
+    "negative_executed": false,
+    "source_mutation_attempted": false,
+    "helper": "skipped",
+    "registration_blob": "14ec71c1a1df364a6d978bfbe24e4f46e8f24896",
+    "full_api_blob": "6042268ac3064ffde7f24b298aed9a0240a71d16",
+    "terminal_review_blob": "053b57627da8b78720bf8d78e707c3588baa55c9"
+  },
+  "change": {
+    "paths": 3,
+    "insertions": 32,
+    "deletions": 6,
+    "workflow_source_of_executable": "Only current step BASH; append .exe if omitted, require the derived actual file, use cygpath -aw, quote the resulting Windows absolute path. No PATH lookup or hardcoded drive.",
+    "python_parameter": "--bash-executable is required in both consumers; native Windows, absolute path, basename bash.exe and an existing regular file are mandatory.",
+    "subprocesses": "Four positive invocations, one negative invocation and the helper invocation all use that explicit path; no fallback. The three argv construction sites preserve every original remaining argument.",
+    "record": "Each Python wrapper records path/bytes/SHA256/Git blob of the selected executable as git-bash-executable.json before launches. Command JSON separately preserves the actual argv.",
+    "dependency": "Helper CONTROL_BLOB now equals counterfactual postimage e6a191a2d3c66c740aa3cb2ccd42c3e4fdb6880e; its PINS uses the same constant. Both pre-existing self-versus-HEAD source checks remain unchanged.",
+    "limits": "The initial executable hash records actual input bytes; this is not a held-file lifetime custody mechanism. Shell provenance is supplied by the trusted current workflow BASH variable, not inferred solely from filename."
+  },
+  "preserved": {
+    "whole_original_workflow_step": "byte-identical including target/command/status handling",
+    "native_Rust_source": "unchanged",
+    "four_exact_positives": {
+      "same_names": true,
+      "once_each": true,
+      "require": "1 passed/0 failed/0 ignored/155 filtered; no cache, one attempt, exact source/index/locks"
+    },
+    "negative": {
+      "same_physical_marker": true,
+      "same_assertion_line": 597,
+      "libtest_and_outer_XML_exit": 101,
+      "Bazel_exit": 3,
+      "once": true
+    },
+    "restore": "Complete original finally bytes; whole-source/index/two-lock check before original-bytes write; exact original source after restore. Unknown drift is not overwritten.",
+    "helper": "Same unfiltered original target; valid physical negative and exact restore remain mandatory.",
+    "workflow_timeout_minutes": 120,
+    "test_roster": 156,
+    "no_new_retries_or_skips": true,
+    "old_physical_fixtures_and_permissions": "unchanged"
+  },
+  "static_validation": {
+    "source_ast": {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/static-verification.json",
+      "bytes": 3523,
+      "sha256": "85b9e0fbcd389c4c63abd4b2c66f16293d17e60df4d2ed013d6c41bcc3b916fc",
+      "git_blob": "0761b6fa3f6c25e506a71f013a58d5c85b686db4"
+    },
+    "cloud_git_yaml": {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/roundtrip-verification.json",
+      "bytes": 1845,
+      "sha256": "15806c6ee4bb6ae36cc929b12ba0d05383f5aeb4c0dd8f509ed3c572c3dc102d",
+      "git_blob": "60e3e2316902256f3b1a13f60172da9a728ccdb4"
+    },
+    "project_tests_executed": false,
+    "native_processes_executed": false,
+    "no_optional_guard_suite_run": true
+  },
+  "required_actual_acceptance": [
+    "Original whole target retains its independent complete stdout/XML and original exit.",
+    "Both Python records identify the workflow-provided Git Bash path and bytes; first exact proceeds through Bazel.",
+    "Four exact original positive cases all qualify before source mutation.",
+    "The single negative reaches the exact physical marker and original assertion exit, followed by exact guarded restoration.",
+    "Only after valid restore, original setup-bin target completes with every compiled case and required readiness case; whole-library failures remain independent."
+  ],
+  "B11_status": "OPEN",
+  "publication_or_native_authorization": "No ref/PR/source mutation, CI dispatch, retry or native execution by this candidate author. Parent root owns publishing; CI owns native operations.",
+  "sources": [
+    {
+      "path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+      "preimage": {
+        "bytes": 22200,
+        "sha256": "1a53b2771e795fb27a495d7c053d7afc9b0cad954f27c4802654311771319ed5",
+        "git_blob": "3680db31233e47ba7fad99f31a7019c4536288bb"
+      },
+      "postimage": {
+        "bytes": 22807,
+        "sha256": "09c1e846ab95951bc08d6637f8207f03df92e4e343e2f9c294a5052483b7f397",
+        "git_blob": "e6a191a2d3c66c740aa3cb2ccd42c3e4fdb6880e"
+      },
+      "preimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/source/.github/scripts/run_b11_acl_identity_counterfactual.py",
+      "postimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py"
+    },
+    {
+      "path": ".github/scripts/run_b11_read_acl_readiness.py",
+      "preimage": {
+        "bytes": 14222,
+        "sha256": "09d4b076ee3f9f1232457612ab2f5549bdb5e16bd980a061094de8b10aeb1398",
+        "git_blob": "6010ce9cc6da2eca95aac9ba453581f68770bbe6"
+      },
+      "postimage": {
+        "bytes": 14425,
+        "sha256": "f5f134b21f1e4775015c2674a22b785244368964a4c8070e18fb1e3d83b8afcf",
+        "git_blob": "01c99717b4dfc14d86858464be4798d4351830e6"
+      },
+      "preimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/source/.github/scripts/run_b11_read_acl_readiness.py",
+      "postimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/candidate/.github/scripts/run_b11_read_acl_readiness.py"
+    },
+    {
+      "path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "preimage": {
+        "bytes": 5929,
+        "sha256": "c2d9c91b0bf724613a075dae881b84523074858728bd06a01f8a39f88c4d4dc6",
+        "git_blob": "89d2eaf4bb9900f7476d49476e2657effa68327a"
+      },
+      "postimage": {
+        "bytes": 6445,
+        "sha256": "ea6159128fea675e4f9b2f969d5e934d87eb9806cbb0480dbafb02fe6676e7cf",
+        "git_blob": "8276dc655ab7d7e1e311f183e398a903a595ae9f"
+      },
+      "preimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/source/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "postimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml"
+    }
+  ],
+  "patch": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/full.patch",
+    "bytes": 7535,
+    "sha256": "799a8b1b620383f114f67ceee956a727db0bf081475bff8603398094941eeb04",
+    "git_blob": "0a52246e763a8693bfd029dc492df1a0c2262cbc"
+  },
+  "source_map": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/source-map.json",
+    "bytes": 2392,
+    "sha256": "df5945d225aebdc34c5db3723f8a3df9e0f4c598a9070b4548707c4eb4ddd3f5",
+    "git_blob": "df984787cdbd12f794f70011cc9e81536d7e3a3d"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "B10-evidence-parser-correction-v1",
+  "initial_parser": {
+    "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/project_originals.initial.py.source.txt",
+    "bytes": 10348,
+    "sha256": "383ceefa2ca313ce828563392d13c29d34ba211f16925cf944b88d6945ac33c2",
+    "git_blob": "8e7ddef9db914ebac2de68e52d890066ba8d3435"
+  },
+  "corrected_parser": {
+    "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b10-original-contracts-20261105/project_originals.py",
+    "bytes": 10829,
+    "sha256": "c03848c5c458696f2b118f239130d1419f375c221a52b981708907f188eb77c7",
+    "git_blob": "9de49e5ea92341279ea993f9be97fbf5a1c7d1d1"
+  },
+  "initial_end_condition": "AssertionError:42 when incorrectly expecting21 TestRunner mnemonic messages.",
+  "actual_cause": "The exact Bazel execution log records21 tw.exe real test spawns and21 xml.exe wrapper XML-generation spawns under the same target/mnemonic. The corrected projection retains all42 and classifies by original argv, never counts xml.exe as a test.",
+  "product_or_native_test_execution": false,
+  "original_bytes_modified": false
+}

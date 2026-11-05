@@ -1,0 +1,48 @@
+{
+  "schema": "b11-acl-identity-counterfactual-v3-github-readback-map",
+  "status": "STATIC_CANDIDATE_DISABLED_UNAPPLIED",
+  "previous_v2_map": "69d3b2aba239e9dfc818dd22f437f1739ebe474a",
+  "objects": [
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py",
+      "bytes": 22200,
+      "sha256": "1a53b2771e795fb27a495d7c053d7afc9b0cad954f27c4802654311771319ed5",
+      "git_blob": "3680db31233e47ba7fad99f31a7019c4536288bb",
+      "actual_create_sha": "3680db31233e47ba7fad99f31a7019c4536288bb",
+      "get_byte_equal": true
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/full.patch",
+      "bytes": 6969,
+      "sha256": "e8e9d45eb167f81b35e3d17db84d9164d6ee12d4dc3260e95e6ce951199d03ab",
+      "git_blob": "53ed544e11003015cf1a57b27da64b2295681fd2",
+      "actual_create_sha": "53ed544e11003015cf1a57b27da64b2295681fd2",
+      "get_byte_equal": true
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/manifest-DISABLED.json",
+      "bytes": 5728,
+      "sha256": "4d27907fa21fa83a4dbbdb87f3c564d0874212ec273083385d947cb398c2f1f8",
+      "git_blob": "4f969ff54698cae7bcd85b32aac5f65d791866e0",
+      "actual_create_sha": "4f969ff54698cae7bcd85b32aac5f65d791866e0",
+      "get_byte_equal": true
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/static-verification.json",
+      "bytes": 13771,
+      "sha256": "66586b870bb6af0522c864241f50b1f9eaabd0b2610b53c9486f0e371021c149",
+      "git_blob": "8e46b5e46ebdc34a0ab1321ad9e90986922ddd6d",
+      "actual_create_sha": "8e46b5e46ebdc34a0ab1321ad9e90986922ddd6d",
+      "get_byte_equal": true
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-acl-repair-20261105/counterfactual-workflow-v3/freeze.py",
+      "bytes": 10239,
+      "sha256": "0e3128ac7f8c290981345f5311e786fc6847c6909d7228750d86c96b9aaf74db",
+      "git_blob": "0b7a36f7cdad35cf8a99475f78263279de371b2b",
+      "actual_create_sha": "0b7a36f7cdad35cf8a99475f78263279de371b2b",
+      "get_byte_equal": true
+    }
+  ],
+  "scope": "V3 addresses the actual Native7 interleaved-positive receipt failure. No corrupted text is repaired, no native new scope has executed, and no ref/PR/source mutation was performed."
+}

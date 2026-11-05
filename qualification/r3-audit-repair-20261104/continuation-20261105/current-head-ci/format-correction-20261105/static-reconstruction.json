@@ -1,0 +1,207 @@
+{
+  "schema": "eed-supervisor-format-original-diff-static-reconstruction-v1",
+  "verified_utc": "2026-11-05T22:29:59.337337+00:00",
+  "head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+  "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+  "original_log": {
+    "bytes": 1664686,
+    "sha256": "4326b4f407af8ddf0fc38a0ec047bdc75cc88bdbc090043c8e225f04d06a4ba0",
+    "git_blob": "18299704e47546b1561af5526208d098f50e485e"
+  },
+  "patch": {
+    "bytes": 3568,
+    "sha256": "b4baef3d2d639397b7ecaa9b4a06063298780ec19ad004f89a00e4342d6ef49e",
+    "git_blob": "e0348cbfde25bfbcf5fd3e6e584714dee82f3ee4"
+  },
+  "four_original_hunks": [
+    {
+      "logical_source_path": "codex-rs/core/src/agent/control_tests.rs",
+      "original_source_line": 4696,
+      "original_job_start_line": 10280,
+      "original_job_end_line": 10291,
+      "original_job_start_byte": 1607433,
+      "original_job_end_byte": 1608355,
+      "original_slice": {
+        "file": "hunk-01.original-job-slice.txt",
+        "bytes": 922,
+        "sha256": "f695c64f8c6bf25bf6fbe106c2dac5ed126707b47c5b252adc996365116e6f56",
+        "git_blob": "c280f8f3d3d731fb3c76126c45763d1279518a95"
+      },
+      "derived_before_block": {
+        "bytes": 316,
+        "sha256": "21e2b951e7fc5ae229d82e75d2e1a33aae7cadc050cd08216649135513a42d40",
+        "git_blob": "6bf8c98ff139a3b308b4852ec14f498ef13f788d"
+      },
+      "derived_after_block": {
+        "bytes": 375,
+        "sha256": "d9b8309fb5dd8d42143c0eef106c4577503991841d2b6ab85beea71034f2259f",
+        "git_blob": "c3ed8b03d2af4e7c26b3d1775c628f329bdd796f"
+      },
+      "original_context_matched_once": true
+    },
+    {
+      "logical_source_path": "codex-rs/core/src/environment_selection.rs",
+      "original_source_line": 1267,
+      "original_job_start_line": 10292,
+      "original_job_end_line": 10302,
+      "original_job_start_byte": 1608355,
+      "original_job_end_byte": 1609304,
+      "original_slice": {
+        "file": "hunk-02.original-job-slice.txt",
+        "bytes": 949,
+        "sha256": "23495e219ba411e6ecf1b62af57d63942ccf2258898b243bb9164d23f575680f",
+        "git_blob": "81f790a54e83d4883f1c2b80e9c21bd4ff8757a3"
+      },
+      "derived_before_block": {
+        "bytes": 339,
+        "sha256": "ad98946caeb6d5c758d834a057b0ffec3f14aa4e64cd9f65b0bbc213582d7207",
+        "git_blob": "91334347b32abc256c79f786ba05c092ffa2f3dd"
+      },
+      "derived_after_block": {
+        "bytes": 401,
+        "sha256": "21a8ed29a132da5fa6563247d51cf8e6ac7abeaee00d77930d94f935e1930354",
+        "git_blob": "aba58916fdd2ac82fd0e4eb1520a0a8f559fa08b"
+      },
+      "original_context_matched_once": true
+    },
+    {
+      "logical_source_path": "codex-rs/core/src/environment_selection.rs",
+      "original_source_line": 1283,
+      "original_job_start_line": 10303,
+      "original_job_end_line": 10317,
+      "original_job_start_byte": 1609304,
+      "original_job_end_byte": 1610687,
+      "original_slice": {
+        "file": "hunk-03.original-job-slice.txt",
+        "bytes": 1383,
+        "sha256": "a311447a2a3ba52e52bddd03ae1328198e267d7cc6fd746877357c4df65c43de",
+        "git_blob": "8389c624c271418ff9a803b7322e12856592a1b4"
+      },
+      "derived_before_block": {
+        "bytes": 595,
+        "sha256": "f495e87e44b12870689398b28a92002b87b4df5324419bd055f06e5af9bc9ed8",
+        "git_blob": "ad4fb04b024c1bd5365d076160a16804ebab74fd"
+      },
+      "derived_after_block": {
+        "bytes": 663,
+        "sha256": "672b02884b43a30c10d2d6e1ca4290a96bcd48c7ce31832a6eae1b14aa7f29d0",
+        "git_blob": "347368a6f2a28c18120520cab7e26b69bc3d728c"
+      },
+      "original_context_matched_once": true
+    },
+    {
+      "logical_source_path": "codex-rs/core/src/environment_selection.rs",
+      "original_source_line": 1291,
+      "original_job_start_line": 10318,
+      "original_job_end_line": 10341,
+      "original_job_start_byte": 1610687,
+      "original_job_end_byte": 1612582,
+      "original_slice": {
+        "file": "hunk-04.original-job-slice.txt",
+        "bytes": 1895,
+        "sha256": "5591d4f7677d3eb2bd2fc35b935085cb9fc67ac117071083879f65e9c6cd0833",
+        "git_blob": "f2c8fd020a3aed52cf928d577dfd1fc05df3adbb"
+      },
+      "derived_before_block": {
+        "bytes": 591,
+        "sha256": "f232f4d7d694e4193c4c0de50e871fe5ae6f860226695e80ab87f695ded5cb6e",
+        "git_blob": "50e433138141d81d8b110fb25e4165261ab6c423"
+      },
+      "derived_after_block": {
+        "bytes": 788,
+        "sha256": "2d04cf702e8c23acdc9df367274f69fbec5d2d0ba5ba7e17e10b7964af65e1ea",
+        "git_blob": "6d96eef452d6d094a36b29d5f0a4826b5e78ea29"
+      },
+      "original_context_matched_once": true
+    }
+  ],
+  "source_rows": [
+    {
+      "logical_source_path": "codex-rs/core/src/agent/control_tests.rs",
+      "before": {
+        "bytes": 173084,
+        "sha256": "2529dca22467d72ee6f067a4f600c99ea17c8099d4010ade2a09f008cfed386d",
+        "git_blob": "05054632b7cd82e5e7587dbcb7aee293788e00a2"
+      },
+      "after": {
+        "bytes": 173143,
+        "sha256": "7fc685bb6465326bb0d62482a98dac60565539f74ef39cd6f5cbfa2dfad9167c",
+        "git_blob": "6c93451a16f833c0241bdbe55806a6af60fa6195"
+      },
+      "pure_nonwhitespace_byte_equality": false,
+      "sole_allowed_nonwhitespace_difference": "One optional trailing comma after the second element of the exact requires_openai_auth two-element tuple, as required by the original rustfmt output.",
+      "all_quoted_literal_matches_byte_equal": true,
+      "budget_assertion_and_expression_tokens_preserved_modulo_the_named_optional_comma": true
+    },
+    {
+      "logical_source_path": "codex-rs/core/src/environment_selection.rs",
+      "before": {
+        "bytes": 78458,
+        "sha256": "2357c4fc2c3750eb45ea2a940259f1d0b05175e39e040f3d8f2c0d4c35c283a2",
+        "git_blob": "3c08e1620e800c30c47d98cc775cb20d4650ac88"
+      },
+      "after": {
+        "bytes": 78785,
+        "sha256": "24d081bd8c2891840bd48e4826319a84a1ba3d12f06827c296fa6ee10f9c0eb2",
+        "git_blob": "18aaa1120cc8449246f363105f16acb459a00dfa"
+      },
+      "pure_nonwhitespace_byte_equality": true,
+      "sole_allowed_nonwhitespace_difference": null,
+      "all_quoted_literal_matches_byte_equal": true,
+      "budget_assertion_and_expression_tokens_preserved_modulo_the_named_optional_comma": true
+    }
+  ],
+  "isolated_git_roundtrip": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/eed-supervisor-format-20261105/format-only.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/eed-supervisor-format-20261105/isolated-patch-check",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/research-audit/eed-supervisor-format-20261105/format-only.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/eed-supervisor-format-20261105/isolated-patch-check",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/research-audit/eed-supervisor-format-20261105/format-only.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/eed-supervisor-format-20261105/isolated-patch-check",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/research-audit/eed-supervisor-format-20261105/format-only.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/research-audit/eed-supervisor-format-20261105/isolated-patch-check",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_bytes_outside_original_rustfmt_hunks_unchanged": true,
+  "Rust_rustfmt_just_test_fix_or_other_native_command_executed": false,
+  "product_source_index_or_ref_modified": false
+}

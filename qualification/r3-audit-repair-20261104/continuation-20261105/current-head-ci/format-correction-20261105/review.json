@@ -1,0 +1,97 @@
+{
+  "schema": "eed-format-correction-independent-evidence-review-v1",
+  "frozen_utc": "2026-11-05T22:44:07.526484+00:00",
+  "reviewer_role": "independent format custody subagent; root owns ref publication and final acceptance",
+  "decision": "STATIC_ACCEPT_EXACT_ORIGINAL_FORMATTER_DIFF",
+  "head": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+  "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+  "original_run_id": 42063947910,
+  "original_job_id": 127372805931,
+  "original_result": "FAILED: only the full-workspace Rust 1.95 formatter step; no post-edit native qualification in this package",
+  "source_changes": [
+    {
+      "logical_source_path": "codex-rs/core/src/agent/control_tests.rs",
+      "before": {
+        "bytes": 173084,
+        "sha256": "2529dca22467d72ee6f067a4f600c99ea17c8099d4010ade2a09f008cfed386d",
+        "git_blob": "05054632b7cd82e5e7587dbcb7aee293788e00a2"
+      },
+      "after": {
+        "bytes": 173143,
+        "sha256": "7fc685bb6465326bb0d62482a98dac60565539f74ef39cd6f5cbfa2dfad9167c",
+        "git_blob": "6c93451a16f833c0241bdbe55806a6af60fa6195"
+      },
+      "full_source_reconstructed_exactly_from_original_formatter_hunks": true,
+      "pure_nonwhitespace_byte_equal": false,
+      "optional_trailing_commas_added": 1,
+      "all_quoted_literal_matches_byte_equal": true
+    },
+    {
+      "logical_source_path": "codex-rs/core/src/environment_selection.rs",
+      "before": {
+        "bytes": 78458,
+        "sha256": "2357c4fc2c3750eb45ea2a940259f1d0b05175e39e040f3d8f2c0d4c35c283a2",
+        "git_blob": "3c08e1620e800c30c47d98cc775cb20d4650ac88"
+      },
+      "after": {
+        "bytes": 78785,
+        "sha256": "24d081bd8c2891840bd48e4826319a84a1ba3d12f06827c296fa6ee10f9c0eb2",
+        "git_blob": "18aaa1120cc8449246f363105f16acb459a00dfa"
+      },
+      "full_source_reconstructed_exactly_from_original_formatter_hunks": true,
+      "pure_nonwhitespace_byte_equal": true,
+      "optional_trailing_commas_added": 0,
+      "all_quoted_literal_matches_byte_equal": true
+    }
+  ],
+  "source_boundaries": [
+    "Exactly four original formatter hunks across two test-source files; full original source and full postimage retained.",
+    "environment_selection.rs has byte-equal non-whitespace content, including the original assertions and five-second bounds.",
+    "control_tests.rs changes whitespace and one optional trailing comma in the requires_openai_auth tuple; all other non-whitespace bytes match.",
+    "Both postimages were actually created in GitHub and full GET bytes compared before root publication.",
+    "All five retained preimages, including AGENTS.md, justfile and the original workflow, were full GET compared to their actual source blobs and the original eed tree leaves."
+  ],
+  "original_native_results": {
+    "supervisor_tests": "3 PASS",
+    "agent_protocol_tests": "14 PASS",
+    "supervisor_clippy": "PASS",
+    "checkout_immutability": "PASS",
+    "full_workspace_rust_format": "FAIL"
+  },
+  "native_evidence_custody": {
+    "full_original_job_log": {
+      "bytes": 1664686,
+      "sha256": "4326b4f407af8ddf0fc38a0ec047bdc75cc88bdbc090043c8e225f04d06a4ba0",
+      "git_blob": "18299704e47546b1561af5526208d098f50e485e"
+    },
+    "complete_two_original_artifact_ZIPs": [
+      {
+        "artifact_id": 13456116767,
+        "bytes": 527,
+        "sha256": "833644afe2c65505d5a795916ee200b2d06f929da894273af7bae9d179542404",
+        "git_blob": "69eb73b14484575e1ecc7c6b3d89fa418d1b21db"
+      },
+      {
+        "artifact_id": 13455858457,
+        "bytes": 782,
+        "sha256": "73adcb25a10e0157a6d083257f47ae62f2e472a55c9d4b4f1fcf2c763979af13",
+        "git_blob": "6aefbcb27d3dcbe1d7edc752a5bc9e935c2fe4fa"
+      }
+    ],
+    "original_API_artifact_digests_and_CRCs_verified": true,
+    "raw_and_XML_named_passes_agree": true,
+    "PASS_rows_appear_twice_due_to_final_status_display_not_two_executions": true,
+    "separate_original_log_API_fetch_wall_clock_unavailable": true
+  },
+  "reviewed_local_instructions": {
+    "AGENTS_lines_78_to_84": "Project tests, full suite for core/common/protocol, scoped fix, then fmt; no tests after fix/fmt.",
+    "local_native_order": "just test -> scoped just fix -> just fmt",
+    "local_native_execution": "NOT_RUN; original resource/tooling gate remains unresolved; reconstructing rustfmt's output is not running rustfmt."
+  },
+  "scope_limits": [
+    "The 3 Supervisor and 14 protocol passes belong to the original eed head and do not qualify codex-core or the proposed new tree.",
+    "No Rust or native host command was run by this format custody task.",
+    "No source branch, ref, workflow, assertion, timeout, lockfile or production permission contract was changed by this review task.",
+    "The separate B21 retention delta, any root publication and subsequent native jobs require their own records."
+  ]
+}

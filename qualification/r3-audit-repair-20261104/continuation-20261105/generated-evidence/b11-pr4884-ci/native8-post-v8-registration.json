@@ -1,0 +1,380 @@
+{
+  "schema": "b11-native8-post-v8-registration-v1",
+  "role": "ORIGINAL_WHOLE_FAILURE_AND_BARE_BASH_LAUNCHER_PRECONDITION_FAILURE_NOT_B11_CLOSURE",
+  "head": "2338281bac08ff68b85dc2146c04a35598e6cbb4",
+  "actual_checkout": "8fd0c14cd5853d21eb23571f67461f3fc386c01c",
+  "actual_tree": "cb105f2d902326c3c2e187f49c76d5598e6646c3",
+  "run_id": 42113095723,
+  "job_id": 127545539398,
+  "attempt": 1,
+  "counts": {
+    "total_named_tests": 156,
+    "passed": 147,
+    "failed": 7,
+    "ignored": 2
+  },
+  "original_bazel_exit": 3,
+  "counterfactual": {
+    "status": "INVALID_OR_NOT_RUN",
+    "first_exact_process_exit": 1,
+    "first_exact_elapsed_seconds": 0.047000000000025466,
+    "actual_first_argv0": "bash",
+    "console_encoding": "UTF-16LE",
+    "actual_diagnostic": "Windows Subsystem for Linux has no installed distributions.",
+    "exact_Bazel_or_test_invocations": 0,
+    "negative_commands": 0,
+    "source_mutation_attempted": false,
+    "source_mutated": false,
+    "helper_step": "skipped",
+    "physical_counterfactual_qualified": false,
+    "restore_error": null,
+    "restored_exact_original_bytes": false,
+    "restore_false_means": "No mutation occurred; no restore operation was performed."
+  },
+  "probe": {
+    "row": {
+      "complete_json": 7,
+      "interleaved_not_repaired": 1
+    },
+    "restoration": {
+      "complete_json": 8,
+      "interleaved_not_repaired": 0
+    },
+    "finalized": {
+      "complete_json": 7,
+      "interleaved_not_repaired": 1
+    }
+  },
+  "original_archive": {
+    "artifact_id": 13454109636,
+    "bytes": 2049241,
+    "sha256": "8b84e8347cc024119d22200862369ae73dc80023607d6d69afcea6862eb2cef7",
+    "all_21_members_crc_hash_verified": true,
+    "parts": 16,
+    "manifest_blob": "bf8d0fef6843034be4f6a22dc2a15341feb4ae30"
+  },
+  "source_leaf_count": 78,
+  "policy": "Append after V8; preserve every prior cut/head/raw result. No interleaved PASS reconstruction, inferred negative, product retry, or B11 closure. Minimal shell propagation repair remains a separate unexecuted candidate.",
+  "source_ref_or_pr_mutation_by_auditor": false,
+  "items": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/terminal-api-envelopes.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/terminal-api-envelopes.json",
+      "bytes": 520966,
+      "sha256": "ea2dbd1fa0bbaf63e4cdd8fdc63682834b5af64095a11fd48143f6da0065ee91",
+      "blob": "6042268ac3064ffde7f24b298aed9a0240a71d16",
+      "mode": "100644",
+      "actual_create_blob_sha": "6042268ac3064ffde7f24b298aed9a0240a71d16",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/job.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/job.log",
+      "bytes": 447899,
+      "sha256": "0f5d79a5aa7626b6480627f585b53299c35a51d2eb36258e931a319960f4757f",
+      "blob": "5c68ade104ced3c469ddc19aacb82e9c3cdc8503",
+      "mode": "100644",
+      "actual_create_blob_sha": "5c68ade104ced3c469ddc19aacb82e9c3cdc8503",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/artifact-verification.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/artifact-verification.json",
+      "bytes": 6289,
+      "sha256": "36050e60b0753de3c79614b12c34c08de87553aa1ad30915e300d93b67bfe037",
+      "blob": "3e67207eeba7a6c7fe26687d0f7eacbbfa2aad42",
+      "mode": "100644",
+      "actual_create_blob_sha": "3e67207eeba7a6c7fe26687d0f7eacbbfa2aad42",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts-manifest.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts-manifest.json",
+      "bytes": 11165,
+      "sha256": "9a5720bff60bac8ed994eaf1ba1e375f0475829def5acaf83a334b9b24a1c360",
+      "blob": "bf8d0fef6843034be4f6a22dc2a15341feb4ae30",
+      "mode": "100644",
+      "actual_create_blob_sha": "bf8d0fef6843034be4f6a22dc2a15341feb4ae30",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/terminal-review.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/terminal-review.json",
+      "bytes": 18066,
+      "sha256": "dbc191b3b29b5a4a51245dcdfd9a8c3c0a45be5f27e4a338415e21dbd1850fb5",
+      "blob": "053b57627da8b78720bf8d78e707c3588baa55c9",
+      "mode": "100644",
+      "actual_create_blob_sha": "053b57627da8b78720bf8d78e707c3588baa55c9",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/failure-classification.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/failure-classification.json",
+      "bytes": 16140,
+      "sha256": "75ce407f66f1f6ba0a60aaee956f12488de395e6884fd8a63e0b6d2718540968",
+      "blob": "f5d29eccdbfa897d5843959e54b49e7676b50d1e",
+      "mode": "100644",
+      "actual_create_blob_sha": "f5d29eccdbfa897d5843959e54b49e7676b50d1e",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/physical-observation-projection.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/physical-observation-projection.json",
+      "bytes": 128682,
+      "sha256": "eeb33a9cc9b3eb96c338a614616130d8660f690292498597eeeee9f6d2194a50",
+      "blob": "e5e3ed47a68e4a425cf13f0d2a81e919749e1a42",
+      "mode": "100644",
+      "actual_create_blob_sha": "e5e3ed47a68e4a425cf13f0d2a81e919749e1a42",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/counterfactual-precondition-review.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/counterfactual-precondition-review.json",
+      "bytes": 6382,
+      "sha256": "617e8ec445184bec1ee22ef3086813ec2d38f58bbaebfac24595912401e494df",
+      "blob": "4760ccd21611609ac9c77e071acad7f84c273193",
+      "mode": "100644",
+      "actual_create_blob_sha": "4760ccd21611609ac9c77e071acad7f84c273193",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/counterfactual-terminal.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/counterfactual-terminal.json",
+      "bytes": 542,
+      "sha256": "19c698b75ff54a7accdebc02554e88fe844cd395e74d873ae618123c2a6a19d4",
+      "blob": "93249d0325dc5f3349b0f5d462c662dcfcfeb8b3",
+      "mode": "100644",
+      "actual_create_blob_sha": "93249d0325dc5f3349b0f5d462c662dcfcfeb8b3",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/source-entry.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/source-entry.json",
+      "bytes": 1212,
+      "sha256": "8074139d993dee8a594d49131544cf23c93a4ec702d2d801284827d6beb32853",
+      "blob": "ca998990ee2c40d9a9b90faca2982e068e3f147e",
+      "mode": "100644",
+      "actual_create_blob_sha": "ca998990ee2c40d9a9b90faca2982e068e3f147e",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command.json",
+      "bytes": 2426,
+      "sha256": "8bdf392d12f20533e70e2ba4469725c3114026ce8427fcf1e24d8ec4e49006fc",
+      "blob": "91091a53399e0642db334b550bd7c016be78f322",
+      "mode": "100644",
+      "actual_create_blob_sha": "91091a53399e0642db334b550bd7c016be78f322",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command-terminal.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command-terminal.json",
+      "bytes": 68,
+      "sha256": "4b71defaecb9ce33babb429d30c2ec35d9a3dd70ccba15f092fc55f5e14ae0e4",
+      "blob": "29bd17e7857716dfd8dd4dfc09b97e12d68709cf",
+      "mode": "100644",
+      "actual_create_blob_sha": "29bd17e7857716dfd8dd4dfc09b97e12d68709cf",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/bazel-execution-logs/failed-test-logs/invocation-90mvwxrg/targets/0000/test.log",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/members/bazel-execution-logs/failed-test-logs/invocation-90mvwxrg/targets/0000/test.log",
+      "bytes": 143090,
+      "sha256": "b4c8bfdeaee03863511ff957d37bc6e398138f30e485340b0337c90aba1caf4c",
+      "blob": "38443e6ea57ba8b37d26de4259c68e24aaa597e0",
+      "mode": "100644",
+      "actual_create_blob_sha": "38443e6ea57ba8b37d26de4259c68e24aaa597e0",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/bazel-execution-logs/failed-test-logs/invocation-90mvwxrg/targets/0000/test.xml",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/members/bazel-execution-logs/failed-test-logs/invocation-90mvwxrg/targets/0000/test.xml",
+      "bytes": 143513,
+      "sha256": "8dbed4a95ed0598ebe8998cacb985725dd0de2647be3851d07d58c556799a86e",
+      "blob": "144a4efe94943d018b83e6cd97393c44853e4614",
+      "mode": "100644",
+      "actual_create_blob_sha": "144a4efe94943d018b83e6cd97393c44853e4614",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/freeze-native8.py",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/freeze-native8.py",
+      "bytes": 13646,
+      "sha256": "09bd5abc5b491a78c7b9acb7b37e12dbdcf7d167e1adf99fac4e45789a5ae0c9",
+      "blob": "1457cfd2751c624926645c32d88e5a987e1ed068",
+      "mode": "100644",
+      "actual_create_blob_sha": "1457cfd2751c624926645c32d88e5a987e1ed068",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-000.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-000.base64",
+      "bytes": 174765,
+      "sha256": "c4c6d94fa6395bb466af1949b8f7c3ee575ab9740c031092c0c021519263bf00",
+      "blob": "69f915bcd282c7a99f2008704d7712c66c899e47",
+      "mode": "100644",
+      "actual_create_blob_sha": "69f915bcd282c7a99f2008704d7712c66c899e47",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-001.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-001.base64",
+      "bytes": 174765,
+      "sha256": "ead31675e65c869fc067c23cd83b233b16c23d9a0d4d86bfc4318db4254ba085",
+      "blob": "9d60f29fb367eff90eb5195cd0db81dd71cd840a",
+      "mode": "100644",
+      "actual_create_blob_sha": "9d60f29fb367eff90eb5195cd0db81dd71cd840a",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-002.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-002.base64",
+      "bytes": 174765,
+      "sha256": "ad8c3b205694a4b8ce2ca0f3cf5df91d8d3de09e11e9aebfb237de0a68add54b",
+      "blob": "47a0988b814c516f96c3cef26f17ac90801df5c4",
+      "mode": "100644",
+      "actual_create_blob_sha": "47a0988b814c516f96c3cef26f17ac90801df5c4",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-003.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-003.base64",
+      "bytes": 174765,
+      "sha256": "f73bfda422bb55e95b4d17668cffe27c25ed7ce7e6b441c51ea0d9c95f5b4baa",
+      "blob": "a29c19d2f5625a755ad800051a54feb643da4f6f",
+      "mode": "100644",
+      "actual_create_blob_sha": "a29c19d2f5625a755ad800051a54feb643da4f6f",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-004.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-004.base64",
+      "bytes": 174765,
+      "sha256": "10251dc0c6d04d719df3743d76f1bf22018bc86817b3ff92c6853b5e99a912f6",
+      "blob": "d0ef4fdc7bbf19a48c032ef5ee385044315a9553",
+      "mode": "100644",
+      "actual_create_blob_sha": "d0ef4fdc7bbf19a48c032ef5ee385044315a9553",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-005.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-005.base64",
+      "bytes": 174765,
+      "sha256": "284271b9197104df9f2e12462f98b4d8515e5e1025c970a25d5c30875946684a",
+      "blob": "14ec2afe79b56c6392836491bccb73103c0075bf",
+      "mode": "100644",
+      "actual_create_blob_sha": "14ec2afe79b56c6392836491bccb73103c0075bf",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-006.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-006.base64",
+      "bytes": 174765,
+      "sha256": "cd28920c79b0087895c06654502829f05ae4bc0b598d01bbcf665286d7309e3d",
+      "blob": "9e99901eedecf369f26cbefb597a396a8c3b66ca",
+      "mode": "100644",
+      "actual_create_blob_sha": "9e99901eedecf369f26cbefb597a396a8c3b66ca",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-007.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-007.base64",
+      "bytes": 174765,
+      "sha256": "4691ac6e0e1d1e96a4073f262aaffb9fce8caf2d2ec3dbbaa5274a9b90e90f3a",
+      "blob": "2c65223004e17ef90542a8717227933da2f988f6",
+      "mode": "100644",
+      "actual_create_blob_sha": "2c65223004e17ef90542a8717227933da2f988f6",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-008.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-008.base64",
+      "bytes": 174765,
+      "sha256": "d7264bd4a724f98bb76f63256d007c98a3532c67dc7d04b4e6a5a3f99246c0a2",
+      "blob": "74dce6b05f659d7990cc18b71aa53eb31f776ac5",
+      "mode": "100644",
+      "actual_create_blob_sha": "74dce6b05f659d7990cc18b71aa53eb31f776ac5",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-009.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-009.base64",
+      "bytes": 174765,
+      "sha256": "895ee0114f9ead700e39cd6ef221db56a90abeb9f4e81920653f1a3cc615f289",
+      "blob": "21a15b446ff0f1be2fcb9317e393808f420814ab",
+      "mode": "100644",
+      "actual_create_blob_sha": "21a15b446ff0f1be2fcb9317e393808f420814ab",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-010.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-010.base64",
+      "bytes": 174765,
+      "sha256": "9582b236693a2ff9a3312eb063a15fb355da06cb19beb35d9599ff5057fa0bc0",
+      "blob": "a0af08942bd67eafc1ca7ad522168e4b519d4ab4",
+      "mode": "100644",
+      "actual_create_blob_sha": "a0af08942bd67eafc1ca7ad522168e4b519d4ab4",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-011.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-011.base64",
+      "bytes": 174765,
+      "sha256": "3f6396c8c8abb19f29a5425a1b5ca9983170c61a3a1e681530b3d1c10fc38e91",
+      "blob": "4f5263f947dcf3500ac8fa157d82e60f65f9e442",
+      "mode": "100644",
+      "actual_create_blob_sha": "4f5263f947dcf3500ac8fa157d82e60f65f9e442",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-012.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-012.base64",
+      "bytes": 174765,
+      "sha256": "db63c4773b9de04a9d6567233e366d87969a70e4e42c898c2dd6253a5ae66099",
+      "blob": "48466d96445f528bb754cebe7019639acab3e7b1",
+      "mode": "100644",
+      "actual_create_blob_sha": "48466d96445f528bb754cebe7019639acab3e7b1",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-013.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-013.base64",
+      "bytes": 174765,
+      "sha256": "6e5cc79e184041376a3c3c419f3c244c676e79d275a3765fbe7d71e33929487a",
+      "blob": "697509f875464a64fcd70963454508b510b660b2",
+      "mode": "100644",
+      "actual_create_blob_sha": "697509f875464a64fcd70963454508b510b660b2",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-014.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-014.base64",
+      "bytes": 174765,
+      "sha256": "21f096b51f6ec97d2a07c15917fdbe262810c1a0a94b8c6aa7a9450ab38dc1ef",
+      "blob": "85a2d099d39a2e82dc01d7b8e60fd9ea9f020d43",
+      "mode": "100644",
+      "actual_create_blob_sha": "85a2d099d39a2e82dc01d7b8e60fd9ea9f020d43",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/archive-parts/artifact-13454109636-015.base64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/probe-127545539398/archive-parts/artifact-13454109636-015.base64",
+      "bytes": 110885,
+      "sha256": "9bc051864e65dd952979bdb134a54e270aac1a6c8a0f0c75c5d4b4d21fd88400",
+      "blob": "6a4fa0286f0d811174d3533336ba0e24abbac406",
+      "mode": "100644",
+      "actual_create_blob_sha": "6a4fa0286f0d811174d3533336ba0e24abbac406",
+      "actual_create_get_equal": true
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/native8-git-map.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/native8-git-map.json",
+      "bytes": 21082,
+      "sha256": "58344beee344bceb73b57f82dd26c55a280bf76cda754b47efa7be07fe8ab46a",
+      "blob": "5ea41485a7ce4dd15ea728daa1f46f2218bb1add",
+      "mode": "100644",
+      "actual_object_verified": true
+    }
+  ]
+}

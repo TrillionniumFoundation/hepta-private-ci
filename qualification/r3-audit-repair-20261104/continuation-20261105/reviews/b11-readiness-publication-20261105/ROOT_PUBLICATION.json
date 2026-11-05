@@ -1,0 +1,183 @@
+{
+  "schema": "b11-seven-path-publication-root-v1",
+  "published_observed_utc": "2026-11-05 21:29:20 UTC",
+  "parent": "0f6148ea3fbe9d1263354791d5cc63c7e66d4628",
+  "head": "2338281bac08ff68b85dc2146c04a35598e6cbb4",
+  "tree": "515be77c425a74381a0aa45d06dcb497fd37ec16",
+  "head_proof": {
+    "tree": "515be77c425a74381a0aa45d06dcb497fd37ec16",
+    "leaves": 10586,
+    "verified_tree_nodes": 1571,
+    "entries": 12156,
+    "diff": [
+      {
+        "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+        "before": "2142eeb382664d95f77d83ac7ae3da4459601abf",
+        "after": "e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9"
+      },
+      {
+        "path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+        "before": "25def4386ea08bb72a7605cc113117f31fffcd1b",
+        "after": "3680db31233e47ba7fad99f31a7019c4536288bb"
+      },
+      {
+        "path": ".github/scripts/run_b11_read_acl_readiness.py",
+        "before": null,
+        "after": "6010ce9cc6da2eca95aac9ba453581f68770bbe6"
+      },
+      {
+        "path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+        "before": "912e22789665b0081c83ae0fa632d2482e8b0eba",
+        "after": "89d2eaf4bb9900f7476d49476e2657effa68327a"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+        "before": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d",
+        "after": "c39b298b7889dc3669e1ee7e2816f7e77568e955"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+        "before": "a96b6a502474a8bab3baa7842f36dfa814c9cc37",
+        "after": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6"
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+        "before": null,
+        "after": "333aefdf9584ef29612ac6f9814ff34308971754"
+      }
+    ],
+    "all_outside_seven_paths_unchanged": true
+  },
+  "merge_commit": {
+    "sha": "8fd0c14cd5853d21eb23571f67461f3fc386c01c",
+    "node_id": "C_kwDOTrgxoNoAKDhmZDBjMTRjZDU4NTNkMjFlYjIzNTcxZjY3NDYxZjNmYzM4NmMwMWM",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/8fd0c14cd5853d21eb23571f67461f3fc386c01c",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/8fd0c14cd5853d21eb23571f67461f3fc386c01c",
+    "author": {
+      "name": "Franksudoman",
+      "email": "273670192+Franksudoman@users.noreply.github.com",
+      "date": "2026-11-05T21:29:23Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-11-05T21:29:23Z"
+    },
+    "tree": {
+      "sha": "cb105f2d902326c3c2e187f49c76d5598e6646c3",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/cb105f2d902326c3c2e187f49c76d5598e6646c3"
+    },
+    "message": "Merge 2338281bac08ff68b85dc2146c04a35598e6cbb4 into eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+    "parents": [
+      {
+        "sha": "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/eed4d6bb61b789b19f60facc79f9e031765fa4c9"
+      },
+      {
+        "sha": "2338281bac08ff68b85dc2146c04a35598e6cbb4",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/2338281bac08ff68b85dc2146c04a35598e6cbb4",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/2338281bac08ff68b85dc2146c04a35598e6cbb4"
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq7PUzCRC1aQ7uu5UhlAAAcjcQAGVylWIz73FNoFI3fe07KVYx\nf16zNyL9NP7UbtWlPr7CS+vam2SB6IiUm6ukNLYEgRcxIqNDk4xYUnFlcj8sZcW/\nXGJAFmEA7azt2cgfyFhOPau4a8O3+7M3viK8VgBQoOiJkZ75PagdEpzlBlxmzr/l\n5EPWZlPQEC+wwOfdyx3toATfvT+g6VspjTlb28KQkMEc9z8YYnDpzfBAsCA0iHEV\nxmQXnCy7mrYqhg8sM9CIfZtFZAUYtiosSQeW9lDqLl8t66Nl0HQCj5sAeKk6yieL\nqK1OaS1DHBGGIT5ELxn3x9brgykeTo5Bj9dB8qYRV3gxeAHZZ+U6wjYxO0a9KnRG\nQLiyKtnGyD2ECrGuG9yJj+2L+ComhzEJadNEWEzFoi3+s06ZqsJnxVyCR8RabtKT\nuqcyBSajENzi5HR/CS1aS5PYud51vhZ+WEqRrVu3U7Wg4YuEhSNgm0Chg8WR9IVJ\nMPIT3cepGEDI1PvsnSbtPvshxFqiQp2z7it+aUWvLfS03w13PPXu0uwVytAgAlQk\nOEYAeGJ3h3RWDAQBLvTAzZZW7+wIBKC1LqHID8I6P+sUPHXDSezJTTQLXe5+OyZD\npz40e709s4qKL0bmzSOIEgldVUE9fne8MxCK1cfWi+HLwkeUNdfcADYf9s3eABPJ\nqceaUKV9S8E9k5LG0nIp\n=ml5a\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree cb105f2d902326c3c2e187f49c76d5598e6646c3\nparent eed4d6bb61b789b19f60facc79f9e031765fa4c9\nparent 2338281bac08ff68b85dc2146c04a35598e6cbb4\nauthor Franksudoman <273670192+Franksudoman@users.noreply.github.com> 1793914163 +0000\ncommitter GitHub <noreply@github.com> 1793914163 +0000\n\nMerge 2338281bac08ff68b85dc2146c04a35598e6cbb4 into eed4d6bb61b789b19f60facc79f9e031765fa4c9\n",
+      "verified_at": "2026-11-05T21:29:24Z"
+    }
+  },
+  "merge_proof": {
+    "tree": "cb105f2d902326c3c2e187f49c76d5598e6646c3",
+    "leaves": 10588,
+    "verified_tree_nodes": 1571,
+    "entries": 12158,
+    "parents": [
+      "eed4d6bb61b789b19f60facc79f9e031765fa4c9",
+      "2338281bac08ff68b85dc2146c04a35598e6cbb4"
+    ],
+    "all_expected_leaves_equal": true
+  },
+  "actual_postimage_readbacks": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "bytes": 45950,
+      "git_blob": "c39b298b7889dc3669e1ee7e2816f7e77568e955",
+      "actual_complete_GET_verified": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "bytes": 1960,
+      "git_blob": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6",
+      "actual_complete_GET_verified": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+      "bytes": 2425,
+      "git_blob": "333aefdf9584ef29612ac6f9814ff34308971754",
+      "actual_complete_GET_verified": true
+    },
+    {
+      "path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "bytes": 5929,
+      "git_blob": "89d2eaf4bb9900f7476d49476e2657effa68327a",
+      "actual_complete_GET_verified": true
+    },
+    {
+      "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "bytes": 16340,
+      "git_blob": "e15bfb8a75678ff7d4bab4b82b2e54e80b8b61c9",
+      "actual_complete_GET_verified": true
+    },
+    {
+      "path": ".github/scripts/run_b11_read_acl_readiness.py",
+      "bytes": 14222,
+      "git_blob": "6010ce9cc6da2eca95aac9ba453581f68770bbe6",
+      "actual_complete_GET_verified": true
+    },
+    {
+      "path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+      "bytes": 22200,
+      "git_blob": "3680db31233e47ba7fad99f31a7019c4536288bb",
+      "actual_complete_GET_verified": true
+    }
+  ],
+  "script_gate": {
+    "source_count": 13,
+    "source_mode_equals_actual_candidate_tree": true,
+    "named_passes": 57,
+    "command_terminal": {
+      "exit_code": 0,
+      "elapsed_seconds": 7.692256672002259,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "stderr": {
+        "bytes": 10418,
+        "sha256": "a7930df7a8fb79204986371edf5573e4a57cd17873f54ce8a3c171787b548af1",
+        "blob": "e9b41de6dad6a56e9e147213ffd66787f1b3314f"
+      }
+    },
+    "prior_workspace_mode_failure_preserved": true,
+    "no_product_native_qualification": true
+  },
+  "ref_readback": {
+    "ref": "refs/heads/diag/b11-token-mechanism-observations-20261105",
+    "node_id": "REF_kwDOTrgxoNoAOXJlZnMvaGVhZHMvZGlhZy9iMTEtdG9rZW4tbWVjaGFuaXNtLW9ic2VydmF0aW9ucy0yMDI2MTEwNQ",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/diag/b11-token-mechanism-observations-20261105",
+    "object": {
+      "sha": "2338281bac08ff68b85dc2146c04a35598e6cbb4",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/2338281bac08ff68b85dc2146c04a35598e6cbb4"
+    }
+  },
+  "ci": {
+    "run_id": 42113095723,
+    "first_observation": "queued",
+    "native_qualification": false
+  },
+  "B11": "OPEN"
+}

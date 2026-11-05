@@ -1,0 +1,1332 @@
+{
+  "schema": "hepta-b09-root-original-exit-closure-v1",
+  "verified_utc": "2026-11-05T22:01:17.279066+00:00",
+  "original_exit_condition_zh": "原注入、idle-steer、suspension、8 个 turn_recover 原用例（含特性门负控）和 panic/cancel/watchdog 负控通过。",
+  "decision": "CLOSED_SCOPED",
+  "scope": "The original 19 named controls on native GNU/Linux source tree fb9, with identical 22 reviewed test/production source files and Cargo/lock leaves through 5b/e78/eed. This is not a new eed GNU execution or full-workspace qualification.",
+  "native_job": "1a1a9f68261-fc05-3a71",
+  "native_source_tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+  "ordinary_HEAD": "cabcb40d36e116beaa65750e1f674c52035da785",
+  "original_command": {
+    "argv": [
+      "just",
+      "test",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0",
+      "--success-output",
+      "immediate"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs",
+    "source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "started_at": "2026-11-05T04:35:49.292397+00:00",
+    "attempt": 1,
+    "cargo_profile": "dev-small",
+    "nextest_profile": "local",
+    "disk_before": {
+      "total": 1005867986944,
+      "used": 948429373440,
+      "free": 47191040000
+    }
+  },
+  "host": {
+    "host_alias": "rog",
+    "uname": [
+      "Linux",
+      "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+      "7.0.0-42-generic",
+      "#42-Ubuntu SMP PREEMPT_DYNAMIC Thu Oct 15 08:06:44 UTC 2026",
+      "x86_64"
+    ],
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n",
+    "target": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105",
+    "source": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+    "initial_free_bytes": 48333479936,
+    "cargo_profile": "dev-small",
+    "nextest_profile": "local",
+    "environment_policy_changed": false
+  },
+  "root_reexecuted_frozen_complete_verifier_exit": 0,
+  "root_supplement_verifier_history": {
+    "initial_exit": 1,
+    "reason": "Directory mode 040000 must serialize as 40000 in a Git tree object.",
+    "corrected_exit": 0,
+    "original_evidence_changed": false,
+    "initial_observation": {
+      "bytes": 611,
+      "sha256": "d3fec9b34fe5d7f8ab18bc52be8c369d9c7808e306f179963a560f73a1c8e43b",
+      "git_blob": "b746673fac3c820af44dcfa29065089a30d6db53"
+    }
+  },
+  "frozen_complete_verifier_identity": {
+    "bytes": 16235,
+    "sha256": "d8e75ca6b77eb00c3aadd8c7f2c75ae1f93f36f5882a9f9b4390a3c8dd03378b",
+    "git_blob": "9ec14a4a3c3e57a4e9528dd82da86a1384d24ecf"
+  },
+  "verified_inputs": {
+    "original-19-case-evidence-v1.json": {
+      "bytes": 60739,
+      "sha256": "7e0c527e201904840c48a5733916570206fe2d14301c4224618fb1112f3f592e",
+      "git_blob": "dced05028fcf9c5c67d9200b6519f9db7567a955"
+    },
+    "source-leaf-bridge-v1.json": {
+      "bytes": 69372,
+      "sha256": "fb77e79ecfb39b4ad8aa0ac24e47cf290c6b1ac0153fd4183076c5c0fa3a77c1",
+      "git_blob": "154ba0fd9a259bd30654d9a8dc6984cd7ffc7c50"
+    },
+    "complete-original-verification-v1.json": {
+      "bytes": 25841,
+      "sha256": "b23ea81b5a039e1486792e4eed7d5b6f3b5eaf3a375ea9cd2074d85263ca3da5",
+      "git_blob": "e3cf7cc3590d1748df55537398ee3a0af465f8f7"
+    }
+  },
+  "full_original_archive": {
+    "files": 42,
+    "bytes": 60915164,
+    "parts": 22,
+    "actual_complete_decode_and_guard_verification": true
+  },
+  "raw_log": {
+    "bytes": 33668423,
+    "sha256": "32a5b36b73badb7b9096759e0faf58aa6acb6679aac90f7dc593118c62f90735",
+    "git_blob": "5e3ec063f037c5665e3a5e09057753333219f84e"
+  },
+  "junit": {
+    "bytes": 4147101,
+    "sha256": "a64ad0f88d187caa6dd0fa7c2dedd2f816a8366bedb1a93d026c169a16cf7ac8",
+    "git_blob": "b1bec87f2dc96169e79042114df3261ec7cd73fd"
+  },
+  "complete_source_files": [
+    {
+      "logical_path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__turn_recover.rs.source.txt",
+        "bytes": 35436,
+        "sha256": "5272864c814ae433c971bcb875658742c9552d1324a78e94013148497182d729",
+        "git_blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/tests/suite/v2/thread_inject_items.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__thread_inject_items.rs.source.txt",
+        "bytes": 15361,
+        "sha256": "0c4537e8cebd69819885945635d2a5e7ff8b5fd8053f32edb34aa22ebaa4d783",
+        "git_blob": "20415effba70adf60c2f28ee3eaaf1ac8288e665"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "20415effba70adf60c2f28ee3eaaf1ac8288e665"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "20415effba70adf60c2f28ee3eaaf1ac8288e665"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "20415effba70adf60c2f28ee3eaaf1ac8288e665"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "20415effba70adf60c2f28ee3eaaf1ac8288e665"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/tests/suite/abort_tasks.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__tests__suite__abort_tasks.rs.source.txt",
+        "bytes": 16433,
+        "sha256": "c5ab67dfcd914f148be37b5d0abdb2738983adc1c7a761eb90a45c2963f2e122",
+        "git_blob": "bd4c8c8057d8626d0265ba61d54d705d6b844baf"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bd4c8c8057d8626d0265ba61d54d705d6b844baf"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bd4c8c8057d8626d0265ba61d54d705d6b844baf"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bd4c8c8057d8626d0265ba61d54d705d6b844baf"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "bd4c8c8057d8626d0265ba61d54d705d6b844baf"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/src/session/tests.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__tests.rs.source.txt",
+        "bytes": 497370,
+        "sha256": "88b10066b3c14589ad5c4894a83390f4cd41e2ecb976d6656cef4a51ba097791",
+        "git_blob": "e8be921f4bd2194559f2c55051a3a2201e5d4789"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e8be921f4bd2194559f2c55051a3a2201e5d4789"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e8be921f4bd2194559f2c55051a3a2201e5d4789"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e8be921f4bd2194559f2c55051a3a2201e5d4789"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "e8be921f4bd2194559f2c55051a3a2201e5d4789"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/src/session/turn_input_tests.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__turn_input_tests.rs.source.txt",
+        "bytes": 79599,
+        "sha256": "9936425b02cee64be3632e707c8e5609868934393b419eb917ec6ba541774351",
+        "git_blob": "d7d9b493ac07c79d0e2c935c7a6df6c0ebada6d0"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d7d9b493ac07c79d0e2c935c7a6df6c0ebada6d0"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d7d9b493ac07c79d0e2c935c7a6df6c0ebada6d0"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d7d9b493ac07c79d0e2c935c7a6df6c0ebada6d0"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d7d9b493ac07c79d0e2c935c7a6df6c0ebada6d0"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/src/session/mod.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__mod.rs.source.txt",
+        "bytes": 215824,
+        "sha256": "a666d5f63dddd2a197827082087692819a841cfa2d30943ab3a19a7ba983ba39",
+        "git_blob": "b71bc56687973debf2b8615da036e60a436e3c08"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b71bc56687973debf2b8615da036e60a436e3c08"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b71bc56687973debf2b8615da036e60a436e3c08"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b71bc56687973debf2b8615da036e60a436e3c08"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "b71bc56687973debf2b8615da036e60a436e3c08"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/src/session/turn_input.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__turn_input.rs.source.txt",
+        "bytes": 41654,
+        "sha256": "7959e38afd075c5cad233a7d1ba59b3406b1de96d9076e444a51ce8ac33b9841",
+        "git_blob": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/src/tasks/mod.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__tasks__mod.rs.source.txt",
+        "bytes": 176503,
+        "sha256": "0161b0acb05df2f9d153090cfd258f8ace71f7a3510d98ec6a55be5baabdf426",
+        "git_blob": "2ee949fb477313003f6eb02961e5cebf50432613"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2ee949fb477313003f6eb02961e5cebf50432613"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2ee949fb477313003f6eb02961e5cebf50432613"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2ee949fb477313003f6eb02961e5cebf50432613"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "2ee949fb477313003f6eb02961e5cebf50432613"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__src__request_processors__turn_processor.rs.source.txt",
+        "bytes": 72090,
+        "sha256": "431f5bdcafe0845d4e383b024a80ad410c03776347195ca28560847d2b06ad77",
+        "git_blob": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9fd203f3d16b03e5c7edafbdb45b63dc741badc5"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__src__request_processors__thread_processor.rs.source.txt",
+        "bytes": 253831,
+        "sha256": "834d91f0e5a59865e1515f0c6cccd08eeeed2e4537e66d49ab6f9937f6c89181",
+        "git_blob": "87fa49fcb4c95021ab347ed510bf7645e381e5cc"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "87fa49fcb4c95021ab347ed510bf7645e381e5cc"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "87fa49fcb4c95021ab347ed510bf7645e381e5cc"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "87fa49fcb4c95021ab347ed510bf7645e381e5cc"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "87fa49fcb4c95021ab347ed510bf7645e381e5cc"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/src/thread_state.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__src__thread_state.rs.source.txt",
+        "bytes": 22695,
+        "sha256": "d6af02611b001c06cd33f4e4c7ed964518b4361a7e5c94bc1f27e4e6102cf40c",
+        "git_blob": "3795638cdd36d377afcbf4d7026d15d77dbf64ca"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3795638cdd36d377afcbf4d7026d15d77dbf64ca"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3795638cdd36d377afcbf4d7026d15d77dbf64ca"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3795638cdd36d377afcbf4d7026d15d77dbf64ca"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3795638cdd36d377afcbf4d7026d15d77dbf64ca"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/src/request_processors.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__src__request_processors.rs.source.txt",
+        "bytes": 34067,
+        "sha256": "3e4f2337d90e445e55233fc16fc9ce6141b7fc823f9157ef7dcb249b0e0b6630",
+        "git_blob": "9ac1871bfa5d174caee1afecdcc86fab2657d847"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9ac1871bfa5d174caee1afecdcc86fab2657d847"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9ac1871bfa5d174caee1afecdcc86fab2657d847"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9ac1871bfa5d174caee1afecdcc86fab2657d847"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "9ac1871bfa5d174caee1afecdcc86fab2657d847"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/tests/common/lib.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__common__lib.rs.source.txt",
+        "bytes": 2802,
+        "sha256": "09ab94bc0980fff7813494fba5a4516d72175ea3b3f5a5409ca8fe29dd3eee15",
+        "git_blob": "7b545e94f3b1e4cd6bed840c57cd0539467e772c"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7b545e94f3b1e4cd6bed840c57cd0539467e772c"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7b545e94f3b1e4cd6bed840c57cd0539467e772c"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7b545e94f3b1e4cd6bed840c57cd0539467e772c"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "7b545e94f3b1e4cd6bed840c57cd0539467e772c"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/tests/common/test_app_server.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__common__test_app_server.rs.source.txt",
+        "bytes": 82176,
+        "sha256": "1b925012501380979ed975981726d419ba2c64dfa729d1bd6359bda01846337a",
+        "git_blob": "4d9f37e14bbc1b04d4129728dbf2dce9dbed0457"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4d9f37e14bbc1b04d4129728dbf2dce9dbed0457"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4d9f37e14bbc1b04d4129728dbf2dce9dbed0457"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4d9f37e14bbc1b04d4129728dbf2dce9dbed0457"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "4d9f37e14bbc1b04d4129728dbf2dce9dbed0457"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/tests/common/mock_model_server.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__common__mock_model_server.rs.source.txt",
+        "bytes": 2493,
+        "sha256": "d9fd5cfc5d391cec9c4d55b39436123b525f0a0ddf7e0006883bb10ecd084e3c",
+        "git_blob": "d70736cf50dd44712a4451661f4e5de29f2d13ca"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d70736cf50dd44712a4451661f4e5de29f2d13ca"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d70736cf50dd44712a4451661f4e5de29f2d13ca"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d70736cf50dd44712a4451661f4e5de29f2d13ca"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "d70736cf50dd44712a4451661f4e5de29f2d13ca"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/tests/common/responses.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__common__responses.rs.source.txt",
+        "bytes": 4362,
+        "sha256": "3bf3aff8aa362c49796a36ed5385e9d0cb73d0c059af46bb3ba3071481bc6940",
+        "git_blob": "3e726309e1786f3e0651692227803db1327b6707"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3e726309e1786f3e0651692227803db1327b6707"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3e726309e1786f3e0651692227803db1327b6707"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3e726309e1786f3e0651692227803db1327b6707"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "3e726309e1786f3e0651692227803db1327b6707"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/app-server/tests/suite/v2/mod.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__app-server__tests__suite__v2__mod.rs.source.txt",
+        "bytes": 2637,
+        "sha256": "9226ee9bc5defc4f867edc72a109411837d61ded66a46effe4324787e6b5766d",
+        "git_blob": "292716a6afb22a2f6885f539dbc3169735727c09"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "292716a6afb22a2f6885f539dbc3169735727c09"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "292716a6afb22a2f6885f539dbc3169735727c09"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "292716a6afb22a2f6885f539dbc3169735727c09"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "292716a6afb22a2f6885f539dbc3169735727c09"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/tests/common/lib.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__tests__common__lib.rs.source.txt",
+        "bytes": 22506,
+        "sha256": "5418ece8bb498ed07b87e99e1faa9a8c86944a40cfe20d519e4d60ecbec54f24",
+        "git_blob": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "29ed4875e0674d534efc39a23b96995eb3790ce6"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/tests/suite/mod.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__tests__suite__mod.rs.source.txt",
+        "bytes": 4895,
+        "sha256": "6cfc926f1fb4417554b75f337372fd714fdd3769b0db9db1398bc8a0ffc9938e",
+        "git_blob": "17145f671a76a894ab374ca299a67cf1a43e9c55"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "17145f671a76a894ab374ca299a67cf1a43e9c55"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "17145f671a76a894ab374ca299a67cf1a43e9c55"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "17145f671a76a894ab374ca299a67cf1a43e9c55"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "17145f671a76a894ab374ca299a67cf1a43e9c55"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/src/codex_thread.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__codex_thread.rs.source.txt",
+        "bytes": 49604,
+        "sha256": "bd552252887317518d7eeb77fd80f3c8744729a2f2f3708d0487cac4f5597475",
+        "git_blob": "0d96d2b722eb1ade7b4974ffee1fbb729847508b"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0d96d2b722eb1ade7b4974ffee1fbb729847508b"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0d96d2b722eb1ade7b4974ffee1fbb729847508b"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0d96d2b722eb1ade7b4974ffee1fbb729847508b"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "0d96d2b722eb1ade7b4974ffee1fbb729847508b"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/src/session/turn_suspension.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__src__session__turn_suspension.rs.source.txt",
+        "bytes": 19038,
+        "sha256": "5f5da2f8d0d2b50530f06b0d5e2b41626c9036a4429cebc4174196f304d96c26",
+        "git_blob": "403a208f3a953bcc7e2c8bcf1ae91c19bdcee5e6"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "403a208f3a953bcc7e2c8bcf1ae91c19bdcee5e6"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "403a208f3a953bcc7e2c8bcf1ae91c19bdcee5e6"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "403a208f3a953bcc7e2c8bcf1ae91c19bdcee5e6"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "403a208f3a953bcc7e2c8bcf1ae91c19bdcee5e6"
+        }
+      }
+    },
+    {
+      "logical_path": "codex-rs/core/tests/common/test_codex.rs",
+      "identity": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/source/codex-rs__core__tests__common__test_codex.rs.source.txt",
+        "bytes": 49262,
+        "sha256": "318fb9469c3f65839f7384c29414b14f9f3617400e65829a47de9ad964fd28da",
+        "git_blob": "efaaf61844b49a1e42e9d630b306733d06647094"
+      },
+      "leaves": {
+        "fb9": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "efaaf61844b49a1e42e9d630b306733d06647094"
+        },
+        "5b": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "efaaf61844b49a1e42e9d630b306733d06647094"
+        },
+        "e78": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "efaaf61844b49a1e42e9d630b306733d06647094"
+        },
+        "eed": {
+          "mode": "100644",
+          "type": "blob",
+          "sha": "efaaf61844b49a1e42e9d630b306733d06647094"
+        }
+      }
+    }
+  ],
+  "tree_merkle_verification": [
+    {
+      "label": "fb9",
+      "tree": "fb9e131272f7e7a138d6c0d1af2b048b9a6ab7ff",
+      "leaves": 9587,
+      "merkle_nodes_recomputed": 1301,
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/fb9-leaves.json",
+        "bytes": 1528904,
+        "sha256": "643b8d3ca63d396185247bf69f0b24fcc5ea0ba386ffee42e7f37dac52c10d83",
+        "git_blob": "52efb56eb5d6b450b5ef3ec324c21e15af1b8dd2"
+      }
+    },
+    {
+      "label": "5b",
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "leaves": 10580,
+      "merkle_nodes_recomputed": 1571,
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/recovery-2113/trees/5b-leaves.json",
+        "bytes": 1606273,
+        "sha256": "1958049ce5552eb171f39fbf1c3ea3774d65eb6513ae9b58ba220220cd79648f",
+        "git_blob": "3d8216c1f62cd2487564171408845d8c4c1d902f"
+      }
+    },
+    {
+      "label": "e78",
+      "tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+      "leaves": 10580,
+      "merkle_nodes_recomputed": 1571,
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/recovery-2113/trees/e78-leaves.json",
+        "bytes": 1606273,
+        "sha256": "cc7d92dd84defdb84e7851c6fbb4fe8ef3f878552e20ceb2645332d1021cdc84",
+        "git_blob": "7e7b8c1c93ac728cf5bc972e62fd491e15b277a2"
+      }
+    },
+    {
+      "label": "eed",
+      "tree": "ca1c4671ef6b2773280d01b5d76c6166252f5856",
+      "leaves": 10582,
+      "merkle_nodes_recomputed": 1571,
+      "source": {
+        "path": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/recovery-2113/trees/eed-leaves.json",
+        "bytes": 1606633,
+        "sha256": "15daf96a99621f17fdd156e21cfc88bc777705e939f32814ca68eb66e998603c",
+        "git_blob": "9d64e7a3f6929b396447a90063c915f5a3134ab9"
+      }
+    }
+  ],
+  "root_fresh_actual_fb9_top_level_GET": {
+    "bytes": 12778,
+    "sha256": "86b1c1629188b81ab43cc5b64398b1bb31e068aa634ace11a7b8a512c5b420b4",
+    "git_blob": "52849f852e64119abc1a763ff94ae52791609e36"
+  },
+  "root_more_inclusive_skip_check": "Frozen independent v1 regex omitted the remote-environment skip text. Root independently rejects every Skipping test / skipping capability test prefix in all 19 complete raw blocks; all are absent. Nine AppServer cases additionally contain their actual business JSONRPC exchanges.",
+  "cases": [
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn",
+      "seconds": "0.480",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/01-thread_inject_items_adds_raw_response_items_after_a_turn.log",
+        "bytes": 17847,
+        "sha256": "9d2aa130169497345370cdfc25fc5e2dbd5e870bdfb09ddcc769826230c4d1ce",
+        "git_blob": "02899b11fd6423526ab9975b5a14a3f0bae3a842",
+        "byte_offset": 23994647,
+        "end_byte_offset_exclusive": 24012494,
+        "first_line": 205682,
+        "last_line": 205737
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": [
+        "account/rateLimits/updated",
+        "initialize",
+        "initialized",
+        "item/completed",
+        "item/started",
+        "remoteControl/status/changed",
+        "thread/inject_items",
+        "thread/start",
+        "thread/started",
+        "thread/status/changed",
+        "thread/tokenUsage/updated",
+        "turn/completed",
+        "turn/start",
+        "turn/started",
+        "warning"
+      ]
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery",
+      "seconds": "0.619",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/02-cold_resume_explicit_cwd_override_is_fail_closed_for_recovery.log",
+        "bytes": 12596,
+        "sha256": "67944dadb8d344574105ce316604be61992e56793c6c66cf485c8b7878d2957e",
+        "git_blob": "1b5f750620b99ee2f3273fa9447a253eb106e028",
+        "byte_offset": 27367657,
+        "end_byte_offset_exclusive": 27380253,
+        "first_line": 214400,
+        "last_line": 214439
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": [
+        "initialize",
+        "initialized",
+        "remoteControl/status/changed",
+        "thread/goal/cleared",
+        "thread/resume",
+        "thread/start",
+        "thread/started",
+        "thread/status/changed",
+        "turn/recover",
+        "turn/start",
+        "warning"
+      ]
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail",
+      "seconds": "0.725",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/03-cold_paginated_sigkill_recovery_uses_canonical_context_tail.log",
+        "bytes": 18391,
+        "sha256": "028557fa8165284db00276b8f47b7a7168f5dfb5a41c9cbbb3d40c9676c550e0",
+        "git_blob": "087f2c364c18112d591f59bcb01be36f82eb6db3",
+        "byte_offset": 27337014,
+        "end_byte_offset_exclusive": 27355405,
+        "first_line": 214307,
+        "last_line": 214361
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": [
+        "account/rateLimits/updated",
+        "initialize",
+        "initialized",
+        "item/completed",
+        "item/started",
+        "remoteControl/status/changed",
+        "thread/goal/cleared",
+        "thread/resume",
+        "thread/start",
+        "thread/started",
+        "thread/status/changed",
+        "thread/tokenUsage/updated",
+        "thread/turns/list",
+        "turn/completed",
+        "turn/recover",
+        "turn/start",
+        "turn/started",
+        "warning"
+      ]
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery",
+      "seconds": "0.599",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/04-cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery.log",
+        "bytes": 12656,
+        "sha256": "819f2b3639ff507e5ed1cabdb0ccafcf91acea96d103f7b82733918d178cda8a",
+        "git_blob": "e16040c957b717728892d9e14f1c48d30aa2dab7",
+        "byte_offset": 27380253,
+        "end_byte_offset_exclusive": 27392909,
+        "first_line": 214440,
+        "last_line": 214479
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": [
+        "initialize",
+        "initialized",
+        "remoteControl/status/changed",
+        "thread/goal/cleared",
+        "thread/resume",
+        "thread/start",
+        "thread/started",
+        "thread/status/changed",
+        "turn/recover",
+        "turn/start",
+        "warning"
+      ]
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+      "seconds": "0.613",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/05-cold_sigkill_after_provider_output_is_not_recoverable.log",
+        "bytes": 16208,
+        "sha256": "637b7cdfb63539f48cdc6882230355cf93c95e9efd66c1ec26a603fabe5e1dcb",
+        "git_blob": "778df8c3ff38dfc6abf2ad91027c292a9ecf091c",
+        "byte_offset": 27392909,
+        "end_byte_offset_exclusive": 27409117,
+        "first_line": 214480,
+        "last_line": 214530
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": [
+        "initialize",
+        "initialized",
+        "item/commandExecution/requestApproval",
+        "item/completed",
+        "item/started",
+        "remoteControl/status/changed",
+        "thread/goal/cleared",
+        "thread/resume",
+        "thread/start",
+        "thread/started",
+        "thread/status/changed",
+        "turn/recover",
+        "turn/start",
+        "turn/started",
+        "warning"
+      ]
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns",
+      "seconds": "0.612",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/06-recover_rejects_busy_completed_and_cross_thread_turns.log",
+        "bytes": 24906,
+        "sha256": "1697ad31442d8429e21954f84913e5b99942b1a42aa9bdb32d707fbd4d4106d3",
+        "git_blob": "612b7fef16ac7c314f49d4b06823d1c8c135411d",
+        "byte_offset": 27469325,
+        "end_byte_offset_exclusive": 27494231,
+        "first_line": 214724,
+        "last_line": 214795
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": [
+        "account/rateLimits/updated",
+        "initialize",
+        "initialized",
+        "item/commandExecution/requestApproval",
+        "item/completed",
+        "item/started",
+        "remoteControl/status/changed",
+        "serverRequest/resolved",
+        "thread/start",
+        "thread/started",
+        "thread/status/changed",
+        "thread/tokenUsage/updated",
+        "turn/completed",
+        "turn/interrupt",
+        "turn/recover",
+        "turn/start",
+        "turn/started",
+        "warning"
+      ]
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state",
+      "seconds": "0.409",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/07-same_process_ephemeral_interrupted_turn_recovers_from_listener_state.log",
+        "bytes": 14466,
+        "sha256": "057e0844b344a3289d693140fbd1aa8d481d72b426f0f8fc0fcc26f443486e1a",
+        "git_blob": "4f515eba89521131d9452007e6b342c2f3792435",
+        "byte_offset": 27421995,
+        "end_byte_offset_exclusive": 27436461,
+        "first_line": 214578,
+        "last_line": 214627
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": [
+        "account/rateLimits/updated",
+        "initialize",
+        "initialized",
+        "item/completed",
+        "item/started",
+        "remoteControl/status/changed",
+        "thread/start",
+        "thread/started",
+        "thread/status/changed",
+        "thread/tokenUsage/updated",
+        "turn/completed",
+        "turn/interrupt",
+        "turn/recover",
+        "turn/start",
+        "turn/started",
+        "warning"
+      ]
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature",
+      "seconds": "0.236",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/08-turn_recover_requires_hepta_turn_recovery_feature.log",
+        "bytes": 5364,
+        "sha256": "b2e3e6bfdda2a5a6ba371fc33fc45bf7209e2577c340f96077f7b4f7d1fa5938",
+        "git_blob": "e4988dcd47cf8ddd92442a0a5e2d5d7959edd1ad",
+        "byte_offset": 27416631,
+        "end_byte_offset_exclusive": 27421995,
+        "first_line": 214557,
+        "last_line": 214577
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": [
+        "initialize",
+        "initialized",
+        "remoteControl/status/changed",
+        "thread/start",
+        "thread/started",
+        "turn/recover"
+      ]
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input",
+      "seconds": "1.011",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/09-cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input.log",
+        "bytes": 32864,
+        "sha256": "674c80ad6f98a557f4978307f16d9a4e290f64482beeb0a803283687df0f913f",
+        "git_blob": "b2592239180362eed873258255492056438bbd57",
+        "byte_offset": 27436461,
+        "end_byte_offset_exclusive": 27469325,
+        "first_line": 214628,
+        "last_line": 214723
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": [
+        "account/rateLimits/updated",
+        "hook/completed",
+        "hook/started",
+        "initialize",
+        "initialized",
+        "item/completed",
+        "item/started",
+        "remoteControl/status/changed",
+        "thread/goal/cleared",
+        "thread/queue/add",
+        "thread/queue/changed",
+        "thread/queue/list",
+        "thread/read",
+        "thread/resume",
+        "thread/start",
+        "thread/started",
+        "thread/status/changed",
+        "thread/tokenUsage/updated",
+        "turn/completed",
+        "turn/recover",
+        "turn/start",
+        "turn/started",
+        "warning"
+      ]
+    },
+    {
+      "binary": "codex-core::all",
+      "name": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+      "seconds": "0.502",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/10-root_turn_suspension_preserves_unfinished_turn_history.log",
+        "bytes": 350,
+        "sha256": "0fd76d6aa95e5aa5b994c5452ce14ca37c0bc24c7b63888a1ce91fc314cb18f1",
+        "git_blob": "bf89e5f12ccff47c4fe1ca89d09cbf843eda7a36",
+        "byte_offset": 2266048,
+        "end_byte_offset_exclusive": 2266398,
+        "first_line": 48359,
+        "last_line": 48367
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": []
+    },
+    {
+      "binary": "codex-core",
+      "name": "session::tests::panicking_session_task_is_converted_to_terminal_error_and_releases_slot",
+      "seconds": "0.056",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/11-panicking_session_task_is_converted_to_terminal_error_and_releases_slot.log",
+        "bytes": 621,
+        "sha256": "3ce2eee487fbcb4221853ef80cefff011cbe2a14092a0cc3b19061bd4f406741",
+        "git_blob": "17c22f4b1e04ac9eef04f9d9979ffea450e613b7",
+        "byte_offset": 1840981,
+        "end_byte_offset_exclusive": 1841602,
+        "first_line": 40038,
+        "last_line": 40051
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": []
+    },
+    {
+      "binary": "codex-core",
+      "name": "session::tests::cancelled_finish_owner_keeps_terminalizer_alive",
+      "seconds": "0.076",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/12-cancelled_finish_owner_keeps_terminalizer_alive.log",
+        "bytes": 323,
+        "sha256": "8ddfd29233f45d318ae3c95cf5762c676c2fbda654377e47e9172c978edc4f7b",
+        "git_blob": "8cb9bb63e8de13a4bbc492a5fd471310700eea78",
+        "byte_offset": 1811046,
+        "end_byte_offset_exclusive": 1811369,
+        "first_line": 39321,
+        "last_line": 39329
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": []
+    },
+    {
+      "binary": "codex-core",
+      "name": "session::tests::panicking_finish_terminalizer_retains_fence",
+      "seconds": "0.169",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/13-panicking_finish_terminalizer_retains_fence.log",
+        "bytes": 569,
+        "sha256": "7447e707492c29aaf20a5400e7733a28de2ac96bf1ad3f800bbaa4af04f7db40",
+        "git_blob": "7605b30e3b80f95c938749445e1444ac3dfdc6cd",
+        "byte_offset": 1850440,
+        "end_byte_offset_exclusive": 1851009,
+        "first_line": 40273,
+        "last_line": 40286
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": []
+    },
+    {
+      "binary": "codex-core",
+      "name": "session::tests::hung_finish_terminalizer_watchdog_retains_fence",
+      "seconds": "4.069",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/14-hung_finish_terminalizer_watchdog_retains_fence.log",
+        "bytes": 323,
+        "sha256": "1a8b36035ad376206204e0beb02cb8d52bd5a3c24c645907e32419371c8381ab",
+        "git_blob": "364573aff18895fdecfdd01ac2dae7610dd16c66",
+        "byte_offset": 2167023,
+        "end_byte_offset_exclusive": 2167346,
+        "first_line": 46488,
+        "last_line": 46496
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": []
+    },
+    {
+      "binary": "codex-core",
+      "name": "session::tests::cancelled_abort_owner_keeps_terminalizer_alive",
+      "seconds": "0.189",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/15-cancelled_abort_owner_keeps_terminalizer_alive.log",
+        "bytes": 321,
+        "sha256": "e3ff4fcf12fc517947a69e6e6b39e392f9494357cfbb3f2ab13eb252a37d68cc",
+        "git_blob": "2b783ebeb23e028141646a3541437304704ce5f9",
+        "byte_offset": 1822262,
+        "end_byte_offset_exclusive": 1822583,
+        "first_line": 39593,
+        "last_line": 39601
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": []
+    },
+    {
+      "binary": "codex-core",
+      "name": "session::tests::panicking_abort_terminalizer_retains_fence",
+      "seconds": "0.167",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/16-panicking_abort_terminalizer_retains_fence.log",
+        "bytes": 559,
+        "sha256": "b94993770a2e58f4b10980e7b3f19117b874919b15f2cd2cc897e1e3645e8828",
+        "git_blob": "74dda2261e40030b40ebc14892f2b290d1f44305",
+        "byte_offset": 1849881,
+        "end_byte_offset_exclusive": 1850440,
+        "first_line": 40259,
+        "last_line": 40272
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": []
+    },
+    {
+      "binary": "codex-core",
+      "name": "session::tests::cancelled_suspend_caller_keeps_writer_handoff_alive",
+      "seconds": "0.085",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/17-cancelled_suspend_caller_keeps_writer_handoff_alive.log",
+        "bytes": 331,
+        "sha256": "354d4506d59d2ad4db03b14c8721fa232a36b6966f88ee67ad6824ba55e96ac6",
+        "git_blob": "7968c6aa22ae9fde35228371546f8da28b9a5773",
+        "byte_offset": 1814217,
+        "end_byte_offset_exclusive": 1814548,
+        "first_line": 39404,
+        "last_line": 39412
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": []
+    },
+    {
+      "binary": "codex-core",
+      "name": "session::turn_input::tests::steer_only_requires_active_turn",
+      "seconds": "0.070",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/18-steer_only_requires_active_turn.log",
+        "bytes": 315,
+        "sha256": "9c873a07c696f4c1c58c67a91b7db9f2539e794034cbb4881eae23adb30e5e3a",
+        "git_blob": "5face18dd19013d61a8271872e0984c0ee9d846b",
+        "byte_offset": 1905163,
+        "end_byte_offset_exclusive": 1905478,
+        "first_line": 41673,
+        "last_line": 41681
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": []
+    },
+    {
+      "binary": "codex-core",
+      "name": "session::turn_input::tests::steer_only_enforces_expected_turn_id",
+      "seconds": "0.092",
+      "raw_block": {
+        "path": "/workspace/scratch/07dd58cc9630/ci-audit/b09-original-exit-review-20261105/raw-case-blocks/19-steer_only_enforces_expected_turn_id.log",
+        "bytes": 325,
+        "sha256": "51a737bd232cc59cb4821e92646d7da08a37b2e0ab969fe643c9a946b3266e0f",
+        "git_blob": "871ba8137187630022db7ab34ad427dff01d0fab",
+        "byte_offset": 1908465,
+        "end_byte_offset_exclusive": 1908790,
+        "first_line": 41763,
+        "last_line": 41771
+      },
+      "all_skip_prefixes_absent": true,
+      "actual_rpc_methods": []
+    }
+  ],
+  "semantic_review": {
+    "recovery": "Eight original recover cases: 3 real recovery successes, 4 rejection scenarios, 1 feature-disabled negative. Real owned child termination/restart, exact turn/cwd/roots, single logical user input, queue deduplication, deferred resume hook and physical provider request counts are asserted.",
+    "injection": "Real AppServer RPC persists an untagged developer item, excludes it from the earlier request and includes it in the second physical request; exactly two requests.",
+    "suspension": "Original real root/descendant test rejects the currently live descendant, removes it, closes the old writer, observes durable Ready without terminal completion/abort, then reopens the exact turn/environment in a replacement runtime. The unit adapter skips only descendant inventory; the real integration case covers it.",
+    "terminalization": "Session-task panic reaches a terminal event and releases its slot. Cancelled finish/abort/suspend callers leave the detached owner alive. Panic/watchdog in an advanced terminalizer retain the exact fence and do not fabricate idle or terminal success.",
+    "steer": "No active turn and a mismatched expected turn identity are rejected by the original steer-only route.",
+    "limits": "Suspension checks a snapshot of loaded descendants; it is not a concurrent descendant-admission seal. Queued inputs and interactive waiters remain documented best effort. The original controls do not certify normal Root/Current/FinalUse acceptance."
+  },
+  "original_enclosing_full_result": {
+    "selected": 19506,
+    "passed": 19490,
+    "failed": 16,
+    "ignored_catalog": 57,
+    "observed_early_returns": 25,
+    "exit_code": 100,
+    "whole_passed": false
+  },
+  "whole_candidate_qualified": false,
+  "B15_closed": false,
+  "new_native_or_product_test_execution": false,
+  "exit_condition_changed": false,
+  "extra_universal_platform_exit_added": false
+}

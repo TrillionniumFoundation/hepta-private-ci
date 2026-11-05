@@ -1,0 +1,171 @@
+{
+  "schema": "b11-native9-windows-env-casing-candidate-v1",
+  "status": "STATIC_ACCEPT_WINDOWS_PENDING",
+  "base": {
+    "diagnostic_head": "855733b0f88c82c68135b1879682358a818daa84",
+    "diagnostic_tree": "bfee878ac3a871fd5b374acf3c2139b48a3235c5",
+    "actual_native9_checkout": "cb5aba57802272d7f535cd6ee2ac3e26334dbff6",
+    "actual_native9_tree": "bf1c52a3ed14ca2bd0276ffc693dccf6c1dbbb83"
+  },
+  "failure": {
+    "run_id": 42119482548,
+    "job_id": 127567774212,
+    "original_whole": {
+      "passed": 147,
+      "failed": 7,
+      "ignored": 2,
+      "exit": 3
+    },
+    "exact_positive_process": {
+      "exit": 1,
+      "elapsed_seconds": 0.03100000000000591,
+      "console_bytes": 106,
+      "message": "Missing required native Windows toolchain environment: UniversalCRTSdkDir VCToolsInstallDir WindowsSdkDir"
+    },
+    "exact_cases": 0,
+    "negative": 0,
+    "source_mutation_attempted": false,
+    "helper": "skipped"
+  },
+  "mechanism": {
+    "kind": "Evidence-supported native cause inference; cloud reproduction verified, actual repaired Windows subprocess pending",
+    "documentation": "https://docs.python.org/3.12/library/os.html#os.environ",
+    "actual_python_version": {
+      "actual_resolved_executable_and_sys_version": "NOT_RECORDED",
+      "recorded_PATH_contains": "C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64",
+      "primary_code_used": "CPython tagged v3.12.10; not a claim that actual child version was independently measured"
+    },
+    "primary_windows_subprocess_source": "CPython v3.12.10 Modules/_winapi.c sorts and deduplicates keys case-insensitively but preserves the selected key spelling when constructing the Unicode environment block."
+  },
+  "repair": {
+    "paths": 2,
+    "shared_helper": "bazel_environment(archive)",
+    "canonical_names": [
+      "UCRTVersion",
+      "UniversalCRTSdkDir",
+      "VCToolsInstallDir",
+      "WindowsLibPath",
+      "WindowsSdkBinPath",
+      "WindowsSdkDir",
+      "WindowsSDKLibVersion",
+      "WindowsSDKVersion"
+    ],
+    "required_names": [
+      "UniversalCRTSdkDir",
+      "VCToolsInstallDir",
+      "WindowsSdkDir"
+    ],
+    "preserve_existing_values": true,
+    "preserve_absent_optional_names": true,
+    "no_synthetic_SDK_values": true,
+    "only_original_archive_override": true,
+    "conflicting_aliases": "reject before launching; inherited Python normalization may already have collapsed pre-import duplicates",
+    "call_sites": [
+      "four exact positives",
+      "single negative",
+      "original setup helper"
+    ],
+    "source_and_guard_binding": "Readiness CONTROL_BLOB matches90ae post; collector PINS binds76a actual union supplied by root. The guard still checks worktree and git show HEAD:path."
+  },
+  "preserved": {
+    "all_other_source_bytes_proved_by_inverse_edit": true,
+    "all_argv_after_explicit_Git_Bash_path": true,
+    "whole_original_target": true,
+    "four_positive_names_and_exact_1pass_0fail_0ignored_155filtered_gate": true,
+    "negative_marker_original_assertion_line597_exit101_and_Bazel3": true,
+    "guarded_finally_exact_restore": true,
+    "original_helper_target_unfiltered": true,
+    "timeout_minutes": 120,
+    "original_roster": 156,
+    "Rust_dependencies_lockfiles_workflow": "unchanged by this two-path candidate"
+  },
+  "source_union": {
+    "collector": {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/primary/collector-merged-76a.source.txt",
+      "bytes": 16383,
+      "sha256": "1300d9ad784eb5df947577f349349b062d82600a6f83cba381ac652e3bfa369f",
+      "git_blob": "76a183d6a45e4a6c1493de194f8a1f6c422f0892"
+    },
+    "root_merge_proof": {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/primary/collector-union-proof.json",
+      "bytes": 943,
+      "sha256": "81eddb70ace03dcdc7befa97bc63390b72702fb78ff2a88fda3181c5b607a7b2",
+      "git_blob": "5bab868dafc9cc2f18f8d8b84a63c9d65f871b52"
+    },
+    "expected_root_source_commit": "021a59ff05ccd963bc087918db823aa86af31bb8",
+    "parents": [
+      "855733b0f88c82c68135b1879682358a818daa84",
+      "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+    ],
+    "limit": "Publication integration is owned and independently verified by root; this manifest records the supplied receipt rather than claiming a new agent ref mutation."
+  },
+  "validation": {
+    "static": {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/static-verification.json",
+      "bytes": 3651,
+      "sha256": "9faf3eca941443b7a91c881761c0a1fae797c807ecddb02e8f3ed54f58517015",
+      "git_blob": "e582a6919fd6405d4afcf9c4c6c89994dffcdc71"
+    },
+    "cloud_mechanism_and_full_Git_roundtrip": {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/cloud-verification.json",
+      "bytes": 9085,
+      "sha256": "bae6ec81ffd9da0a23fad55a68d1807d32cb9afe75d1a19509a234f050d14d0d",
+      "git_blob": "83a2cffe39b50daa97d956b08099faf46d8b7107"
+    },
+    "actual_posts": {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/candidate-postimages.actual.json",
+      "bytes": 1190,
+      "sha256": "226e2cb93e6b46f87987d42a2c9858c74696bc514f25922c27f08ad705c512d6",
+      "git_blob": "c69358c0b48e3685b5995cd956f7be1057104f68"
+    },
+    "no_Windows_Bazel_Rust_native_execution": true,
+    "local_full_fix_fmt": "NOT_RUN in this cloud candidate preparation"
+  },
+  "sources": [
+    {
+      "path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+      "preimage": {
+        "bytes": 22807,
+        "sha256": "09c1e846ab95951bc08d6637f8207f03df92e4e343e2f9c294a5052483b7f397",
+        "git_blob": "e6a191a2d3c66c740aa3cb2ccd42c3e4fdb6880e"
+      },
+      "postimage": {
+        "bytes": 23767,
+        "sha256": "e2bb7cf91e20895d5f11c2479238692b2966cdc1ca188ca2f8c620cfd09c6987",
+        "git_blob": "90ae8f030ee405706217d7cb2cdc12f1a7cda443"
+      },
+      "preimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/source/.github/scripts/run_b11_acl_identity_counterfactual.py",
+      "postimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py"
+    },
+    {
+      "path": ".github/scripts/run_b11_read_acl_readiness.py",
+      "preimage": {
+        "bytes": 14425,
+        "sha256": "f5f134b21f1e4775015c2674a22b785244368964a4c8070e18fb1e3d83b8afcf",
+        "git_blob": "01c99717b4dfc14d86858464be4798d4351830e6"
+      },
+      "postimage": {
+        "bytes": 14374,
+        "sha256": "221c05297886ee4cd774d337d56beedd896540281c9c559adca290cc3727d313",
+        "git_blob": "e77b32cce112f188d16063e787baca3019e3d892"
+      },
+      "preimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/source/.github/scripts/run_b11_read_acl_readiness.py",
+      "postimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/candidate/.github/scripts/run_b11_read_acl_readiness.py"
+    }
+  ],
+  "patch": {
+    "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-windows-env-casing-20261105/full.patch",
+    "bytes": 4790,
+    "sha256": "4a530f9f70abef5c6ad2f23f88f82073237d9077828fa0b5f24b9386b824c3df",
+    "git_blob": "63ec5734e666a8748ba1e92b9425bd0deb3ac81a"
+  },
+  "required_native_acceptance": [
+    "Original full target result retained without promotion",
+    "Same original wrapper reaches Bazel with correctly propagated actual toolchain environment",
+    "All four exact positives qualify once before source mutation",
+    "One negative reaches original physical marker/assertion then guarded exact restore",
+    "Unfiltered original helper target runs only after valid negative and restore"
+  ],
+  "B11_status": "OPEN",
+  "source_ref_native_or_PR_mutations_by_candidate_author": false
+}

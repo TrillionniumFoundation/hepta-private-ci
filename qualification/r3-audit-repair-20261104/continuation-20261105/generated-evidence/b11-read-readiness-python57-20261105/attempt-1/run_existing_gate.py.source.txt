@@ -1,0 +1,110 @@
+"""Run only the authorized existing Python wrapper tests in an owned projection."""
+
+import ast
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import time
+
+
+ROOT = Path(__file__).resolve().parent
+SOURCE = ROOT / "source"
+MAPPING = json.loads((ROOT / "source-map.json").read_text())
+COMMAND = ["python3", "-m", "unittest", "discover", "-s", ".github/scripts", "-p", "test_run_bazel*.py", "-v"]
+
+
+def identity(body):
+    return {"bytes": len(body), "sha256": hashlib.sha256(body).hexdigest(),
+            "blob": hashlib.sha1(b"blob " + str(len(body)).encode() + b"\0" + body).hexdigest()}
+
+
+def save(name, value):
+    (ROOT / name).write_text(json.dumps(value, indent=2) + "\n")
+
+
+def source_snapshot():
+    result = []
+    for row in MAPPING["files"]:
+        path = SOURCE / row["repository_path"]
+        actual = identity(path.read_bytes())
+        assert actual == {key: row[key] for key in ("bytes", "sha256", "blob")}
+        expected_mode = int(row["mode"][-3:], 8)
+        assert path.stat().st_mode & 0o777 == expected_mode
+        result.append({"repository_path": row["repository_path"], "mode": row["mode"], **actual})
+    return sorted(result, key=lambda row: row["repository_path"])
+
+
+assert not (ROOT / "command.json").exists(), "A gate command already exists; never replay this run directory"
+assert not (SOURCE / ".git").exists(), "Only a fresh isolated projection can be initialized"
+for row in MAPPING["files"]:
+    path = SOURCE / row["repository_path"]
+    assert identity(path.read_bytes())["blob"] == row["blob"]
+    path.chmod(int(row["mode"][-3:], 8))
+before = source_snapshot()
+save("source-before.json", before)
+
+setup = []
+def git(*arguments, input=None):
+    argv = ["git", "-c", "core.autocrlf=false", "-c", "core.hooksPath=/dev/null", *arguments]
+    result = subprocess.run(argv, cwd=SOURCE, input=input, capture_output=True, check=False)
+    setup.append({"argv": argv, "exit_code": result.returncode,
+                  "stdout": result.stdout.decode(), "stderr": result.stderr.decode()})
+    save("isolated-git-setup.json", setup)
+    assert result.returncode == 0
+    return result.stdout
+
+
+# Existing collector tests query Git HEAD/tree. Give this thirteen-file local
+# fixture its own detached identity; never claim it is the full 0f product tree.
+git("init", "--quiet", "--object-format=sha1")
+git("add", "--all", "--", ".")
+tree = git("write-tree").decode().strip()
+commit = git("-c", "user.name=Qualification Fixture", "-c", "user.email=qualification-fixture@example.invalid",
+             "commit-tree", tree, input=b"Isolated existing Python wrapper regression projection\n").decode().strip()
+(SOURCE / ".git/HEAD").write_text(commit + "\n")
+head = git("rev-parse", "HEAD", "HEAD^{tree}").decode().splitlines()
+assert head == [commit, tree]
+index_before = identity(git("ls-files", "--stage"))
+assert not git("status", "--porcelain=v1", "--untracked-files=all")
+
+names = []
+for path in sorted((SOURCE / ".github/scripts").glob("test_run_bazel*.py")):
+    for class_node in ast.parse(path.read_text()).body:
+        if isinstance(class_node, ast.ClassDef):
+            for node in class_node.body:
+                if isinstance(node, ast.FunctionDef) and node.name.startswith("test_"):
+                    names.append(f"{path.stem}.{class_node.name}.{node.name}")
+assert len(names) == len(set(names)) == 57
+save("original-case-roster.json", {"names": names, "count": len(names), "source": "AST of five exact original test files; no selected case rewrite"})
+
+env = os.environ.copy()
+env["PYTHONDONTWRITEBYTECODE"] = "1"
+started_utc = datetime.now(timezone.utc).isoformat()
+save("command.json", {"argv": COMMAND, "cwd": str(SOURCE), "started_at_utc": started_utc,
+                      "environment_override": {"PYTHONDONTWRITEBYTECODE": "1"},
+                      "fixed_input_head": MAPPING["fixed_source_head"], "fixed_input_tree": MAPPING["fixed_source_tree"],
+                      "isolated_fixture_head": commit, "isolated_fixture_tree": tree,
+                      "python3": shutil.which("python3"), "bash": shutil.which("bash"), "git": shutil.which("git"),
+                      "scope": "Original unmodified 57 Python wrapper tests; wrappers use the existing recording Bazel probe, no product Cargo/Bazel/native test is invoked."})
+started = time.monotonic()
+with (ROOT / "stdout.original").open("xb") as stdout, (ROOT / "stderr.original").open("xb") as stderr:
+    result = subprocess.run(COMMAND, cwd=SOURCE, env=env, stdout=stdout, stderr=stderr, check=False)
+elapsed = time.monotonic() - started
+after = source_snapshot()
+save("source-after.json", after)
+index_after = identity(git("ls-files", "--stage"))
+status = git("status", "--porcelain=v1", "--untracked-files=all").decode()
+save("result.json", {"exit_code": result.returncode, "elapsed_seconds": elapsed,
+                     "completed_at_utc": datetime.now(timezone.utc).isoformat(),
+                     "source_before_after_equal": before == after,
+                     "semantic_index_before_after_equal": index_before == index_after,
+                     "index_before": index_before, "index_after": index_after, "final_status": status,
+                     "stdout": identity((ROOT / "stdout.original").read_bytes()), "stderr": identity((ROOT / "stderr.original").read_bytes()),
+                     "reruns": 0, "test_modifications": 0, "native_product_qualification": False})
+assert before == after and index_before == index_after and status == ""
+print(json.dumps(json.loads((ROOT / "result.json").read_text())))
+raise SystemExit(result.returncode)

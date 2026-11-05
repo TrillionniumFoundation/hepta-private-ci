@@ -1,0 +1,306 @@
+{
+  "schema": "b11-git-bash-independent-static-verification/v1",
+  "result": "STATIC_ACCEPT",
+  "native_or_ref_execution": false,
+  "source_map": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/source-map.json",
+    "bytes": 2392,
+    "sha256": "df5945d225aebdc34c5db3723f8a3df9e0f4c598a9070b4548707c4eb4ddd3f5",
+    "git_blob": "df984787cdbd12f794f70011cc9e81536d7e3a3d"
+  },
+  "patch": {
+    "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/full.patch",
+    "bytes": 7535,
+    "sha256": "799a8b1b620383f114f67ceee956a727db0bf081475bff8603398094941eeb04",
+    "git_blob": "0a52246e763a8693bfd029dc492df1a0c2262cbc"
+  },
+  "source_identity": [
+    {
+      "path": ".github/scripts/run_b11_acl_identity_counterfactual.py",
+      "preimage": {
+        "bytes": 22200,
+        "sha256": "1a53b2771e795fb27a495d7c053d7afc9b0cad954f27c4802654311771319ed5",
+        "git_blob": "3680db31233e47ba7fad99f31a7019c4536288bb"
+      },
+      "postimage": {
+        "bytes": 22807,
+        "sha256": "09c1e846ab95951bc08d6637f8207f03df92e4e343e2f9c294a5052483b7f397",
+        "git_blob": "e6a191a2d3c66c740aa3cb2ccd42c3e4fdb6880e"
+      },
+      "preimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/source/.github/scripts/run_b11_acl_identity_counterfactual.py",
+      "postimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/candidate/.github/scripts/run_b11_acl_identity_counterfactual.py"
+    },
+    {
+      "path": ".github/scripts/run_b11_read_acl_readiness.py",
+      "preimage": {
+        "bytes": 14222,
+        "sha256": "09d4b076ee3f9f1232457612ab2f5549bdb5e16bd980a061094de8b10aeb1398",
+        "git_blob": "6010ce9cc6da2eca95aac9ba453581f68770bbe6"
+      },
+      "postimage": {
+        "bytes": 14425,
+        "sha256": "f5f134b21f1e4775015c2674a22b785244368964a4c8070e18fb1e3d83b8afcf",
+        "git_blob": "01c99717b4dfc14d86858464be4798d4351830e6"
+      },
+      "preimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/source/.github/scripts/run_b11_read_acl_readiness.py",
+      "postimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/candidate/.github/scripts/run_b11_read_acl_readiness.py"
+    },
+    {
+      "path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "preimage": {
+        "bytes": 5929,
+        "sha256": "c2d9c91b0bf724613a075dae881b84523074858728bd06a01f8a39f88c4d4dc6",
+        "git_blob": "89d2eaf4bb9900f7476d49476e2657effa68327a"
+      },
+      "postimage": {
+        "bytes": 6445,
+        "sha256": "ea6159128fea675e4f9b2f969d5e934d87eb9806cbb0480dbafb02fe6676e7cf",
+        "git_blob": "8276dc655ab7d7e1e311f183e398a903a595ae9f"
+      },
+      "preimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/source/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "postimage_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml"
+    }
+  ],
+  "isolated_git_forward_reverse": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "cwd": "/tmp/b11-git-bash-static-b0bw8743",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/full.patch"
+      ],
+      "cwd": "/tmp/b11-git-bash-static-b0bw8743",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/full.patch"
+      ],
+      "cwd": "/tmp/b11-git-bash-static-b0bw8743",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/full.patch"
+      ],
+      "cwd": "/tmp/b11-git-bash-static-b0bw8743",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-c",
+        "core.autocrlf=false",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-git-bash-launcher-20261105/full.patch"
+      ],
+      "cwd": "/tmp/b11-git-bash-static-b0bw8743",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "three_postimages_and_three_preimages_exact": true,
+  "structural_equality": {
+    ".github/scripts/run_b11_acl_identity_counterfactual.py": {
+      "complete_non_main_functions_equal": [
+        "canonical",
+        "digest",
+        "git",
+        "replace_owned_source",
+        "require",
+        "retained_log",
+        "save",
+        "source_guard",
+        "target_terminal"
+      ],
+      "argv_tails_equal": [
+        "argv",
+        "positive_argv"
+      ],
+      "entire_finally_and_terminal_tail_equal": true,
+      "original_constants_equal_except_helper_control_blob": true
+    },
+    ".github/scripts/run_b11_read_acl_readiness.py": {
+      "complete_non_main_functions_equal": [
+        "guard",
+        "helper_artifacts",
+        "helper_results",
+        "load_control"
+      ],
+      "argv_tails_equal": [
+        "argv"
+      ],
+      "entire_finally_and_terminal_tail_equal": true,
+      "original_constants_equal_except_helper_control_blob": true
+    }
+  },
+  "workflow_original_whole_step_and_upload_tail_equal": true,
+  "workflow_only_two_explicit_bash_arguments_and_derivation_blocks": true,
+  "native8_originals": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command.json",
+      "bytes": 2426,
+      "sha256": "8bdf392d12f20533e70e2ba4469725c3114026ce8427fcf1e24d8ec4e49006fc",
+      "git_blob": "91091a53399e0642db334b550bd7c016be78f322"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/command-terminal.json",
+      "bytes": 68,
+      "sha256": "4b71defaecb9ce33babb429d30c2ec35d9a3dd70ccba15f092fc55f5e14ae0e4",
+      "git_blob": "29bd17e7857716dfd8dd4dfc09b97e12d68709cf"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/console.log",
+      "bytes": 504,
+      "sha256": "756a9ae833f91603d69b5ee0e38d855073252c2585b8808c37f801cf43646c15",
+      "git_blob": "c0b38378bcf8ddee32ff284f37df8cd78e78cc18"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/source-before.json",
+      "bytes": 1212,
+      "sha256": "8074139d993dee8a594d49131544cf23c93a4ec702d2d801284827d6beb32853",
+      "git_blob": "ca998990ee2c40d9a9b90faca2982e068e3f147e"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/source-after.json",
+      "bytes": 1212,
+      "sha256": "8074139d993dee8a594d49131544cf23c93a4ec702d2d801284827d6beb32853",
+      "git_blob": "ca998990ee2c40d9a9b90faca2982e068e3f147e"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127545539398/members/b11-token-mechanism-probe/acl-identity-counterfactual/counterfactual-terminal.json",
+      "bytes": 542,
+      "sha256": "19c698b75ff54a7accdebc02554e88fe844cd395e74d873ae618123c2a6a19d4",
+      "git_blob": "93249d0325dc5f3349b0f5d462c662dcfcfeb8b3"
+    }
+  ],
+  "native8_observed": {
+    "job_id": "127545539398",
+    "run_id": "42113095723",
+    "command": {
+      "argv": [
+        "bash",
+        "./.github/scripts/run-bazel-ci.sh",
+        "--print-failed-action-summary",
+        "--print-failed-test-logs",
+        "--windows-msvc-host-platform",
+        "--remote-download-toplevel",
+        "--",
+        "test",
+        "--platforms=//:windows_x86_64_msvc",
+        "--skip_incompatible_explicit_targets",
+        "--test_tag_filters=-argument-comment-lint",
+        "--test_verbose_timeout_warnings",
+        "--test_output=all",
+        "--build_metadata=COMMIT_SHA=8fd0c14cd5853d21eb23571f67461f3fc386c01c",
+        "--build_metadata=TAG_b11_observation_only=true",
+        "--build_metadata=TAG_b11_identity_positive=true",
+        "--nocache_test_results",
+        "--flaky_test_attempts=1",
+        "--test_arg=acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+        "--test_arg=--exact",
+        "--",
+        "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests"
+      ],
+      "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+      "case": "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+      "source": {
+        "head": "8fd0c14cd5853d21eb23571f67461f3fc386c01c",
+        "head_tree": "cb105f2d902326c3c2e187f49c76d5598e6646c3",
+        "source": {
+          "bytes": 10467,
+          "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+          "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+        },
+        "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+        "tests": {
+          "bytes": 23872,
+          "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+          "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+        },
+        "status": [],
+        "index_entries": {
+          "bytes": 1183933,
+          "sha256": "b0d47be0aa7c9a3ebff30de7c9d3e3d9848ef737e8a14731b490a4d1fb541f9b",
+          "git_blob": "68a970190df948136aa1390fcf7fa6d69a6b9ad9"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "bytes": 432254,
+            "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+            "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+          },
+          "MODULE.bazel.lock": {
+            "bytes": 1740955,
+            "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+            "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+          }
+        }
+      },
+      "scope": "One exact original positive, once; the whole-target result is retained."
+    },
+    "terminal": {
+      "exit_code": 1,
+      "elapsed_seconds": 0.047000000000025466
+    },
+    "counterfactual_terminal": {
+      "status": "INVALID_OR_NOT_RUN",
+      "physical_counterfactual_qualified": false,
+      "physical_oracle_reached": false,
+      "product_B11": "OPEN",
+      "restored_exact_original_bytes": false,
+      "positive_scopes": [],
+      "error": "RuntimeError('exact positive failed: acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object')",
+      "restore_error": null,
+      "source_mutated": false,
+      "source_mutation_attempted": false,
+      "original_target_exit_code_unchanged": true,
+      "hard_cancellation_restore_guaranteed": false
+    },
+    "console_decoded": "Windows Subsystem for Linux has no installed distributions.\r\nYou can resolve this by installing a distribution with the instructions below:\r\n\r\nUse 'wsl.exe --list --online' to list available distributions\r\nand 'wsl.exe --install <Distro>' to install.\r\n"
+  },
+  "mechanism_review": [
+    "Each existing workflow step derives its current shell executable from $BASH, adds the Windows .exe suffix when the MSYS path omits it, verifies the file and converts that same path with cygpath -aw. Both values remain quoted.",
+    "Each Python CLI requires --bash-executable. The shared validator accepts only a native-Windows absolute existing bash.exe file and records its complete bytes/SHA256/Git blob before running a test subprocess.",
+    "All three actual subprocess argv[0] values use that recorded absolute path. Every argv element after0, cwd, environment construction, output file and return-code handling is unchanged. There is no PATH search fallback or WSL installation.",
+    "Helper load_control pins the exact new counterfactual script and imports definitions under a non-main module name. Its ten other source pins and all guards stay unchanged.",
+    "Original whole library status remains authoritative; four exact positives, sole precise physical negative, pre-restore source/index/lock checks, exact owned restoration and the unfiltered helper target are unchanged.",
+    "Native8 stopped before its first exact test due to WSL shell resolution, with unchanged source. This source repair is not proof that a new exact positive/negative/helper scope has executed."
+  ],
+  "limits": [
+    "No Windows CLI or native test was run by this review. Only cloud Git apply/check/reverse and AST/source identity comparison.",
+    "No product Rust code, scope, original timeout120min, retry, oracle, collector, original failure or ref changes.",
+    "The original full library147P7F2I remains independent; B11 stays OPEN pending its actual product gates."
+  ]
+}

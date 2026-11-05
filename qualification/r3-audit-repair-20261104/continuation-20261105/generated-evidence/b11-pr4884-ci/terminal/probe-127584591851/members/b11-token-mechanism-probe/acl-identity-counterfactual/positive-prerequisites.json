@@ -1,0 +1,268 @@
+{
+  "original_exit_code": 3,
+  "original_summary": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 53.9s",
+  "console": {
+    "bytes": 227921,
+    "sha256": "3db588b312463a466f70b1da95ab69e04fc0c69d26d8c56f0b8f30ce37e83f7a",
+    "git_blob": "d3d98226f17725004a409a710ba5ea018f90fd04"
+  },
+  "collector_manifest": {
+    "path": "D:\\a\\_temp\\bazel-execution-logs\\failed-test-logs\\invocation-dp0tyrq_\\manifest.json",
+    "bytes": 1273,
+    "sha256": "001664cafcbcfdcb0d163d30729b24e6841d770376a512af04ae230f410c7bce",
+    "git_blob": "032a28850a857869b9f0eca34ba52013434210ad"
+  },
+  "files": {
+    ".log": {
+      "path": "D:\\a\\_temp\\bazel-execution-logs\\failed-test-logs\\invocation-dp0tyrq_\\targets\\0000\\test.log",
+      "bytes": 143080,
+      "sha256": "04aa1193f2fa3b76fe49df686b9117cce0929f6600524a923cbd664a3ac7b1fb",
+      "git_blob": "6ff9144d7eb0acf3816499a7a86b39b54b589260"
+    },
+    ".xml": {
+      "path": "D:\\a\\_temp\\bazel-execution-logs\\failed-test-logs\\invocation-dp0tyrq_\\targets\\0000\\test.xml",
+      "bytes": 143503,
+      "sha256": "e19d038b1d5a51d7276788f1a0691a0c8512ec4cd46d4f963cf42dd2dabb708a",
+      "git_blob": "b3abefc6130a1c7dc99533961f90a8d87ecc671a"
+    }
+  },
+  "exact_individual_scopes": [
+    {
+      "case": "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+      "status": "EXACT_POSITIVE_QUALIFIED",
+      "attempts": 1,
+      "target_summary": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              PASSED in 0.1s",
+      "collector_manifest": {
+        "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-01\\bazel-execution-logs\\selected-target-test-logs\\invocation-bllv549o\\manifest.json",
+        "bytes": 5077,
+        "sha256": "38ac4c70b370a977863e7dd3379609f3b06265592c0aba0d8cbefbc77f912ac2",
+        "git_blob": "088c427f84a81d8c36862aa27457b3337e1ffaee"
+      },
+      "files": {
+        ".log": {
+          "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-01\\bazel-execution-logs\\selected-target-test-logs\\invocation-bllv549o\\targets\\0000\\test.log",
+          "bytes": 574,
+          "sha256": "50293fd5bde99827d63a32d5283c3b26e74645c2dc9a28c46474c57236389162",
+          "git_blob": "c44eece675aa44a0a6fa682413bfbb9de3829d25"
+        },
+        ".xml": {
+          "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-01\\bazel-execution-logs\\selected-target-test-logs\\invocation-bllv549o\\targets\\0000\\test.xml",
+          "bytes": 945,
+          "sha256": "70cb3dfa6e513573529e4a172d51c070afddac22820fe854d49af195e7ff5dbc",
+          "git_blob": "88efeda2ec83de43a34949212c5bc60221e4fd51"
+        }
+      },
+      "source": {
+        "head": "5ce73498a9e8ee843d156c43593b1bc2fede416f",
+        "head_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+        "source": {
+          "bytes": 10467,
+          "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+          "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+        },
+        "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+        "tests": {
+          "bytes": 23872,
+          "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+          "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+        },
+        "status": [],
+        "index_entries": {
+          "bytes": 1183933,
+          "sha256": "9f3792f02f2e903e25ab4ab5ffbdf530602a5a1dab07c45bd33fc9711568e49f",
+          "git_blob": "c8f6f3963ed5288471c09c99a695ff168f5aee25"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "bytes": 432254,
+            "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+            "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+          },
+          "MODULE.bazel.lock": {
+            "bytes": 1740955,
+            "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+            "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+          }
+        }
+      }
+    },
+    {
+      "case": "acl::tests::existing_native_deny_does_not_require_write_dac",
+      "status": "EXACT_POSITIVE_QUALIFIED",
+      "attempts": 1,
+      "target_summary": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              PASSED in 0.1s",
+      "collector_manifest": {
+        "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-02\\bazel-execution-logs\\selected-target-test-logs\\invocation-7ljtw6r6\\manifest.json",
+        "bytes": 5077,
+        "sha256": "7f377d3d42b1acd085dff46dd9c63f25b818da7e14884fb970a6b4fc53c0b409",
+        "git_blob": "6ca88e187d672a5ea1de1c04b731759faa8a1cb2"
+      },
+      "files": {
+        ".log": {
+          "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-02\\bazel-execution-logs\\selected-target-test-logs\\invocation-7ljtw6r6\\targets\\0000\\test.log",
+          "bytes": 345,
+          "sha256": "8b956b8090d424edd28f45f57631639363559f80f0e9b58fa8253edcb0a38791",
+          "git_blob": "9768c926f34f6c7130f98e070b7f6b4cb95d55e1"
+        },
+        ".xml": {
+          "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-02\\bazel-execution-logs\\selected-target-test-logs\\invocation-7ljtw6r6\\targets\\0000\\test.xml",
+          "bytes": 716,
+          "sha256": "cf4e45d14b83db8787f04d501148a1ac813f9d3f90a6531de7bfd1265d1fe5d0",
+          "git_blob": "411b244733894cad3fe812bc419ae65126191d27"
+        }
+      },
+      "source": {
+        "head": "5ce73498a9e8ee843d156c43593b1bc2fede416f",
+        "head_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+        "source": {
+          "bytes": 10467,
+          "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+          "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+        },
+        "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+        "tests": {
+          "bytes": 23872,
+          "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+          "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+        },
+        "status": [],
+        "index_entries": {
+          "bytes": 1183933,
+          "sha256": "9f3792f02f2e903e25ab4ab5ffbdf530602a5a1dab07c45bd33fc9711568e49f",
+          "git_blob": "c8f6f3963ed5288471c09c99a695ff168f5aee25"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "bytes": 432254,
+            "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+            "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+          },
+          "MODULE.bazel.lock": {
+            "bytes": 1740955,
+            "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+            "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+          }
+        }
+      }
+    },
+    {
+      "case": "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+      "status": "EXACT_POSITIVE_QUALIFIED",
+      "attempts": 1,
+      "target_summary": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              PASSED in 0.1s",
+      "collector_manifest": {
+        "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-03\\bazel-execution-logs\\selected-target-test-logs\\invocation-jeaej818\\manifest.json",
+        "bytes": 5077,
+        "sha256": "9c6e35fce278fe7de63ceb528ef3e5c37074a8873ba864cef8d4c2c2b48cea63",
+        "git_blob": "8d67d23c6d6b9d86faa7c92acd95be7947430a62"
+      },
+      "files": {
+        ".log": {
+          "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-03\\bazel-execution-logs\\selected-target-test-logs\\invocation-jeaej818\\targets\\0000\\test.log",
+          "bytes": 365,
+          "sha256": "66c15b250e06fd152ccba60dabbf992e2295d2abb32126f625e73da51b96bf78",
+          "git_blob": "b6f2f9e7ca05eba4b58a460a4dacd83bf5353ef0"
+        },
+        ".xml": {
+          "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-03\\bazel-execution-logs\\selected-target-test-logs\\invocation-jeaej818\\targets\\0000\\test.xml",
+          "bytes": 736,
+          "sha256": "ebab1c23349c04966166b1980e0bb4dcc41ca9f3ee1b7977312a58437f82c4c3",
+          "git_blob": "8f90dceb41c7f99ec351fb00836f19de19306e9c"
+        }
+      },
+      "source": {
+        "head": "5ce73498a9e8ee843d156c43593b1bc2fede416f",
+        "head_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+        "source": {
+          "bytes": 10467,
+          "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+          "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+        },
+        "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+        "tests": {
+          "bytes": 23872,
+          "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+          "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+        },
+        "status": [],
+        "index_entries": {
+          "bytes": 1183933,
+          "sha256": "9f3792f02f2e903e25ab4ab5ffbdf530602a5a1dab07c45bd33fc9711568e49f",
+          "git_blob": "c8f6f3963ed5288471c09c99a695ff168f5aee25"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "bytes": 432254,
+            "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+            "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+          },
+          "MODULE.bazel.lock": {
+            "bytes": 1740955,
+            "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+            "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+          }
+        }
+      }
+    },
+    {
+      "case": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "status": "EXACT_POSITIVE_QUALIFIED",
+      "attempts": 1,
+      "target_summary": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              PASSED in 0.1s",
+      "collector_manifest": {
+        "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-04\\bazel-execution-logs\\selected-target-test-logs\\invocation-oq13a7in\\manifest.json",
+        "bytes": 5082,
+        "sha256": "dc90cbb2806429115c4efddb905378ef36f491336679bc7651f1e2393aee1026",
+        "git_blob": "13bf83a5fef6283fea394b2e806e399b48dbc56d"
+      },
+      "files": {
+        ".log": {
+          "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-04\\bazel-execution-logs\\selected-target-test-logs\\invocation-oq13a7in\\targets\\0000\\test.log",
+          "bytes": 16871,
+          "sha256": "88934b8a11c36919505801418fecb074b22e403a71670873b68af488dbf97ab4",
+          "git_blob": "1cfa7cdc4b8a92efcba03aa6d1bab23b6c510f84"
+        },
+        ".xml": {
+          "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-04\\bazel-execution-logs\\selected-target-test-logs\\invocation-oq13a7in\\targets\\0000\\test.xml",
+          "bytes": 17242,
+          "sha256": "b7e788cf73148319f9f620d3fe18ef91ad1718d26a3ebd96bb66fbc6502b509f",
+          "git_blob": "2458aeb2b42dabc337502f15fac1d86a9d068a0a"
+        }
+      },
+      "source": {
+        "head": "5ce73498a9e8ee843d156c43593b1bc2fede416f",
+        "head_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+        "source": {
+          "bytes": 10467,
+          "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+          "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+        },
+        "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+        "tests": {
+          "bytes": 23872,
+          "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+          "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+        },
+        "status": [],
+        "index_entries": {
+          "bytes": 1183933,
+          "sha256": "9f3792f02f2e903e25ab4ab5ffbdf530602a5a1dab07c45bd33fc9711568e49f",
+          "git_blob": "c8f6f3963ed5288471c09c99a695ff168f5aee25"
+        },
+        "locks": {
+          "codex-rs/Cargo.lock": {
+            "bytes": 432254,
+            "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+            "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+          },
+          "MODULE.bazel.lock": {
+            "bytes": 1740955,
+            "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+            "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+          }
+        }
+      }
+    }
+  ],
+  "scope_limit": "Four exact positive records supplement the unchanged whole target; no interleaved PASS is reconstructed."
+}

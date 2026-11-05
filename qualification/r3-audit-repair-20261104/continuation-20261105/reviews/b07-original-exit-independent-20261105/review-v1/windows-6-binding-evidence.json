@@ -1,0 +1,234 @@
+{
+  "schema": "b07-windows-5b-six-binding-originals-v1",
+  "run_id": 41999114842,
+  "run_attempt": 1,
+  "job_id": 127339255880,
+  "artifact_id": 13431285250,
+  "full_archive": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-win-shard2-127339255880/artifact-13431285250/artifact.zip",
+    "bytes": 4967167,
+    "sha256": "d0dd2347f5be91ae1f445d21e892ea5d4559499dc8e2f71554ce0ce2bb93ba85",
+    "git_blob": "9b9fa486d7b33d003f9139ebce829f7afa982122"
+  },
+  "complete_job_log": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/main-win-shard2-127339255880/job.log",
+    "bytes": 463383,
+    "sha256": "1b7114b1ff639cc2cd5d38e5d53326e16796ffb1516fef1e960d8df371c3de65",
+    "git_blob": "e5519cc76138d773f491c7ea42655448655c0dc9"
+  },
+  "original_command_block": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/review-v1/windows-original-command.original-block.txt",
+    "bytes": 3429,
+    "sha256": "0d58ffbf59637c00c739b1021ea083c69b408e1800e8b81f99add3768336841a",
+    "git_blob": "7d50a40f0517fdc2822a36034ef5bc4107ab5624"
+  },
+  "command_block_lines": [
+    925,
+    971
+  ],
+  "complete_target_log": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/originals/windows-binding-test.original.log",
+    "bytes": 18291,
+    "sha256": "38959cedc44a71678cd341d669a5e61df8b779abbf00c3060ddd680f0e192415",
+    "git_blob": "97479e15b1b1451a48a1a760a5bc7bf593150f55"
+  },
+  "complete_target_xml": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/originals/windows-binding-test.original.xml",
+    "bytes": 18628,
+    "sha256": "a622dd1bc592d0129a110f1a8d4b7e930f7b9e00b8e77d0395718c38358a7f4c",
+    "git_blob": "e376b293fa47459ddbc5353fb5f7d26ed9a1f5dd"
+  },
+  "collector": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/published-eed4d6-ci-20261105/b07-source-review-v1/originals/windows-binding-collector.original.json",
+    "bytes": 25219,
+    "sha256": "0381d8eab6462d424621b1c00ea4428bfce53f0676a27f4597d80430921b8b7b",
+    "git_blob": "7e4f87ae0ff3d412d4175ecf694acb02a09097a8"
+  },
+  "source": {
+    "commit": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+    "tracked_worktree_dirty": false,
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35"
+  },
+  "target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+  "original_target_summary": [
+    {
+      "line": 3435,
+      "text": "2026-11-05T15:50:40.7775894Z //codex-rs/codex-mcp:codex-mcp-unit-tests                                PASSED in 53.7s"
+    }
+  ],
+  "outer_xml_attributes": {
+    "name": "codex-rs\\codex-mcp\\codex-mcp-unit-tests.bat",
+    "classname": "",
+    "status": "run",
+    "duration": "53",
+    "time": "53"
+  },
+  "xml_system_out_equals_entire_log": true,
+  "original_libtest_subinvocations": [
+    [
+      "80",
+      "113",
+      "7.01"
+    ],
+    [
+      "85",
+      "108",
+      "0.07"
+    ],
+    [
+      "28",
+      "165",
+      "0.05"
+    ]
+  ],
+  "complete_target_passes": 193,
+  "binding_cases": [
+    {
+      "test": "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+      "binary": "codex-mcp",
+      "result": "PASS",
+      "line": 11,
+      "physical_line": "test binding::tests::configured_hook_call_preserves_model_and_environment_boundaries ... ok",
+      "source_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "early_return_review": "All six complete test bodies and shared test_step inspected; no early-return/ignore/platform-skip branches."
+    },
+    {
+      "test": "binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh",
+      "binary": "codex-mcp",
+      "result": "PASS",
+      "line": 13,
+      "physical_line": "test binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh ... ok",
+      "source_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "early_return_review": "All six complete test bodies and shared test_step inspected; no early-return/ignore/platform-skip branches."
+    },
+    {
+      "test": "binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes",
+      "binary": "codex-mcp",
+      "result": "PASS",
+      "line": 10,
+      "physical_line": "test binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes ... ok",
+      "source_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "early_return_review": "All six complete test bodies and shared test_step inspected; no early-return/ignore/platform-skip branches."
+    },
+    {
+      "test": "binding::tests::prepared_call_is_rejected_after_catalog_refresh",
+      "binary": "codex-mcp",
+      "result": "PASS",
+      "line": 9,
+      "physical_line": "test binding::tests::prepared_call_is_rejected_after_catalog_refresh ... ok",
+      "source_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "early_return_review": "All six complete test bodies and shared test_step inspected; no early-return/ignore/platform-skip branches."
+    },
+    {
+      "test": "binding::tests::stale_prepared_call_does_not_run_preparation",
+      "binary": "codex-mcp",
+      "result": "PASS",
+      "line": 12,
+      "physical_line": "test binding::tests::stale_prepared_call_does_not_run_preparation ... ok",
+      "source_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "early_return_review": "All six complete test bodies and shared test_step inspected; no early-return/ignore/platform-skip branches."
+    },
+    {
+      "test": "binding::tests::preparation_holds_catalog_authority_until_it_finishes",
+      "binary": "codex-mcp",
+      "result": "PASS",
+      "line": 14,
+      "physical_line": "test binding::tests::preparation_holds_catalog_authority_until_it_finishes ... ok",
+      "source_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "early_return_review": "All six complete test bodies and shared test_step inspected; no early-return/ignore/platform-skip branches."
+    }
+  ],
+  "collector_retention": {
+    "console_bytes": 209693,
+    "console_sha256": "2a8cbfa765e254756f8099af84f3c97a72d847b77538f2ade91c40071ab0d900",
+    "limitations": "NOT_REPORTED does not mean filtered or skipped. An absent cached marker does not prove local execution or an independent remote execution. Files are existing local records for a console-reported target; their binding to this invocation is not independently established. Bazel config expansion and per-case filtering must be checked separately. Checkout identity is recorded at collection time, not at test start.",
+    "selection_errors": [],
+    "targets": {
+      "//codex-rs/app-server:app-server-all-test": {
+        "cached_marker": false,
+        "collect_existing_logs": true,
+        "status": "PASSED",
+        "summary_lines": [
+          "//codex-rs/app-server:app-server-all-test                                PASSED in 57.2s"
+        ]
+      },
+      "//codex-rs/app-server:app-server-all-wine-exec-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/app-server:app-server-unit-tests": {
+        "cached_marker": false,
+        "collect_existing_logs": true,
+        "status": "PASSED",
+        "summary_lines": [
+          "//codex-rs/app-server:app-server-unit-tests                              PASSED in 9.6s"
+        ]
+      },
+      "//codex-rs/codex-mcp:codex-mcp-unit-tests": {
+        "cached_marker": false,
+        "collect_existing_logs": true,
+        "status": "PASSED",
+        "summary_lines": [
+          "//codex-rs/codex-mcp:codex-mcp-unit-tests                                PASSED in 53.7s"
+        ]
+      },
+      "//codex-rs/core:core-all-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/core:core-all-wine-exec-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/core:core-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/ext/queue:queue-queue_service-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test": {
+        "cached_marker": false,
+        "collect_existing_logs": true,
+        "status": "PASSED",
+        "summary_lines": [
+          "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test  PASSED in 31.0s"
+        ]
+      },
+      "//codex-rs/tui:tui-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests": {
+        "cached_marker": false,
+        "collect_existing_logs": false,
+        "status": "FAILED",
+        "summary_lines": [
+          "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests     FAILED TO BUILD"
+        ]
+      }
+    },
+    "wrapper_requested_selection_flags": [
+      "--test_tag_filters=-argument-comment-lint",
+      "--config=ci-windows"
+    ]
+  },
+  "limits": [
+    "Outer XML is one wrapper testcase; six named Rust results are proved by complete original stdout plus complete source bodies.",
+    "Retained collector provenance limits are preserved verbatim: checkout identity was captured at collection time, and lack of a cached marker alone is not an independent local or remote execution attestation.",
+    "No new eed Windows binding execution or GNU binding execution is claimed."
+  ]
+}

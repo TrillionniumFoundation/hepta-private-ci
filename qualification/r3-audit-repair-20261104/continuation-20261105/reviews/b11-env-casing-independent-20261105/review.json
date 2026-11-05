@@ -1,0 +1,70 @@
+{
+  "schema": "independent-b11-env-casing-review-v1",
+  "decision": "STATIC_ACCEPT_ACTUAL_PUBLISHED_PINS_BOUND",
+  "reviewed_utc": "2026-11-05T22:48:18.996571+00:00",
+  "published_commit": "021a59ff05ccd963bc087918db823aa86af31bb8",
+  "published_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+  "source_postimages": {
+    ".github/scripts/run_b11_acl_identity_counterfactual.py": {
+      "bytes": 23767,
+      "sha256": "e2bb7cf91e20895d5f11c2479238692b2966cdc1ca188ca2f8c620cfd09c6987",
+      "git_blob": "90ae8f030ee405706217d7cb2cdc12f1a7cda443"
+    },
+    ".github/scripts/run_b11_read_acl_readiness.py": {
+      "bytes": 14374,
+      "sha256": "221c05297886ee4cd774d337d56beedd896540281c9c559adca290cc3727d313",
+      "git_blob": "e77b32cce112f188d16063e787baca3019e3d892"
+    }
+  },
+  "scope_findings": [
+    "Both complete candidate scripts read, including all guard and finally/restoration paths.",
+    "Removing exactly the new environment helper, three environment-construction replacements and two updated pins reproduces both full preimages byte-for-byte.",
+    "All eight mixed-case names exactly match the unchanged wrapper forwarding list; all three mixed-case required names exactly match its existing required list.",
+    "All inherited values remain unchanged; absent optional names remain absent; required missing/empty values and conflicting copied aliases are rejected. Equal aliases collapse to their canonical name.",
+    "The helper changes a copy and does not mutate os.environ. Uppercase INCLUDE/LIB/LIBPATH/VCINSTALLDIR and all unrelated keys retain their values; the per-step archive override is unchanged.",
+    "All argv tails, targets, retry and no-cache flags, full156 roster, four exact positives, negative assertion/marker/ordinary101 XML gate, source guards, finally restore and helper120-minute workflow budget remain unchanged.",
+    "Collector76a is the complete prior diagnostic collector e15 plus the sole PTY retained-target tuple entry; original eleven targets and setup helper retain their order and behavior.",
+    "Independent actual full Git GETs match both postimages and the combined collector. Independent actual commit/root GET plus full intended Merkle reconstruction binds all eleven helper pins to published HEAD021a59."
+  ],
+  "mechanism_evidence": {
+    "native9": "Actual original106B wrapper error before Bazel; four exact positives/negative/helper not reached.",
+    "CPython": "Tagged v3.12.10 os.environ uppercases Windows keys; _winapi copies the supplied dictionary key spelling into the Windows environment block.",
+    "observed_version_limit": "Native9 PATH contains Python3.12.10 but resolved executable and sys.version were not recorded; actual interpreter version is unverified.",
+    "cloud_check": "Reviewed architecture cloud-verification.json, whose exact original step values and unchanged wrapper fragment reproduce old106B failure and pass after normalization; this independent task did not re-execute that behavioral check.",
+    "alias_limit": "Conflicts are rejected only if both aliases survive in the copied mapping; earlier OS/Python normalization may already collapse duplicates."
+  },
+  "actual_pin_verification": {
+    "schema": "independent-b11-published-pins-verification-v1",
+    "commit": "021a59ff05ccd963bc087918db823aa86af31bb8",
+    "actual_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+    "parents": [
+      "855733b0f88c82c68135b1879682358a818daa84",
+      "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+    ],
+    "expected_entries": 12158,
+    "leaves": 10588,
+    "all_directory_nodes_recomputed": 1571,
+    "complete_intended_tree_Merkle_equals_actual_GET_root_and_entries": true,
+    "every_helper_pin_equals_published_HEAD_leaf": {
+      "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs": "c39b298b7889dc3669e1ee7e2816f7e77568e955",
+      "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6",
+      "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs": "333aefdf9584ef29612ac6f9814ff34308971754",
+      "codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs": "e488e2a914b119ecb02cfc1a13a90009bc6120ea",
+      "codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs": "262460775ef6b5e02f0ba4485f388e1b389cc85f",
+      "codex-rs/windows-sandbox-rs/Cargo.toml": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "codex-rs/windows-sandbox-rs/BUILD.bazel": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+      "defs.bzl": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      ".github/scripts/run-bazel-ci.sh": "42b59b6354b5933c8155b992519682c06d024ca1",
+      ".github/scripts/collect_bazel_failed_test_logs.py": "76a183d6a45e4a6c1493de194f8a1f6c422f0892",
+      ".github/scripts/run_b11_acl_identity_counterfactual.py": "90ae8f030ee405706217d7cb2cdc12f1a7cda443"
+    },
+    "helper_script_blob_equals_published_HEAD_leaf": "e77b32cce112f188d16063e787baca3019e3d892",
+    "method_limit": "Full intended tree Merkle proof bound to a complete actual root GET; not a recursive GitHub full-tree GET.",
+    "source_pin_gate_discharged_for_this_commit_only": true,
+    "Windows_execution_qualified": false,
+    "B11": "OPEN"
+  },
+  "product_B11": "OPEN",
+  "native_qualification": "PENDING_NEXT_ORIGINAL_WINDOWS_WORKFLOW",
+  "no_guard_relaxation_or_native_execution": true
+}
