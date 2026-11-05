@@ -124,6 +124,18 @@ pub(crate) async fn attach_root_desktop_operation_host_with_startup_before(
         .await?;
     let operations = operations.with_notes_receipt_recovery(notes_observer.clone())?;
     end.remaining()?;
+    // Opening the new local lease can leave the original owner Dirty. Publish
+    // its actual cut only here, after both authenticated handoffs and before
+    // installing the sole owner. Recovery selectors remain strictly read-only.
+    tokio::time::timeout(end.remaining()?, host.writer().acknowledge_current())
+        .await
+        .map_err(|_| {
+            AgentdError::Invalid("Desktop Current acknowledgement deadline elapsed".into())
+        })?
+        .map_err(|error| {
+            AgentdError::Invalid(format!("Desktop original Current acknowledgement: {error}"))
+        })?;
+    end.remaining()?;
     // The original atomic installer checks live authority after all handoffs
     // and awaits, then publishes the sole writer/runtime without another await.
     config.install_production_hosts(Arc::new(host), operations)?;

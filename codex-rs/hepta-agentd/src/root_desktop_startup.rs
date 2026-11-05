@@ -1,7 +1,9 @@
 //! Joint Session reservation sealed by the same original prepared Root.
 use super::PreparedHostAuthoritySession;
+use crate::RootDesktopPolicy;
 use crate::desktop_launch::DesktopInteraction;
 use crate::desktop_launch::FrozenBindings;
+use crate::desktop_previous_recovery::DesktopPreviousRecovery;
 use serde::Deserialize;
 use serde::Serialize;
 use std::fs::File;
@@ -20,6 +22,11 @@ struct Profile {
     grant_lifetime_ms: u64,
     bindings: FrozenBindings,
     interaction: DesktopInteraction,
+    #[serde(
+        default,
+        deserialize_with = "crate::desktop_previous_recovery::deserialize_present"
+    )]
+    previous_recovery: Option<DesktopPreviousRecovery>,
 }
 #[derive(Serialize)]
 struct Deployment {
@@ -31,33 +38,65 @@ struct Deployment {
     bindings: FrozenBindings,
     startup_release: crate::AgentdDesktopStartupRelease,
     interaction: DesktopInteraction,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    previous_recovery: Option<DesktopPreviousRecovery>,
 }
 impl PreparedHostAuthoritySession {
     /// Consume the real joint reservation after Root provisioned both exact
     /// policies in its original issuer. SO_PASSCRED must precede Session spawn.
-    /// No policy, issuer or ledger is created here. Old Notes recovery is never
-    /// inferred. Agentd activates and consumes both ordered offers only after
-    /// recovering its one original protected writer.
+    /// No policy, issuer or ledger is created here.
     pub fn with_desktop_startup_from_session_before(
-        mut self,
+        self,
         profile_file: &Path,
         bootstrap: UnixDatagram,
         session_pidfd: OwnedFd,
         deployment: File,
         end: Instant,
     ) -> io::Result<Self> {
+        self.with_desktop_startup_selected(
+            profile_file,
+            bootstrap,
+            session_pidfd,
+            deployment,
+            end,
+            None,
+        )
+    }
+
+    /// Recover the physical original Current, then replace the exact old pair
+    /// with the actual new Reserved pair in one original issuer CAS. Previous
+    /// targets remain recovery-only; their requests cannot acquire grants.
+    pub fn with_desktop_recovery_startup_from_session_before(
+        self,
+        profile_file: &Path,
+        bootstrap: UnixDatagram,
+        session_pidfd: OwnedFd,
+        deployment: File,
+        end: Instant,
+        previous: RootDesktopPolicy<'_>,
+    ) -> io::Result<Self> {
+        self.with_desktop_startup_selected(
+            profile_file,
+            bootstrap,
+            session_pidfd,
+            deployment,
+            end,
+            Some(previous),
+        )
+    }
+
+    fn with_desktop_startup_selected(
+        mut self,
+        profile_file: &Path,
+        bootstrap: UnixDatagram,
+        session_pidfd: OwnedFd,
+        deployment: File,
+        end: Instant,
+        previous: Option<RootDesktopPolicy<'_>>,
+    ) -> io::Result<Self> {
         reservation::remaining(end)?;
         let profile: Profile = crate::authority_host_config::read_root_json(profile_file)?;
-        if profile.schema != "hepta.root.desktop_launch_profile.v1"
-            || profile.profile != "notes_calculator_v1"
-            || profile.grant_lifetime_ms == 0
-            || profile.grant_lifetime_ms > 30_000
-            || profile.bindings.issuer_id != self.config.signer_id
-        {
-            return Err(io::Error::other(
-                "original Desktop profile differs from retained Root",
-            ));
-        }
+        validate_profile(&profile, &self.config.signer_id, previous.is_some())?;
         profile.bindings.validate().map_err(io::Error::other)?;
         profile
             .interaction
@@ -82,6 +121,33 @@ impl PreparedHostAuthoritySession {
             &self.owner_pidfd,
             end,
         )?;
+        let recovery = previous.is_some();
+        if let Some(previous) = previous {
+            validate_recovery_policy(&profile, &previous, &release)?;
+            let writer = self
+                .config
+                .writer
+                .as_ref()
+                .ok_or_else(|| io::Error::other("original successor writer required"))?;
+            if writer.local_lease_generation <= 1 || self.fresh_filesystem {
+                return Err(io::Error::other(
+                    "original recovered successor required for joint policy replacement",
+                ));
+            }
+            // Read the original physical Current on this retained service;
+            // no caller-supplied cut or historical receipt replaces it.
+            self.observe_physical_current()?;
+            self.service
+                .replace_desktop_policy_for_registered_successor(
+                    previous,
+                    RootDesktopPolicy {
+                        notes: &release.notes,
+                        calculator: &release.calculator,
+                        grant_lifetime_ms: profile.grant_lifetime_ms,
+                    },
+                )?;
+            reservation::remaining(end)?;
+        }
         self.service = self
             .service
             .with_notes_from_original_session(&release.notes, profile.grant_lifetime_ms)?;
@@ -97,7 +163,11 @@ impl PreparedHostAuthoritySession {
             end,
         )?;
         let value = Deployment {
-            schema: "hepta.agentd.original_desktop_launch.v1",
+            schema: if recovery {
+                "hepta.agentd.original_desktop_launch.v2"
+            } else {
+                "hepta.agentd.original_desktop_launch.v1"
+            },
             profile: "notes_calculator_v1",
             agent_id: self
                 .registration
@@ -110,6 +180,7 @@ impl PreparedHostAuthoritySession {
             bindings: profile.bindings,
             startup_release: release,
             interaction: profile.interaction,
+            previous_recovery: profile.previous_recovery,
         };
         super::notes_startup::seal_deployment(
             deployment,
@@ -120,3 +191,56 @@ impl PreparedHostAuthoritySession {
         Ok(self)
     }
 }
+
+fn validate_profile(profile: &Profile, issuer: &str, recovery: bool) -> io::Result<()> {
+    let schema = if recovery {
+        "hepta.root.desktop_launch_profile.v2"
+    } else {
+        "hepta.root.desktop_launch_profile.v1"
+    };
+    if profile.schema != schema
+        || profile.profile != "notes_calculator_v1"
+        || !(1..=30_000).contains(&profile.grant_lifetime_ms)
+        || profile.bindings.issuer_id != issuer
+        || profile.previous_recovery.is_some() != recovery
+    {
+        return Err(io::Error::other(
+            "original Desktop profile differs from retained Root or recovery selection",
+        ));
+    }
+    if let Some(previous) = &profile.previous_recovery {
+        previous.validate().map_err(io::Error::other)?;
+    }
+    Ok(())
+}
+
+fn validate_recovery_policy(
+    profile: &Profile,
+    previous: &RootDesktopPolicy<'_>,
+    release: &crate::AgentdDesktopStartupRelease,
+) -> io::Result<()> {
+    previous.notes.validate().map_err(io::Error::other)?;
+    previous.calculator.validate().map_err(io::Error::other)?;
+    release.validate().map_err(io::Error::other)?;
+    let recorded = profile
+        .previous_recovery
+        .as_ref()
+        .ok_or_else(|| io::Error::other("original joint previous targets required"))?;
+    if !(1..=30_000).contains(&previous.grant_lifetime_ms)
+        || recorded.notes.previous_target != *previous.notes
+        || recorded.calculator.previous_target != *previous.calculator
+        || previous.notes.session_instance != previous.calculator.session_instance
+        || previous.notes.session_instance == release.notes.session_instance
+        || previous.notes == &release.notes
+        || previous.calculator == &release.calculator
+    {
+        return Err(io::Error::other(
+            "joint recovery must name the exact previous policies and distinct actual Reserved pair",
+        ));
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+#[path = "root_desktop_startup_tests.rs"]
+mod tests;

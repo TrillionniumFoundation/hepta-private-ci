@@ -153,6 +153,9 @@ required_boundary_ids = [
   "calculator_previous_recovery_config_selection",
   "root_original_issuer_renewal_prepare",
   "root_original_issuer_renewal_commit",
+  "root_desktop_original_startup_before",
+  "root_desktop_recovered_successor_startup_before",
+  "root_desktop_registered_successor_policy_replace",
 ]
 
 [[boundary]]
@@ -794,8 +797,8 @@ symbol = "ProductionDurableWriter::acknowledge_current"
 call_pattern = '(?:\.\s*acknowledge_current\s*\(\s*\)|ProductionDurableWriter\s*::\s*acknowledge_current\s*\()'
 definition_path = "codex-rs/hepta-memory/src/production_owner_publication.rs"
 definition_markers = ["pub async fn acknowledge_current(&self)", "self.verify_authority().await?", "if !self.store.commit_gate.is_managed()", "begin_checkpoint_barrier()", "self.acknowledge_bound_owner_transaction(&mut transaction)"]
-product_callers = ["codex-rs/hepta-agentd/src/native_hos2_owner.rs"]
-caller_markers = ["acknowledge_current_receipt", ".acknowledge_current()", ".observed_current_receipt()"]
+product_callers = ["codex-rs/hepta-agentd/src/native_hos2_owner.rs", "codex-rs/hepta-agentd/src/desktop_root_composition.rs"]
+caller_markers = [".acknowledge_current()"]
 
 [[protected_file]]
 path = "codex-rs/hepta-memory/src/production_owner_publication.rs"
@@ -813,7 +816,7 @@ caller_markers = ["acknowledge_current_receipt", "self.root", ".checkpoint", ".o
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/native_hos2_owner.rs"
-required = ["pub async fn acknowledge_current_receipt(", "self.host", ".writer()", ".acknowledge_current()", "self.root", ".checkpoint", ".observed_current_receipt()", "require_unconfigured_production_hosts", "attach_root_production_operation_host"]
+required = ["pub async fn acknowledge_current_receipt(", "self.host", ".writer()", ".acknowledge_current()", "self.root", ".checkpoint", ".observed_current_receipt()", "require_unconfigured_production_hosts", "attach_root_production_operation_host", "acknowledge_current_receipt"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
@@ -1095,7 +1098,7 @@ id = "root_material_current_observation_chain"
 symbol = "PreparedHostAuthoritySession/HostCognitiveCheckpoint::observe_physical_current"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_session_material.rs"
 definition_markers = ["pub fn observe_physical_current(", "verify_pinned_process(", "self.service.observe_registered_physical_current()?"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_material_recovery.rs", "codex-rs/hepta-agentd/src/native_g2_entry/cycle.rs", "codex-rs/hepta-agentd/src/native_g2_entry/recovery.rs", "codex-rs/hepta-agentd/src/root_notes_startup.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_material_recovery.rs", "codex-rs/hepta-agentd/src/native_g2_entry/cycle.rs", "codex-rs/hepta-agentd/src/native_g2_entry/recovery.rs", "codex-rs/hepta-agentd/src/root_notes_startup.rs", "codex-rs/hepta-agentd/src/root_desktop_startup.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)observe_physical_current\\s*\\("
 
@@ -1456,7 +1459,7 @@ symbol = "DeploymentFinalUseIssuer::replace_registered_desktop_policy"
 call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)replace_registered_desktop_policy\\s*\\("
 definition_path = "codex-rs/hepta-agentd/src/deployment_desktop.rs"
 definition_markers = ["pub fn replace_registered_desktop_policy(", "libc::getuid()", "libc::geteuid()", "self.replace_desktop_policy(", "registration.local_lease_generation <= 1", "registration.with_live(verifier", "self.retained_writer_authorization(registration)?", "state.writer_authorization.as_ref() != Some(&proof)", "current != [&previous_policies[0], &previous_policies[1]]", ".compare_and_set(STATE_OWNER, &state, &changed)", "writer::validate_writer_time(registration, state.head.authority_epoch, after)"]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_desktop_successor.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -2126,3 +2129,47 @@ caller_markers = []
 path = "codex-rs/hepta-agentd/src/authority_host_issuer_renewal.rs"
 required = ["#[serde(deny_unknown_fields)]", "libc::getuid()", "libc::geteuid()", "MAX_ISSUER_RENEWAL_MS: u64 = 300_000", "old.revision.checked_add(1)", "new.binding != old.binding", "new.authority_epoch != old.authority_epoch", "current != plan.previous_lease && current != plan.renewed_lease", ".read_revocation(", ".put_lease(", "plan.previous_lease.revision", "now >= new.expires_at_unix_ms"]
 forbidden = ["initialize_host_authority(", "create_protected(", "advance_epoch(", "AllowVerifier", "permit_all"]
+
+[[boundary]]
+id = "root_desktop_original_startup_before"
+symbol = "PreparedHostAuthoritySession::with_desktop_startup_from_session_before"
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)with_desktop_startup_from_session_before\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/root_desktop_startup.rs"
+definition_markers = ["pub fn with_desktop_startup_from_session_before(","self.with_desktop_startup_selected("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "root_desktop_recovered_successor_startup_before"
+symbol = "PreparedHostAuthoritySession::with_desktop_recovery_startup_from_session_before"
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)with_desktop_recovery_startup_from_session_before\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/root_desktop_startup.rs"
+definition_markers = ["pub fn with_desktop_recovery_startup_from_session_before(","previous: RootDesktopPolicy","self.with_desktop_startup_selected(","Some(previous)"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "root_desktop_registered_successor_policy_replace"
+symbol = "HostAuthorityService::replace_desktop_policy_for_registered_successor"
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)replace_desktop_policy_for_registered_successor\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/authority_host_desktop_successor.rs"
+definition_markers = ["pub(crate) fn replace_desktop_policy_for_registered_successor(","libc::getuid()","libc::geteuid()","self.notes.is_some()","self.calculator.is_some()","writer.registration.local_lease_generation <= 1","self.issuer", ".replace_registered_desktop_policy("]
+product_callers = ["codex-rs/hepta-agentd/src/root_desktop_startup.rs"]
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/root_desktop_startup.rs"
+required = ["profile.previous_recovery.is_some() != recovery","previous.validate()","writer.local_lease_generation <= 1 || self.fresh_filesystem","self.observe_physical_current()?","recorded.notes.previous_target != *previous.notes","recorded.calculator.previous_target != *previous.calculator","previous.notes.session_instance == release.notes.session_instance","super::notes_startup::seal_deployment(","crate::authority_host_runtime::owner_alive("]
+forbidden = ["initialize_host_authority","create_protected","put_lease"]
+required_function_order = [{ function = "fn with_desktop_startup_selected(", sequence = ["validate_profile(","reservation::receive(","validate_recovery_policy(","self.observe_physical_current()?","replace_desktop_policy_for_registered_successor(","with_notes_from_original_session(","with_calculator_from_original_session(","super::notes_startup::seal_deployment("] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_desktop_successor.rs"
+required = ["libc::getuid()","libc::geteuid()","self.notes.is_some()","self.calculator.is_some()","writer.registration.local_lease_generation <= 1","self.issuer", ".replace_registered_desktop_policy("]
+forbidden = ["initialize_host_authority","create_protected","put_lease"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/desktop_root_composition.rs"
+required = ["end.remaining()?", "host.writer().acknowledge_current()", "config.install_production_hosts(Arc::new(host), operations)?"]
+forbidden = ["initialize_host_authority", "create_protected", "put_lease", "observed_current_owner_receipt"]
+required_function_order = [{ function = "fn attach_root_desktop_operation_host_with_startup_before(", sequence = ["open_with_protected_recovery(", "primary_notes_runtime_before(", ".with_calculator_from_session_expected_before(", "with_notes_receipt_recovery(", "host.writer().acknowledge_current()", "config.install_production_hosts("] }]

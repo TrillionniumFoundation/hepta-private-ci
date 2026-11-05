@@ -100,6 +100,14 @@ impl Fixture {
         registry
             .put_lease(predecessor.authority_lease.clone(), 0)
             .unwrap();
+        // The issuer owns a distinct finite lease. A writer must expire before
+        // its successor rotates; that must not expire the original issuer.
+        let mut issuer_lease = predecessor.authority_lease.clone();
+        issuer_lease.lease_id = "desktop-issuer-authority".into();
+        issuer_lease.binding.operation_class = "runtime.agentd.root_issuer".into();
+        issuer_lease.binding.destination_id = "original-desktop-issuer".into();
+        issuer_lease.expires_at_unix_ms = 100_000;
+        registry.put_lease(issuer_lease.clone(), 0).unwrap();
         let old = Pair::successor("1", "2", "3");
         let next = Pair::successor("4", "5", "6");
         let mut policies = old.policy().policies(agent.as_str()).unwrap().to_vec();
@@ -118,14 +126,8 @@ impl Fixture {
         .unwrap();
         // Ordinary owner fixture uses the original registry, disk CAS and
         // signer. It does not qualify Root custody or real Session identity.
-        issuer.lease = Some(
-            ProtectedLease::new(
-                registry.verifier(),
-                predecessor.authority_lease.lease_id.clone(),
-                1,
-            )
-            .unwrap(),
-        );
+        issuer.lease =
+            Some(ProtectedLease::new(registry.verifier(), issuer_lease.lease_id, 1).unwrap());
         let old_proof = issuer
             .register_writer_authorization(&predecessor, &registry.verifier())
             .unwrap();
@@ -348,4 +350,42 @@ fn desktop_policy_public_entry_requires_actual_root_before_any_state_change() {
         serde_json::to_value(f.state()).unwrap(),
         serde_json::to_value(before).unwrap()
     );
+}
+
+#[test]
+fn desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences_the_pair() {
+    let f = Fixture::new();
+    let key = f.issuer.trust_key().unwrap().verifying_key;
+    f.replace(&f.old, &f.next).unwrap();
+    let proof = f.issuer.retained_writer_authorization(&f.writer).unwrap();
+    f.clock.0.store(21_000, Ordering::SeqCst);
+    let mut next_writer = f.writer.clone();
+    next_writer.spawn_generation = 5;
+    next_writer.owner_epoch = 3;
+    next_writer.local_lease_generation = 3;
+    next_writer.authority_lease.lease_id = "desktop-writer-3".into();
+    next_writer.authority_lease.issued_at_unix_ms = 21_000;
+    next_writer.authority_lease.expires_at_unix_ms = 31_000;
+    f.registry
+        .put_lease(next_writer.authority_lease.clone(), 0)
+        .unwrap();
+    f.issuer
+        .rotate_writer_authorization(&f.writer, &proof, &next_writer)
+        .unwrap();
+    let third = Pair::successor("a", "b", "c");
+    f.issuer
+        .replace_desktop_policy(&next_writer, f.next.policy(), third.policy())
+        .unwrap();
+    assert_eq!(f.issuer.trust_key().unwrap().verifying_key, key);
+    let preserved = serde_json::to_value(f.state()).unwrap();
+    f.registry
+        .revoke("desktop-issuer-authority", 1, [8; 32])
+        .unwrap();
+    let fourth = Pair::successor("d", "e", "f");
+    assert!(
+        f.issuer
+            .replace_desktop_policy(&next_writer, third.policy(), fourth.policy())
+            .is_err()
+    );
+    assert_eq!(serde_json::to_value(f.state()).unwrap(), preserved);
 }
