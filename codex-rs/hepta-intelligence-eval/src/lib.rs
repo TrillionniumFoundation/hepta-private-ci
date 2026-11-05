@@ -162,7 +162,7 @@ pub use self_evolution_selection::admit_self_evolution_rollback_v1;
 pub use self_evolution_selection::admit_self_evolution_selection_v1;
 pub use self_evolution_selection::prepare_self_evolution_selection_v1;
 pub use self_evolution_selection::rollback_signing_payload_v1;
-pub use self_evolution_selection::selection_signing_payload_v1;
+pub use self_evolution_selection::selection_signing_payload_v2;
 pub use sequential::DepthSupport;
 pub use sequential::FiniteHorizonEstimand;
 pub use sequential::SequentialError;
@@ -182,7 +182,7 @@ pub use signed_evaluation::SignedEvaluationError;
 pub use signed_evaluation::SignedEvaluationEvidenceV1;
 #[cfg(any(test, feature = "trusted-inprocess-eval"))]
 pub(crate) use signed_evaluation::decide_with_signed_evidence_v1;
-pub use signed_evaluation::decide_with_signed_evidence_v2;
+pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;
 pub use signed_evaluation::evaluation_signing_payload_v1;
 pub use signed_evaluation::evaluation_signing_payload_v2;
 
