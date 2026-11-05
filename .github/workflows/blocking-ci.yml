@@ -204,6 +204,38 @@ jobs:
           python3 scripts/hepta-docs.py verify --profile development
           test -z "$(git status --porcelain --untracked-files=no)"
 
+  ndu-portfolio-reference:
+    name: NDU portfolio reference (synthetic only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: scripts
+    steps:
+      - name: Checkout exact prospective merge without retained credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install isolated reference dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/ndu-reference-venv"
+          "$RUNNER_TEMP/ndu-reference-venv/bin/python" -m pip install -r scripts/ndu_portfolio/requirements.txt
+      - name: Run regressions and labelled quick research evidence
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          "$RUNNER_TEMP/ndu-reference-venv/bin/python" -m ndu_portfolio.run --quick --output "$RUNNER_TEMP/ndu-reference-evidence"
+          git diff --check
+          git diff --exit-code
+      - name: Retain source-bound research evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-portfolio-reference-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-reference-evidence/
+          if-no-files-found: error
+          retention-days: 14
+
   required:
     timeout-minutes: 30
     name: CI required
@@ -220,6 +252,7 @@ jobs:
       - sdk
       - hepta-scoped
       - lightweight
+      - ndu-portfolio-reference
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -253,3 +286,4 @@ jobs:
           PY
           )"
           python3 .github/scripts/check_ci_results.py
+
