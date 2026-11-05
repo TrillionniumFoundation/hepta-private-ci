@@ -35,6 +35,14 @@ impl Drop for OwnedChild {
 fn cli(args: &[String]) -> TestResult<Output> {
     let mut command = Command::new(codex_utils_cargo_bin::cargo_bin("hepta-neural-agentd")?);
     command.args(args);
+    // Supply the already-required recovery arguments; these dispatch negatives
+    // must reject before opening either file or entering a recovery owner.
+    command.args([
+        "--evidence-recovery-frontier-file",
+        "/absent-controlled-frontier",
+        "--evidence-recovery-frontier-trust-file",
+        "/absent-controlled-frontier-trust",
+    ]);
     run_command(command)
 }
 
@@ -122,15 +130,15 @@ fn actual_cell_daemon_rejects_anonymous_image_before_aliases_but_keeps_old_dispa
         .env("CODEX_HOME", directory.path().join("named"));
     let named = run_command(named)?;
     assert!(named.status.success());
-    assert!(String::from_utf8_lossy(&named.stdout).contains("--host-format owner-v1|cell-v2"));
+    assert!(String::from_utf8_lossy(&named.stdout).contains("--host-format owner-v2|cell-v2"));
 
     let mut legacy = Command::new(&fd_path);
     legacy
-        .args(["--host-format", "owner-v1", "--help"])
+        .args(["--host-format", "owner-v2", "--help"])
         .env("CODEX_HOME", directory.path().join("legacy"));
     assert!(
         run_command(legacy)?.status.success(),
-        "the explicit Cell gate must not redefine owner-v1"
+        "the explicit Cell gate must not redefine owner-v2"
     );
 
     let helper_home = directory.path().join("helper");
@@ -195,17 +203,22 @@ fn actual_argv_rejects_unknown_and_duplicate_formats_without_fallback() -> TestR
         "--host-config-sha256".to_owned(),
         Digest32::from_array([1; 32]).to_string(),
     ];
-    let mut args = base.clone();
-    args.extend(["--host-format".to_owned(), "cell-v999".to_owned()]);
-    let unknown = cli(&args)?;
-    assert!(!unknown.status.success());
-    assert!(String::from_utf8_lossy(&unknown.stderr).contains("unsupported neural host format"));
-    args = base;
+    for unsupported in ["cell-v999", "owner-v1"] {
+        let mut args = base.clone();
+        args.extend(["--host-format".to_owned(), unsupported.to_owned()]);
+        let unknown = cli(&args)?;
+        assert!(!unknown.status.success());
+        assert!(
+            String::from_utf8_lossy(&unknown.stderr).contains("unsupported neural host format")
+        );
+        assert!(unknown.stdout.is_empty());
+    }
+    let mut args = base;
     args.extend([
         "--host-format".to_owned(),
         "cell-v2".to_owned(),
         "--host-format".to_owned(),
-        "owner-v1".to_owned(),
+        "owner-v2".to_owned(),
     ]);
     let duplicate = cli(&args)?;
     assert!(!duplicate.status.success());
@@ -213,9 +226,6 @@ fn actual_argv_rejects_unknown_and_duplicate_formats_without_fallback() -> TestR
         String::from_utf8_lossy(&duplicate.stderr)
             .contains("unknown or duplicate neural host flag")
     );
-    assert_eq!(
-        (unknown.stdout, duplicate.stdout),
-        (Vec::<u8>::new(), Vec::<u8>::new())
-    );
+    assert!(duplicate.stdout.is_empty());
     Ok(())
 }

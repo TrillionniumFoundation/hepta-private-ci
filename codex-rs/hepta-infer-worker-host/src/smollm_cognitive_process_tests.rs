@@ -49,6 +49,10 @@ fn cell_host_fixture() -> (tempfile::TempDir, serde_json::Value) {
     let root = directory.path().canonicalize().unwrap();
     let target = protected(&root.join("target.json"), b"synthetic contract; no model");
     let wrapped = protected(&root.join("wrapped.json"), b"synthetic adapter metadata");
+    let snapshot = protected(
+        &root.join("runtime-snapshot.json"),
+        b"explicit decoding-only runtime fixture",
+    );
     let sidecar = protected(
         &root.join("sidecar.json"),
         b"synthetic declaration; not admitted",
@@ -59,11 +63,11 @@ fn cell_host_fixture() -> (tempfile::TempDir, serde_json::Value) {
     );
     let pin = Digest32::from_array([1; 32]).to_string();
     let owner = serde_json::json!({
-        "schema":"hepta-smollm-cognitive-host-v1",
+        "schema":"hepta-smollm-cognitive-host-v2",
         "descriptor":{"path":root.join("descriptor"),"sha256":pin},
         "worker":{"python":root.join("python"),"script":root.join("worker.py"),
             "materials":root.join("materials"),"run_directory":root.join("run"),
-            "source_pins":{},"target_contract":target,"wrapped_adapter":wrapped,
+            "source_pins":{},"runtime_snapshot":snapshot,"target_contract":target,"wrapped_adapter":wrapped,
             "contract_digest":pin,"adapter_digest":pin,"backbone_digest":pin,
             "tokenizer_digest":pin,"action_completions":{"native-answer-no":"no","native-answer-yes":"yes"}},
         "worker_id":"cell-host-test","resource_grant":{"grant_id":"decode-only",
@@ -103,12 +107,55 @@ fn protected_v2_decoder_preserves_owned_snapshots_without_opening_inference_owne
     // This positive is only protected decoding, not the complete Cell factory.
     assert!(!directory.path().join("journal").exists());
     assert!(!directory.path().join("run").exists());
-    assert!(load_smollm_cognitive_host_inputs_v1(&path, Digest32::of_bytes(&raw)).is_err());
+    assert!(load_smollm_cognitive_host_inputs_v2(&path, Digest32::of_bytes(&raw)).is_err());
     let legacy = serde_json::to_vec(&value["owner"]).unwrap();
     let path = directory.path().canonicalize().unwrap().join("legacy.json");
     protected(&path, &legacy);
-    assert!(load_smollm_cognitive_host_inputs_v1(&path, Digest32::of_bytes(&legacy)).is_ok());
+    assert!(load_smollm_cognitive_host_inputs_v2(&path, Digest32::of_bytes(&legacy)).is_ok());
     assert!(load_smollm_cognitive_cell_host_inputs_v2(&path, Digest32::of_bytes(&legacy)).is_err());
+}
+
+#[test]
+fn runtime_bound_owner_v2_rejects_legacy_schema_or_missing_snapshot() {
+    for change in ["legacy-schema", "missing-snapshot", "wrong-snapshot-pin"] {
+        let (directory, mut value) = cell_host_fixture();
+        match change {
+            "legacy-schema" => {
+                value["owner"]["schema"] = serde_json::json!("hepta-smollm-cognitive-host-v1")
+            }
+            "missing-snapshot" => {
+                value["owner"]["worker"]
+                    .as_object_mut()
+                    .unwrap()
+                    .remove("runtime_snapshot");
+            }
+            "wrong-snapshot-pin" => {
+                value["owner"]["worker"]["runtime_snapshot"]["sha256"] =
+                    serde_json::json!(Digest32::from_array([9; 32]).to_string())
+            }
+            _ => unreachable!(),
+        }
+        let raw = serde_json::to_vec(&value).unwrap();
+        let path = directory
+            .path()
+            .canonicalize()
+            .unwrap()
+            .join("cell-host.json");
+        protected(&path, &raw);
+        assert!(
+            load_smollm_cognitive_cell_host_inputs_v2(&path, Digest32::of_bytes(&raw)).is_err(),
+            "{change}"
+        );
+        let owner = serde_json::to_vec(&value["owner"]).unwrap();
+        let path = directory.path().canonicalize().unwrap().join("owner.json");
+        protected(&path, &owner);
+        assert!(
+            load_smollm_cognitive_host_inputs_v2(&path, Digest32::of_bytes(&owner)).is_err(),
+            "{change}"
+        );
+        assert!(!directory.path().join("journal").exists());
+        assert!(!directory.path().join("run").exists());
+    }
 }
 
 #[test]
@@ -124,7 +171,7 @@ fn cell_host_rejects_schema_field_pin_operation_and_local_file_rebinding() {
     ] {
         let (directory, mut value) = cell_host_fixture();
         match change {
-            "schema" => value["schema"] = serde_json::json!("hepta-smollm-cognitive-host-v1"),
+            "schema" => value["schema"] = serde_json::json!("hepta-smollm-cognitive-host-v2"),
             "missing" => {
                 value.as_object_mut().unwrap().remove("dependency_closure");
             }

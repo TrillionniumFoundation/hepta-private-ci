@@ -1,0 +1,153 @@
+{
+  "scope": "Exact incomplete linker temporary removed after root authorization and identity recheck; no source, profile, other cache or valid ELF changes.",
+  "failed_cargo_unit": "codex-hepta-infer-worker-host bin hepta-infer-worker test",
+  "entries": [
+    {
+      "classification": "incomplete_linker_temporary",
+      "path": "/workspace/scratch/42d46a663b73/runtime-target/debug/deps/hepta_infer_worker-1916dbf9703c9394.tmp84abb6c",
+      "size_bytes": 340010816,
+      "allocated_bytes": 84623360,
+      "sha256": "c170ab1dcca21f2b190ce9a649dc8e137783c006e88b299c53bc5e35b04a7b82",
+      "inode": 3694996,
+      "mtime_ns": 1793873144556160307,
+      "mode": "0o100755",
+      "elf_header": {
+        "magic": "7f454c46",
+        "elf64_little_endian": true,
+        "type": 3,
+        "machine": 62,
+        "program_header_end": 736,
+        "section_header_end": 340010816,
+        "program_header_count": 12,
+        "section_header_count": 43
+      },
+      "fingerprint_entries": [
+        {
+          "path": "/workspace/scratch/42d46a663b73/runtime-target/debug/.fingerprint/codex-hepta-infer-worker-host-1916dbf9703c9394/invoked.timestamp",
+          "size": 48,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/workspace/scratch/42d46a663b73/runtime-target/debug/.fingerprint/codex-hepta-infer-worker-host-1916dbf9703c9394/output-test-bin-hepta-infer-worker",
+          "size": 60461,
+          "sha256": "7e79378557f7b4d2ee60c68aef6fb69d8d61782de6aec39f4dc1e46fec932308"
+        }
+      ]
+    },
+    {
+      "classification": "completed_library_test_binary",
+      "path": "/workspace/scratch/42d46a663b73/runtime-target/debug/deps/codex_hepta_infer_worker_host-ad1e79b685e4211d",
+      "size_bytes": 1271890896,
+      "allocated_bytes": 1265377280,
+      "sha256": "0c624cc2ec4b8cea991a92f2c076bf2467213dda7ddedad60197a5997227a28f",
+      "inode": 3694596,
+      "mtime_ns": 1793873135004032317,
+      "mode": "0o100755",
+      "elf_header": {
+        "magic": "7f454c46",
+        "elf64_little_endian": true,
+        "type": 3,
+        "machine": 62,
+        "program_header_end": 736,
+        "section_header_end": 1271890896,
+        "program_header_count": 12,
+        "section_header_count": 43
+      },
+      "fingerprint_entries": [
+        {
+          "path": "/workspace/scratch/42d46a663b73/runtime-target/debug/.fingerprint/codex-hepta-infer-worker-host-ad1e79b685e4211d/test-lib-codex_hepta_infer_worker_host.json",
+          "size": 2732,
+          "sha256": "88b266d7989aaf58d44fa14cfa815cdea69448cc5b21cf8505840a5508ec905b"
+        },
+        {
+          "path": "/workspace/scratch/42d46a663b73/runtime-target/debug/.fingerprint/codex-hepta-infer-worker-host-ad1e79b685e4211d/test-lib-codex_hepta_infer_worker_host",
+          "size": 16,
+          "sha256": "2ba9bbc5322e7c9c0f95389285611868c4ff68c7a53947c2bca8610bf15a23e1"
+        },
+        {
+          "path": "/workspace/scratch/42d46a663b73/runtime-target/debug/.fingerprint/codex-hepta-infer-worker-host-ad1e79b685e4211d/invoked.timestamp",
+          "size": 48,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/workspace/scratch/42d46a663b73/runtime-target/debug/.fingerprint/codex-hepta-infer-worker-host-ad1e79b685e4211d/dep-test-lib-codex_hepta_infer_worker_host",
+          "size": 5165,
+          "sha256": "643a5e38173c63f54d2b74a6db578f34ec3790005ca88733aa22f0d2762f3f57"
+        }
+      ]
+    },
+    {
+      "classification": "completed_integration_test_binary",
+      "path": "/workspace/scratch/42d46a663b73/runtime-target/debug/deps/cell_host_cli-108d66b9cf944055",
+      "size_bytes": 19523736,
+      "allocated_bytes": 19517440,
+      "sha256": "e15d9e07f103c38addd21a14c5edf1a1660b60bd08980b9ab494e3e92afc1276",
+      "inode": 3694965,
+      "mtime_ns": 1793873137556066989,
+      "mode": "0o100755",
+      "elf_header": {
+        "magic": "7f454c46",
+        "elf64_little_endian": true,
+        "type": 3,
+        "machine": 62,
+        "program_header_end": 736,
+        "section_header_end": 19523736,
+        "program_header_count": 12,
+        "section_header_count": 42
+      },
+      "fingerprint_entries": [
+        {
+          "path": "/workspace/scratch/42d46a663b73/runtime-target/debug/.fingerprint/codex-hepta-infer-worker-host-108d66b9cf944055/dep-test-integration-test-cell_host_cli",
+          "size": 42,
+          "sha256": "6bc88dac34c1dab260ef7caded1413dc86520461769cbb57373244e25b1744c0"
+        },
+        {
+          "path": "/workspace/scratch/42d46a663b73/runtime-target/debug/.fingerprint/codex-hepta-infer-worker-host-108d66b9cf944055/test-integration-test-cell_host_cli.json",
+          "size": 2810,
+          "sha256": "4023d891879a47bce2ddc6d7d872ea922fa41ed5dd94b45181486d5ce59b3e4e"
+        },
+        {
+          "path": "/workspace/scratch/42d46a663b73/runtime-target/debug/.fingerprint/codex-hepta-infer-worker-host-108d66b9cf944055/invoked.timestamp",
+          "size": 48,
+          "sha256": "5a109e6643e8d3e88642e3f35e85d2a83e639d07523aa6e99166c48178e965c3"
+        },
+        {
+          "path": "/workspace/scratch/42d46a663b73/runtime-target/debug/.fingerprint/codex-hepta-infer-worker-host-108d66b9cf944055/test-integration-test-cell_host_cli",
+          "size": 16,
+          "sha256": "30b70da0667e09d155d67f30b31cb11a25e6314ef075c312a01a652b16f1b941"
+        }
+      ]
+    }
+  ],
+  "failed_final_output_exists": false,
+  "log": {
+    "path": "/workspace/scratch/42d46a663b73/verification/hepta-host-nextest-attempt2.log",
+    "sha256": "3e4ce6804a2edab3ad07399201b0cd8794e810d7f325872fae9e2bd99ec61d75",
+    "error_lines": [
+      "  = note: collect2: fatal error: ld terminated with signal 7 [Bus error]",
+      "error: could not compile `codex-hepta-infer-worker-host` (bin \"hepta-infer-worker\" test) due to 1 previous error",
+      "error: command `/root/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo '--color=auto' test '--manifest-path=/workspace/scratch/42d46a663b73/runtime/codex-rs/Cargo.toml' --no-run '--message-format=json-render-diagnostics' '--package=codex-hepta-infer-worker-host' --locked --offline` exited with code 101"
+    ]
+  },
+  "core_pattern": "unavailable in this executor",
+  "active_target_processes_at_initial_inspection": [],
+  "runtime_target_temporary_or_core_candidates": [
+    "debug/deps/hepta_infer_worker-1916dbf9703c9394.tmp84abb6c"
+  ],
+  "safe_reclamation_candidate": "Only the incomplete_linker_temporary entry; completed binaries and current rlibs/rmeta must be preserved.",
+  "nextest_native_assertions_executed": 0,
+  "diagnosis": "Storage exhaustion is consistent with zero available bytes and sparse incomplete LLD output, but SIGBUS alone does not prove the kernel cause.",
+  "reclamation": {
+    "authorized_by": "root explicit follow-up",
+    "removed_at": "2026-11-05T10:10:01.502224+00:00",
+    "path": "/workspace/scratch/42d46a663b73/runtime-target/debug/deps/hepta_infer_worker-1916dbf9703c9394.tmp84abb6c",
+    "sha256_reverified_before_unlink": "c170ab1dcca21f2b190ce9a649dc8e137783c006e88b299c53bc5e35b04a7b82",
+    "size_bytes": 340010816,
+    "allocated_bytes": 84623360,
+    "failed_final_output_absent_before_and_after": true,
+    "active_failed_linker_or_rustc_pids": [],
+    "free_bytes_before": 1250758656,
+    "free_bytes_after": 1335402496,
+    "completed_library_and_integration_binaries_preserved": true
+  }
+}

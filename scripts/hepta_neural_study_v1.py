@@ -428,6 +428,7 @@ def train(value, input_pin):
 
 
 def forward(value, input_pin):
+    execution_source.require_legacy_worker_profile(EXECUTION_SOURCE_PROFILE)
     require(
         set(value)
         == {

@@ -132,12 +132,19 @@ fn declaration_fixture() -> DeclarationFixture {
     let directory = tempfile::tempdir().unwrap();
     let mut source_pins = BTreeMap::new();
     for name in [
+        "contract_wire.py",
+        "devnet-v1.json",
+        "ledger-v1.json",
         "llm_adapter_contract.py",
+        "llm_base_material.py",
         "llm_inherited_runtime.py",
         "llm_neural_read_worker.py",
         "llm_parent_material.py",
+        "llm_python_runtime_contract.py",
         "llm_runtime_pilot.py",
         "model-family-smollm2-135m-v1.json",
+        "model-family-v1.json",
+        "work-profile-v1.json",
     ] {
         let path = directory.path().join(name);
         std::fs::write(&path, name.as_bytes()).unwrap();
@@ -149,6 +156,8 @@ fn declaration_fixture() -> DeclarationFixture {
         materials: directory.path().join("materials"),
         run_directory: directory.path().join("run"),
         source_pins,
+        runtime_snapshot: b"explicit unexecuted runtime snapshot fixture; not model evidence"
+            .to_vec(),
         target_contract: b"synthetic-declaration-only".to_vec(),
         wrapped_adapter: b"no-model-bytes".to_vec(),
         contract_digest: Digest32::of_bytes(b"contract"),

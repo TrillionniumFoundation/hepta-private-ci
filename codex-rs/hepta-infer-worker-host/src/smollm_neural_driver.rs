@@ -27,6 +27,9 @@ use crate::model_worker::WorkerRequest;
 mod environment;
 use environment::configure_python_environment;
 
+#[path = "smollm_python_runtime.rs"]
+mod python_runtime;
+
 #[path = "smollm_cell_material.rs"]
 mod cell_material;
 pub(crate) use cell_material::ControlledCellInputsV2;
@@ -129,6 +132,11 @@ impl SmolLmDriver {
         startup_execution.check()?;
         let config = &self.config;
         config.verify_sources()?;
+        python_runtime::verify_snapshot(
+            &config.python,
+            &config.runtime_snapshot,
+            &startup_execution,
+        )?;
         if self.parameters.len() > 2 * 1024 * 1024
             || self.parameters.is_empty()
             || Digest32::of_bytes(&self.parameters) != self.pin.payload_digest
@@ -168,8 +176,21 @@ impl SmolLmDriver {
             "file_sha256":self.pin.payload_digest.to_string(),
         })).map_err(|error| error.to_string())?;
         let actions = serde_json::to_vec(&config.actions()).map_err(|error| error.to_string())?;
+        let source_pins = serde_json::to_vec(
+            &config
+                .source_pins
+                .iter()
+                .map(|(path, digest)| (path, digest.to_string()))
+                .collect::<std::collections::BTreeMap<_, _>>(),
+        )
+        .map_err(|error| error.to_string())?;
         write_private(&root.join("parent.json"), &parent)?;
         write_private(&root.join("actions.json"), &actions)?;
+        write_private(
+            &root.join("runtime-snapshot.json"),
+            &config.runtime_snapshot,
+        )?;
+        write_private(&root.join("source-pins.json"), &source_pins)?;
         let log = OpenOptions::new()
             .write(true)
             .create_new(true)
@@ -191,11 +212,23 @@ impl SmolLmDriver {
             &self.cancellation,
         )?;
         let mut command = Command::new(&config.python);
-        configure_python_environment(&mut command);
+        configure_python_environment(&mut command)?;
+        command.arg("-X").arg(format!(
+            "pycache_prefix={}",
+            root.join("unused-python-bytecode").display()
+        ));
         session.spawn(
             command
                 .arg(&config.script)
                 .arg("serve")
+                .arg("--source-pins")
+                .arg(root.join("source-pins.json"))
+                .arg("--source-pins-sha256")
+                .arg(Digest32::of_bytes(&source_pins).to_string())
+                .arg("--runtime-snapshot")
+                .arg(root.join("runtime-snapshot.json"))
+                .arg("--runtime-snapshot-sha256")
+                .arg(python_runtime::snapshot_digest(&config.runtime_snapshot)?.to_string())
                 .arg("--materials")
                 .arg(&config.materials)
                 .arg("--parent")
@@ -239,6 +272,8 @@ impl SmolLmDriver {
             || ready.tokenizer != config.tokenizer_digest.to_string()
             || ready.source_pins != sources
             || ready.worker_source != worker_source
+            || ready.runtime_snapshot_sha256
+                != python_runtime::snapshot_digest(&config.runtime_snapshot)?.to_string()
             || ready.actions != config.actions()
             || !ready.authority.denied()
             || ready.observed_rss_bytes == 0
