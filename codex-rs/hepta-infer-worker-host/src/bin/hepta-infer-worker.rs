@@ -23,7 +23,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut maximum_in_flight = None;
     let mut context_query = None;
     let mut final_use_authority_config = None;
-    let mut intelligence_run_id = None;
+    let mut intelligence_snapshot = None;
     let mut intelligence_revision = None;
     let mut intelligence_context_digest = None;
     let mut intelligence_envelope_digest = None;
@@ -33,7 +33,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-snapshot-json JSON --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
             );
             return Ok(());
         }
@@ -52,7 +52,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--final-use-authority-config" => {
                 final_use_authority_config = Some(PathBuf::from(value))
             }
-            "--intelligence-run-id" => intelligence_run_id = Some(value),
+            "--intelligence-run-snapshot-json" => {
+                intelligence_snapshot = Some(parse_intelligence_snapshot(&value)?);
+            }
             "--intelligence-revision" => intelligence_revision = Some(value.parse()?),
             "--intelligence-context-digest" => intelligence_context_digest = Some(value),
             "--intelligence-envelope-digest" => intelligence_envelope_digest = Some(value),
@@ -96,15 +98,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         }
     });
     let intelligence = match (
-        intelligence_run_id,
+        intelligence_snapshot,
         intelligence_revision,
         intelligence_context_digest,
         intelligence_envelope_digest,
     ) {
         (None, None, None, None) => None,
-        (Some(run_id), Some(expected_revision), Some(context_digest), Some(envelope_digest)) => {
+        (Some(snapshot), Some(expected_revision), Some(context_digest), Some(envelope_digest)) => {
             Some(NativeIntelligenceRunBinding {
-                run_id,
+                snapshot,
                 expected_revision,
                 context_digest,
                 envelope_digest,
@@ -149,4 +151,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         return Err("model run lacks successful completion with verified owner authority".into());
     }
     Ok(())
+}
+
+fn parse_intelligence_snapshot(
+    value: &str,
+) -> Result<codex_hepta_agentd::AgentRunSnapshot, Box<dyn std::error::Error + Send + Sync>> {
+    if value.len() > 16 * 1024 {
+        return Err("intelligence run snapshot exceeds its byte bound".into());
+    }
+    // No default fields and no lookup of the current daemon. A retry supplies
+    // the original immutable admission, which the driver checks against Agentd.
+    Ok(serde_json::from_str(value)?)
 }
