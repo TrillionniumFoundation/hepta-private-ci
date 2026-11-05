@@ -26,6 +26,9 @@ use sha2::Sha256;
 mod live_owner;
 #[path = "final_use_store.rs"]
 mod store;
+#[cfg(unix)]
+#[path = "final_use_existing.rs"]
+mod existing;
 
 const MAX_CLAIMS: usize = 1_048_576;
 const MAX_REVOKED_GRANTS: usize = 16_384;
