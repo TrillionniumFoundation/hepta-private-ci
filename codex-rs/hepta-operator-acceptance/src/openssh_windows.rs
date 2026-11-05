@@ -256,6 +256,7 @@ struct TrustedOpenSsh {
     // DELETE sharing. Writable directory contents do not weaken the file pin.
     _ancestors: Vec<File>,
     system_directory: PathBuf,
+    program_data: PathBuf,
 }
 
 impl TrustedOpenSsh {
@@ -271,6 +272,39 @@ impl TrustedOpenSsh {
         let system_directory = PathBuf::from(OsString::from_wide(&buffer[..length as usize]));
         if !system_directory.is_absolute() {
             return Err(invalid("Windows system directory is not absolute"));
+        }
+        #[link(name = "userenv")]
+        unsafe extern "system" {
+            fn GetAllUsersProfileDirectoryW(lp_profile_dir: *mut u16, lpcch_size: *mut u32) -> i32;
+        }
+        // Win32 OpenSSH requires ProgramData during initialization, before it
+        // initializes stderr. Read the configured directory from the OS rather
+        // than inheriting a caller-controlled environment variable.
+        let mut program_data_buffer = vec![0_u16; 32_768];
+        let mut program_data_capacity = program_data_buffer.len() as u32;
+        // SAFETY: both pointers refer to writable storage, and the supplied
+        // character count is the exact UTF-16 buffer capacity.
+        if unsafe {
+            GetAllUsersProfileDirectoryW(
+                program_data_buffer.as_mut_ptr(),
+                &mut program_data_capacity,
+            )
+        } == 0
+        {
+            return Err(invalid(format!(
+                "Windows program data directory is unavailable: {}",
+                std::io::Error::last_os_error()
+            )));
+        }
+        let program_data_length = program_data_buffer
+            .iter()
+            .position(|character| *character == 0)
+            .ok_or_else(|| invalid("Windows program data directory exceeds its bound"))?;
+        let program_data = PathBuf::from(OsString::from_wide(
+            &program_data_buffer[..program_data_length],
+        ));
+        if !program_data.is_absolute() {
+            return Err(invalid("Windows program data directory is not absolute"));
         }
         let path = system_directory.join("OpenSSH").join("ssh-keygen.exe");
         let parent = path
@@ -298,6 +332,7 @@ impl TrustedOpenSsh {
             id,
             _ancestors: ancestors,
             system_directory,
+            program_data,
         })
     }
 }
@@ -364,6 +399,7 @@ pub(crate) fn verify(
         // Windows side-by-side loading needs SystemRoot. Derive it from the
         // trusted OS API, never the caller's environment.
         .env("SystemRoot", system_root)
+        .env("ProgramData", &verifier.program_data)
         .env("LANG", "C")
         .env("LC_ALL", "C")
         .current_dir(&verifier.system_directory)
