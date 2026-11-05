@@ -5211,7 +5211,7 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
         GLOBAL_AGENTS_FILENAME,
         OLD_GLOBAL_INSTRUCTIONS,
     )?;
-    let mut builder = test_codex()
+    let mut builder = test_codex().with_internal_metadata_for_mock()
         .with_home(Arc::clone(&home))
         .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
         .with_config(|config| {
@@ -5273,7 +5273,7 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
     })
     .await;
     let resumed_cwd = test.config.cwd.clone();
-    let mut resume_builder = test_codex()
+    let mut resume_builder = test_codex().with_internal_metadata_for_mock()
         .with_home(Arc::clone(&home))
         .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
         .with_config(move |config| {

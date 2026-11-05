@@ -353,7 +353,7 @@ async fn resumed_history_only_emits_resize_notices_for_new_images() -> anyhow::R
         .join("\n");
     fs::write(&rollout_path, format!("{rollout}\n"))?;
 
-    let mut resume_builder = test_codex().with_config(|config| {
+    let mut resume_builder = test_codex().with_internal_metadata_for_mock().with_config(|config| {
         let _ = config.features.enable(Feature::ImageResizeNotice);
         let _ = config
             .features

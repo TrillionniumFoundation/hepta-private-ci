@@ -933,7 +933,7 @@ async fn pre_tool_use_blocks_mcp_tool_before_execution(
 
     let block_reason = "blocked mcp pre hook";
     let rmcp_test_server_bin = stdio_server_bin()?;
-    let test = test_codex()
+    let test = test_codex().with_internal_metadata_for_mock()
         .with_pre_build_hook(move |home| {
             write_pre_tool_use_hook(home, block_reason)
                 .expect("failed to write MCP pre tool use hook fixture");
