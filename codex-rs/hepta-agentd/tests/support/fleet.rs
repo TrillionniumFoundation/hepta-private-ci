@@ -71,7 +71,7 @@ impl FleetHarness {
         let temp = tempfile::tempdir()?;
         let root = temp.path().canonicalize()?;
         let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
-        let registry = FleetRegistry::initialize(fleet_root.clone())?;
+        let registry = FleetRegistry::initialize_for_qualification(fleet_root.clone())?;
         let mut config = SupervisorConfig::local_default();
         config.health_timeout = READY_TIMEOUT;
         config.drain_timeout = Duration::from_secs(2);

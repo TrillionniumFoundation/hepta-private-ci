@@ -22,6 +22,8 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::FleetReleaseTrustConfig;
+use codex_hepta_fleet::PqReleaseQualification;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
@@ -39,6 +41,7 @@ mod recovery;
 
 const CHILD_MODE_ENV: &str = "HEPTA_TEST_SUPERVISORD_CHILD";
 const CHILD_FLEET_ROOT_ENV: &str = "HEPTA_TEST_SUPERVISORD_FLEET_ROOT";
+const CHILD_RELEASE_TRUST_ENV: &str = "HEPTA_TEST_SUPERVISORD_RELEASE_TRUST";
 const READY_TIMEOUT: Duration = Duration::from_secs(120);
 const DAEMON_TIMEOUT: Duration = Duration::from_secs(15);
 const AGENT_IDS: [&str; 5] = [
@@ -66,6 +69,10 @@ fn supervisord_child_entry() -> Result<()> {
         .build()?;
     runtime.block_on(codex_hepta_supervisor::run_supervisord(
         HeptaFleetRoot::parse(fleet_root)?,
+        FleetReleaseTrustConfig::read(&PathBuf::from(
+            std::env::var_os(CHILD_RELEASE_TRUST_ENV)
+                .context("child release trust configuration is missing")?,
+        ))?,
         tokio_util::sync::CancellationToken::new(),
     ))?;
     Ok(())
@@ -77,7 +84,9 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
-    let registry = FleetRegistry::initialize(fleet_root.clone())?;
+    let (mut publisher, registry) =
+        PqReleaseQualification::initialize(&root.join("publication"), fleet_root.clone())
+            .map_err(anyhow::Error::from_boxed)?;
     let agents = register_agents(&registry, &fleet_root, &root)?;
     assert_distinct_roots(&agents)?;
 
@@ -94,8 +103,12 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     let source_v2 = agentd_wrapper(&sources, "agentd-v2", &agentd)?;
     let release_v1 = ReleaseId::parse("agentd-v1")?;
     let release_v2 = ReleaseId::parse("agentd-v2")?;
-    registry.install_release(release_v1.clone(), &source_v1, Vec::new())?;
-    registry.install_release(release_v2.clone(), &source_v2, Vec::new())?;
+    publisher
+        .install_release(&registry, release_v1.clone(), &source_v1, Vec::new())
+        .map_err(anyhow::Error::from_boxed)?;
+    publisher
+        .install_release(&registry, release_v2.clone(), &source_v2, Vec::new())
+        .map_err(anyhow::Error::from_boxed)?;
     for agent in &agents {
         registry.allow_release(&agent.agent_id, &release_v1)?;
     }
@@ -103,7 +116,7 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
 
     let log_path = root.join("supervisord-child.log");
     let mut process_guard = AgentProcessGuard::default();
-    let mut daemon = DaemonChild::spawn(&fleet_root, &log_path)?;
+    let mut daemon = DaemonChild::spawn(&fleet_root, &log_path, publisher.config_path())?;
     let client = wait_for_daemon(&registry, &mut daemon, &log_path).await?;
     let first_supervisor_epoch = client.health().await?.supervisor_epoch;
 
@@ -301,7 +314,7 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
     daemon.kill()?;
     assert_agentd_endpoints(&agents, &before_daemon_restart).await?;
 
-    let mut restarted_daemon = DaemonChild::spawn(&fleet_root, &log_path)?;
+    let mut restarted_daemon = DaemonChild::spawn(&fleet_root, &log_path, publisher.config_path())?;
     let restarted_client = wait_for_daemon(&registry, &mut restarted_daemon, &log_path).await?;
     let restarted_supervisor_epoch = restarted_client.health().await?.supervisor_epoch;
     ensure!(
@@ -695,7 +708,7 @@ fn require_pid(status: &SupervisordAgentStatus) -> Result<u64> {
 struct DaemonChild(Child);
 
 impl DaemonChild {
-    fn spawn(fleet_root: &HeptaFleetRoot, log_path: &Path) -> Result<Self> {
+    fn spawn(fleet_root: &HeptaFleetRoot, log_path: &Path, release_trust: &Path) -> Result<Self> {
         let log = OpenOptions::new()
             .create(true)
             .append(true)
@@ -707,6 +720,7 @@ impl DaemonChild {
             .arg("--test-threads=1")
             .env(CHILD_MODE_ENV, "1")
             .env(CHILD_FLEET_ROOT_ENV, fleet_root.as_path())
+            .env(CHILD_RELEASE_TRUST_ENV, release_trust)
             .stdin(Stdio::null())
             .stdout(Stdio::from(log.try_clone()?))
             .stderr(Stdio::from(log))
