@@ -18,8 +18,33 @@ import statistics
 import sys
 import time
 import threading
+import tempfile
 
 import numpy as np
+
+
+def atomic_json(path, value):
+    """Publish one complete receipt, retaining the previous file on interruption."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(dir=path.parent, prefix=path.name+".", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w") as stream:
+            json.dump(value, stream, indent=2, allow_nan=False)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def receipt_key(report, task, model, seed):
+    provenance = {key: report[key] for key in ("config", "source_sha256", "hardware", "software", "datasets")}
+    provenance["datasets"] = report["datasets"][task]
+    provenance.update(task=task, model=model, seed=seed)
+    return hashlib.sha256(json.dumps(provenance, sort_keys=True).encode()).hexdigest()
 
 
 def make_dataset(task, count, length, seed):
@@ -144,6 +169,9 @@ def validate_config(config):
         raise ValueError("seeds must be a nonempty list of distinct nonnegative integers")
     if not config.get("models") or not config.get("tasks"):
         raise ValueError("models and tasks must be nonempty")
+    for key in ("models", "tasks"):
+        if len(set(config[key])) != len(config[key]):
+            raise ValueError(f"{key} must contain distinct entries")
     if any(not isinstance(config.get(key), (int, float)) or not math.isfinite(config[key]) or
            config[key] <= 0 for key in ("dt", "learning_rate")):
         raise ValueError("dt and learning_rate must be finite and positive")
@@ -172,7 +200,7 @@ def aggregate(runs):
     return output
 
 
-def _run_one(config, task, name, seed, datasets, device, torch):
+def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=None):
     from .baselines import UnavailableBaseline, make_encoder
     from torch import nn
 
@@ -257,6 +285,15 @@ def _run_one(config, task, name, seed, datasets, device, torch):
         record["training_examples_seen"] = config["train_steps"]*config["batch_size"]
         record["training_tokens_seen"] = record["training_examples_seen"]*config["length"]
         record["training_examples_per_second"] = record["training_examples_seen"]/elapsed
+        if checkpoint_path is not None:
+            checkpoint_path = Path(checkpoint_path)
+            temporary = checkpoint_path.with_suffix(".tmp")
+            torch.save({"state_dict": best_state, "best_validation_mse": best_val,
+                        "config": config, "task": task, "model": name, "seed": seed,
+                        "training_steps_completed": len(losses)}, temporary)
+            os.replace(temporary, checkpoint_path)
+            record["best_checkpoint"] = str(checkpoint_path)
+            record["best_checkpoint_sha256"] = hashlib.sha256(checkpoint_path.read_bytes()).hexdigest()
         model.load_state_dict(best_state)
         model.eval()
         with torch.no_grad():
@@ -290,10 +327,12 @@ def _run_one(config, task, name, seed, datasets, device, torch):
     return record
 
 
-def run(config):
+def run(config, checkpoint_dir=None):
     validate_config(config)
     root = Path(__file__).parent
     source = hashlib.sha256()
+    source_files = {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
+                    for p in sorted(root.rglob("*.py"))}
     for path in sorted(root.rglob("*.py")):
         source.update(str(path.relative_to(root)).encode()+b"\0"+path.read_bytes())
     cpu_name = platform.processor()
@@ -301,7 +340,7 @@ def run(config):
         cpu_name = next((line.partition(":")[2].strip() for line in Path("/proc/cpuinfo").read_text().splitlines()
                          if line.startswith("model name")), "unknown CPU")
     report = {"schema_version": 1, "purpose": "synthetic research qualification", "config": config,
-              "source_sha256": source.hexdigest(), "hardware": {"platform": platform.platform(),
+              "source_sha256": source.hexdigest(), "source_files_sha256": source_files, "hardware": {"platform": platform.platform(),
               "machine": platform.machine(), "cpu_model": cpu_name, "logical_cpu_count": os.cpu_count(),
               "python": sys.version.split()[0], "numpy": np.__version__},
               "protocol": {"data_budget": "same steps, batch size, length and splits for every model",
@@ -322,19 +361,19 @@ def run(config):
         report.update(status="unavailable", summary=aggregate(report["runs"]))
         return report
     device = torch.device(config.get("device", "cpu"))
-    if device.type == "cuda" and not torch.cuda.is_available():
-        raise ValueError("CUDA requested but unavailable; no silent CPU fallback")
+    cuda_missing = device.type == "cuda" and not torch.cuda.is_available()
     torch.set_num_threads(config["cpu_threads"])
     torch.use_deterministic_algorithms(True, warn_only=True)
     report["software"] = {}
-    for package in ("numpy", "scipy", "torch", "ncps", "mamba-ssm"):
+    for package in ("numpy", "scipy", "torch", "ncps", "mamba-ssm", "triton", "causal-conv1d", "nvidia-ml-py"):
         try:
             report["software"][package] = metadata.version(package)
         except metadata.PackageNotFoundError:
             report["software"][package] = None
     report["hardware"].update(torch=torch.__version__, device=str(device),
-                              device_name=torch.cuda.get_device_name(device) if device.type == "cuda" else cpu_name,
+                              device_name=torch.cuda.get_device_name(device) if device.type == "cuda" and not cuda_missing else cpu_name,
                               cpu_threads=torch.get_num_threads(), deterministic_requested=True)
+    report["hardware"].update(cuda_runtime=torch.version.cuda, cuda_available=torch.cuda.is_available())
     for task in config["tasks"]:
         splits = []
         for offset, key in enumerate(("train_count", "validation_count", "test_count")):
@@ -344,9 +383,51 @@ def run(config):
                                       "constant_predictor_test_mse": float(np.mean((splits[5]-np.mean(splits[1]))**2))}
         for name in config["models"]:
             for seed in config["seeds"]:
-                result = _run_one(config, task, name, seed, splits, device, torch)
+                key = receipt_key(report, task, name, seed)
+                saved = None
+                weights = None
+                if checkpoint_dir is not None:
+                    directory = Path(checkpoint_dir)
+                    directory.mkdir(parents=True, exist_ok=True)
+                    saved = directory/(key+".json")
+                    weights = directory/(key+".pt")
+                result = None
+                if saved is not None and saved.exists():
+                    prior = json.loads(saved.read_text())
+                    candidate = prior["result"]
+                    if prior["key"] != key:
+                        raise ValueError("checkpoint provenance mismatch")
+                    if candidate["status"] == "completed":
+                        if (not weights.exists() or hashlib.sha256(weights.read_bytes()).hexdigest()
+                                != candidate.get("best_checkpoint_sha256")):
+                            raise ValueError("missing or corrupted best validation checkpoint")
+                        result = candidate
+                if result is None:
+                    if cuda_missing:
+                        result = dict(task=task, model=name, seed=seed, status="unavailable",
+                                      training_status="not_started",
+                                      reason="CUDA requested but unavailable; no CPU fallback")
+                    else:
+                        result = _run_one(config, task, name, seed, splits, device, torch, weights)
+                    if saved is not None:
+                        atomic_json(saved, {"key": key, "source_sha256": report["source_sha256"],
+                                            "config": config, "dataset": report["datasets"][task],
+                                            "hardware": report["hardware"], "software": report["software"],
+                                            "result": result})
+                current_files = {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
+                                 for p in sorted(root.rglob("*.py"))}
+                if current_files != source_files:
+                    raise RuntimeError("source changed during benchmark; discard mixed-source run")
                 report["runs"].append(result)
                 print(f"{task} {name} seed={seed}: {result['status']}", file=sys.stderr, flush=True)
+    expected = {(t, m, s) for t in config["tasks"] for m in config["models"] for s in config["seeds"]}
+    observed = [(r["task"], r["model"], r["seed"]) for r in report["runs"]]
+    if len(observed) != len(expected) or set(observed) != expected:
+        raise ValueError("run matrix has missing or duplicate combinations")
+    report["accounting"] = dict(requested=len(expected), unique_records=len(set(observed)),
+                               completed=sum(r["status"] == "completed" for r in report["runs"]),
+                               failed=sum(r["status"] == "failed" for r in report["runs"]),
+                               unavailable=sum(r["status"] == "unavailable" for r in report["runs"]))
     report["summary"] = aggregate(report["runs"])
     statuses = {r["status"] for r in report["runs"]}
     report["status"] = "completed" if statuses == {"completed"} else "partial"
@@ -359,10 +440,10 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     config = json.loads(args.config.read_text())
-    report = run(config)
+    report = run(config, args.output.with_suffix(".runs"))
     report["command"] = shlex.join([sys.executable, "-m", "qualification.hcsn.benchmark", *sys.argv[1:]])
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, indent=2, allow_nan=False)+"\n")
+    atomic_json(args.output, report)
     print(json.dumps({"output": str(args.output), "status": report["status"],
                       "runs": len(report["runs"])}, indent=2))
     if any(r["status"] == "failed" for r in report["runs"]):

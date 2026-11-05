@@ -4,6 +4,9 @@ import copy
 import json
 from pathlib import Path
 import unittest
+import tempfile
+import importlib.util
+from unittest.mock import patch
 
 import numpy as np
 
@@ -39,6 +42,46 @@ class DatasetTests(unittest.TestCase):
             invalid[key] = value
             with self.assertRaises(ValueError):
                 validate_config(invalid)
+
+    @unittest.skipUnless(importlib.util.find_spec("torch"), "PyTorch not installed")
+    def test_completed_run_resume_verifies_weights_and_exact_budget(self):
+        from ..benchmark import run
+        config = json.loads((Path(__file__).parents[1]/"configs/smoke.json").read_text())
+        config.update(models=["gru"], seeds=[0], train_steps=1, latency_repeats=1,
+                      train_count=8, validation_count=4, test_count=4, batch_size=4)
+        with tempfile.TemporaryDirectory() as directory:
+            first = run(config, directory)
+            self.assertEqual(first["accounting"], dict(requested=1, unique_records=1,
+                                                    completed=1, failed=0, unavailable=0))
+            with patch("hcsn.benchmark._run_one", side_effect=AssertionError("reran completed run")):
+                self.assertEqual(run(config, directory)["runs"], first["runs"])
+            weights = Path(first["runs"][0]["best_checkpoint"])
+            weights.write_bytes(b"corrupted")
+            with self.assertRaisesRegex(ValueError, "corrupted"):
+                run(config, directory)
+            config["train_steps"] = 2
+            changed = run(config, directory)
+            self.assertEqual(changed["runs"][0]["training_examples_seen"], 8)
+            self.assertNotEqual(changed["runs"][0]["best_checkpoint"], str(weights))
+
+    @unittest.skipUnless(importlib.util.find_spec("torch"), "PyTorch not installed")
+    def test_trained_grid_audit_reproduces_encoder_and_preserves_refractory(self):
+        import torch
+        from ..audit_population import trace
+        from ..baselines import make_encoder
+        torch.manual_seed(3)
+        encoder = make_encoder("population_flux", 2, 2, dt=.1)
+        readout = torch.nn.Linear(2, 1)
+        inputs = torch.randn(2, 4, 2)
+        with torch.no_grad():
+            expected = encoder(inputs, dt=.1)
+        prediction, outputs, measurements = trace(encoder, readout, inputs, 1)
+        torch.testing.assert_close(outputs, expected)
+        torch.testing.assert_close(prediction, readout(expected[:, -1]))
+        _, _, refined = trace(encoder, readout, inputs, 2)
+        self.assertAlmostEqual(measurements["effective_refractory"], .3)
+        self.assertAlmostEqual(refined["effective_refractory"], .3)
+        self.assertLess(refined["maximum_mass_error"], 1e-5)
 
     def test_energy_counter_wraps_without_estimating_missing_measurements(self):
         meter = object.__new__(EnergyCounter)
