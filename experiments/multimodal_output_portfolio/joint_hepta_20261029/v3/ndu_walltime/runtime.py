@@ -73,6 +73,20 @@ def validate(contract, controller, tools, verifier, identity):
     canonical(identity)
 
 
+def _unique_json_object(pairs):
+    """Reject duplicate keys at every depth before worker output earns authority.
+
+    The standard JSON decoder accepts duplicates and silently uses the last
+    value, which can change action or quality depending on the verifier.
+    """
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("Duplicate JSON object key")
+        result[key] = value
+    return result
+
+
 def _invoke(worker, payload, timeout, output_limit):
     started = time.perf_counter_ns()
     record = {"argv_sha256": digest(worker.argv), "attempt_fee": worker.attempt_fee,
@@ -96,7 +110,8 @@ def _invoke(worker, payload, timeout, output_limit):
             record["status"] = "oversized_output"
         else:
             result = json.loads(stdout.decode("utf-8"),
-                                parse_constant=lambda _: (_ for _ in ()).throw(ValueError()))
+                                parse_constant=lambda _: (_ for _ in ()).throw(ValueError()),
+                                object_pairs_hook=_unique_json_object)
             if not isinstance(result, dict):
                 raise ValueError("Expected a JSON object")
             canonical(result)  # Reject nested nonfinite numbers, including 1e999.
