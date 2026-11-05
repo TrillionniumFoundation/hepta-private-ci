@@ -276,6 +276,20 @@ impl SqliteConfig {
         Ok(pool)
     }
 
+    /// Open a single in-memory database for fixture-level migration checks.
+    ///
+    /// Keep foreign keys enabled and the original single-connection pool.
+    pub async fn open_in_memory_test_pool() -> Result<SqlitePool, Error> {
+        SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect_with(
+                SqliteConnectOptions::new()
+                    .in_memory(true)
+                    .foreign_keys(true),
+            )
+            .await
+    }
+
     /// Open a writable Codex SQLite database, creating it if necessary.
     pub async fn open_read_write_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
         let options = SqliteConnectOptions::new()

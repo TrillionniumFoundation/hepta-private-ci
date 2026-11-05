@@ -1,19 +1,11 @@
 //! Exercise the original non-empty journal's additive schema migration.
+use codex_state::SqliteConfig;
 use pretty_assertions::assert_eq;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqlitePoolOptions;
 
 #[tokio::test]
 async fn retirement_migration_keeps_original_rows_foreign_keys_and_immutability()
 -> Result<(), Box<dyn std::error::Error>> {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(
-            SqliteConnectOptions::new()
-                .in_memory(true)
-                .foreign_keys(true),
-        )
-        .await?;
+    let pool = SqliteConfig::open_in_memory_test_pool().await?;
     sqlx::raw_sql(include_str!("../migrations/0005_local_lease_outbox.sql"))
         .execute(&pool)
         .await?;
