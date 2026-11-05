@@ -14,6 +14,7 @@ mod recovery_process;
 mod recovery_registration;
 mod root;
 mod socket_publication;
+mod startup_error;
 mod supervisor;
 mod workload;
 
