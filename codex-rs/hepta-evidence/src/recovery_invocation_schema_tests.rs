@@ -1,5 +1,6 @@
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use sqlx::AssertSqlSafe;
 use sqlx::Connection;
 use sqlx::SqliteConnection;
 
@@ -23,7 +24,9 @@ const TERMINAL_KEYS: &str = "CREATE TABLE provider_invocation_terminals (
 
 async fn key_connection(intents: &str, terminals: &str) -> Result<SqliteConnection> {
     let mut connection = SqliteConnection::connect("sqlite::memory:").await?;
-    sqlx::raw_sql(&format!("{intents}\n{terminals}"))
+    // Audited test-only DDL: callers supply the literal key schemas above or
+    // their fixed negative-case replacements below, never external input.
+    sqlx::raw_sql(AssertSqlSafe(format!("{intents}\n{terminals}")))
         .execute(&mut connection)
         .await?;
     Ok(connection)
@@ -141,18 +144,20 @@ async fn recovery_invocation_schema_requires_exact_unconditional_column_uniquene
             Replacement::OtherCollation,
         ] {
             let mut connection = key_connection(&intents, &terminals).await?;
+            // All index, table and column names come from the fixed required
+            // roster above; no database or external text supplies identifiers.
             for (index, owner, keys) in required {
-                sqlx::query(&format!(
+                sqlx::query(AssertSqlSafe(format!(
                     "CREATE UNIQUE INDEX {index} ON {owner} ({})",
                     keys.join(", ")
-                ))
+                )))
                 .execute(&mut connection)
                 .await?;
             }
             // Establish a real accepted control before replacing exactly one
             // key with a structure that cannot supply its original guarantee.
             verify(&mut connection).await?;
-            sqlx::query(&format!("DROP INDEX {name}"))
+            sqlx::query(AssertSqlSafe(format!("DROP INDEX {name}")))
                 .execute(&mut connection)
                 .await?;
             let keys = columns.join(", ");
@@ -183,7 +188,11 @@ async fn recovery_invocation_schema_requires_exact_unconditional_column_uniquene
                 }
             };
             if let Some(sql) = replacement_sql {
-                sqlx::query(&sql).execute(&mut connection).await?;
+                // The replacement is built only from the same fixed roster
+                // and the literal malformed-constraint clauses in this match.
+                sqlx::query(AssertSqlSafe(sql))
+                    .execute(&mut connection)
+                    .await?;
             }
             assert!(
                 matches!(

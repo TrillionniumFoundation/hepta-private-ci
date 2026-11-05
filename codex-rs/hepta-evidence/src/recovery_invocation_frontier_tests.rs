@@ -131,6 +131,8 @@ async fn recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary() 
         sqlx::query_as("SELECT seq, payload_json FROM provider_invocation_terminals ORDER BY seq")
             .fetch_all(&store.pool)
             .await?;
+    // Saved DDL comes only from this test's freshly migrated temporary database.
+    // The replacements below introduce fixed schema faults, with no external SQL.
     let table: String = sqlx::query_scalar(
         "SELECT sql FROM sqlite_schema WHERE name = 'provider_invocation_terminals'",
     )
@@ -149,14 +151,14 @@ async fn recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary() 
     sqlx::query("DROP TABLE provider_invocation_terminals")
         .execute(&mut *transaction)
         .await?;
-    sqlx::query(
-        &table
+    sqlx::query(sqlx::AssertSqlSafe(
+        table
             .replace(
                 "seq INTEGER PRIMARY KEY AUTOINCREMENT",
                 "seq INTEGER NOT NULL",
             )
             .replace("TEXT NOT NULL UNIQUE", "TEXT NOT NULL"),
-    )
+    ))
     .execute(&mut *transaction)
     .await?;
     sqlx::query("INSERT INTO provider_invocation_terminals SELECT * FROM terminal_backup")
@@ -169,7 +171,9 @@ async fn recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary() 
     .execute(&mut *transaction)
     .await?;
     for object in schema_objects {
-        sqlx::query(&object).execute(&mut *transaction).await?;
+        sqlx::query(sqlx::AssertSqlSafe(object))
+            .execute(&mut *transaction)
+            .await?;
     }
     sqlx::query("DROP TABLE terminal_backup")
         .execute(&mut *transaction)
@@ -221,26 +225,35 @@ async fn recovery_snapshot_revalidates_invocation_payloads_and_projected_columns
     );
     store.append_provider_receipt(&receipt).await?;
     let before = store.recovery_snapshot().await?;
+    // Only these fixed fixture identifiers enter SQL; payload values stay bound.
     for table in [
         "provider_invocation_intents",
         "provider_invocation_terminals",
     ] {
-        let original: String = sqlx::query_scalar(&format!("SELECT payload_json FROM {table}"))
-            .fetch_one(&store.pool)
-            .await?;
-        sqlx::query(&format!("DROP TRIGGER {table}_no_update"))
-            .execute(&store.pool)
-            .await?;
-        sqlx::query(&format!("UPDATE {table} SET thread_id = 'other-thread'"))
-            .execute(&store.pool)
-            .await?;
+        let original: String = sqlx::query_scalar(sqlx::AssertSqlSafe(format!(
+            "SELECT payload_json FROM {table}"
+        )))
+        .fetch_one(&store.pool)
+        .await?;
+        sqlx::query(sqlx::AssertSqlSafe(format!(
+            "DROP TRIGGER {table}_no_update"
+        )))
+        .execute(&store.pool)
+        .await?;
+        sqlx::query(sqlx::AssertSqlSafe(format!(
+            "UPDATE {table} SET thread_id = 'other-thread'"
+        )))
+        .execute(&store.pool)
+        .await?;
         assert!(matches!(
             store.recovery_snapshot().await,
             Err(EvidenceError::Corrupt(_))
         ));
-        sqlx::query(&format!("UPDATE {table} SET thread_id = 'thread-1'"))
-            .execute(&store.pool)
-            .await?;
+        sqlx::query(sqlx::AssertSqlSafe(format!(
+            "UPDATE {table} SET thread_id = 'thread-1'"
+        )))
+        .execute(&store.pool)
+        .await?;
         // A retained digest cannot bless replacement bytes, and a recomputed
         // digest cannot bless a valid but noncanonical encoding.
         for (payload, digest) in [
@@ -253,9 +266,9 @@ async fn recovery_snapshot_revalidates_invocation_payloads_and_projected_columns
                 Sha256Digest::for_bytes(format!("\n{original}").as_bytes()),
             ),
         ] {
-            sqlx::query(&format!(
+            sqlx::query(sqlx::AssertSqlSafe(format!(
                 "UPDATE {table} SET payload_json = ?, payload_sha256 = ?"
-            ))
+            )))
             .bind(payload)
             .bind(digest.as_str())
             .execute(&store.pool)
@@ -265,9 +278,9 @@ async fn recovery_snapshot_revalidates_invocation_payloads_and_projected_columns
                 Err(EvidenceError::Corrupt(_))
             ));
         }
-        sqlx::query(&format!(
+        sqlx::query(sqlx::AssertSqlSafe(format!(
             "UPDATE {table} SET payload_json = ?, payload_sha256 = ?"
-        ))
+        )))
         .bind(&original)
         .bind(Sha256Digest::for_bytes(original.as_bytes()).as_str())
         .execute(&store.pool)
@@ -329,6 +342,8 @@ async fn recovery_snapshot_requires_the_terminals_authoritative_intent() -> Resu
 #[tokio::test]
 async fn recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking()
 -> Result<()> {
+    // Identifiers are fixed; saved trigger SQL is from this test's fresh migration
+    // before the column-only corruption, not from an externally supplied database.
     for table in [
         "provider_invocation_intents",
         "provider_invocation_terminals",
@@ -352,13 +367,17 @@ async fn recovery_snapshot_refuses_invocation_column_type_corruption_without_pan
             .fetch_one(&store.pool)
             .await?;
         let mut transaction = store.pool.begin().await?;
-        sqlx::query(&format!("DROP TRIGGER {trigger_name}"))
+        sqlx::query(sqlx::AssertSqlSafe(format!("DROP TRIGGER {trigger_name}")))
             .execute(&mut *transaction)
             .await?;
-        sqlx::query(&format!("UPDATE {table} SET thread_id = X'ff'"))
+        sqlx::query(sqlx::AssertSqlSafe(format!(
+            "UPDATE {table} SET thread_id = X'ff'"
+        )))
+        .execute(&mut *transaction)
+        .await?;
+        sqlx::query(sqlx::AssertSqlSafe(trigger))
             .execute(&mut *transaction)
             .await?;
-        sqlx::query(&trigger).execute(&mut *transaction).await?;
         transaction.commit().await?;
         store.close().await;
 
