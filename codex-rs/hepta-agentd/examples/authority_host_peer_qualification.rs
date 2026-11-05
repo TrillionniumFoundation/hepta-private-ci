@@ -141,11 +141,20 @@ mod qualification {
             std::fs::read_dir(state).unwrap_err().kind(),
             std::io::ErrorKind::PermissionDenied
         );
+        let writer_proof = std::env::var_os("HEPTA_SERVICE_WRITER_PROOF").is_some();
+        let mut issuer_expiry = None;
         let mut trusted_bootstrap = None;
         if std::env::var_os("HEPTA_SERVICE_START_STDIN").is_some() {
             let mut start = [0];
             std::io::stdin().read_exact(&mut start)?;
             assert_eq!(start, [1]);
+            if writer_proof {
+                // Public fixture oracle from the actual canonical Root lease,
+                // captured before the production session acquired its owner.
+                let mut expiry = [0; 8];
+                std::io::stdin().read_exact(&mut expiry)?;
+                issuer_expiry = Some(u64::from_be_bytes(expiry));
+            }
             if std::env::var_os("HEPTA_SERVICE_CONSUMERS").is_some() {
                 trusted_bootstrap = Some(super::consumers::read_bootstrap()?);
             }
@@ -165,7 +174,6 @@ mod qualification {
         } else {
             None
         };
-        let writer_proof = std::env::var_os("HEPTA_SERVICE_WRITER_PROOF").is_some();
         if std::env::var_os("HEPTA_SERVICE_EXPECT_EXPIRED_CONSUMER").is_some() {
             std::thread::sleep(Duration::from_secs(3));
             let device = &mut consumer_streams.as_mut().ok_or("missing consumer lanes")?.0;
@@ -385,6 +393,9 @@ mod qualification {
         let key = ed25519_dalek::VerifyingKey::from_bytes(&public)?;
         let mut unregistered_objective = issuer.try_clone()?;
         let objective_sequence = if writer_proof {
+            let expected_expiry = writer_expiry
+                .ok_or("missing writer expiry")?
+                .min(issuer_expiry.ok_or("missing original issuer expiry")?);
             let signed = exchange(
                 &mut issuer,
                 &serde_json::json!({"schema_version":1,"operation":"runtime.authbus.objective.sign.v1","body":objective_body(identity.spawn_generation)}),
@@ -393,10 +404,7 @@ mod qualification {
             let ingress: AuthBusObjectiveIngress =
                 serde_json::from_value(signed["ingress"].clone())?;
             assert_eq!(ingress.sequence, 2);
-            assert_eq!(
-                ingress.expires_at_ms,
-                writer_expiry.ok_or("missing writer expiry")?
-            );
+            assert_eq!(ingress.expires_at_ms, expected_expiry);
             let signature: Vec<u8> = ingress
                 .signature_hex
                 .as_bytes()

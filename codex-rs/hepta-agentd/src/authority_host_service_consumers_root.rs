@@ -69,7 +69,9 @@ pub(super) fn release(
     owner_pidfd: &OwnedFd,
     prepared: &crate::PreparedHostAuthoritySession,
     expected: Option<crate::HostAuthorityPublicBootstrapV1>,
+    expected_issuer_expiry: Option<u64>,
 ) {
+    assert_eq!(expected_issuer_expiry.is_some(), config.writer.is_some());
     let bytes = config.consumers.as_ref().map(|_| {
         let local = config
             .sockets
@@ -168,6 +170,11 @@ pub(super) fn release(
     });
     let mut stdin = child.stdin.take().unwrap();
     stdin.write_all(&[1]).unwrap();
+    if let Some(expiry) = expected_issuer_expiry {
+        // A fixed-size public test oracle, separate from the unchanged sealed
+        // bootstrap bytes below and never consumed as production authority.
+        stdin.write_all(&expiry.to_be_bytes()).unwrap();
+    }
     if let Some(bytes) = bytes {
         // Component fixture only: copy the actual producer's sealed bytes to
         // stdin. Production transfers the sealed File itself, never this pipe.

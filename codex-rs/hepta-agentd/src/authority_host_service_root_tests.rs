@@ -624,6 +624,23 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
     } else {
         config_path
     };
+    // Independently read the canonical protected issuer lease before the
+    // production session takes its sole owner. This is only an assertion oracle;
+    // it does not change either lifetime or supply authority to production.
+    let expected_issuer_expiry = config.writer.as_ref().map(|_| {
+        let (_, _leases, issuer) = open_registered_issuer(&config).unwrap();
+        issuer
+            .with_live_lease(|lease| {
+                assert_eq!(lease.lease_id, config.lease_id);
+                assert_eq!(lease.revision, config.lease_revision);
+                assert_eq!(
+                    lease.binding.principal_id,
+                    registration.registered_identity.agent_id.as_str()
+                );
+                Ok(lease.expires_at_unix_ms)
+            })
+            .unwrap()
+    });
     // The test-only independent oracle releases its temporary original store
     // handle before the sole prepared production session acquires ownership.
     let expected = config
@@ -658,6 +675,7 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         &pidfd,
         &prepared,
         expected,
+        expected_issuer_expiry,
     );
     let result = prepared.serve();
     let status = child.wait().unwrap();
