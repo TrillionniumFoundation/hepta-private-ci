@@ -388,10 +388,11 @@ fn retain_anchor(
     consumed: &mut BTreeSet<(AgentId, [u8; 32])>,
     anchor: &ReleaseIntentAnchorV1,
 ) {
-    if let Some(previous) = current.get(&anchor.agent_id) {
-        if previous.grant_sha256 != anchor.grant_sha256 && previous.is_closed_history() {
-            previous_closed.insert(anchor.agent_id.clone(), previous.clone());
-        }
+    if let Some(previous) = current.get(&anchor.agent_id)
+        && previous.grant_sha256 != anchor.grant_sha256
+        && previous.is_closed_history()
+    {
+        previous_closed.insert(anchor.agent_id.clone(), previous.clone());
     }
     consumed.insert((anchor.agent_id.clone(), anchor.grant_sha256));
     current.insert(anchor.agent_id.clone(), anchor.clone());

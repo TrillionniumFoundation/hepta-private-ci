@@ -463,7 +463,7 @@ impl FleetRegistry {
             release_id: release_id.clone(),
             manifest_sha256: admission.catalog.manifest_sha256.clone(),
             agentd_program_sha256: admission.catalog.agentd_program_sha256.clone(),
-            matrixd_program_sha256: admission.catalog.matrixd_program_sha256.clone(),
+            matrixd_program_sha256: admission.catalog.matrixd_program_sha256,
             admission_frontier_sha256,
         })
     }

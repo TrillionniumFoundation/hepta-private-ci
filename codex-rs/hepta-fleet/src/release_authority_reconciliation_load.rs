@@ -116,10 +116,10 @@ pub(super) fn replacement(
             state_sha256: hash(bytes),
         },
     };
-    if let Some(bytes) = files.replacement_attempt.as_deref() {
-        if attempt(bytes)? != update {
-            return Err(FleetRegistryError::ReleaseAuthorityRollback);
-        }
+    if let Some(bytes) = files.replacement_attempt.as_deref()
+        && attempt(bytes)? != update
+    {
+        return Err(FleetRegistryError::ReleaseAuthorityRollback);
     }
     let _ = value.rebuild(&owner.config, update.proposed)?;
     Ok(Some(update))

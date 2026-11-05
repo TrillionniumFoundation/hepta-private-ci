@@ -67,10 +67,10 @@ impl FleetReleaseTrustConfig {
                 .owner_id
                 .bytes()
                 .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
-            || !self
+            || self
                 .owner_id
                 .strip_prefix("hepta.fleet.release.")
-                .is_some_and(|suffix| !suffix.is_empty())
+                .is_none_or(str::is_empty)
             || self.initial_root_sha256 == [0; 32]
             || self.network_id == [0; 32]
             || self.platform_sha256 == [0; 32]

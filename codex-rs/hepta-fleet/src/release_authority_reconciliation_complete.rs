@@ -168,15 +168,14 @@ pub(super) fn known_winner(
     {
         return Err(FleetRegistryError::ReleaseAuthorityRollback);
     }
-    if let Some(replacement) = &replacement {
-        if replacement.expected != original.expected
+    if let Some(replacement) = &replacement
+        && (replacement.expected != original.expected
             || replacement.proposed.generation != original.proposed.generation
             || replacement.proposed.initial_root_sha256 != original.proposed.initial_root_sha256
             || replacement.proposed.checkpoint_sha256 != original.proposed.checkpoint_sha256
-            || replacement.proposed == original.proposed
-        {
-            return Err(FleetRegistryError::ReleaseAuthorityRollback);
-        }
+            || replacement.proposed == original.proposed)
+    {
+        return Err(FleetRegistryError::ReleaseAuthorityRollback);
     }
     if let Some(bytes) = &files.original_proposal {
         if load::hash(bytes) != original.proposed.state_sha256 {

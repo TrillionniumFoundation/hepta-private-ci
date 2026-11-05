@@ -54,13 +54,13 @@ fn retry(
     )?)
 }
 
-fn local_material(
-    h: &Harness,
-) -> QualificationResult<(
+type LocalMaterial = (
     Vec<u8>,
     Option<Vec<u8>>,
     Option<crate::signed_intent_confirmation::SignedIntentPublicationConfirmation>,
-)> {
+);
+
+fn local_material(h: &Harness) -> QualificationResult<LocalMaterial> {
     let record = h.supervisor.record(&h.fleet.first)?;
     Ok((
         std::fs::read(

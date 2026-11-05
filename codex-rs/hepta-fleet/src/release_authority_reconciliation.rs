@@ -69,12 +69,11 @@ impl PendingIntentReconciliation {
         self.original.pending_publication_sha256()
     }
     pub fn previous_closed_intent_anchor(&self) -> Option<&ReleaseIntentAnchorV1> {
-        if let Some(previous) = self.expected_intent_anchor() {
-            if previous.is_closed_history()
-                && previous.grant_sha256 != self.original.anchor.grant_sha256
-            {
-                return Some(previous);
-            }
+        if let Some(previous) = self.expected_intent_anchor()
+            && previous.is_closed_history()
+            && previous.grant_sha256 != self.original.anchor.grant_sha256
+        {
+            return Some(previous);
         }
         self.state
             .previous_closed_intents

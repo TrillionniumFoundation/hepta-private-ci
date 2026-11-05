@@ -77,7 +77,7 @@ fn ordinary_browser_pq_enters_once_replay_is_spent_and_unknown_remains_readable(
     revoked.revision += 1;
     revoked
         .revoked_grant_ids
-        .insert(invocation.signed_grant.grant.grant_id.clone());
+        .insert(invocation.signed_grant.grant.grant_id);
     h.owner.update_revocations(revoked)?;
     fixture.now.store(NOW + 90_000, Ordering::SeqCst);
     let before = fixture.trust_requests();

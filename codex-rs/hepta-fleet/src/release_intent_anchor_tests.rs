@@ -240,7 +240,7 @@ fn stale_generation_zero_terminal_cas_and_forged_completion_do_not_replace_prepa
             .anchor_intent(Some(&first), &forged)
             .is_err()
     );
-    let mut zero = forged.clone();
+    let mut zero = forged;
     zero.terminal_witness
         .as_mut()
         .ok_or("witness missing")?

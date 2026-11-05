@@ -32,15 +32,15 @@ use std::time::Instant;
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
 const AGENT: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
-fn role(name: &str, seed: u8) -> ProductionAuthorityRoleV1 {
+fn role(name: &str, seed: u8) -> TestResult<ProductionAuthorityRoleV1> {
     let seed = zeroize::Zeroizing::new([seed; 32]);
     let spki = PqNativeSigningKey::public_spki_from_seed(&seed);
-    ProductionAuthorityRoleV1 {
+    Ok(ProductionAuthorityRoleV1 {
         signer_id: name.to_string(),
         signer_epoch: 7,
-        public_key_id: ml_dsa_65_key_id_from_spki(&spki).unwrap(),
+        public_key_id: ml_dsa_65_key_id_from_spki(&spki)?,
         public_spki_base64: STANDARD.encode(spki),
-    }
+    })
 }
 
 fn private_file(path: &Path, seed: u8) -> TestResult {
@@ -120,7 +120,7 @@ fn run_cli(
     Ok((status.success(), stdout))
 }
 
-fn envelope_request() -> SignRequest {
+fn envelope_request() -> TestResult<SignRequest> {
     let mut runtime = H7QualificationRuntime::new();
     let event = H7TrajectoryEvent::new(
         "pq-cli",
@@ -132,23 +132,20 @@ fn envelope_request() -> SignRequest {
         /*owner_epoch*/ 1,
         /*generation*/ 1,
         Sha256Digest::for_bytes(b"pq-cli-fixture"),
-    )
-    .unwrap();
-    runtime.append_trajectory_event(event).unwrap();
-    runtime.evaluate_trajectory("pq-cli").unwrap();
-    SignRequest::H7Envelope {
+    )?;
+    runtime.append_trajectory_event(event)?;
+    runtime.evaluate_trajectory("pq-cli")?;
+    Ok(SignRequest::H7Envelope {
         signer_id: "artifact".to_string(),
         signer_epoch: 7,
-        artifact: runtime
-            .propose_artifact("pq-cli-artifact", "pq-cli", /*generation*/ 1)
-            .unwrap(),
+        artifact: runtime.propose_artifact("pq-cli-artifact", "pq-cli", /*generation*/ 1)?,
         ope: None,
         transition: H7SignedArtifactTransition::Reload,
         expected_runtime_generation: 0,
         predecessor_artifact_sha256: None,
         issued_at_unix_seconds: 100,
         expires_at_unix_seconds: 500,
-    }
+    })
 }
 
 // Public wire fixture construction is independent of the daemon's private
@@ -188,9 +185,9 @@ fn explicit_pq_cli_signs_three_independent_roles_and_refuses_wrong_secrets() -> 
     let policy = ProductionAuthorityPolicyV1 {
         schema_version: 1,
         algorithm: "ml_dsa65_v2".to_string(),
-        grant: role("grant", /*seed*/ 111),
-        artifact: role("artifact", /*seed*/ 112),
-        recovery: role("recovery", /*seed*/ 113),
+        grant: role("grant", /*seed*/ 111)?,
+        artifact: role("artifact", /*seed*/ 112)?,
+        recovery: role("recovery", /*seed*/ 113)?,
     };
     let policy_bytes = serde_json::to_vec(&policy)?;
     let policy_path = root.join("policy.json");
@@ -203,7 +200,7 @@ fn explicit_pq_cli_signs_three_independent_roles_and_refuses_wrong_secrets() -> 
     private_file(&recovery_key, /*seed*/ 113)?;
     let (ok, output) = run_cli(
         &root,
-        &envelope_request(),
+        &envelope_request()?,
         &artifact_key,
         Some("ml_dsa65_v2"),
         Some(&policy_path),
@@ -547,7 +544,7 @@ fn cli_requires_explicit_profile_and_refuses_unsafe_key_files() -> TestResult {
     let root = temp.path().canonicalize()?;
     let key = root.join("key");
     private_file(&key, /*seed*/ 112)?;
-    let request = envelope_request();
+    let request = envelope_request()?;
     assert!(
         !run_cli(
             &root, &request, &key, /*profile*/ None, /*policy*/ None

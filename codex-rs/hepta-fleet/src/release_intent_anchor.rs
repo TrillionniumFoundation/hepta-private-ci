@@ -96,17 +96,16 @@ impl ReleaseIntentAnchorV1 {
         {
             return Err(invalid("malformed release intent anchor"));
         }
-        if let Some(witness) = &self.terminal_witness {
-            if witness.transaction_sha256 == [0; 32]
+        if let Some(witness) = &self.terminal_witness
+            && (witness.transaction_sha256 == [0; 32]
                 || witness.release_state_sha256 == [0; 32]
                 || witness.release_state_generation == 0
                 || witness.recovery_decision_sha256 == Some([0; 32])
                 || witness.publication_confirmation_sha256 == Some([0; 32])
                 || (witness.kind == ReleaseIntentWitnessKindV1::AbandonUnknown
-                    && witness.recovery_decision_sha256.is_none())
-            {
-                return Err(invalid("malformed release intent completion witness"));
-            }
+                    && witness.recovery_decision_sha256.is_none()))
+        {
+            return Err(invalid("malformed release intent completion witness"));
         }
         match (self.phase, self.terminal_witness.as_ref().map(|w| w.kind)) {
             (
@@ -235,16 +234,14 @@ pub(crate) fn validate_transition(
     | AnchorMutation::UnanchoredRecovery {
         decision_sha256, ..
     } = mutation
-    {
-        if next
+        && next
             .terminal_witness
             .as_ref()
             .is_some_and(|w| w.recovery_decision_sha256 != Some(decision_sha256))
-        {
-            return Err(invalid(
-                "recovery witness differs from its verified decision",
-            ));
-        }
+    {
+        return Err(invalid(
+            "recovery witness differs from its verified decision",
+        ));
     }
     let expected_generation = previous.map_or(Some(1), |old| old.generation.checked_add(1));
     if expected_generation != Some(next.generation)

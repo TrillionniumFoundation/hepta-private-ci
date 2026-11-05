@@ -205,10 +205,10 @@ async fn real_chain_pq_packet_v1_full_local_rollback_is_rejected_by_retained_fro
             let snapshots = tempfile::tempdir()?;
             let automation_copy = snapshots.path().join("automation");
             let provider_copy = snapshots.path().join("receiver");
-            let original_automation = closed_tree_image(&automation_root)?;
+            let original_automation = closed_tree_image(automation_root)?;
             let original_authority = closed_tree_image(&authority_root)?;
             let original_provider = closed_tree_image(&namespace)?;
-            copy_closed_tree(&automation_root, &automation_copy)?;
+            copy_closed_tree(automation_root, &automation_copy)?;
             copy_closed_tree(&namespace, &provider_copy)?;
             assert_eq!(closed_tree_image(&automation_copy)?, original_automation);
             assert_eq!(closed_tree_image(&provider_copy)?, original_provider);
@@ -302,11 +302,11 @@ async fn real_chain_pq_packet_v1_full_local_rollback_is_rejected_by_retained_fro
             // Keep the advanced evidence intact. Rename only closed owners,
             // then restore whole cold trees at their exact configured paths.
             fs::rename(
-                &automation_root,
+                automation_root,
                 automation_root.with_file_name("rollback-retained-automation"),
             )?;
             fs::rename(&namespace, root.join("retained-receiver"))?;
-            copy_closed_tree(&automation_copy, &automation_root)?;
+            copy_closed_tree(&automation_copy, automation_root)?;
             copy_closed_tree(&provider_copy, &namespace)?;
             // Replay the original signed bytes; never sign restored state.
             write_private(&setup.config_path, &original_config)?;
@@ -314,7 +314,7 @@ async fn real_chain_pq_packet_v1_full_local_rollback_is_rejected_by_retained_fro
             assert_eq!(fs::read(&setup.config_path)?, original_config);
             assert_eq!(fs::read(&setup.feed_path)?, original_feed);
             assert_eq!(serde_json::to_vec(&grant)?, original_grant);
-            assert_eq!(closed_tree_image(&automation_root)?, original_automation);
+            assert_eq!(closed_tree_image(automation_root)?, original_automation);
             assert_eq!(closed_tree_image(&namespace)?, original_provider);
             assert_eq!(fs::read(&frontier_path)?, retained_frontier_bytes);
 

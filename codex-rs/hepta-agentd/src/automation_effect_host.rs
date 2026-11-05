@@ -33,6 +33,7 @@ use codex_hepta_automation::TaskFlowFence;
 use codex_hepta_automation::TaskFlowStepObservation;
 use codex_hepta_automation::TaskFlowStepReceipt;
 use codex_hepta_contracts::FinalUseAuthority;
+#[cfg(test)]
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::ProviderEffectAck;
 use codex_hepta_contracts::ProviderEffectAckSource;
@@ -82,6 +83,7 @@ mod pon_lifecycle_tests;
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
 #[cfg(test)]
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
+#[cfg(test)]
 const MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES: u64 = 4 * 1024 * 1024;
 const MAX_PROVIDER_HEADERS: usize = 64;
 #[cfg(test)]
