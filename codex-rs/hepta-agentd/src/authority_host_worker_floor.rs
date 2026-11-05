@@ -235,6 +235,36 @@ impl ReservedWorkerFloor {
         })
     }
 
+    pub(super) fn create_journal_binding_directory_fresh(&self) -> io::Result<Arc<RootAuthorityDirectory>> {
+        self.check_current()?;
+        if !matches!(&self.expected.state, SlotPhase::Reserved { .. }) {
+            return Err(refused("Worker journal provisioning requires the actual reserved original slot"));
+        }
+        let directory = self.directories.worker.create_child_fresh("local-journal-custody-v1").map_err(io::Error::other)?;
+        self.check_current()?;
+        Ok(directory)
+    }
+
+    pub(super) fn check_journal_directory_is_distinct(
+        &self,
+        journal: &crate::worker_root_registration::journal_wire::WorkerJournalDirectoryPinV1,
+        binding: &RootAuthorityDirectory,
+    ) -> io::Result<()> {
+        self.check_current()?;
+        let original = self.directories.pins()?;
+        let protected = [original.original_authority, original.worker, original.current_slot,
+            original.consumer_floor, original.original_checkpoint, original.original_device, original.original_notes];
+        let binding = binding.descriptor_identity().map_err(io::Error::other)?;
+        let parent = (journal.parent_device, journal.parent_inode);
+        let consumer = (journal.directory_device, journal.directory_inode);
+        if protected.contains(&binding) || protected.contains(&consumer) || protected.contains(&parent)
+            || binding == consumer || binding == parent || parent == consumer
+        {
+            return Err(refused("Worker journal, binding, parent and original independent floors must be distinct actual inodes"));
+        }
+        Ok(())
+    }
+
     pub(super) fn namespace(&self) -> &str { &self.expected.consumer_namespace }
     pub(super) fn slot_sequence(&self) -> u64 { self.expected.slot_sequence }
 

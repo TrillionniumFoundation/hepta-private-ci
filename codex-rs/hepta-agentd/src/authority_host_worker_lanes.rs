@@ -4,6 +4,7 @@
 
 use super::HeldWorkerRootRegistration;
 use super::floor::ReservedWorkerFloor;
+use super::journal::RootWorkerJournal;
 use crate::worker_root_registration::lanes_wire;
 use crate::worker_root_registration::process;
 use crate::worker_root_registration::refused;
@@ -72,6 +73,18 @@ impl HeldWorkerRootRegistration<'_> {
     /// fallback, restart claim, reconnect, successor reset or refund exists.
     /// This blocks until the peer closes a lane or an original owner fails.
     pub fn serve_worker_lanes(self, timeout: Duration, lifetime: Duration) -> io::Result<()> {
+        self.serve_worker_lanes_selected(timeout, lifetime, None)
+    }
+
+    /// Root alone selects a safe journal parent. The actual retained Child,
+    /// original issuer/writer and reserved slot determine every other pin.
+    /// This publishes only an empty directory and a second sealed offer; the
+    /// Worker, after confirmation, creates its own journal as its actual UID.
+    pub fn serve_worker_journal_lanes(self, journal_parent: &std::path::Path, timeout: Duration, lifetime: Duration) -> io::Result<()> {
+        self.serve_worker_lanes_selected(timeout, lifetime, Some(journal_parent))
+    }
+
+    fn serve_worker_lanes_selected(self, timeout: Duration, lifetime: Duration, journal_parent: Option<&std::path::Path>) -> io::Result<()> {
         if timeout.is_zero() || timeout > Duration::from_millis(self._session.config.timeout_ms.min(5_000))
             || lifetime.is_zero() || lifetime > Duration::from_millis(self._session.config.lifetime_ms.min(300_000))
         {
@@ -84,6 +97,15 @@ impl HeldWorkerRootRegistration<'_> {
         // No error below can restore the prior Provisioned record.
         let result = (|| {
             self.verify_original_custody(handoff_end)?;
+            let mut journal = match journal_parent {
+                Some(parent) => Some(self._session.service.with_worker_floor_fence(Some(&self.registration), |view| {
+                    self.verify_original_custody(handoff_end)?;
+                    let journal = RootWorkerJournal::create_fresh(&floor, &self.registration, &view.owner_id, floor.frontier_for_handoff(&view.head)?, parent)?;
+                    self.verify_original_custody(handoff_end)?;
+                    Ok(journal)
+                })?),
+                None => None,
+            };
             let bound = BoundWorkerLanes::bind(&self.registration, floor.slot_sequence())?;
             self._session.service.with_worker_floor_fence(Some(&self.registration), |view| {
                 self.verify_original_custody(handoff_end)?;
@@ -105,7 +127,17 @@ impl HeldWorkerRootRegistration<'_> {
                     expires_at_unix_ms: view.expires_at_unix_ms,
                     effect_authorization_available: false,
                 };
-                let mut sealed = crate::authority_host_bootstrap_seal::seal_worker_lanes(&observation)?;
+                let mut sealed = match journal.as_ref() {
+                    Some(journal) => {
+                        journal.check()?;
+                        crate::authority_host_bootstrap_seal::seal_worker_journal(&crate::worker_root_registration::WorkerRootJournalBootstrapV1 {
+                            schema_version: 1,
+                            purpose: crate::worker_root_registration::journal_wire::WORKER_ROOT_JOURNAL_V1.into(),
+                            lanes: observation, journal: journal.observation().clone(), effect_authorization_available: false,
+                        })?
+                    }
+                    None => crate::authority_host_bootstrap_seal::seal_worker_lanes(&observation)?,
+                };
                 let mut bytes = Vec::new();
                 sealed.read_to_end(&mut bytes)?;
                 sealed.rewind()?;
@@ -115,6 +147,7 @@ impl HeldWorkerRootRegistration<'_> {
                 wire::receive(&self.channel, wire::Phase::Acknowledged, &digest, &self.registration.worker, handoff_end)?;
                 self.verify_original_custody(handoff_end)?;
                 floor.confirm_after_child_ack()?;
+                if let Some(journal) = journal.as_mut() { journal.confirm_after_original_child_ack()?; }
                 wire::send(&self.channel, wire::Phase::Confirmed, &digest, handoff_end)?;
                 self.verify_original_custody(handoff_end)?;
                 Ok(())
@@ -140,6 +173,7 @@ impl HeldWorkerRootRegistration<'_> {
             }
             self.verify_original_custody(handoff_end)?;
             floor.check_current()?;
+            if let Some(journal) = journal.as_ref() { journal.check()?; }
             loop {
                 let index = self.wait_lane(&connected, &floor, end)?;
                 let lane = connected[index].lane;
@@ -148,6 +182,7 @@ impl HeldWorkerRootRegistration<'_> {
                     let response = self._session.service.with_worker_floor_fence(Some(&self.registration), |view| {
                         self.verify_original_custody(end)?;
                         floor.check_current()?;
+                        if let Some(journal) = journal.as_ref() { journal.check()?; }
                         let response = match lane {
                             WorkerLane::ConsumerFrontier => floor.exchange(bytes, &view.head)?,
                             WorkerLane::Observation | WorkerLane::OriginalWriterProof => {
@@ -178,6 +213,7 @@ impl HeldWorkerRootRegistration<'_> {
                         };
                         self.verify_original_custody(end)?;
                         floor.check_current()?;
+                        if let Some(journal) = journal.as_ref() { journal.check()?; }
                         Ok(response)
                     }).map_err(|_| HostIssuerTransportError::Unavailable)?;
                     self.verify_original_custody(end).map_err(|_| HostIssuerTransportError::PeerDenied)?;

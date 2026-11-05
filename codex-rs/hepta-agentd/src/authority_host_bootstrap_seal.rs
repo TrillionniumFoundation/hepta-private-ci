@@ -80,6 +80,19 @@ pub(crate) fn seal_worker_lanes(
     seal_bytes(&bytes.0)
 }
 
+pub(crate) fn seal_worker_journal(
+    bundle: &crate::worker_root_registration::WorkerRootJournalBootstrapV1,
+) -> io::Result<File> {
+    require_root()?;
+    bundle.validate()?;
+    if bundle.lanes.registration.root.pid != std::process::id() {
+        return Err(io::Error::new(io::ErrorKind::PermissionDenied, "Worker journal must name its actual Root producer"));
+    }
+    let mut bytes = BoundedBytes(Vec::new());
+    serde_json::to_writer(&mut bytes, bundle).map_err(io::Error::other)?;
+    seal_bytes(&bytes.0)
+}
+
 fn seal_bytes(bytes: &[u8]) -> io::Result<File> {
     require_root()?;
     if bytes.is_empty() || bytes.len() > HOST_AUTHORITY_BOOTSTRAP_BOUND {

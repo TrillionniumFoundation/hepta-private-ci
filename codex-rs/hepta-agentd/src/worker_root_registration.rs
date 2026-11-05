@@ -26,6 +26,14 @@ pub use lanes_wire::WorkerRootLaneBootstrapV1;
 pub use lanes_wire::WorkerRootLanePathsV1;
 pub use lanes_wire::WorkerRootObservationV1;
 
+#[path = "worker_root_journal_wire.rs"]
+pub(crate) mod journal_wire;
+pub use journal_wire::WorkerJournalDirectoryPinV1;
+pub use journal_wire::WorkerRootJournalBootstrapV1;
+
+#[path = "worker_root_journal_path.rs"]
+pub(crate) mod journal_path;
+
 #[path = "worker_root_lanes_client.rs"]
 mod lanes_client;
 pub use lanes_client::WorkerRootLaneReceipt;
