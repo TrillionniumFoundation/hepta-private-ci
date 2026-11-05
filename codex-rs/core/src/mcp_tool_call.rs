@@ -1224,7 +1224,7 @@ fn build_mcp_tool_call_request_meta(
     (!request_meta.is_empty()).then_some(serde_json::Value::Object(request_meta))
 }
 
-fn with_mcp_tool_call_thread_id_meta(
+pub(crate) fn with_mcp_tool_call_thread_id_meta(
     meta: Option<serde_json::Value>,
     thread_id: &str,
 ) -> Option<serde_json::Value> {
