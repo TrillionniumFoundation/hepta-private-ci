@@ -153,7 +153,7 @@ async fn attestation_generate_round_trip_adds_header_to_responses_websocket_hand
                 JSONRPCMessage::Notification(notification)
                     if notification.method == "turn/completed" =>
                 {
-                    break Ok(());
+                    break Ok::<(), anyhow::Error>(());
                 }
                 _ => {}
             }
