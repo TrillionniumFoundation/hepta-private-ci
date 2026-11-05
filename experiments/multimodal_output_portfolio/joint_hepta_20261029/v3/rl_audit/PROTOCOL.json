@@ -1,0 +1,287 @@
+{
+  "base_commit": "29243f8fd1e17ff9c74d606163a862bd7ecae48d",
+  "execution": {
+    "blas_openmp_threads": 1,
+    "full_RL_algorithm_efficacy_claim": false,
+    "future_holdout": false,
+    "independent_administrative_evaluator": false,
+    "machine": "x86_64",
+    "max_seconds_per_phase": 1800,
+    "numpy": "2.3.5",
+    "official_rsEAC_executed": false,
+    "python": "3.12.14",
+    "separate_waited_process_per_phase": true,
+    "source_directory_import_isolated": true,
+    "system": "Linux"
+  },
+  "schema": "hepta.ndu-rl-validation.v1",
+  "semantics": {
+    "discount_rate": [
+      0.0,
+      0.13
+    ],
+    "eta": [
+      0.0,
+      0.2,
+      2.0
+    ],
+    "independent_precision_digits": 60,
+    "path_limit_eta": [
+      1e-06,
+      1e-09,
+      1e-12,
+      1e-30
+    ],
+    "risk_limit_eta": [
+      0.1,
+      0.001,
+      1e-06,
+      1e-09
+    ]
+  },
+  "structure": {
+    "action_step": 0.45,
+    "budget": "Identical observations, separate measured training/inference costs; capacity and CPU are not matched.",
+    "conditioning": "Z labels equal sigma times paired gradient labels; no extra noise is injected in a competing arm.",
+    "families": [
+      "linear",
+      "quadratic",
+      "neural"
+    ],
+    "hidden": 12,
+    "mc_replicates": 8,
+    "neural_lr": 0.025,
+    "neural_updates": 160,
+    "objective": "Expected terminal quality less adjustment/load/reset fees; measured CPU has no utility tariff.",
+    "open_gates": [
+      "matched effective capacity and CPU",
+      "multi-step RL and rsEAC comparison",
+      "independent real tasks",
+      "full physical cost net gain",
+      "future time window"
+    ],
+    "panels": [
+      {
+        "adjustment": 0.03,
+        "capacity": 2,
+        "complementarity": 0.6,
+        "dimension": 2,
+        "load_cost": 0.0,
+        "model_bias": 0.0,
+        "name": "base",
+        "noise": 0.2,
+        "reset_probability": 0.5,
+        "resident": 2
+      },
+      {
+        "adjustment": 0.03,
+        "capacity": 2,
+        "complementarity": 0.6,
+        "dimension": 2,
+        "load_cost": 0.0,
+        "model_bias": 0.0,
+        "name": "noise_zero",
+        "noise": 0.0,
+        "reset_probability": 0.5,
+        "resident": 2
+      },
+      {
+        "adjustment": 0.03,
+        "capacity": 2,
+        "complementarity": 0.6,
+        "dimension": 2,
+        "load_cost": 0.0,
+        "model_bias": 0.0,
+        "name": "noise_small",
+        "noise": 1e-06,
+        "reset_probability": 0.5,
+        "resident": 2
+      },
+      {
+        "adjustment": 0.03,
+        "capacity": 2,
+        "complementarity": 0.6,
+        "dimension": 2,
+        "load_cost": 0.0,
+        "model_bias": 0.0,
+        "name": "noise_large",
+        "noise": 0.7,
+        "reset_probability": 0.5,
+        "resident": 2
+      },
+      {
+        "adjustment": 0.03,
+        "capacity": 2,
+        "complementarity": 0.6,
+        "dimension": 4,
+        "load_cost": 0.0,
+        "model_bias": 0.0,
+        "name": "dimension_four",
+        "noise": 0.2,
+        "reset_probability": 0.5,
+        "resident": 4
+      },
+      {
+        "adjustment": 0.5,
+        "capacity": 2,
+        "complementarity": 0.6,
+        "dimension": 2,
+        "load_cost": 0.0,
+        "model_bias": 0.0,
+        "name": "adjustment_high",
+        "noise": 0.2,
+        "reset_probability": 0.5,
+        "resident": 2
+      },
+      {
+        "adjustment": 0.03,
+        "capacity": 2,
+        "complementarity": 0.0,
+        "dimension": 2,
+        "load_cost": 0.0,
+        "model_bias": 0.0,
+        "name": "complementarity_zero",
+        "noise": 0.2,
+        "reset_probability": 0.5,
+        "resident": 2
+      },
+      {
+        "adjustment": 0.03,
+        "capacity": 1,
+        "complementarity": 0.6,
+        "dimension": 2,
+        "load_cost": 0.15,
+        "model_bias": 0.0,
+        "name": "resource_residency",
+        "noise": 0.2,
+        "reset_probability": 0.5,
+        "resident": 1
+      },
+      {
+        "adjustment": 0.03,
+        "capacity": 2,
+        "complementarity": 0.6,
+        "dimension": 2,
+        "load_cost": 0.0,
+        "model_bias": 0.3,
+        "name": "model_error",
+        "noise": 0.2,
+        "reset_probability": 0.5,
+        "resident": 2
+      },
+      {
+        "adjustment": 0.03,
+        "capacity": 2,
+        "complementarity": 0.6,
+        "dimension": 2,
+        "load_cost": 0.0,
+        "model_bias": 0.0,
+        "name": "reset_always",
+        "noise": 0.2,
+        "reset_probability": 1.0,
+        "resident": 2
+      },
+      {
+        "adjustment": 0.03,
+        "capacity": 2,
+        "complementarity": 0.6,
+        "dimension": 2,
+        "load_cost": 0.0,
+        "model_bias": 0.0,
+        "name": "reset_never",
+        "noise": 0.2,
+        "reset_probability": 0.0,
+        "resident": 2
+      }
+    ],
+    "reset_cost": 0.08,
+    "ridge": 1e-05,
+    "schema": "ndu-critic-structure-v1",
+    "scope": "Supervised one-decision structural probe, not actor-critic RL or a multi-step resource benchmark.",
+    "seeds": [
+      101,
+      211,
+      307,
+      401,
+      503
+    ],
+    "selection": "No heldout tuning or winner selection; all seeds, models and zero-noise rejections retained.",
+    "sensor_sd": 0.002,
+    "shared_information": "All critics may access the identical full value stencil; labels are representations of it.",
+    "stencil_step": 0.02,
+    "targets": [
+      "value",
+      "direct_gradient",
+      "z_gradient"
+    ],
+    "test_n": 128,
+    "train_n": 96
+  },
+  "tools": {
+    "budget": "same initialization and exact full-law updates; CPU separately measured",
+    "confirmation": false,
+    "cost_unit": "declared_research_credits",
+    "eta": 2.0,
+    "fixed_consumes_trained_parameters": false,
+    "future_window": false,
+    "horizon": 5,
+    "independent_administrator": false,
+    "inference": [
+      "fixed",
+      "dynamic"
+    ],
+    "initial_counts": [
+      0,
+      1,
+      2
+    ],
+    "initial_logit_sd": 0.03,
+    "known_model": true,
+    "learning_rate": 3.0,
+    "parameter_pairs": [
+      [
+        2,
+        3
+      ],
+      [
+        -3,
+        5
+      ],
+      [
+        7,
+        -11
+      ]
+    ],
+    "prediction": "The two CE gradients and trained policies agree; no novel-method claim.",
+    "prior": [
+      0.3333333333333333,
+      0.3333333333333333,
+      0.3333333333333333
+    ],
+    "qualification_faults": [
+      "syntax_failure",
+      "malformed_success",
+      "deadline_0.25s",
+      "cancel_after_one_action"
+    ],
+    "real_frozen_llm": false,
+    "schema": "hepta.ndu-tool-equivalence.v1",
+    "seeds": [
+      51001,
+      51031,
+      51061
+    ],
+    "service_order": "seeded permutation of four cells; same task roster in every cell",
+    "tariff": {
+      "CHECK": 0.015,
+      "ORACLE": 0.02,
+      "REPAIR": 0.08,
+      "STOP": 0.005
+    },
+    "training": [
+      "inherited_flat_ce",
+      "recursive_ce"
+    ],
+    "updates": 500
+  }
+}

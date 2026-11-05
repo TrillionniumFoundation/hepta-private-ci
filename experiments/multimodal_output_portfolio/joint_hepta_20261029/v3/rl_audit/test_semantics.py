@@ -21,6 +21,16 @@ from .semantics import (
 
 
 class SemanticTests(unittest.TestCase):
+    def test_complete_path_reference_stays_stable_as_risk_vanishes(self):
+        model = example_model()
+        theta = (0.3, -0.2, 0.5, -0.4, -0.1, 0.2)
+        for eta in (1e-6, 1e-9, 1e-12, 1e-30):
+            with self.subTest(eta=eta):
+                path = path_value_gradient(model, theta, eta)
+                recursive = evaluate(model, theta, eta)
+                self.assertLess(abs(path["value"] - recursive["value"]), 1e-14)
+                self.assertLess(max(abs(x - y) for x, y in zip(path["gradient"], recursive["gradient"])), 1e-14)
+
     def setUp(self):
         self.model = example_model()
         self.theta = (0.3, -0.2, 0.5, -0.4, -0.1, 0.2)
