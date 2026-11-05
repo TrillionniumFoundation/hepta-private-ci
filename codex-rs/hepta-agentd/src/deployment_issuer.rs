@@ -51,6 +51,10 @@ use root::ProtectedLease;
 mod writer;
 pub use writer::HostAuthorityWriterRegistration;
 
+#[path = "deployment_desktop.rs"]
+mod desktop;
+pub use desktop::RootDesktopPolicy;
+
 #[path = "deployment_calculator.rs"]
 mod calculator;
 pub(crate) use calculator::RootCalculatorGrantAdmission;

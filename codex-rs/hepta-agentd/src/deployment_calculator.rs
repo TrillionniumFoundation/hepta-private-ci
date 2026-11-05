@@ -243,7 +243,10 @@ fn denied(message: &'static str) -> io::Error {
     io::Error::new(io::ErrorKind::PermissionDenied, message)
 }
 
-fn calculator_slot(policies: &[DeploymentGrantPolicy], subject: &str) -> io::Result<usize> {
+pub(super) fn calculator_slot(
+    policies: &[DeploymentGrantPolicy],
+    subject: &str,
+) -> io::Result<usize> {
     let mut slots = policies.iter().enumerate().filter(|(_, policy)| {
         policy.subject_id == subject && policy.destination_id.starts_with("trill.calculator:")
     });

@@ -1442,6 +1442,15 @@ product_callers = ["codex-rs/hepta-agentd/src/root_notes_startup.rs"]
 caller_markers = []
 
 [[boundary]]
+id = "root_desktop_original_issuer_pair_policy_cas"
+symbol = "DeploymentFinalUseIssuer::replace_registered_desktop_policy"
+call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)replace_registered_desktop_policy\\s*\\("
+definition_path = "codex-rs/hepta-agentd/src/deployment_desktop.rs"
+definition_markers = ["pub fn replace_registered_desktop_policy(", "libc::getuid()", "libc::geteuid()", "self.replace_desktop_policy(", "registration.local_lease_generation <= 1", "registration.with_live(verifier", "self.retained_writer_authorization(registration)?", "state.writer_authorization.as_ref() != Some(&proof)", "current != [&previous_policies[0], &previous_policies[1]]", ".compare_and_set(STATE_OWNER, &state, &changed)", "writer::validate_writer_time(registration, state.head.authority_epoch, after)"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
 id = "root_notes_original_issuer_policy_cas"
 symbol = "DeploymentFinalUseIssuer::replace_registered_notes_policy"
 call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)replace_registered_notes_policy\\s*\\("

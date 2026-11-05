@@ -230,6 +230,8 @@ pub use deployment_issuer::DeploymentIssuerObserver;
 #[cfg(target_os = "linux")]
 pub use deployment_issuer::HostAuthorityWriterRegistration;
 #[cfg(target_os = "linux")]
+pub use deployment_issuer::RootDesktopPolicy;
+#[cfg(target_os = "linux")]
 pub use deployment_issuer::RootIssuedNotesGrantObservation;
 #[cfg(target_os = "linux")]
 pub use deployment_issuer::RootIssuedNotesGrantSelection;
