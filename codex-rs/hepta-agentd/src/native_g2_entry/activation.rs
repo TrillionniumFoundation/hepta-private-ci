@@ -3,13 +3,15 @@ use super::boot::Boot;
 use super::ipc;
 use super::paths;
 use super::provision;
+use super::socket_publication::PublishedListener;
+use super::startup_error::Stage;
+use super::startup_error::{self};
 use super::supervisor;
 use super::workload;
 use codex_hepta_agentd::*;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::FleetRegistry;
 use std::os::unix::net::UnixDatagram;
-use std::os::unix::net::UnixListener;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -25,10 +27,10 @@ pub(super) struct Activation {
     pub(super) consumers: PathBuf,
     pub(super) manager_handoff: UnixDatagram,
     pub(super) recovery_handoff: UnixDatagram,
-    pub(super) manager_requests: UnixListener,
-    pub(super) recovery_requests: UnixListener,
-    pub(super) workload: UnixListener,
-    pub(super) recovery_observer: UnixListener,
+    pub(super) manager_requests: PublishedListener,
+    pub(super) recovery_requests: PublishedListener,
+    pub(super) workload: PublishedListener,
+    pub(super) recovery_observer: PublishedListener,
     pub(super) heartbeat: workload::Heartbeat,
 }
 
@@ -53,28 +55,37 @@ pub(super) fn fresh(boot: &Boot) -> Result<Activation, Box<dyn std::error::Error
         (&manager_launch, boot.pids[0]),
         (&recovery_launch, boot.pids[2]),
     ] {
-        let stream = ipc::accept(listener, pid)?;
+        let stream = ipc::accept(listener, pid)
+            .map_err(|error| startup_error::at(Stage::InitialLaunchAccept, error))?;
         let (root, child) = UnixDatagram::pair()?;
         selected.push((stream, supervisor::pin(pid)?, pid, child));
         handoffs.push(root);
     }
-    paths::mount_fresh()?;
-    let (registry, agent) = provision::fresh_registry()?;
-    let initialized = provision::initialize_authority(boot, &agent)?;
-    let supervisor = supervisor::start_original(registry.clone(), agent.clone(), selected)?;
+    paths::mount_fresh().map_err(|error| startup_error::at(Stage::MountState, error))?;
+    let (registry, agent) = provision::fresh_registry()
+        .map_err(|error| startup_error::at(Stage::FreshRegistry, error))?;
+    let initialized = provision::initialize_authority(boot, &agent)
+        .map_err(|error| startup_error::at(Stage::InitializeAuthority, error))?;
+    let supervisor = supervisor::start_original(registry.clone(), agent.clone(), selected)
+        .map_err(|error| startup_error::at(Stage::SelectSupervisor, error))?;
     let (config, registration, proof) =
-        provision::register_initial(boot, &registry, &agent, initialized)?;
+        provision::register_initial(boot, &registry, &agent, initialized)
+            .map_err(|error| startup_error::at(Stage::RegisterAuthority, error))?;
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()?;
-    let prepared = runtime.block_on(
-        PreparedHostAuthoritySession::prepare_fresh_with_physical_material(
-            Path::new(provision::CONFIG),
-            Path::new(provision::REGISTRATION),
-            supervisor::pin(boot.pids[0])?,
-        ),
-    )?;
-    let (prepared, consumers) = prepared.handoff_fresh_agent_filesystem()?;
+    let prepared = runtime
+        .block_on(
+            PreparedHostAuthoritySession::prepare_fresh_with_physical_material(
+                Path::new(provision::CONFIG),
+                Path::new(provision::REGISTRATION),
+                supervisor::pin(boot.pids[0])?,
+            ),
+        )
+        .map_err(|error| startup_error::at(Stage::PreparePhysicalSession, error))?;
+    let (prepared, consumers) = prepared
+        .handoff_fresh_agent_filesystem()
+        .map_err(|error| startup_error::at(Stage::AgentFilesystemHandoff, error))?;
     let mut handoffs = handoffs.into_iter();
     Ok(Activation {
         registry,

@@ -8,6 +8,8 @@ use super::evidence::Evidence;
 use super::ipc;
 use super::paths;
 use super::provision;
+use super::startup_error::Stage;
+use super::startup_error::{self};
 use codex_hepta_agentd::HostAuthorityServiceConfig;
 use codex_hepta_agentd::HostSignedWriterAuthorizationV1;
 use codex_hepta_agentd::PreparedHostAuthoritySession;
@@ -42,14 +44,19 @@ pub(super) fn run(boot: Boot, control: File) -> Result<(), Box<dyn std::error::E
         recovery_observer,
         heartbeat,
     } = activation;
-    let mut observer = ipc::channel(&recovery_observer, boot.pids[2], 60001)?;
+    let mut observer = ipc::channel(&recovery_observer, boot.pids[2], 60001)
+        .map_err(|error| startup_error::at(Stage::RecoveryObserverChannel, error))?;
     let prepared = Arc::new(prepared);
     let serving = Arc::clone(&prepared);
     let service = std::thread::spawn(move || serving.serve_retained());
-    activation::wait_lanes(&config)?;
-    activation::send_original(&prepared, &consumers, manager_handoff)?;
-    let mut manager = ipc::channel(&manager_requests, boot.pids[0], 60001)?;
-    let (initial, material) = cycle::current(&mut manager, &prepared)?;
+    activation::wait_lanes(&config)
+        .map_err(|error| startup_error::at(Stage::AuthorityLanes, error))?;
+    activation::send_original(&prepared, &consumers, manager_handoff)
+        .map_err(|error| startup_error::at(Stage::ManagerHandoff, error))?;
+    let mut manager = ipc::channel(&manager_requests, boot.pids[0], 60001)
+        .map_err(|error| startup_error::at(Stage::ManagerRequestChannel, error))?;
+    let (initial, material) = cycle::current(&mut manager, &prepared)
+        .map_err(|error| startup_error::at(Stage::FirstCurrent, error))?;
     // Root independently observes all actual credentials after both owner roles
     // have dropped them; no role/UID/capability evidence comes from argv.
     evidence.emit("roles", evidence::roles(&boot)?)?;
