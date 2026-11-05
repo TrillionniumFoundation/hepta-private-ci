@@ -1,0 +1,104 @@
+--- a/codex-rs/core/src/environment_selection.rs
++++ b/codex-rs/core/src/environment_selection.rs
+@@ -1221,6 +1221,93 @@
+ 
+     #[tokio::test]
+     async fn blocking_snapshot_waits_for_starting_environment() {
++        use std::io::Write as _;
++
++        const CASE: &str =
++            "environment_selection::tests::blocking_snapshot_waits_for_starting_environment";
++        const CHILD_MODE: &str = "CODEX_TEST_BLOCKING_SNAPSHOT_CHILD";
++        const STARTED: &str = "BLOCKING_SNAPSHOT_CHILD: original_body_started";
++        const FINISHED: &str = "BLOCKING_SNAPSHOT_CHILD: original_body_passed";
++
++        if let Some(mode) = std::env::var_os(CHILD_MODE) {
++            assert_eq!(mode, "1", "unexpected blocking snapshot child mode");
++        } else {
++            // Callsite interest is process-global. Other parallel tests can
++            // first register these spans without this test's scoped subscriber.
++            // Keep the original case in the parallel roster, but run its body
++            // in an owned process with the same test binary and exact selector.
++            struct OwnedChild(Option<std::process::Child>);
++
++            impl Drop for OwnedChild {
++                fn drop(&mut self) {
++                    if let Some(mut child) = self.0.take() {
++                        let _ = child.kill();
++                        let _ = child.wait();
++                    }
++                }
++            }
++
++            let output_dir = tempfile::tempdir().expect("isolated snapshot output directory");
++            let stdout_path = output_dir.path().join("stdout");
++            let stderr_path = output_dir.path().join("stderr");
++            let deadline = std::time::Instant::now() + Duration::from_secs(5);
++            let mut child = OwnedChild(Some(
++                std::process::Command::new(std::env::current_exe().expect("current test binary"))
++                    .args(["--exact", CASE, "--nocapture", "--color", "never"])
++                    .env(CHILD_MODE, "1")
++                    .stdout(std::fs::File::create(&stdout_path).expect("child stdout file"))
++                    .stderr(std::fs::File::create(&stderr_path).expect("child stderr file"))
++                    .spawn()
++                    .expect("spawn isolated blocking snapshot test"),
++            ));
++            let result = loop {
++                match child.0.as_mut().expect("owned child").try_wait() {
++                    Ok(Some(status)) => {
++                        child.0.take();
++                        break if std::time::Instant::now() <= deadline {
++                            Ok(status)
++                        } else {
++                            Err(format!("isolated snapshot completed after its five-second bound: {status}"))
++                        };
++                    }
++                    Ok(None) => {}
++                    Err(error) => break Err(format!("wait for isolated snapshot: {error}")),
++                }
++                if std::time::Instant::now() >= deadline {
++                    break Err("isolated snapshot exceeded its five-second parent bound".to_owned());
++                }
++                tokio::time::sleep(Duration::from_millis(10)).await;
++            };
++            // On error, timeout, or cancellation, kill and reap only this child.
++            // Files avoid a pipe filling while the parent waits; read after reap.
++            drop(child);
++            let stdout = std::fs::read(stdout_path).expect("read child stdout");
++            let stderr = std::fs::read(stderr_path).expect("read child stderr");
++            std::io::stdout().write_all(&stdout).expect("forward child stdout");
++            std::io::stderr().write_all(&stderr).expect("forward child stderr");
++            let stdout = String::from_utf8(stdout).expect("UTF-8 child stdout");
++            let stderr = String::from_utf8(stderr).expect("UTF-8 child stderr");
++            let status = result.expect("isolated blocking snapshot must complete");
++            assert!(status.success(), "isolated blocking snapshot assertions failed: {status}");
++            assert_eq!(stderr.lines().filter(|line| *line == STARTED).count(), 1);
++            assert_eq!(stderr.lines().filter(|line| *line == FINISHED).count(), 1);
++            assert_eq!(stdout.lines().filter(|line| *line == "running 1 test").count(), 1);
++            assert!(
++                stdout.lines().any(|line| line.starts_with(&format!("test {CASE} ..."))),
++                "isolated child must run the original exact case"
++            );
++            let summaries: Vec<_> = stdout
++                .lines()
++                .filter(|line| line.starts_with("test result:"))
++                .collect();
++            assert_eq!(summaries.len(), 1, "isolated child must report one result");
++            assert!(
++                summaries[0].starts_with("test result: ok. 1 passed; 0 failed; 0 ignored;"),
++                "isolated child must execute the original test exactly once"
++            );
++            return;
++        }
++        writeln!(std::io::stderr(), "\n{STARTED}").expect("write original-body start marker");
+         let buffer: &'static std::sync::Mutex<Vec<u8>> =
+             Box::leak(Box::new(std::sync::Mutex::new(Vec::new())));
+         let subscriber = tracing_subscriber::fmt()
+@@ -1302,6 +1389,7 @@
+         }
+         .with_subscriber(subscriber)
+         .await;
++        writeln!(std::io::stderr(), "\n{FINISHED}").expect("write original-body completion marker");
+     }
+ 
+     #[tokio::test]

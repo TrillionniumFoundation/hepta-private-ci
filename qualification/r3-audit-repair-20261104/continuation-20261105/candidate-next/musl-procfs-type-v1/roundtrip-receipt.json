@@ -1,0 +1,61 @@
+{
+  "scope": "isolated cloud Git patch application only; no compiler/test/native execution",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/musl-parent-procfs-type-20261105/candidate.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/musl-parent-procfs-type-20261105/candidate.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/musl-parent-procfs-type-20261105/candidate.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/musl-parent-procfs-type-20261105/candidate.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "postimage_exact": true,
+  "reverse_preimage_exact": true
+}

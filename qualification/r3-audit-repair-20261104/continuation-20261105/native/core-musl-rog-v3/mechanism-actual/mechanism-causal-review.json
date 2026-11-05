@@ -1,0 +1,72 @@
+{
+  "negative_valid": true,
+  "positive_valid": true,
+  "binary": {
+    "path": "/home/qian-qi/work/hepta-core-wait-span-20261105/probe-target/debug/core-wait-span-callsite-probe",
+    "bytes": 1132120,
+    "sha256": "e717a2217c170f2f00cda79391df313db52a74dfceb73b2ab79ada908d7cfc62",
+    "git_blob": "90ed6b6cfa9348bdf0b818350c0d9227a07912d0",
+    "mode": 448,
+    "executable": true
+  },
+  "negative": {
+    "label": "probe-shared-negative",
+    "argv": [
+      "/home/qian-qi/work/hepta-core-wait-span-20261105/probe-target/debug/core-wait-span-callsite-probe",
+      "shared"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-core-wait-span-20261105/probe-source",
+    "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "started_ns": 1793887306699419903,
+    "completed_at": "2026-11-05T14:01:46.702059+00:00",
+    "duration_seconds": 0.0026426389813423157,
+    "exit_code": 101,
+    "stdout": {
+      "path": "/home/qian-qi/work/hepta-core-wait-span-20261105/evidence/probe-shared-negative.stdout",
+      "bytes": 213,
+      "sha256": "c4dd3b28f95f799d7e144702c763ffc71154d9a8fd30b937ada8a1cbf1c6d767",
+      "git_blob": "55caeb20bfe3fa020d84157eaee33d60c17c371a",
+      "mode": 384,
+      "executable": false
+    },
+    "stderr": {
+      "path": "/home/qian-qi/work/hepta-core-wait-span-20261105/evidence/probe-shared-negative.stderr",
+      "bytes": 182,
+      "sha256": "aa2bc80e4902d53e2706eac274ebcdad2525789f848e3fe48096d190c2e680a2",
+      "git_blob": "36ff0c27e3d431de891e0549f05203469cffad56",
+      "mode": 384,
+      "executable": false
+    }
+  },
+  "positive": {
+    "label": "probe-isolated-positive",
+    "argv": [
+      "/home/qian-qi/work/hepta-core-wait-span-20261105/probe-target/debug/core-wait-span-callsite-probe",
+      "isolated",
+      "/home/qian-qi/work/hepta-core-wait-span-20261105/evidence/probe-isolated-child"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-core-wait-span-20261105/probe-source",
+    "source_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "started_ns": 1793887307588847383,
+    "completed_at": "2026-11-05T14:01:47.602693+00:00",
+    "duration_seconds": 0.013852003001375124,
+    "exit_code": 0,
+    "stdout": {
+      "path": "/home/qian-qi/work/hepta-core-wait-span-20261105/evidence/probe-isolated-positive.stdout",
+      "bytes": 656,
+      "sha256": "123c73c49bee9990d722eecbd099a61e255ad3ebf526e359b35384ede822c535",
+      "git_blob": "e46fea0699913542e0155b7ab1adf9c5eb4fe36b",
+      "mode": 384,
+      "executable": false
+    },
+    "stderr": {
+      "path": "/home/qian-qi/work/hepta-core-wait-span-20261105/evidence/probe-isolated-positive.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": 384,
+      "executable": false
+    }
+  },
+  "limits": "Controlled pinned tracing mechanism only; original CI interleaving is not observed."
+}

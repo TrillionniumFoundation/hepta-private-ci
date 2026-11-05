@@ -1,0 +1,117 @@
+"""Reconstruct and review existing native receipts without contacting a native host."""
+from pathlib import Path
+import base64
+import datetime
+import hashlib
+import json
+
+ROOT = Path(__file__).resolve().parent.parent
+CI = ROOT / "ci-audit/core-wait-span-20261105"
+OUT = ROOT / "hepta-audit-fifth/inputs"
+
+
+def identity(path):
+    data = path.read_bytes()
+    return {"local_path": str(path), "bytes": len(data),
+            "sha256": hashlib.sha256(data).hexdigest(),
+            "git_blob": hashlib.sha1(f"blob {len(data)}\0".encode() + data).hexdigest()}
+
+
+def read(path):
+    return json.loads(path.read_bytes())
+
+
+def response(path):
+    data = read(path)["response"]
+    assert not data.get("isError"), path
+    return data.get("structuredContent") or json.loads(next(x["text"] for x in data["content"] if x["type"] == "text"))
+
+
+mechanism = CI / "mechanism-actual-priority-v1"
+manifest = read(mechanism / "manifest.json")
+for row in manifest["files"]:
+    actual = identity(Path(row["local_path"]))
+    assert all(actual[key] == row[key] for key in ("bytes", "sha256", "git_blob"))
+negative = (mechanism / "probe-shared-negative.stdout").read_text()
+error = (mechanism / "probe-shared-negative.stderr").read_text()
+positive = (mechanism / "probe-isolated-positive.stdout").read_text()
+causal = read(mechanism / "mechanism-causal-review.json")
+assert causal["negative"]["exit_code"] == 101 and causal["positive"]["exit_code"] == 0
+assert "src/main.rs:117:9" in error and "shared-process parent/wait chain was suppressed" in error
+assert negative.count("PROBE: no-subscriber first registration completed") == 1
+assert negative.count("environments.wait_until_ready{") == 1 and "environments.snapshot{" not in negative
+assert positive.count("PROBE: no-subscriber first registration completed") == 1
+assert positive.count("environments.snapshot{") == 2
+assert positive.count("environments.wait_until_ready{") == 2
+assert "environments.snapshot{environment_count=1 non_blocking=false}:environments.wait_until_ready{environment_id=remote}" in positive
+for marker in ("PROBE: clean-child-chain-passed", "PROBE: shared-poison-and-clean-child-isolation-passed"):
+    assert positive.count(marker) == 1
+assert (mechanism / "probe-isolated-positive.stderr").read_bytes() == b""
+
+summary = read(CI / "ai395-readiness-launch-v1/readiness-actual-summary.json")
+report_path = Path(summary["report"]["path"])
+assert all(identity(report_path)[k] == summary["report"][k] for k in ("bytes", "sha256", "git_blob"))
+raw_parts = []
+offset = 0
+for part in summary["chunks"]:
+    data = response(Path(part["original_response"]))
+    raw = base64.b64decode(data["data_base64"], validate=True)
+    assert data["offset"] == part["offset"] == offset
+    assert data["next_offset"] == part["next_offset"] == offset + len(raw)
+    assert hashlib.sha256(raw).hexdigest() == data["chunk_sha256"] == part["chunk_sha256"]
+    assert data["version"] == summary["native_version"]
+    assert data["eof"] == part["eof"] == (part is summary["chunks"][-1])
+    raw_parts.append(raw)
+    offset += len(raw)
+assert b"".join(raw_parts) == report_path.read_bytes()
+report = read(report_path)
+request = read(ROOT / "research-audit/ai395-core-readiness-static-20261105/request-DISABLED.json")
+pins = request["input_pins"]
+assert hashlib.sha256(json.dumps(pins, sort_keys=True, separators=(",", ":")).encode()).hexdigest() == report["input_pins_sha256"]
+assert len(pins["files"]) == len(report["files"]) == 171
+assert len(pins["links"]) == len(report["links"]) == 147
+assert len({row["path"] for row in report["files"]}) == 171
+assert len({row["path"] for row in report["links"]}) == 147
+for pin, actual in zip(pins["files"], report["files"]):
+    assert pin["path"] == actual["path"]
+    assert pin["bytes"] == actual["read_bytes"] == actual["expected_bytes"] == actual["actual"]["bytes"]
+    assert pin["sha256"] == actual["sha256"] == actual["expected_sha256"]
+    assert actual["matches_expected_bytes"] is True
+for pin, actual in zip(pins["links"], report["links"]):
+    assert all(pin[key] == actual[key] for key in ("path", "link_target", "resolved_path"))
+status_path = Path(summary["process_status"]["path"])
+status = response(status_path)
+assert status["job_id"] == "1a1ac07278f-fc05-51b8" and status["state"] == "succeeded"
+assert status["exit_code"] == 0 and status["output_complete"] is True
+assert status["automatic_retry"] is False and status["timed_out"] is False and status["cancelled"] is False
+assert report["exit_code"] == 0 and report["status"] == "PINNED_BYTES_AND_HOST_OBSERVED"
+assert report["tests_executed"] == report["builds_executed"] == 0
+assert report["product_qualification"] is False
+assert report["future_core_before"]["exists"] is False and report["future_core_after"]["exists"] is False
+memory = dict(line.split(":", 1) for line in report["meminfo"].splitlines())
+available_memory = int(memory["MemAvailable"].split()[0]) * 1024
+result = {
+    "schema": "hepta-core-native-prerequisites-root-original-review-v1",
+    "reviewed_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    "mechanism_manifest": identity(mechanism / "manifest.json"),
+    "controlled_mechanism": {"negative_exit": 101, "positive_exit": 0,
+        "five_originals_rehashed": True, "same_poison_then_clean_child_parent_wait_chain_observed": True,
+        "original_Windows_interleaving_observed": False, "product_test_qualification": False},
+    "readiness_original": identity(report_path),
+    "readiness_original_sdk_chunks": [identity(Path(p["original_response"])) for p in summary["chunks"]],
+    "authoritative_status_original": identity(status_path),
+    "readiness_result": {"job_id": status["job_id"], "state": status["state"], "exit_code": 0,
+        "complete_report_reconstructed_from_four_same_version_chunks": True,
+        "all_171_file_pins_and_147_link_pins_matched": True,
+        "observed_interval": [report["started_at"], report["completed_at"]],
+        "available_disk_bytes": report["work_capacity"]["available_bytes"],
+        "available_memory_bytes": available_memory, "cpu_count": report["host"]["cpu_count"],
+        "new_core_root_absent_before_and_after": True, "builds": 0, "tests": 0},
+    "limits": ["This is review of complete recorded observations, not a new native read or launch.",
+        "Historical tool version strings were copied; fresh file bytes and SDK links were observed.",
+        "A future cold build must re-read capacity and validate its own new source, tools, graph, catalog and outputs.",
+        "The old B16 driver remains unknown; this separate readiness job gives no evidence about its execution."]}
+target = OUT / "core-native-prerequisites-root-review-v1.json"
+assert not target.exists(), target
+target.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
+print(json.dumps(identity(target)))

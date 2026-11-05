@@ -1,0 +1,77 @@
+"""Join the reviewed evidence groups and current reports into the V6 checkpoint."""
+from pathlib import Path
+import hashlib
+import json
+
+ROOT = Path(__file__).resolve().parent.parent
+BASE = ROOT / "hepta-audit-fifth"
+PREFIX = "qualification/r3-audit-repair-20261104/continuation-20261105"
+plan = json.loads((BASE / "registration-plan-v6-extended-verified.json").read_bytes())
+items = {r["repository_path"]:r for r in plan["items"]}
+assert len(items) == 224 and all(r["actual_object_verified"] for r in items.values())
+
+def add(path, destination, role, blob=None, verified=False):
+    path = Path(path)
+    if not path.is_absolute(): path = ROOT / path
+    raw = path.read_bytes()
+    actual = {"bytes":len(raw),"sha256":hashlib.sha256(raw).hexdigest(),
+              "blob":hashlib.sha1(f"blob {len(raw)}\0".encode()+raw).hexdigest()}
+    if blob: assert blob == actual["blob"], (path,blob,actual)
+    dest = destination if destination.startswith(PREFIX+"/") else PREFIX+"/"+destination
+    assert dest not in items, dest
+    items[dest] = {"repository_path":dest,"local_file":str(path),"mode":"100644",**actual,
+                   "role":role,"actual_object_verified":verified}
+    if verified: items[dest]["verification"]="Actual Git create and full byte-equal GET; root rehashed local bytes and reviewed exact scope"
+
+supp = ROOT / "architecture-audit/b11-mic-physical-probe-20261105/registration-plan-v6-supplement.json"
+for r in json.loads(supp.read_bytes())["items"]:
+    assert r["repository_path"] not in items and r["actual_object_verified"]
+    raw = Path(r["local_file"]).read_bytes()
+    assert len(raw)==r["bytes"] and hashlib.sha256(raw).hexdigest()==r["sha256"]
+    assert hashlib.sha1(f"blob {len(raw)}\0".encode()+raw).hexdigest()==r["blob"]
+    items[r["repository_path"]]=r
+add(supp,"generated-evidence/b11-v2-registration-supplement.json","Actual existing-object registration plan; original first CI cut preserved",
+    "d3a21037aefd94f7d6733412137b50dfbf89aeb0",True)
+
+archive = BASE / "v6-archives/current-outcomes-cut0063-v1"
+for path in sorted(archive.iterdir()):
+    add(path,"generated-evidence/current-outcomes-cut0063-v6/"+path.name+(".source.txt" if path.suffix==".py" else ""),
+        "22 complete observed originals, root full gzip/TAR identity verification; bounded ROG projection is not complete29 originals")
+for path in sorted((BASE / "v6-deliverables").iterdir()):
+    add(path,path.name,"Current human report or machine ledger; original23 exit/status/closure_class unchanged")
+
+for local,dest,blob,role in [
+    ("hepta-audit-fifth/inputs/b11-diagnostic-draft-publication-v1.json","reviews/b11-diagnostic-draft-publication-v1.json",None,"Initial actual Draft4884 publication and complete-tree check"),
+    ("hepta-audit-fifth/inputs/b11-macro-correction-publication-v1.json","reviews/b11-macro-correction-publication-v1.json",None,"Actual E0659 one-import correction and trigger-path publication with fresh ref/PR readback"),
+    ("hepta-audit-fifth/inputs/b11-macro-fix-workflow-v3.yml.source.txt","candidate-next/b11-macro-fix/workflow-v3.yml.source.txt","757e0eb43b2583604569fd51fac3aee4828899a5","Only existing-module path added; actual target/assertions/budget unchanged"),
+    ("architecture-audit/b11-pr4884-ci-20261105/repair-macro-import-v1/repair.patch","candidate-next/b11-macro-fix/repair.patch","a442366ae64689eb96a8a3aaf9b39bd166de986e","Actual compile prerequisite one-line test import correction"),
+    ("architecture-audit/b11-pr4884-ci-20261105/repair-macro-import-v1/manifest.json","candidate-next/b11-macro-fix/manifest.json","615c2abc65182aac2dc259c29961beed4d8e77e4","Exact original failure and unchanged eight assertions"),
+    ("architecture-audit/b11-pr4884-ci-20261105/repair-macro-import-v1/candidate/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs","candidate-next/b11-macro-fix/delete_permission_tests.rs.source.txt","d8511f92f9fbd9d58061238dbf3181152c74ccbc","Actual postimage; new Windows outcome pending"),
+    ("research-audit/b11-mic-probe-independent-review-20261105/macro-import-independent-review.json","reviews/b11-macro-import-independent-review.json","b4790a5e95ea609ac60fbbdc400b10abff3e0908","Independent source correction review; no native pass claimed"),
+    ("architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127320081049/job.log","generated-evidence/b11-pr4884-ci/initial-compile-failure/job.log","31264e17a1f148bc464d91986fcc7446b5771b2b","Complete original initial Windows compile failure log, zero tests"),
+    ("architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127320081049/artifact-verification.json","generated-evidence/b11-pr4884-ci/initial-compile-failure/artifact-verification.json",None,"Original eleven-member ZIP inventory; asset custody recorded separately"),
+    ("ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/native-first-start/preparation-terminal.json","native/ai395-core-c0-c1-v1/preparation-terminal.json",None,"Actual C0 success and pre-C1 memory gate failure; zero compile/test"),
+    ("ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/native-first-start/preparation-final-source-guard.json","native/ai395-core-c0-c1-v1/preparation-final-source-guard.json",None,"Actual e78 final source/index/locks/tool guard"),
+    ("ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/nonpass-projection.json","native/core-musl-rog-v3/actual-nonpass-projection.json",None,"Complete derived projection, not a substitute for all native raw files"),
+    ("ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/original-owning-projects-status.json","native/core-musl-rog-v3/original-owning-projects-status.json",None,"Actual owning status and complete native raw identity"),
+    ("ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/core-same-process-parallel-status.json","native/core-musl-rog-v3/core-same-process-parallel-status.json",None,"Actual parallel status and complete native raw identity"),
+    ("ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/core-same-process-parallel.stderr","native/core-musl-rog-v3/core-same-process-parallel.stderr",None,"Complete original stderr, one actual nonpass plus intentional panic and early-return limits"),
+    ("ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/export-manifest.json","native/core-musl-rog-v3/nonpass-full-export-manifest.json",None,"Native29-original export identity; full70-part recovery pending at this checkpoint"),
+    ("hepta-audit-fifth/freeze_v6_current_outcomes.py","generated-evidence/freeze_v6_current_outcomes.py.source.txt",None,"Reproduce fixed observation archive without project/native execution"),
+    ("hepta-audit-fifth/build_v6_reports.py","generated-evidence/build_v6_reports.py.source.txt",None,"Initial V6 report builder; subsequent B11 correction is separately bound in the actual reports and receipt"),
+    ("hepta-audit-fifth/complete_registration_v6.py","generated-evidence/complete_registration_v6.py.source.txt",None,"Evidence-only registration assembly; no product ref mutation"),
+]:
+    add(local,dest,role,blob,verified=blob is not None)
+
+plan.update(schema="hepta-evidence-only-registration-plan-v6-final",entry_count=len(items),
+            items=sorted(items.values(),key=lambda r:r["repository_path"]))
+for row in plan["items"]:
+    raw=Path(row["local_file"]).read_bytes()
+    assert len(raw)==row["bytes"] and hashlib.sha256(raw).hexdigest()==row["sha256"]
+    assert len(raw)<=480601, (row["repository_path"],len(raw))
+path=BASE / "registration-plan-v6-final.json"
+assert not path.exists(),path
+path.write_text(json.dumps(plan,ensure_ascii=False,indent=2)+"\n")
+print(json.dumps({"entries":len(items),"verified":sum(r["actual_object_verified"] for r in items.values()),
+                  "unverified":sum(not r["actual_object_verified"] for r in items.values()),
+                  "bytes":sum(r["bytes"] for r in items.values())}))

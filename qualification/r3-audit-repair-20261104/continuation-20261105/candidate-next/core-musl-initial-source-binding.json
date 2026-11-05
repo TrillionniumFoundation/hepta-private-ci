@@ -1,0 +1,31 @@
+{
+  "schema": "hepta-next-core-musl-static-source-candidate-v1",
+  "base_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "base_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "candidate_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+  "leaf_count": 10580,
+  "exact_changes": [
+    {
+      "path": "codex-rs/core/src/environment_selection.rs",
+      "pre": "85d590f386ba81428e5ea3360d2e573d054cab4a",
+      "post": "3c08e1620e800c30c47d98cc775cb20d4650ac88",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "pre": "8f500e03938718820360ce2ad41f2286eb9071bd",
+      "post": "fe42212316589999fdfc0b1877c975bdafa4a8e7",
+      "mode": "100644"
+    }
+  ],
+  "all_other_product_and_qualification_paths_unchanged": true,
+  "compiled": false,
+  "tests_executed": false,
+  "ref_modified": false,
+  "actual_GitHub_create_and_full_tree_GET": true,
+  "original_failure_jobs": [
+    127149546323,
+    127149584475
+  ],
+  "scope": "Initial static native-verification source only; future native hygiene postimages must be reviewed separately."
+}

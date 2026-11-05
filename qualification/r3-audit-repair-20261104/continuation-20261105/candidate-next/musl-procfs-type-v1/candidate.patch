@@ -1,0 +1,13 @@
+diff --git a/codex-rs/linux-sandbox/src/parent_lifecycle.rs b/codex-rs/linux-sandbox/src/parent_lifecycle.rs
+index 8f500e03938718820360ce2ad41f2286eb9071bd..fe42212316589999fdfc0b1877c975bdafa4a8e7 100644
+--- a/codex-rs/linux-sandbox/src/parent_lifecycle.rs
++++ b/codex-rs/linux-sandbox/src/parent_lifecycle.rs
+@@ -119,7 +119,7 @@
+             return Err(io::Error::last_os_error());
+         }
+         if !metadata.is_file()
+-            || filesystem.f_type != libc::PROC_SUPER_MAGIC
++            || i128::from(filesystem.f_type) != i128::from(libc::PROC_SUPER_MAGIC)
+             || status_flags & (libc::O_PATH | libc::O_ACCMODE) != libc::O_RDONLY
+             || position != 0
+         {

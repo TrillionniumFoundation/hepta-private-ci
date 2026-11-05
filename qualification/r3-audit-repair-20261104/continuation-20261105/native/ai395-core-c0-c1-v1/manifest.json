@@ -1,0 +1,68 @@
+{
+  "schema": "ai395-independent-core-C0-C1-concrete-disabled-v1",
+  "execute": false,
+  "runner": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/run_prepare_v2.py",
+    "bytes": 20913,
+    "sha256": "ee8561b2a2a50a4914640032057e11417965e283cc0fcc954a0e360656075c12",
+    "git_blob": "3ecebfe6c74214f911bf5771506ab6b6ebbaf9d4"
+  },
+  "request": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/request-DISABLED-v1.json",
+    "bytes": 4960,
+    "sha256": "8788c88ddba97e1febe06ee780089b1458c6d512e81420b17c635b9c70fd5bf6",
+    "git_blob": "377bf801ec7e422618c8aa52b75c40565c297f07"
+  },
+  "process_start": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/process-start-DISABLED-v1.json",
+    "bytes": 26966,
+    "sha256": "9ac04f41ee28b41b34ee204ec9a2aa4b55b5f3a1e8dc3bd1464308901cec7c0e",
+    "git_blob": "8d91a968673172e5bfef3e3e2eef6646e0d9de7f"
+  },
+  "initial_draft": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/run_prepare.py",
+    "bytes": 20883,
+    "sha256": "8d05513aca9ca90cf5bfbfbc031b3060e9394ca04d327a9183fcc0fbe367b564",
+    "git_blob": "41254274d1d76724e3bd9879c8ba5b87f435f0c3"
+  },
+  "delta": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/v1-to-v2-writable-rustup-home.delta.patch",
+    "bytes": 767,
+    "sha256": "b7e2f86b2e50a04453b35a42f9b48f96dba354ec80b61b5da1235501e7dd8d82",
+    "git_blob": "187b9700e5d1ef0bae4245182104dc8c62cb0843"
+  },
+  "scope": "Only C0 fixed source/inputs and C1 seven normal helper build. Durable checkpoint then natural exit. No metadata, catalog, tests, hygiene or background waiting.",
+  "entry": {
+    "disk_free_bytes": 200000000000,
+    "mem_available_bytes": 34359738368
+  },
+  "commands": {
+    "phase_minimum_free_bytes": 64000000000,
+    "build_before_minimum_mem_bytes": 34359738368,
+    "CARGO_BUILD_JOBS": 4
+  },
+  "source": {
+    "fixed_product_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "product_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "candidate_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "fixed_supply_commit": "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72",
+    "input_members": "Same exact root-published source maps/two posts/3977 project+19563 full roster; original ROG runner main is never invoked.",
+    "ordinary_head_index": "Fresh own5b checkout/index measured and guarded; never borrow ROG or B index."
+  },
+  "actual_frozen_reference_reuse": "Exec original approved V3 source with __name__=frozen_original_V3_reference_only; use exact original source_guard, command, environment/name checks, record and tree_hash logic; override capacity to cold bounds and source_guard to additionally rehash current171/147 inputs. No reference run() or main() called.",
+  "environment_delta_from_cold_plan": "RUSTUP_HOME also belongs to newroot/rustup-home. PATH selects exact real1.95 binaries, no rustup installation/update/default command is run. Any missing tool prerequisite fails; never writes old B Rustup/cache. Other task write paths were already newroot.",
+  "expected_compiler_helpers": [
+    "test_arg0_preflight",
+    "codex-code-mode-host",
+    "codex-execve-wrapper",
+    "test_stdio_server",
+    "test_streamable_http_server",
+    "codex-exec",
+    "codex"
+  ],
+  "SDK_scope": "Fresh bounded reads of 171 physical files and147symlink identities from actual readiness; parent version strings remain historical. Checks initial, source-guard/build-before/after and terminal, including failure.",
+  "continuation": "C2 normal full metadata/catalog and C3 full originaltests remain separately disabled pending ROG P4 actual result review and root approval; require C1 checkpoint AND preparation terminal0 and all final guards.",
+  "old_B_mutations": false,
+  "native_started": false,
+  "validation": "Cloud Python AST parsed; source-level no-native scope review only. No optional guard test or simulation execution."
+}

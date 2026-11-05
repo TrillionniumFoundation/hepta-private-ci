@@ -1,0 +1,288 @@
+{
+  "schema": "hepta-original-success-named-review-v1",
+  "reviewed_at": "2026-11-05T13:12:19.679193+00:00",
+  "api_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "run_id": 41999115000,
+  "job_id": 127251874956,
+  "run_attempt": 1,
+  "terminal_job": {
+    "id": 127251874956,
+    "run_id": 41999115000,
+    "workflow_name": "v8-canary",
+    "head_branch": "fix/r3-original-product-contracts-20261104",
+    "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41999115000",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTrgxoM8AAAAdoM2EjA",
+    "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127251874956",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41999115000/job/127251874956",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-05T12:42:45Z",
+    "started_at": "2026-11-05T12:47:28Z",
+    "completed_at": "2026-11-05T12:59:42Z",
+    "name": "Build release x86_64-apple-darwin",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-11-05T12:47:35Z",
+        "completed_at": "2026-11-05T12:47:41Z"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-11-05T12:47:41Z",
+        "completed_at": "2026-11-05T12:48:02Z"
+      },
+      {
+        "name": "Set up Bazel",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-11-05T12:48:02Z",
+        "completed_at": "2026-11-05T12:48:16Z"
+      },
+      {
+        "name": "Set up Python",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-11-05T12:48:16Z",
+        "completed_at": "2026-11-05T12:48:17Z"
+      },
+      {
+        "name": "Set up Rust toolchain for Cargo smoke",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-11-05T12:48:17Z",
+        "completed_at": "2026-11-05T12:48:39Z"
+      },
+      {
+        "name": "Pin installed Cargo binary",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-11-05T12:48:39Z",
+        "completed_at": "2026-11-05T12:48:39Z"
+      },
+      {
+        "name": "Build Bazel V8 release pair",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-11-05T12:48:39Z",
+        "completed_at": "2026-11-05T12:55:32Z"
+      },
+      {
+        "name": "Stage release pair",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-11-05T12:55:32Z",
+        "completed_at": "2026-11-05T12:56:39Z"
+      },
+      {
+        "name": "Smoke test staged artifact with Cargo",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-11-05T12:56:39Z",
+        "completed_at": "2026-11-05T12:59:26Z"
+      },
+      {
+        "name": "Upload staged artifacts",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-11-05T12:59:26Z",
+        "completed_at": "2026-11-05T12:59:35Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-11-05T12:59:35Z",
+        "completed_at": "2026-11-05T12:59:37Z"
+      },
+      {
+        "name": "Post Set up Python",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 20,
+        "started_at": "2026-11-05T12:59:37Z",
+        "completed_at": "2026-11-05T12:59:37Z"
+      },
+      {
+        "name": "Post Set up Bazel",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 21,
+        "started_at": "2026-11-05T12:59:37Z",
+        "completed_at": "2026-11-05T12:59:38Z"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 22,
+        "started_at": "2026-11-05T12:59:38Z",
+        "completed_at": "2026-11-05T12:59:39Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 23,
+        "started_at": "2026-11-05T12:59:39Z",
+        "completed_at": "2026-11-05T12:59:40Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127251874956",
+    "labels": [
+      "macos-15-intel"
+    ],
+    "runner_id": 1000000854,
+    "runner_name": "GitHub Actions 1000000854",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  "job_log": {
+    "bytes": 555906,
+    "sha256": "906cec9d74c19d601bc4764c49cec6816bdae2428c00c40e1f94072173ee7d68",
+    "computed_git_blob": "646f8c6ce9da430c287644ecd3e019229b76a2e8"
+  },
+  "catalog_identity": {
+    "bytes": 180651,
+    "sha256": "16df332bed13d79c0e2f0294d65218a0f83aaa1dd926c0694dfb1363b3b83752",
+    "computed_git_blob": "5ce46bbcb2f3979eb3a320ecf3c3d065000d9645"
+  },
+  "original_raw_preserved": true,
+  "reviewer_executed_tests": false,
+  "global_blocker_status_changed": false,
+  "scope_limits": [
+    "A named PASS is scoped to this actual source/platform/command.",
+    "No independent operator/Root/issuer/production acceptance is inferred.",
+    "No old-head result is transferred to this head."
+  ],
+  "checkout": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+  "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "platform": "x86_64-apple-darwin",
+  "sandbox_variant": false,
+  "named_pass_occurrences": 6,
+  "cases": [
+    {
+      "test": "tests::exposes_embedded_v8_version",
+      "status": "ok",
+      "should_panic": false,
+      "line_1based": 5769
+    },
+    {
+      "test": "tests::exposes_expected_bazel_target",
+      "status": "ok",
+      "should_panic": false,
+      "line_1based": 5770
+    },
+    {
+      "test": "tests::sandbox_feature_matches_linked_v8",
+      "status": "ok",
+      "should_panic": false,
+      "line_1based": 5771
+    },
+    {
+      "test": "tests::parses_crdtp_dispatchable_messages",
+      "status": "ok",
+      "should_panic": false,
+      "line_1based": 5772
+    },
+    {
+      "test": "tests::evaluates_string_concatenation",
+      "status": "ok",
+      "should_panic": false,
+      "line_1based": 5773
+    },
+    {
+      "test": "tests::evaluates_integer_addition",
+      "status": "ok",
+      "should_panic": false,
+      "line_1based": 5774
+    }
+  ],
+  "original_142_matches": [],
+  "command_scope": "Pinned Cargo 1.95.0 tests codex-v8-poc using the staged matching archive and binding, --no-default-features, and --features sandbox only when SANDBOX=true.",
+  "smoke_command_and_result_lines": [
+    {
+      "line_1based": 1151,
+      "text": "  CARGO_1_95: /Users/runner/.rustup/toolchains/1.95.0-x86_64-apple-darwin/bin/cargo"
+    },
+    {
+      "line_1based": 1154,
+      "text": "  SANDBOX: false"
+    },
+    {
+      "line_1based": 5472,
+      "text": "  CARGO_1_95: /Users/runner/.rustup/toolchains/1.95.0-x86_64-apple-darwin/bin/cargo"
+    },
+    {
+      "line_1based": 5476,
+      "text": "  SANDBOX: false"
+    },
+    {
+      "line_1based": 5552,
+      "text": "cargo_args=(test -p codex-v8-poc --no-default-features)"
+    },
+    {
+      "line_1based": 5554,
+      "text": "  cargo_args+=(--features sandbox)"
+    },
+    {
+      "line_1based": 5561,
+      "text": "  RUSTY_V8_ARCHIVE=\"${GITHUB_WORKSPACE}/${archive}\" \\"
+    },
+    {
+      "line_1based": 5562,
+      "text": "  RUSTY_V8_SRC_BINDING_PATH=\"${GITHUB_WORKSPACE}/${binding}\" \\"
+    },
+    {
+      "line_1based": 5563,
+      "text": "  \"${CARGO_1_95}\" \"${cargo_args[@]}\""
+    },
+    {
+      "line_1based": 5586,
+      "text": "  CARGO_1_95: /Users/runner/.rustup/toolchains/1.95.0-x86_64-apple-darwin/bin/cargo"
+    },
+    {
+      "line_1based": 5587,
+      "text": "  SANDBOX: false"
+    },
+    {
+      "line_1based": 5776,
+      "text": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s"
+    },
+    {
+      "line_1based": 5807,
+      "text": "  CARGO_1_95: /Users/runner/.rustup/toolchains/1.95.0-x86_64-apple-darwin/bin/cargo"
+    },
+    {
+      "line_1based": 5853,
+      "text": "  CARGO_1_95: /Users/runner/.rustup/toolchains/1.95.0-x86_64-apple-darwin/bin/cargo"
+    },
+    {
+      "line_1based": 5888,
+      "text": "  CARGO_1_95: /Users/runner/.rustup/toolchains/1.95.0-x86_64-apple-darwin/bin/cargo"
+    }
+  ],
+  "actual_native_smoke_executed": true,
+  "large_release_zip_downloaded_by_reviewer": false,
+  "limitations": [
+    "Six original staged-library smoke tests passed for this one native target/variant.",
+    "Large uploaded release ZIP bytes were not independently downloaded or qualified here.",
+    "No full CodeMode, other platform, product musl, or external acceptance is inferred."
+  ]
+}

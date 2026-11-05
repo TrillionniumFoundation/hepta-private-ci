@@ -1,0 +1,888 @@
+{
+  "schema": "hepta-original-private-state-review-v1",
+  "reviewed_at": "2026-11-05T13:12:20.683685+00:00",
+  "source": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "run_id": 41999114721,
+  "job_id": 127149582685,
+  "run_attempt": 1,
+  "terminal_job": {
+    "id": 127149582685,
+    "run_id": 41999114721,
+    "workflow_name": "Hepta Windows private-state native (security qualification only)",
+    "head_branch": "fix/r3-original-product-contracts-20261104",
+    "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114721",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTrgxoM8AAAAdmrSpXQ",
+    "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127149582685",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114721/job/127149582685",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-05T09:02:28Z",
+    "started_at": "2026-11-05T12:32:32Z",
+    "completed_at": "2026-11-05T12:48:28Z",
+    "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-11-05T12:32:34Z",
+        "completed_at": "2026-11-05T12:32:36Z"
+      },
+      {
+        "name": "Checkout immutable PR head without saved credentials",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-11-05T12:32:36Z",
+        "completed_at": "2026-11-05T12:32:52Z"
+      },
+      {
+        "name": "Install repository test runners",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-11-05T12:32:52Z",
+        "completed_at": "2026-11-05T12:33:06Z"
+      },
+      {
+        "name": "Verify exact source identity and pinned native compiler",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-11-05T12:33:06Z",
+        "completed_at": "2026-11-05T12:33:27Z"
+      },
+      {
+        "name": "Exercise private file handles, ACL, reparse and hardlink invariants",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-11-05T12:33:27Z",
+        "completed_at": "2026-11-05T12:34:14Z"
+      },
+      {
+        "name": "Exercise actual Prompt Registry Windows durable owner",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-11-05T12:34:14Z",
+        "completed_at": "2026-11-05T12:34:30Z"
+      },
+      {
+        "name": "Exercise signed final-use and authority-lease durable stores",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-11-05T12:34:30Z",
+        "completed_at": "2026-11-05T12:34:53Z"
+      },
+      {
+        "name": "Validate Agentd Prompt Runtime integration and reopened state",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-11-05T12:34:53Z",
+        "completed_at": "2026-11-05T12:48:04Z"
+      },
+      {
+        "name": "Verify native socket cleanup and fail-closed kernel peer boundary",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-11-05T12:48:04Z",
+        "completed_at": "2026-11-05T12:48:08Z"
+      },
+      {
+        "name": "Enforce source-level Rust formatting for durable owners",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-11-05T12:48:08Z",
+        "completed_at": "2026-11-05T12:48:10Z"
+      },
+      {
+        "name": "Prove directory acquisition rejects both original native attacks",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-11-05T12:48:10Z",
+        "completed_at": "2026-11-05T12:48:18Z"
+      },
+      {
+        "name": "Confirm no generated or modified tracked source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-11-05T12:48:18Z",
+        "completed_at": "2026-11-05T12:48:19Z"
+      },
+      {
+        "name": "Preserve exact source and all acquisition qualification logs",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-11-05T12:48:19Z",
+        "completed_at": "2026-11-05T12:48:22Z"
+      },
+      {
+        "name": "Post Checkout immutable PR head without saved credentials",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 26,
+        "started_at": "2026-11-05T12:48:22Z",
+        "completed_at": "2026-11-05T12:48:26Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 27,
+        "started_at": "2026-11-05T12:48:26Z",
+        "completed_at": "2026-11-05T12:48:26Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127149582685",
+    "labels": [
+      "windows-latest"
+    ],
+    "runner_id": 1000000812,
+    "runner_name": "GitHub Actions 1000000812",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  "job_log": {
+    "bytes": 266036,
+    "sha256": "65598cd0789c4c2307b430bcaa97176da0bc50706e37f013f6aa43f539d89bdb",
+    "computed_git_blob": "3e1893c5aa2b7d798c9d48bdcd58e04dd924e00e"
+  },
+  "named_pass_occurrences": 53,
+  "cases": [
+    {
+      "test": "private_state_windows::directory::tests::create_new_directory_is_private_and_keeps_its_pin",
+      "package": "codex-utils-path",
+      "seconds": 0.008,
+      "line_1based": 421,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::directory::tests::create_new_directory_rejects_a_leaf_occupied_at_acquisition",
+      "package": "codex-utils-path",
+      "seconds": 0.007,
+      "line_1based": 422,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::directory::tests::create_new_directory_rejects_existing_directory_and_file",
+      "package": "codex-utils-path",
+      "seconds": 0.008,
+      "line_1based": 423,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open",
+      "package": "codex-utils-path",
+      "seconds": 0.016,
+      "line_1based": 424,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf",
+      "package": "codex-utils-path",
+      "seconds": 0.014,
+      "line_1based": 425,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::recovery::tests::existing_only_directory_does_not_create_or_repair_a_missing_source",
+      "package": "codex-utils-path",
+      "seconds": 0.006,
+      "line_1based": 426,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::recovery::tests::fresh_materialization_never_opens_an_occupied_name",
+      "package": "codex-utils-path",
+      "seconds": 0.077,
+      "line_1based": 427,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::recovery::tests::frozen_child_rejects_missing_alias_and_hard_link_without_creation",
+      "package": "codex-utils-path",
+      "seconds": 0.009,
+      "line_1based": 428,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::recovery::tests::frozen_private_child_retains_bytes_and_refuses_write_and_delete_handles",
+      "package": "codex-utils-path",
+      "seconds": 0.014,
+      "line_1based": 429,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::security_tests::native_creation_rejects_nul_without_creating_a_prefix_path",
+      "package": "codex-utils-path",
+      "seconds": 0.007,
+      "line_1based": 430,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::security_tests::new_directory_and_child_have_explicit_token_user_ownership",
+      "package": "codex-utils-path",
+      "seconds": 0.008,
+      "line_1based": 431,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::security_tests::opening_existing_objects_never_rewrites_their_security",
+      "package": "codex-utils-path",
+      "seconds": 0.008,
+      "line_1based": 432,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::security_tests::relative_root_uses_one_absolute_spelling_for_create_and_open",
+      "package": "codex-utils-path",
+      "seconds": 0.007,
+      "line_1based": 433,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::tests::hard_link_is_rejected",
+      "package": "codex-utils-path",
+      "seconds": 0.008,
+      "line_1based": 434,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::tests::malformed_ace_sid_bounds_fail_closed",
+      "package": "codex-utils-path",
+      "seconds": 0.006,
+      "line_1based": 435,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::tests::malformed_getace_spans_fail_closed",
+      "package": "codex-utils-path",
+      "seconds": 0.006,
+      "line_1based": 436,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::tests::public_read_access_is_not_private",
+      "package": "codex-utils-path",
+      "seconds": 0.006,
+      "line_1based": 437,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::tests::retained_directory_opens_private_single_link_children",
+      "package": "codex-utils-path",
+      "seconds": 0.008,
+      "line_1based": 438,
+      "status": "PASS"
+    },
+    {
+      "test": "private_state_windows::tests::retained_directory_pins_root_and_ancestor_until_drop",
+      "package": "codex-utils-path",
+      "seconds": 0.018,
+      "line_1based": 439,
+      "status": "PASS"
+    },
+    {
+      "test": "durable::windows::tests::full_private_registry_roundtrip_reopens_without_resetting_owner_history",
+      "package": "codex-hepta-prompt-registry",
+      "seconds": 0.026,
+      "line_1based": 533,
+      "status": "PASS"
+    },
+    {
+      "test": "durable::windows::tests::hard_link_is_rejected_before_registry_bytes_are_read",
+      "package": "codex-hepta-prompt-registry",
+      "seconds": 0.01,
+      "line_1based": 534,
+      "status": "PASS"
+    },
+    {
+      "test": "final_use::store::windows::tests::windows_final_use_denies_issuer_or_epoch_substitution",
+      "package": "codex-hepta-contracts",
+      "seconds": 0.025,
+      "line_1based": 606,
+      "status": "PASS"
+    },
+    {
+      "test": "final_use::store::windows::tests::windows_final_use_rejects_hardlinked_claims_before_nonce_replay",
+      "package": "codex-hepta-contracts",
+      "seconds": 0.025,
+      "line_1based": 607,
+      "status": "PASS"
+    },
+    {
+      "test": "final_use::store::windows::tests::windows_nonce_burn_persists_across_real_private_store_reopen",
+      "package": "codex-hepta-contracts",
+      "seconds": 0.035,
+      "line_1based": 608,
+      "status": "PASS"
+    },
+    {
+      "test": "authority_lease::windows::tests::hardlink_alias_of_authority_state_is_rejected_before_reopen",
+      "package": "codex-hepta-contracts",
+      "seconds": 0.021,
+      "line_1based": 629,
+      "status": "PASS"
+    },
+    {
+      "test": "authority_lease::windows::tests::private_authority_lease_roundtrip_reopens_with_exact_frontier",
+      "package": "codex-hepta-contracts",
+      "seconds": 0.041,
+      "line_1based": 630,
+      "status": "PASS"
+    },
+    {
+      "test": "prompt_runtime::tests::dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry",
+      "package": "codex-hepta-agentd",
+      "seconds": 0.272,
+      "line_1based": 2786,
+      "status": "PASS"
+    },
+    {
+      "test": "prompt_runtime::tests::final_delivered_terminal_releases_staged_turn",
+      "package": "codex-hepta-agentd",
+      "seconds": 0.012,
+      "line_1based": 2787,
+      "status": "PASS"
+    },
+    {
+      "test": "prompt_runtime::tests::indeterminate_terminal_reopens_blocked_and_reconciles_monotonically",
+      "package": "codex-hepta-agentd",
+      "seconds": 0.055,
+      "line_1based": 2788,
+      "status": "PASS"
+    },
+    {
+      "test": "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host",
+      "package": "codex-hepta-agentd",
+      "seconds": 0.332,
+      "line_1based": 2789,
+      "status": "PASS"
+    },
+    {
+      "test": "prompt_runtime::tests::non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry",
+      "package": "codex-hepta-agentd",
+      "seconds": 0.013,
+      "line_1based": 2790,
+      "status": "PASS"
+    },
+    {
+      "test": "prompt_runtime::tests::not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement",
+      "package": "codex-hepta-agentd",
+      "seconds": 0.065,
+      "line_1based": 2791,
+      "status": "PASS"
+    },
+    {
+      "test": "prompt_runtime::tests::owner_remains_send_sync_with_fault_injection",
+      "package": "codex-hepta-agentd",
+      "seconds": 0.012,
+      "line_1based": 2792,
+      "status": "PASS"
+    },
+    {
+      "test": "prompt_runtime::tests::post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent",
+      "package": "codex-hepta-agentd",
+      "seconds": 0.036,
+      "line_1based": 2793,
+      "status": "PASS"
+    },
+    {
+      "test": "prompt_runtime::tests::staged_attachment_is_bound_to_exact_thread_and_turn",
+      "package": "codex-hepta-agentd",
+      "seconds": 0.012,
+      "line_1based": 2794,
+      "status": "PASS"
+    },
+    {
+      "test": "prompt_runtime::tests::windows_prompt_runtime_existing_insecure_directory_is_never_repaired",
+      "package": "codex-hepta-agentd",
+      "seconds": 0.013,
+      "line_1based": 2795,
+      "status": "PASS"
+    },
+    {
+      "test": "prompt_runtime::tests::windows_prompt_runtime_private_owner_reopens_without_reset_or_acl_waiver",
+      "package": "codex-hepta-agentd",
+      "seconds": 0.025,
+      "line_1based": 2796,
+      "status": "PASS"
+    },
+    {
+      "test": "control::peer_auth_tests::accept_path_authenticates_before_consuming_a_permit",
+      "package": "codex-hepta-agentd",
+      "seconds": 0.012,
+      "line_1based": 3112,
+      "status": "PASS"
+    },
+    {
+      "test": "control::peer_auth_tests::control_peer_check_runs_before_control_frames",
+      "package": "codex-hepta-agentd",
+      "seconds": 0.017,
+      "line_1based": 3113,
+      "status": "PASS"
+    },
+    {
+      "test": "lib_tests::bound_listener_path_is_stale_socket_path",
+      "package": "codex-uds",
+      "seconds": 0.01,
+      "line_1based": 3114,
+      "status": "PASS"
+    },
+    {
+      "test": "lib_tests::peer_identity_gate_rejects_on_unsupported_platforms",
+      "package": "codex-uds",
+      "seconds": 0.01,
+      "line_1based": 3115,
+      "status": "PASS"
+    },
+    {
+      "test": "lib_tests::prepare_private_socket_directory_creates_directory",
+      "package": "codex-uds",
+      "seconds": 0.009,
+      "line_1based": 3116,
+      "status": "PASS"
+    },
+    {
+      "test": "lib_tests::stopped_listener_path_can_be_cleaned_and_rebound",
+      "package": "codex-uds",
+      "seconds": 0.01,
+      "line_1based": 3117,
+      "status": "PASS"
+    },
+    {
+      "test": "lib_tests::stream_round_trips_data_between_listener_and_client",
+      "package": "codex-uds",
+      "seconds": 0.01,
+      "line_1based": 3118,
+      "status": "PASS"
+    },
+    {
+      "test": "owner_local::platform::security::tests::owner_local_client_rejects_invalid_transport_acknowledgement",
+      "package": "codex-uds",
+      "seconds": 0.009,
+      "line_1based": 3119,
+      "status": "PASS"
+    },
+    {
+      "test": "owner_local::platform::security::tests::owner_local_compares_the_real_client_token_and_reverts_after_rejection",
+      "package": "codex-uds",
+      "seconds": 0.009,
+      "line_1based": 3120,
+      "status": "PASS"
+    },
+    {
+      "test": "owner_local::platform::security::tests::owner_local_dacl_denies_an_actual_anonymous_client_open",
+      "package": "codex-uds",
+      "seconds": 0.009,
+      "line_1based": 3121,
+      "status": "PASS"
+    },
+    {
+      "test": "owner_local::platform::security::tests::owner_local_pending_handshake_remains_cancellable",
+      "package": "codex-uds",
+      "seconds": 0.043,
+      "line_1based": 3122,
+      "status": "PASS"
+    },
+    {
+      "test": "owner_local::platform::security::tests::owner_local_rejects_an_actual_handle_with_a_foreign_principal_grant",
+      "package": "codex-uds",
+      "seconds": 0.01,
+      "line_1based": 3123,
+      "status": "PASS"
+    },
+    {
+      "test": "owner_local::platform::security::tests::owner_local_rejects_anonymous_and_impersonation_level_clients_without_token_leak",
+      "package": "codex-uds",
+      "seconds": 0.01,
+      "line_1based": 3124,
+      "status": "PASS"
+    },
+    {
+      "test": "owner_local::platform::security::tests::owner_local_rejects_wrong_preface_before_application_io",
+      "package": "codex-uds",
+      "seconds": 0.009,
+      "line_1based": 3125,
+      "status": "PASS"
+    },
+    {
+      "test": "owner_local::tests::authenticated_owner_local_stream_round_trips_application_bytes",
+      "package": "codex-uds",
+      "seconds": 0.009,
+      "line_1based": 3126,
+      "status": "PASS"
+    },
+    {
+      "test": "owner_local::tests::live_owner_local_listener_cannot_be_replaced",
+      "package": "codex-uds",
+      "seconds": 0.009,
+      "line_1based": 3127,
+      "status": "PASS"
+    }
+  ],
+  "original_six_scope_summaries": [
+    {
+      "line_1based": 441,
+      "text": "     Summary [   0.244s] 19 tests run: 19 passed, 5 skipped"
+    },
+    {
+      "line_1based": 536,
+      "text": "     Summary [   0.037s] 2 tests run: 2 passed, 26 skipped"
+    },
+    {
+      "line_1based": 610,
+      "text": "     Summary [   0.087s] 3 tests run: 3 passed, 131 skipped"
+    },
+    {
+      "line_1based": 632,
+      "text": "     Summary [   0.064s] 2 tests run: 2 passed, 132 skipped"
+    },
+    {
+      "line_1based": 2798,
+      "text": "     Summary [   0.851s] 11 tests run: 11 passed, 161 skipped"
+    },
+    {
+      "line_1based": 3129,
+      "text": "     Summary [   0.199s] 16 tests run: 16 passed, 170 skipped"
+    }
+  ],
+  "commands": [
+    {
+      "line_1based": 310,
+      "text": "just test --locked -p codex-utils-path --lib -E 'test(private_state_windows::)' --test-threads 1 --no-tests fail --retries 0"
+    },
+    {
+      "line_1based": 444,
+      "text": "just test --locked -p codex-hepta-prompt-registry --lib -E 'test(durable::windows::tests::)' --test-threads 1 --no-tests fail --retries 0"
+    },
+    {
+      "line_1based": 539,
+      "text": "just test --locked -p codex-hepta-contracts --lib -E 'test(final_use::store::windows::tests::)' --test-threads 1 --no-tests fail --retries 0"
+    },
+    {
+      "line_1based": 541,
+      "text": "just test --locked -p codex-hepta-contracts --lib -E 'test(authority_lease::windows::tests::)' --test-threads 1 --no-tests fail --retries 0"
+    },
+    {
+      "line_1based": 635,
+      "text": "just test --locked -p codex-hepta-agentd --lib -E 'test(prompt_runtime::tests::)' --test-threads 1 --no-tests fail --retries 0"
+    },
+    {
+      "line_1based": 2801,
+      "text": "just test --locked -p codex-uds -p codex-hepta-agentd --lib -E 'package(codex-uds) | test(control::peer_auth_tests::)' --test-threads 1 --no-tests fail --retries 0"
+    }
+  ],
+  "two_control_cases_are_additional_occurrences_not_new_distinct_names": true,
+  "counterfactual_controls": [
+    {
+      "lane": "positive",
+      "log": {
+        "bytes": 8612,
+        "sha256": "5339d44aabc3b9bd43a8e4e395756ea79e372d70b85469beabd5100a18b20421",
+        "computed_git_blob": "28e5d2ab88aadae4c582c5c8f08c4e1bf6768726"
+      },
+      "source": {
+        "bytes": 8284,
+        "sha256": "66c07bc62a3d808bb980f83ff7ff7faf5d0430f228d3cc8cc696cb6dbeb60f51",
+        "computed_git_blob": "091a2f80f4e709aaeb750e4f5eb8fa939f7924c1"
+      },
+      "original_receipt": {
+        "lane": "positive",
+        "production_sha256": "66c07bc62a3d808bb980f83ff7ff7faf5d0430f228d3cc8cc696cb6dbeb60f51",
+        "exit_code": 0,
+        "log_sha256": "5339d44aabc3b9bd43a8e4e395756ea79e372d70b85469beabd5100a18b20421",
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=true redirected=false",
+          "creation": "denied=true created=false"
+        }
+      },
+      "actual_observation_and_assertion_lines": [
+        {
+          "line_1based": 19,
+          "text": "        PASS [   0.018s] codex-utils-path private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open"
+        },
+        {
+          "line_1based": 28,
+          "text": "    PRIVATE_STATE_ACQUISITION substitution swapped=true denied=true redirected=false"
+        },
+        {
+          "line_1based": 49,
+          "text": "        PASS [   0.017s] codex-utils-path private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf"
+        },
+        {
+          "line_1based": 58,
+          "text": "    PRIVATE_STATE_ACQUISITION creation denied=true created=false"
+        },
+        {
+          "line_1based": 61,
+          "text": "     Summary [   0.037s] 2 tests run: 2 passed, 22 skipped"
+        },
+        {
+          "line_1based": 62,
+          "text": "        PASS [   0.018s] codex-utils-path private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open"
+        },
+        {
+          "line_1based": 63,
+          "text": "        PASS [   0.017s] codex-utils-path private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf"
+        }
+      ]
+    },
+    {
+      "lane": "unchecked-create",
+      "log": {
+        "bytes": 9263,
+        "sha256": "91a7e4eb273ce0bfd5b5be8ab5ce487f641d7804f0521221981eff3e2e23833a",
+        "computed_git_blob": "d54ca3470910d3031986a93f2110a70f5acd37c4"
+      },
+      "source": {
+        "bytes": 8693,
+        "sha256": "848702096e73fbd4ee79e5a1ad672efbfe3a0de79fd7274e4643b59f7102fb16",
+        "computed_git_blob": "b3131c625c8f92aec3f8ccda208e00e24aabfcee"
+      },
+      "original_receipt": {
+        "lane": "unchecked-create",
+        "patch_sha256": "c882a2f9798b3aa5318236c6a16b7bd0edde1cd5b88395e3364a2bb831899448",
+        "production_sha256": "848702096e73fbd4ee79e5a1ad672efbfe3a0de79fd7274e4643b59f7102fb16",
+        "exit_code": 1,
+        "log_sha256": "91a7e4eb273ce0bfd5b5be8ab5ce487f641d7804f0521221981eff3e2e23833a",
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "FAIL"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=true redirected=false",
+          "creation": "denied=true created=true"
+        }
+      },
+      "actual_observation_and_assertion_lines": [
+        {
+          "line_1based": 20,
+          "text": "        PASS [   0.019s] codex-utils-path private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open"
+        },
+        {
+          "line_1based": 29,
+          "text": "    PRIVATE_STATE_ACQUISITION substitution swapped=true denied=true redirected=false"
+        },
+        {
+          "line_1based": 50,
+          "text": "        FAIL [   0.016s] codex-utils-path private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf"
+        },
+        {
+          "line_1based": 64,
+          "text": "    PRIVATE_STATE_ACQUISITION creation denied=true created=true"
+        },
+        {
+          "line_1based": 66,
+          "text": "    thread 'private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf' (8188) panicked at utils\\path-utils\\src\\private_state_windows_directory_tests.rs:97:5:"
+        },
+        {
+          "line_1based": 71,
+          "text": "     Summary [   0.038s] 2 tests run: 1 passed, 1 failed, 22 skipped"
+        },
+        {
+          "line_1based": 72,
+          "text": "        PASS [   0.019s] codex-utils-path private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open"
+        },
+        {
+          "line_1based": 95,
+          "text": "        FAIL [   0.016s] codex-utils-path private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf"
+        }
+      ]
+    },
+    {
+      "lane": "path-check-open",
+      "log": {
+        "bytes": 9343,
+        "sha256": "ee95866b230cb1b8acf1c6c2e7a55273dd924184d10498aef8af0da4a4960846",
+        "computed_git_blob": "fc36ddef4b2ed93cf5b22683156cd699974138a7"
+      },
+      "source": {
+        "bytes": 8620,
+        "sha256": "6b082a53058f4c4ebb77aa55407d6cef9952777f9b9f9ddd589c8000991b799d",
+        "computed_git_blob": "2e8acfe0ede2c41c20812061fca345922d6551e0"
+      },
+      "original_receipt": {
+        "lane": "path-check-open",
+        "patch_sha256": "e57b07ed6fc04bd973d05c4426576cb42253b35ab423ac39f1a3c2f792f2fdd9",
+        "production_sha256": "6b082a53058f4c4ebb77aa55407d6cef9952777f9b9f9ddd589c8000991b799d",
+        "exit_code": 1,
+        "log_sha256": "ee95866b230cb1b8acf1c6c2e7a55273dd924184d10498aef8af0da4a4960846",
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "FAIL",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=false redirected=true",
+          "creation": "denied=true created=false"
+        }
+      },
+      "actual_observation_and_assertion_lines": [
+        {
+          "line_1based": 20,
+          "text": "        FAIL [   0.018s] codex-utils-path private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open"
+        },
+        {
+          "line_1based": 34,
+          "text": "    PRIVATE_STATE_ACQUISITION substitution swapped=true denied=false redirected=true"
+        },
+        {
+          "line_1based": 36,
+          "text": "    thread 'private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open' (7964) panicked at utils\\path-utils\\src\\private_state_windows_directory_tests.rs:146:5:"
+        },
+        {
+          "line_1based": 68,
+          "text": "        PASS [   0.015s] codex-utils-path private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf"
+        },
+        {
+          "line_1based": 77,
+          "text": "    PRIVATE_STATE_ACQUISITION creation denied=true created=false"
+        },
+        {
+          "line_1based": 80,
+          "text": "     Summary [   0.034s] 2 tests run: 1 passed, 1 failed, 22 skipped"
+        },
+        {
+          "line_1based": 81,
+          "text": "        PASS [   0.015s] codex-utils-path private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf"
+        },
+        {
+          "line_1based": 104,
+          "text": "        FAIL [   0.018s] codex-utils-path private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open"
+        }
+      ]
+    }
+  ],
+  "original_control_command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-utils-path",
+    "--lib",
+    "-E",
+    "test(private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf) | test(private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open)",
+    "--test-threads",
+    "1",
+    "--no-tests",
+    "fail",
+    "--retries",
+    "0",
+    "--success-output",
+    "immediate",
+    "--failure-output",
+    "immediate",
+    "--status-level",
+    "all",
+    "--final-status-level",
+    "all"
+  ],
+  "original_142_matches": [],
+  "restoration": {
+    "workflow_receipt_restored": true,
+    "positive_source_sha_verified": "66c07bc62a3d808bb980f83ff7ff7faf5d0430f228d3cc8cc696cb6dbeb60f51",
+    "independent_host_post_job_recheck": false
+  },
+  "artifact_verification": {
+    "schema": "hepta-exact-artifact-zip-verification-v1",
+    "artifact_id": 13415043773,
+    "acquisition": "exact_connector_url",
+    "github_size": 15423,
+    "github_digest": "sha256:79205cd3806dc7e1a2105e5b103dc03191969c86ae3b41cf080c53bbb755f948",
+    "archive": {
+      "bytes": 15423,
+      "sha256": "79205cd3806dc7e1a2105e5b103dc03191969c86ae3b41cf080c53bbb755f948",
+      "computed_git_blob": "07f4877d3ba470d89f4ac36ffc0a703967b49283"
+    },
+    "all_crc_valid": true,
+    "member_count": 9,
+    "members": [
+      {
+        "name": "path-check-open.patch",
+        "crc": 1051073321,
+        "bytes": 962,
+        "sha256": "e57b07ed6fc04bd973d05c4426576cb42253b35ab423ac39f1a3c2f792f2fdd9",
+        "computed_git_blob": "e388cf7576b827be199b6fdf8893571f8c7a9e3b"
+      },
+      {
+        "name": "path-check-open.log",
+        "crc": 2234147277,
+        "bytes": 9343,
+        "sha256": "ee95866b230cb1b8acf1c6c2e7a55273dd924184d10498aef8af0da4a4960846",
+        "computed_git_blob": "fc36ddef4b2ed93cf5b22683156cd699974138a7"
+      },
+      {
+        "name": "manifest.json",
+        "crc": 3464433893,
+        "bytes": 3307,
+        "sha256": "8fe70804c32f688facfe76baf5781f5c7140bf22705eefd7226115611f35b540",
+        "computed_git_blob": "e127b5230782a44028b29d85df5dcca227ef4a26"
+      },
+      {
+        "name": "path-check-open.rs",
+        "crc": 1311514852,
+        "bytes": 8620,
+        "sha256": "6b082a53058f4c4ebb77aa55407d6cef9952777f9b9f9ddd589c8000991b799d",
+        "computed_git_blob": "2e8acfe0ede2c41c20812061fca345922d6551e0"
+      },
+      {
+        "name": "positive.log",
+        "crc": 2040020927,
+        "bytes": 8612,
+        "sha256": "5339d44aabc3b9bd43a8e4e395756ea79e372d70b85469beabd5100a18b20421",
+        "computed_git_blob": "28e5d2ab88aadae4c582c5c8f08c4e1bf6768726"
+      },
+      {
+        "name": "positive.rs",
+        "crc": 2060689877,
+        "bytes": 8284,
+        "sha256": "66c07bc62a3d808bb980f83ff7ff7faf5d0430f228d3cc8cc696cb6dbeb60f51",
+        "computed_git_blob": "091a2f80f4e709aaeb750e4f5eb8fa939f7924c1"
+      },
+      {
+        "name": "unchecked-create.log",
+        "crc": 2001066731,
+        "bytes": 9263,
+        "sha256": "91a7e4eb273ce0bfd5b5be8ab5ce487f641d7804f0521221981eff3e2e23833a",
+        "computed_git_blob": "d54ca3470910d3031986a93f2110a70f5acd37c4"
+      },
+      {
+        "name": "unchecked-create.patch",
+        "crc": 1294917461,
+        "bytes": 728,
+        "sha256": "c882a2f9798b3aa5318236c6a16b7bd0edde1cd5b88395e3364a2bb831899448",
+        "computed_git_blob": "83cdc99550cf514f90875714a2f7629e3948a191"
+      },
+      {
+        "name": "unchecked-create.rs",
+        "crc": 95223812,
+        "bytes": 8693,
+        "sha256": "848702096e73fbd4ee79e5a1ad672efbfe3a0de79fd7274e4643b59f7102fb16",
+        "computed_git_blob": "b3131c625c8f92aec3f8ccda208e00e24aabfcee"
+      }
+    ]
+  },
+  "limits": [
+    "All selected original commands explicitly use --retries 0; original filtered-out counts are preserved rather than relabelled ignored or passed.",
+    "Only these two physical directory controls establish their stated denial/creation/redirection endpoints.",
+    "No strict token outside-delete qualification or general B11 closure is inferred.",
+    "Private owner and prompt/FinalUse fixtures do not establish independent operator/Root/issuer acceptance.",
+    "No product command, native test or source/ref modification was performed by this reviewer."
+  ]
+}

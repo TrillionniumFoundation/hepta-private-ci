@@ -1,0 +1,90 @@
+"""Review selected-case counts directly from five already retained CI ZIPs."""
+from pathlib import Path
+import base64
+from collections import Counter
+import datetime
+import gzip
+import hashlib
+import io
+import json
+import tarfile
+import xml.etree.ElementTree as ET
+import zipfile
+
+ROOT = Path(__file__).resolve().parent.parent
+DIRECTORY = ROOT / "research-audit/published-5b633-ci-20261105/immutable-v6-unix-recovery-objective"
+transport = json.loads((DIRECTORY / "transport-manifest.json").read_bytes())
+packed = b"".join(base64.b64decode((DIRECTORY / p["name"]).read_bytes().removesuffix(b"\n"), validate=True)
+                  for p in transport["parts"])
+assert len(packed) == 3160229
+assert hashlib.sha256(packed).hexdigest() == "d90d73b9a63535d8cf9879436c27a453a69de34b8773b7145663ae703b2e897a"
+rows = []
+members_total = 0
+with tarfile.open(fileobj=io.BytesIO(gzip.decompress(packed)), mode="r:") as tar:
+    for member in tar.getmembers():
+        if not member.name.endswith(".zip"):
+            continue
+        raw = tar.extractfile(member).read()
+        job = member.name.split("/")[1]
+        review = json.loads((DIRECTORY / (job + ".review.json")).read_bytes())
+        artifact = review.get("artifact", review.get("artifact_verification"))
+        assert len(raw) == artifact["archive"]["bytes"]
+        assert hashlib.sha256(raw).hexdigest() == artifact["archive"]["sha256"]
+        scopes = []
+        all_cases = []
+        with zipfile.ZipFile(io.BytesIO(raw)) as z:
+            assert z.testzip() is None
+            assert len(z.infolist()) == artifact["member_count"]
+            pins = {r["name"]: r for r in artifact["members"]}
+            assert len(pins) == len(z.infolist())
+            for entry in z.infolist():
+                data = z.read(entry)
+                pin = pins[entry.filename]
+                assert len(data) == pin["bytes"] and hashlib.sha256(data).hexdigest() == pin["sha256"]
+                members_total += 1
+                if not entry.filename.endswith(".xml"):
+                    continue
+                xml = ET.fromstring(data)
+                cases = list(xml.iter("testcase"))
+                assert int(xml.attrib["tests"]) == len(cases)
+                assert xml.attrib["failures"] == xml.attrib["errors"] == "0"
+                assert not any(c.findall("failure") or c.findall("error") or c.findall("skipped") for c in cases)
+                assert not any("rerun" in n.tag.lower() or "flaky" in n.tag.lower() for c in cases for n in c.iter())
+                names = [(c.attrib["classname"], c.attrib["name"]) for c in cases]
+                assert len(set(names)) == len(names)
+                all_cases.extend(names)
+                scope = next(s for s in review["scopes"] if Path(s["junit"]["path"]).name == entry.filename)
+                expected = [(c["classname"], c["name"]) for c in scope["cases"]]
+                assert Counter(names) == Counter(expected)
+                scopes.append({"file": entry.filename, "selected_PASS": len(cases), "JUnit_failures_errors_skips": 0})
+        occurrences = len(all_cases)
+        distinct = len(set(all_cases))
+        if job.startswith("gnu-"):
+            assert occurrences == distinct == 517
+        elif job.startswith("mac-"):
+            assert occurrences == distinct == 521
+        else:
+            assert occurrences == 816 and distinct == 574
+        assert review["frozen_142_exact_name_intersection"] == []
+        rows.append({"job_id": review["job_id"], "actual_checkout": review["actual_checkout"],
+                     "actual_tree": review["actual_tree"], "artifact_id": artifact["artifact_id"],
+                     "artifact_bytes": len(raw), "artifact_sha256": hashlib.sha256(raw).hexdigest(),
+                     "member_count": artifact["member_count"], "scopes": scopes,
+                     "profile_occurrences": occurrences, "distinct_classname_name_pairs": distinct})
+assert len(rows) == 5 and members_total == 96
+result = {"schema": "hepta-v6-unix-objective-root-original-junit-review-v1",
+          "reviewed_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+          "original_archive_sha256": hashlib.sha256(packed).hexdigest(),
+          "root_complete_archive_verifier_previously_passed": True,
+          "five_zip_members_rehashed_and_crc_verified": members_total, "jobs": rows,
+          "limits": ["Selected JUnit counts are independently reconstructed from complete original ZIPs.",
+            "GNU and macOS ARM source/merge are separate executions; repeats across platforms or branches are not new definitions.",
+            "Console-excluded cases are outside these selected JUnit results; original scope summaries retain their separate counts and unknown names where applicable.",
+            "No product, native process, workflow or ref mutation occurred in this review.",
+            "These scopes do not close full workspace, musl, Intel, strict Windows sandbox, independent Root or B13 explicit qualification-feature exits."]}
+out = ROOT / "hepta-audit-fifth/inputs/v6-unix-objective-root-review.json"
+assert not out.exists()
+out.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
+print(json.dumps({"path": str(out), "jobs": len(rows), "zip_members": members_total,
+                  "per_job_occurrences": [r["profile_occurrences"] for r in rows],
+                  "per_job_distinct": [r["distinct_classname_name_pairs"] for r in rows]}))

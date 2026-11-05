@@ -1,0 +1,106 @@
+"""Add verified CI and separate native observations to the evidence-only V6 seed."""
+from pathlib import Path
+import hashlib
+import json
+
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "hepta-audit-fifth"
+PREFIX = "qualification/r3-audit-repair-20261104/continuation-20261105"
+seed = json.loads((OUT / "registration-plan-v6-seed-verified.json").read_bytes())
+items = {row["repository_path"]: row for row in seed["items"]}
+assert len(items) == 122 and all(row["actual_object_verified"] for row in items.values())
+
+
+def add(path, destination, role, pin=None):
+    path = Path(path)
+    if not path.is_absolute():
+        path = ROOT / path
+    data = path.read_bytes()
+    actual = {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
+              "blob": hashlib.sha1(f"blob {len(data)}\0".encode() + data).hexdigest()}
+    destination = destination if destination.startswith(PREFIX + "/") else PREFIX + "/" + destination
+    assert destination not in items, destination
+    row = {"repository_path": destination, "local_file": str(path), "mode": "100644", **actual, "role": role}
+    if pin:
+        assert actual["blob"] == pin.get("blob", pin.get("git_blob"))
+        for key in ("bytes", "sha256"):
+            if key in pin:
+                assert actual[key] == pin[key], path
+        row.update(actual_object_verified=True,
+                   verification="Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope")
+        row["prior_object_verification"] = pin
+    items[destination] = row
+
+
+base = "research-audit/published-5b633-ci-20261105"
+for directory, blob, name in [
+    ("immutable-v6-recovery-ui-registry", "4830effd23de5fa76ab604a0273cd59ce6986893", "ci-5b633-recovery-ui-v6-registry-plan.json"),
+    ("immutable-v6-unix-objective-registry", "4c4b91e37501a7bb1f32a323d76f04d51d772fbf", "ci-5b633-unix-objective-v6-registry-plan.json"),
+    ("immutable-v6-queue-v8-registry", "97fd6b5731bdc5f12ca399690baf6a179d3682c5", "ci-5b633-queue-v8-v6-registry-plan.json"),
+]:
+    path = ROOT / base / directory / "registry-plan.json"
+    for row in json.loads(path.read_bytes())["items"]:
+        assert row["actual_create_get"]
+        add(row["local_path"], row["repo_path"], "Complete original CI evidence with exact execution and selection boundaries", row)
+    add(path, "generated-evidence/" + name, "Root-read immutable source registry", {"blob": blob})
+
+archive = OUT / "v6-archives/core-transport-readiness-starts-v1"
+for path in sorted(archive.iterdir()):
+    name = path.name + (".source.txt" if path.suffix == ".py" else "")
+    add(path, "native/core-transport-readiness-starts-v1/" + name,
+        "84 complete observed originals; root independently reconstructed the entire gzip/TAR and every original identity")
+
+core = ROOT / "ci-audit/core-wait-span-20261105"
+for row in json.loads((core / "mechanism-actual-priority-v1/manifest.json").read_bytes())["files"]:
+    add(row["local_path"], "native/core-musl-rog-v3/mechanism-actual/" + Path(row["local_path"]).name,
+        "Actual controlled tracing mechanism; original Windows interleaving and product gates remain separate", row)
+add(core / "mechanism-actual-priority-v1/manifest.json", "native/core-musl-rog-v3/mechanism-actual/manifest.json",
+    "Original mechanism endpoint inventory")
+add(ROOT / "research-audit/core-wait-span-independent-20261105/mechanism-actual-endpoint-review.json",
+    "reviews/core-tracing-mechanism-actual-independent-review.json", "Independent exact endpoint review",
+    {"blob": "8bc0cb19465285973ba75bad3c80314f3e20d27b"})
+add(ROOT / "research-audit/core-wait-span-independent-20261105/git-transport-independent-narrow-review.json",
+    "reviews/core-git-transport-independent-review.json", "Independent fixed-input bootstrap review",
+    {"blob": "1eaf35a1e15a20aa9d8edfa89754b95dd5aea019"})
+
+for local, destination, blob, role in [
+    ("inputs/core-musl-git-bootstrap-root-guard-v1.json", "native/core-musl-rog-v3/git-bootstrap-root-guard.json", "e186a961c02ab3e511db1e1dffe7719f35b46baf", "Root guard for the actual fixed-Git bootstrap"),
+    ("inputs/core-musl-git-transport-publication-v1.json", "reviews/core-git-input-publication-receipt.json", None, "Input-only cc33 checkpoint, eight new paths and unchanged previous leaves"),
+    ("inputs/core-native-prerequisites-root-review-v1.json", "reviews/core-native-prerequisites-root-review.json", "5bae7f2aee0faa29388e589a978da70a162cf07f", "Root reconstructed mechanism and ai395 readonly readiness originals"),
+    ("inputs/ai395-core-c0-c1-root-execution-guard-v1.json", "native/ai395-core-c0-c1-v1/root-execution-guard.json", "2a1279906be31aebff28e68350d5fee1010524e6", "C0/C1 build-only execution scope; C2/full remains disabled"),
+    ("inputs/ai395-core-c0-c1-request-ENABLED-v1.json", "native/ai395-core-c0-c1-v1/request-ENABLED.json", "0ff35093e284f2c074061f473f295ec49bbb5bf4", "Exact root-enabled request"),
+    ("inputs/ai395-core-c0-c1-process-start-ENABLED-v1.json", "native/ai395-core-c0-c1-v1/process-start-ENABLED.json", "d8473e84b63a670a291ca71606a749e88a3e44d3", "Exact first-start arguments; not a terminal success claim"),
+    ("inputs/v6-unix-objective-root-review.json", "reviews/v6-unix-objective-root-review.json", "391f0ecd4ea7ff286e324abb9bdf3ea32db8e519", "Root directly verified five original ZIPs, 96 members and all selected JUnit case identities"),
+    ("verify_core_prerequisites_v6.py", "generated-evidence/verify_core_prerequisites_v6.py.source.txt", None, "Reproduce existing receipt verification without native calls"),
+    ("verify_v6_unix_objective_junit.py", "generated-evidence/verify_v6_unix_objective_junit.py.source.txt", None, "Reproduce selected JUnit accounting from complete retained ZIPs"),
+    ("prepare_ai395_core_c0_c1_guard.py", "native/ai395-core-c0-c1-v1/prepare_root_guard.py.source.txt", None, "Concrete input checks and authorization preparation; no native launch"),
+    ("freeze_v6_core_observations.py", "native/core-transport-readiness-starts-v1/freeze_originals.py.source.txt", None, "Exact observation-cut archiver"),
+    ("extend_registration_v6.py", "generated-evidence/extend_registration_v6.py.source.txt", None, "Additive evidence-only registration builder"),
+]:
+    add(OUT / local, destination, role, {"blob": blob} if blob else None)
+
+for local, destination, blob in [
+    ("ai395-readiness-launch-v1/readiness.original.json", "native/ai395-core-readiness-v1/readiness.original.json", None),
+    ("ai395-readiness-launch-v1/readiness-actual-summary.json", "native/ai395-core-readiness-v1/readiness-actual-summary.json", None),
+    ("ai395-cold-prepare-v1/run_prepare_v2.py", "native/ai395-core-c0-c1-v1/run_prepare_v2.py.source.txt", "3ecebfe6c74214f911bf5771506ab6b6ebbaf9d4"),
+    ("ai395-cold-prepare-v1/request-DISABLED-v1.json", "native/ai395-core-c0-c1-v1/request-DISABLED.json", "377bf801ec7e422618c8aa52b75c40565c297f07"),
+    ("ai395-cold-prepare-v1/process-start-DISABLED-v1.json", "native/ai395-core-c0-c1-v1/process-start-DISABLED.json", "8d91a968673172e5bfef3e3e2eef6646e0d9de7f"),
+    ("ai395-cold-prepare-v1/manifest.json", "native/ai395-core-c0-c1-v1/manifest.json", "e7aa401e532d0c37e78c1bf75bd651016381b4ee"),
+    ("ai395-cold-full-plan-v1/plan-DISABLED.json", "native/ai395-core-full-DISABLED/plan.json", None),
+    ("ai395-cold-full-plan-v1/agentd-qualification-after-full-DISABLED.json", "native/ai395-core-full-DISABLED/agentd-qualification-after-full.json", None),
+]:
+    add(core / local, destination, "Separate source/readiness/build-only/full-disabled scope; actual outcomes require their own receipts", {"blob": blob} if blob else None)
+
+result = {"schema": "hepta-evidence-only-registration-plan-v6-extended",
+    "base_audit_commit": "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72",
+    "base_audit_tree": "65cfd91deea0fbd5b432c225e16d15106ed5f373",
+    "evidence_only": True, "all_blockers_closed": False, "whole_product_qualified": False,
+    "entry_count": len(items), "items": sorted(items.values(), key=lambda row: row["repository_path"])}
+for row in result["items"]:
+    b = Path(row["local_file"]).read_bytes()
+    assert len(b) == row["bytes"] and hashlib.sha256(b).hexdigest() == row["sha256"]
+path = OUT / "registration-plan-v6-extended.json"
+assert not path.exists(), path
+path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
+print(json.dumps({"entries": len(items), "verified": sum(r.get("actual_object_verified", False) for r in items.values()),
+                  "bytes": sum(r["bytes"] for r in items.values()), "max_blob": max(r["bytes"] for r in items.values())}))

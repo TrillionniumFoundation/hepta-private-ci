@@ -1,0 +1,223 @@
+from __future__ import annotations
+
+import collections
+import hashlib
+import json
+import re
+import shlex
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+OUT = Path(__file__).resolve().parent
+SRC = OUT / "source"
+COMMIT = "5b6331250ff459033bd44d1a95daec70131277cc"
+TREE = "b26598d0d97d8d51e723bb5582137315f2174d35"
+
+
+def pin(path: Path):
+    body = path.read_bytes()
+    return {"path": str(path.relative_to(ROOT)), "bytes": len(body),
+            "sha256": hashlib.sha256(body).hexdigest(),
+            "git_blob": hashlib.sha1(b"blob " + str(len(body)).encode() + b"\0" + body).hexdigest()}
+
+
+def read(path):
+    return json.loads((ROOT / path).read_text())
+
+
+def save(name, value):
+    (OUT / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n")
+
+
+def source_anchor(path, needle, radius=0):
+    lines = (SRC / path).read_text().splitlines()
+    matches = [n for n, line in enumerate(lines, 1) if needle in line]
+    assert len(matches) == 1, (path, needle, matches)
+    n = matches[0]
+    return {"path": path, "git_blob": leaf[path]["sha"], "line": n,
+            "excerpt": "\n".join(lines[max(0, n - 1 - radius):n + radius])}
+
+
+leaf = {x["path"]: x for x in read("hepta-audit-fifth/inputs/product-5b-full-leaf-manifest.json")["leaves"]}
+named_path = ROOT / "research-audit/next-head-ci-plan-20261105/named-exit-cases.json"
+named = json.loads(named_path.read_text())
+cases = [x for x in named["cases"] if x["blocker_id"] in ("B07", "B10") or
+         x["blocker_id"] == "B08" and x["binary"] == "codex-core::all" or
+         x["blocker_id"] == "B09" and x["binary"].endswith("::all") or
+         x["blocker_id"] == "B13" and x["binary"] == "codex-hepta-agentd"]
+assert len(cases) == 54
+assert collections.Counter(x["blocker_id"] for x in cases) == {"B07": 28, "B08": 1, "B09": 10, "B10": 14, "B13": 1}
+
+fullbase = ROOT / "ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1"
+catalog = json.loads((fullbase / "full-workspace-catalog.stdout").read_text())
+selection = json.loads((fullbase / "full-workspace-selection.json").read_text())
+metadata = json.loads((fullbase / "workspace-metadata.stdout").read_text())
+pkg = {x["name"]: x for x in metadata["packages"]}
+nodes = {x["id"]: x for x in metadata["resolve"]["nodes"]}
+records = {x["binary_id"]: x for x in selection["test_binaries_after_catalog_before_just"]}
+config = {
+    "codex-core::all": ("codex-core", ["--test", "all"], [], 38, "long"),
+    "codex-mcp": ("codex-mcp", ["--lib"], [], 6, "unspecified; inherit Bazel rule defaults"),
+    "codex-app-server::all": ("codex-app-server", ["--test", "all"], [], 9, "long"),
+    "codex-hepta-agentd": ("codex-hepta-agentd", ["--lib"], ["qualification-cognitive-write"], 1, "unspecified; inherit Bazel rule defaults"),
+}
+groups = []
+for binary, (package, target_args, features, expected, bazel_timeout) in config.items():
+    selected = [x for x in cases if x["binary"] == binary]
+    assert len(selected) == expected
+    names = [x["test"] for x in selected]
+    rows = []
+    for item in selected:
+        name = item["test"]
+        if package == "codex-core":
+            module = name.split("::")[1]
+            path = f"codex-rs/core/tests/suite/{module}.rs"
+            function = name.split("::")[2]
+        elif package == "codex-app-server":
+            module = name.split("::")[2]
+            path = f"codex-rs/app-server/tests/suite/v2/{module}.rs"
+            function = name.split("::")[3]
+        elif package == "codex-mcp":
+            path = "codex-rs/codex-mcp/src/binding_tests.rs"
+            function = name.split("::")[2]
+        else:
+            path = "codex-rs/hepta-agentd/src/runtime_tests.rs"
+            function = name.split("::")[2]
+        anchor = source_anchor(path, "fn " + function + "(", 2)
+        old = catalog["rust-suites"].get(binary, {}).get("testcases", {}).get(name)
+        assert (old is None) == bool(features), (binary, name, old)
+        if old is not None:
+            assert old == {"ignored": False, "filter-match": {"status": "matches"}}
+        rows.append({"blocker_id": item["blocker_id"], "binary_id": binary, "name": name,
+                     "source": anchor, "original_bazel_target": item["bazel_target"],
+                     "windows_scope_from_frozen_catalog": item["windows_cfg_scope"],
+                     "actual_fb9_full_catalog_record": old,
+                     "current_execution_claim": False})
+    expr = " | ".join("test(=" + x + ")" for x in names)
+    argv = ["just", "test", "--locked", "--cargo-profile", "dev-small", "-p", package]
+    if features:
+        argv += ["--features", ",".join(features)]
+    argv += target_args + ["--no-tests", "fail", "--retries", "0", "--success-output", "immediate", "-E", expr]
+    if features:
+        argv += ["--test-threads=1"]
+    groups.append({
+        "group": binary, "expected_exact_cases": expected, "package": package,
+        "original_cargo_target": target_args, "additional_features": features,
+        "actual_historic_full_features": nodes[pkg[package]["id"]]["features"],
+        "actual_historic_binary": records[binary],
+        "historic_binary_qualifies_requested_feature": not bool(features),
+        "historic_identity_limit": "Original fb9/ROG observation only; no current-host existence, freshness, or peak-capacity claim. The Agentd row is the ordinary 243-case binary, not a qualification binary.",
+        "proposed_existing_recipe_selection_argv": argv,
+        "shell_display": shlex.join(argv),
+        "working_directory": "repository root; original just recipe changes to codex-rs",
+        "execution_authorized_by_this_receipt": False,
+        "expected_case_selection_requires_fresh_catalog": True,
+        "original_budget": {
+            "nextest_profile": "local (set by original just test recipe)",
+            "slow_timeout_period_seconds": 30,
+            "slow_timeout_terminate_after": 2,
+            "applicable_case_specific_override": None,
+            "retry_setting": "explicit 0 as existing native qualification policy, not default nextest retries=1",
+            "source_internal_deadlines": "unchanged exact test source; no extension, skip, assertion, or sleep change",
+            "bazel_target_timeout_attribute": bazel_timeout,
+        },
+        "cases": rows,
+    })
+
+proof = json.loads((OUT / "actual-full-agentd-feature-catalog-proof.json").read_text())
+delta_path = ROOT / "hepta-audit-fifth/inputs/source-A4a-to-product-5b-full-delta.json"
+delta = json.loads(delta_path.read_text())
+changed = delta["changed"]
+production = [x for x in changed if not x["path"].startswith("qualification/")]
+build_inputs = [x["path"] for x in production if x["path"].endswith(("Cargo.toml", "Cargo.lock", "BUILD.bazel", "nextest.toml")) or x["path"] in ("defs.bzl", "MODULE.bazel", "MODULE.bazel.lock", "justfile", "scripts/run-nextest.py")]
+assert build_inputs == []
+pty = catalog["rust-suites"]["codex-utils-pty"]["testcases"]
+assert pty["tests::output_collector_waits_for_exit_after_output_closes"] == {"ignored": False, "filter-match": {"status": "matches"}}
+
+workflow_map = json.loads((OUT / "workflow-input-map.json").read_text())
+collector = (SRC / ".github/scripts/collect_bazel_failed_test_logs.py").read_text()
+retained = re.search(r"RETAINED_TARGETS = \((.*?)\n\)", collector, re.S)[1]
+targets = sorted({x["bazel_target"] for x in cases})
+assert all('"' + t + '"' in retained for t in targets)
+out = {
+    "schema": "original-exit-selection-5b-static-v1", "fixed_commit": COMMIT, "fixed_tree": TREE,
+    "status": "STATIC_SOURCE_AND_ORIGINAL_CATALOG_VERIFIED_NO_NEW_EXECUTION",
+    "original_named_catalog": pin(named_path), "scope_counts": dict(collections.Counter(x["blocker_id"] for x in cases)),
+    "total_exact_remaining_names": 54,
+    "selection_commands_are_existing_tests_only": True,
+    "no_source_scope_budget_assertion_or_ignore_policy_changes": True,
+    "groups": groups,
+    "agentd_distinct_feature_scope": {
+        "original_workflow": {"path": ".github/workflows/hepta-gap-agentd-process.yml", "git_blob": leaf[".github/workflows/hepta-gap-agentd-process.yml"]["sha"], "lines": [159, 160]},
+        "original_literal_argv": ["just", "test", "--locked", "-p", "codex-hepta-agentd", "--features", "qualification-cognitive-write", "--lib", "runtime::tests::qualification_", "--test-threads=1"],
+        "original_prefix_count": 3,
+        "original_prefix_names": ["runtime::tests::qualification_" + x for x in ["host_binds_one_local_turn_and_replays_exactly_once", "prepare_takes_over_expired_registry_head_without_evidence", "prepare_quarantines_expired_registry_attempt_with_h7_evidence"]],
+        "single_case_option": "groups[codex-hepta-agentd] selects only the unchanged original ninth name, through the same feature-enabled original recipe, under existing native no-retry policy. Do not run both scopes by default.",
+        "feature_effect": "qualification-cognitive-write adds only local production-cognitive-write; no new dependency feature edge. Fresh Cargo compilation/catalog/program hashes still required; old ordinary binary does not establish reuse or a memory/disk peak.",
+        "actual_fixture_dependencies": "temporary registry and SQLite, existing H7/authority-lease APIs and compile_data; no Agentd/AppServer/provider child process for these three original unit fixtures",
+        "physical_deadline": source_anchor("codex-rs/hepta-agentd/src/runtime_tests.rs", "const SETUP_LEASE_TTL_SECONDS: u64 = 30;", 1),
+        "test_contract": "Set up and commit real H7 start/terminal evidence while lease is live; wait until its existing 30-second deadline; expired prepare must return no writable input and preserve the exact expired registry head.",
+        "not_b16_root_current_acceptance": True,
+        "qualified_historic_binary_available_in_inspected_363_program_sets": False,
+        "full_graph_and_catalog_proof": pin(OUT / "actual-full-agentd-feature-catalog-proof.json"),
+    },
+    "bazel_registration_and_selection": {
+        "targets": targets,
+        "main_caller": source_anchor(".github/workflows/blocking-ci.yml", "uses: ./.github/workflows/bazel.yml", 2),
+        "main_guard": "needs.scope.outputs.full_repo == 'true'; registration and static selector inclusion do not prove the queued matrix executed",
+        "non_windows_selector": "//... minus only //third_party/v8:all and //codex-rs/v8-poc:v8-poc-unit-tests; test_tag_filters=-argument-comment-lint",
+        "windows_selector": 'tests(//...) except tests(//third_party/v8:all) except attr(tags, "manual", tests(//...))',
+        "windows_partition": "one of four PR shards by POSIX cksum(label + newline) modulo 4; no new selection filter",
+        "qualification_outer": source_anchor("codex-rs/hepta-agentd/BUILD.bazel", 'name = "hepta-agentd-cognitive-write-qualification-test",', 2),
+        "qualification_outer_manual": False, "qualification_inner_manual": True,
+        "qualification_outer_platform_restriction": None,
+        "inner_manual_does_not_remove_outer_registered_test": True,
+        "main_matrix_job_budget_minutes": 120,
+        "success_log_retention_already_contains_every_target": True,
+        "collector_blob": leaf[".github/scripts/collect_bazel_failed_test_logs.py"]["sha"],
+        "collector_limits": "A console PASS with cached/no-local artifacts is not automatically fresh exact-case evidence; keep original collector limitations.",
+    },
+    "specialized_workflow_scope": {
+        "all_93_fixed_workflow_bodies_hash_verified": True,
+        "workflow_map": pin(OUT / "workflow-input-map.json"),
+        "hepta_gap_agentd_process_has_no_repo_workflow_caller": True,
+        "hepta_gap_agentd_process_triggers": ["workflow_call", "workflow_dispatch"],
+        "deep_agentd_workflow_not_among_19_observed_5b_run_names": True,
+        "owner_local_agentd_lib_default_does_not_enable_qualification": True,
+        "windows_core_lifecycle_only_core_unit_not_core_all": True,
+        "rust_ci_cargo_test_is_argument_comment_lint_subworkspace_not_whole_codex": True,
+        "current_observation_limit": "This is a static selection audit, not a new CI status query. At the independently recorded 13:08 snapshot0045 the main blocking Bazel matrix had not expanded. Await original exact-case records, without adding dispatch/retry or transferring unrelated successes.",
+    },
+    "already_observed_subset_not_reexecuted_here": {
+        "B08_core_units": 3, "B09_core_units": 9, "B13_queue_cases": 8,
+        "core_target_whole_status": "1 other FAIL; matched named case PASS does not make the whole target PASS",
+        "queue_source_review_git": "8ac8043ed4c8db0c992379f5d6a917662927084c",
+        "queue_merge_review_git": "6d3c3c3df36621093de010723c53eb7564cdba64",
+        "owner_local_217_intersection_original_142": 0,
+    },
+    "source_bridge": {"input": pin(delta_path), "from_tree": delta["from_tree"], "to_tree": TREE,
+                      "actual_non_qualification_changed_paths": [x["path"] for x in production],
+                      "actual_cargo_build_nextest_input_changes": build_inputs,
+                      "interpretation": "Historical metadata/catalog retain their original fb9 or BUILD_ONLY 4a source label. Exact 4a-to-5b source bridge supports unchanged selection inputs; it does not relabel an old test execution."},
+    "pty_roster_clarification": {"actual_fb9_catalog": pin(fullbase / "full-workspace-catalog.stdout"),
+                                 "binary": "codex-utils-pty", "actual_linux_suite_cases": len(pty),
+                                 "already_present_before_5b": "tests::output_collector_waits_for_exit_after_output_closes",
+                                 "record": pty["tests::output_collector_waits_for_exit_after_output_closes"],
+                                 "no_extra_plus_one_to_19563_for_5b_diagnostic": True,
+                                 "mac_31_is_platform_specific_not_linux_counter": True},
+    "original_receipt_sources": {"full_selection": pin(fullbase / "full-workspace-selection.json"),
+                                  "actual_full_metadata_catalog_proof": pin(OUT / "actual-full-agentd-feature-catalog-proof.json"),
+                                  "source_manifest": pin(OUT / "source-manifest.json")},
+    "limitations": ["All 54 original names, tests, assertions, deadlines and platform cfg remain unchanged.",
+                    "Windows cannot qualify Unix-only/ignored original cases; Wine is not an independent native Windows acceptance result.",
+                    "B10's existing skip_if_no_network gates remain in source; an early-return PASS is not business acceptance.",
+                    "Current test/helper identities, feature closure and free capacity must be bound by the sole native lane if root chooses the proposed extra selection.",
+                    "No native project command, test, build, remote host operation, workflow dispatch or product source/ref mutation was performed by this audit.",
+                    "No original blocker status was changed."]
+}
+save("selection-checklist.json", out)
+print(json.dumps({"cases": len(cases), "groups": {g["group"]: g["expected_exact_cases"] for g in groups},
+                  "source_inputs": len(json.loads((OUT / "source-manifest.json").read_text())["sources"]),
+                  "workflow_inputs": workflow_map["workflow_count"],
+                  "exact_old_catalog_cases_present": sum(c["actual_fb9_full_catalog_record"] is not None for g in groups for c in g["cases"]),
+                  "selection_pin": pin(OUT / "selection-checklist.json")}, ensure_ascii=False, indent=2))

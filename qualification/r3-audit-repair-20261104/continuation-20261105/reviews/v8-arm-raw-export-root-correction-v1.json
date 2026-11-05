@@ -1,0 +1,49 @@
+{
+  "schema": "root_v8_arm_exact_api_bytes_correction_v1",
+  "old_v1_retained": true,
+  "root_verified_API_equality": true,
+  "root_verified_CRLF_equation": true,
+  "old": {
+    "bytes": 157330,
+    "sha256": "a8c7d0afe0df61a8b6199e9eaccc2c6e40f530ed823010c561961acba650e313",
+    "computed_git_blob": "c4e00e6db917ba7d942dc7e792d4a5008ef6d8e5"
+  },
+  "actual": {
+    "bytes": 159107,
+    "sha256": "36ed4e52e87b3fe4612104898097e7ff937bd0a6008b90bcd5bc7cd182b25ade",
+    "computed_git_blob": "c2ed0bf58d1e3b9cba521555eb6975e84b408a95"
+  },
+  "envelope": {
+    "bytes": 169061,
+    "sha256": "427a21d599b1cabd8b3acba8f3f6033c0f09c340f5f3e3249fc9825a63366401",
+    "computed_git_blob": "4c7e26a9ddbcc0d22c19506e54be3d82b6bb9025"
+  },
+  "scope": {
+    "old_v1_archive": {
+      "name": "original-outcomes.tar.gz",
+      "bytes": 338203,
+      "sha256": "54ce92f95d29afdbe589d8cca63c6d0d0f16894b19e896eec71959dc159326a9",
+      "computed_git_blob": "a8386447a83b5de8a0fe89f8f18dea90cb54aeef"
+    },
+    "old_LF_export": {
+      "bytes": 157330,
+      "sha256": "a8c7d0afe0df61a8b6199e9eaccc2c6e40f530ed823010c561961acba650e313",
+      "computed_git_blob": "c4e00e6db917ba7d942dc7e792d4a5008ef6d8e5"
+    },
+    "corrected_API_bytes": {
+      "bytes": 159107,
+      "sha256": "36ed4e52e87b3fe4612104898097e7ff937bd0a6008b90bcd5bc7cd182b25ade",
+      "computed_git_blob": "c2ed0bf58d1e3b9cba521555eb6975e84b408a95"
+    },
+    "API_envelope": {
+      "bytes": 169061,
+      "sha256": "427a21d599b1cabd8b3acba8f3f6033c0f09c340f5f3e3249fc9825a63366401",
+      "computed_git_blob": "4c7e26a9ddbcc0d22c19506e54be3d82b6bb9025"
+    },
+    "CRLF_count": 1777,
+    "exact_CRLF_to_LF_reproduces_old_export": true,
+    "old_v1_preserved_as_history": true,
+    "new_observations_or_tests_added": false
+  },
+  "facts_unchanged": "Only canceled observed; actor/reason UNKNOWN, product test/stage/upload not executed."
+}

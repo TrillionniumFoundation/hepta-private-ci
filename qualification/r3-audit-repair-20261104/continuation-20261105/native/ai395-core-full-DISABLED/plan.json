@@ -1,0 +1,404 @@
+{
+  "schema": "ai395-independent-core-full-cold-plan-v1",
+  "execute": false,
+  "root_execution_guard": null,
+  "state": "DISABLED_WAITING_FRESH_READINESS_AND_ROOT_SCOPE_REVIEW",
+  "purpose": "Complete the original workspace gate on an independent new host/source/target if ROG cannot satisfy its full-stage capacity gate; no replay or mutation of unknown B driver.",
+  "host": "ai395",
+  "owned_root_must_be_absent": "/home/qq/work/hepta-core-musl-full-20261105",
+  "source_directory": "/home/qq/work/hepta-core-musl-full-20261105/source",
+  "target_directory": "/home/qq/work/hepta-core-musl-full-20261105/target-dev-small",
+  "evidence_directory": "/home/qq/work/hepta-core-musl-full-20261105/evidence",
+  "prior_B_write_exclusion": {
+    "source": "/home/qq/work/hepta-audit-b16-20261105/source",
+    "target": "/home/qq/work/hepta-audit-b16-20261105/target-dev-small",
+    "requests_and_keys": "All prior B driver requests, idempotency keys, source, target, caches and evidence are excluded from any mutation.",
+    "old_tools_and_SDK": "Only immutable file reads/execution of explicitly pinned tools and SDK inputs; no install, rustup update/default change or old cache write."
+  },
+  "source": {
+    "repository": "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+    "commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "product_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "product_leaves": 10580,
+    "candidate_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "candidate_changes": {
+      "codex-rs/core/src/environment_selection.rs": {
+        "pre": "85d590f386ba81428e5ea3360d2e573d054cab4a",
+        "post": "3c08e1620e800c30c47d98cc775cb20d4650ac88"
+      },
+      "codex-rs/linux-sandbox/src/parent_lifecycle.rs": {
+        "pre": "8f500e03938718820360ce2ad41f2286eb9071bd",
+        "post": "fe42212316589999fdfc0b1877c975bdafa4a8e7"
+      }
+    },
+    "ordinary_head_and_index": "New checkout HEAD must be fixed5b; measure its own ordinary index. Never transplant ROG cabc/e959 or B20fd/index identities.",
+    "acquisition": "Normal existing noninteractive Git credentials only. Create new owned Git source, fetch exact commit, verify complete 10580-leaf tree, then apply only two reviewed posts and verify full e78c. Failure is retained; no credential extraction/login/config edits or alternate route."
+  },
+  "readiness": {
+    "request": "ci-audit/core-wait-span-20261105/ai395-readiness-launch-v1/request-ENABLED.json",
+    "key": "hepta-ai395-core-readiness-20261105-v1",
+    "current_result": "First process_start MCP timeout; only exact owned report-path readback pending. No fresh free/memory/bytes qualification assumed.",
+    "expected_physical_files": 171,
+    "expected_links": 147,
+    "old_versions_are_historical": true,
+    "future_root_absence_must_be_rechecked": true
+  },
+  "capacity": {
+    "minimum_entry_free_bytes": 200000000000,
+    "minimum_before_after_build_or_test_free_bytes": 64000000000,
+    "cold_target": true,
+    "historical_roles_sum_bytes": 18517479536,
+    "historical_role_sum_limit": "363 programs +33 helper roles are not unique allocated storage or peak-build measurements; they do not establish the new target capacity.",
+    "working_allowance_breakdown_bytes": {
+      "conditional_Cargo_outputs_and_intermediate_budget": 96000000000,
+      "task_private_registry_Git_tools_and_source_budget": 16000000000,
+      "raw_JUnit_catalog_evidence_budget": 8000000000,
+      "unallocated_estimation_margin": 16000000000,
+      "reserve": 64000000000
+    },
+    "sum": 200000000000,
+    "runtime_RAM_and_CPU": "Fresh readiness memory/load/CPU observations are required. Propose CARGO_BUILD_JOBS=4 as in the verified P4 cold build; all test scheduler/thread settings remain original. A concrete RAM threshold or sequencing decision will be bound from fresh facts, not an invented current availability.",
+    "no_peak_guarantee": true,
+    "no_delete_or_lower_gate": true,
+    "unknown_B_process_activity": "Not inferred from paths or host load; no PID reads/kills or old target reuse."
+  },
+  "environment_proposed": {
+    "CARGO_BUILD_JOBS": "4",
+    "CARGO_HOME": "/home/qq/work/hepta-core-musl-full-20261105/cargo-home",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "CARGO_TARGET_DIR": "/home/qq/work/hepta-core-musl-full-20261105/target-dev-small",
+    "DOTSLASH_CACHE": "/home/qq/work/hepta-core-musl-full-20261105/dotslash-cache",
+    "GCM_INTERACTIVE": "never",
+    "GIT_TERMINAL_PROMPT": "0",
+    "NEXTEST_PROFILE": "local",
+    "OPENSSL_INCLUDE_DIR": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include",
+    "OPENSSL_LIB_DIR": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu",
+    "PATH": "/home/qq/work/hepta-audit-b16-20261105/tools/bin:/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+    "PKG_CONFIG_PATH": "/home/qq/work/hepta-audit-b16-20261105/tools/libcap-2.75-10ubuntu2/pkgconfig",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RUSTUP_HOME": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "RUSTY_V8_ARCHIVE": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "GIT_OPTIONAL_LOCKS": "0",
+    "UV_CACHE_DIR": "/home/qq/work/hepta-core-musl-full-20261105/uv-cache",
+    "UV_PYTHON_DOWNLOADS": "never",
+    "PYTHONPYCACHEPREFIX": "/home/qq/work/hepta-core-musl-full-20261105/python-pycache"
+  },
+  "environment_rules": [
+    "All writable build/cache/uv/Python paths belong to new root. No existing B target/cache location is used as output.",
+    "Use pinned actual Rust toolchain binaries and physical sysroot; do not invoke rustup install/update/default commands. Before running, validate PATH resolves each planned command to the intended physical pinned executable.",
+    "Use actual fixed V8 ptrcomp+sandbox archive/bindings and actual private OpenSSL/libcap inputs; rehash them at initial/final/failure boundaries. Keep their source receipts historical and record new observed identities independently.",
+    "Reject unreviewed compiler injection names, test skip/thread overrides or environment drift. Never print credentials or ambient environment.",
+    "If actual required tool resolution would write an old B directory, stop and prepare a separately reviewed task-owned tool copy/install. No implicit fall back to old caches."
+  ],
+  "actual_tool_pins": [
+    {
+      "bytes": 644784,
+      "dev": 66306,
+      "git_blob": "d2d5434a06d69fdd4982b4ed3e41cba1d138cd4e",
+      "inode": 65436480,
+      "mode": "0o700",
+      "name": "rustc",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6",
+      "version_output": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n"
+    },
+    {
+      "bytes": 42185192,
+      "dev": 66306,
+      "git_blob": "dbc25264b05124bf8b4cabb637e73229f52c138f",
+      "inode": 65436393,
+      "mode": "0o700",
+      "name": "cargo",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "sha256": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66",
+      "version_output": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)\n"
+    },
+    {
+      "bytes": 1263912,
+      "dev": 66306,
+      "git_blob": "dbf54b2ab4a561ada99f2bbfb47c1e9fbd0b013d",
+      "inode": 65436331,
+      "mode": "0o700",
+      "name": "cargo-clippy",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo-clippy",
+      "sha256": "b71b1263063707608daa1e9b231ad9d87507c11d6aa178ede2b01d8372d5effb",
+      "version_output": "clippy 0.1.95 (59807616e1 2026-04-14)\n"
+    },
+    {
+      "bytes": 5295560,
+      "dev": 66306,
+      "git_blob": "9cd0dd53f44f9fe85f52b0d0b59f5008aed4f501",
+      "inode": 65436471,
+      "mode": "0o700",
+      "name": "rustfmt",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "sha256": "56b31ad3ec8fe0277a2884a189e243b8f04e9b48e5fd22e547c1516c5f8fd34c",
+      "version_output": "rustfmt 1.9.0-stable (59807616e1 2026-04-14)\n"
+    },
+    {
+      "bytes": 5452040,
+      "dev": 66306,
+      "git_blob": "1da163996dca7176901b8e5b2514a4ff9fae8a01",
+      "inode": 65436562,
+      "mode": "0o700",
+      "name": "just",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7",
+      "version_output": "just 1.51.0\n"
+    },
+    {
+      "bytes": 24038232,
+      "dev": 66306,
+      "git_blob": "b15125abb7e82cfbe52f7d2a1b6dfb90b914e990",
+      "inode": 65436586,
+      "mode": "0o700",
+      "name": "cargo-nextest",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1",
+      "version_output": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu\n"
+    },
+    {
+      "bytes": 77023347,
+      "dev": 66306,
+      "git_blob": "b5eed055bd801723ce22ab16114d4adbc0ffa43e",
+      "inode": 65436613,
+      "mode": "0o700",
+      "name": "bazel",
+      "nlink": 1,
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/bazel",
+      "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+      "version_output": "bazel 9.3.0\n"
+    },
+    {
+      "bytes": 4547768,
+      "dev": 66306,
+      "git_blob": "4639a1005ff733f8a6a6ed0fea50cbc633d15c79",
+      "inode": 82183527,
+      "mode": "0o755",
+      "name": "git",
+      "nlink": 1,
+      "observation_scope": "Current read-only completion; not claimed as original P4 pre-build capture.",
+      "observed_at": "2026-11-05T10:06:59.926753+00:00",
+      "path": "/usr/bin/git",
+      "sha256": "ed8b2df973b28c0fb773b9c0dc0816d3ee2b3835bb932d9153c21417bb51b362",
+      "version_output": "git version 2.53.0\n"
+    }
+  ],
+  "SDK_parent_pins": {
+    "libcap": {
+      "environment": {
+        "PKG_CONFIG_PATH": "/home/qq/work/hepta-audit-b16-20261105/tools/libcap-2.75-10ubuntu2/pkgconfig"
+      },
+      "final_guard": {
+        "bytes": 4871,
+        "dev": 66306,
+        "git_blob": "6a702717bff52a9e8b4eb3d1cb55652571fb34a1",
+        "inode": 68970423,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-readonly-completion-v4/completion-final.libcap-sdk-guard.json",
+        "sha256": "d2873c2c374003397e21fec5bca4561553a7a68981ec47d261dd3057a86fe098"
+      },
+      "initial_guard": {
+        "bytes": 4871,
+        "dev": 66306,
+        "git_blob": "6a702717bff52a9e8b4eb3d1cb55652571fb34a1",
+        "inode": 68968975,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-readonly-completion-v4/completion-initial.libcap-sdk-guard.json",
+        "sha256": "d2873c2c374003397e21fec5bca4561553a7a68981ec47d261dd3057a86fe098"
+      },
+      "receipt": {
+        "bytes": 21821,
+        "dev": 66306,
+        "git_blob": "86c0f8f58e339106f0606c507848d8ca344480c6",
+        "inode": 67663424,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-libcap-sdk-continuation-v2/libcap-sdk.json",
+        "sha256": "91a00c1b04650fe67d60af6573b60f5d4a2e50414262157cc6a636ba52b7c88b"
+      },
+      "relocation_is_used_by_actual_cargo_environment": true
+    },
+    "openssl": {
+      "environment": {
+        "OPENSSL_INCLUDE_DIR": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include",
+        "OPENSSL_LIB_DIR": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu"
+      },
+      "final_guard": {
+        "bytes": 93803,
+        "dev": 66306,
+        "git_blob": "cc83062847e6f8d40315700fd3e6ec093f954ef5",
+        "inode": 68970422,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-readonly-completion-v4/completion-final.openssl-sdk-guard.json",
+        "sha256": "764eca25406722c8f9f9a73a12cf125a617c5c96b50f2d4a20b0da331bb9e46c"
+      },
+      "initial_guard": {
+        "bytes": 93803,
+        "dev": 66306,
+        "git_blob": "cc83062847e6f8d40315700fd3e6ec093f954ef5",
+        "inode": 68968974,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-readonly-completion-v4/completion-initial.openssl-sdk-guard.json",
+        "sha256": "764eca25406722c8f9f9a73a12cf125a617c5c96b50f2d4a20b0da331bb9e46c"
+      },
+      "pkg_config_relocation_is_preparation_only": true,
+      "receipt": {
+        "bytes": 114477,
+        "dev": 66306,
+        "git_blob": "cd94077d9281c979faad884e1f57e07f30c74956",
+        "inode": 66869533,
+        "mode": "0o600",
+        "nlink": 1,
+        "path": "/home/qq/work/hepta-audit-b16-20261105/evidence/bootstrap-P4-openssl-sdk-v1/openssl-sdk.json",
+        "sha256": "48e973cac721615cf30b937ff20bf7f47cc951265aa5030b194dec971e1e2bc3"
+      }
+    }
+  },
+  "baseline_semantics": "Old P4 metadata/catalog/artifact identities are historical comparison references only. They are never labeled current Core source or current host target execution.",
+  "phases": [
+    {
+      "id": "C0_new_owned_source",
+      "actions": [
+        "Require fresh capacity and newroot absence, stable explicit current tool/SDK/V8 reads.",
+        "Create only newroot; preserve normal repository access and complete source tree checks.",
+        "Capture fresh HEAD/index/locks/full source/recipe preimages before the two-source update and after e78c. No reset or shared index."
+      ]
+    },
+    {
+      "id": "C1_new_target_normal_helpers",
+      "commands": [
+        [
+          "cargo",
+          "build",
+          "--locked",
+          "--profile",
+          "dev-small",
+          "--message-format=json-render-diagnostics",
+          "-p",
+          "codex-arg0",
+          "--bin",
+          "test_arg0_preflight",
+          "-p",
+          "codex-code-mode-host",
+          "--bin",
+          "codex-code-mode-host",
+          "-p",
+          "codex-shell-escalation",
+          "--bin",
+          "codex-execve-wrapper",
+          "-p",
+          "codex-rmcp-client",
+          "--bin",
+          "test_stdio_server",
+          "--bin",
+          "test_streamable_http_server",
+          "-p",
+          "codex-exec",
+          "--bin",
+          "codex-exec",
+          "-p",
+          "codex-cli",
+          "--bin",
+          "codex"
+        ]
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105/source/codex-rs",
+      "qualification": "Build only; actual compiler-artifact rows and fresh flags recorded. Old B/ROG binaries never supply this step."
+    },
+    {
+      "id": "C2_complete_metadata_catalog",
+      "commands": [
+        [
+          "cargo",
+          "metadata",
+          "--locked",
+          "--format-version",
+          "1"
+        ],
+        [
+          "cargo",
+          "nextest",
+          "list",
+          "--locked",
+          "--cargo-profile",
+          "dev-small",
+          "--message-format=json"
+        ]
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105/source/codex-rs",
+      "requirements": [
+        "Normal metadata no-p/no-no-deps; verify whole workspace members/features/dependencies against exact candidate expectation and classify source-path IDs.",
+        "Unfiltered nextest catalog no-p/no-E, all 19563 original names with exact ignored flags:19506 matches/57 ignored mismatch reason ignored. No mere total-count comparison.",
+        "Capture all actual test programs/helper roles and normal helper changes after full feature unification; hashes before execution and after terminal."
+      ]
+    },
+    {
+      "id": "C3_original_complete_workspace",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105/source/codex-rs",
+      "rules": [
+        "Original just/local profile/internal budgets and retries0. No all-features, package/expression/default-members narrowing or added skip/timeout.",
+        "Fresh JUnit and full raw stdout/stderr; exact per-case Counter and actual PASS/FAIL/TIMEOUT/retries/ignored/earlyreturns separately.",
+        "Keep known host-injection failures as actual nonpasses if present. Do not filter diagnostics or alter profile/security policy to pass.",
+        "Any resource, source, command or result failure preserves actual evidence and stops for root triage. No automatic retry or hygiene."
+      ]
+    },
+    {
+      "id": "C4_later_hygiene_not_automatic",
+      "requires": "Root review of actual full results and reconciliation with ROG project/parallel/mechanism evidence.",
+      "commands": [
+        [
+          "just",
+          "fix",
+          "--locked",
+          "--profile",
+          "dev-small",
+          "-p",
+          "codex-core",
+          "-p",
+          "codex-linux-sandbox"
+        ],
+        [
+          "just",
+          "fmt",
+          "--base",
+          "5b6331250ff459033bd44d1a95daec70131277cc"
+        ]
+      ],
+      "no_tests_after_hygiene": true
+    }
+  ],
+  "scope_non_expansion": [
+    "No duplicate ROG mechanism/project/same-process tests are automatically scheduled by this backup plan. ROG P0-P4 actual results remain distinct and prerequisite conditions are set by root.",
+    "Agentd qualification feature-only original case is separate and not silently inserted into this default full scope.",
+    "Linux full results do not close Windows tracing/sharding or musl native compile/ELF/smoke gates.",
+    "No B epoch, A already completed tests, product refs, workflow dispatch or user/system configuration mutation."
+  ],
+  "native_executed": false
+}

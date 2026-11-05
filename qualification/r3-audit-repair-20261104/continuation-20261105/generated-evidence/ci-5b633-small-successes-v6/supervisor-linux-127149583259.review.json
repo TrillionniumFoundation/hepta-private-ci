@@ -1,0 +1,491 @@
+{
+  "schema": "hepta-original-success-named-review-v1",
+  "reviewed_at": "2026-11-05T13:12:19.591402+00:00",
+  "api_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "run_id": 41999114773,
+  "job_id": 127149583259,
+  "run_attempt": 1,
+  "terminal_job": {
+    "id": 127149583259,
+    "run_id": 41999114773,
+    "workflow_name": "Hepta Supervisor P0 Cross-Platform Restart Qualification",
+    "head_branch": "fix/r3-original-product-contracts-20261104",
+    "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114773",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTrgxoM8AAAAdmrSrmw",
+    "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127149583259",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114773/job/127149583259",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-05T09:02:28Z",
+    "started_at": "2026-11-05T12:33:12Z",
+    "completed_at": "2026-11-05T12:45:04Z",
+    "name": "Restart and signed recovery (ubuntu-24.04)",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-11-05T12:33:13Z",
+        "completed_at": "2026-11-05T12:33:14Z"
+      },
+      {
+        "name": "Checkout exact PR head without write credentials",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-11-05T12:33:14Z",
+        "completed_at": "2026-11-05T12:35:55Z"
+      },
+      {
+        "name": "Verify exact source identity",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-11-05T12:35:55Z",
+        "completed_at": "2026-11-05T12:35:56Z"
+      },
+      {
+        "name": "Initialize isolated Cargo target directory",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-11-05T12:35:56Z",
+        "completed_at": "2026-11-05T12:35:56Z"
+      },
+      {
+        "name": "Install repository CI tools",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-11-05T12:35:56Z",
+        "completed_at": "2026-11-05T12:36:00Z"
+      },
+      {
+        "name": "Install pinned nextest",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-11-05T12:36:00Z",
+        "completed_at": "2026-11-05T12:36:00Z"
+      },
+      {
+        "name": "Install pinned Rust 1.95",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-11-05T12:36:00Z",
+        "completed_at": "2026-11-05T12:36:09Z"
+      },
+      {
+        "name": "Execute actual restart budget, repeated recovery and signed intent recovery",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-11-05T12:36:09Z",
+        "completed_at": "2026-11-05T12:40:31Z"
+      },
+      {
+        "name": "Verify named native test evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-11-05T12:40:31Z",
+        "completed_at": "2026-11-05T12:40:31Z"
+      },
+      {
+        "name": "Execute the complete Agentd protocol package",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-11-05T12:40:31Z",
+        "completed_at": "2026-11-05T12:41:24Z"
+      },
+      {
+        "name": "Verify signed protocol wire regression evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-11-05T12:41:24Z",
+        "completed_at": "2026-11-05T12:41:24Z"
+      },
+      {
+        "name": "Strict Supervisor Clippy",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-11-05T12:41:24Z",
+        "completed_at": "2026-11-05T12:44:39Z"
+      },
+      {
+        "name": "Verify full-workspace canonical Rust format on Linux",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-11-05T12:44:39Z",
+        "completed_at": "2026-11-05T12:44:58Z"
+      },
+      {
+        "name": "Verify Supervisor canonical Rust format on Windows",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 14,
+        "started_at": "2026-11-05T12:44:58Z",
+        "completed_at": "2026-11-05T12:44:58Z"
+      },
+      {
+        "name": "Preserve native JUnit evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-11-05T12:44:58Z",
+        "completed_at": "2026-11-05T12:44:59Z"
+      },
+      {
+        "name": "Preserve Agentd protocol JUnit evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-11-05T12:44:59Z",
+        "completed_at": "2026-11-05T12:45:00Z"
+      },
+      {
+        "name": "Ensure test checkout remained immutable",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-11-05T12:45:00Z",
+        "completed_at": "2026-11-05T12:45:02Z"
+      },
+      {
+        "name": "Post Checkout exact PR head without write credentials",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 34,
+        "started_at": "2026-11-05T12:45:02Z",
+        "completed_at": "2026-11-05T12:45:02Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 35,
+        "started_at": "2026-11-05T12:45:02Z",
+        "completed_at": "2026-11-05T12:45:02Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127149583259",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000000818,
+    "runner_name": "GitHub Actions 1000000818",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  "job_log": {
+    "bytes": 1650767,
+    "sha256": "f3401756b105d31167373540aa7b83cc36d7b6fed1c024bc0ee0ee1ac9b16e76",
+    "computed_git_blob": "e5c1ccd16e5cb1d85ea5be55e98ce072ef690a34"
+  },
+  "catalog_identity": {
+    "bytes": 180651,
+    "sha256": "16df332bed13d79c0e2f0294d65218a0f83aaa1dd926c0694dfb1363b3b83752",
+    "computed_git_blob": "5ce46bbcb2f3979eb3a320ecf3c3d065000d9645"
+  },
+  "original_raw_preserved": true,
+  "reviewer_executed_tests": false,
+  "global_blocker_status_changed": false,
+  "scope_limits": [
+    "A named PASS is scoped to this actual source/platform/command.",
+    "No independent operator/Root/issuer/production acceptance is inferred.",
+    "No old-head result is transferred to this head."
+  ],
+  "checkout": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "named_pass_occurrences": 17,
+  "cases": [
+    {
+      "test": "capabilities::tests::duplicate_and_invalid_ids_are_rejected",
+      "classname": "codex-hepta-agent-protocol",
+      "status": "PASS",
+      "time": "0.005",
+      "attributes": {
+        "name": "capabilities::tests::duplicate_and_invalid_ids_are_rejected",
+        "classname": "codex-hepta-agent-protocol",
+        "timestamp": "2026-11-05T12:41:24.543+00:00",
+        "time": "0.005"
+      }
+    },
+    {
+      "test": "capabilities::tests::negotiation_is_intersection_with_minor_downgrade",
+      "classname": "codex-hepta-agent-protocol",
+      "status": "PASS",
+      "time": "0.006",
+      "attributes": {
+        "name": "capabilities::tests::negotiation_is_intersection_with_minor_downgrade",
+        "classname": "codex-hepta-agent-protocol",
+        "timestamp": "2026-11-05T12:41:24.543+00:00",
+        "time": "0.006"
+      }
+    },
+    {
+      "test": "objective_tests::history::history_unknown_is_nested_and_cannot_decode_as_non_admission",
+      "classname": "codex-hepta-agent-protocol",
+      "status": "PASS",
+      "time": "0.005",
+      "attributes": {
+        "name": "objective_tests::history::history_unknown_is_nested_and_cannot_decode_as_non_admission",
+        "classname": "codex-hepta-agent-protocol",
+        "timestamp": "2026-11-05T12:41:24.549+00:00",
+        "time": "0.005"
+      }
+    },
+    {
+      "test": "objective_tests::history::history_query_preserves_historical_body_and_current_outer_generation",
+      "classname": "codex-hepta-agent-protocol",
+      "status": "PASS",
+      "time": "0.006",
+      "attributes": {
+        "name": "objective_tests::history::history_query_preserves_historical_body_and_current_outer_generation",
+        "classname": "codex-hepta-agent-protocol",
+        "timestamp": "2026-11-05T12:41:24.549+00:00",
+        "time": "0.006"
+      }
+    },
+    {
+      "test": "objective_tests::objective_start_outcomes_are_strict_wire_types",
+      "classname": "codex-hepta-agent-protocol",
+      "status": "PASS",
+      "time": "0.005",
+      "attributes": {
+        "name": "objective_tests::objective_start_outcomes_are_strict_wire_types",
+        "classname": "codex-hepta-agent-protocol",
+        "timestamp": "2026-11-05T12:41:24.554+00:00",
+        "time": "0.005"
+      }
+    },
+    {
+      "test": "objective_tests::signed_objective_control_request_round_trips_inside_frame_bound",
+      "classname": "codex-hepta-agent-protocol",
+      "status": "PASS",
+      "time": "0.005",
+      "attributes": {
+        "name": "objective_tests::signed_objective_control_request_round_trips_inside_frame_bound",
+        "classname": "codex-hepta-agent-protocol",
+        "timestamp": "2026-11-05T12:41:24.555+00:00",
+        "time": "0.005"
+      }
+    },
+    {
+      "test": "tests::automation_effect_wire_round_trip_is_strict_and_bounded",
+      "classname": "codex-hepta-agent-protocol",
+      "status": "PASS",
+      "time": "0.006",
+      "attributes": {
+        "name": "tests::automation_effect_wire_round_trip_is_strict_and_bounded",
+        "classname": "codex-hepta-agent-protocol",
+        "timestamp": "2026-11-05T12:41:24.559+00:00",
+        "time": "0.006"
+      }
+    },
+    {
+      "test": "tests::automation_wire_round_trip_is_strict_and_bounded",
+      "classname": "codex-hepta-agent-protocol",
+      "status": "PASS",
+      "time": "0.007",
+      "attributes": {
+        "name": "tests::automation_wire_round_trip_is_strict_and_bounded",
+        "classname": "codex-hepta-agent-protocol",
+        "timestamp": "2026-11-05T12:41:24.560+00:00",
+        "time": "0.007"
+      }
+    },
+    {
+      "test": "tests::capabilities_endpoint_is_additive_and_bounded",
+      "classname": "codex-hepta-agent-protocol",
+      "status": "PASS",
+      "time": "0.005",
+      "attributes": {
+        "name": "tests::capabilities_endpoint_is_additive_and_bounded",
+        "classname": "codex-hepta-agent-protocol",
+        "timestamp": "2026-11-05T12:41:24.564+00:00",
+        "time": "0.005"
+      }
+    },
+    {
+      "test": "tests::cognitive_context_response_stays_v2_compatible_and_revalidation_is_additive",
+      "classname": "codex-hepta-agent-protocol",
+      "status": "PASS",
+      "time": "0.005",
+      "attributes": {
+        "name": "tests::cognitive_context_response_stays_v2_compatible_and_revalidation_is_additive",
+        "classname": "codex-hepta-agent-protocol",
+        "timestamp": "2026-11-05T12:41:24.566+00:00",
+        "time": "0.005"
+      }
+    },
+    {
+      "test": "tests::health_wire_round_trip_is_strict_and_bounded",
+      "classname": "codex-hepta-agent-protocol",
+      "status": "PASS",
+      "time": "0.005",
+      "attributes": {
+        "name": "tests::health_wire_round_trip_is_strict_and_bounded",
+        "classname": "codex-hepta-agent-protocol",
+        "timestamp": "2026-11-05T12:41:24.570+00:00",
+        "time": "0.005"
+      }
+    },
+    {
+      "test": "tests::host_turn_authority_binding_is_strict_and_fail_closed",
+      "classname": "codex-hepta-agent-protocol",
+      "status": "PASS",
+      "time": "0.005",
+      "attributes": {
+        "name": "tests::host_turn_authority_binding_is_strict_and_fail_closed",
+        "classname": "codex-hepta-agent-protocol",
+        "timestamp": "2026-11-05T12:41:24.571+00:00",
+        "time": "0.005"
+      }
+    },
+    {
+      "test": "tests::memory_federation_control_is_typed_strict_and_bounded",
+      "classname": "codex-hepta-agent-protocol",
+      "status": "PASS",
+      "time": "0.005",
+      "attributes": {
+        "name": "tests::memory_federation_control_is_typed_strict_and_bounded",
+        "classname": "codex-hepta-agent-protocol",
+        "timestamp": "2026-11-05T12:41:24.575+00:00",
+        "time": "0.005"
+      }
+    },
+    {
+      "test": "tests::run_lifecycle_wire_round_trip_is_strict_and_bounded",
+      "classname": "codex-hepta-agent-protocol",
+      "status": "PASS",
+      "time": "0.005",
+      "attributes": {
+        "name": "tests::run_lifecycle_wire_round_trip_is_strict_and_bounded",
+        "classname": "codex-hepta-agent-protocol",
+        "timestamp": "2026-11-05T12:41:24.576+00:00",
+        "time": "0.005"
+      }
+    },
+    {
+      "test": "unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence",
+      "classname": "codex-hepta-supervisor::signed_intent_recovery",
+      "status": "PASS",
+      "time": "0.021",
+      "attributes": {
+        "name": "unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence",
+        "classname": "codex-hepta-supervisor::signed_intent_recovery",
+        "timestamp": "2026-11-05T12:40:31.081+00:00",
+        "time": "0.021"
+      }
+    },
+    {
+      "test": "unexpected_agent_crashes_back_off_and_stop_after_three_restarts",
+      "classname": "codex-hepta-supervisor::restart_budget",
+      "status": "PASS",
+      "time": "0.086",
+      "attributes": {
+        "name": "unexpected_agent_crashes_back_off_and_stop_after_three_restarts",
+        "classname": "codex-hepta-supervisor::restart_budget",
+        "timestamp": "2026-11-05T12:40:31.081+00:00",
+        "time": "0.086"
+      }
+    },
+    {
+      "test": "restart_budget_survives_repeated_supervisord_recovery",
+      "classname": "codex-hepta-supervisor::restart_budget_recovery",
+      "status": "PASS",
+      "time": "0.098",
+      "attributes": {
+        "name": "restart_budget_survives_repeated_supervisord_recovery",
+        "classname": "codex-hepta-supervisor::restart_budget_recovery",
+        "timestamp": "2026-11-05T12:40:31.081+00:00",
+        "time": "0.098"
+      }
+    }
+  ],
+  "junit_originals": [
+    {
+      "member": "members-13415103143/junit.xml",
+      "identity": {
+        "bytes": 3239,
+        "sha256": "080b95626bfc2deb73a97eaa68aeb2ccf03fbf91e4b6591a92b0bf8fc1817bea",
+        "computed_git_blob": "c4fecc26bb7ff7b1a096afe44f3817a5f772c390"
+      },
+      "tests": 14,
+      "root_attributes": {
+        "name": "nextest-run",
+        "tests": "14",
+        "failures": "0",
+        "errors": "0",
+        "uuid": "7ee24840-ea6c-4bea-899f-f1719c77393c",
+        "timestamp": "2026-11-05T12:41:24.543+00:00",
+        "time": "0.039"
+      }
+    },
+    {
+      "member": "members-13415846245/junit.xml",
+      "identity": {
+        "bytes": 1282,
+        "sha256": "efdad7214cb3298ea4b7b015d27d3deb4091d76fb85aa7ce52c1d2b80f2fab14",
+        "computed_git_blob": "a10372c1ab4d0e5d8c6831b294ebab1002a3855e"
+      },
+      "tests": 3,
+      "root_attributes": {
+        "name": "nextest-run",
+        "tests": "3",
+        "failures": "0",
+        "errors": "0",
+        "uuid": "3632c541-383f-440f-bd7b-5696684b287f",
+        "timestamp": "2026-11-05T12:40:31.081+00:00",
+        "time": "0.099"
+      }
+    }
+  ],
+  "other_original_source_and_scope_records": [],
+  "original_142_matches": [],
+  "commands_and_summaries": [
+    {
+      "line_1based": 7992,
+      "text": "##[group]Run just test --locked -p codex-hepta-supervisor --test restart_budget --test restart_budget_recovery --test signed_intent_recovery --no-tests fail --retries 0 --status-level all --final-status-level all"
+    },
+    {
+      "line_1based": 7993,
+      "text": "just test --locked -p codex-hepta-supervisor --test restart_budget --test restart_budget_recovery --test signed_intent_recovery --no-tests fail --retries 0 --status-level all --final-status-level all"
+    },
+    {
+      "line_1based": 9305,
+      "text": "     Summary [   0.099s] 3 tests run: 3 passed, 0 skipped"
+    },
+    {
+      "line_1based": 9345,
+      "text": "##[group]Run just test --locked -p codex-hepta-agent-protocol --profile default --test-threads 2 --no-tests fail --retries 0 --status-level all --final-status-level all"
+    },
+    {
+      "line_1based": 9346,
+      "text": "just test --locked -p codex-hepta-agent-protocol --profile default --test-threads 2 --no-tests fail --retries 0 --status-level all --final-status-level all"
+    },
+    {
+      "line_1based": 9468,
+      "text": "     Summary [   0.039s] 14 tests run: 14 passed, 0 skipped"
+    },
+    {
+      "line_1based": 10121,
+      "text": "##[group]Run cargo +1.95.0 fmt --all -- --check"
+    },
+    {
+      "line_1based": 10122,
+      "text": "cargo +1.95.0 fmt --all -- --check"
+    }
+  ],
+  "retry_policy": "Original commands explicitly use --retries 0.",
+  "filter_and_early_return_limits": "JUnit has no skipped node among selected cases. Original console Summary filtering counts are preserved separately; no complete unselected inventory or universal absence of body-level early return is inferred."
+}

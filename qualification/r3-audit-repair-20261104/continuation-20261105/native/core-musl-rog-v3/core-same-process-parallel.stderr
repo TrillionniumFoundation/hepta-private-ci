@@ -1,0 +1,52 @@
+
+thread 'context::world_state::tests::duplicate_section_ids_are_rejected' (2996876) panicked at core/src/context/world_state/mod.rs:360:9:
+duplicate world-state section ID: test
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'context_manager::history::tests::normalize_adds_missing_output_for_custom_tool_call_panics_in_debug' (2996944) panicked at core/src/util.rs:95:9:
+Custom tool call output is missing for call id: tool-x
+
+thread 'context_manager::history::tests::normalize_adds_missing_output_for_local_shell_call_with_id_panics_in_debug' (2996946) panicked at core/src/util.rs:95:9:
+Local shell call output is missing for call id: shell-1
+
+thread 'context_manager::history::tests::normalize_mixed_inserts_and_removals_panics_in_debug' (2996949) panicked at core/src/util.rs:95:9:
+Custom tool call output is missing for call id: t1
+
+thread 'context_manager::history::tests::normalize_removes_orphan_client_tool_search_output_panics_in_debug' (2996951) panicked at core/src/util.rs:95:9:
+Orphan tool search output for call id: orphan-search
+
+thread 'context_manager::history::tests::normalize_removes_orphan_custom_tool_call_output_panics_in_debug' (2996952) panicked at core/src/util.rs:95:9:
+Orphan custom tool call output for call id: orphan-2
+
+thread 'context_manager::history::tests::normalize_removes_orphan_function_call_output_panics_in_debug' (2996953) panicked at core/src/util.rs:95:9:
+Orphan function call output for call id: orphan-1
+
+BLOCKING_SNAPSHOT_CHILD: original_body_started
+
+BLOCKING_SNAPSHOT_CHILD: original_body_passed
+
+thread 'tokio-rt-worker' (3002985) panicked at core/src/session/tests.rs:12197:17:
+intentional finish terminalizer panic for fencing regression
+
+thread 'tokio-rt-worker' (3003022) panicked at core/src/session/tests.rs:11048:9:
+intentional session task panic for lifecycle fencing test
+
+thread 'tokio-rt-worker' (3002939) panicked at core/src/session/tests.rs:11242:9:
+intentional terminalizer panic for fencing regression
+
+thread 'agent::control::tests::resume_agent_from_rollout_skips_descendants_when_parent_resume_fails' (2984015) panicked at core/src/agent/control_tests.rs:347:5:
+timed out waiting for user message recording: [
+    "McpStartupComplete(McpStartupCompleteEvent { ready: [], failed: [], cancelled: [] })",
+    "TurnStarted(TurnStartedEvent { turn_id: \"01a1ac0a-77d7-77e3-b487-12196828a4a6\", trace_id: None, started_at: Some(1793887729), model_context_window: Some(258400), collaboration_mode_kind: Default })",
+]
+
+thread 'tools::parallel::tests::cancellation_owner_records_indeterminate_when_handler_task_panics' (3020329) panicked at core/src/tools/parallel.rs:1025:17:
+intentional cancellation cleanup panic
+
+thread 'tools::parallel::tests::handler_task_panic_emits_one_indeterminate_terminal' (3020349) panicked at core/src/tools/parallel.rs:987:30:
+intentional handler panic
+
+thread 'tools::parallel::tests::panic_after_handler_terminal_does_not_emit_a_second_terminal' (3020378) panicked at core/src/tools/parallel.rs:1273:30:
+intentional lifecycle finish panic
+Skipping test because it requires a remote test environment.
+Skipping test because it requires a remote test environment.

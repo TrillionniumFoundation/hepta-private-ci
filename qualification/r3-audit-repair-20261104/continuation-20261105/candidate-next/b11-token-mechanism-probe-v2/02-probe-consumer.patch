@@ -1,0 +1,263 @@
+diff --git a/codex-rs/windows-sandbox-rs/src/token.rs b/codex-rs/windows-sandbox-rs/src/token.rs
+index 8945d75fe172679479b738e6266cac99a6f7ed16..b22acb5556f6af3b4c250a2441f161ee448ea1c1 100644
+--- a/codex-rs/windows-sandbox-rs/src/token.rs
++++ b/codex-rs/windows-sandbox-rs/src/token.rs
+@@ -542,3 +542,7 @@
+ #[cfg(test)]
+ #[path = "token_tests.rs"]
+ mod tests;
++
++#[cfg(test)]
++#[path = "token_integrity_probe_tests.rs"]
++mod integrity_probe;
+diff --git a/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs b/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..2a384792e8ba88518c26943716e8c3a39a523f9b
+--- /dev/null
++++ b/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs
+@@ -0,0 +1,245 @@
++//! Diagnostic observations only. Passing this probe does not qualify sandbox isolation.
++
++use super::*;
++use crate::acl::ensure_allow_mask_aces;
++use crate::acl::ensure_allow_write_aces;
++use anyhow::ensure;
++use pretty_assertions::assert_eq;
++use serde::Serialize;
++use serde_json::json;
++use std::fs;
++use std::path::Path;
++use windows_sys::Win32::Security as security;
++use windows_sys::Win32::Storage::FileSystem as fswin;
++use windows_sys::Win32::System::SystemServices as system;
++use windows_sys::Win32::System::Threading as threading;
++
++#[path = "token_integrity_probe_support.rs"]
++mod support;
++use support::Descriptor;
++use support::Handle;
++use support::LabelledObject;
++use support::ObjectKind;
++use support::observe;
++
++struct Impersonation;
++
++impl Impersonation {
++    fn enter(token: HANDLE) -> Result<Self> {
++        // SAFETY: token remains owned until after this synchronous guard is dropped.
++        ensure!(unsafe { security::ImpersonateLoggedOnUser(token) } != 0,
++            "ImpersonateLoggedOnUser: {}", std::io::Error::last_os_error());
++        Ok(Self)
++    }
++}
++
++impl Drop for Impersonation {
++    fn drop(&mut self) {
++        // SAFETY: never continue on a reused test thread with a different token.
++        if unsafe { security::RevertToSelf() } == 0 { std::process::abort(); }
++    }
++}
++
++#[derive(Debug, PartialEq, Eq, Serialize)]
++struct TokenState { integrity_rid: u32, integrity_attributes: u32, mandatory_policy: u32 }
++
++fn token_state(token: HANDLE) -> Result<TokenState> {
++    let mut buffer = [0_u64; 128];
++    let mut returned = 0;
++    // SAFETY: this aligned buffer is bounded and owns the complete returned label and SID.
++    ensure!(unsafe { security::GetTokenInformation(token, security::TokenIntegrityLevel,
++        buffer.as_mut_ptr().cast(), std::mem::size_of_val(&buffer) as u32, &mut returned) } != 0,
++        "TokenIntegrityLevel: {}", std::io::Error::last_os_error());
++    ensure!(returned as usize >= std::mem::size_of::<security::TOKEN_MANDATORY_LABEL>()
++        && returned as usize <= std::mem::size_of_val(&buffer), "invalid native label size");
++    let label = unsafe { &*buffer.as_ptr().cast::<security::TOKEN_MANDATORY_LABEL>() };
++    // SAFETY: Windows returned this SID in the live buffer; validate before reading its RID.
++    ensure!(unsafe { security::IsValidSid(label.Label.Sid) } != 0
++        && unsafe { *security::GetSidSubAuthorityCount(label.Label.Sid) } == 1,
++        "invalid native integrity SID");
++    ensure!(unsafe { (*security::GetSidIdentifierAuthority(label.Label.Sid)).Value } == [0, 0, 0, 0, 0, 16],
++        "unexpected native integrity SID authority");
++    let integrity_rid = unsafe { *security::GetSidSubAuthority(label.Label.Sid, /*nsubauthority*/ 0) };
++    let mut policy = security::TOKEN_MANDATORY_POLICY { Policy: 0 };
++    ensure!(unsafe { security::GetTokenInformation(token, security::TokenMandatoryPolicy,
++        (&mut policy as *mut security::TOKEN_MANDATORY_POLICY).cast(),
++        std::mem::size_of_val(&policy) as u32, &mut returned) } != 0,
++        "TokenMandatoryPolicy: {}", std::io::Error::last_os_error());
++    ensure!(returned as usize == std::mem::size_of_val(&policy), "invalid native policy size");
++    Ok(TokenState { integrity_rid, integrity_attributes: label.Label.Attributes, mandatory_policy: policy.Policy })
++}
++
++fn full_restricting_read_token(base: HANDLE, write_cap: &LocalSid, read_cap: &LocalSid) -> Result<Handle> {
++    let entries = [write_cap, read_cap].map(|sid| security::SID_AND_ATTRIBUTES { Sid: sid.as_ptr(), Attributes: 0 });
++    let mut handle = 0;
++    // SAFETY: all SIDs and the base token are live. This test-only alternative omits
++    // WRITE_RESTRICTED; it grants a read SID only on the finite owned fixture objects.
++    ensure!(unsafe { security::CreateRestrictedToken(base, DISABLE_MAX_PRIVILEGE | LUA_TOKEN,
++        /*disablesidcount*/ 0, std::ptr::null(), /*deleteprivilegecount*/ 0, std::ptr::null(),
++        entries.len() as u32, entries.as_ptr(), &mut handle) } != 0,
++        "full restricting control: {}", std::io::Error::last_os_error());
++    let token = Handle(handle);
++    let mut logon = unsafe { get_logon_sid_bytes(base)? };
++    let mut everyone = unsafe { world_sid()? };
++    unsafe {
++        // Preserve the strict token's default DACL. The extra read SID does not
++        // receive GENERIC_ALL on newly created IPC objects through this control.
++        set_default_dacl(token.0, &[logon.as_mut_ptr().cast(), everyone.as_mut_ptr().cast(), write_cap.as_ptr()])?;
++        enable_single_privilege(token.0, "SeChangeNotifyPrivilege")?;
++    }
++    Ok(token)
++}
++
++struct Operations {
++    read: std::io::Result<String>,
++    mutations: [std::io::Result<()>; 4],
++}
++
++fn io_error<T>(result: &std::io::Result<T>) -> Option<serde_json::Value> {
++    result.as_ref().err().map(|error| json!({"kind": format!("{:?}", error.kind()),
++        "code": error.raw_os_error(), "message": error.to_string()}))
++}
++
++impl Operations {
++    fn run(root: &Path) -> Self {
++        Self {
++            read: fs::read_to_string(root.join("read.txt")),
++            mutations: [fs::write(root.join("overwrite.txt"), "overwritten"),
++                fs::write(root.join("created.txt"), "created"),
++                fs::remove_file(root.join("delete.txt")), fs::remove_dir(root.join("delete-dir"))],
++        }
++    }
++
++    fn report(&self) -> serde_json::Value {
++        let errors = self.mutations.each_ref().map(io_error);
++        json!({"read": self.read.as_ref().ok(), "read_error": io_error(&self.read),
++            "order": ["overwrite", "create", "remove_file", "remove_dir"], "errors": errors})
++    }
++}
++
++#[test]
++fn integrity_mechanism_probe_observation_only() -> Result<()> {
++    let fixture = tempfile::tempdir()?;
++    let base = Handle(unsafe { get_current_token_for_restriction()? });
++    let cap_a = LocalSid::from_string("S-1-5-21-101-202-303-404")?;
++    let cap_b = LocalSid::from_string("S-1-5-21-121-232-343-454")?;
++    let read_cap = LocalSid::from_string("S-1-5-21-131-242-353-464")?;
++    let strict = Handle(unsafe { create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr()])? });
++    let low = Handle(unsafe { create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr()])? });
++    let full_read = full_restricting_read_token(base.0, &cap_a, &read_cap)?;
++    let low_sid = LocalSid::from_string("S-1-16-4096")?;
++    let mut label_buffer = [0_u64; 16];
++    let label_size = std::mem::size_of::<security::TOKEN_MANDATORY_LABEL>();
++    let sid_size = unsafe { security::GetLengthSid(low_sid.as_ptr()) };
++    ensure!(label_size + sid_size as usize <= std::mem::size_of_val(&label_buffer), "low SID too large");
++    // SAFETY: the label and copied SID occupy the same bounded aligned allocation.
++    unsafe {
++        let sid = label_buffer.as_mut_ptr().cast::<u8>().add(label_size).cast();
++        ensure!(security::CopySid(sid_size, sid, low_sid.as_ptr()) != 0, "copy low SID");
++        label_buffer.as_mut_ptr().cast::<security::TOKEN_MANDATORY_LABEL>().write(security::TOKEN_MANDATORY_LABEL {
++            Label: security::SID_AND_ATTRIBUTES { Sid: sid, Attributes: system::SE_GROUP_INTEGRITY as u32 },
++        });
++        ensure!(security::SetTokenInformation(low.0, security::TokenIntegrityLevel,
++            label_buffer.as_ptr().cast(), (label_size + sid_size as usize) as u32) != 0,
++            "lower owned token IL: {}", std::io::Error::last_os_error());
++    }
++    let subjects = [("host", base.0), ("current_strict", strict.0),
++        ("current_strict_low", low.0), ("full_restricting_explicit_read", full_read.0)];
++    for (name, token) in subjects {
++        let state = token_state(token)?;
++        observe(format_args!("token {name} {}", serde_json::to_string(&state)?))?;
++        if name == "current_strict_low" { assert_eq!(state.integrity_rid, 4096); }
++    }
++    let medium = Descriptor::from_sddl("S:(ML;;NW;;;ME)")?;
++    let low_label = Descriptor::from_sddl("S:(ML;;NW;;;LW)")?;
++    let mut logon = unsafe { get_logon_sid_bytes(base.0)? };
++    let mut everyone = unsafe { world_sid()? };
++    let mut positive_controls = Vec::new();
++    let mut access_descriptors = Vec::new();
++    for (subject, token) in subjects {
++        for (outside_level, label) in [("medium", &medium), ("low_other_cohort", &low_label)] {
++            let row = fixture.path().join(format!("{subject}-{outside_level}"));
++            medium.create(&row, ObjectKind::Directory)?;
++            // Deliberately keep the original broad inherited identity grant; do not
++            // replace it with an artificial deny ACL to make either mechanism pass.
++            unsafe { ensure_allow_mask_aces(&row,
++                &[logon.as_mut_ptr().cast(), everyone.as_mut_ptr().cast()], fswin::FILE_ALL_ACCESS)?; }
++            let inside = row.join("inside");
++            let outside = row.join("outside");
++            let mut objects = Vec::new();
++            for (root, cap, target_label) in [(&inside, &cap_a, &low_label), (&outside, &cap_b, label)] {
++                medium.create(root, ObjectKind::Directory)?;
++                unsafe {
++                    ensure_allow_write_aces(root, &[cap.as_ptr()])?;
++                    ensure_allow_mask_aces(root, &[read_cap.as_ptr()], fswin::FILE_GENERIC_READ | fswin::FILE_GENERIC_EXECUTE)?;
++                }
++                let mut paths = vec![root.to_owned()];
++                for name in ["read.txt", "overwrite.txt", "delete.txt"] {
++                    let path = root.join(name);
++                    medium.create(&path, ObjectKind::File)?;
++                    fs::write(&path, "original")?;
++                    paths.push(path);
++                }
++                let directory = root.join("delete-dir");
++                medium.create(&directory, ObjectKind::Directory)?;
++                paths.push(directory);
++                for path in paths { objects.push(LabelledObject::prepare(&path, target_label, &medium)?); }
++            }
++            // Each root adds [parent, read, overwrite, delete-file, delete-directory].
++            // Every subject is checked against these same outside descriptors, including ML.
++            let access_checks = [objects[5].access_checks(&subjects, fswin::FILE_DELETE_CHILD)?,
++                objects[8].access_checks(&subjects, fswin::DELETE)?, objects[9].access_checks(&subjects, fswin::DELETE)?];
++            access_descriptors.push(access_checks.each_ref().map(|record| record["access_sd"].clone()));
++            let expected_token_state = token_state(token)?;
++            let (effective_token_state, inside_operations, outside_operations) = {
++                let _impersonation = Impersonation::enter(token)?;
++                let mut effective = 0;
++                // SAFETY: OpenAsSelf applies only to querying our own thread token;
++                // the subsequent file operations still use this thread's impersonation.
++                ensure!(unsafe { threading::OpenThreadToken(threading::GetCurrentThread(),
++                    security::TOKEN_QUERY, /*openasself*/ 1, &mut effective) } != 0,
++                    "query effective thread token: {}", std::io::Error::last_os_error());
++                let effective = Handle(effective);
++                (token_state(effective.0)?, Operations::run(&inside), Operations::run(&outside))
++            };
++            observe(format_args!("row {}", json!({"subject": subject, "outside_level": outside_level,
++                "expected_token": expected_token_state, "effective_thread_token": effective_token_state,
++                "inside": inside_operations.report(), "outside": outside_operations.report(), "access_checks": access_checks})))?;
++            // Attempt restoration for every object even if one result is an error.
++            let finished: Vec<_> = objects.into_iter().map(LabelledObject::finish).collect();
++            observe(format_args!("restoration {}", json!({"subject": subject,
++                "outside_level": outside_level, "results": finished.iter().map(|result| match result {
++                    Ok(value) => value.clone(), Err(error) => json!({"error": format!("{error:#}")}),
++                }).collect::<Vec<_>>()})))?;
++            let mut restored = Vec::new();
++            for result in finished { restored.push(result?); }
++            let physical: Vec<_> = [&inside, &outside].into_iter().map(|root| {
++                let overwrite = fs::read_to_string(root.join("overwrite.txt"));
++                let created = fs::read_to_string(root.join("created.txt"));
++                let file = fs::symlink_metadata(root.join("delete.txt"));
++                let directory = fs::symlink_metadata(root.join("delete-dir"));
++                let legitimate = overwrite.as_deref().ok() == Some("overwritten")
++                    && created.as_deref().ok() == Some("created")
++                    && [file.as_ref(), directory.as_ref()].iter().all(|result|
++                        result.err().is_some_and(|error| error.kind() == std::io::ErrorKind::NotFound));
++                (json!({"root": root, "overwrite": overwrite.as_ref().ok(), "overwrite_error": io_error(&overwrite),
++                    "created": created.as_ref().ok(), "created_error": io_error(&created),
++                    "deleted_file_still_named": file.is_ok(), "file_error": io_error(&file),
++                    "deleted_directory_still_named": directory.is_ok(), "directory_error": io_error(&directory)}), legitimate)
++            }).collect();
++            observe(format_args!("finalized {}", json!({"subject": subject, "outside_level": outside_level,
++                "objects": restored, "physical_post_state": physical.iter().map(|item| &item.0).collect::<Vec<_>>()})))?;
++            positive_controls.push(effective_token_state == expected_token_state
++                && inside_operations.read.as_deref().ok() == Some("original")
++                && inside_operations.mutations.iter().all(std::result::Result::is_ok) && physical[0].1
++                && outside_operations.read.as_deref().ok() == Some("original")
++                && (subject != "host" || outside_operations.mutations.iter().all(std::result::Result::is_ok) && physical[1].1));
++        }
++    }
++    // These are fixture/read/legitimate-I/O controls, never outside-denial assertions.
++    ensure!(access_descriptors.windows(2).all(|rows| rows[0] == rows[1]), "cross-row access DACLs differ");
++    assert_eq!(positive_controls, vec![true; 8]);
++    fixture.close()?;
++    observe(format_args!("complete rows=8 token_subjects=4 descendants_spawned=0 tests_do_not_qualify_isolation=true"))?;
++    Ok(())
++}

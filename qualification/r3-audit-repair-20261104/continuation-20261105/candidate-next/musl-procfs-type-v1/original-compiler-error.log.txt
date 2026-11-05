@@ -1,0 +1,29 @@
+error[E0308]: mismatched types
+   --> codex-rs/linux-sandbox/src/parent_lifecycle.rs:122:37
+    |
+122 |             || filesystem.f_type != libc::PROC_SUPER_MAGIC
+    |                                     ^^^^^^^^^^^^^^^^^^^^^^ expected `u64`, found `i64`
+
+error[E0277]: can't compare `u64` with `i64`
+   --> codex-rs/linux-sandbox/src/parent_lifecycle.rs:122:34
+    |
+122 |             || filesystem.f_type != libc::PROC_SUPER_MAGIC
+    |                                  ^^ no implementation for `u64 == i64`
+    |
+    = help: the trait `PartialEq<i64>` is not implemented for `u64`
+help: the following other types implement trait `PartialEq<Rhs>`
+   --> /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/cmp.rs:1876:12
+    |
+    = note: `u64` implements `PartialEq`
+   ::: /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/cmp.rs:1900:5
+    |
+    = note: in this macro invocation
+   --> external/rules_rs++crate+crates__serde_json-1.0.154/src/value/partial_eq.rs:76:12
+    |
+    = note: `u64` implements `PartialEq<serde_json::Value>`
+   ::: external/rules_rs++crate+crates__serde_json-1.0.154/src/value/partial_eq.rs:103:1
+    |
+    = note: in this macro invocation
+    = note: this error originates in the macro `partial_eq_impl` which comes from the expansion of the macro `partialeq_numeric` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: aborting due to 2 previous errors

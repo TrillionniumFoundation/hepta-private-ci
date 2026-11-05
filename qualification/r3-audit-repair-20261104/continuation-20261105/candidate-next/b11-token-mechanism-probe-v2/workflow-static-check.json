@@ -1,0 +1,33 @@
+{
+  "scope": "cloud YAML parse and Bash syntax only; no workflow/native/project tests",
+  "workflow": {
+    "bytes": 4211,
+    "sha256": "8ab7b1e1d93c7c64fe4f40d5b4823912d22b7269d5ae5cc630d6fea8c35176a2",
+    "git_blob": "565e442d290309da85a72969226b5cf48049f072"
+  },
+  "jobs": 1,
+  "expected_names": [
+    "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+    "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+    "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+    "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+    "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+    "token::integrity_probe::integrity_mechanism_probe_observation_only"
+  ],
+  "commands": [
+    {
+      "argv": [
+        "bash",
+        "-n"
+      ],
+      "input_sha256": "07af465bddad2510fa3098845e6a92d93188461719af5bc43a4ed1d41e644a4b",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "unchanged_collector_already_retains_exact_target": true,
+  "extra_unconditional_collector_call": false,
+  "fresh_execution_not_inferred_from_cache_or_file_existence": true,
+  "previous_inspection_error": "workflow-static-check-first-error.json"
+}

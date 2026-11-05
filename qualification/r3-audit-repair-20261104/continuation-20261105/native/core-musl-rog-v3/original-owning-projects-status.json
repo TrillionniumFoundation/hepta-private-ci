@@ -1,0 +1,42 @@
+{
+  "label": "original-owning-projects",
+  "argv": [
+    "just",
+    "test",
+    "--locked",
+    "--cargo-profile",
+    "dev-small",
+    "--no-tests",
+    "fail",
+    "--retries",
+    "0",
+    "--success-output",
+    "immediate",
+    "-p",
+    "codex-core",
+    "-p",
+    "codex-linux-sandbox"
+  ],
+  "cwd": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs",
+  "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+  "started_ns": 1793887678749409003,
+  "completed_at": "2026-11-05T14:08:41.730870+00:00",
+  "duration_seconds": 42.981486514006974,
+  "exit_code": 100,
+  "stdout": {
+    "path": "/home/qian-qi/work/hepta-core-wait-span-20261105/evidence/original-owning-projects.stdout",
+    "bytes": 11059831,
+    "sha256": "a06d2a7c73589c76300a3a6886f37affcd8609f8cb41499e6704a9762a20aeb4",
+    "git_blob": "e611358b8bdcd77bb3eb7cb68c0067a0438368b7",
+    "mode": 384,
+    "executable": false
+  },
+  "stderr": {
+    "path": "/home/qian-qi/work/hepta-core-wait-span-20261105/evidence/original-owning-projects.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "mode": 384,
+    "executable": false
+  }
+}

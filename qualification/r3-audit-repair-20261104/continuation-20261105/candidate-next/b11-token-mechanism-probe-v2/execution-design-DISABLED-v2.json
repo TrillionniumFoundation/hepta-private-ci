@@ -1,0 +1,85 @@
+{
+  "schema": "b11_observation_only_execution_design_v2",
+  "execute": false,
+  "approval_reference": null,
+  "branch_created": false,
+  "pr_created": false,
+  "base_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "base_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "suggested_branch": "diag/b11-token-mechanisms-20261105",
+  "suggested_base_branch": "fix/r3-original-product-contracts-20261104",
+  "base_must_be_reconciled_if_branch_moves": true,
+  "suggested_title": "test(windows-sandbox): observe token integrity and delete routes",
+  "draft": true,
+  "paths": [
+    "codex-rs/windows-sandbox-rs/src/token.rs",
+    "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+    "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+    ".github/workflows/hepta-windows-token-mechanism-probe.yml"
+  ],
+  "workflow_path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+  "workflow": {
+    "bytes": 4211,
+    "sha256": "8ab7b1e1d93c7c64fe4f40d5b4823912d22b7269d5ae5cc630d6fea8c35176a2",
+    "git_blob": "565e442d290309da85a72969226b5cf48049f072"
+  },
+  "job_count_in_new_workflow": 1,
+  "other_existing_PR_workflows_may_also_trigger": true,
+  "runner": "windows-latest",
+  "target_triple": "x86_64-pc-windows-msvc",
+  "job_timeout_minutes": 120,
+  "outer_target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+  "scope": "complete original outer unit target; six listed names are evidence roster, not a filter",
+  "required_names": [
+    "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+    "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+    "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+    "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+    "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+    "token::integrity_probe::integrity_mechanism_probe_observation_only"
+  ],
+  "old_strict_names": [
+    "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+    "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+    "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+  ],
+  "old_matrix_names": [
+    "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+    "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells"
+  ],
+  "new_probe_name": "token::integrity_probe::integrity_mechanism_probe_observation_only",
+  "new_probe_ignored": false,
+  "new_probe_isolation_acceptance": false,
+  "new_probe_rows": 8,
+  "new_probe_spawns_children": false,
+  "case_timeout_override": null,
+  "retry_override": null,
+  "test_filter_override": null,
+  "launcher_arguments_override": null,
+  "preserved_functional_flags": [
+    "--print-failed-action-summary",
+    "--print-failed-test-logs",
+    "--windows-msvc-host-platform",
+    "--remote-download-toplevel",
+    "--platforms=//:windows_x86_64_msvc",
+    "--skip_incompatible_explicit_targets",
+    "--test_tag_filters=-argument-comment-lint",
+    "--test_verbose_timeout_warnings"
+  ],
+  "only_extra_output_flag": "--test_output=all",
+  "build_metadata": "COMMIT_SHA remains; a true observation-only tag replaces misleading shard metadata",
+  "failure_exit": "save and return original wrapper PIPESTATUS[0]; never convert strict failures to success",
+  "artifact_collection": "existing wrapper original failure and allowlisted console-reported success collection; complete console plus original exit and source identity",
+  "freshness_requirement": "native review must inspect actual source, case names, cache, attempts, skips and all eight observation rows; no cached/target-only upgrade",
+  "public_permissions": {
+    "contents": "read"
+  },
+  "secret_names": [
+    "BUILDBUDDY_API_KEY"
+  ],
+  "secret_policy": "same existing Bazel environment/keyless-capable wrapper; no new secret",
+  "dependencies_added": [],
+  "features_added": [],
+  "Cargo_or_Bazel_lock_changes": false,
+  "native_commands_executed": []
+}

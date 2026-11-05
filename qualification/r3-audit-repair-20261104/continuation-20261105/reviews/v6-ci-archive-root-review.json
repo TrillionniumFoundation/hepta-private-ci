@@ -1,0 +1,96 @@
+{
+  "schema": "hepta-v6-root-complete-ci-archive-review-v1",
+  "reviewed_at": "2026-11-05T13:31:34.320843+00:00",
+  "scope": "Independent root reassembly of four complete immutable batches, not project execution or expanded qualification",
+  "actual_registry_get": {
+    "blob": "a8352968733a6448fda36f3d3d59d3120791bb7d",
+    "bytes": 46681,
+    "sha256": "ad8255a35ef0a149a7b5e0ffe97503f3ac80e6f84e3fc97cf8652657ea5e4879",
+    "local_registered_item_identities_verified": 63
+  },
+  "archives": [
+    {
+      "directory": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/immutable-v6-gitqueue",
+      "original_files": 34,
+      "original_bytes": 10581100,
+      "part_count": 26,
+      "archive": {
+        "name": "original-ci.tar.gz",
+        "bytes": 9278846,
+        "sha256": "a4a8b62ae52b89ea400fd6a7ab9dd4697c2b406244e3b992b31e7aab0b6c325a",
+        "computed_git_blob": "2baa30eff36cf64efac47c660f8269129ab57a47"
+      },
+      "root_executed_complete_verifier_exit": 0,
+      "strict_base64_all_parts_full_gzip_crc_complete_tar_all_original_hashes": true
+    },
+    {
+      "directory": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/immutable-v6-small-successes",
+      "original_files": 72,
+      "original_bytes": 17434448,
+      "part_count": 7,
+      "archive": {
+        "name": "original-ci.tar.gz",
+        "bytes": 2242273,
+        "sha256": "a33e5b3c62d948df8b3bbe70118da660ad11a5384f590dbcca01508460eefda9",
+        "computed_git_blob": "bb84f2af0537d80ca947fb7563d1225f5469e166"
+      },
+      "root_executed_complete_verifier_exit": 0,
+      "strict_base64_all_parts_full_gzip_crc_complete_tar_all_original_hashes": true
+    },
+    {
+      "directory": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/immutable-v6-snapshots0041-0046",
+      "original_files": 7,
+      "original_bytes": 6599102,
+      "part_count": 1,
+      "archive": {
+        "name": "original-ci.tar.gz",
+        "bytes": 349508,
+        "sha256": "e3fa692f9d2388ed6e13e2b22ec70afd7c2d245428ff8ac22eeca4fb750210b1",
+        "computed_git_blob": "5d9bfcb83b6222a5e3f43951ab2e27208d0ee199"
+      },
+      "root_executed_complete_verifier_exit": 0,
+      "strict_base64_all_parts_full_gzip_crc_complete_tar_all_original_hashes": true
+    },
+    {
+      "directory": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/immutable-v6-musl-compile-failure-v2",
+      "original_files": 25,
+      "original_bytes": 323735,
+      "part_count": 1,
+      "archive": {
+        "name": "original-ci.tar.gz",
+        "bytes": 74092,
+        "sha256": "cd8df42eee6252ab91203dc8905705e4db6d38a0da15efe86050827501b22378",
+        "computed_git_blob": "b544d89fade0777ad2a7d6f8a4b178f5071a343f"
+      },
+      "root_executed_complete_verifier_exit": 0,
+      "strict_base64_all_parts_full_gzip_crc_complete_tar_all_original_hashes": true
+    }
+  ],
+  "snapshot0046_independent_recount": {
+    "start": "2026-11-05T13:12:39.579Z",
+    "end": "2026-11-05T13:12:40.863Z",
+    "runs": 19,
+    "all_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "jobs": 59,
+    "unique_job_ids": 59,
+    "all_paginated_total_count_equal": true,
+    "queued": 16,
+    "running": 7,
+    "success": 32,
+    "failure": 2,
+    "skipped": 2
+  },
+  "scope_findings": [
+    "GitQueue source and merge each have 35 outer Git-utils + one nested repeated same-binary execution + 36 Queue passes; this is 72 pass occurrences and 71 distinct names. All eight named original B13 Queue exits match each lane; ninth Agentd feature case not selected.",
+    "Windows private state has 53 scoped passes and two valid physical counterfactual failures, each original file restored. These do not establish B11 strict-token outside-delete denial.",
+    "Memory Linux and Windows each have two scoped passes; Supervisor each has 3+14. They have no intersection with the frozen 142 original exit names.",
+    "Intel V8 release and sandbox each have six actual native smoke passes on their actual merge source. The large release ZIP binaries are not downloaded or independently byte-verified here.",
+    "musl original compile failed E0308/E0277 after 664.197151291 seconds; no actual product ELF/CLI/smoke passed. Its later candidate remains separate."
+  ],
+  "limits": [
+    "Original 23 status and exit conditions unchanged.",
+    "Snapshot0046 is a complete non-atomic bounded observation; later 0047/0048 results remain independent increments.",
+    "Queued runner_id=0, empty runner_name and steps do not establish cause, billing state, capacity exhaustion or actual runner start.",
+    "No task rerun, cancellation, source/ref mutation, native test, or expanded acceptance was performed by this review."
+  ]
+}

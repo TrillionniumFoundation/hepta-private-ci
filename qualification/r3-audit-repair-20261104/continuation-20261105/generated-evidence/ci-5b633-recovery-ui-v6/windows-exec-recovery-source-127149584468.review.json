@@ -1,0 +1,3504 @@
+{
+  "schema": "hepta-original-windows-recovery-independent-projection-v1",
+  "observed_at": "2026-11-05T13:30:53.696107+00:00",
+  "api_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "run_id": 41999114971,
+  "run_attempt": 1,
+  "actual_checkout": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "actual_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "source_receipt": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-exec-recovery-source-127149584468/members-13418030881/source.json",
+    "bytes": 3976,
+    "sha256": "e48382bb4b2f1d282ae187ad4e58f13c719551af701eef21c0ef30973185e1e3",
+    "computed_git_blob": "8b078633f894b4722d65da7e2296a2c2c3e3bd13"
+  },
+  "source": {
+    "source": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "inputs": {
+      "codex-rs/exec/Cargo.toml": "e36607e5f02152f22fc6de4d6893e2c36d18c5fcf33919ce795b00430f89d2bb",
+      "codex-rs/exec/tests/suite/resume.rs": "3b1b3a049a2d70e117c5c0bcba6043f0aea5d17b0e02a1830443a9b1af6c004b",
+      "codex-rs/exec-server/tests/file_system_unix.rs": "4ba2ff436a388e2fc5b809221e525bdf3450506cc227ab7e0eae0b9c71aa1dbe",
+      "codex-rs/exec-server/tests/authorized_read_rpc.rs": "631c14e1980f65ff49d47ba9a5783534c9f5dffa424115ca800bb14e93ce3264",
+      "codex-rs/exec-server/src/client.rs": "bbd67b6791f23784a8e2f57925cde890e21f15325076a5b93eb38c92d75b7db8",
+      "codex-rs/exec-server/src/client_stdio_tests.rs": "7ab9b83c452b1e211ef39a1be262afc0b11411926f863b00dc3893b63e334181",
+      "codex-rs/exec-server/src/lib.rs": "194cbe8eada6379358cf4ba4743294084d81977db316776c258cf4bbf8c5cb61",
+      "codex-rs/exec-server/src/remote_file_system.rs": "a56426a26040d3c8df304b1dd31a3529246a4ecb488c6f93b6a8252ed0b99073",
+      "codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs": "443e13057b277d3d0ee437b6a044854a10a1d2a55bbb62525681a47ecce464b4",
+      "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs": "8201adb8bd745e7ecbee185f5cf477e1f7cbd84a0bd71e22ff66050f437ed858",
+      "codex-rs/rollout/src/state_db.rs": "d4dd2020daefcdfe9e67168f3a35f5c0eb80daf4ea6fdde576b9304b8dcc31d3",
+      "codex-rs/rollout/src/state_db_tests.rs": "cb7c881c970e3632ce12edac4bbcde535e6fe143bb5ddf73338fe7d19d769bc4",
+      "codex-rs/Cargo.lock": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+      "codex-rs/rust-toolchain.toml": "029fd8fde748bb7dd75f20e21576e36f1f567bba8149af4602310086a2a0dc58",
+      "codex-rs/.config/nextest.toml": "b7341ed779adcbeff363df4de96fdb1bab7c705244c928e8a4b019373f250585",
+      "scripts/run-nextest.py": "5688430c4e061bdd46e9aa37cf37b078ff0dbc52a8f8e641dc6583a7581738e0",
+      "justfile": "325e27adeb9034ffbabf4a7c6245447fc65c496365ddacc16eb1c80ca4636b3e"
+    },
+    "input_git_objects": "100644 blob 868f75986ea9719e116b8fa8a0aa53bd269bc830\tcodex-rs/.config/nextest.toml\n100644 blob 71fc8fa78b5afa076835b29790a5e6b0bd772558\tcodex-rs/Cargo.lock\n100644 blob d5b5c20eaa846713af5279675efcf2d8f5b11643\tcodex-rs/exec-server/src/client.rs\n100644 blob 1f0e145eed988c0940263d54829ceabd3118a8cf\tcodex-rs/exec-server/src/client_stdio_tests.rs\n100644 blob 1506b032568d76c30209b8c5533ac867c23cdafc\tcodex-rs/exec-server/src/lib.rs\n100644 blob e67e1f65896c81bddeb70c411bae75f99557c7ff\tcodex-rs/exec-server/src/local_file_system_authorized_read_tests.rs\n100644 blob 62bc9682f502ff95dffef9bc2b5548cad034dbf1\tcodex-rs/exec-server/src/remote_file_system.rs\n100644 blob d1d34281d7a56db3278773d69ed972fd90610a25\tcodex-rs/exec-server/src/remote_file_system_path_uri_tests.rs\n100644 blob 7f1ea1795fba968d8223760893d5dfe6841d4509\tcodex-rs/exec-server/tests/authorized_read_rpc.rs\n100644 blob b0436c0a20a36d8808b5c33416ff7272e4533501\tcodex-rs/exec-server/tests/file_system_unix.rs\n100644 blob eebecc9ff1bb3b0cd3e914f510fce599e1cf3cf0\tcodex-rs/exec/Cargo.toml\n100644 blob 3d70c6c80105230e148c4ab207ce6b912cf79fab\tcodex-rs/exec/tests/suite/resume.rs\n100644 blob 1c021fd3c1c09509af6926080023617886e0da7a\tcodex-rs/rollout/src/state_db.rs\n100644 blob ac8694562b341f0df65fd1d523a2401c28c9645b\tcodex-rs/rollout/src/state_db_tests.rs\n100644 blob 910c65114ec128a8317ee8257428451f3cd28230\tcodex-rs/rust-toolchain.toml\n100644 blob a215a76cf407ace9715bca39c20497014e7dd4dc\tjustfile\n100644 blob 1ed63abe84267b320cbfb0123a70aac5507f4595\tscripts/run-nextest.py\n",
+    "run_id": "41999114971",
+    "run_attempt": "1",
+    "rustc": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-pc-windows-msvc\nrelease: 1.95.0\nLLVM version: 22.1.2\n"
+  },
+  "retained_receipt": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-exec-recovery-source-127149584468/members-13418030881/retained.json",
+    "bytes": 4850,
+    "sha256": "324303159eaddb28f6c3ac552c565ddfe1391718b9650e96f7cab326bdcc019a",
+    "computed_git_blob": "bedd8488de33c22c0c52cb6786eaacb5907c5c2e"
+  },
+  "recorded_input_count": 17,
+  "recorded_inputs_before_after_equal": true,
+  "job_log": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-exec-recovery-source-127149584468/job.log",
+    "bytes": 1529427,
+    "sha256": "6da47bb7fcb493a2a0b8c479f81ee2b153a8095982ad2d5b00c185b7225a28fc",
+    "computed_git_blob": "9cc73366ee20e9146587605690970945a7a65e7f"
+  },
+  "artifact_verification": {
+    "schema": "hepta-exact-artifact-zip-verification-v1",
+    "artifact_id": 13418030881,
+    "acquisition": "exact_connector_url",
+    "github_size": 48610,
+    "github_digest": "sha256:ac9c6ac9055b0aad2050dfacb1d1c00d90ae060daa247aa724e246958ae28247",
+    "archive": {
+      "bytes": 48610,
+      "sha256": "ac9c6ac9055b0aad2050dfacb1d1c00d90ae060daa247aa724e246958ae28247",
+      "computed_git_blob": "84a3016202bf411fc260014ac2043d40d987c889"
+    },
+    "all_crc_valid": true,
+    "member_count": 11,
+    "members": [
+      {
+        "name": "resume-junit.xml",
+        "crc": 2871024314,
+        "bytes": 2878,
+        "sha256": "e5a223e9bc2bbc617c4fb9b7c9aa0fe5d7ce13d0675a8da17b47c95f7f37813d",
+        "computed_git_blob": "5fd80ccc8bf4c7fe3522a8df318fab35710245ce"
+      },
+      {
+        "name": "resume.json",
+        "crc": 877950314,
+        "bytes": 900,
+        "sha256": "0c417f7da4b4d4d1751aab2c4a72574dbc05628a3648dbd03f6e6a7b7218ec2f",
+        "computed_git_blob": "7af22d44d74716e5b70a65b1338d68cec3f23101"
+      },
+      {
+        "name": "resume.log",
+        "crc": 3430921751,
+        "bytes": 71501,
+        "sha256": "3c6bc2eefd65a50d03b4f18f07f035ccd51758aeaf9bd8398dd8f5bc247d286a",
+        "computed_git_blob": "d9e63c10d8400273a782a4ee085ec1225400bcd8"
+      },
+      {
+        "name": "retained.json",
+        "crc": 173047146,
+        "bytes": 4850,
+        "sha256": "324303159eaddb28f6c3ac552c565ddfe1391718b9650e96f7cab326bdcc019a",
+        "computed_git_blob": "bedd8488de33c22c0c52cb6786eaacb5907c5c2e"
+      },
+      {
+        "name": "rollout-junit.xml",
+        "crc": 1540150101,
+        "bytes": 24243,
+        "sha256": "d989cd3ce6b27f4f4bc7619e860f802de41588913456820d98bc82c00508f2ff",
+        "computed_git_blob": "9b57520cc94461cedb1820a7bfdb97c48a495607"
+      },
+      {
+        "name": "rollout.json",
+        "crc": 2939215273,
+        "bytes": 755,
+        "sha256": "0a797f7f7b79d580c792d954f958051291f30232c5ac19c523e15f98117297cf",
+        "computed_git_blob": "0203283d27256a71e30b93aaa26fdf49a3f4459d"
+      },
+      {
+        "name": "server-junit.xml",
+        "crc": 1062759229,
+        "bytes": 53113,
+        "sha256": "588dfa5da0b5a9b363ab6245fc337b5deace3bb202f3dd9479e2139d74b3e2fd",
+        "computed_git_blob": "6fe1ede1b0a25ebfaaf5097da05ddfb8454c4e94"
+      },
+      {
+        "name": "rollout.log",
+        "crc": 1219094817,
+        "bytes": 47279,
+        "sha256": "6e8e5d7ec1def92707c40f31cd301ad98f8417360b140ab394f7f78b65dbfa80",
+        "computed_git_blob": "ce2cba0873f3ae5414a97e55bc85b6f5459fdebd"
+      },
+      {
+        "name": "server.json",
+        "crc": 514766586,
+        "bytes": 791,
+        "sha256": "6de78ecf892e36b49e4077442ad98a03633e23977cb673655ae361e066c7636a",
+        "computed_git_blob": "56d03099c599f96d3ea81f7a306f3f9d6d81dc38"
+      },
+      {
+        "name": "server.log",
+        "crc": 2996731006,
+        "bytes": 99511,
+        "sha256": "72f6c75ef1e57d2138236c1b91c98a014f476294edee39f92982e85c46880f0b",
+        "computed_git_blob": "da611ac90409b3c7d8ec47287bf39db78f92ca87"
+      },
+      {
+        "name": "source.json",
+        "crc": 2962946380,
+        "bytes": 3976,
+        "sha256": "e48382bb4b2f1d282ae187ad4e58f13c719551af701eef21c0ef30973185e1e3",
+        "computed_git_blob": "8b078633f894b4722d65da7e2296a2c2c3e3bd13"
+      }
+    ]
+  },
+  "sandbox_helper_prerequisite": {
+    "command_lines": [
+      {
+        "line": 7996,
+        "text": "2026-11-05T12:40:13.3089321Z \u001b[36;1mcargo build --locked -p codex-windows-sandbox \\\u001b[0m"
+      },
+      {
+        "line": 7997,
+        "text": "2026-11-05T12:40:13.3089679Z \u001b[36;1m  --bin codex-windows-sandbox-setup \\\u001b[0m"
+      },
+      {
+        "line": 7998,
+        "text": "2026-11-05T12:40:13.3089970Z \u001b[36;1m  --bin codex-command-runner\u001b[0m"
+      }
+    ],
+    "environment_line": "2026-11-05T12:40:13.3107638Z   CARGO_TARGET_DIR: D:\\a\\_temp/hepta-exec-authorized-read-target",
+    "finished_line": {
+      "line": 9056,
+      "text": "2026-11-05T12:47:59.5103060Z     Finished `dev` profile [unoptimized + debuginfo] target(s) in 7m 45s"
+    },
+    "binary_hashes_not_separately_recorded_by_original_workflow": true,
+    "setup_and_runner_built_before_scoped_commands": true
+  },
+  "scopes": [
+    {
+      "scope": "resume",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-exec",
+        "--test",
+        "all",
+        "-E",
+        "test(suite::resume::)",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all",
+        "--success-output",
+        "final"
+      ],
+      "command_receipt": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-exec-recovery-source-127149584468/members-13418030881/resume.json",
+        "bytes": 900,
+        "sha256": "0c417f7da4b4d4d1751aab2c4a72574dbc05628a3648dbd03f6e6a7b7218ec2f",
+        "computed_git_blob": "7af22d44d74716e5b70a65b1338d68cec3f23101"
+      },
+      "junit": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-exec-recovery-source-127149584468/members-13418030881/resume-junit.xml",
+        "bytes": 2878,
+        "sha256": "e5a223e9bc2bbc617c4fb9b7c9aa0fe5d7ce13d0675a8da17b47c95f7f37813d",
+        "computed_git_blob": "5fd80ccc8bf4c7fe3522a8df318fab35710245ce"
+      },
+      "log": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-exec-recovery-source-127149584468/members-13418030881/resume.log",
+        "bytes": 71501,
+        "sha256": "3c6bc2eefd65a50d03b4f18f07f035ccd51758aeaf9bd8398dd8f5bc247d286a",
+        "computed_git_blob": "d9e63c10d8400273a782a4ee085ec1225400bcd8"
+      },
+      "junit_root_attributes": {
+        "name": "nextest-run",
+        "tests": "13",
+        "failures": "0",
+        "errors": "0",
+        "uuid": "4814e56e-77e5-4cfd-8599-c72e147d55c4",
+        "timestamp": "2026-11-05T13:10:36.907+00:00",
+        "time": "241.807"
+      },
+      "suite_attributes": [
+        {
+          "name": "codex-exec::all",
+          "tests": "13",
+          "disabled": "0",
+          "errors": "0",
+          "failures": "0"
+        }
+      ],
+      "cases": [
+        {
+          "name": "suite::resume::exec_falls_back_to_legacy_history_when_thread_store_cannot_paginate",
+          "classname": "codex-exec::all",
+          "timestamp": "2026-11-05T13:10:36.909+00:00",
+          "time": "17.947",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "suite::resume::exec_fork_creates_distinct_threads_with_and_without_a_prompt",
+          "classname": "codex-exec::all",
+          "timestamp": "2026-11-05T13:10:36.909+00:00",
+          "time": "39.019",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "suite::resume::exec_resume_accepts_global_flags_after_subcommand",
+          "classname": "codex-exec::all",
+          "timestamp": "2026-11-05T13:10:54.858+00:00",
+          "time": "38.262",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "suite::resume::exec_resume_accepts_images_after_subcommand",
+          "classname": "codex-exec::all",
+          "timestamp": "2026-11-05T13:11:15.930+00:00",
+          "time": "37.796",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "suite::resume::exec_resume_by_id_appends_to_existing_file",
+          "classname": "codex-exec::all",
+          "timestamp": "2026-11-05T13:11:33.121+00:00",
+          "time": "38.223",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "suite::resume::exec_resume_includes_output_schema_in_request",
+          "classname": "codex-exec::all",
+          "timestamp": "2026-11-05T13:11:53.727+00:00",
+          "time": "38.169",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "suite::resume::exec_resume_last_accepts_prompt_after_flag_in_json_mode",
+          "classname": "codex-exec::all",
+          "timestamp": "2026-11-05T13:12:11.345+00:00",
+          "time": "38.275",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "suite::resume::exec_resume_last_appends_to_existing_file",
+          "classname": "codex-exec::all",
+          "timestamp": "2026-11-05T13:12:31.897+00:00",
+          "time": "39.424",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "suite::resume::exec_resume_last_repairs_rollout_missing_from_state_db",
+          "classname": "codex-exec::all",
+          "timestamp": "2026-11-05T13:12:49.621+00:00",
+          "time": "34.285",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "suite::resume::exec_resume_last_respects_cwd_filter_and_all_flag",
+          "classname": "codex-exec::all",
+          "timestamp": "2026-11-05T13:13:11.322+00:00",
+          "time": "40.249",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "suite::resume::exec_resume_last_skips_mismatched_state_db_candidate",
+          "classname": "codex-exec::all",
+          "timestamp": "2026-11-05T13:13:23.908+00:00",
+          "time": "35.581",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "suite::resume::exec_resume_preserves_cli_configuration_overrides",
+          "classname": "codex-exec::all",
+          "timestamp": "2026-11-05T13:13:59.489+00:00",
+          "time": "33.266",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "suite::resume::exec_resume_last_trusts_usable_state_db_candidate",
+          "classname": "codex-exec::all",
+          "timestamp": "2026-11-05T13:13:51.572+00:00",
+          "time": "47.148",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        }
+      ],
+      "actual_case_count": 13,
+      "failed": 0,
+      "junit_skipped": 0,
+      "console_summary": "     Summary [ 241.807s] 13 tests run: 13 passed (1 slow), 35 skipped",
+      "outside_selected_scope_skips": 35,
+      "retries": 0,
+      "cache_scope": "Fresh nextest execution; Cargo build reuse is not test-result caching."
+    },
+    {
+      "scope": "rollout",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-rollout",
+        "--lib",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all"
+      ],
+      "command_receipt": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-exec-recovery-source-127149584468/members-13418030881/rollout.json",
+        "bytes": 755,
+        "sha256": "0a797f7f7b79d580c792d954f958051291f30232c5ac19c523e15f98117297cf",
+        "computed_git_blob": "0203283d27256a71e30b93aaa26fdf49a3f4459d"
+      },
+      "junit": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-exec-recovery-source-127149584468/members-13418030881/rollout-junit.xml",
+        "bytes": 24243,
+        "sha256": "d989cd3ce6b27f4f4bc7619e860f802de41588913456820d98bc82c00508f2ff",
+        "computed_git_blob": "9b57520cc94461cedb1820a7bfdb97c48a495607"
+      },
+      "log": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-exec-recovery-source-127149584468/members-13418030881/rollout.log",
+        "bytes": 47279,
+        "sha256": "6e8e5d7ec1def92707c40f31cd301ad98f8417360b140ab394f7f78b65dbfa80",
+        "computed_git_blob": "ce2cba0873f3ae5414a97e55bc85b6f5459fdebd"
+      },
+      "junit_root_attributes": {
+        "name": "nextest-run",
+        "tests": "121",
+        "failures": "0",
+        "errors": "0",
+        "uuid": "a2da84bd-9c71-4fcc-933a-bbb057d94da5",
+        "timestamp": "2026-11-05T12:59:49.774+00:00",
+        "time": "10.240"
+      },
+      "suite_attributes": [
+        {
+          "name": "codex-rollout",
+          "tests": "121",
+          "disabled": "0",
+          "errors": "0",
+          "failures": "0"
+        }
+      ],
+      "cases": [
+        {
+          "name": "compression::tests::load_rollout_items_reads_compressed_rollout",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.775+00:00",
+          "time": "0.047",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::find_thread_path_by_id_handles_compressed_rollout_filenames",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.775+00:00",
+          "time": "0.048",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::append_rollout_item_materializes_compressed_rollout",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.775+00:00",
+          "time": "0.052",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::find_thread_path_by_id_ignores_compression_temp_matches",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.775+00:00",
+          "time": "0.070",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::persist_temp_file_noclobber_does_not_replace_existing_destination",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.824+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::persist_temp_file_noclobber_installs_completed_temp",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.824+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::read_session_meta_line_preserves_pre_header_and_error_semantics",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.827+00:00",
+          "time": "0.028",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::read_session_meta_line_stops_before_invalid_utf8_compressed_tail",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.845+00:00",
+          "time": "0.029",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::read_session_meta_line_stops_before_invalid_utf8_tail",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.847+00:00",
+          "time": "0.030",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::rollout_file_from_path_hides_compressed_sibling_when_plain_exists",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.856+00:00",
+          "time": "0.033",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::resume_materializes_compressed_rollout_path",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.847+00:00",
+          "time": "0.050",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::rollout_file_from_path_normalizes_compressed_file_names",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.874+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::run_marker_is_removed_unless_persisted",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.876+00:00",
+          "time": "0.031",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::worker_skips_archived_paginated_fork_pointer_chain",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.902+00:00",
+          "time": "0.038",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::worker_skips_existing_compressed_archived_rollouts",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.908+00:00",
+          "time": "0.033",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::search_rollout_matches_uses_logical_path_for_compressed_rollout",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.889+00:00",
+          "time": "0.062",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::worker_compresses_old_active_and_archived_rollouts",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.897+00:00",
+          "time": "0.072",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::worker_skips_source_referenced_by_archived_compressed_rollout",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.940+00:00",
+          "time": "0.052",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::worker_skips_when_fresh_run_marker_exists",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.952+00:00",
+          "time": "0.040",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::worker_skips_unreadable_metadata_without_blocking_other_compression",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.941+00:00",
+          "time": "0.054",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "compression::tests::worker_waits_for_rollout_maintenance_before_compressing",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.969+00:00",
+          "time": "0.055",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "metadata::tests::backfill_sessions_preserves_existing_git_branch_and_fills_missing_git_fields",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.992+00:00",
+          "time": "1.668",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "metadata::tests::builder_from_items_falls_back_to_filename",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.660+00:00",
+          "time": "0.015",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "metadata::tests::backfill_sessions_preserves_existing_paginated_memory_mode",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.995+00:00",
+          "time": "1.696",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "metadata::tests::extract_metadata_from_rollout_rejects_unknown_history_mode",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.675+00:00",
+          "time": "0.020",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "metadata::tests::extract_metadata_from_rollout_uses_session_meta",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.695+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "metadata::tests::extract_metadata_from_rollout_returns_latest_memory_mode",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.691+00:00",
+          "time": "0.031",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "persistence_metrics::tests::invalid_turn_boundaries_reset_partial_measurements",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.721+00:00",
+          "time": "0.016",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "persistence_metrics::tests::item_completion_persistence_depends_on_history_mode",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.721+00:00",
+          "time": "0.017",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "persistence_metrics::tests::mixed_batch_reports_exact_policy_counts_and_bytes",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.737+00:00",
+          "time": "0.017",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "persistence_metrics::tests::retained_items_are_byte_identical",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.738+00:00",
+          "time": "0.016",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "persistence_metrics::tests::review_mode_persistence_depends_on_history_mode",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.754+00:00",
+          "time": "0.016",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "persistence_metrics::tests::thread_sampling_is_stable_and_selects_whole_threads",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.755+00:00",
+          "time": "0.015",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "metadata::tests::backfill_sessions_normalizes_cwd_before_upsert",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:49.991+00:00",
+          "time": "1.794",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "persistence_metrics::tests::turn_measurements_span_batches_and_include_items_before_start",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.769+00:00",
+          "time": "0.017",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::append_repair_terminates_nonempty_rollout_tail",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.770+00:00",
+          "time": "0.019",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::fill_missing_thread_item_metadata_preserves_identity_and_prefers_state_git_fields",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.786+00:00",
+          "time": "0.019",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::append_rollout_item_to_path_assigns_next_paginated_ordinal",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.786+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::list_threads_db_disabled_does_not_skip_paginated_items",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.789+00:00",
+          "time": "0.038",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::list_threads_db_enabled_preserves_metadata_for_missing_rollout_paths",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.806+00:00",
+          "time": "1.297",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::list_threads_metadata_filter_overlays_state_db_list_metadata",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.828+00:00",
+          "time": "1.426",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::list_threads_default_filter_returns_filesystem_scan_results",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:51.808+00:00",
+          "time": "1.463",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::load_rollout_items_defaults_legacy_session_id",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.271+00:00",
+          "time": "0.067",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::load_rollout_items_filters_legacy_ghost_snapshots_from_compaction_history",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.339+00:00",
+          "time": "0.051",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::load_rollout_items_ignores_unknown_fork_source_history_mode",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.390+00:00",
+          "time": "0.029",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::load_rollout_items_preserves_legacy_guardian_assessment_lines",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.419+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::load_rollout_items_preserves_security_risk_scores",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.443+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::opening_existing_rollout_preserves_modified_time",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.466+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::paginated_ordinal_overflow_fails_without_appending",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.493+00:00",
+          "time": "0.037",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::persist_reports_filesystem_error_and_retries_buffered_items",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.531+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::recorder_materializes_on_flush_with_pending_items",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.559+00:00",
+          "time": "0.035",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::recorder_omits_ordinals_from_legacy_rollouts",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.594+00:00",
+          "time": "0.045",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::referenced_paginated_rollout_starts_at_history_cutoff_and_resumes",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.638+00:00",
+          "time": "0.028",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "metadata::tests::backfill_sessions_resumes_from_watermark_and_marks_complete",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:50.024+00:00",
+          "time": "3.738",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::resumed_empty_rollout_omits_ordinals",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.762+00:00",
+          "time": "0.031",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::resume_candidate_matches_cwd_reads_latest_turn_context",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.667+00:00",
+          "time": "0.128",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::resumed_paginated_rollout_continues_after_ordinal_gap",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.793+00:00",
+          "time": "0.059",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::resumed_paginated_rollout_repairs_unsafe_tail",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.795+00:00",
+          "time": "0.070",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::resumed_paginated_subagent_rollout_rejects_incomplete_prefix",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.853+00:00",
+          "time": "0.037",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::rollout_id_preserves_session_meta_thread_id",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.866+00:00",
+          "time": "0.063",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::strip_legacy_ghost_snapshot_keeps_checkpoint_metadata_aligned",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.929+00:00",
+          "time": "0.012",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::writer_state_retries_write_error_before_reporting_flush_success",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.941+00:00",
+          "time": "0.029",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "reverse_jsonl_scanner::tests::accepts_valid_json_at_eof",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.970+00:00",
+          "time": "0.013",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "reverse_jsonl_scanner::tests::rejects_invalid_json_and_continues_scanning",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.984+00:00",
+          "time": "0.013",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "reverse_jsonl_scanner::tests::rejects_invalid_json_at_eof_and_continues_scanning",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.996+00:00",
+          "time": "0.012",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "reverse_jsonl_scanner::tests::scans_across_read_chunk_boundaries",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.009+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "reverse_jsonl_scanner::tests::scans_from_a_frozen_prefix_end",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.036+00:00",
+          "time": "0.015",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "reverse_jsonl_scanner::tests::scans_jsonl_records_from_end",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.052+00:00",
+          "time": "0.013",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "reverse_jsonl_scanner::tests::scans_record_spanning_three_read_chunks",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.065+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "reverse_jsonl_scanner::tests::skips_blank_lines_with_or_without_termination",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.087+00:00",
+          "time": "0.019",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "reverse_jsonl_scanner::tests::skips_records_over_the_configured_limit",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.106+00:00",
+          "time": "0.014",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rollout_file_name::tests::canonical_rollout_file_names_round_trip",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.121+00:00",
+          "time": "0.014",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::list_threads_state_db_only_skips_jsonl_repair_scan",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.254+00:00",
+          "time": "0.984",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rollout_reference_index::tests::active_duplicate_wins_without_double_counting",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.134+00:00",
+          "time": "0.106",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rollout_reference_index::tests::expired_deadline_returns_none",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.238+00:00",
+          "time": "0.015",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rollout_reference_index::tests::indexes_multiple_rollouts_for_the_same_thread",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.241+00:00",
+          "time": "0.089",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::list_threads_search_repairs_stale_state_db_hits_before_returning",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.103+00:00",
+          "time": "1.244",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rollout_reference_index::tests::self_history_base_does_not_count_as_reference",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.329+00:00",
+          "time": "0.042",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rollout_reference_index::tests::scans_active_archived_and_compressed_history_bases",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.254+00:00",
+          "time": "0.132",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "session_index::tests::find_thread_id_by_name_prefers_latest_entry",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.347+00:00",
+          "time": "0.050",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "session_index::tests::find_thread_meta_by_name_str_ignores_historical_name_after_rename",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.371+00:00",
+          "time": "0.041",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "session_index::tests::find_thread_meta_by_name_str_skips_partial_rollout",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.397+00:00",
+          "time": "0.037",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "session_index::tests::find_thread_meta_by_name_str_skips_newest_entry_without_rollout",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.386+00:00",
+          "time": "0.074",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "session_index::tests::find_thread_meta_candidates_filter_metadata_before_ranking",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.413+00:00",
+          "time": "0.055",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "session_index::tests::find_thread_name_by_id_prefers_latest_entry",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.435+00:00",
+          "time": "0.033",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "session_index::tests::find_thread_names_by_ids_prefers_latest_entry",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.460+00:00",
+          "time": "0.021",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "session_index::tests::reverse_lookup_accepts_valid_eof_json_and_skips_invalid",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.468+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "session_index::tests::scan_index_finds_latest_match_among_mixed_entries",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.468+00:00",
+          "time": "0.031",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "session_index::tests::scan_index_returns_none_when_entry_missing",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.481+00:00",
+          "time": "0.034",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "state_db::tests::cursor_to_anchor_normalizes_timestamp_format",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.492+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "state_db::tests::cursor_to_anchor_preserves_recency_tie_breaker",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.500+00:00",
+          "time": "0.021",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "recorder::tests::state_db_init_backfills_before_returning",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:53.890+00:00",
+          "time": "1.146",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "state_db::tests::index_reads_accept_config_before_native_home_canonicalization",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.516+00:00",
+          "time": "1.488",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "state_db::tests::list_threads_db_rejects_mismatched_sqlite_config_without_cleanup",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.520+00:00",
+          "time": "1.665",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "state_db::tests::filesystem_repair_preserves_existing_rollout_path",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:54.515+00:00",
+          "time": "1.709",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "state_db::tests::reconcile_rollout_preserves_existing_explicit_title",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:55.036+00:00",
+          "time": "1.633",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::filesystem_lookup_distinguishes_thread_ids_from_rollout_ids",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:56.669+00:00",
+          "time": "0.109",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "state_db::tests::reconcile_rollout_preserves_existing_paginated_memory_mode",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:56.005+00:00",
+          "time": "1.658",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "state_db::tests::try_init_waits_for_concurrent_startup_backfill",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:56.224+00:00",
+          "time": "1.848",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::find_thread_path_accepts_existing_state_db_path_without_canonical_filename",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:56.779+00:00",
+          "time": "1.661",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::find_thread_path_falls_back_when_db_path_is_stale",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:57.662+00:00",
+          "time": "1.586",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::read_head_for_summary_omits_harness_metadata",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.248+00:00",
+          "time": "0.046",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::read_thread_item_from_rollout_rejects_unknown_canonical_history_mode",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.294+00:00",
+          "time": "0.053",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::rollout_date_parts_extracts_directory_components",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.348+00:00",
+          "time": "0.015",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::rollout_line_decoder_preserves_canonical_json_compatibility",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.363+00:00",
+          "time": "0.015",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::test_base_instructions_missing_in_meta_defaults_to_null",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.378+00:00",
+          "time": "0.051",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::test_base_instructions_present_in_meta_is_preserved",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.428+00:00",
+          "time": "0.067",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::find_thread_path_falls_back_when_db_path_points_to_another_thread",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:58.072+00:00",
+          "time": "1.498",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::test_created_at_sort_uses_file_mtime_for_updated_at",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.495+00:00",
+          "time": "0.077",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::test_get_thread_contents",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.570+00:00",
+          "time": "0.043",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::test_goal_first_thread_reads_later_user_message",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.572+00:00",
+          "time": "0.041",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::test_list_threads_scans_past_head_for_user_event",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.614+00:00",
+          "time": "0.057",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::test_list_conversations_latest_first",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.613+00:00",
+          "time": "0.091",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::test_list_threads_uses_goal_objective_as_preview",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.670+00:00",
+          "time": "0.074",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::test_model_provider_filter_selects_only_matching_sessions",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.705+00:00",
+          "time": "0.093",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::test_source_filter_excludes_non_matching_sessions",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.799+00:00",
+          "time": "0.046",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::find_thread_path_repairs_missing_db_row_after_filesystem_fallback",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:58.440+00:00",
+          "time": "1.449",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::test_pagination_cursor",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.745+00:00",
+          "time": "0.147",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::test_timestamp_only_cursor_skips_same_second_filesystem_ties",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.845+00:00",
+          "time": "0.069",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "tests::test_updated_at_uses_file_mtime",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:59.889+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "state_db::tests::try_init_times_out_waiting_for_stuck_startup_backfill",
+          "classname": "codex-rollout",
+          "timestamp": "2026-11-05T12:59:56.186+00:00",
+          "time": "3.828",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        }
+      ],
+      "actual_case_count": 121,
+      "failed": 0,
+      "junit_skipped": 0,
+      "console_summary": "     Summary [  10.240s] 121 tests run: 121 passed, 0 skipped",
+      "outside_selected_scope_skips": 0,
+      "retries": 0,
+      "cache_scope": "Fresh nextest execution; Cargo build reuse is not test-result caching."
+    },
+    {
+      "scope": "server",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-exec-server",
+        "--lib",
+        "--test",
+        "authorized_read_rpc",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all"
+      ],
+      "command_receipt": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-exec-recovery-source-127149584468/members-13418030881/server.json",
+        "bytes": 791,
+        "sha256": "6de78ecf892e36b49e4077442ad98a03633e23977cb673655ae361e066c7636a",
+        "computed_git_blob": "56d03099c599f96d3ea81f7a306f3f9d6d81dc38"
+      },
+      "junit": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-exec-recovery-source-127149584468/members-13418030881/server-junit.xml",
+        "bytes": 53113,
+        "sha256": "588dfa5da0b5a9b363ab6245fc337b5deace3bb202f3dd9479e2139d74b3e2fd",
+        "computed_git_blob": "6fe1ede1b0a25ebfaaf5097da05ddfb8454c4e94"
+      },
+      "log": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-exec-recovery-source-127149584468/members-13418030881/server.log",
+        "bytes": 99511,
+        "sha256": "72f6c75ef1e57d2138236c1b91c98a014f476294edee39f92982e85c46880f0b",
+        "computed_git_blob": "da611ac90409b3c7d8ec47287bf39db78f92ca87"
+      },
+      "junit_root_attributes": {
+        "name": "nextest-run",
+        "tests": "254",
+        "failures": "0",
+        "errors": "0",
+        "uuid": "fc482fb1-424b-4bef-87f3-e0ac121a309c",
+        "timestamp": "2026-11-05T12:56:01.144+00:00",
+        "time": "5.993"
+      },
+      "suite_attributes": [
+        {
+          "name": "codex-exec-server",
+          "tests": "253",
+          "disabled": "0",
+          "errors": "0",
+          "failures": "0"
+        },
+        {
+          "name": "codex-exec-server::authorized_read_rpc",
+          "tests": "1",
+          "disabled": "0",
+          "errors": "0",
+          "failures": "0"
+        }
+      ],
+      "cases": [
+        {
+          "name": "client::accepted::tests::replacement_claim_is_released_when_handoff_is_cancelled",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.147+00:00",
+          "time": "0.028",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::recovery::tests::process_event_reorder_rejects_oversized_output",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.147+00:00",
+          "time": "0.028",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::recovery::tests::recovery_adds_sandbox_denial_to_pending_exit_event",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.147+00:00",
+          "time": "0.031",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::recovery::tests::process_event_reorder_accepts_gap_closing_event_at_limits",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.147+00:00",
+          "time": "0.034",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::recovery::tests::recovery_does_not_retry_other_registry_conflicts",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.176+00:00",
+          "time": "0.030",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::recovery::tests::recovery_handles_dense_tail_output_and_newer_notification",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.176+00:00",
+          "time": "0.031",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::recovery::tests::recovery_rejects_output_at_closed_sequence",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.178+00:00",
+          "time": "0.032",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::recovery::tests::recovery_retries_environment_offline_conflicts",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.181+00:00",
+          "time": "0.030",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::recovery::tests::recovery_retries_registry_request_timeouts",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.206+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::recovery::tests::recovery_retries_transient_registry_errors",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.207+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::recovery::tests::registry_recovery_retry_delay_exponentially_backs_off_and_caps",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.210+00:00",
+          "time": "0.029",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::environment_info_is_cached::test_case_1_from_initialize",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.230+00:00",
+          "time": "0.040",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::environment_info_is_cached::test_case_2_legacy_server",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.231+00:00",
+          "time": "0.042",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::explicit_resume_drains_notifications_before_initialize_response",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.239+00:00",
+          "time": "0.053",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::initial_connection_is_shared_by_all_waiters",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.272+00:00",
+          "time": "0.029",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::network_policy_tests::abandoned_process_start_unregisters_and_cleans_up",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.292+00:00",
+          "time": "0.031",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::network_policy_tests::policy_decisions_reject_forged_process_and_use_trusted_controller_metadata",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.302+00:00",
+          "time": "0.035",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::process_events_are_delivered_in_seq_order_when_notifications_are_reordered",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.337+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::process_start_propagates_caller_trace_context_across_background_task",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.360+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::remote_websocket_client_resumes_session",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.386+00:00",
+          "time": "0.031",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::network_policy_tests::policy_requests_use_process_decider_and_cancel_on_unregister",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.323+00:00",
+          "time": "0.101",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::retryable_startup_failure_does_not_burn_environment",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.417+00:00",
+          "time": "0.030",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::session_write_retries_same_write_id_after_recovery",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.424+00:00",
+          "time": "0.034",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::terminal_stdio_startup_failure_is_remembered",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.448+00:00",
+          "time": "0.028",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::transport_disconnect_fails_sessions_and_rejects_new_sessions",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.458+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client_transport::tests::initial_noise_connection_bounds_a_stalled_initial_request",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.480+00:00",
+          "time": "0.045",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::connect_stdio_command_initializes_json_rpc_client_on_windows",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.211+00:00",
+          "time": "0.329",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client_transport::tests::initial_noise_connection_bounds_a_stalled_retry_request",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.525+00:00",
+          "time": "0.044",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client_transport::tests::initial_noise_connection_bounds_offline_retries",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.540+00:00",
+          "time": "0.043",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client_transport::tests::initial_noise_connection_refreshes_bundle_after_exhausting_initial_retries",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.583+00:00",
+          "time": "0.089",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client_transport::tests::initial_noise_connection_retries_a_stalled_initial_request",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.672+00:00",
+          "time": "0.055",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::wake_notifications_do_not_block_other_sessions",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.476+00:00",
+          "time": "0.280",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client_transport::tests::initial_noise_connection_retries_registry_request_timeouts",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.727+00:00",
+          "time": "0.063",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client::tests::failed_reconnect_does_not_burn_environment",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.270+00:00",
+          "time": "0.534",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "connection::tests::stdio_connection_accepts_message_at_size_limit",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.805+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client_transport::tests::initial_noise_connection_does_not_retry_permanent_registry_errors",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.569+00:00",
+          "time": "0.261",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client_transport::tests::noise_session_resume_leaves_offline_retries_to_recovery",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.790+00:00",
+          "time": "0.041",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "connection::tests::stdio_connection_rejects_overlong_unterminated_message",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.829+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "connection::tests::websocket_connection_accepts_binary_jsonrpc_message",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.830+00:00",
+          "time": "0.029",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "client_transport::tests::initial_noise_connection_retries_transient_registry_statuses",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.756+00:00",
+          "time": "0.123",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "connection::tests::websocket_connection_reports_server_close",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.859+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::create_local_environment_does_not_connect",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.881+00:00",
+          "time": "0.020",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "connection::tests::websocket_connection_ignores_server_pong",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.831+00:00",
+          "time": "0.088",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::default_environment_has_ready_local_executor",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.901+00:00",
+          "time": "0.028",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "connection::tests::websocket_connection_keeps_outbound_message_while_send_is_backpressured",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.851+00:00",
+          "time": "0.085",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "connection::tests::websocket_connection_sends_configured_ping",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.879+00:00",
+          "time": "0.059",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::disabled_environment_manager_has_no_default_or_local_environment",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.919+00:00",
+          "time": "0.019",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_builds_from_snapshot",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.929+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_carries_local_runtime_paths",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.936+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_creates_remote_environment_for_url",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.938+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_default_environment_caches_environment",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.938+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_disables_provider_default",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.955+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_includes_local_for_default_provider_without_url",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.960+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_leaves_stdio_environment_lazy",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.960+00:00",
+          "time": "0.029",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_normalizes_empty_url",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.966+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_omits_default_provider_local_lookup_when_default_disabled",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.980+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_rejects_empty_environment_id",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.985+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_rejects_empty_remote_environment_url",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.989+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_rejects_provider_supplied_local_environment",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:01.990+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_rejects_unknown_provider_default",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.007+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_snapshot_without_local_environment_disables_local_default",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.008+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_upserts_named_remote_environment",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.013+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_starts_remote_environment_when_upserted",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.011+00:00",
+          "time": "0.028",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_status_keeps_stdio_environment_pending",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.033+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::environment_manager_uses_explicit_provider_default",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.032+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::get_environment_returns_none_for_unknown_id",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.039+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::local_environment_info_includes_current_directory",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.039+00:00",
+          "time": "0.029",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::local_environment_passes_runtime_paths_to_exec_backend",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.058+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::replacing_environment_stops_its_startup_task",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.062+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::selected_capability_inspection_keeps_stdio_environment_lazy",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.068+00:00",
+          "time": "0.029",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::test_environment_rejects_sandboxed_filesystem_without_runtime_paths",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.082+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment::tests::noise_environment_config_selects_remote_as_default",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.059+00:00",
+          "time": "0.051",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_bootstrap::tests::prepared_environment_manager_builds_with_the_explicit_http_policy",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.089+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_bootstrap::tests::prepared_local_and_disabled_environments_are_not_remote",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.097+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_bootstrap::tests::prepared_noise_environment_is_detected_before_http_policy_is_resolved",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.106+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_bootstrap::tests::prepared_noise_environment_rejects_invalid_configuration",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.110+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_bootstrap::tests::prepared_remote_environment_is_detected_without_constructing_a_connection",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.113+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_provider::tests::default_provider_adds_remote_environment_for_websocket_url",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.123+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_provider::tests::default_provider_omits_local_environment_for_none_value",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.129+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_provider::tests::default_provider_requests_local_environment_when_url_is_empty",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.135+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_provider::tests::default_provider_requests_local_environment_when_url_is_missing",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.137+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_provider::tests::normalizes_exec_server_url",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.148+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::environment_provider_from_codex_home_falls_back_when_file_is_missing",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.159+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::environment_provider_from_codex_home_uses_present_environments_file",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.162+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::load_environments_toml_reads_root_environment_list",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.173+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_registry::tests::connect_response_debug_redacts_authorizations",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.153+00:00",
+          "time": "0.047",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::load_environments_toml_rejects_unknown_fields",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.182+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::toml_provider_can_disable_local_environment",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.187+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::toml_provider_default_omitted_selects_local",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.201+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::toml_provider_default_none_disables_default",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.199+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::toml_provider_includes_local_and_adds_configured_environments",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.209+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::toml_provider_parses_configured_transport_timeouts",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.214+00:00",
+          "time": "0.028",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::toml_provider_rejects_duplicate_ids",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.224+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::toml_provider_rejects_invalid_environments",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.224+00:00",
+          "time": "0.029",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::toml_provider_rejects_local_default_when_local_is_disabled",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.231+00:00",
+          "time": "0.029",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::toml_provider_rejects_overlong_id",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.247+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::toml_provider_rejects_malformed_websocket_url",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.242+00:00",
+          "time": "0.037",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::toml_provider_rejects_relative_stdio_cwd_without_config_dir",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.253+00:00",
+          "time": "0.029",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::toml_provider_rejects_unknown_default",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.260+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::toml_provider_resolves_relative_stdio_cwd_from_config_dir",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.274+00:00",
+          "time": "0.028",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "environment_toml::tests::toml_provider_without_local_and_default_omitted_disables_default",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.279+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "fs_helper::tests::helper_protocol_uses_path_uris",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.302+00:00",
+          "time": "0.028",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "fs_sandbox::tests::helper_env_carries_only_allowlisted_runtime_vars",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.303+00:00",
+          "time": "0.028",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "fs_sandbox::tests::helper_env_preserves_path_for_system_bwrap_discovery_without_leaking_secrets",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.330+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "fs_sandbox::tests::helper_env_preserves_windows_path_key_for_system_bwrap_discovery",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.332+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "fs_sandbox::tests::helper_permissions_enable_minimal_reads_for_restricted_profile",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.357+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "fs_sandbox::tests::helper_permissions_enable_minimal_reads_for_restricted_profile_with_writes",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.357+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "forward::tests::destination_close_is_acknowledged",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.282+00:00",
+          "time": "0.104",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "forward::tests::transport_disconnect_cancels_an_unfinished_websocket_handshake",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.286+00:00",
+          "time": "0.109",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "fs_sandbox::tests::helper_permissions_include_only_the_helper_executable",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.382+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "fs_sandbox::tests::helper_permissions_include_only_linux_sandbox_alias_executable",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.379+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "fs_sandbox::tests::helper_permissions_preserve_existing_writes",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.387+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "fs_sandbox::tests::sandbox_cwd_rejects_cwd_dependent_profile_without_context_cwd",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.396+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "fs_sandbox::tests::sandbox_cwd_rejects_non_native_context_cwd_without_fallback",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.405+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "fs_sandbox::tests::sandbox_cwd_uses_context_cwd",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.406+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_file_system::path_uri_tests::direct_file_system_rejects_non_native_uri_as_invalid_input",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.422+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_file_system::tests::symlink_points_to_directory_handles_dangling_directory_symlinks",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.427+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_file_system::walk_tests::sync_walk_cancellation_stops_before_io",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.432+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_file_system::walk_tests::sync_walk_rejects_sandbox_context",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.447+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_file_system::walk_tests::sync_walk_response_budget_counts_entries_and_errors",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.453+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_process::tests::callback_enabled_start_bounds_process_id_before_proxy_launch",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.455+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_process::tests::child_env_applies_policy_then_overlay",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.473+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_process::tests::child_env_defaults_to_exact_env",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.476+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_process::tests::exit_before_shutdown_records_success",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.497+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_process::tests::exited_process_keeps_network_proxy_until_inherited_streams_close",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.499+00:00",
+          "time": "0.030",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_process::tests::closed_process_is_evicted_after_retention",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.480+00:00",
+          "time": "0.075",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_process::tests::shutdown_before_exit_records_terminated",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.554+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_process::tests::exited_process_retains_late_output_past_retention",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.521+00:00",
+          "time": "0.059",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_process::tests::start_process_rejects_non_native_cwd_before_launch",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.579+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_process::tests::termination_request_after_exit_cancels_network_policy_decisions",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.580+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_process::tests::termination_request_before_exit_records_terminated",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.605+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "network_policy_decisions::tests::boundary_host_is_relayed",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.606+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "fs_sandbox::tests::sandbox_exec_request_carries_helper_env",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.410+00:00",
+          "time": "0.226",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "network_policy_decisions::tests::configured_decision_timeout_fails_closed",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.631+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "network_policy_decisions::tests::invalid_hosts_fail_closed_before_reverse_rpc",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.633+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "network_policy_decisions::tests::policy_response_reasons_are_bounded_and_fail_closed",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.637+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "network_policy_decisions::tests::process_exit_and_disconnect_fail_closed",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.655+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "network_policy_decisions::tests::returns_client_policy_decision",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.657+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "no_follow::windows::tests::native_open_rejects_named_pipes_before_connecting",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.662+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_channel::tests::initiator_rejects_oversized_handshake_payload",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.682+00:00",
+          "time": "0.058",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_channel::tests::prologue_encoding_is_stable_and_unambiguous",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.740+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_channel::tests::initiator_rejects_wrong_responder_key",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.684+00:00",
+          "time": "0.112",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_channel::tests::public_key_serializes_with_expected_suite",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.763+00:00",
+          "time": "0.039",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_channel::tests::hybrid_ik_roundtrip_authenticates_both_endpoints",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.680+00:00",
+          "time": "0.150",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_channel::tests::public_key_validation_rejects_unknown_suite",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.796+00:00",
+          "time": "0.068",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_channel::tests::responder_rejects_mismatched_prologue",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.802+00:00",
+          "time": "0.105",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_channel::tests::transport_rejects_replayed_ciphertext",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.830+00:00",
+          "time": "0.167",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_channel::tests::transport_rejects_tampered_ciphertext",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.864+00:00",
+          "time": "0.143",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::executor_stream::tests::executor_requests_attach_trace_context_only_to_the_first_noise_record",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.997+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::harness::tests::application_event_delivery_is_bounded",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.020+00:00",
+          "time": "0.044",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::executor_stream::tests::processor_exit_reports_closed_virtual_stream",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.008+00:00",
+          "time": "0.149",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::executor_stream::forward_tests::forwards_opaque_noise_payloads_and_drains_before_closing",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.907+00:00",
+          "time": "0.268",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::harness::tests::first_encrypted_request_frame_exposes_only_its_trace_context",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.064+00:00",
+          "time": "0.197",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::harness::tests::fragmented_writes_yield_to_keepalive_and_queued_pong",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.157+00:00",
+          "time": "0.221",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::message_framing::tests::fragments_and_reassembles_large_jsonrpc_message",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.378+00:00",
+          "time": "0.028",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::message_framing::tests::reassembles_many_messages_from_one_record",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.406+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::message_framing::tests::rejects_declared_message_length_above_limit_without_payload",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.433+00:00",
+          "time": "0.019",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::message_framing::tests::rejects_oversized_plaintext_record",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.452+00:00",
+          "time": "0.016",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::ordered_ciphertext::tests::ignores_duplicate_ciphertexts_without_replacing_buffered_record",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.469+00:00",
+          "time": "0.018",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::ordered_ciphertext::tests::rejects_unbounded_reordering",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.487+00:00",
+          "time": "0.018",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::ordered_ciphertext::tests::releases_ciphertexts_only_in_nonce_order",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.505+00:00",
+          "time": "0.017",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "local_process::tests::process_read_replay_is_bounded_by_chunk_count",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:02.529+00:00",
+          "time": "1.005",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::harness::tests::post_deadline_drain_stops_before_frame_33",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.262+00:00",
+          "time": "0.278",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::stream_handler::tests::local_decode_starts_request_span_before_queueing",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.523+00:00",
+          "time": "0.019",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "process::tests::event_history_replay_is_bounded_by_retained_bytes",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.540+00:00",
+          "time": "0.020",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "process_sandbox::tests::managed_network_honors_windows_sandbox_level::test_case_1_unelevated_is_rejected",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.542+00:00",
+          "time": "0.021",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "process::tests::empty_event_receiver_stays_open",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.534+00:00",
+          "time": "0.033",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "process_sandbox::tests::managed_network_honors_windows_sandbox_level::test_case_2_elevated_is_accepted",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.560+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.564+00:00",
+          "time": "0.021",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "process_sandbox::tests::native_request_preserves_native_launch_fields",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.567+00:00",
+          "time": "0.020",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "noise_relay::harness::tests::pong_keeps_harness_alive_until_peer_stops_responding",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.175+00:00",
+          "time": "0.429",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "regular_file::tests::read_sensitive_file_rejects_directory",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.585+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "regular_file::tests::read_sensitive_file_reads_regular_file",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.584+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "regular_file::tests::read_sensitive_file_rejects_symlink",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.587+00:00",
+          "time": "0.029",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "relay::noise_tests::oversized_harness_authorization_is_rejected_before_validation",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.610+00:00",
+          "time": "0.105",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "relay::noise_tests::pending_harness_key_validation_does_not_block_new_handshakes",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.616+00:00",
+          "time": "0.130",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "relay::noise_tests::duplicate_handshakes_exhaust_failure_budget",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.605+00:00",
+          "time": "0.146",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "relay::noise_tests::missing_pong_disconnects_physical_relay",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.609+00:00",
+          "time": "0.186",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "relay::noise_tests::processor_exit_resets_noise_harness_stream",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.746+00:00",
+          "time": "0.119",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "relay::noise_tests::pong_keeps_physical_relay_connected",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.715+00:00",
+          "time": "0.196",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "relay::tests::harness_connection_reports_server_close",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.911+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "relay::tests::harness_connection_keeps_outbound_frame_while_send_is_backpressured",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.865+00:00",
+          "time": "0.088",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "relay::tests::harness_connection_reports_text_frames_as_malformed",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.938+00:00",
+          "time": "0.026",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "relay::tests::harness_connection_sends_keepalive_and_receives_relay_data",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.953+00:00",
+          "time": "0.064",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "relay::tests::multiplexed_environment_sends_keepalive",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.964+00:00",
+          "time": "0.069",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "relay::noise_tests::repeated_early_data_during_validation_closes_the_physical_relay",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.751+00:00",
+          "time": "0.323",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "relay::tests::send_event_with_keepalive_pings_while_incoming_queue_is_full",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.018+00:00",
+          "time": "0.063",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote::noise_tests::noise_connect_provider_uses_supplied_system_proxy_policy",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.034+00:00",
+          "time": "0.067",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "relay::noise_tests::repeated_malformed_handshakes_close_the_physical_relay",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:03.795+00:00",
+          "time": "0.325",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote::noise_tests::validate_harness_key_does_not_expose_error_body",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.101+00:00",
+          "time": "0.045",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote::noise_tests::registry_requests_do_not_log_sensitive_urls_or_response_headers",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.080+00:00",
+          "time": "0.070",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote::noise_tests::validate_harness_key_requires_explicit_valid_response",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.120+00:00",
+          "time": "0.045",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote::tests::connect_environment_does_not_retry_malformed_successful_responses",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.146+00:00",
+          "time": "0.046",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote::tests::connect_environment_retries_interrupted_registry_response_bodies",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.151+00:00",
+          "time": "0.045",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote::tests::debug_output_redacts_auth_provider",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.195+00:00",
+          "time": "0.020",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote::tests::connect_environment_times_out_when_registry_response_body_stalls",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.165+00:00",
+          "time": "0.093",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote::tests::noise_connect_provider_requests_and_validates_a_full_bundle",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.216+00:00",
+          "time": "0.053",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote::tests::connect_environment_times_out_when_registry_stalls",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.192+00:00",
+          "time": "0.094",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote::tests::register_environment_does_not_follow_redirects_with_auth_headers",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.258+00:00",
+          "time": "0.042",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote::tests::remote_environment_config_preserves_http_client_factory_policy",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.286+00:00",
+          "time": "0.020",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote::tests::register_environment_posts_with_auth_provider_headers",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.269+00:00",
+          "time": "0.043",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::path_uri_tests::authorized_read_rejects_invalid_bounds_before_connecting",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.312+00:00",
+          "time": "0.021",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::path_uri_tests::authorized_read_preserves_server_bound_failure_without_returning_bytes",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.300+00:00",
+          "time": "0.081",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::path_uri_tests::authorized_read_redacts_all_remote_server_errors",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.306+00:00",
+          "time": "0.091",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::path_uri_tests::authorized_reads_fail_closed_for_legacy_or_disabled_capability",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.333+00:00",
+          "time": "0.079",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::path_uri_tests::concurrent_remote_metadata_errors_are_shared_but_retried",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.413+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::path_uri_tests::concurrent_remote_metadata_requests_share_only_in_flight_results",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.436+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::path_uri_tests::authorized_reads_reject_oversized_and_invalid_responses",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.381+00:00",
+          "time": "0.079",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::path_uri_tests::authorized_reads_use_cached_capability_and_preserve_wire_authority",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.397+00:00",
+          "time": "0.080",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::path_uri_tests::remote_file_system_sends_path_and_sandbox_cwd_uris_without_native_conversion",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.459+00:00",
+          "time": "0.029",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::path_uri_tests::remote_metadata_requests_do_not_cross_path_or_sandbox_boundaries",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.460+00:00",
+          "time": "0.033",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::tests::authorized_read_transport_errors_are_fixed",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.489+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::tests::remote_sandbox_context_drops_unused_cwd",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.493+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::path_uri_tests::remote_metadata_starts_fresh_after_intervening_filesystem_mutation",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.478+00:00",
+          "time": "0.046",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::tests::remote_sandbox_context_preserves_required_cwd",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.511+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote_file_system::tests::transport_errors_map_to_broken_pipe",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.516+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rpc::tests::best_effort_notifications_preserve_outbound_control_capacity",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.524+00:00",
+          "time": "0.020",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rpc::tests::inbound_request_span_stays_open_until_event_consumption",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.534+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rpc::tests::rpc_client_call_has_no_implicit_deadline",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.545+00:00",
+          "time": "0.020",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rpc::tests::rpc_client_matches_out_of_order_responses_by_request_id",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.558+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rpc::tests::rpc_client_propagates_current_trace_context",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.565+00:00",
+          "time": "0.021",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rpc::tests::rpc_client_bounds_in_flight_calls_and_preserves_cleanup",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.538+00:00",
+          "time": "0.071",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rpc_server_requests::tests::rpc_server_sender_bounds_and_drains_pending_requests_on_close",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.587+00:00",
+          "time": "0.027",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rpc::tests::rpc_client_timeout_removes_pending_request",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.581+00:00",
+          "time": "0.032",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rpc_server_requests::tests::rpc_server_sender_matches_out_of_order_responses_by_request_id",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.610+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rpc_server_requests::tests::rpc_server_sender_preserves_response_received_before_close",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.614+00:00",
+          "time": "0.021",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "rpc_server_requests::tests::rpc_server_sender_timeout_removes_pending_request",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.614+00:00",
+          "time": "0.023",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "sandboxed_file_system::path_uri_tests::sandboxed_file_system_rejects_non_native_uri_as_invalid_input",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.632+00:00",
+          "time": "0.022",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::file_system_handler::tests::no_platform_sandbox_policies_do_not_require_configured_sandbox_helper",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.635+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::handler::tests::active_session_resume_is_rejected",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.637+00:00",
+          "time": "0.025",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::handler::tests::duplicate_process_ids_allow_only_one_successful_start",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.655+00:00",
+          "time": "0.179",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::handler::tests::terminate_reports_false_after_process_exit",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.834+00:00",
+          "time": "0.054",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::processor::tests::connection_accepts_pipelined_scalar_requests",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.888+00:00",
+          "time": "0.024",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::processor::tests::disconnect_completes_queued_network_policy_response",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.912+00:00",
+          "time": "0.016",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::processor::tests::transport_disconnect_detaches_session_during_in_flight_read",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.929+00:00",
+          "time": "0.052",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::request_dispatcher::tests::concurrent_request_limit_rejects_invalid_values",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.981+00:00",
+          "time": "0.016",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::request_dispatcher::tests::request_dispatch_mode_parses_bounded_concurrency",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.998+00:00",
+          "time": "0.018",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::handler::tests::long_poll_read_fails_after_session_resume",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.659+00:00",
+          "time": "0.546",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::request_dispatcher::tests::request_span_uses_bounded_name_wire_method_and_inbound_trace_parent",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:05.206+00:00",
+          "time": "0.019",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::tests::telemetry_entrypoint_emits_root_span",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:05.225+00:00",
+          "time": "0.016",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::transport::transport_tests::parse_listen_url_accepts_default_websocket_url",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:05.241+00:00",
+          "time": "0.015",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::request_dispatcher::tests::request_queue_waits_for_dispatcher_admission_before_recording_telemetry",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:05.015+00:00",
+          "time": "0.247",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::transport::transport_tests::parse_listen_url_accepts_stdio",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:05.256+00:00",
+          "time": "0.017",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::transport::transport_tests::parse_listen_url_accepts_stdio_url",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:05.263+00:00",
+          "time": "0.017",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::transport::transport_tests::parse_listen_url_accepts_websocket_url",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:05.274+00:00",
+          "time": "0.018",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::transport::transport_tests::parse_listen_url_rejects_invalid_websocket_url",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:05.280+00:00",
+          "time": "0.017",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::transport::transport_tests::parse_listen_url_rejects_unsupported_url",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:05.292+00:00",
+          "time": "0.016",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::transport::transport_tests::stdio_listen_transport_serves_initialize",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:05.298+00:00",
+          "time": "0.021",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "trace_context::tests::creates_traceparent_header_from_current_span",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:05.308+00:00",
+          "time": "0.017",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "websocket_pong_watchdog::tests::pong_starts_a_fresh_deadline",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:05.319+00:00",
+          "time": "0.017",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "websocket_pong_watchdog::tests::repeated_ping_does_not_extend_deadline",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:05.325+00:00",
+          "time": "0.017",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "server::handler::tests::output_and_exit_are_retained_after_notification_receiver_closes",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.663+00:00",
+          "time": "1.177",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "remote::noise_tests::reconnect_reuses_registration_until_url_is_rejected",
+          "classname": "codex-exec-server",
+          "timestamp": "2026-11-05T12:56:04.074+00:00",
+          "time": "3.063",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        },
+        {
+          "name": "authorized_read_rpc_is_capability_gated_and_denies_outside_root",
+          "classname": "codex-exec-server::authorized_read_rpc",
+          "timestamp": "2026-11-05T12:56:05.336+00:00",
+          "time": "0.140",
+          "junit_result": "PASS",
+          "terminal_nodes": []
+        }
+      ],
+      "actual_case_count": 254,
+      "failed": 0,
+      "junit_skipped": 0,
+      "console_summary": "     Summary [   5.993s] 254 tests run: 254 passed, 0 skipped",
+      "outside_selected_scope_skips": 0,
+      "retries": 0,
+      "cache_scope": "Fresh nextest execution; Cargo build reuse is not test-result caching."
+    }
+  ],
+  "selected_total": 388,
+  "selected_junit_pass": 388,
+  "frozen_142_catalog": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/next-head-ci-plan-20261105/named-exit-cases.json",
+    "bytes": 180651,
+    "sha256": "16df332bed13d79c0e2f0294d65218a0f83aaa1dd926c0694dfb1363b3b83752",
+    "computed_git_blob": "5ce46bbcb2f3979eb3a320ecf3c3d065000d9645"
+  },
+  "frozen_142_exact_name_intersection": [],
+  "qualification_limits": [
+    "The source and base-merge lanes are independent executions; their 388 cases each are not 776 distinct test definitions.",
+    "The 35 resume filter exclusions remain outside this selected scope; no ignored or skipped XML nodes were counted as PASS.",
+    "Windows native_request_handles_remote_proxy_config_for_platform covers its Windows-specific environment/handle branch, not the Linux CONNECT response path that failed in the earlier full native run.",
+    "254 server JUnit PASS nodes are not an assertion that every platform-gated business path ran; exact platform branch qualifications remain separate.",
+    "Working-tree hashes are retained verbatim. Windows Cargo.lock CRLF hash differs from its Git LF blob; the prior exact CRLF reconstruction applies to that lock only.",
+    "The original recorded 17 inputs were unchanged. This does not independently hash every generated binary or every working-tree leaf after the job.",
+    "These original recovery/authorized-read scopes do not match the frozen 142-name catalog and do not close unrelated original blocker IDs."
+  ],
+  "native_operations_by_reviewer": false
+}

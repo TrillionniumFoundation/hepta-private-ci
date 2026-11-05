@@ -1,0 +1,44 @@
+{
+  "status": "STATIC_CANDIDATE_NOT_EXECUTED",
+  "base_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "source_path": "codex-rs/core/src/environment_selection.rs",
+  "original": {
+    "bytes": 73500,
+    "sha256": "04bdcec5996e2bae7187622fc7bc8a82784b70b916cb9c54618febd9f0101ca6",
+    "git_blob": "85d590f386ba81428e5ea3360d2e573d054cab4a"
+  },
+  "candidate": {
+    "bytes": 78458,
+    "sha256": "2357c4fc2c3750eb45ea2a940259f1d0b05175e39e040f3d8f2c0d4c35c283a2",
+    "git_blob": "3c08e1620e800c30c47d98cc775cb20d4650ac88"
+  },
+  "patch": {
+    "bytes": 5552,
+    "sha256": "fe32995c1b57e9a6f9481e3fe98b20532a53ee5307030a5b782313c61e011006",
+    "git_blob": "9c4d10f63f5d9bea70875d8759b67d69b9da9cf1"
+  },
+  "original_case_body": {
+    "bytes": 3621,
+    "sha256": "cc725eac77ac89dd9dc6af9d1aa2b363187f6435696dca32817d67287834f245",
+    "git_blob": "32a26d750c0ea6bfeea14fa86cd72e2ab255eebd"
+  },
+  "original_body_byte_equal": true,
+  "remove_only_added_prefix_and_suffix_equals_complete_original": true,
+  "original_three_chain_assertions_and_snapshot_five_second_timeout_unchanged": true,
+  "parent_deadline_seconds": 5,
+  "parent_deadline_includes_spawn": true,
+  "original_roster_name_unchanged": true,
+  "child_args": [
+    "--exact",
+    "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+    "--nocapture",
+    "--color",
+    "never"
+  ],
+  "counterfactual_dispatch_draft_status": "REJECTED_INCOMPLETE_NOT_APPLIED",
+  "limits": [
+    "No native compilation or execution yet.",
+    "Exact Windows interleaving remains inferred, not observed.",
+    "Same-process full parallel Core validation is required in addition to nextest."
+  ]
+}

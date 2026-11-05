@@ -1,0 +1,101 @@
+{
+  "schema": "hepta-unix-recovery-objective-original-cut-v1",
+  "frozen_at_utc": "2026-11-05T14:18:37.069639+00:00",
+  "job_terminal_cut": "All five jobs are terminal in the complete snapshot0055 collected 2026-11-05T14:05:58.817Z–14:06:00.248Z; receipt production and artifact download times remain distinct.",
+  "jobs": [
+    {
+      "directory": "gnu-exec-recovery-source-127149584446",
+      "direct_review": "gnu-exec-recovery-source-127149584446.review.json",
+      "review_identity": {
+        "bytes": 185635,
+        "sha256": "ecc7fd880e8456f348e3966dc9a58a13f16d527e16a222a87ffd378b8b92f554",
+        "computed_git_blob": "d7567d4c12629b7febcdeca3f307a4498788feaf"
+      },
+      "job_id": 127149584446,
+      "run_id": 41999114971,
+      "run_attempt": 1,
+      "actual_checkout": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "actual_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "selected_profile_occurrences": 517,
+      "distinct_cases_if_reported": null,
+      "frozen_142_exact_name_intersection": []
+    },
+    {
+      "directory": "gnu-exec-recovery-merge-127149584782",
+      "direct_review": "gnu-exec-recovery-merge-127149584782.review.json",
+      "review_identity": {
+        "bytes": 185621,
+        "sha256": "ee39ee47ec5907cb29651c2ef82d2ee57d77737adab3447553468b8a80f65981",
+        "computed_git_blob": "3fd5892581f7fea98fba7b6893d3f5e8441bfbf1"
+      },
+      "job_id": 127149584782,
+      "run_id": 41999114971,
+      "run_attempt": 1,
+      "actual_checkout": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+      "actual_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "selected_profile_occurrences": 517,
+      "distinct_cases_if_reported": null,
+      "frozen_142_exact_name_intersection": []
+    },
+    {
+      "directory": "mac-exec-recovery-source-127149584244",
+      "direct_review": "mac-exec-recovery-source-127149584244.review.json",
+      "review_identity": {
+        "bytes": 187641,
+        "sha256": "78524357b87ae316e5f8de27711c6f76ac909efddaa5ef832a626466dddff305",
+        "computed_git_blob": "ed116baffc123c34592713aaecc4cd281884659e"
+      },
+      "job_id": 127149584244,
+      "run_id": 41999114971,
+      "run_attempt": 1,
+      "actual_checkout": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "actual_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "selected_profile_occurrences": 521,
+      "distinct_cases_if_reported": null,
+      "frozen_142_exact_name_intersection": []
+    },
+    {
+      "directory": "mac-exec-recovery-merge-127149584381",
+      "direct_review": "mac-exec-recovery-merge-127149584381.review.json",
+      "review_identity": {
+        "bytes": 187632,
+        "sha256": "fce779521bcf17ff73be04d4f2ad281ead789f3ac4c1480ad321659a525557f2",
+        "computed_git_blob": "c14c92b93e23fa271f2c32b7155241fa66c6905f"
+      },
+      "job_id": 127149584381,
+      "run_id": 41999114971,
+      "run_attempt": 1,
+      "actual_checkout": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+      "actual_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "selected_profile_occurrences": 521,
+      "distinct_cases_if_reported": null,
+      "frozen_142_exact_name_intersection": []
+    },
+    {
+      "directory": "objective-source-127149582491",
+      "direct_review": "objective-source-127149582491.review.json",
+      "review_identity": {
+        "bytes": 325786,
+        "sha256": "45b9ea587c5b16dd97007358dc95d278d1fdb3d95786970a7aae4819f8cba54a",
+        "computed_git_blob": "61569ef31ec07e139a55ba5fc2e447feff37ffbd"
+      },
+      "job_id": 127149582491,
+      "run_id": 41999114631,
+      "run_attempt": 1,
+      "actual_checkout": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "actual_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "selected_profile_occurrences": 816,
+      "distinct_cases_if_reported": 574,
+      "frozen_142_exact_name_intersection": []
+    }
+  ],
+  "limits": [
+    "GNU/glibc source and merge each have 517 selected PASS; macOS ARM source and merge each have 521. These are distinct executions, not different test definitions.",
+    "Resume excluded names are retained:62 each GNU and76 each ARM, all outside original suite::resume:: selection. No excluded case is promoted to PASS.",
+    "Objective owner has816 profile occurrences but574 distinct definitions; original8/1/1 skipped totals lack names and remain unknown.",
+    "Actual Unix proxy CONNECT endpoint is qualified within these dedicated commands, not diagnosed as the cause of the earlier whole-workspace failure.",
+    "No true musl/Intel/Windows/whole-workspace/external authority qualification is inferred; original142-name exact intersections are empty.",
+    "Original local metadata/parser-author corrections are preserved; they are not product failures, native retries or edits to original evidence.",
+    "No new native test/build, workflow dispatch/rerun/cancel or ref/source mutation by reviewer."
+  ]
+}

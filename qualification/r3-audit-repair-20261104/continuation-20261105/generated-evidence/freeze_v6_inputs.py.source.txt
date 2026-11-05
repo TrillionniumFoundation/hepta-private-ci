@@ -1,0 +1,83 @@
+"""Freeze complete already-observed inputs; no native or Git operation."""
+from pathlib import Path
+import base64
+import gzip
+import hashlib
+import io
+import json
+import shutil
+import tarfile
+
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "hepta-audit-fifth/v6-archives"
+VERIFIER = ROOT / "research-audit/published-5b633-ci-20261105/immutable-v6-gitqueue/verify_archive.py"
+
+
+def identity(raw):
+    return {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
+            "computed_git_blob": hashlib.sha1(f"blob {len(raw)}\0".encode() + raw).hexdigest()}
+
+
+def save(path, value):
+    path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n")
+
+
+def freeze(label, files, scope):
+    destination = OUT / label
+    assert not destination.exists(), destination
+    destination.mkdir(parents=True)
+    stream = io.BytesIO()
+    rows = []
+    with tarfile.open(fileobj=stream, mode="w", format=tarfile.GNU_FORMAT) as archive:
+        for path in sorted(files):
+            assert path.is_file() and not path.is_symlink(), path
+            raw = path.read_bytes()
+            relative = path.relative_to(ROOT).as_posix()
+            member = "original/" + relative
+            info = tarfile.TarInfo(member)
+            info.size = len(raw)
+            info.mode = 0o644
+            info.mtime = 0
+            archive.addfile(info, io.BytesIO(raw))
+            rows.append({"member": member, **identity(raw)})
+    raw_archive = gzip.compress(stream.getvalue(), mtime=0)
+    original = {"schema": "hepta-complete-original-files-v1", "scope": scope,
+                "file_count": len(rows), "total_original_bytes": sum(x["bytes"] for x in rows), "files": rows}
+    save(destination / "original-files-manifest.json", original)
+    parts = []
+    for index, offset in enumerate(range(0, len(raw_archive), 360450)):
+        part = raw_archive[offset:offset + 360450]
+        encoded = base64.b64encode(part) + b"\n"
+        name = f"original-inputs.tar.gz.part{index:03}.b64.txt"
+        (destination / name).write_bytes(encoded)
+        parts.append({"index": index, "name": name, "compressed_offset": offset,
+                      "file": identity(encoded), "decoded_chunk": identity(part)})
+    transport = {"schema": "hepta-complete-original-byte-transport-v1", "scope": scope,
+                 "archive": {"name": "original-inputs.tar.gz", **identity(raw_archive)},
+                 "original_files_manifest": {"name": "original-files-manifest.json",
+                                             **identity((destination / "original-files-manifest.json").read_bytes())},
+                 "part_count": len(parts), "parts": parts}
+    save(destination / "transport-manifest.json", transport)
+    shutil.copyfile(VERIFIER, destination / "verify_archive.py")
+    print(json.dumps({"label": label, "originals": len(rows), "original_bytes": original["total_original_bytes"],
+                      "gzip": identity(raw_archive), "parts": len(parts)}))
+
+
+increment = ROOT / "hepta-audit-fifth/pr-increment-1338"
+freeze("pr-increment-1338", list(increment.glob("*.json")),
+       "Complete two non-atomic PR pages plus fixed donor compare and bounded root review; no new whole-repository total.")
+
+native = ROOT / "ci-audit/core-wait-span-20261105"
+names = ["native-project-request-DISABLED-v3.json", "native-plan-v2.json", "native_project_runner_v3.py",
+         "load_staged_native_project.py", "package_staged_request.py", "native-v3-frozen-review.json",
+         "native-project-request-manifest-v3.json", "runner-v2-to-v3.delta.patch", "plan-v1-to-v2.delta.patch",
+         "core-unit-timeout-reference-v1.json", "owning-conditional-capacity-v1.json",
+         "core-reverse-closure-capacity-v2.json", "historical-owning-catalog-roster.json"]
+files = [native / name for name in names]
+files += [ROOT / "hepta-audit-fifth/inputs/core-musl-native-ENABLED-v3.json",
+          ROOT / "hepta-audit-fifth/inputs/core-musl-native-root-execution-guard-v3.json",
+          ROOT / "hepta-audit-fifth/inputs/core-musl-staged-ENABLED-v3/transport-manifest.json",
+          ROOT / "hepta-audit-fifth/inputs/core-musl-staged-ENABLED-v3/small-control.json",
+          ROOT / "hepta-audit-fifth/inputs/core-musl-staged-ENABLED-v3/process-start.json"]
+freeze("core-musl-native-request-v3", files,
+       "Complete reviewed disabled and root-enabled request, source runner, transport, capacity and original selection inputs; preparation is not native success.")

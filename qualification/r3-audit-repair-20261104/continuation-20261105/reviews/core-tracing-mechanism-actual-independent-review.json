@@ -1,0 +1,65 @@
+{
+  "schema": "core-tracing-controlled-mechanism-actual-endpoint-independent-review-v1",
+  "observed_at_utc": "2026-11-05T14:17:03.707034+00:00",
+  "verdict": "ORIGINAL_CONTROLLED_ENDPOINTS_VERIFIED",
+  "original_native_job": "1a1ac0281fa-fc05-519e",
+  "five_original_bytes_reverified": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/mechanism-actual-priority-v1/probe-shared-negative.stdout",
+      "bytes": 213,
+      "sha256": "c4dd3b28f95f799d7e144702c763ffc71154d9a8fd30b937ada8a1cbf1c6d767",
+      "git_blob": "55caeb20bfe3fa020d84157eaee33d60c17c371a"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/mechanism-actual-priority-v1/probe-shared-negative.stderr",
+      "bytes": 182,
+      "sha256": "aa2bc80e4902d53e2706eac274ebcdad2525789f848e3fe48096d190c2e680a2",
+      "git_blob": "36ff0c27e3d431de891e0549f05203469cffad56"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/mechanism-actual-priority-v1/probe-isolated-positive.stdout",
+      "bytes": 656,
+      "sha256": "123c73c49bee9990d722eecbd099a61e255ad3ebf526e359b35384ede822c535",
+      "git_blob": "e46fea0699913542e0155b7ab1adf9c5eb4fe36b"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/mechanism-actual-priority-v1/probe-isolated-positive.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/mechanism-actual-priority-v1/mechanism-causal-review.json",
+      "bytes": 2941,
+      "sha256": "d750fb8575a91498eba86dab801bcb83918cdecf8fb15304671e824cb62c3393",
+      "git_blob": "07f84f399ab6af2106a993aed4518affdc814745"
+    }
+  ],
+  "shared_negative": {
+    "exit": 101,
+    "exact_panic": "src/main.rs:117:9: shared-process parent/wait chain was suppressed",
+    "captured_wait_spans": 1,
+    "captured_parent_spans": 0
+  },
+  "isolated_positive": {
+    "exit": 0,
+    "parent_first_shows_same_poison": true,
+    "owned_child_has_parent_and_wait_chain": true,
+    "each_completion_marker_exactly_once": true,
+    "stderr_bytes": 0
+  },
+  "binary_identity_source": "Original native receipt; this review checks receipt bytes but does not re-read the native executable.",
+  "recorded_binary": {
+    "path": "/home/qian-qi/work/hepta-core-wait-span-20261105/probe-target/debug/core-wait-span-callsite-probe",
+    "bytes": 1132120,
+    "sha256": "e717a2217c170f2f00cda79391df313db52a74dfceb73b2ab79ada908d7cfc62",
+    "git_blob": "90ed6b6cfa9348bdf0b818350c0d9227a07912d0",
+    "mode": 448,
+    "executable": true
+  },
+  "limits": [
+    "This verifies the controlled pinned-library mechanism endpoint, not the exact original Windows scheduler interleaving.",
+    "It does not qualify the product fixture, whole Core parallel suite, or another platform.",
+    "No test execution, new probe, native call, source/ref change or additional verification gate by reviewer."
+  ]
+}

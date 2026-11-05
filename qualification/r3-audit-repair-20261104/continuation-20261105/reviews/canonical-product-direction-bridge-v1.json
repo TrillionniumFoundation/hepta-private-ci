@@ -1,0 +1,50 @@
+{
+  "schema": "hepta-canonical-to-product-direction-exact-leaf-bridge-v1",
+  "canonical_commit": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+  "product_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "product_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "candidate_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+  "rows": [
+    {
+      "path": "docs/DEVELOPMENT.md",
+      "canonical_blob": "9ff53000ff301289d87c364eb45a938755a0f11e",
+      "product_blob": "9ff53000ff301289d87c364eb45a938755a0f11e",
+      "bytes": 56512,
+      "exact_blob_equal": true
+    },
+    {
+      "path": "docs/modules/MODULES.json",
+      "canonical_blob": "2571766d45a0a6b0db0ec83e675c70609d3bc39d",
+      "product_blob": "2571766d45a0a6b0db0ec83e675c70609d3bc39d",
+      "bytes": 60119,
+      "exact_blob_equal": true
+    },
+    {
+      "path": "docs/delivery/WORK_PACKAGES.json",
+      "canonical_blob": "77568a3965c4c68357b2e16f6af10309209b35dd",
+      "product_blob": "77568a3965c4c68357b2e16f6af10309209b35dd",
+      "bytes": 364370,
+      "exact_blob_equal": true
+    },
+    {
+      "path": "docs/readiness/GAPS.json",
+      "canonical_blob": "aa01454cf24a60b8f0c61a8440d5177dced8d7a0",
+      "product_blob": "aa01454cf24a60b8f0c61a8440d5177dced8d7a0",
+      "bytes": 43580,
+      "exact_blob_equal": true
+    },
+    {
+      "path": "docs/readiness/READINESS.json",
+      "canonical_blob": "2b56ff94aad7e6a0e19b0c2a600a2c3cd3616729",
+      "product_blob": "2b56ff94aad7e6a0e19b0c2a600a2c3cd3616729",
+      "bytes": 57843,
+      "exact_blob_equal": true
+    }
+  ],
+  "all_five_exact": true,
+  "source": "Actual GitHub fixed-ref four directory responses compared with root-fetched complete b265 Git tree; e78 changes only the two independently reviewed Core/musl files.",
+  "limits": [
+    "Registry counts and directions apply exactly to these fixed five product documents.",
+    "This does not change declarations to actual production readiness or infer execution from source_implemented."
+  ]
+}

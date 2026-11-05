@@ -1,0 +1,340 @@
+{
+  "schema": "r3_continuation_b11_probe_v2_registration_supplement_v1",
+  "evidence_only": true,
+  "native_execution_claimed_by_this_plan": false,
+  "all_blockers_closed": false,
+  "whole_product_qualified": false,
+  "base_audit_commit_observed_from_v6_plan": "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72",
+  "base_audit_tree_observed_from_v6_plan": "65cfd91deea0fbd5b432c225e16d15106ed5f373",
+  "integration_note": "Supplement only. Root reconciles the current audit ref before registration; this file performs no tree/ref/PR mutation.",
+  "entry_count": 26,
+  "required_delivery_count": 23,
+  "supplemental_interpretation_and_initial_CI_count": 3,
+  "existing_v6_path_collisions": [],
+  "product_publication": {
+    "pr": 4884,
+    "head": "f02b9ae98e8608210c92a3f53646147f5c7dc428",
+    "head_tree": "fc47759c145d33122b3cab70235a617661556db8",
+    "base": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "merge": "a4e2d71f85d6da48cb6bfc7c09bd34f2837ff7f6",
+    "merge_tree": "fc47759c145d33122b3cab70235a617661556db8",
+    "draft": true,
+    "original_candidate_disabled_template_preserved_as_historical_record": true,
+    "source_binding": "Four exact API changed-file blob IDs equal frozen candidate; root separately checked the complete product tree"
+  },
+  "original_B11_contract": {
+    "ledger": {
+      "local_file": "/workspace/scratch/07dd58cc9630/hepta-audit-fifth/v5-deliverables/continuation-blocker-progress-v3.json",
+      "bytes": 37513,
+      "sha256": "1ab45660bb0dfe59ee9cab41f1cc9c17c7ffa577e8dc7ccde88070670ca95b7e",
+      "blob": "8c2c3dc39708fb6dcaf0004490fca67e784deaa4"
+    },
+    "id": "B11",
+    "status": "OPEN_WINDOWS_BOUNDARY_AND_DIAGNOSTIC_SCOPE",
+    "closure_class": "OPEN",
+    "original_exit_condition_zh": "在获准的修复范围内提供原生 helper 与原严格 token 契约，原攻击/权限/文件系统用例全部通过；需要超出已允许边界时明确升级审批。",
+    "not_modified": true
+  },
+  "initial_ci_scope": {
+    "snapshot_utc": "2026-11-05 14:52:56 UTC",
+    "not_atomic": true,
+    "runs": 6,
+    "jobs": 9,
+    "job_states": {
+      "queued": 9
+    },
+    "probe_run": 42049112832,
+    "probe_job": 127320081049,
+    "run_attempt": 1,
+    "runner_assigned": false,
+    "no_execution_claim": true
+  },
+  "items": [
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/full.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/full.patch",
+      "mode": "100644",
+      "bytes": 29379,
+      "sha256": "b0aab22c663dd596664716cd534c5d42df92cff45c122a35dd792a31acbbbe0b",
+      "blob": "42c16c379b9f4adb24567252f759045115871c4d",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/01-label-custody-support.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/01-label-custody-support.patch",
+      "mode": "100644",
+      "bytes": 13864,
+      "sha256": "b77270a69d57b9b5450e3a9eaad46bf23f2294b8ffff52f794fd85cf03e5d12b",
+      "blob": "d6b8e45dfa1673368597a87528a6271192505198",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/02-probe-consumer.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/02-probe-consumer.patch",
+      "mode": "100644",
+      "bytes": 15515,
+      "sha256": "dd397aab9adc8a092c90ed1c61d9dd1cb7940471b6851e5e4233956937b9658e",
+      "blob": "aff4ac9be31940ef9fcefebec198ba6cf3e80d53",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/03-independent-windows-workflow.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/03-independent-windows-workflow.patch",
+      "mode": "100644",
+      "bytes": 4639,
+      "sha256": "580580166d0c8175da198b6494f3895eb337b075d6d28456cfff1e43da77878c",
+      "blob": "2d2de77ee71810051c8d0ac9f259eec29068e355",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/diagnostic-pr-full.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/diagnostic-pr-full.patch",
+      "mode": "100644",
+      "bytes": 34018,
+      "sha256": "a79d83c11caece015ec56df3dd8508776001432bf273a97f998592ce4b40f488",
+      "blob": "f8869774509a4226328bc4dc28243e86a35f8779",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/v1-to-v2-output-visibility.delta.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/v1-to-v2-output-visibility.delta.patch",
+      "mode": "100644",
+      "bytes": 5682,
+      "sha256": "1697e5703fe0e06b2830789a10c5a840446e3f96c532567d143ec734eceff335",
+      "blob": "ba098a59ef1997fb5424147d85408110bb54bb8b",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/workflow-v1-to-v2-existing-collector.delta.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/workflow-v1-to-v2-existing-collector.delta.patch",
+      "mode": "100644",
+      "bytes": 1225,
+      "sha256": "d2da361da4ecb7de9a168f8809229dbf615e7438729ce4a6d343949fef2fd5bf",
+      "blob": "49b22792950d10637f8af375036fdf40dad641ef",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/source-map.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/source-map.json",
+      "mode": "100644",
+      "bytes": 1842,
+      "sha256": "2117e1acda9dd3d6ea2c084cef81f7b771f01fe05231ceefc335e02071e19b1f",
+      "blob": "35a87d5890f238d30a72da7738ab6d32aa2f53a2",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/workflow-source-map.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/workflow-source-map.json",
+      "mode": "100644",
+      "bytes": 623,
+      "sha256": "e8bca210c07aab88abb5ce25cfc5cd97dfe4de8e9e0b57f85344c4c1112bfefb",
+      "blob": "2a5b7c8cc44c631d5caccb037d2fa8181ee072a4",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/fixed-source-identities.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/fixed-source-identities.json",
+      "mode": "100644",
+      "bytes": 8176,
+      "sha256": "42e40d35afcf392277555215280f6391e6a439376c755e494d068ab36bd9710e",
+      "blob": "18ff63e6f53d8c6a6d4898e4f2e4f27a2b2417f5",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/cloud-patch-verification-v2.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-patch-verification-v2.json",
+      "mode": "100644",
+      "bytes": 10867,
+      "sha256": "937023e125b671effb7d368146dbd0f6e84d857c3cf0ed2c4c8deb8caf1a6640",
+      "blob": "6fa3c3d0c1e9c4829dfb0bdb63fdd22b62a00cf5",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/workflow-static-check.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/workflow-static-check.json",
+      "mode": "100644",
+      "bytes": 1353,
+      "sha256": "234771067788b618424783941937b4951fb773ef4e9c69a3dac6c8c8d9eff2a2",
+      "blob": "a4a209a3c907ec3fcb5fcc7267a0382832262ecb",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/REVIEW.zh-CN.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/README.zh-CN.md",
+      "mode": "100644",
+      "bytes": 8793,
+      "sha256": "c420fee2ec1e6fbc74be69512def01581de1cf766a1caf60db3cbdbf78b667a9",
+      "blob": "00641a98eb87bc9885aca50148ddf4f1bec14a10",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/postimages/codex-rs/windows-sandbox-rs/src/token.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token.rs",
+      "mode": "100644",
+      "bytes": 18437,
+      "sha256": "6d7ddb4a84561b28bc134139226f9be444cb0dc03c73038e7988e21e18339a77",
+      "blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/postimages/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "mode": "100644",
+      "bytes": 13242,
+      "sha256": "80de0b271e57775c00661cfda26dd8b20b8894b040a2081d601c931982a2ecd7",
+      "blob": "3b850db502bef372592322dd1c1d2272e65a6a47",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/postimages/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "mode": "100644",
+      "bytes": 14475,
+      "sha256": "5fe644714b4180dd4bbb988452a4c8464524149eda1a91af0af8879761f448ab",
+      "blob": "2a384792e8ba88518c26943716e8c3a39a523f9b",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/postimages/.github/workflows/hepta-windows-token-mechanism-probe.yml.source.txt",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/execution-candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "mode": "100644",
+      "bytes": 4211,
+      "sha256": "8ab7b1e1d93c7c64fe4f40d5b4823912d22b7269d5ae5cc630d6fea8c35176a2",
+      "blob": "565e442d290309da85a72969226b5cf48049f072",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/execution-design-DISABLED-v2.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/execution-design-DISABLED-v2.json",
+      "mode": "100644",
+      "bytes": 4235,
+      "sha256": "010cb3b931fe076cb013242fc5c3292398dab293c22e9b8196224b5ce4b08494",
+      "blob": "233385e1c0f6a884f82ca0920bd2132e5ad742e1",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/manifest-v2.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/manifest-v2.json",
+      "mode": "100644",
+      "bytes": 18703,
+      "sha256": "9b39be778a28c6a8223fb4028d09176222a227ea098a9c3f24290a130711d895",
+      "blob": "dfbd4f609afa66239ca2b6d10fd584e882987bf3",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/history/v1-frozen/full.patch",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/v1-frozen/full.patch",
+      "mode": "100644",
+      "bytes": 29139,
+      "sha256": "d2eed5fc2babd60e1acbfff6657c54b7f8162a8696049640f249dbb63cb2a178",
+      "blob": "6c9dc6f01085bc161a6004fab836331f09b73d2d",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/history/v1-frozen/source-map.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/v1-frozen/source-map.json",
+      "mode": "100644",
+      "bytes": 1823,
+      "sha256": "21e3008f6d5ec4969809133ae10043ae615c3e81f895f1817e1da045c3cf8cda",
+      "blob": "4593181e6f3fa898c6131bc71984ac6cb0f20fbb",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/github-readback-map-v2.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/github-readback-map-v2.json",
+      "mode": "100644",
+      "bytes": 14292,
+      "sha256": "89e0237892f3c322c75d0c2e34a0a46324f1dd10fa77c0a1a5bfaf4d0bd7e6b4",
+      "blob": "854d444b838f7dee21be8a92254321e0974cafe2",
+      "role": "Actual 21-object create/readback map",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and full byte-equal GET"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-physical-mechanism-probe-v2/independent-static-review.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/research-audit/b11-mic-probe-independent-review-20261105/independent-static-review.json",
+      "mode": "100644",
+      "bytes": 16996,
+      "sha256": "38822706d05723fbb513e586e685547568a90e39b2cdad13ebca20e52b98b7a9",
+      "blob": "3f2afcb1df8a905cb348106012454902a2c1c06a",
+      "role": "Independent static review; original Windows and process qualification remain pending",
+      "actual_object_verified": true,
+      "verification": "Research actual create/GET plus architecture independent full GET compared to local bytes"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-physical-mechanism-probe-v2/RESULT_INTERPRETATION.zh-CN.md",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/RESULT_INTERPRETATION.zh-CN.md",
+      "mode": "100644",
+      "bytes": 5289,
+      "sha256": "9be1e2b2ac1cc401b1ec6d2e26bc481793e3bcdb03b2f4cdc97409b63a0336ab",
+      "blob": "dce2674f5376744920f80bb5a7574247824bd8d3",
+      "role": "Precommitted eight-row interpretation; original B11 exit remains OPEN",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and full byte-equal GET"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/snapshot-0001/api-envelopes.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/snapshot-0001/api-envelopes.json",
+      "mode": "100644",
+      "bytes": 177763,
+      "sha256": "a8bd60d92b8081d0efcafb037a972bc2dcca9655fa3afd68686fa91648e1ced6",
+      "blob": "e11ade5ab9d16acd82e27d02840eced0895b91fe",
+      "role": "Original PR/source/run/job API snapshot only; all nine observed jobs queued and no native result",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and full byte-equal GET"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/snapshot-0001/snapshot-summary.json",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/snapshot-0001/snapshot-summary.json",
+      "mode": "100644",
+      "bytes": 11477,
+      "sha256": "6978ee482f3ac00d28f63dc4210a8899cab0ae97933463ebe06a9ea2be1397c8",
+      "blob": "05925a6cafc5327c813199fc27fa4385f81e48ce",
+      "role": "Original PR/source/run/job API snapshot only; all nine observed jobs queued and no native result",
+      "actual_object_verified": true,
+      "verification": "Architecture actual create and full byte-equal GET"
+    }
+  ]
+}

@@ -1,0 +1,376 @@
+{
+  "schema": "b11_physical_mechanism_probe_candidate_v2",
+  "status": "STATIC_CANDIDATE_PENDING_WINDOWS",
+  "base_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "base_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "not_based_on_e78_or_B16_payload": true,
+  "product_status": "B11 OPEN; this is an observation-only test candidate, not a production permission fix",
+  "source": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "before": {
+        "bytes": 18359,
+        "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac",
+        "git_blob": "8945d75fe172679479b738e6266cac99a6f7ed16"
+      },
+      "after": {
+        "bytes": 18437,
+        "sha256": "6d7ddb4a84561b28bc134139226f9be444cb0dc03c73038e7988e21e18339a77",
+        "git_blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1"
+      },
+      "postimage": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token.rs",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "before": null,
+      "after": {
+        "bytes": 13242,
+        "sha256": "80de0b271e57775c00661cfda26dd8b20b8894b040a2081d601c931982a2ecd7",
+        "git_blob": "3b850db502bef372592322dd1c1d2272e65a6a47"
+      },
+      "postimage": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "before": null,
+      "after": {
+        "bytes": 14475,
+        "sha256": "5fe644714b4180dd4bbb988452a4c8464524149eda1a91af0af8879761f448ab",
+        "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b"
+      },
+      "postimage": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "mode": "100644"
+    }
+  ],
+  "patch_cohorts": {
+    "01-label-custody-support.patch": {
+      "added": 264,
+      "removed": 0
+    },
+    "02-probe-consumer.patch": {
+      "added": 249,
+      "removed": 0
+    },
+    "03-independent-windows-workflow.patch": {
+      "added": 92,
+      "removed": 0
+    }
+  },
+  "cohort_contract": "support-only cohort is unregistered and proves no execution; consumer completes the test module; workflow is independent",
+  "unchanged_original_tests": {
+    "full_paths_byte_identical": [
+      {
+        "repository_path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/source/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+        "bytes": 6807,
+        "sha256": "8dc0ae01935586ac22001a5b567c148fa9ff744bf10e4de691c6fbe0993021da",
+        "git_blob": "a0cb1647d95f067fcf135bc9ea2a654ca3e5e7a2"
+      },
+      {
+        "repository_path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "bytes": 22681,
+        "sha256": "cda729e069f427b9fb197a75391ea30b3427a6b6c98a8ecb60d858328b808af0",
+        "git_blob": "042858ce22b784d7809612e2d80e35d29b559f1a"
+      },
+      {
+        "repository_path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+        "bytes": 43106,
+        "sha256": "f6b49b35c8c0aed98dc621ae179faa2ec6d5d33858c09223a38bf4784fa2b940",
+        "git_blob": "aea1ff8476ab8ce33642677a36b1609054888a4e"
+      },
+      {
+        "repository_path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/supervisor-fmt-repair-20261105/source/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+        "bytes": 16679,
+        "sha256": "b701ad01169eb9f64b62ad50099dfcda51b014a5c96dbc2080631fd2e6d7ee75",
+        "git_blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73"
+      }
+    ],
+    "required_names": [
+      "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+      "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+      "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells"
+    ],
+    "original_names_bodies_budgets_assertions_preserved": true
+  },
+  "token_production_unchanged": "postimage equals complete fixed token.rs plus exactly 78 bytes of cfg(test) module registration",
+  "subjects": [
+    "host",
+    "current_strict",
+    "current_strict_low",
+    "full_restricting_explicit_read"
+  ],
+  "outside_levels": [
+    "medium",
+    "low_other_cohort"
+  ],
+  "operations": [
+    "read",
+    "overwrite",
+    "create",
+    "remove_file",
+    "remove_dir"
+  ],
+  "actual_token_observations": [
+    "TokenIntegrityLevel RID and attributes",
+    "TokenMandatoryPolicy",
+    "current thread token while impersonating"
+  ],
+  "same_object_AccessCheck": [
+    {
+      "object": "outside parent",
+      "desired_access": 64
+    },
+    {
+      "object": "outside delete file",
+      "desired_access": 65536
+    },
+    {
+      "object": "outside delete directory",
+      "desired_access": 65536
+    }
+  ],
+  "AccessCheck_does_not_replace_physical_IO": true,
+  "new_probe_positive_conditions": [
+    "same effective token state",
+    "inside original read and all four legitimate I/O results plus physical post-state",
+    "outside original read",
+    "host outside operations and post-state",
+    "all retained object identity/SD restoration or actual completed deletion",
+    "all eight rows complete; same access DACL/owner/group across comparable rows"
+  ],
+  "no_new_probe_assertion_requires_outside_denial": true,
+  "object_custody": [
+    "new owned TempDir only",
+    "explicit Medium label at creation",
+    "retained same handle with READ_CONTROL/WRITE_OWNER/FILE_READ_ATTRIBUTES",
+    "share READ/WRITE/DELETE; no DELETE right; non-inheritable",
+    "no reparse point or multiple-link regular file",
+    "same handle capture/set/readback/restore",
+    "RevertToSelf before restoration; abort on failed Revert",
+    "attempt every row object restoration",
+    "delete pending observed before handle close, then name must disappear",
+    "survivor complete original SD must compare exactly"
+  ],
+  "error_contract": "setup/IO observation/restoration failures invalidate fixture; no skip, early-success or silent privilege fallback",
+  "unwind_cleanup": "best effort only, not proof of successful restore",
+  "descendants": "none spawned by this synchronous token probe; original backend tests remain separately selected",
+  "V2_delta": "only direct locked stderr Write with leading newline, normal output errors propagate and Drop remains best effort",
+  "workflow_static_correction": "removed an unexecuted unconditional stdin collector draft because its fixed failed-only scope would mislabel success; existing allowlist already contains Windows target",
+  "primary_sources": [
+    {
+      "local_original": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-threading-0.52.0.json",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "repository_path": "crates/libs/sys/src/Windows/Win32/System/Threading/mod.rs",
+      "bytes": 136501,
+      "sha256": "6258ef99d17078002020644540a608a89cdf20436daefa3970a65348e6793c1c",
+      "git_blob": "6ee2c4ad6120e5a3ad34c87e67d6d9187304d9ac"
+    },
+    {
+      "local_original": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-systemservices-0.52.0.json",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "repository_path": "crates/libs/sys/src/Windows/Win32/System/SystemServices/mod.rs",
+      "bytes": 253400,
+      "sha256": "edd591c9ea164c7d6f4e7b7174f33054261a122a231f3ea8ce5cdacb5bcd2475",
+      "git_blob": "3d024dcbdf3061096f2a5e90a3762af7cca2bddd"
+    },
+    {
+      "local_original": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-security-0.52.0.json",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "repository_path": "crates/libs/sys/src/Windows/Win32/Security/mod.rs",
+      "bytes": 111353,
+      "sha256": "b35db507ad9380695f15b7ba798d0e677e08cc84b905577489d7e63994f00673",
+      "git_blob": "e474d1dfc62b7be1443f2b59eda8370477fdfa74"
+    },
+    {
+      "local_original": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-foundation-0.52.0.json",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "repository_path": "crates/libs/sys/src/Windows/Win32/Foundation/mod.rs",
+      "bytes": 739086,
+      "sha256": "ee8378fd7a513d263aca8d5d441625965c746658f5a595f571d82e7a6cf71b36",
+      "git_blob": "6502b8224f3bebf23dca29c6ea1a68b47e7c7611"
+    },
+    {
+      "local_original": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/windows-sys-authorization-original-api.json",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "repository_path": "crates/libs/sys/src/Windows/Win32/Security/Authorization/mod.rs",
+      "bytes": 89139,
+      "sha256": "8f815ef1e07914982c627898d4dc071a703e86240e9a9f946878e3210bc23ac7",
+      "git_blob": "75767ccc1fd85b05762b66339e432b4e45ab711e"
+    },
+    {
+      "local_original": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/windows-sys-filesystem-original-api.json",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "repository_path": "crates/libs/sys/src/Windows/Win32/Storage/FileSystem/mod.rs",
+      "bytes": 296470,
+      "sha256": "62de1e36d41b1efdb8651c887dae8fbfb0ca2dc34e4d3a789e716f50e424630d",
+      "git_blob": "5cb313fe5ba69cbec6eee56b86ec13608744dae4"
+    },
+    {
+      "local_original": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/rust-1.95-stdio-api.json",
+      "repository": "rust-lang/rust",
+      "ref": "1.95.0",
+      "repository_path": "library/std/src/io/stdio.rs",
+      "bytes": 44087,
+      "sha256": "83a4386e70e8d7127213c24854ffb985beac0efac8b8617275db0cc16babe040",
+      "git_blob": "2d80fe49e80a7ddb7a01792caf96f121527b7a52"
+    }
+  ],
+  "fixed_source_manifest": {
+    "bytes": 8176,
+    "sha256": "42e40d35afcf392277555215280f6391e6a439376c755e494d068ab36bd9710e",
+    "git_blob": "18ff63e6f53d8c6a6d4898e4f2e4f27a2b2417f5"
+  },
+  "review_artifacts": {
+    "full.patch": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/full.patch",
+      "bytes": 29379,
+      "sha256": "b0aab22c663dd596664716cd534c5d42df92cff45c122a35dd792a31acbbbe0b",
+      "git_blob": "42c16c379b9f4adb24567252f759045115871c4d"
+    },
+    "01-label-custody-support.patch": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/01-label-custody-support.patch",
+      "bytes": 13864,
+      "sha256": "b77270a69d57b9b5450e3a9eaad46bf23f2294b8ffff52f794fd85cf03e5d12b",
+      "git_blob": "d6b8e45dfa1673368597a87528a6271192505198"
+    },
+    "02-probe-consumer.patch": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/02-probe-consumer.patch",
+      "bytes": 15515,
+      "sha256": "dd397aab9adc8a092c90ed1c61d9dd1cb7940471b6851e5e4233956937b9658e",
+      "git_blob": "aff4ac9be31940ef9fcefebec198ba6cf3e80d53"
+    },
+    "03-independent-windows-workflow.patch": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/03-independent-windows-workflow.patch",
+      "bytes": 4639,
+      "sha256": "580580166d0c8175da198b6494f3895eb337b075d6d28456cfff1e43da77878c",
+      "git_blob": "2d2de77ee71810051c8d0ac9f259eec29068e355"
+    },
+    "diagnostic-pr-full.patch": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/diagnostic-pr-full.patch",
+      "bytes": 34018,
+      "sha256": "a79d83c11caece015ec56df3dd8508776001432bf273a97f998592ce4b40f488",
+      "git_blob": "f8869774509a4226328bc4dc28243e86a35f8779"
+    },
+    "v1-to-v2-output-visibility.delta.patch": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/v1-to-v2-output-visibility.delta.patch",
+      "bytes": 5682,
+      "sha256": "1697e5703fe0e06b2830789a10c5a840446e3f96c532567d143ec734eceff335",
+      "git_blob": "ba098a59ef1997fb5424147d85408110bb54bb8b"
+    },
+    "workflow-v1-to-v2-existing-collector.delta.patch": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/workflow-v1-to-v2-existing-collector.delta.patch",
+      "bytes": 1225,
+      "sha256": "d2da361da4ecb7de9a168f8809229dbf615e7438729ce4a6d343949fef2fd5bf",
+      "git_blob": "49b22792950d10637f8af375036fdf40dad641ef"
+    },
+    "source-map.json": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/source-map.json",
+      "bytes": 1842,
+      "sha256": "2117e1acda9dd3d6ea2c084cef81f7b771f01fe05231ceefc335e02071e19b1f",
+      "git_blob": "35a87d5890f238d30a72da7738ab6d32aa2f53a2"
+    },
+    "workflow-source-map.json": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/workflow-source-map.json",
+      "bytes": 623,
+      "sha256": "e8bca210c07aab88abb5ce25cfc5cd97dfe4de8e9e0b57f85344c4c1112bfefb",
+      "git_blob": "2a5b7c8cc44c631d5caccb037d2fa8181ee072a4"
+    },
+    "fixed-source-identities.json": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/fixed-source-identities.json",
+      "bytes": 8176,
+      "sha256": "42e40d35afcf392277555215280f6391e6a439376c755e494d068ab36bd9710e",
+      "git_blob": "18ff63e6f53d8c6a6d4898e4f2e4f27a2b2417f5"
+    },
+    "cloud-patch-verification-v2.json": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-patch-verification-v2.json",
+      "bytes": 10867,
+      "sha256": "937023e125b671effb7d368146dbd0f6e84d857c3cf0ed2c4c8deb8caf1a6640",
+      "git_blob": "6fa3c3d0c1e9c4829dfb0bdb63fdd22b62a00cf5"
+    },
+    "workflow-static-check.json": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/workflow-static-check.json",
+      "bytes": 1353,
+      "sha256": "234771067788b618424783941937b4951fb773ef4e9c69a3dac6c8c8d9eff2a2",
+      "git_blob": "a4a209a3c907ec3fcb5fcc7267a0382832262ecb"
+    },
+    "README.zh-CN.md": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/README.zh-CN.md",
+      "bytes": 8793,
+      "sha256": "c420fee2ec1e6fbc74be69512def01581de1cf766a1caf60db3cbdbf78b667a9",
+      "git_blob": "00641a98eb87bc9885aca50148ddf4f1bec14a10"
+    },
+    "candidate/codex-rs/windows-sandbox-rs/src/token.rs": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token.rs",
+      "bytes": 18437,
+      "sha256": "6d7ddb4a84561b28bc134139226f9be444cb0dc03c73038e7988e21e18339a77",
+      "git_blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1"
+    },
+    "candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "bytes": 13242,
+      "sha256": "80de0b271e57775c00661cfda26dd8b20b8894b040a2081d601c931982a2ecd7",
+      "git_blob": "3b850db502bef372592322dd1c1d2272e65a6a47"
+    },
+    "candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "bytes": 14475,
+      "sha256": "5fe644714b4180dd4bbb988452a4c8464524149eda1a91af0af8879761f448ab",
+      "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b"
+    },
+    "execution-candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/execution-candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "bytes": 4211,
+      "sha256": "8ab7b1e1d93c7c64fe4f40d5b4823912d22b7269d5ae5cc630d6fea8c35176a2",
+      "git_blob": "565e442d290309da85a72969226b5cf48049f072"
+    },
+    "execution-design-DISABLED-v2.json": {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/execution-design-DISABLED-v2.json",
+      "bytes": 4235,
+      "sha256": "010cb3b931fe076cb013242fc5c3292398dab293c22e9b8196224b5ce4b08494",
+      "git_blob": "233385e1c0f6a884f82ca0920bd2132e5ad742e1"
+    }
+  },
+  "completed_checks": [
+    "exact Git/SHA for all fixed 5b source copies",
+    "25 isolated Git commands: full/split/inverse/V1-V2 byte equality",
+    "six official windows-sys 0.52 API symbol/type sources read",
+    "Rust1.95 stderr capture path read",
+    "cloud YAML parse and Bash syntax"
+  ],
+  "unexecuted": [
+    "Rust fmt",
+    "Rust compile/clippy",
+    "Windows original full unit target",
+    "all original strict/matrix cases in this candidate",
+    "new 8-row physical probe",
+    "workflow/PR"
+  ],
+  "explicit_open": [
+    "actual Windows behavior for MIC FILE_DELETE_CHILD",
+    "cross-Low/cohort protection",
+    "production arbitrary ambient-read/loader/IPC closure",
+    "process/backend/Job descendant qualification",
+    "B11 original strict failures"
+  ],
+  "history_preserved": [
+    "v1-frozen/",
+    "workflow-v1-frozen/",
+    "cloud-patch-verification-v1-failure.json",
+    "workflow-static-check-first-error.json"
+  ],
+  "no_native_source_target_ref_or_host_ACL_change": true,
+  "github_readback": "separate map after actual create+GET; fields here are content identities"
+}

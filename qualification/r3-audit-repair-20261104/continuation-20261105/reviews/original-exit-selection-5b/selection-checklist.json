@@ -1,0 +1,1492 @@
+{
+  "schema": "original-exit-selection-5b-static-v1",
+  "fixed_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "fixed_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "status": "STATIC_SOURCE_AND_ORIGINAL_CATALOG_VERIFIED_NO_NEW_EXECUTION",
+  "original_named_catalog": {
+    "path": "research-audit/next-head-ci-plan-20261105/named-exit-cases.json",
+    "bytes": 180651,
+    "sha256": "16df332bed13d79c0e2f0294d65218a0f83aaa1dd926c0694dfb1363b3b83752",
+    "git_blob": "5ce46bbcb2f3979eb3a320ecf3c3d065000d9645"
+  },
+  "scope_counts": {
+    "B07": 28,
+    "B08": 1,
+    "B09": 10,
+    "B10": 14,
+    "B13": 1
+  },
+  "total_exact_remaining_names": 54,
+  "selection_commands_are_existing_tests_only": true,
+  "no_source_scope_budget_assertion_or_ignore_policy_changes": true,
+  "groups": [
+    {
+      "group": "codex-core::all",
+      "expected_exact_cases": 38,
+      "package": "codex-core",
+      "original_cargo_target": [
+        "--test",
+        "all"
+      ],
+      "additional_features": [],
+      "actual_historic_full_features": [],
+      "actual_historic_binary": {
+        "binary_id": "codex-core::all",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-916220dd7febbd0c",
+        "bytes": 284376560,
+        "sha256": "4c62e88f00028e2e9b08cf22ad8a848e7fc8aab3a889c370da9e77dd74d35b01"
+      },
+      "historic_binary_qualifies_requested_feature": true,
+      "historic_identity_limit": "Original fb9/ROG observation only; no current-host existence, freshness, or peak-capacity claim. The Agentd row is the ordinary 243-case binary, not a qualification binary.",
+      "proposed_existing_recipe_selection_argv": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "-p",
+        "codex-core",
+        "--test",
+        "all",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate",
+        "-E",
+        "test(=suite::hooks_executor::executor_stop_hook_stops_after_disconnection) | test(=suite::hooks_executor::executor_stop_hook_runs_after_attachment) | test(=suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions) | test(=suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport) | test(=suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport) | test(=suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval) | test(=suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable) | test(=suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval) | test(=suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment) | test(=suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters) | test(=suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured) | test(=suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools) | test(=suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review) | test(=suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review) | test(=suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names) | test(=suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names) | test(=suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names) | test(=suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution) | test(=suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names) | test(=suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server) | test(=suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server) | test(=suite::token_budget::token_budget_context_injects_plain_thread_hint_text) | test(=suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay) | test(=suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history) | test(=suite::agent_websocket::websocket_model_switch_to_responses_lite_omits_top_level_tools) | test(=suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm) | test(=suite::agent_websocket::websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm) | test(=suite::agent_websocket::websocket_v2_next_turn_uses_updated_service_tier) | test(=suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation) | test(=suite::compact_remote::remote_compact_v2_reuses_compaction_trigger_for_followups) | test(=suite::compact_remote::remote_mid_turn_compact_v2_sends_turn_state_over_websocket) | test(=suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread) | test(=suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread) | test(=suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state) | test(=suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after) | test(=suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after) | test(=suite::turn_state::websocket_turn_state_is_stable_within_turn) | test(=suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting)"
+      ],
+      "shell_display": "just test --locked --cargo-profile dev-small -p codex-core --test all --no-tests fail --retries 0 --success-output immediate -E 'test(=suite::hooks_executor::executor_stop_hook_stops_after_disconnection) | test(=suite::hooks_executor::executor_stop_hook_runs_after_attachment) | test(=suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions) | test(=suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport) | test(=suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport) | test(=suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval) | test(=suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable) | test(=suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval) | test(=suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment) | test(=suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters) | test(=suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured) | test(=suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools) | test(=suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review) | test(=suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review) | test(=suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names) | test(=suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names) | test(=suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names) | test(=suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution) | test(=suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names) | test(=suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server) | test(=suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server) | test(=suite::token_budget::token_budget_context_injects_plain_thread_hint_text) | test(=suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay) | test(=suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history) | test(=suite::agent_websocket::websocket_model_switch_to_responses_lite_omits_top_level_tools) | test(=suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm) | test(=suite::agent_websocket::websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm) | test(=suite::agent_websocket::websocket_v2_next_turn_uses_updated_service_tier) | test(=suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation) | test(=suite::compact_remote::remote_compact_v2_reuses_compaction_trigger_for_followups) | test(=suite::compact_remote::remote_mid_turn_compact_v2_sends_turn_state_over_websocket) | test(=suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread) | test(=suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread) | test(=suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state) | test(=suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after) | test(=suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after) | test(=suite::turn_state::websocket_turn_state_is_stable_within_turn) | test(=suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting)'",
+      "working_directory": "repository root; original just recipe changes to codex-rs",
+      "execution_authorized_by_this_receipt": false,
+      "expected_case_selection_requires_fresh_catalog": true,
+      "original_budget": {
+        "nextest_profile": "local (set by original just test recipe)",
+        "slow_timeout_period_seconds": 30,
+        "slow_timeout_terminate_after": 2,
+        "applicable_case_specific_override": null,
+        "retry_setting": "explicit 0 as existing native qualification policy, not default nextest retries=1",
+        "source_internal_deadlines": "unchanged exact test source; no extension, skip, assertion, or sleep change",
+        "bazel_target_timeout_attribute": "long"
+      },
+      "cases": [
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_executor::executor_stop_hook_stops_after_disconnection",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_executor.rs",
+            "git_blob": "d664d41c9a7ca66d1a9b47445b36f2754bf6fece",
+            "line": 101,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn executor_stop_hook_stops_after_disconnection() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_executor.rs",
+            "git_blob": "d664d41c9a7ca66d1a9b47445b36f2754bf6fece",
+            "line": 44,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn executor_stop_hook_runs_after_attachment() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+          "source": {
+            "path": "codex-rs/core/tests/suite/code_mode.rs",
+            "git_blob": "d1970f7853bcd5777ef96881b457525b7abfa92a",
+            "line": 2048,
+            "excerpt": "#[cfg_attr(windows, ignore = \"no exec_command on Windows\")]\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn code_mode_exec_surfaces_handler_errors_as_exceptions() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "ORIGINAL_IGNORE_NO_EXEC_COMMAND",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::active_tool_policy_disables_mcp_tool_hooks_before_transport",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 509,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn active_tool_policy_disables_mcp_tool_hooks_before_transport() -> Result<()> {\n    run_governed_mcp_tool_hook_guard_test(/*enable_hepta*/ false, /*active_policy*/ true).await\n}"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::hepta_feature_disables_mcp_tool_hooks_before_transport",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 504,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn hepta_feature_disables_mcp_tool_hooks_before_transport() -> Result<()> {\n    run_governed_mcp_tool_hook_guard_test(/*enable_hepta*/ true, /*active_policy*/ false).await\n}"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 862,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn mcp_tool_hook_blocks_model_tool_without_recursive_hooks_or_approval() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::mcp_tool_hook_fails_open_when_server_is_unavailable",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 932,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn mcp_tool_hook_fails_open_when_server_is_unavailable() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 600,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn mcp_tool_hook_interpolates_prompt_and_runs_without_tool_approval() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_executor::executor_stop_hook_rejects_mismatched_environment",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_executor.rs",
+            "git_blob": "d664d41c9a7ca66d1a9b47445b36f2754bf6fece",
+            "line": 128,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn executor_stop_hook_rejects_mismatched_environment() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::mcp_tool_hook_cannot_call_tools_excluded_by_server_filters",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 722,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn mcp_tool_hook_cannot_call_tools_excluded_by_server_filters() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 807,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn mcp_tool_hook_marks_thread_memory_mode_polluted_when_configured() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 655,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::permission_request_hook_allows_mcp_tool_without_user_or_guardian_review",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 382,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn permission_request_hook_allows_mcp_tool_without_user_or_guardian_review() -> Result<()> {\n    run_mcp_permission_request_hook_test(PermissionRequestHookOutcome::Allow).await\n}"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::permission_request_hook_denies_mcp_tool_without_user_or_guardian_review",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 387,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn permission_request_hook_denies_mcp_tool_without_user_or_guardian_review() -> Result<()> {\n    run_mcp_permission_request_hook_test(PermissionRequestHookOutcome::Deny(\n        \"MCP tool access denied by the integration-test hook\","
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 1184,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn post_tool_use_records_mcp_tool_payload_and_context_with_legacy_prefixed_names()\n-> Result<()> {\n    post_tool_use_records_mcp_tool_payload_and_context("
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 1194,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn post_tool_use_records_mcp_tool_payload_and_context_with_non_prefixed_names() -> Result<()>\n{\n    post_tool_use_records_mcp_tool_payload_and_context("
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 976,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn pre_tool_use_blocks_mcp_tool_before_execution_with_legacy_prefixed_names() -> Result<()> {\n    pre_tool_use_blocks_mcp_tool_before_execution(\n        /*prefix_mcp_tool_names*/ true,"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::pre_tool_use_rewrites_mcp_tool_before_execution",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 1109,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn pre_tool_use_rewrites_mcp_tool_before_execution() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::hooks_mcp::pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names",
+          "source": {
+            "path": "codex-rs/core/tests/suite/hooks_mcp.rs",
+            "git_blob": "4fd06489fb864fb74d1b457f5eb39cc279c23ec0",
+            "line": 985,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn pre_tool_use_blocks_mcp_tool_before_execution_with_non_prefixed_names() -> Result<()> {\n    pre_tool_use_blocks_mcp_tool_before_execution(\n        /*prefix_mcp_tool_names*/ false,"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::token_budget::active_tool_policy_skips_notes_thread_hint_without_calling_server",
+          "source": {
+            "path": "codex-rs/core/tests/suite/token_budget.rs",
+            "git_blob": "e7fb29f3b32eafc364022be4405a6edf736f9afd",
+            "line": 683,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn active_tool_policy_skips_notes_thread_hint_without_calling_server() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::token_budget::hepta_token_budget_skips_notes_thread_hint_without_calling_server",
+          "source": {
+            "path": "codex-rs/core/tests/suite/token_budget.rs",
+            "git_blob": "e7fb29f3b32eafc364022be4405a6edf736f9afd",
+            "line": 669,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn hepta_token_budget_skips_notes_thread_hint_without_calling_server() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-core::all",
+          "name": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+          "source": {
+            "path": "codex-rs/core/tests/suite/token_budget.rs",
+            "git_blob": "e7fb29f3b32eafc364022be4405a6edf736f9afd",
+            "line": 584,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn token_budget_context_injects_plain_thread_hint_text() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B08",
+          "binary_id": "codex-core::all",
+          "name": "suite::tools::namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay",
+          "source": {
+            "path": "codex-rs/core/tests/suite/tools.rs",
+            "git_blob": "1fc4b08dd39ec30085d38cc3b5b661e2bdc6775e",
+            "line": 349,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_replay() -> Result<()>\n{\n    skip_if_no_network!(Ok(()));"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B09",
+          "binary_id": "codex-core::all",
+          "name": "suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history",
+          "source": {
+            "path": "codex-rs/core/tests/suite/abort_tasks.rs",
+            "git_blob": "bd4c8c8057d8626d0265ba61d54d705d6b844baf",
+            "line": 76,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn root_turn_suspension_preserves_unfinished_turn_history() {\n    let server = start_mock_server().await;\n    // Waiting on the mocked response keeps the turn active on local and remote executors"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_BY_ORIGINAL_CFG",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B10",
+          "binary_id": "codex-core::all",
+          "name": "suite::agent_websocket::websocket_model_switch_to_responses_lite_omits_top_level_tools",
+          "source": {
+            "path": "codex-rs/core/tests/suite/agent_websocket.rs",
+            "git_blob": "0c4ba0b0b0bd88278028a9209fdbd536546512b9",
+            "line": 26,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn websocket_model_switch_to_responses_lite_omits_top_level_tools() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B10",
+          "binary_id": "codex-core::all",
+          "name": "suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm",
+          "source": {
+            "path": "codex-rs/core/tests/suite/agent_websocket.rs",
+            "git_blob": "0c4ba0b0b0bd88278028a9209fdbd536546512b9",
+            "line": 417,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B10",
+          "binary_id": "codex-core::all",
+          "name": "suite::agent_websocket::websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm",
+          "source": {
+            "path": "codex-rs/core/tests/suite/agent_websocket.rs",
+            "git_blob": "0c4ba0b0b0bd88278028a9209fdbd536546512b9",
+            "line": 362,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn websocket_v2_first_turn_uses_updated_fast_tier_after_startup_prewarm() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B10",
+          "binary_id": "codex-core::all",
+          "name": "suite::agent_websocket::websocket_v2_next_turn_uses_updated_service_tier",
+          "source": {
+            "path": "codex-rs/core/tests/suite/agent_websocket.rs",
+            "git_blob": "0c4ba0b0b0bd88278028a9209fdbd536546512b9",
+            "line": 473,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn websocket_v2_next_turn_uses_updated_service_tier() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B10",
+          "binary_id": "codex-core::all",
+          "name": "suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation",
+          "source": {
+            "path": "codex-rs/core/tests/suite/compact.rs",
+            "git_blob": "aab24b45c2ad9aa8752ebefd4a4715a7680a484c",
+            "line": 5183,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation()\n-> Result<()> {\n    skip_if_no_network!(Ok(()));"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B10",
+          "binary_id": "codex-core::all",
+          "name": "suite::compact_remote::remote_compact_v2_reuses_compaction_trigger_for_followups",
+          "source": {
+            "path": "codex-rs/core/tests/suite/compact_remote.rs",
+            "git_blob": "80d019affee98bd59f3031e37060452c1ebc68a3",
+            "line": 1476,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B10",
+          "binary_id": "codex-core::all",
+          "name": "suite::compact_remote::remote_mid_turn_compact_v2_sends_turn_state_over_websocket",
+          "source": {
+            "path": "codex-rs/core/tests/suite/compact_remote.rs",
+            "git_blob": "80d019affee98bd59f3031e37060452c1ebc68a3",
+            "line": 4550,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn remote_mid_turn_compact_v2_sends_turn_state_over_websocket() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B10",
+          "binary_id": "codex-core::all",
+          "name": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread",
+          "source": {
+            "path": "codex-rs/core/tests/suite/git_enrichment.rs",
+            "git_blob": "f82539307bddd975872e018e0bc1f8a9c61b5aba",
+            "line": 279,
+            "excerpt": "#[test_case(\"ambient_background\"; \"ambient background thread\")]\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state(\n    thread_source: &str,\n) -> Result<()> {"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B10",
+          "binary_id": "codex-core::all",
+          "name": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread",
+          "source": {
+            "path": "codex-rs/core/tests/suite/git_enrichment.rs",
+            "git_blob": "f82539307bddd975872e018e0bc1f8a9c61b5aba",
+            "line": 279,
+            "excerpt": "#[test_case(\"ambient_background\"; \"ambient background thread\")]\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state(\n    thread_source: &str,\n) -> Result<()> {"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B10",
+          "binary_id": "codex-core::all",
+          "name": "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state",
+          "source": {
+            "path": "codex-rs/core/tests/suite/git_enrichment.rs",
+            "git_blob": "f82539307bddd975872e018e0bc1f8a9c61b5aba",
+            "line": 98,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B10",
+          "binary_id": "codex-core::all",
+          "name": "suite::turn_state::responses_turn_state_persists_within_turn_and_resets_after",
+          "source": {
+            "path": "codex-rs/core/tests/suite/turn_state.rs",
+            "git_blob": "8c20f52ed34b6cf848ee1851f0ff3507f6a26cb6",
+            "line": 31,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn responses_turn_state_persists_within_turn_and_resets_after() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B10",
+          "binary_id": "codex-core::all",
+          "name": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+          "source": {
+            "path": "codex-rs/core/tests/suite/turn_state.rs",
+            "git_blob": "8c20f52ed34b6cf848ee1851f0ff3507f6a26cb6",
+            "line": 168,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn websocket_turn_state_persists_within_turn_and_resets_after() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B10",
+          "binary_id": "codex-core::all",
+          "name": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+          "source": {
+            "path": "codex-rs/core/tests/suite/turn_state.rs",
+            "git_blob": "8c20f52ed34b6cf848ee1851f0ff3507f6a26cb6",
+            "line": 248,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn websocket_turn_state_is_stable_within_turn() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B10",
+          "binary_id": "codex-core::all",
+          "name": "suite::turn_state::websocket_turn_state_survives_permission_change_by_reconnecting",
+          "source": {
+            "path": "codex-rs/core/tests/suite/turn_state.rs",
+            "git_blob": "8c20f52ed34b6cf848ee1851f0ff3507f6a26cb6",
+            "line": 345,
+            "excerpt": "\n#[tokio::test(flavor = \"multi_thread\", worker_threads = 2)]\nasync fn websocket_turn_state_survives_permission_change_by_reconnecting() -> Result<()> {\n    skip_if_no_network!(Ok(()));\n"
+          },
+          "original_bazel_target": "//codex-rs/core:core-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        }
+      ]
+    },
+    {
+      "group": "codex-mcp",
+      "expected_exact_cases": 6,
+      "package": "codex-mcp",
+      "original_cargo_target": [
+        "--lib"
+      ],
+      "additional_features": [],
+      "actual_historic_full_features": [],
+      "actual_historic_binary": {
+        "binary_id": "codex-mcp",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_mcp-9081b604c508e809",
+        "bytes": 99738592,
+        "sha256": "802b99e6b672b09810f524f6c9d3dd57b870a5cba432eea56daee6a957711e26"
+      },
+      "historic_binary_qualifies_requested_feature": true,
+      "historic_identity_limit": "Original fb9/ROG observation only; no current-host existence, freshness, or peak-capacity claim. The Agentd row is the ordinary 243-case binary, not a qualification binary.",
+      "proposed_existing_recipe_selection_argv": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "-p",
+        "codex-mcp",
+        "--lib",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate",
+        "-E",
+        "test(=binding::tests::configured_hook_call_preserves_model_and_environment_boundaries) | test(=binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh) | test(=binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes) | test(=binding::tests::prepared_call_is_rejected_after_catalog_refresh) | test(=binding::tests::stale_prepared_call_does_not_run_preparation) | test(=binding::tests::preparation_holds_catalog_authority_until_it_finishes)"
+      ],
+      "shell_display": "just test --locked --cargo-profile dev-small -p codex-mcp --lib --no-tests fail --retries 0 --success-output immediate -E 'test(=binding::tests::configured_hook_call_preserves_model_and_environment_boundaries) | test(=binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh) | test(=binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes) | test(=binding::tests::prepared_call_is_rejected_after_catalog_refresh) | test(=binding::tests::stale_prepared_call_does_not_run_preparation) | test(=binding::tests::preparation_holds_catalog_authority_until_it_finishes)'",
+      "working_directory": "repository root; original just recipe changes to codex-rs",
+      "execution_authorized_by_this_receipt": false,
+      "expected_case_selection_requires_fresh_catalog": true,
+      "original_budget": {
+        "nextest_profile": "local (set by original just test recipe)",
+        "slow_timeout_period_seconds": 30,
+        "slow_timeout_terminate_after": 2,
+        "applicable_case_specific_override": null,
+        "retry_setting": "explicit 0 as existing native qualification policy, not default nextest retries=1",
+        "source_internal_deadlines": "unchanged exact test source; no extension, skip, assertion, or sleep change",
+        "bazel_target_timeout_attribute": "unspecified; inherit Bazel rule defaults"
+      },
+      "cases": [
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-mcp",
+          "name": "binding::tests::configured_hook_call_preserves_model_and_environment_boundaries",
+          "source": {
+            "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+            "git_blob": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+            "line": 156,
+            "excerpt": "\n#[tokio::test]\nasync fn configured_hook_call_preserves_model_and_environment_boundaries() {\n    let step = test_step(\n        \"hidden\","
+          },
+          "original_bazel_target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-mcp",
+          "name": "binding::tests::prepared_call_keeps_captured_connection_and_authority_after_refresh",
+          "source": {
+            "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+            "git_blob": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+            "line": 201,
+            "excerpt": "\n#[tokio::test]\nasync fn prepared_call_keeps_captured_connection_and_authority_after_refresh() -> anyhow::Result<()>\n{\n    let old = test_step("
+          },
+          "original_bazel_target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-mcp",
+          "name": "binding::tests::prepared_call_does_not_reroute_after_captured_connection_closes",
+          "source": {
+            "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+            "git_blob": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+            "line": 302,
+            "excerpt": "\n#[tokio::test]\nasync fn prepared_call_does_not_reroute_after_captured_connection_closes() {\n    let old = test_step(\n        \"old\","
+          },
+          "original_bazel_target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-mcp",
+          "name": "binding::tests::prepared_call_is_rejected_after_catalog_refresh",
+          "source": {
+            "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+            "git_blob": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+            "line": 338,
+            "excerpt": "\n#[tokio::test]\nasync fn prepared_call_is_rejected_after_catalog_refresh() {\n    let step = test_step(\n        \"old\","
+          },
+          "original_bazel_target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-mcp",
+          "name": "binding::tests::stale_prepared_call_does_not_run_preparation",
+          "source": {
+            "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+            "git_blob": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+            "line": 367,
+            "excerpt": "\n#[tokio::test]\nasync fn stale_prepared_call_does_not_run_preparation() {\n    let step = test_step(\n        \"old\","
+          },
+          "original_bazel_target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B07",
+          "binary_id": "codex-mcp",
+          "name": "binding::tests::preparation_holds_catalog_authority_until_it_finishes",
+          "source": {
+            "path": "codex-rs/codex-mcp/src/binding_tests.rs",
+            "git_blob": "a95d1913cd11a8426e56c3b1d030641d9c287220",
+            "line": 394,
+            "excerpt": "\n#[tokio::test]\nasync fn preparation_holds_catalog_authority_until_it_finishes() {\n    let step = test_step(\n        \"old\","
+          },
+          "original_bazel_target": "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        }
+      ]
+    },
+    {
+      "group": "codex-app-server::all",
+      "expected_exact_cases": 9,
+      "package": "codex-app-server",
+      "original_cargo_target": [
+        "--test",
+        "all"
+      ],
+      "additional_features": [],
+      "actual_historic_full_features": [],
+      "actual_historic_binary": {
+        "binary_id": "codex-app-server::all",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/all-828a7c4f37edd91e",
+        "bytes": 365292176,
+        "sha256": "e710363d62d17f65cbc6ad8e789b1289002597c9a8bb98daf08d5c57fa9ced12"
+      },
+      "historic_binary_qualifies_requested_feature": true,
+      "historic_identity_limit": "Original fb9/ROG observation only; no current-host existence, freshness, or peak-capacity claim. The Agentd row is the ordinary 243-case binary, not a qualification binary.",
+      "proposed_existing_recipe_selection_argv": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "-p",
+        "codex-app-server",
+        "--test",
+        "all",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate",
+        "-E",
+        "test(=suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn) | test(=suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery) | test(=suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail) | test(=suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery) | test(=suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable) | test(=suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns) | test(=suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state) | test(=suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature) | test(=suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input)"
+      ],
+      "shell_display": "just test --locked --cargo-profile dev-small -p codex-app-server --test all --no-tests fail --retries 0 --success-output immediate -E 'test(=suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn) | test(=suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery) | test(=suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail) | test(=suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery) | test(=suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable) | test(=suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns) | test(=suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state) | test(=suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature) | test(=suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input)'",
+      "working_directory": "repository root; original just recipe changes to codex-rs",
+      "execution_authorized_by_this_receipt": false,
+      "expected_case_selection_requires_fresh_catalog": true,
+      "original_budget": {
+        "nextest_profile": "local (set by original just test recipe)",
+        "slow_timeout_period_seconds": 30,
+        "slow_timeout_terminate_after": 2,
+        "applicable_case_specific_override": null,
+        "retry_setting": "explicit 0 as existing native qualification policy, not default nextest retries=1",
+        "source_internal_deadlines": "unchanged exact test source; no extension, skip, assertion, or sleep change",
+        "bazel_target_timeout_attribute": "long"
+      },
+      "cases": [
+        {
+          "blocker_id": "B09",
+          "binary_id": "codex-app-server::all",
+          "name": "suite::v2::thread_inject_items::thread_inject_items_adds_raw_response_items_after_a_turn",
+          "source": {
+            "path": "codex-rs/app-server/tests/suite/v2/thread_inject_items.rs",
+            "git_blob": "20415effba70adf60c2f28ee3eaaf1ac8288e665",
+            "line": 273,
+            "excerpt": "\n#[tokio::test]\nasync fn thread_inject_items_adds_raw_response_items_after_a_turn() -> Result<()> {\n    let server = responses::start_mock_server().await;\n    let first_body = responses::sse(vec!["
+          },
+          "original_bazel_target": "//codex-rs/app-server:app-server-all-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B09",
+          "binary_id": "codex-app-server::all",
+          "name": "suite::v2::turn_recover::cold_resume_explicit_cwd_override_is_fail_closed_for_recovery",
+          "source": {
+            "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+            "git_blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+            "line": 449,
+            "excerpt": "\n#[tokio::test]\nasync fn cold_resume_explicit_cwd_override_is_fail_closed_for_recovery() -> Result<()> {\n    skip_if_remote!(\n        Ok(()),"
+          },
+          "original_bazel_target": "//codex-rs/app-server:app-server-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_CFG_UNIX",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B09",
+          "binary_id": "codex-app-server::all",
+          "name": "suite::v2::turn_recover::cold_paginated_sigkill_recovery_uses_canonical_context_tail",
+          "source": {
+            "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+            "git_blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+            "line": 569,
+            "excerpt": "\n#[tokio::test]\nasync fn cold_paginated_sigkill_recovery_uses_canonical_context_tail() -> Result<()> {\n    skip_if_remote!(\n        Ok(()),"
+          },
+          "original_bazel_target": "//codex-rs/app-server:app-server-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_CFG_UNIX",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B09",
+          "binary_id": "codex-app-server::all",
+          "name": "suite::v2::turn_recover::cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery",
+          "source": {
+            "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+            "git_blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+            "line": 371,
+            "excerpt": "\n#[tokio::test]\nasync fn cold_resume_explicit_workspace_roots_override_is_fail_closed_for_recovery() -> Result<()> {\n    skip_if_remote!(\n        Ok(()),"
+          },
+          "original_bazel_target": "//codex-rs/app-server:app-server-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_CFG_UNIX",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B09",
+          "binary_id": "codex-app-server::all",
+          "name": "suite::v2::turn_recover::cold_sigkill_after_provider_output_is_not_recoverable",
+          "source": {
+            "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+            "git_blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+            "line": 519,
+            "excerpt": "\n#[tokio::test]\nasync fn cold_sigkill_after_provider_output_is_not_recoverable() -> Result<()> {\n    skip_if_remote!(\n        Ok(()),"
+          },
+          "original_bazel_target": "//codex-rs/app-server:app-server-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_CFG_UNIX",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B09",
+          "binary_id": "codex-app-server::all",
+          "name": "suite::v2::turn_recover::recover_rejects_busy_completed_and_cross_thread_turns",
+          "source": {
+            "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+            "git_blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+            "line": 90,
+            "excerpt": "\n#[tokio::test]\nasync fn recover_rejects_busy_completed_and_cross_thread_turns() -> Result<()> {\n    skip_if_remote!(Ok(()), \"uses a host-local approval-blocked command fixture\");\n"
+          },
+          "original_bazel_target": "//codex-rs/app-server:app-server-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_CFG_UNIX",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B09",
+          "binary_id": "codex-app-server::all",
+          "name": "suite::v2::turn_recover::same_process_ephemeral_interrupted_turn_recovers_from_listener_state",
+          "source": {
+            "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+            "git_blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+            "line": 670,
+            "excerpt": "\n#[tokio::test]\nasync fn same_process_ephemeral_interrupted_turn_recovers_from_listener_state() -> Result<()> {\n    skip_if_remote!(Ok(()), \"uses a host-local approval-blocked command fixture\");\n"
+          },
+          "original_bazel_target": "//codex-rs/app-server:app-server-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_CFG_UNIX",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B09",
+          "binary_id": "codex-app-server::all",
+          "name": "suite::v2::turn_recover::turn_recover_requires_hepta_turn_recovery_feature",
+          "source": {
+            "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+            "git_blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+            "line": 66,
+            "excerpt": "\n#[tokio::test]\nasync fn turn_recover_requires_hepta_turn_recovery_feature() -> Result<()> {\n    let server = MockServer::start().await;\n    let codex_home = TempDir::new()?;"
+          },
+          "original_bazel_target": "//codex-rs/app-server:app-server-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_CFG_UNIX",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        },
+        {
+          "blocker_id": "B09",
+          "binary_id": "codex-app-server::all",
+          "name": "suite::v2::turn_recover::cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input",
+          "source": {
+            "path": "codex-rs/app-server/tests/suite/v2/turn_recover.rs",
+            "git_blob": "43cd9b0c2d1ba3a6560ade3f3a85616674fcd4c8",
+            "line": 176,
+            "excerpt": "\n#[tokio::test]\nasync fn cold_sigkill_recovery_preserves_turn_and_deduplicates_stable_queue_input() -> Result<()> {\n    skip_if_remote!(\n        Ok(()),"
+          },
+          "original_bazel_target": "//codex-rs/app-server:app-server-all-test",
+          "windows_scope_from_frozen_catalog": "NOT_COMPILED_CFG_UNIX",
+          "actual_fb9_full_catalog_record": {
+            "ignored": false,
+            "filter-match": {
+              "status": "matches"
+            }
+          },
+          "current_execution_claim": false
+        }
+      ]
+    },
+    {
+      "group": "codex-hepta-agentd",
+      "expected_exact_cases": 1,
+      "package": "codex-hepta-agentd",
+      "original_cargo_target": [
+        "--lib"
+      ],
+      "additional_features": [
+        "qualification-cognitive-write"
+      ],
+      "actual_historic_full_features": [
+        "default",
+        "production-cognitive-write"
+      ],
+      "actual_historic_binary": {
+        "binary_id": "codex-hepta-agentd",
+        "path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_hepta_agentd-2edf7023cb6a9aad",
+        "bytes": 101107624,
+        "sha256": "f419d1f207b1a493583191de4de8ece0ff94be712666e479ec46936b7ff5e1ce"
+      },
+      "historic_binary_qualifies_requested_feature": false,
+      "historic_identity_limit": "Original fb9/ROG observation only; no current-host existence, freshness, or peak-capacity claim. The Agentd row is the ordinary 243-case binary, not a qualification binary.",
+      "proposed_existing_recipe_selection_argv": [
+        "just",
+        "test",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "-p",
+        "codex-hepta-agentd",
+        "--features",
+        "qualification-cognitive-write",
+        "--lib",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--success-output",
+        "immediate",
+        "-E",
+        "test(=runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence)",
+        "--test-threads=1"
+      ],
+      "shell_display": "just test --locked --cargo-profile dev-small -p codex-hepta-agentd --features qualification-cognitive-write --lib --no-tests fail --retries 0 --success-output immediate -E 'test(=runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence)' --test-threads=1",
+      "working_directory": "repository root; original just recipe changes to codex-rs",
+      "execution_authorized_by_this_receipt": false,
+      "expected_case_selection_requires_fresh_catalog": true,
+      "original_budget": {
+        "nextest_profile": "local (set by original just test recipe)",
+        "slow_timeout_period_seconds": 30,
+        "slow_timeout_terminate_after": 2,
+        "applicable_case_specific_override": null,
+        "retry_setting": "explicit 0 as existing native qualification policy, not default nextest retries=1",
+        "source_internal_deadlines": "unchanged exact test source; no extension, skip, assertion, or sleep change",
+        "bazel_target_timeout_attribute": "unspecified; inherit Bazel rule defaults"
+      },
+      "cases": [
+        {
+          "blocker_id": "B13",
+          "binary_id": "codex-hepta-agentd",
+          "name": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+          "source": {
+            "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+            "git_blob": "31a41d8cad53ee3f04a1106e245dc5c3f4392a5b",
+            "line": 608,
+            "excerpt": "#[cfg(feature = \"qualification-cognitive-write\")]\n#[tokio::test]\nasync fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence() {\n    let fixture = runtime_fixture();\n    attach_runtime_prerequisites(&fixture).await;"
+          },
+          "original_bazel_target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+          "windows_scope_from_frozen_catalog": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "actual_fb9_full_catalog_record": null,
+          "current_execution_claim": false
+        }
+      ]
+    }
+  ],
+  "agentd_distinct_feature_scope": {
+    "original_workflow": {
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "git_blob": "18a6d4e1108482653ff7560d9e64d91649e41236",
+      "lines": [
+        159,
+        160
+      ]
+    },
+    "original_literal_argv": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agentd",
+      "--features",
+      "qualification-cognitive-write",
+      "--lib",
+      "runtime::tests::qualification_",
+      "--test-threads=1"
+    ],
+    "original_prefix_count": 3,
+    "original_prefix_names": [
+      "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+      "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+      "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+    ],
+    "single_case_option": "groups[codex-hepta-agentd] selects only the unchanged original ninth name, through the same feature-enabled original recipe, under existing native no-retry policy. Do not run both scopes by default.",
+    "feature_effect": "qualification-cognitive-write adds only local production-cognitive-write; no new dependency feature edge. Fresh Cargo compilation/catalog/program hashes still required; old ordinary binary does not establish reuse or a memory/disk peak.",
+    "actual_fixture_dependencies": "temporary registry and SQLite, existing H7/authority-lease APIs and compile_data; no Agentd/AppServer/provider child process for these three original unit fixtures",
+    "physical_deadline": {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "git_blob": "31a41d8cad53ee3f04a1106e245dc5c3f4392a5b",
+      "line": 644,
+      "excerpt": "    // is exercised afterward against its actual deadline, not a setup race.\n    const SETUP_LEASE_TTL_SECONDS: u64 = 30;\n    let expires_at = SystemTime::now()"
+    },
+    "test_contract": "Set up and commit real H7 start/terminal evidence while lease is live; wait until its existing 30-second deadline; expired prepare must return no writable input and preserve the exact expired registry head.",
+    "not_b16_root_current_acceptance": true,
+    "qualified_historic_binary_available_in_inspected_363_program_sets": false,
+    "full_graph_and_catalog_proof": {
+      "path": "architecture-audit/original-exit-selection-5b-20261105/actual-full-agentd-feature-catalog-proof.json",
+      "bytes": 8428,
+      "sha256": "81a4719b877568dd311b38708956cdbe8e2892542e01448d734b74e8a6eb98de",
+      "git_blob": "ae2c125a829d235b7e327c057c00217cb846ac1c"
+    }
+  },
+  "bazel_registration_and_selection": {
+    "targets": [
+      "//codex-rs/app-server:app-server-all-test",
+      "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+      "//codex-rs/core:core-all-test",
+      "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test"
+    ],
+    "main_caller": {
+      "path": ".github/workflows/blocking-ci.yml",
+      "git_blob": "fd01ab5edac5d78c9bcfb78397a157a3d5ea7c71",
+      "line": 95,
+      "excerpt": "    needs: scope\n    if: needs.scope.outputs.full_repo == 'true'\n    uses: ./.github/workflows/bazel.yml\n    secrets: inherit\n"
+    },
+    "main_guard": "needs.scope.outputs.full_repo == 'true'; registration and static selector inclusion do not prove the queued matrix executed",
+    "non_windows_selector": "//... minus only //third_party/v8:all and //codex-rs/v8-poc:v8-poc-unit-tests; test_tag_filters=-argument-comment-lint",
+    "windows_selector": "tests(//...) except tests(//third_party/v8:all) except attr(tags, \"manual\", tests(//...))",
+    "windows_partition": "one of four PR shards by POSIX cksum(label + newline) modulo 4; no new selection filter",
+    "qualification_outer": {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "git_blob": "f9354d8ecab6b3d026468301af83238493b09cb3",
+      "line": 73,
+      "excerpt": "\nworkspace_root_test(\n    name = \"hepta-agentd-cognitive-write-qualification-test\",\n    args = [\"runtime::tests::qualification_\"],\n    test_bin = \":hepta-agentd-cognitive-write-qualification-test-bin\","
+    },
+    "qualification_outer_manual": false,
+    "qualification_inner_manual": true,
+    "qualification_outer_platform_restriction": null,
+    "inner_manual_does_not_remove_outer_registered_test": true,
+    "main_matrix_job_budget_minutes": 120,
+    "success_log_retention_already_contains_every_target": true,
+    "collector_blob": "2142eeb382664d95f77d83ac7ae3da4459601abf",
+    "collector_limits": "A console PASS with cached/no-local artifacts is not automatically fresh exact-case evidence; keep original collector limitations."
+  },
+  "specialized_workflow_scope": {
+    "all_93_fixed_workflow_bodies_hash_verified": true,
+    "workflow_map": {
+      "path": "architecture-audit/original-exit-selection-5b-20261105/workflow-input-map.json",
+      "bytes": 15066,
+      "sha256": "bb2812490f9d2714d237c2fc87ca3971fdab932161cf02e88ccce4b47493c8e7",
+      "git_blob": "8d144b6b996cc8e330a58211f140d3c56b0beab8"
+    },
+    "hepta_gap_agentd_process_has_no_repo_workflow_caller": true,
+    "hepta_gap_agentd_process_triggers": [
+      "workflow_call",
+      "workflow_dispatch"
+    ],
+    "deep_agentd_workflow_not_among_19_observed_5b_run_names": true,
+    "owner_local_agentd_lib_default_does_not_enable_qualification": true,
+    "windows_core_lifecycle_only_core_unit_not_core_all": true,
+    "rust_ci_cargo_test_is_argument_comment_lint_subworkspace_not_whole_codex": true,
+    "current_observation_limit": "This is a static selection audit, not a new CI status query. At the independently recorded 13:08 snapshot0045 the main blocking Bazel matrix had not expanded. Await original exact-case records, without adding dispatch/retry or transferring unrelated successes."
+  },
+  "already_observed_subset_not_reexecuted_here": {
+    "B08_core_units": 3,
+    "B09_core_units": 9,
+    "B13_queue_cases": 8,
+    "core_target_whole_status": "1 other FAIL; matched named case PASS does not make the whole target PASS",
+    "queue_source_review_git": "8ac8043ed4c8db0c992379f5d6a917662927084c",
+    "queue_merge_review_git": "6d3c3c3df36621093de010723c53eb7564cdba64",
+    "owner_local_217_intersection_original_142": 0
+  },
+  "source_bridge": {
+    "input": {
+      "path": "hepta-audit-fifth/inputs/source-A4a-to-product-5b-full-delta.json",
+      "bytes": 585838,
+      "sha256": "4442775005388f36dcb563c24cd2d810ac75836f965cb8bc34d736e71d4d4ced",
+      "git_blob": "d05170bb561b31ea4051616d5ee42571f05b2f46"
+    },
+    "from_tree": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+    "to_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "actual_non_qualification_changed_paths": [
+      ".codespellrc",
+      ".github/scripts/run-bazel-ci.sh",
+      ".github/workflows/hepta-musl-product-smoke.yml",
+      ".github/workflows/v8-canary.yml",
+      "codex-rs/utils/pty/src/process.rs",
+      "codex-rs/utils/pty/src/pty.rs",
+      "codex-rs/utils/pty/src/tests.rs",
+      "codex-rs/utils/pty/src/unix_io.rs",
+      "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "codex-rs/utils/pty/src/unix_io_diagnostics.rs"
+    ],
+    "actual_cargo_build_nextest_input_changes": [],
+    "interpretation": "Historical metadata/catalog retain their original fb9 or BUILD_ONLY 4a source label. Exact 4a-to-5b source bridge supports unchanged selection inputs; it does not relabel an old test execution."
+  },
+  "pty_roster_clarification": {
+    "actual_fb9_catalog": {
+      "path": "ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/full-workspace-catalog.stdout",
+      "bytes": 2846923,
+      "sha256": "37aa98bace85dfa81d9c729820de24912d913bd85c3a10b60243f4dba67e4001",
+      "git_blob": "6215be8be0979a4af011c64de4043c934aeee81a"
+    },
+    "binary": "codex-utils-pty",
+    "actual_linux_suite_cases": 29,
+    "already_present_before_5b": "tests::output_collector_waits_for_exit_after_output_closes",
+    "record": {
+      "ignored": false,
+      "filter-match": {
+        "status": "matches"
+      }
+    },
+    "no_extra_plus_one_to_19563_for_5b_diagnostic": true,
+    "mac_31_is_platform_specific_not_linux_counter": true
+  },
+  "original_receipt_sources": {
+    "full_selection": {
+      "path": "ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/full-workspace-selection.json",
+      "bytes": 5364870,
+      "sha256": "48dcb2b104793c7dac9699803e4746d6d8145bcc66701de167de57cbf6bd3c6c",
+      "git_blob": "cfe723c534fab7be981a38aa64e5ca99de412bc2"
+    },
+    "actual_full_metadata_catalog_proof": {
+      "path": "architecture-audit/original-exit-selection-5b-20261105/actual-full-agentd-feature-catalog-proof.json",
+      "bytes": 8428,
+      "sha256": "81a4719b877568dd311b38708956cdbe8e2892542e01448d734b74e8a6eb98de",
+      "git_blob": "ae2c125a829d235b7e327c057c00217cb846ac1c"
+    },
+    "source_manifest": {
+      "path": "architecture-audit/original-exit-selection-5b-20261105/source-manifest.json",
+      "bytes": 13028,
+      "sha256": "f595257ffd8b40a68884b293e48f1abd3a04a42744fa1e6400f4eafc33a959e0",
+      "git_blob": "f39ee5cc1ae677d6882f8a0c05254e3b1ca0bb60"
+    }
+  },
+  "limitations": [
+    "All 54 original names, tests, assertions, deadlines and platform cfg remain unchanged.",
+    "Windows cannot qualify Unix-only/ignored original cases; Wine is not an independent native Windows acceptance result.",
+    "B10's existing skip_if_no_network gates remain in source; an early-return PASS is not business acceptance.",
+    "Current test/helper identities, feature closure and free capacity must be bound by the sole native lane if root chooses the proposed extra selection.",
+    "No native project command, test, build, remote host operation, workflow dispatch or product source/ref mutation was performed by this audit.",
+    "No original blocker status was changed."
+  ]
+}

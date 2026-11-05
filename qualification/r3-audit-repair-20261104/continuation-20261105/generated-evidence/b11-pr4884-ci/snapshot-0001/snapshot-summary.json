@@ -1,0 +1,310 @@
+{
+  "schema": "b11_pr4884_ci_snapshot_summary_v1",
+  "observed_start_utc": "2026-11-05 14:52:26 UTC",
+  "observed_end_utc": "2026-11-05 14:52:56 UTC",
+  "not_atomic": true,
+  "pr": {
+    "number": 4884,
+    "draft": true,
+    "head": "f02b9ae98e8608210c92a3f53646147f5c7dc428",
+    "base": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "merge": "a4e2d71f85d6da48cb6bfc7c09bd34f2837ff7f6",
+    "head_and_merge_tree": "fc47759c145d33122b3cab70235a617661556db8",
+    "commits": 3,
+    "files": 4,
+    "added": 605,
+    "removed": 0
+  },
+  "source_binding": {
+    "codex-rs/windows-sandbox-rs/src/token.rs": "b22acb5556f6af3b4c250a2441f161ee448ea1c1",
+    "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs": "3b850db502bef372592322dd1c1d2272e65a6a47",
+    "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs": "2a384792e8ba88518c26943716e8c3a39a523f9b",
+    ".github/workflows/hepta-windows-token-mechanism-probe.yml": "565e442d290309da85a72969226b5cf48049f072"
+  },
+  "runs": [
+    {
+      "id": 42049112863,
+      "name": "blocking-ci",
+      "workflow_path": ".github/workflows/blocking-ci.yml",
+      "attempt": 1,
+      "head": "f02b9ae98e8608210c92a3f53646147f5c7dc428",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 42049112637,
+      "name": "Hepta architecture convergence",
+      "workflow_path": ".github/workflows/hepta-architecture-convergence.yml",
+      "attempt": 1,
+      "head": "f02b9ae98e8608210c92a3f53646147f5c7dc428",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 42049112558,
+      "name": "v8-canary",
+      "workflow_path": ".github/workflows/v8-canary.yml",
+      "attempt": 1,
+      "head": "f02b9ae98e8608210c92a3f53646147f5c7dc428",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 42049112732,
+      "name": "Original Objective owner package gates",
+      "workflow_path": ".github/workflows/hepta-objective-owner.yml",
+      "attempt": 1,
+      "head": "f02b9ae98e8608210c92a3f53646147f5c7dc428",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 42049112769,
+      "name": "Hepta musl product smoke",
+      "workflow_path": ".github/workflows/hepta-musl-product-smoke.yml",
+      "attempt": 1,
+      "head": "f02b9ae98e8608210c92a3f53646147f5c7dc428",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "id": 42049112832,
+      "name": "Windows token mechanisms (observations only)",
+      "workflow_path": ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+      "attempt": 1,
+      "head": "f02b9ae98e8608210c92a3f53646147f5c7dc428",
+      "status": "queued",
+      "conclusion": null
+    }
+  ],
+  "jobs": [
+    {
+      "id": 127320082382,
+      "run_id": 42049112863,
+      "name": "Select blocking CI scope",
+      "status": "queued",
+      "conclusion": null,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at_api": "2026-11-05T14:51:42Z",
+      "completed_at": null
+    },
+    {
+      "id": 127320082934,
+      "run_id": 42049112863,
+      "name": "Blob size policy / Blob size policy",
+      "status": "queued",
+      "conclusion": null,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at_api": "2026-11-05T14:51:42Z",
+      "completed_at": null
+    },
+    {
+      "id": 127320083333,
+      "run_id": 42049112863,
+      "name": "Codespell / Check for spelling errors",
+      "status": "queued",
+      "conclusion": null,
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at_api": "2026-11-05T14:51:42Z",
+      "completed_at": null
+    },
+    {
+      "id": 127320080644,
+      "run_id": 42049112637,
+      "name": "Architecture convergence (source-head)",
+      "status": "queued",
+      "conclusion": null,
+      "labels": [
+        "ubuntu-24.04-arm"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at_api": "2026-11-05T14:51:42Z",
+      "completed_at": null
+    },
+    {
+      "id": 127320081376,
+      "run_id": 42049112637,
+      "name": "Architecture convergence (base-merge)",
+      "status": "queued",
+      "conclusion": null,
+      "labels": [
+        "ubuntu-24.04-arm"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at_api": "2026-11-05T14:51:42Z",
+      "completed_at": null
+    },
+    {
+      "id": 127320082883,
+      "run_id": 42049112558,
+      "name": "metadata",
+      "status": "queued",
+      "conclusion": null,
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at_api": "2026-11-05T14:51:42Z",
+      "completed_at": null
+    },
+    {
+      "id": 127320083034,
+      "run_id": 42049112732,
+      "name": "Original memory and Agentd libraries (source head)",
+      "status": "queued",
+      "conclusion": null,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at_api": "2026-11-05T14:51:42Z",
+      "completed_at": null
+    },
+    {
+      "id": 127320081430,
+      "run_id": 42049112769,
+      "name": "Static x86_64 musl Hepta CLI build and process smoke",
+      "status": "queued",
+      "conclusion": null,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at_api": "2026-11-05T14:51:42Z",
+      "completed_at": null
+    },
+    {
+      "id": 127320081049,
+      "run_id": 42049112832,
+      "name": "Windows token observations with original strict assertions",
+      "status": "queued",
+      "conclusion": null,
+      "labels": [
+        "windows-latest"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at_api": "2026-11-05T14:51:42Z",
+      "completed_at": null
+    }
+  ],
+  "run_count": 6,
+  "job_count": 9,
+  "job_states": {
+    "queued": 9
+  },
+  "native_execution_claimed": false,
+  "limits": [
+    "queued API started_at is not evidence of runner execution",
+    "current enumerated jobs can expand later",
+    "target/probe success cannot close B11",
+    "no dispatch/rerun/cancel/ref operation"
+  ],
+  "original_assets": [
+    {
+      "name": "pr",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/snapshot-0001/pr.original.json",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/4884",
+      "bytes": 21316,
+      "sha256": "37cbe20690133c7d168b664fd86b4737540730f8fe1344801e57c313b4f8b77b",
+      "git_blob": "a684dafd88eb94c93ec31795696af9aef27d3194"
+    },
+    {
+      "name": "runs",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/snapshot-0001/runs.original.json",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?head_sha=f02b9ae98e8608210c92a3f53646147f5c7dc428&per_page=100&page=1",
+      "bytes": 91993,
+      "sha256": "fb18167cddea8a2a7443f9491f9a391f59f0b932c8866591833ae1eb9c9dd929",
+      "git_blob": "4bcb0eef805fe027df7bbf22d5cca84129174a43"
+    },
+    {
+      "name": "files",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/snapshot-0001/files.original.json",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/4884/files?per_page=100&page=1",
+      "bytes": 36723,
+      "sha256": "369330ef52605733df805c28c4d799d90f3b10bc8c52f7c09d66f69ecf39fd7d",
+      "git_blob": "0b059008c5e056a97c2472f1f374a4b1e7724606"
+    },
+    {
+      "name": "head",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/snapshot-0001/head.original.json",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/f02b9ae98e8608210c92a3f53646147f5c7dc428",
+      "bytes": 1316,
+      "sha256": "76593d2e7daf1d3f9a8ffc5b1815de58410ccc6d0ea476dc9f2998f3da98e9ae",
+      "git_blob": "78f8664a3104d0a9d133b638859bf501320725a1"
+    },
+    {
+      "name": "merge",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/snapshot-0001/merge.original.json",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/a4e2d71f85d6da48cb6bfc7c09bd34f2837ff7f6",
+      "bytes": 2814,
+      "sha256": "8446317831afa1e0ee3543f61275061f1406dd560bdcd56cd611b6b0b4a16673",
+      "git_blob": "fe5cbe2792755cef05dfd0419c2fd159f38be890"
+    },
+    {
+      "name": "jobs-42049112863",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/snapshot-0001/jobs-42049112863.original.json",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42049112863/attempts/1/jobs?per_page=100&page=1",
+      "bytes": 2898,
+      "sha256": "576180947aa568efea7c5fd924906f6301cc952a9b5cfce7840e20c8e99fdb67",
+      "git_blob": "67723351c0e2d0ca269331eaa6c215a7b712466b"
+    },
+    {
+      "name": "jobs-42049112637",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/snapshot-0001/jobs-42049112637.original.json",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42049112637/attempts/1/jobs?per_page=100&page=1",
+      "bytes": 1997,
+      "sha256": "ef3b457cd1104bc295791259c509b3e5ea8d9f25eda813741730b05233e0dc15",
+      "git_blob": "b932beddde6a12d0561ff549adf33c4dce91109a"
+    },
+    {
+      "name": "jobs-42049112558",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/snapshot-0001/jobs-42049112558.original.json",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42049112558/attempts/1/jobs?per_page=100&page=1",
+      "bytes": 958,
+      "sha256": "170e7da652cd89f9ca9721dc25a6a56d83a476a6bb1e99283d21c43e896ae00a",
+      "git_blob": "e2e8edd040b349bfbf714473ff2d470a15935180"
+    },
+    {
+      "name": "jobs-42049112732",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/snapshot-0001/jobs-42049112732.original.json",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42049112732/attempts/1/jobs?per_page=100&page=1",
+      "bytes": 1028,
+      "sha256": "79cfa9d9edc7079b4aace7d4aa058dada0220158615508411ffbb5629fb18e56",
+      "git_blob": "571d7e2dba8837cc6a0057ba5922a16f1febb139"
+    },
+    {
+      "name": "jobs-42049112769",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/snapshot-0001/jobs-42049112769.original.json",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42049112769/attempts/1/jobs?per_page=100&page=1",
+      "bytes": 1016,
+      "sha256": "adc001e5ccb969e333e528441a00bc644a9f80480d0149a0d5cdb8541631a554",
+      "git_blob": "9219dc03d5568bad7d6c78a90a7239deb844d6fc"
+    },
+    {
+      "name": "jobs-42049112832",
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-pr4884-ci-20261105/snapshot-0001/jobs-42049112832.original.json",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42049112832/attempts/1/jobs?per_page=100&page=1",
+      "bytes": 1044,
+      "sha256": "0318882675da305b913d16ad67bc233ca33c5f9cd2b3dcdb6facc97646307d93",
+      "git_blob": "7ecb81693f15aae0c47fb7bcbc642b90ccabb313"
+    }
+  ]
+}

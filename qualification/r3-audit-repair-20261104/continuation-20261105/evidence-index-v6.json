@@ -1,0 +1,2627 @@
+{
+  "schema": "hepta-continuation-evidence-index-v6",
+  "created_utc": "2026-11-05 15:37:14 UTC",
+  "parent_audit_commit": "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72",
+  "parent_audit_tree": "65cfd91deea0fbd5b432c225e16d15106ed5f373",
+  "evidence_only": true,
+  "source_snapshot_cut": "Main candidate CI0063 2026-11-05T14:55:04.543Z..14:55:05.519Z; initial B11 and macro-correction publication are explicitly separate later observations.",
+  "later_native_results": "Subsequent complete ROG archive, ai395 fresh readiness, B11 physical runs and newer main CI snapshots are retained separately for the next incremental checkpoint; not backfilled into this cut.",
+  "original23_counts": {
+    "CLOSED_SCOPED": 8,
+    "OPEN": 14,
+    "SCIENTIFIC_HOLD": 1
+  },
+  "all_blockers_closed": false,
+  "whole_product_qualified": false,
+  "product_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "product_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "core_musl_candidate_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+  "raw_correction": "V8 ARM original is the exact UTF-8 decoded API content; historical LF export and precise1777 CRLF transformation are separately preserved. Execution facts unchanged.",
+  "entry_count": 289,
+  "total_file_bytes": 40023592,
+  "all_actual_git_objects_created_and_byte_equal_read_back": true,
+  "files": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-macro-fix/delete_permission_tests.rs.source.txt",
+      "mode": "100644",
+      "bytes": 6841,
+      "sha256": "397abb256644d00394b64d0d48cf02b72a32ca835163b1b7aed793617f68dcf3",
+      "blob": "d8511f92f9fbd9d58061238dbf3181152c74ccbc",
+      "role": "Actual postimage; new Windows outcome pending",
+      "verification": "Actual Git create and full byte-equal GET; root rehashed local bytes and reviewed exact scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-macro-fix/manifest.json",
+      "mode": "100644",
+      "bytes": 3932,
+      "sha256": "1427f307a07fcb7ae13f1120fab748b403de01171a74ce6de3510954ec1c8348",
+      "blob": "615c2abc65182aac2dc259c29961beed4d8e77e4",
+      "role": "Exact original failure and unchanged eight assertions",
+      "verification": "Actual Git create and full byte-equal GET; root rehashed local bytes and reviewed exact scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-macro-fix/repair.patch",
+      "mode": "100644",
+      "bytes": 750,
+      "sha256": "12b41de67be6a9f4865389736e45dea62972cdb3d59ab3d544ddcaeb631b4108",
+      "blob": "a442366ae64689eb96a8a3aaf9b39bd166de986e",
+      "role": "Actual compile prerequisite one-line test import correction",
+      "verification": "Actual Git create and full byte-equal GET; root rehashed local bytes and reviewed exact scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-macro-fix/workflow-v3.yml.source.txt",
+      "mode": "100644",
+      "bytes": 4291,
+      "sha256": "3703f27540fb0f7c3f0220b922ba5e473dbafeda58bad385d6982e02b38971f3",
+      "blob": "757e0eb43b2583604569fd51fac3aee4828899a5",
+      "role": "Only existing-module path added; actual target/assertions/budget unchanged",
+      "verification": "Actual Git create and full byte-equal GET; root rehashed local bytes and reviewed exact scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/01-label-custody-support.patch",
+      "mode": "100644",
+      "bytes": 13864,
+      "sha256": "b77270a69d57b9b5450e3a9eaad46bf23f2294b8ffff52f794fd85cf03e5d12b",
+      "blob": "d6b8e45dfa1673368597a87528a6271192505198",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/02-probe-consumer.patch",
+      "mode": "100644",
+      "bytes": 15515,
+      "sha256": "dd397aab9adc8a092c90ed1c61d9dd1cb7940471b6851e5e4233956937b9658e",
+      "blob": "aff4ac9be31940ef9fcefebec198ba6cf3e80d53",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/03-independent-windows-workflow.patch",
+      "mode": "100644",
+      "bytes": 4639,
+      "sha256": "580580166d0c8175da198b6494f3895eb337b075d6d28456cfff1e43da77878c",
+      "blob": "2d2de77ee71810051c8d0ac9f259eec29068e355",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/cloud-patch-verification-v2.json",
+      "mode": "100644",
+      "bytes": 10867,
+      "sha256": "937023e125b671effb7d368146dbd0f6e84d857c3cf0ed2c4c8deb8caf1a6640",
+      "blob": "6fa3c3d0c1e9c4829dfb0bdb63fdd22b62a00cf5",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/diagnostic-pr-full.patch",
+      "mode": "100644",
+      "bytes": 34018,
+      "sha256": "a79d83c11caece015ec56df3dd8508776001432bf273a97f998592ce4b40f488",
+      "blob": "f8869774509a4226328bc4dc28243e86a35f8779",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/execution-design-DISABLED-v2.json",
+      "mode": "100644",
+      "bytes": 4235,
+      "sha256": "010cb3b931fe076cb013242fc5c3292398dab293c22e9b8196224b5ce4b08494",
+      "blob": "233385e1c0f6a884f82ca0920bd2132e5ad742e1",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/fixed-source-identities.json",
+      "mode": "100644",
+      "bytes": 8176,
+      "sha256": "42e40d35afcf392277555215280f6391e6a439376c755e494d068ab36bd9710e",
+      "blob": "18ff63e6f53d8c6a6d4898e4f2e4f27a2b2417f5",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/full.patch",
+      "mode": "100644",
+      "bytes": 29379,
+      "sha256": "b0aab22c663dd596664716cd534c5d42df92cff45c122a35dd792a31acbbbe0b",
+      "blob": "42c16c379b9f4adb24567252f759045115871c4d",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/github-readback-map-v2.json",
+      "mode": "100644",
+      "bytes": 14292,
+      "sha256": "89e0237892f3c322c75d0c2e34a0a46324f1dd10fa77c0a1a5bfaf4d0bd7e6b4",
+      "blob": "854d444b838f7dee21be8a92254321e0974cafe2",
+      "role": "Actual 21-object create/readback map",
+      "verification": "Architecture actual create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/history/v1-frozen/full.patch",
+      "mode": "100644",
+      "bytes": 29139,
+      "sha256": "d2eed5fc2babd60e1acbfff6657c54b7f8162a8696049640f249dbb63cb2a178",
+      "blob": "6c9dc6f01085bc161a6004fab836331f09b73d2d",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/history/v1-frozen/source-map.json",
+      "mode": "100644",
+      "bytes": 1823,
+      "sha256": "21e3008f6d5ec4969809133ae10043ae615c3e81f895f1817e1da045c3cf8cda",
+      "blob": "4593181e6f3fa898c6131bc71984ac6cb0f20fbb",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/manifest-v2.json",
+      "mode": "100644",
+      "bytes": 18703,
+      "sha256": "9b39be778a28c6a8223fb4028d09176222a227ea098a9c3f24290a130711d895",
+      "blob": "dfbd4f609afa66239ca2b6d10fd584e882987bf3",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/postimages/.github/workflows/hepta-windows-token-mechanism-probe.yml.source.txt",
+      "mode": "100644",
+      "bytes": 4211,
+      "sha256": "8ab7b1e1d93c7c64fe4f40d5b4823912d22b7269d5ae5cc630d6fea8c35176a2",
+      "blob": "565e442d290309da85a72969226b5cf48049f072",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/postimages/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs.source.txt",
+      "mode": "100644",
+      "bytes": 13242,
+      "sha256": "80de0b271e57775c00661cfda26dd8b20b8894b040a2081d601c931982a2ecd7",
+      "blob": "3b850db502bef372592322dd1c1d2272e65a6a47",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/postimages/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs.source.txt",
+      "mode": "100644",
+      "bytes": 14475,
+      "sha256": "5fe644714b4180dd4bbb988452a4c8464524149eda1a91af0af8879761f448ab",
+      "blob": "2a384792e8ba88518c26943716e8c3a39a523f9b",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/postimages/codex-rs/windows-sandbox-rs/src/token.rs.source.txt",
+      "mode": "100644",
+      "bytes": 18437,
+      "sha256": "6d7ddb4a84561b28bc134139226f9be444cb0dc03c73038e7988e21e18339a77",
+      "blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/REVIEW.zh-CN.md",
+      "mode": "100644",
+      "bytes": 8793,
+      "sha256": "c420fee2ec1e6fbc74be69512def01581de1cf766a1caf60db3cbdbf78b667a9",
+      "blob": "00641a98eb87bc9885aca50148ddf4f1bec14a10",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/source-map.json",
+      "mode": "100644",
+      "bytes": 1842,
+      "sha256": "2117e1acda9dd3d6ea2c084cef81f7b771f01fe05231ceefc335e02071e19b1f",
+      "blob": "35a87d5890f238d30a72da7738ab6d32aa2f53a2",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/v1-to-v2-output-visibility.delta.patch",
+      "mode": "100644",
+      "bytes": 5682,
+      "sha256": "1697e5703fe0e06b2830789a10c5a840446e3f96c532567d143ec734eceff335",
+      "blob": "ba098a59ef1997fb5424147d85408110bb54bb8b",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/workflow-source-map.json",
+      "mode": "100644",
+      "bytes": 623,
+      "sha256": "e8bca210c07aab88abb5ce25cfc5cd97dfe4de8e9e0b57f85344c4c1112bfefb",
+      "blob": "2a5b7c8cc44c631d5caccb037d2fa8181ee072a4",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/workflow-static-check.json",
+      "mode": "100644",
+      "bytes": 1353,
+      "sha256": "234771067788b618424783941937b4951fb773ef4e9c69a3dac6c8c8d9eff2a2",
+      "blob": "a4a209a3c907ec3fcb5fcc7267a0382832262ecb",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/b11-token-mechanism-probe-v2/workflow-v1-to-v2-existing-collector.delta.patch",
+      "mode": "100644",
+      "bytes": 1225,
+      "sha256": "d2da361da4ecb7de9a168f8809229dbf615e7438729ce4a6d343949fef2fd5bf",
+      "blob": "49b22792950d10637f8af375036fdf40dad641ef",
+      "role": "Frozen test-only diagnostic candidate or author static evidence; not native qualification",
+      "verification": "Architecture actual create and byte-equal GET recorded in 854d444b838f7dee21be8a92254321e0974cafe2"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/core-musl-initial-source-binding.json",
+      "mode": "100644",
+      "bytes": 1103,
+      "sha256": "63458816ecc15342a6e2d0bce8b8ba0801538d8d4bfff99a0f30943d562f2605",
+      "blob": "62c0ea0c0335150ab85c5269d8bf2dc8846d4a64",
+      "role": "Root-reviewed exact-source/observation record",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/core-owned-child-v4/environment_selection.rs.source.txt",
+      "mode": "100644",
+      "bytes": 78458,
+      "sha256": "2357c4fc2c3750eb45ea2a940259f1d0b05175e39e040f3d8f2c0d4c35c283a2",
+      "blob": "3c08e1620e800c30c47d98cc775cb20d4650ac88",
+      "role": "Reviewed Core fixture candidate; native and original Windows gates remain distinct",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/core-owned-child-v4/github-readback.json",
+      "mode": "100644",
+      "bytes": 1190,
+      "sha256": "717c6110b67dd5cf6f9c653a266d26e0b02ce5344a9dfdc315d22527c7fd509b",
+      "blob": "a0c97136a16299e0e0903070eb3241b930aea46b",
+      "role": "Actual source-object readback map",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/core-owned-child-v4/owned-child.patch",
+      "mode": "100644",
+      "bytes": 5552,
+      "sha256": "fe32995c1b57e9a6f9481e3fe98b20532a53ee5307030a5b782313c61e011006",
+      "blob": "9c4d10f63f5d9bea70875d8759b67d69b9da9cf1",
+      "role": "Reviewed Core fixture candidate; native and original Windows gates remain distinct",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/core-owned-child-v4/static-reconstruction.json",
+      "mode": "100644",
+      "bytes": 1680,
+      "sha256": "32aa8399a1eade2676c34180c4b08424eebe3f970d24d595e60992ddb145ee88",
+      "blob": "c632ab828b260e8ee30d3fc927036cfb82fd4fbf",
+      "role": "Reviewed Core fixture candidate; native and original Windows gates remain distinct",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/core-owned-child-v4/v2-to-v4.delta.patch",
+      "mode": "100644",
+      "bytes": 3274,
+      "sha256": "8a66c6418546fbcba3e5a973e4416b2d9429124ef46d9bbc17a45d0e1abb0727",
+      "blob": "3a76f923a6270b9d767d8bf9f41488ec922740b4",
+      "role": "Reviewed Core fixture candidate; native and original Windows gates remain distinct",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/musl-procfs-type-v1/candidate.patch",
+      "mode": "100644",
+      "bytes": 694,
+      "sha256": "af8ee4d1d6d614f318fba5a4e685c9653710a3745c9ee6462932d8362913f938",
+      "blob": "5b3b84db742827e56318772095dc46b6cc82a210",
+      "role": "Cross-platform lossless comparison candidate and original ABI/failure evidence",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/musl-procfs-type-v1/git-objects.json",
+      "mode": "100644",
+      "bytes": 2840,
+      "sha256": "f694ee9c2de933123dab545db1e108a54444a865ffb3777e11a0230416ba1205",
+      "blob": "983cc17b5afded692b9812ef6d4b8b88415c721d",
+      "role": "Actual candidate source/evidence Git map",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/musl-procfs-type-v1/hygiene-causality.json",
+      "mode": "100644",
+      "bytes": 3573,
+      "sha256": "f0f447e987fc5e2768685761668f66e4cf24b33168a178aced825f4cc8522453",
+      "blob": "4b07ab496b5d475096cedaa9d4571d5a8924d4ba",
+      "role": "Cross-platform lossless comparison candidate and original ABI/failure evidence",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/musl-procfs-type-v1/manifest.json",
+      "mode": "100644",
+      "bytes": 12387,
+      "sha256": "a75f697fcca5f88d943c9bacafa09e0571cef44258625782cbcffd5b499010e3",
+      "blob": "f08717e1544d50a9daf31f3769adbf32c747dcfd",
+      "role": "Cross-platform lossless comparison candidate and original ABI/failure evidence",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/musl-procfs-type-v1/original-compiler-error.log.txt",
+      "mode": "100644",
+      "bytes": 1434,
+      "sha256": "9d67112c3c12934379cb4b41528ea04a75e3c2ee2bb7e8916cd2331afc2575d3",
+      "blob": "812a6997ad1af44d2c835f881743d77aa141426e",
+      "role": "Cross-platform lossless comparison candidate and original ABI/failure evidence",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/musl-procfs-type-v1/postimage-parent_lifecycle.rs.source.txt",
+      "mode": "100644",
+      "bytes": 8252,
+      "sha256": "b1353af4d2fa468e94a52b93bf9468050f56e734b2afb20c099b342ab85b5c03",
+      "blob": "fe42212316589999fdfc0b1877c975bdafa4a8e7",
+      "role": "Cross-platform lossless comparison candidate and original ABI/failure evidence",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/musl-procfs-type-v1/preimage-parent_lifecycle.rs.source.txt",
+      "mode": "100644",
+      "bytes": 8228,
+      "sha256": "6b1df4d24e48d9eaf772c85e70ebca822b5fd23d3708b2c749158b9cb4350c68",
+      "blob": "8f500e03938718820360ce2ad41f2286eb9071bd",
+      "role": "Cross-platform lossless comparison candidate and original ABI/failure evidence",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/musl-procfs-type-v1/primary-sources.json",
+      "mode": "100644",
+      "bytes": 176256,
+      "sha256": "c0f578c3a26909335c30b31a5c5b4436a95f4d7f090a7fe1b41cf303e4d90b7e",
+      "blob": "1741a2b1a871ad0c338243bc21911b4f8ef84d89",
+      "role": "Cross-platform lossless comparison candidate and original ABI/failure evidence",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/musl-procfs-type-v1/REVIEW.zh-CN.md",
+      "mode": "100644",
+      "bytes": 2854,
+      "sha256": "7de271a7892be835959a06b3fdc436336727e3db95ebbedc4ac1e41610080ee2",
+      "blob": "50859b20c05135bb3167cf4cf0276145a72b5a00",
+      "role": "Cross-platform lossless comparison candidate and original ABI/failure evidence",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/candidate-next/musl-procfs-type-v1/roundtrip-receipt.json",
+      "mode": "100644",
+      "bytes": 1367,
+      "sha256": "66c1a889821797134a34c94744c524e425953efc94626d44e0be9bb82d4b5d97",
+      "blob": "4292d2d45105043d9d888b650a5fff66e9e7c929",
+      "role": "Cross-platform lossless comparison candidate and original ABI/failure evidence",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/CONTINUATION_PROGRESS_V5.zh-CN.md",
+      "mode": "100644",
+      "bytes": 13013,
+      "sha256": "2514d080a0506f2da7d14c684d566b0dc0802b064af2219af9b526a63c00b624",
+      "blob": "064fe7de58447ce2c733084645a227dca8e466be",
+      "role": "Current human report or machine ledger; original23 exit/status/closure_class unchanged",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/continuation-blocker-progress-v4.json",
+      "mode": "100644",
+      "bytes": 54548,
+      "sha256": "0542eb48cb689a5aff9b6693c946daf832bc84e3003d59306fc9234af549ed60",
+      "blob": "a2a2da623788aa6241a0b513225b1597c49fd60f",
+      "role": "Current human report or machine ledger; original23 exit/status/closure_class unchanged",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/initial-compile-failure/artifact-verification.json",
+      "mode": "100644",
+      "bytes": 6542,
+      "sha256": "c32c0a809b781bdb35d2ca963e1c9bba8d4c946d64fdd184828530b3ff2c0921",
+      "blob": "801c9c26082d3fff8215ee9171f8bfa62dc3e644",
+      "role": "Original eleven-member ZIP inventory; asset custody recorded separately",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/initial-compile-failure/job.log",
+      "mode": "100644",
+      "bytes": 256778,
+      "sha256": "449a53c9925b58e10e24082f19b5f57a7b2b39e7b148c9cd6d2468158d3ed299",
+      "blob": "31264e17a1f148bc464d91986fcc7446b5771b2b",
+      "role": "Complete original initial Windows compile failure log, zero tests",
+      "verification": "Actual Git create and full byte-equal GET; root rehashed local bytes and reviewed exact scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/snapshot-0001/api-envelopes.json",
+      "mode": "100644",
+      "bytes": 177763,
+      "sha256": "a8bd60d92b8081d0efcafb037a972bc2dcca9655fa3afd68686fa91648e1ced6",
+      "blob": "e11ade5ab9d16acd82e27d02840eced0895b91fe",
+      "role": "Original PR/source/run/job API snapshot only; all nine observed jobs queued and no native result",
+      "verification": "Architecture actual create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-pr4884-ci/snapshot-0001/snapshot-summary.json",
+      "mode": "100644",
+      "bytes": 11477,
+      "sha256": "6978ee482f3ac00d28f63dc4210a8899cab0ae97933463ebe06a9ea2be1397c8",
+      "blob": "05925a6cafc5327c813199fc27fa4385f81e48ce",
+      "role": "Original PR/source/run/job API snapshot only; all nine observed jobs queued and no native result",
+      "verification": "Architecture actual create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/b11-v2-registration-supplement.json",
+      "mode": "100644",
+      "bytes": 22226,
+      "sha256": "5726f8a4539097948d9634f6e787b28c98add0986d776ee60d1dea15185523fd",
+      "blob": "d3a21037aefd94f7d6733412137b50dfbf89aeb0",
+      "role": "Actual existing-object registration plan; original first CI cut preserved",
+      "verification": "Actual Git create and full byte-equal GET; root rehashed local bytes and reviewed exact scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/build_registration_v6.py.source.txt",
+      "mode": "100644",
+      "bytes": 6906,
+      "sha256": "9d77879615c4e5c7a6534903bf96d7ecdc720bbfcdd3b486a0746d2493914a9f",
+      "blob": "3c02a9f21614f0ccc2410f70dce96578bb1e1736",
+      "role": "Root-reviewed exact-source/observation record",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/build_v6_reports.py.source.txt",
+      "mode": "100644",
+      "bytes": 41103,
+      "sha256": "cd03f9407293444163ca731d8983400013994e97121a84baadb252d40efe4dfb",
+      "blob": "2add3c4940fef246fe4816f163dcf0f0de04ec31",
+      "role": "Initial V6 report builder; subsequent B11 correction is separately bound in the actual reports and receipt",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/canonical-fixed-directory-originals-v1.json",
+      "mode": "100644",
+      "bytes": 149099,
+      "sha256": "53cf8d6cf531f90f5d02bebef7cb3bfe177cce12848c4d35505ea847c3bb822b",
+      "blob": "081401a2b0d9806086a21457b544a6345e8f03f0",
+      "role": "Root-reviewed exact-source/observation record",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/freeze_completed_batch.py.source.txt",
+      "mode": "100644",
+      "bytes": 7084,
+      "sha256": "b8d4c0161edf8d98672a900961a8fecc4fe50510a939cd40d89e5e850bf8914f",
+      "blob": "46ae12abc636f8ba09c79fb26e2d3d0e7f7f1413",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/github-readback-map.json",
+      "mode": "100644",
+      "bytes": 17579,
+      "sha256": "9cc4b97468b39db5fb641d5b939b33f6ccaac55c79685b4858cf0996ebf00deb",
+      "blob": "d66829c6a655306b442b9dc4b6e2f4bc9c545dd0",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "36cdf2afb2041639cb94314e3db79e50a0b411f34dd483f21b896f976c60f760",
+      "blob": "873adee1357c1400bbf7a7c19c58c1b381068079",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part001.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "ef01ae2071b586b6656435af69c12b57b054b03f7e92c612336fb75648d62b48",
+      "blob": "927cd952a504a4da2e305615a4415df19e8b72d8",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part002.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "11b41c7636fabb05a1a3de3df0b0b96949d0708405f22cf3bdbc98d5988eab2d",
+      "blob": "b83752595f4afa52dac01261d6e68f1da0987031",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part003.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "3f8a7a92040c935273c0c87a0121130e70624200c9b3c4a25c5270fb8400aca8",
+      "blob": "abc8653cfa6a41e850cfa62a5bf01b2f1ef4ad8b",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part004.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "0b85155a40454961d8f7d1c04779c810c829fc1ad2de1e37bb37b175509b5fef",
+      "blob": "852dc0bd003aa20b42b56a0395303e2896fef025",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part005.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "6f456ceb74e300b5478401fcaf6698983973a2d5b27c8b3c10051a09ee49dea1",
+      "blob": "194c4c75a4b30c53f423eed6474d0163b7e4c0c5",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part006.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "bf7aacef49b6ea01d91f3818f12419958fe4a24e29bcdb5a54f6c47e9f05c873",
+      "blob": "adb2db1dd257c03059aeee67c68838049634a19b",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part007.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "aab65b8ca39dc928f22eb9319754ecce1dcabcf8eb1041a26ff4bd0a0bac2882",
+      "blob": "fdd761b0bdd481352d9bd96032294e7873e8f234",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part008.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "5c2cc6d8334d00efd3ecc3b857cfafd0d5e687a3b0a8647bff0f34760a19573d",
+      "blob": "ec9b7912e41c14c898960541243451bb0f0b956f",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part009.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "9b76ef1fec4086cea171fd4d1d0ee6631e23c3c29e086eb473383eda40593bbe",
+      "blob": "360bcd6463c95366915433dc60b2817b18ce961f",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part010.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "09b62024aa1b343902129bc69b48ea79c125ae61cc09c5105f59611c90a8e44e",
+      "blob": "c71e22146bb610de29b8d4f15f664ac799dfbc12",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part011.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "709d12ff61569f8495e7164ff0d84541d7a856c5638dabb22f0b68594f3f1725",
+      "blob": "3b185b4dcf6c31273869e2f4b9c5a17466e66970",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part012.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "5ed9366da9b48a9571aea5eb3d6c3568be764dc5b868495c967d16d3da44a6a9",
+      "blob": "a2baf2d663a30dcf49d688d86cfb45258fadd7ad",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part013.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "7b9087148e1ba77ca426d96b165c29be83371180f2339bc28601103d32bf47bf",
+      "blob": "9ba69f24bdd9f750aaec1baaf3c80cdfa17934b2",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part014.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "015ff762eca26d77c3e4982f2a08a117bbbfee0a7f0fd4a1bde8704b648bf6c3",
+      "blob": "475571a8b735de4e64bfb84517edd4ccbb62e1e2",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part015.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "0228e851d7c53713f55a48300123aacdf1a656b571f436fe4205aa21cd8949c8",
+      "blob": "ee616d9e1190d90fbcc7c46a25ddc00812280317",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part016.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "11b43d45c80f5b5666815188afe668971d02ac5700e1ff2197be04d276d817cc",
+      "blob": "571830ef490ed4cb8d880039a06dc9b86c99463a",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part017.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "80bee73d8bd1bcc70cf23d524655a63516126ed261aba5ca52f75cfd158d44a8",
+      "blob": "075539d630c4dceb6b3fd6b26beb269469dee068",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part018.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "a8f72c01f5a6099c0a421532e91ff71de22af5d7761b8ddadb28bccf685ce557",
+      "blob": "feb247e968faae80820d73ecbe04b2aedc5a2d22",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part019.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "168880b640a1316e402d85c79c2c820843549c13cfd197bdd43022f0a1954bd2",
+      "blob": "28a94ca15930a18035519580b39f9c0ad4ebfd82",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part020.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "8b6e452972a1c6670503672a85765fdb4e201ed2fd0aaab22cb88766ad131d0d",
+      "blob": "8f9bd32ca53e3a69bcb444ce98d6cc09d9029d03",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part021.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "7f2a90e89cd4db025c5f98820dbc1776faa1f18c90c9d6f0618ee3915d6320a6",
+      "blob": "26a9d4cae6290c40029cd20af92a2f006cea6f76",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part022.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "1aff6234eebbe334a7f3168d8f3e576526759398cd3b6a19c638fc8aed9c6f4d",
+      "blob": "246c987b3f1ab7091512b096fdec1f8a3381e57e",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part023.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "bffd5e41ee9c5f25adb7eeec2e7254ee77ba855dac7a5be15c7ec797e48e3c14",
+      "blob": "aa677f0bb8b55ffb2825a82067ba9e98d3bf9b1d",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part024.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "b323d39be836c13ca4b68976aa89f49570489a0d1f0b6c9103cfbe461d5a9e29",
+      "blob": "9a197f9c87007dc2067cc7c9a0b8f009a0226be4",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-ci.tar.gz.part025.b64.txt",
+      "mode": "100644",
+      "bytes": 356865,
+      "sha256": "9555a0b7650282acd386ab55ddafed72da12603c6b9ea82e10d82ab9bfd8df00",
+      "blob": "c4c9fcd91d56b4360fa965890f9ab16deb38d8c1",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/original-files-manifest.json",
+      "mode": "100644",
+      "bytes": 12182,
+      "sha256": "d24e0269bf3edbc886840b770ed51bc20bcb5ef6d94777a24dffbc1f96d2339e",
+      "blob": "5c07d143cf28bc1e09203a752a3f622ab35545a6",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/project_completed_successes.py.source.txt",
+      "mode": "100644",
+      "bytes": 10913,
+      "sha256": "fd0e996772cc71d03ee8c5fd472dbcf04c99b1532f47fab2dd207e5b52501154",
+      "blob": "e41c7741b61b0a424f2bc761001c156bffb944c6",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/scope-summary.json",
+      "mode": "100644",
+      "bytes": 14725,
+      "sha256": "ffe3b5301aa1c9aa82bfd74e5ebd6adeefdd2a49be54f4001f7f8c275f13c0c3",
+      "blob": "c041b78035d9314f59a8c4e897162fec963db346",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/transport-manifest.json",
+      "mode": "100644",
+      "bytes": 14689,
+      "sha256": "c5c216742374606952a0956ed95a1c9ec4eb684e8b732dd51f680fbe139f85c0",
+      "blob": "8005be287b5e91b5dc10048de10bf25aaffc85b7",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/verify_archive.py.source.txt",
+      "mode": "100644",
+      "bytes": 3466,
+      "sha256": "ed9a0c4e2730a69827075a556517827be8555fa004c4124145397e26ff9f9f65",
+      "blob": "1287dcc4fb0883b9f203724ff97c9554cd52a978",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/windows-gitqueue-merge-127149583430.review.json",
+      "mode": "100644",
+      "bytes": 32918,
+      "sha256": "3391b252cb193cd5f23560033bb964cce4767bb1d9b6159eccaf9c97d971b884",
+      "blob": "6d3c3c3df36621093de010723c53eb7564cdba64",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-gitqueue-v6/windows-gitqueue-source-127149583164.review.json",
+      "mode": "100644",
+      "bytes": 32920,
+      "sha256": "40c116baeb2ee54c061f7dec2d3df866ef7a141848f31077519a74831c8135bc",
+      "blob": "8ac8043ed4c8db0c992379f5d6a917662927084c",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-musl-compile-failure-v6/freeze_musl_failure_v2.py.source.txt",
+      "mode": "100644",
+      "bytes": 7438,
+      "sha256": "37ece3c6963001918641ececd664fb547001ee77c1bc91049b83832ec916f2c5",
+      "blob": "6566e883779c303a456ad6f864ae57b8d484172c",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-musl-compile-failure-v6/github-readback-map.json",
+      "mode": "100644",
+      "bytes": 3538,
+      "sha256": "15f747308fd184a1c306ee3724950ff3357f3fd6a0f1bef5729f1892e8508c09",
+      "blob": "40af7e4f7192489be74b6b430a5a67a089986d09",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-musl-compile-failure-v6/original-ci.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "bytes": 98793,
+      "sha256": "644953203f4cbc5455874b7a8acea6f4063777544b1d5d56e031de28e998501e",
+      "blob": "fa4568ea02a8bdd3a9d8d255101fbe8b74439a0e",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-musl-compile-failure-v6/original-compiler-failure.log.txt",
+      "mode": "100644",
+      "bytes": 3088,
+      "sha256": "a8d9f05a2cf84211d47ac83366b1518ce99094594bd91ccad1b1ae5a428c1167",
+      "blob": "5f18df3bcfe7b31402e7cd985803dd28a27e5558",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-musl-compile-failure-v6/original-failure-review.json",
+      "mode": "100644",
+      "bytes": 19813,
+      "sha256": "61b1ef81ab2d591d6441c9918a43b775d9c7648c74c6cd9b6928ddd072a8c920",
+      "blob": "62bca0fbb5eff23fa91b1daed8e3fec2359e4294",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-musl-compile-failure-v6/original-files-manifest.json",
+      "mode": "100644",
+      "bytes": 6822,
+      "sha256": "53dda7a6c75f9801e503e48367cb919e08801570038ff1775610e49242244b4d",
+      "blob": "b10c22f1065bc635363aee82617b9b957028a29c",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-musl-compile-failure-v6/transport-manifest.json",
+      "mode": "100644",
+      "bytes": 1094,
+      "sha256": "dfc87ce25936a56f6b52bd8db54202579fb05fed1aea6e7e15e650dc4a304ac7",
+      "blob": "d34af0048a396599374ce1913239cee2e2fd8a01",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-musl-compile-failure-v6/verify_archive.py.source.txt",
+      "mode": "100644",
+      "bytes": 3466,
+      "sha256": "ed9a0c4e2730a69827075a556517827be8555fa004c4124145397e26ff9f9f65",
+      "blob": "1287dcc4fb0883b9f203724ff97c9554cd52a978",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-musl-failure-v6-registry-plan.json",
+      "mode": "100644",
+      "bytes": 6164,
+      "sha256": "73ff8fd822bc6e6a074191ae3d1ff972617d39ee68601935b9f411f4cbbdc3b6",
+      "blob": "4f7a7e61d2de9d118098ec03ee9b80036f0f681b",
+      "role": "Actual immutable source registry",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-queue-v8-snapshots0051-0059-v6/github-readback-map.json",
+      "mode": "100644",
+      "bytes": 4308,
+      "sha256": "0e301665e23a5b5751d4bbe6f373a386605060c692aa8b74c823ee046647680e",
+      "blob": "273b4a09fa574ecabe00ca77fc4667256ec75afb",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-queue-v8-snapshots0051-0059-v6/independent-verification.stdout.json",
+      "mode": "100644",
+      "bytes": 401,
+      "sha256": "901372db3b6fa357c732873358a22178c051b2d54061801da0f9609d9183e5f5",
+      "blob": "1a395d3e1b423ba43a0e89b9893b106e34b1bc4d",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-queue-v8-snapshots0051-0059-v6/original-ci.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "49c98ca51d853c5df4ef321b24334246c46e427fc5af0feca84b3f727455433f",
+      "blob": "d96d3264a5752bb8f19bff01d1dc62aedfc395cd",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-queue-v8-snapshots0051-0059-v6/original-ci.tar.gz.part001.b64.txt",
+      "mode": "100644",
+      "bytes": 446953,
+      "sha256": "df47a234816aac4b62ac11ee17155756d0320f7c36dab9b3310901c7a8b6c13d",
+      "blob": "60fe8a5d81eda49e80e30c35fc75aaa432678026",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-queue-v8-snapshots0051-0059-v6/original-files-manifest.json",
+      "mode": "100644",
+      "bytes": 5584,
+      "sha256": "74242c7583c431f4fb13a363dae825c7d53ad4d8eb1fc3cd1fcf728cc239ec83",
+      "blob": "05c25bc4787157a9aacefba984c350f9b3b24da5",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-queue-v8-snapshots0051-0059-v6/queue-independent-review.json",
+      "mode": "100644",
+      "bytes": 14197,
+      "sha256": "f5b1580ff8a7e12aa96196c8f02de91811950f61a73f5e34db044d75fc187da9",
+      "blob": "e51ecce1d088481488a86a586ec59bb2e8491bb0",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-queue-v8-snapshots0051-0059-v6/scope-summary.json",
+      "mode": "100644",
+      "bytes": 21107,
+      "sha256": "67077699d4fb095311e1bca81d43262d504588d579b6658410bcf00fba8acd8d",
+      "blob": "c99d9fcf74b3ff119a1c9a3eea36a3e5e0fff999",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-queue-v8-snapshots0051-0059-v6/transport-manifest.json",
+      "mode": "100644",
+      "bytes": 1639,
+      "sha256": "c4689154c643c04ae02b7d268c031741f6481361edf880d40bdc6eb08338c621",
+      "blob": "883b4b1b0a4aa6f2fb2c8def906c5682b0310651",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-queue-v8-snapshots0051-0059-v6/v8-windows-x86-original-link-review.json",
+      "mode": "100644",
+      "bytes": 9480,
+      "sha256": "d030e126be7b15a4b61fa65378fd13b477d866799ae6a66c6b33c3b029e66e9e",
+      "blob": "ae8ffad91e1f38d9e6feae75b606924c59ae2714",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-queue-v8-snapshots0051-0059-v6/verify_archive.py.source.txt",
+      "mode": "100644",
+      "bytes": 3466,
+      "sha256": "ed9a0c4e2730a69827075a556517827be8555fa004c4124145397e26ff9f9f65",
+      "blob": "1287dcc4fb0883b9f203724ff97c9554cd52a978",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-queue-v8-v6-registry-plan.json",
+      "mode": "100644",
+      "bytes": 8811,
+      "sha256": "ab2094456683d268f888c7efa4d522a34a47b7f19aa3841f4c49bd0230ef83d9",
+      "blob": "97fd6b5731bdc5f12ca399690baf6a179d3682c5",
+      "role": "Root-read immutable source registry",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6-registry-plan.json",
+      "mode": "100644",
+      "bytes": 27905,
+      "sha256": "1bb052e616c4ea315ff7fe20ca2abc483931a93c349ec97e69028f7be7a39771",
+      "blob": "4830effd23de5fa76ab604a0273cd59ce6986893",
+      "role": "Root-read immutable source registry",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/github-readback-map.json",
+      "mode": "100644",
+      "bytes": 16229,
+      "sha256": "8c064624faf6763fc6409c9ce86fa9b5a851317a3cd84506189d5192e98872af",
+      "blob": "0194dd1f0ea9cec9418935cbe80cce6defe05a5c",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "7dd52e406b67dd35dbe7a73a471c9ac9dacf7eac6cf8316206b996cda5e4b87a",
+      "blob": "930b58d54e2c6b519c94a4d5c39fda0ba0dc90bc",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part001.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "29b298fd8c66f02254a951bdf93a84541cbd68ab0a9cf215767bca958f64fd7c",
+      "blob": "11557e1ec84a20fc0227fdd4c562235416676936",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part002.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "27397b6f309adbf36f0017ac8e4f6b2b4f7f2c26eb2d7a5cd7e9f708c5673081",
+      "blob": "a5d884c95a58d5b6fbe7696c7a507e67eca30e7f",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part003.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "fba9686a6b8e3962309bc2cdf45b87764c34722c9ff073dad12656a52a492b7d",
+      "blob": "4165bc639539f0abe196ff6ff9ef0cb230cbd391",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part004.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "662cc97d7119693b34c50e37768d7853816932c00d2c32fd81fe7849f3c5fd51",
+      "blob": "553858aca8777d59ea4bce46d8081776838a4464",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part005.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "16e593670c6fd2c4aea505807e56830d2e65ebbb76588f58b9af62b1c866fc73",
+      "blob": "08feea671b14ad77b470bc626e412f9aa989b45a",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part006.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "a5cf70c6e6e44787778d62f6371776b72fcf2bb9973caea6e8988bb0eff22908",
+      "blob": "db5f7f64ff1a39f0b704c804cd952fd301cca2b2",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part007.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "8a790c26420286e13e5f695127636081ef949befb69d566346942a4869cf7c8b",
+      "blob": "c1607f3be8d859aa6cdf7fc72070c9a1383b5f6e",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part008.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "8b7ba4a2c46a25e8044c46c59bcf35f3c7b7a830dd23a97e085131e2bd3f322f",
+      "blob": "4b95296cc844e362f888913b9b8b1f98a5e3c331",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part009.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "b74ea1e833b65d53d1280acf76e17c4776e5a0700de7c7a993925e43326e4ca3",
+      "blob": "ebacc3b09cc5aaa9d242e4808e38e9425bf199b3",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part010.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "c7e491d5898cee39d124a55e442297f27c014eb7b5c3fff76f02d1498184774c",
+      "blob": "56ac0fb70317b24dc0924d81430bed67c3d9ebfb",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part011.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "7db43ecef0c4d76d6971babe0bf6ddcad848b02e1915b40d8d50449b1dfba51e",
+      "blob": "e79abbed57fa34a89cb85c32a0753509544c776a",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part012.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "ba42530ecd24200755979a3ca16839c6d2c5fa204bb13205c13dd201acb3247f",
+      "blob": "0244e74b5dc1ddcdf801a80d1090fbd7e8ff4029",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part013.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "f40bbd858e41f9bafb5df0fc76371873cd9dc8108c3d312cf026b7039317d792",
+      "blob": "836be043594ba3af706eb13f9fb8728f045f1191",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part014.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "b3acd95a4581cb83f34a4d907f38ec9aca7955a53894db556f146f67f52dbe9c",
+      "blob": "7b4e0e388c2d2d2c567647603d379975d022f3c6",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part015.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "b5d768b9d52b409865a5f53b5eb3a64d3688a821b88616ae9d8e54c0e5eaa700",
+      "blob": "29c0f29acf13cf4a629c9652c9caf8cc41f27c33",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part016.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "d5ec8950e4bc9899c8d317eaadfa997089d523c8e829cf95329c533ee569e985",
+      "blob": "0f038ada2fb62b031062f83957df2f8a142b59af",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part017.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "d7fecd2cc2cf1d0b03e64315b7b21716eeef079e3c7578553c87e44e8c27fb9d",
+      "blob": "0111fe1577a95a23bab610c0c5743a8e0f4048ed",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-ci.tar.gz.part018.b64.txt",
+      "mode": "100644",
+      "bytes": 474333,
+      "sha256": "7eb56663aebb7426c6c46be59307cb609e1207ea64c2aefb6376b532335c8ace",
+      "blob": "4ea77789934568abda32c3293e5c41b553f764df",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/original-files-manifest.json",
+      "mode": "100644",
+      "bytes": 20234,
+      "sha256": "18bfc3e31aaca1d6910878673a4ef089005de6331627ea9d645b1dd7812be156",
+      "blob": "0e159dd5a3821bd2698be14389111d3098ad056c",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/scope-summary.json",
+      "mode": "100644",
+      "bytes": 5228,
+      "sha256": "4588d2cbdee076284a87efd779466c3107b071e4c1c72bd970322db7e93bf416",
+      "blob": "69b7e23b26fc6b4465c592a7fb4ea11c7c9440fb",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/transport-manifest.json",
+      "mode": "100644",
+      "bytes": 10881,
+      "sha256": "22ce3dd97aa4ddce412470ba9b8d0ae6c9fc1424873e61beb62c7ca0fd519981",
+      "blob": "bc0d0b87b801c025889552011ce3bff639b69f97",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/ui-browser-merge-127149583165.review.json",
+      "mode": "100644",
+      "bytes": 241684,
+      "sha256": "94e4681a5533a032d02dbdd278e8b82469d5abe36bd105846247863d835e9e06",
+      "blob": "3e9257e99f39eb410a20a3ad64980d06667967a5",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/ui-browser-source-127149583647.review.json",
+      "mode": "100644",
+      "bytes": 240972,
+      "sha256": "e1dfcaeb904f7c85987cc54839cc9c7a0a1a27b5ef817211c9e65adf50227788",
+      "blob": "6f53130bae80a77e803d68c7c2b55cad64220136",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/ui-native-merge-127149583438.review.json",
+      "mode": "100644",
+      "bytes": 39158,
+      "sha256": "cb9e8c3320b505b3fd77a76ec20b9a824c2df9bf1e181fa80afe4a68962957e2",
+      "blob": "665bc61f50a7d45d7ebb19d5d4d2dbe8964db840",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/ui-native-source-127149583527.review.json",
+      "mode": "100644",
+      "bytes": 38608,
+      "sha256": "7377cd76d6d11945af970b51c4c4ae5561241a3b4e1c5a4ac7bd595c17a92fb6",
+      "blob": "9d886c4a8a9c6ed969cb722f13b5fa042234ed96",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/verify_archive.py.source.txt",
+      "mode": "100644",
+      "bytes": 3466,
+      "sha256": "ed9a0c4e2730a69827075a556517827be8555fa004c4124145397e26ff9f9f65",
+      "blob": "1287dcc4fb0883b9f203724ff97c9554cd52a978",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/windows-exec-recovery-merge-127149584445.review.json",
+      "mode": "100644",
+      "bytes": 137843,
+      "sha256": "61f95da0dfebfb1412109d56cf09bbaaf5658ae9536ed941871b76ca8402ee38",
+      "blob": "9a9603f1783d78c56d7b64c11ddb2f411ca821c9",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-recovery-ui-v6/windows-exec-recovery-source-127149584468.review.json",
+      "mode": "100644",
+      "bytes": 137858,
+      "sha256": "62a9317072171248b2ed60c2b731838ab5f8ab96ba59b6f36d2d899d05b45945",
+      "blob": "d6755fb11956367642adaf1215770f12f2f16b41",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/freeze_completed_batch.py.source.txt",
+      "mode": "100644",
+      "bytes": 7084,
+      "sha256": "b8d4c0161edf8d98672a900961a8fecc4fe50510a939cd40d89e5e850bf8914f",
+      "blob": "46ae12abc636f8ba09c79fb26e2d3d0e7f7f1413",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/github-readback-map.json",
+      "mode": "100644",
+      "bytes": 10637,
+      "sha256": "8e2a1c46bc6c9d2c92dd1eba0b7556c74768f0d0801f4984f52609e9eeda1690",
+      "blob": "e5954411aca407af42630ffc0b0f74324dad87d7",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/memory-linux-127149582083.review.json",
+      "mode": "100644",
+      "bytes": 10106,
+      "sha256": "13c675a2f86dca58dec2bb3fd0f30ec4fd1d8ad45d9885c61791b4af5cd87fe7",
+      "blob": "63b81924c4d1894831950c1d6890204b41b4b31f",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/original-ci.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "4d51f3289c81ae780bc1af2d63fa0e242f65388fac6f88a75412c142db87f558",
+      "blob": "31a721515cdbf1cd40bb5a3e207334d1b49aecc1",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/original-ci.tar.gz.part001.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "1cb8eb9a5dd0dc505a17595d1d412ea985af53afbcacd68a1c6b7e1676753d7f",
+      "blob": "9c1f756f8d832200577e4ec083dfaffd2e9f9a0e",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/original-ci.tar.gz.part002.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "3050cee611a2d675ee6e4f26ea027261754313f35f4c958fb8dc99b91f2458ea",
+      "blob": "0a7ec504b7f1f35ed5e11e6cb8d90d3fda61e7ab",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/original-ci.tar.gz.part003.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "b489dfc34e732b64db7b2e276153f387a65dc4f02dd8a9f428c2cb3d22535c04",
+      "blob": "6272533f1e01df5caa2fcb56a2520073cb02c5bc",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/original-ci.tar.gz.part004.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "57acb8d75f0d5da4e5c056a9319b4864684330a50296e13469ba8f82b122af9a",
+      "blob": "e577e5940a3694d4bfdfb8afd25d8dfd745aa2a0",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/original-ci.tar.gz.part005.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "01c1f6d89460698feb4af2505d1b7b4052a7560362e0869de7f46d9e5fbaebf5",
+      "blob": "904fc1d8dae8f3b8ce8df6cd0122e2f8e52581e6",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/original-ci.tar.gz.part006.b64.txt",
+      "mode": "100644",
+      "bytes": 106117,
+      "sha256": "1de404b3f3d4b56dda735f40bd83e6d34c0f430060a737bafc5aeb2b6e286108",
+      "blob": "c86d35d8f085477641b7ad568aa764d8f5c77266",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/original-files-manifest.json",
+      "mode": "100644",
+      "bytes": 21553,
+      "sha256": "1d517396391ca6a1c49739acaa2bb45bbed23683f1ff882b9f0147d2e0d4b5d6",
+      "blob": "d03c420ed642e1a8103c21593591939bba7fc892",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/project_completed_successes.py.source.txt",
+      "mode": "100644",
+      "bytes": 10913,
+      "sha256": "fd0e996772cc71d03ee8c5fd472dbcf04c99b1532f47fab2dd207e5b52501154",
+      "blob": "e41c7741b61b0a424f2bc761001c156bffb944c6",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/scope-summary.json",
+      "mode": "100644",
+      "bytes": 3848,
+      "sha256": "bfbf0c65e99f9b50fcaaab99e1de6c84f1a1144953294fbb13b581be75465eba",
+      "blob": "72460901678dba37254502579e6de02eaf363882",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/supervisor-linux-127149583259.review.json",
+      "mode": "100644",
+      "bytes": 17706,
+      "sha256": "cd1eb0be3f3686082ca19e8b717dc64081eca4c244ad96f26eea63f37658017a",
+      "blob": "a1a13b6130cdcb7946fb3145fa18a30e1be41934",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/transport-manifest.json",
+      "mode": "100644",
+      "bytes": 4354,
+      "sha256": "755772b294cef2b5c184c2c2d569f7053a0e0732661797748931510d8d2d929c",
+      "blob": "299e8e9acbdf6a37c7aa68719751dbf05a6209a5",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/v8-intel-release-127251874956.review.json",
+      "mode": "100644",
+      "bytes": 9285,
+      "sha256": "cc6e4c2c8020c2807079c9f668a50c9e93753a6b47f77432d4ec0ae8785b45f2",
+      "blob": "5d6825077eeb48d96ae2359bdf4f32e4dcd3e4f6",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/v8-intel-sandbox-127251875130.review.json",
+      "mode": "100644",
+      "bytes": 9289,
+      "sha256": "59df242dbc4f2a206195ccf3e18cae385bb51438891032d8ebd297f120225293",
+      "blob": "2043097a638aaa8ec42b5e5b6c99426efe62dd49",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/verify_archive.py.source.txt",
+      "mode": "100644",
+      "bytes": 3466,
+      "sha256": "ed9a0c4e2730a69827075a556517827be8555fa004c4124145397e26ff9f9f65",
+      "blob": "1287dcc4fb0883b9f203724ff97c9554cd52a978",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/windows-memory-127149581896.review.json",
+      "mode": "100644",
+      "bytes": 10112,
+      "sha256": "5459f9e843fdf87da8904fd0f75ec8248839159991fad7a55b8547748dfb1eb4",
+      "blob": "281f5a78d1a11330773eb5f2a7dd27309e1253ef",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/windows-private-127149582685.review.json",
+      "mode": "100644",
+      "bytes": 32146,
+      "sha256": "9643a69fe6597858e8060828248a5c9f784171b48afe84bfb62ce21ec66a2c2a",
+      "blob": "360635b5b8a48e11be5ea53e4938c7a6d40ab05b",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-small-successes-v6/windows-supervisor-127149582849.review.json",
+      "mode": "100644",
+      "bytes": 17750,
+      "sha256": "5159d72a35658ca296e4900e3b307cc2c5f88e0ecaabc9c235a4732fb363d816",
+      "blob": "9667d02e8aa018e6e80c0f98387d23b0c812811c",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-snapshots0041-0046-v6/freeze_completed_batch.py.source.txt",
+      "mode": "100644",
+      "bytes": 7084,
+      "sha256": "b8d4c0161edf8d98672a900961a8fecc4fe50510a939cd40d89e5e850bf8914f",
+      "blob": "46ae12abc636f8ba09c79fb26e2d3d0e7f7f1413",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-snapshots0041-0046-v6/github-readback-map.json",
+      "mode": "100644",
+      "bytes": 3243,
+      "sha256": "e89b5467e5d2896f2a9ce2e8d45b7613f16492529a70106984626420bcf44be6",
+      "blob": "02454896e166bb067a192cb43f9c698e1148a653",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-snapshots0041-0046-v6/original-ci.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "bytes": 466013,
+      "sha256": "d3c091dda2066576b4797a3377bd6c16526a467c07cc9e9dfb124c783d9e2576",
+      "blob": "9fecf79661508a243a5086cec9f224f34bf29b87",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-snapshots0041-0046-v6/original-files-manifest.json",
+      "mode": "100644",
+      "bytes": 1900,
+      "sha256": "1d5c663549556e26cddae3a0a6392e370dbc67e2eba872ee46de7b518ecc4b54",
+      "blob": "c78628eb5f330918c088d40e8a7370c943509fa3",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-snapshots0041-0046-v6/snapshot-summary.compact.json",
+      "mode": "100644",
+      "bytes": 224619,
+      "sha256": "555d426f0290e49ef0b207a6bd6fe3c6098ad3c3ac618bc7c167147da98406f0",
+      "blob": "7067b6c82356cb8af8f4eb9fd356f1f735f9d8cd",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-snapshots0041-0046-v6/transport-manifest.json",
+      "mode": "100644",
+      "bytes": 1097,
+      "sha256": "29b3b5b3e4d6fa8d8c4442e9973c4c844f4f7adc033e1921dd9b3ff77e4ea296",
+      "blob": "8ba45a02e4710745583a236fca2da0573100c6e3",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-snapshots0041-0046-v6/verify_archive.py.source.txt",
+      "mode": "100644",
+      "bytes": 3466,
+      "sha256": "ed9a0c4e2730a69827075a556517827be8555fa004c4124145397e26ff9f9f65",
+      "blob": "1287dcc4fb0883b9f203724ff97c9554cd52a978",
+      "role": "Complete original CI evidence with bounded per-job qualification",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-snapshots0047-0050-v6/github-readback-map.json",
+      "mode": "100644",
+      "bytes": 3050,
+      "sha256": "b8d9c4eaa14633f718d8e16bb15d9d6922d53e3d53ecec8357e91cc6f19da52a",
+      "blob": "2417d0c7c6371307431ac1b8fb5ebfe96df9a3bd",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-snapshots0047-0050-v6/original-ci.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "bytes": 329341,
+      "sha256": "5402b5384743e90b1bdd82ad9847554390dd02043f1f1f063b66c260611d4345",
+      "blob": "39570a4f57a0c162841f4c36661a2d6d78dd6515",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-snapshots0047-0050-v6/original-files-manifest.json",
+      "mode": "100644",
+      "bytes": 1418,
+      "sha256": "0f1697166e64326d595ec330a8b703c5b0d35142cd98f38d44cc0cf8bef40edf",
+      "blob": "6f9d1f8afdcefedd481b5f1254de882f121eb94e",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-snapshots0047-0050-v6/scope-summary.json",
+      "mode": "100644",
+      "bytes": 125783,
+      "sha256": "4aef15d9e4ada49800499f439dfb48fb476d2a246871953c1dc8317b65d837ad",
+      "blob": "06a87c3c78b0f1bff9f715199f2caef44b1519fb",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-snapshots0047-0050-v6/transport-manifest.json",
+      "mode": "100644",
+      "bytes": 1097,
+      "sha256": "9ee79fec37060edbf9af05a11d78a51fee58e21b847bd11b0caf07d5d7422e6b",
+      "blob": "a1b8148738a5f63d28581933b72f97252d892818",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-snapshots0047-0050-v6/verify_archive.py.source.txt",
+      "mode": "100644",
+      "bytes": 3466,
+      "sha256": "ed9a0c4e2730a69827075a556517827be8555fa004c4124145397e26ff9f9f65",
+      "blob": "1287dcc4fb0883b9f203724ff97c9554cd52a978",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-success-groups-v6-registry-plan.json",
+      "mode": "100644",
+      "bytes": 46681,
+      "sha256": "ad8255a35ef0a149a7b5e0ffe97503f3ac80e6f84e3fc97cf8652657ea5e4879",
+      "blob": "a8352968733a6448fda36f3d3d59d3120791bb7d",
+      "role": "Actual immutable source registry",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-objective-v6-registry-plan.json",
+      "mode": "100644",
+      "bytes": 16459,
+      "sha256": "f8b37e879353890e35c52d7ed88cf4fb0867e3dafad9e65b8d680a3ddcb3d47f",
+      "blob": "4c4b91e37501a7bb1f32a323d76f04d51d772fbf",
+      "role": "Root-read immutable source registry",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/github-readback-map.json",
+      "mode": "100644",
+      "bytes": 9548,
+      "sha256": "da9597a0e9f2317ea29922bbaaf227fe7dbe32d5528b87fadf625caeb8f14137",
+      "blob": "c138c3895a2873e60c211caac4c0edd3dea4fd91",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/gnu-exec-recovery-merge-127149584782.review.json",
+      "mode": "100644",
+      "bytes": 185621,
+      "sha256": "ee39ee47ec5907cb29651c2ef82d2ee57d77737adab3447553468b8a80f65981",
+      "blob": "3fd5892581f7fea98fba7b6893d3f5e8441bfbf1",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/gnu-exec-recovery-source-127149584446.review.json",
+      "mode": "100644",
+      "bytes": 185635,
+      "sha256": "ecc7fd880e8456f348e3966dc9a58a13f16d527e16a222a87ffd378b8b92f554",
+      "blob": "d7567d4c12629b7febcdeca3f307a4498788feaf",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/independent-verification.stdout.json",
+      "mode": "100644",
+      "bytes": 402,
+      "sha256": "738eed237953ad58c18e6f6c1aac7b2d98fc16762d4a79d0dff3e6da35f28cc6",
+      "blob": "63da2fc05327b6b5093857558b474b6db15574d5",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/mac-exec-recovery-merge-127149584381.review.json",
+      "mode": "100644",
+      "bytes": 187632,
+      "sha256": "fce779521bcf17ff73be04d4f2ad281ead789f3ac4c1480ad321659a525557f2",
+      "blob": "c14c92b93e23fa271f2c32b7155241fa66c6905f",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/mac-exec-recovery-source-127149584244.review.json",
+      "mode": "100644",
+      "bytes": 187641,
+      "sha256": "78524357b87ae316e5f8de27711c6f76ac909efddaa5ef832a626466dddff305",
+      "blob": "ed116baffc123c34592713aaecc4cd281884659e",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/objective-source-127149582491.review.json",
+      "mode": "100644",
+      "bytes": 325786,
+      "sha256": "45b9ea587c5b16dd97007358dc95d278d1fdb3d95786970a7aae4819f8cba54a",
+      "blob": "61569ef31ec07e139a55ba5fc2e447feff37ffbd",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/original-ci.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "632cfd3997b62fc4a1b3b2d34d2b8b2ddcf5bd0addd851bef0d9eff569c6bfdc",
+      "blob": "4c1b3aa738bec01162f3fd2ff46fb33b844b41a1",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/original-ci.tar.gz.part001.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "a7783e955238a988234b6ef7785cae6b367e874d283aa0105a305b32c20c623e",
+      "blob": "f42e78500f33f1f85dc658a0c7d43574bf6ffe43",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/original-ci.tar.gz.part002.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "07b5f821e71e6455eb879d66fd82ad61b312ebe5b93625a2551a391e9b19c764",
+      "blob": "0d48722cb0fd01892464bdef046c2bfdf1580283",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/original-ci.tar.gz.part003.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "f40f031e9313f7537decbea20837137146d1ee61c96e2218229a747f976db76d",
+      "blob": "b207022474f20cfabc27b50cf62392f795109dda",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/original-ci.tar.gz.part004.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "10233fce126e277cc70745f21009791033ba40cab80c6e7b2877ebfdcdc98e1a",
+      "blob": "95f64e3d526351166a3c29a929f5644f55e11b8a",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/original-ci.tar.gz.part005.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "c0125b8ae3fd594fd052a7ff31540dfb2bec4a305c91284246dcdb23e5f579c3",
+      "blob": "6b4fdc7430621b0d9a2e10f588bd20b9dc42ee7a",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/original-ci.tar.gz.part006.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "c1120bd6f0703ddfaeb97b4bbd857816c68eb0841efeb6a5d87dcba2b5143329",
+      "blob": "014a08dd48ecc6ff04557d3ee3b92e2541d37b10",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/original-ci.tar.gz.part007.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "8da69f5233ea71ba3846a951a94fa30f69c3f43b8903a956dabe2d46c95256a1",
+      "blob": "842e058a7ca7cbd11b61eb076581ce1c644c3772",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/original-ci.tar.gz.part008.b64.txt",
+      "mode": "100644",
+      "bytes": 368861,
+      "sha256": "9642934387775c067f9afda29b4015982cb9884397adc3d87ada5202a9bac8d2",
+      "blob": "7a832ceaa66dfc26ad4d7c8a5183373ef73f9b5a",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/original-files-manifest.json",
+      "mode": "100644",
+      "bytes": 15022,
+      "sha256": "3cce33d6aae2fb90cd49e5383157ba8cef5dcfb85390b85c4a60d9dce32b5d5d",
+      "blob": "2b2624349b08b7ff3b97e2d0c1b63c94a87aaef2",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/scope-summary.json",
+      "mode": "100644",
+      "bytes": 4925,
+      "sha256": "04a5e3093ed0b5f7d1c1a2cdf3a2a4c5863d1bb99bca1458dbba7254b846d8d2",
+      "blob": "bde113da0034f5e9043506261d00bae2caf0049f",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/transport-manifest.json",
+      "mode": "100644",
+      "bytes": 5441,
+      "sha256": "f799294052e8546e7addba6aabbe3333a6ca58295aa366e1d1cd92ded480c85e",
+      "blob": "96cbdd2a78922613389005458c0d005410a7267f",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/ci-5b633-unix-recovery-objective-v6/verify_archive.py.source.txt",
+      "mode": "100644",
+      "bytes": 3466,
+      "sha256": "ed9a0c4e2730a69827075a556517827be8555fa004c4124145397e26ff9f9f65",
+      "blob": "1287dcc4fb0883b9f203724ff97c9554cd52a978",
+      "role": "Complete original CI evidence with exact execution and selection boundaries",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/complete_registration_v6.py.source.txt",
+      "mode": "100644",
+      "bytes": 7926,
+      "sha256": "5c9e771ce4b1cce3242a96c2c9309a538ce34f06d9dd9e58c5591d14da7baf66",
+      "blob": "560576e8254cabed50cb54a38b4cc9a31890b295",
+      "role": "Evidence-only registration assembly; no product ref mutation",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/correct_v6_arm_original.py.source.txt",
+      "mode": "100644",
+      "bytes": 6832,
+      "sha256": "ca5b82cd1f28093fe588ca664796b45dfebf565bcb5d3add4868980f16f03d34",
+      "blob": "9907b3eda9c6b6a32f638cf84fd19cde0125c6ee",
+      "role": "Exact-byte provenance correction, no change in execution facts",
+      "verification": "Root actual Git create and full byte-equal GET; corrected exact API bytes and retained historical normalized export"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/current-outcomes-cut0063-v6/history-v1-normalized-arm-export/original-files-manifest.json",
+      "mode": "100644",
+      "bytes": 15452,
+      "sha256": "4ca53d529045c95e485d7d23a1aaa56d95865c50a3bda1a9922bc8f0bc845e56",
+      "blob": "8c75cc6e1333fa7976ffd112f5fabe2b24435746",
+      "role": "Historical first cut: ARM job.log is the exact retained LF export, not the connector-original line endings; correction record governs interpretation",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/current-outcomes-cut0063-v6/history-v1-normalized-arm-export/original-outcomes.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "bytes": 450941,
+      "sha256": "ed2dcdb4cc47c00d00c6e82ecad3b7b420adcf167c6b652baea791a77f883fd9",
+      "blob": "89ccbda0625beeae1216b1d62b7f9b29afc32c61",
+      "role": "Historical first cut: ARM job.log is the exact retained LF export, not the connector-original line endings; correction record governs interpretation",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/current-outcomes-cut0063-v6/history-v1-normalized-arm-export/scope-summary.json",
+      "mode": "100644",
+      "bytes": 8099,
+      "sha256": "4f4748c9b1525ae7e087f746c853d50b257cd268af4f85eb915e1a5720c82bea",
+      "blob": "acaa7d5d12935cdecf9835bebd37fff25ca32b77",
+      "role": "Historical first cut: ARM job.log is the exact retained LF export, not the connector-original line endings; correction record governs interpretation",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/current-outcomes-cut0063-v6/history-v1-normalized-arm-export/transport-manifest.json",
+      "mode": "100644",
+      "bytes": 9689,
+      "sha256": "a12c43ac32bbc8bc51466f72258b52ad3bc55655dc853be91154e6b9efeac430",
+      "blob": "a300fb742f26991bc9f7f923831f93df98f14e6d",
+      "role": "Historical first cut: ARM job.log is the exact retained LF export, not the connector-original line endings; correction record governs interpretation",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/current-outcomes-cut0063-v6/history-v1-normalized-arm-export/verify_archive.py.source.txt",
+      "mode": "100644",
+      "bytes": 3466,
+      "sha256": "ed9a0c4e2730a69827075a556517827be8555fa004c4124145397e26ff9f9f65",
+      "blob": "1287dcc4fb0883b9f203724ff97c9554cd52a978",
+      "role": "Historical first cut: ARM job.log is the exact retained LF export, not the connector-original line endings; correction record governs interpretation",
+      "verification": "Reuse actual byte-equal Git object; exact local SHA already root-checked"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/current-outcomes-cut0063-v6/original-files-manifest.json",
+      "mode": "100644",
+      "bytes": 17439,
+      "sha256": "0731ef88bcae82f52ead0e36f8bae131f147a8d56251e8cec3e075427236e172",
+      "blob": "9752c5476056bef579de32bf389020dd1044d159",
+      "role": "Corrected full24-file observed archive, exact API-decoded ARM log independently verified; ROG projection remains explicitly derived",
+      "verification": "Root actual Git create and full byte-equal GET; corrected exact API bytes and retained historical normalized export"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/current-outcomes-cut0063-v6/original-outcomes.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "bytes": 480001,
+      "sha256": "cef2298d67d63109909b399d85d7a17a15ad30e4660b98420d78ddccca3e45eb",
+      "blob": "72cf0a2855bb3b21f1233e249521eb1cb2bb0e57",
+      "role": "Corrected full24-file observed archive, exact API-decoded ARM log independently verified; ROG projection remains explicitly derived",
+      "verification": "Root actual Git create and full byte-equal GET; corrected exact API bytes and retained historical normalized export"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/current-outcomes-cut0063-v6/original-outcomes.tar.gz.part001.b64.txt",
+      "mode": "100644",
+      "bytes": 7409,
+      "sha256": "eae37641f672df915e1b2588edc6ecf464af476619d4ad5572da521a54cd4a21",
+      "blob": "462ddda0ff9797cf5fff9d5758f3103741e81b76",
+      "role": "Additional complete corrected archive part",
+      "verification": "Root actual Git create and full byte-equal GET; corrected exact API bytes and retained historical normalized export"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/current-outcomes-cut0063-v6/scope-summary.json",
+      "mode": "100644",
+      "bytes": 9368,
+      "sha256": "b94d1e9273f3281c3899554fcc7c702f4ce60a306d337ee491256cea5d0a4848",
+      "blob": "7366faf7c852d8ff828d1ab681aaa430bc3af8ff",
+      "role": "Corrected full24-file observed archive, exact API-decoded ARM log independently verified; ROG projection remains explicitly derived",
+      "verification": "Root actual Git create and full byte-equal GET; corrected exact API bytes and retained historical normalized export"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/current-outcomes-cut0063-v6/transport-manifest.json",
+      "mode": "100644",
+      "bytes": 11558,
+      "sha256": "174186afc6aae99e5f1426175f02717df3bc00746f4d9f271321f4af26192cb4",
+      "blob": "4ea2f2a9bb53d33640d42a9861386c8cdc8c2f1e",
+      "role": "Corrected full24-file observed archive, exact API-decoded ARM log independently verified; ROG projection remains explicitly derived",
+      "verification": "Root actual Git create and full byte-equal GET; corrected exact API bytes and retained historical normalized export"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/current-outcomes-cut0063-v6/verify_archive.py.source.txt",
+      "mode": "100644",
+      "bytes": 3466,
+      "sha256": "ed9a0c4e2730a69827075a556517827be8555fa004c4124145397e26ff9f9f65",
+      "blob": "1287dcc4fb0883b9f203724ff97c9554cd52a978",
+      "role": "Corrected full24-file observed archive, exact API-decoded ARM log independently verified; ROG projection remains explicitly derived",
+      "verification": "Reuse actual full byte-equal Git object with exact root local hash"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/extend_registration_v6.py.source.txt",
+      "mode": "100644",
+      "bytes": 8622,
+      "sha256": "e68e98b56dacd4b4d7332e7e3de4568ea01850fd3dccf64bf6e68e50eced0e72",
+      "blob": "d10b9c5323ce99e943ff0bfde710e8b8cd82e274",
+      "role": "Additive evidence-only registration builder",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/freeze_v6_current_outcomes.py.source.txt",
+      "mode": "100644",
+      "bytes": 5950,
+      "sha256": "a5bead116e462b5b34d551a8fad18d645fe20610783c1028a68e015fe6344fb1",
+      "blob": "8968eeef6efbddefe3f4d0d4e12cfdd322dbac98",
+      "role": "Reproduce fixed observation archive without project/native execution",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/freeze_v6_inputs.py.source.txt",
+      "mode": "100644",
+      "bytes": 4469,
+      "sha256": "c372da84764218c29d833cd1fc1a82dffb4c4f052cf3a2024c009ed152c3e0c0",
+      "blob": "52dfe325e6110a24da287f3b375dae20ffb3eef7",
+      "role": "Root-reviewed exact-source/observation record",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-increment-1338-v6/original-files-manifest.json",
+      "mode": "100644",
+      "bytes": 1371,
+      "sha256": "6dd14be1971a753a43cd03726a76e5ceec170963a7f8bfce52a038c57f975ea1",
+      "blob": "23715f09b694f949a6e36fd95fd226a9f2a71855",
+      "role": "Complete lossless originals; independently reconstructed before registration",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-increment-1338-v6/original-inputs.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "bytes": 243561,
+      "sha256": "ee02b7874c77829a03ee8de5545fef7ad1ca07e580f6d712f93613186409788e",
+      "blob": "95c2627abf9e3b95aa8309e5d5c38649b3f493b5",
+      "role": "Complete lossless originals; independently reconstructed before registration",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-increment-1338-v6/transport-manifest.json",
+      "mode": "100644",
+      "bytes": 1243,
+      "sha256": "cc0d9d873c995a0e8ecb1fbb304c4ba80de4d5123ec88956684f555b2af2da6f",
+      "blob": "825b4dbdaf84d78965805e0c28fb04860497af10",
+      "role": "Complete lossless originals; independently reconstructed before registration",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/pr-increment-1338-v6/verify_archive.py.source.txt",
+      "mode": "100644",
+      "bytes": 3466,
+      "sha256": "ed9a0c4e2730a69827075a556517827be8555fa004c4124145397e26ff9f9f65",
+      "blob": "1287dcc4fb0883b9f203724ff97c9554cd52a978",
+      "role": "Complete lossless originals; independently reconstructed before registration",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/verify_core_prerequisites_v6.py.source.txt",
+      "mode": "100644",
+      "bytes": 6844,
+      "sha256": "55833a461945cdfd8f0167513cb720cd983e3fbbf4a69eabad188011d14d5b7b",
+      "blob": "a6b6b8aff4f7bde5058d9915ba196c04f4763bef",
+      "role": "Reproduce existing receipt verification without native calls",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/generated-evidence/verify_v6_unix_objective_junit.py.source.txt",
+      "mode": "100644",
+      "bytes": 5441,
+      "sha256": "a045701e20939e973214f58019b5ce17dcdc2f7bcfc608c4f3f4af9e8fab3053",
+      "blob": "c13905830277c0eb15c462b8759456e69a070c9a",
+      "role": "Reproduce selected JUnit accounting from complete retained ZIPs",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md",
+      "mode": "100644",
+      "bytes": 4259,
+      "sha256": "34c24b7959d8b5c974190d00095605befd6ed69e74b1b4dbd13f0ca87de785f2",
+      "blob": "136ed98682865a76b7c693d3659f4c5648f7c0ae",
+      "role": "Current human report or machine ledger; original23 exit/status/closure_class unchanged",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/ai395-core-c0-c1-v1/manifest.json",
+      "mode": "100644",
+      "bytes": 4104,
+      "sha256": "c539e28a67a2e6510ec2ab76ee6d4e32759f1d3eccb7315c2315748c1ec0edc9",
+      "blob": "e7aa401e532d0c37e78c1bf75bd651016381b4ee",
+      "role": "Separate source/readiness/build-only/full-disabled scope; actual outcomes require their own receipts",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/ai395-core-c0-c1-v1/preparation-final-source-guard.json",
+      "mode": "100644",
+      "bytes": 2137,
+      "sha256": "afa8f019661e419b35fd9e82f30d67b2f52ec447916108775c7e29da8b431d07",
+      "blob": "1e04d8914a369dfa0b3e044d9ca83fd446f4b0e3",
+      "role": "Actual e78 final source/index/locks/tool guard",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/ai395-core-c0-c1-v1/preparation-terminal.json",
+      "mode": "100644",
+      "bytes": 27472,
+      "sha256": "cc5e7788d64efbf31fc2875b676419a4d4a56e3391fb714b32f600269f5dfb97",
+      "blob": "a1d37955c77eef8dded34b4d4ffe2519219eb359",
+      "role": "Actual C0 success and pre-C1 memory gate failure; zero compile/test",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/ai395-core-c0-c1-v1/prepare_root_guard.py.source.txt",
+      "mode": "100644",
+      "bytes": 6108,
+      "sha256": "ff45b10939764a3295aed5c0741686e55f04eeaa3be43418232061546f03fd17",
+      "blob": "b656c4c651ef475daa60de9987f3c3e6cd6f670b",
+      "role": "Concrete input checks and authorization preparation; no native launch",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/ai395-core-c0-c1-v1/process-start-DISABLED.json",
+      "mode": "100644",
+      "bytes": 26966,
+      "sha256": "9ac04f41ee28b41b34ee204ec9a2aa4b55b5f3a1e8dc3bd1464308901cec7c0e",
+      "blob": "8d91a968673172e5bfef3e3e2eef6646e0d9de7f",
+      "role": "Separate source/readiness/build-only/full-disabled scope; actual outcomes require their own receipts",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/ai395-core-c0-c1-v1/process-start-ENABLED.json",
+      "mode": "100644",
+      "bytes": 27203,
+      "sha256": "509cca06b3cb3c4ec2bd9bc1640e591bb882990d9022d0f49011228a2cf4ec0e",
+      "blob": "d8473e84b63a670a291ca71606a749e88a3e44d3",
+      "role": "Exact first-start arguments; not a terminal success claim",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/ai395-core-c0-c1-v1/request-DISABLED.json",
+      "mode": "100644",
+      "bytes": 4960,
+      "sha256": "8788c88ddba97e1febe06ee780089b1458c6d512e81420b17c635b9c70fd5bf6",
+      "blob": "377bf801ec7e422618c8aa52b75c40565c297f07",
+      "role": "Separate source/readiness/build-only/full-disabled scope; actual outcomes require their own receipts",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/ai395-core-c0-c1-v1/request-ENABLED.json",
+      "mode": "100644",
+      "bytes": 5178,
+      "sha256": "a10543e2fdc836a8983ea3449a3975d6272eecf0e20aa8446d8060e6772f4df1",
+      "blob": "0ff35093e284f2c074061f473f295ec49bbb5bf4",
+      "role": "Exact root-enabled request",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/ai395-core-c0-c1-v1/root-execution-guard.json",
+      "mode": "100644",
+      "bytes": 4775,
+      "sha256": "170613b263a174a70f4a73e499fbfd0522e1d6c48239eeaeee2501e567009b0b",
+      "blob": "2a1279906be31aebff28e68350d5fee1010524e6",
+      "role": "C0/C1 build-only execution scope; C2/full remains disabled",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/ai395-core-c0-c1-v1/run_prepare_v2.py.source.txt",
+      "mode": "100644",
+      "bytes": 20913,
+      "sha256": "ee8561b2a2a50a4914640032057e11417965e283cc0fcc954a0e360656075c12",
+      "blob": "3ecebfe6c74214f911bf5771506ab6b6ebbaf9d4",
+      "role": "Separate source/readiness/build-only/full-disabled scope; actual outcomes require their own receipts",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/ai395-core-full-DISABLED/agentd-qualification-after-full.json",
+      "mode": "100644",
+      "bytes": 3750,
+      "sha256": "ebb5280b451af7abe370cdd3d5e73bc55e49195216a033c80a1c60b3f00b1405",
+      "blob": "399aff6a880b60adc0b8f6439717ccf810ed8e2c",
+      "role": "Separate source/readiness/build-only/full-disabled scope; actual outcomes require their own receipts",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/ai395-core-full-DISABLED/plan.json",
+      "mode": "100644",
+      "bytes": 18995,
+      "sha256": "06107d56003e8d4847bc36b80a1d630c1f8dcfe2e297fcb7497cf0ac09f3d306",
+      "blob": "8e5fe203c941b9c848f4bc938c9efd1e667dfab3",
+      "role": "Separate source/readiness/build-only/full-disabled scope; actual outcomes require their own receipts",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/ai395-core-readiness-v1/readiness-actual-summary.json",
+      "mode": "100644",
+      "bytes": 3888,
+      "sha256": "aec23a93ee4391b0521246ec4e6b4ac9e3a7b7ecf13cc94bd822c851d8f55480",
+      "blob": "43a20f178d3c2a35e4d953b9a0bd79b1fcc9aca1",
+      "role": "Separate source/readiness/build-only/full-disabled scope; actual outcomes require their own receipts",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/ai395-core-readiness-v1/readiness.original.json",
+      "mode": "100644",
+      "bytes": 229791,
+      "sha256": "c61d68f27c06ab53c0b2befc36a3b6cc2b56184e8d77fa4ee77cece37761bfd3",
+      "blob": "54b205c850d87f4759404950b6370b7a7992a282",
+      "role": "Separate source/readiness/build-only/full-disabled scope; actual outcomes require their own receipts",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/actual-nonpass-projection.json",
+      "mode": "100644",
+      "bytes": 145424,
+      "sha256": "9931149a3239406315e2b51e05b3a8c04f48fd9f97c37cbeb9d4145508e71cfb",
+      "blob": "99dd6edb6401a82f9f7664c2a64e6aac5155d403",
+      "role": "Complete derived projection, not a substitute for all native raw files",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/core-same-process-parallel-status.json",
+      "mode": "100644",
+      "bytes": 1194,
+      "sha256": "64fa9f873d59c9bd7351830ee939215e49cd193f4054fc03b38aec4a3e6abfb7",
+      "blob": "5c51896afdbeaad2f22afd0b03bc1a82a13a6fce",
+      "role": "Actual parallel status and complete native raw identity",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/core-same-process-parallel.stderr",
+      "mode": "100644",
+      "bytes": 3197,
+      "sha256": "952bb0c28a972829fb86ab717a3bbd77b64a1334a7a4ea0deb2c0ca39408cb8d",
+      "blob": "57f6f5ab1056e5a157671dc72570b140af5c037f",
+      "role": "Complete original stderr, one actual nonpass plus intentional panic and early-return limits",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/git-bootstrap-root-guard.json",
+      "mode": "100644",
+      "bytes": 6154,
+      "sha256": "d0fa1df83c82a6b18b34e82dd702b06d5308830afa49908b2aeacf90b88e149f",
+      "blob": "e186a961c02ab3e511db1e1dffe7719f35b46baf",
+      "role": "Root guard for the actual fixed-Git bootstrap",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/mechanism-actual/manifest.json",
+      "mode": "100644",
+      "bytes": 3759,
+      "sha256": "dbe9ebb70e35da5287cafea3568d41545abb7456e22b3753713c527b153ef3ad",
+      "blob": "c383b5095412320661ff2f5b8b479e71dfaf93d4",
+      "role": "Original mechanism endpoint inventory",
+      "verification": "Root actual create/full byte-equal GET for the complete six-file mechanism group after preserved missing-object422."
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/mechanism-actual/mechanism-causal-review.json",
+      "mode": "100644",
+      "bytes": 2941,
+      "sha256": "d750fb8575a91498eba86dab801bcb83918cdecf8fb15304671e824cb62c3393",
+      "blob": "07f84f399ab6af2106a993aed4518affdc814745",
+      "role": "Actual controlled tracing mechanism; original Windows interleaving and product gates remain separate",
+      "verification": "Root actual create/full byte-equal GET for the complete six-file mechanism group after preserved missing-object422."
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/mechanism-actual/probe-isolated-positive.stderr",
+      "mode": "100644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "role": "Actual controlled tracing mechanism; original Windows interleaving and product gates remain separate",
+      "verification": "Root actual create/full byte-equal GET for the complete six-file mechanism group after preserved missing-object422."
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/mechanism-actual/probe-isolated-positive.stdout",
+      "mode": "100644",
+      "bytes": 656,
+      "sha256": "123c73c49bee9990d722eecbd099a61e255ad3ebf526e359b35384ede822c535",
+      "blob": "e46fea0699913542e0155b7ab1adf9c5eb4fe36b",
+      "role": "Actual controlled tracing mechanism; original Windows interleaving and product gates remain separate",
+      "verification": "Root actual create/full byte-equal GET for the complete six-file mechanism group after preserved missing-object422."
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/mechanism-actual/probe-shared-negative.stderr",
+      "mode": "100644",
+      "bytes": 182,
+      "sha256": "aa2bc80e4902d53e2706eac274ebcdad2525789f848e3fe48096d190c2e680a2",
+      "blob": "36ff0c27e3d431de891e0549f05203469cffad56",
+      "role": "Actual controlled tracing mechanism; original Windows interleaving and product gates remain separate",
+      "verification": "Root actual create/full byte-equal GET for the complete six-file mechanism group after preserved missing-object422."
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/mechanism-actual/probe-shared-negative.stdout",
+      "mode": "100644",
+      "bytes": 213,
+      "sha256": "c4dd3b28f95f799d7e144702c763ffc71154d9a8fd30b937ada8a1cbf1c6d767",
+      "blob": "55caeb20bfe3fa020d84157eaee33d60c17c371a",
+      "role": "Actual controlled tracing mechanism; original Windows interleaving and product gates remain separate",
+      "verification": "Root actual create/full byte-equal GET for the complete six-file mechanism group after preserved missing-object422."
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/nonpass-full-export-manifest.json",
+      "mode": "100644",
+      "bytes": 53278,
+      "sha256": "8a30fd1939e75a997ae3d8cb305673ef2ed6f233952855dd498937839aa84b29",
+      "blob": "4fa8c17b473bd78d1caf04c0c9f4ca4d57c68ea1",
+      "role": "Native29-original export identity; full70-part recovery pending at this checkpoint",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/original-owning-projects-status.json",
+      "mode": "100644",
+      "bytes": 1247,
+      "sha256": "d883fe7676b050bfcadded0b3a75db506ff9354058ac884382718dd2d971cdca",
+      "blob": "8faa4dea902b6c31d41ada7c46cd66b5f6b06692",
+      "role": "Actual owning status and complete native raw identity",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/request-originals/original-files-manifest.json",
+      "mode": "100644",
+      "bytes": 5385,
+      "sha256": "694a0d33ab0a4f4eaff9be1483c1d1d16b7552a81f0211b7a8a6c0faf47c609b",
+      "blob": "6812915b96e1628109c74c91f6c867d91809e04d",
+      "role": "Complete lossless originals; independently reconstructed before registration",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/request-originals/original-inputs.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "1be739dfec3034218612ffd687d55552d09c5d81869744b7d483928f758f36ed",
+      "blob": "1bb004e88677f196c879b869138f8688fda0ba43",
+      "role": "Complete lossless originals; independently reconstructed before registration",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/request-originals/original-inputs.tar.gz.part001.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "d0b087c304ac80d7d54d08f339b208a373e3c40433db3d43d85620ecb4792015",
+      "blob": "98c799875df58edc6c21cc2382009d4d06db453e",
+      "role": "Complete lossless originals; independently reconstructed before registration",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/request-originals/original-inputs.tar.gz.part002.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "e90b1e1870636472b36144793705604ecdd66fd3f0cd613421fbdf386fae2250",
+      "blob": "beaeaf88296ba287c6f4052868402e41476f9541",
+      "role": "Complete lossless originals; independently reconstructed before registration",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/request-originals/original-inputs.tar.gz.part003.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "88e1392026eebd17c7813ec63279c89cc19b98bb17ef4b78464baf44f4c223fe",
+      "blob": "c7c0b77de0416ed4681a534e073304f41dd00db1",
+      "role": "Complete lossless originals; independently reconstructed before registration",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/request-originals/original-inputs.tar.gz.part004.b64.txt",
+      "mode": "100644",
+      "bytes": 480601,
+      "sha256": "8a0847f7ea80f507540f119dbb2d30c0b5f38464c93ba36eacbab40f89fafd92",
+      "blob": "1d7fe023a4accae4af2ef216faada996d74fe092",
+      "role": "Complete lossless originals; independently reconstructed before registration",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/request-originals/original-inputs.tar.gz.part005.b64.txt",
+      "mode": "100644",
+      "bytes": 219933,
+      "sha256": "8a1f263defe02ffd44a87a6011af1c8dcca4f99168d3948c69cce6450d303570",
+      "blob": "bc5eb7412951723745ef395de205ee16cd6a8a9d",
+      "role": "Complete lossless originals; independently reconstructed before registration",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/request-originals/transport-manifest.json",
+      "mode": "100644",
+      "bytes": 4017,
+      "sha256": "524c03d72694bfe0ae8d42fa0b33346fe0495da5dd4a1135c951984d5271e88a",
+      "blob": "c19c085b64460e4ed31027f9c37fbf7010bef699",
+      "role": "Complete lossless originals; independently reconstructed before registration",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/request-originals/verify_archive.py.source.txt",
+      "mode": "100644",
+      "bytes": 3466,
+      "sha256": "ed9a0c4e2730a69827075a556517827be8555fa004c4124145397e26ff9f9f65",
+      "blob": "1287dcc4fb0883b9f203724ff97c9554cd52a978",
+      "role": "Complete lossless originals; independently reconstructed before registration",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/root-execution-guard.json",
+      "mode": "100644",
+      "bytes": 8917,
+      "sha256": "c228cdca1cd4af14c800e0d1b061ea699cbe923a96c859181d1eed1f3d851e7d",
+      "blob": "d92b0ab0445382b266129c7f959e15497e0ac19e",
+      "role": "Root-reviewed exact-source/observation record",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-transport-readiness-starts-v1/freeze_originals.py.source.txt",
+      "mode": "100644",
+      "bytes": 6330,
+      "sha256": "5196664564a54897a78301aa7eb8446c0138f68f1e42a2a6b00d473c4903ee7a",
+      "blob": "b41b88fc5e558a96ccf4148cccee52e2e2d50bb8",
+      "role": "Exact observation-cut archiver",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-transport-readiness-starts-v1/original-files-manifest.json",
+      "mode": "100644",
+      "bytes": 26451,
+      "sha256": "08b657d99e2a07e2f78632bf772a11b3736227eeb994b36a8aabf37c2fd06eed",
+      "blob": "a123265b96647e894d4e9dbf091866252a1c5da7",
+      "role": "84 complete observed originals; root independently reconstructed the entire gzip/TAR and every original identity",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-transport-readiness-starts-v1/original-inputs.tar.gz.part000.b64.txt",
+      "mode": "100644",
+      "bytes": 273553,
+      "sha256": "b81a5dbf6a495a4677dcb75f8d437577704907cd850bb8fe58abc83c24b5a92d",
+      "blob": "090e29146e317d67ffcc6a15c41a59caf697a7af",
+      "role": "84 complete observed originals; root independently reconstructed the entire gzip/TAR and every original identity",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-transport-readiness-starts-v1/scope-summary.json",
+      "mode": "100644",
+      "bytes": 1088,
+      "sha256": "da4bdfbc781cfed5b490436fe690e24c9a7efb86c2284226afbc7d61318db843",
+      "blob": "8be5d61115648984e425ea6d592c5e64b8f9e9be",
+      "role": "84 complete observed originals; root independently reconstructed the entire gzip/TAR and every original identity",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-transport-readiness-starts-v1/transport-manifest.json",
+      "mode": "100644",
+      "bytes": 2242,
+      "sha256": "a1fd7caa8644b97ce7fcf0f4864a3505efdd655f9c9bf8313ffa72e6d2dda897",
+      "blob": "01bb8d17e4ba56f9e0c116b5463bcf8c3883a32e",
+      "role": "84 complete observed originals; root independently reconstructed the entire gzip/TAR and every original identity",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-transport-readiness-starts-v1/verify_archive.py.source.txt",
+      "mode": "100644",
+      "bytes": 3466,
+      "sha256": "ed9a0c4e2730a69827075a556517827be8555fa004c4124145397e26ff9f9f65",
+      "blob": "1287dcc4fb0883b9f203724ff97c9554cd52a978",
+      "role": "84 complete observed originals; root independently reconstructed the entire gzip/TAR and every original identity",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/PROJECT_DIRECTION_AND_EXECUTION_PLAN_V3.zh-CN.md",
+      "mode": "100644",
+      "bytes": 19918,
+      "sha256": "307e3eda945252ede86b7f45588c5b673b77bf0b02f856d9e39ef02cacedc4f5",
+      "blob": "34e28ba5f55681c8315a7fb284d6950920e2b07f",
+      "role": "Current human report or machine ledger; original23 exit/status/closure_class unchanged",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/audit-publication-receipt-v5.json",
+      "mode": "100644",
+      "bytes": 1412,
+      "sha256": "b5fe07b849113a6bbc8ad65c5a81dc16ae066bd3e0e326ed6149970517f55aed",
+      "blob": "157d54a8f3482f63b2912785e66799b57ecaacf3",
+      "role": "Root-reviewed exact-source/observation record",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-diagnostic-draft-publication-v1.json",
+      "mode": "100644",
+      "bytes": 55947,
+      "sha256": "9a513f55b7183fb997970ec3960cb4c435369dca333d38ec4ff45533ccaeed71",
+      "blob": "962a23b6d5e6b439fc2911de6ed119df9248c0d2",
+      "role": "Initial actual Draft4884 publication and complete-tree check",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-macro-correction-publication-v1.json",
+      "mode": "100644",
+      "bytes": 56234,
+      "sha256": "64703b92751bc5170c261a63020279855f0d719d53c3c1772891d5f004d77a64",
+      "blob": "bbaa7fdd3c6255d618bedda37634f52b23fff532",
+      "role": "Actual E0659 one-import correction and trigger-path publication with fresh ref/PR readback",
+      "verification": "Root actual Git create and full byte-equal GET of complete local content"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-macro-import-independent-review.json",
+      "mode": "100644",
+      "bytes": 3631,
+      "sha256": "c0b61c1820eb089b0be09a0afb07f2f7ee062f4d0200248aa761f8cb6f28e03b",
+      "blob": "b4790a5e95ea609ac60fbbdc400b10abff3e0908",
+      "role": "Independent source correction review; no native pass claimed",
+      "verification": "Actual Git create and full byte-equal GET; root rehashed local bytes and reviewed exact scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-physical-mechanism-probe-v2/independent-static-review.json",
+      "mode": "100644",
+      "bytes": 16996,
+      "sha256": "38822706d05723fbb513e586e685547568a90e39b2cdad13ebca20e52b98b7a9",
+      "blob": "3f2afcb1df8a905cb348106012454902a2c1c06a",
+      "role": "Independent static review; original Windows and process qualification remain pending",
+      "verification": "Research actual create/GET plus architecture independent full GET compared to local bytes"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-physical-mechanism-probe-v2/RESULT_INTERPRETATION.zh-CN.md",
+      "mode": "100644",
+      "bytes": 5289,
+      "sha256": "9be1e2b2ac1cc401b1ec6d2e26bc481793e3bcdb03b2f4cdc97409b63a0336ab",
+      "blob": "dce2674f5376744920f80bb5a7574247824bd8d3",
+      "role": "Precommitted eight-row interpretation; original B11 exit remains OPEN",
+      "verification": "Architecture actual create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/canonical-product-direction-bridge-v1.json",
+      "mode": "100644",
+      "bytes": 1999,
+      "sha256": "48d3d755afddcc94dcb47d35fd027d23686c81aa1b319181fa35a10ccaf3dd7b",
+      "blob": "2a11bc508a8f94d1fbf2248cbda2c7e21840bac3",
+      "role": "Root-reviewed exact-source/observation record",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/core-git-input-publication-receipt.json",
+      "mode": "100644",
+      "bytes": 4950,
+      "sha256": "238463d1adab792b148b05138f8ec9f611b492aa59c37b6b119290f0536259f1",
+      "blob": "5ade34461b31663d12d3f970736722eae956714a",
+      "role": "Input-only cc33 checkpoint, eight new paths and unchanged previous leaves",
+      "verification": "Root actual Git create/full byte-equal GET or identical previously verified content object"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/core-git-transport-independent-review.json",
+      "mode": "100644",
+      "bytes": 3308,
+      "sha256": "20863702f43a9bacbb1af3163e7d4d84a625e7d0797740287982a1f35c7d1a29",
+      "blob": "1eaf35a1e15a20aa9d8edfa89754b95dd5aea019",
+      "role": "Independent fixed-input bootstrap review",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/core-musl-native-v3-independent-review.json",
+      "mode": "100644",
+      "bytes": 7546,
+      "sha256": "274f9eb2b63a41cab28b705115b7c1cae3e3ee2551865df1c739cc4b771ba0b2",
+      "blob": "f5f3296956a6a1b2f26b8aa360e95aa053e8f90b",
+      "role": "Independent staged-loader and mechanism review",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/core-native-prerequisites-root-review.json",
+      "mode": "100644",
+      "bytes": 3719,
+      "sha256": "0c4106d95f6f1c63b53acf4e65c38356736bf8e8fddb88f2a9527e76f531c378",
+      "blob": "5bae7f2aee0faa29388e589a978da70a162cf07f",
+      "role": "Root reconstructed mechanism and ai395 readonly readiness originals",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/core-owned-child-v4-independent-readback.json",
+      "mode": "100644",
+      "bytes": 465,
+      "sha256": "3ea1d77ce85ea507f2db8c7a09562fe6b2cfb40b05f5a9e4b49895e0b426bebd",
+      "blob": "477b46936ec24c66aadf6d195d2f7ac5840f1ee9",
+      "role": "Actual review-object map",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/core-owned-child-v4-independent-review.json",
+      "mode": "100644",
+      "bytes": 5139,
+      "sha256": "058e5b9b6b0d7a75dc0afc3fbf2054ff18483542b23b65376b059341fd69a726",
+      "blob": "570078c7541904869235c279e58c2993efaa1b8c",
+      "role": "Independent semantic review, not execution",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/core-tracing-mechanism-actual-independent-review.json",
+      "mode": "100644",
+      "bytes": 3124,
+      "sha256": "b6e9e9e2f8e958f3c53caba844182aff08fb6d0917bebcbacdff116c639436a3",
+      "blob": "8bc0cb19465285973ba75bad3c80314f3e20d27b",
+      "role": "Independent exact endpoint review",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/original-exit-selection-5b/actual-full-agentd-feature-catalog-proof.json",
+      "mode": "100644",
+      "bytes": 8428,
+      "sha256": "81a4719b877568dd311b38708956cdbe8e2892542e01448d734b74e8a6eb98de",
+      "blob": "ae2c125a829d235b7e327c057c00217cb846ac1c",
+      "role": "Original exact-name selection and independent feature/catalog boundary",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/original-exit-selection-5b/build_selection_receipt.py.source.txt",
+      "mode": "100644",
+      "bytes": 15619,
+      "sha256": "fc18feeefbe18f9d1eb44d52bc049c78bdb34c7677aacf38259148995f27afbb",
+      "blob": "2ec9e0c8b34f475889cf58713c36aa8e2e33d73d",
+      "role": "Original exact-name selection and independent feature/catalog boundary",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/original-exit-selection-5b/git-object-map.json",
+      "mode": "100644",
+      "bytes": 1858,
+      "sha256": "d5f5ec2e36d9453d8a8f5097b6152cb38ca33c575019192971ef157b016b2111",
+      "blob": "34de51ab1c4d8afeeb5552f755f869028fd094c5",
+      "role": "Actual selection-review Git map",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/original-exit-selection-5b/REVIEW.zh-CN.md",
+      "mode": "100644",
+      "bytes": 8006,
+      "sha256": "375e81fc8dc43ebe3470a7a136cee9feca85f32f248581c2bccd352841622b61",
+      "blob": "6b47962de841f5702603e3913e99f4491b641fd1",
+      "role": "Original exact-name selection and independent feature/catalog boundary",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/original-exit-selection-5b/selection-checklist.json",
+      "mode": "100644",
+      "bytes": 82674,
+      "sha256": "6afe702f4cd5291dc3225790ccb0df0e8726ebfe53e4c232c58d7fed3fe387b9",
+      "blob": "638e1703c2ccea82e9610dfe4c3a1360c557777d",
+      "role": "Original exact-name selection and independent feature/catalog boundary",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/original-exit-selection-5b/source-manifest.json",
+      "mode": "100644",
+      "bytes": 13028,
+      "sha256": "f595257ffd8b40a68884b293e48f1abd3a04a42744fa1e6400f4eafc33a959e0",
+      "blob": "f39ee5cc1ae677d6882f8a0c05254e3b1ca0bb60",
+      "role": "Original exact-name selection and independent feature/catalog boundary",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/original-exit-selection-5b/workflow-input-map.json",
+      "mode": "100644",
+      "bytes": 15066,
+      "sha256": "bb2812490f9d2714d237c2fc87ca3971fdab932161cf02e88ccce4b47493c8e7",
+      "blob": "8d144b6b996cc8e330a58211f140d3c56b0beab8",
+      "role": "Original exact-name selection and independent feature/catalog boundary",
+      "verification": "Previously actual-created/GET-verified content with root exact local SHA validation"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pr-increment-1338-root-review.json",
+      "mode": "100644",
+      "bytes": 10502,
+      "sha256": "d939b9cdb988c656d6489af2707055108c5133920eb97df6c5dbaf6805f77c1a",
+      "blob": "316813d4eb6e52c93cf5a5041f36e277b5625524",
+      "role": "Root-reviewed exact-source/observation record",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pr4797-body-after-v5.md",
+      "mode": "100644",
+      "bytes": 35251,
+      "sha256": "65f8584727d9e64b7b0ea6cb1cb006e23b69b9f55f41603d21a36b23f2dc1f94",
+      "blob": "fd69a7303c56b6d6274a90b2bb49ab3138f8806e",
+      "role": "Root-reviewed exact-source/observation record",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pr4797-body-update-v5-receipt.json",
+      "mode": "100644",
+      "bytes": 477,
+      "sha256": "b3a33344a2ce216b47318daa54ff0e576101178100cb7d4e6dc87d3d4e9a344f",
+      "blob": "88ebf706f86a8f8cbc0186cba9942661327c08ee",
+      "role": "Root-reviewed exact-source/observation record",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v6-ci-archive-root-review.json",
+      "mode": "100644",
+      "bytes": 4761,
+      "sha256": "2473a59257cdf91b84368935fd6cd4d5a80251bc85fa9c8772bf1884d34d3483",
+      "blob": "0715fbcfb5a615bd0b61f2ec9d25db248b1b8822",
+      "role": "Root-reviewed exact-source/observation record",
+      "verification": "Root actual Git create and full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v6-mechanism-group-registration-completion-v1.json",
+      "mode": "100644",
+      "bytes": 3094,
+      "sha256": "b0c391b0ce67c17b23207a9411d9cd662fe33dcb274147960742d1320b00d071",
+      "blob": "416ee2f95dcab520b05776c5194bc5c2a6f22348",
+      "role": "Complete actual six-file registration replacing insufficient prior computed-only provenance",
+      "verification": "Root actual create/full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v6-object-registration-provenance-correction-v1.json",
+      "mode": "100644",
+      "bytes": 1961,
+      "sha256": "ee3611727f7ba2a4320ac682b5d57d3df8a59238bacd20f861e068bc0d821076",
+      "blob": "e957a037b6ab607282c3ef69243e7f8554fb0156",
+      "role": "Preserved original Git422 and actual immutable object registration correction",
+      "verification": "Root actual create/full byte-equal GET"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v6-unix-objective-root-review.json",
+      "mode": "100644",
+      "bytes": 5314,
+      "sha256": "cbb3d8953e40666a5562beee48ea3bd6955636ee075e2126147f7b408433089e",
+      "blob": "391f0ecd4ea7ff286e324abb9bdf3ea32db8e519",
+      "role": "Root directly verified five original ZIPs, 96 members and all selected JUnit case identities",
+      "verification": "Actual Git create/full byte-equal GET; root rehashed local original and reviewed its scope"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/v8-arm-raw-export-root-correction-v1.json",
+      "mode": "100644",
+      "bytes": 1899,
+      "sha256": "0980933dc8e0819a389ab3bf3f5890119238d97653689369f07d82b768959d4d",
+      "blob": "30366189569e92ddbe3ea9d994847fb0b6638378",
+      "role": "Exact-byte provenance correction, no change in execution facts",
+      "verification": "Root actual Git create and full byte-equal GET; corrected exact API bytes and retained historical normalized export"
+    }
+  ],
+  "object_registration_correction": "Complete six-file mechanism group explicitly created/read back; both rejected tree responses and correction records are preserved."
+}

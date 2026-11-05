@@ -1,0 +1,172 @@
+{
+  "schema": "hepta-original-v8-windows-x86-staged-link-review-v1",
+  "observed_at_utc": "2026-11-05T14:30:23.439201+00:00",
+  "run_id": 41999115000,
+  "run_attempt": 1,
+  "job_id": 127251874901,
+  "api_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "actual_checkout_from_log": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+  "actual_checkout_tree_directly_recorded_in_this_log": false,
+  "job_conclusion": "success",
+  "platform_target": "x86_64-pc-windows-msvc",
+  "complete_log": {
+    "path": "research-audit/published-5b633-ci-20261105/terminal/v8-windows-x86-sandbox-127251874901/job.log",
+    "bytes": 183630,
+    "sha256": "703f306ac04c6b13648ae7ddcf5675e0eaaea341ff6c2743c1035ecc8af181bc",
+    "git_blob": "2df4fc0dc67340bc8828757642b04abc324eb964"
+  },
+  "original_api": {
+    "path": "research-audit/published-5b633-ci-20261105/terminal/v8-windows-x86-sandbox-127251874901/terminal-metadata.json",
+    "bytes": 23792,
+    "sha256": "99dacc9e8da71c4b93a2c4b4ba796cd4d78985998d56bdf2ec9f47b25eb7e623",
+    "git_blob": "ca755d859bf5cd9e6262b316ac3da64a599de58d"
+  },
+  "step_results": [
+    {
+      "name": "Build upstream rusty_v8 sandbox release pair",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 13,
+      "started_at": "2026-11-05T12:52:53Z",
+      "completed_at": "2026-11-05T14:08:22Z"
+    },
+    {
+      "name": "Stage upstream sandbox release pair",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 14,
+      "started_at": "2026-11-05T14:08:22Z",
+      "completed_at": "2026-11-05T14:08:27Z"
+    },
+    {
+      "name": "Smoke link staged artifact with Cargo",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 15,
+      "started_at": "2026-11-05T14:08:27Z",
+      "completed_at": "2026-11-05T14:09:37Z"
+    },
+    {
+      "name": "Upload staged artifacts",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 16,
+      "started_at": "2026-11-05T14:09:37Z",
+      "completed_at": "2026-11-05T14:09:41Z"
+    },
+    {
+      "name": "Check for a clean worktree",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 17,
+      "started_at": "2026-11-05T14:09:41Z",
+      "completed_at": "2026-11-05T14:09:42Z"
+    }
+  ],
+  "exact_original_slices": [
+    {
+      "original_line": 36,
+      "text": "2026-11-05T12:50:17.4918090Z Complete job name: Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
+      "ansi_normalized": "2026-11-05T12:50:17.4918090Z Complete job name: Build ptrcomp-sandbox x86_64-pc-windows-msvc from source"
+    },
+    {
+      "original_line": 179,
+      "text": "2026-11-05T12:50:31.7238921Z HEAD is now at 9063c52 Merge 5b6331250ff459033bd44d1a95daec70131277cc into 63652be658ebed8d3052eb789b951793384fd5e4",
+      "ansi_normalized": "2026-11-05T12:50:31.7238921Z HEAD is now at 9063c52 Merge 5b6331250ff459033bd44d1a95daec70131277cc into 63652be658ebed8d3052eb789b951793384fd5e4"
+    },
+    {
+      "original_line": 614,
+      "text": "2026-11-05T12:50:56.2258509Z HEAD is now at 5c15a69 v150.4.0 (#2030)",
+      "ansi_normalized": "2026-11-05T12:50:56.2258509Z HEAD is now at 5c15a69 v150.4.0 (#2030)"
+    },
+    {
+      "original_line": 1359,
+      "text": "2026-11-05T12:52:52.3181691Z Cache not found for input keys: rusty-v8-source-x86_64-pc-windows-msvc-windows-2025-sandbox-cc29b53c9baf8ac6fccd64d8531aa92ef8c539ff5b40c2121565ceb42657aaed, rusty-v8-source-x86_64-pc-windows-msvc-windows-2025-sandbox-",
+      "ansi_normalized": "2026-11-05T12:52:52.3181691Z Cache not found for input keys: rusty-v8-source-x86_64-pc-windows-msvc-windows-2025-sandbox-cc29b53c9baf8ac6fccd64d8531aa92ef8c539ff5b40c2121565ceb42657aaed, rusty-v8-source-x86_64-pc-windows-msvc-windows-2025-sandbox-"
+    },
+    {
+      "original_line": 1410,
+      "text": "2026-11-05T12:52:53.8889670Z ##[group]Run cargo +1.91.0 build --locked --release --target \"${TARGET}\" --features v8_enable_sandbox",
+      "ansi_normalized": "2026-11-05T12:52:53.8889670Z ##[group]Run cargo +1.91.0 build --locked --release --target \"${TARGET}\" --features v8_enable_sandbox"
+    },
+    {
+      "original_line": 1411,
+      "text": "2026-11-05T12:52:53.8890239Z \u001b[36;1mcargo +1.91.0 build --locked --release --target \"${TARGET}\" --features v8_enable_sandbox\u001b[0m",
+      "ansi_normalized": "2026-11-05T12:52:53.8890239Z cargo +1.91.0 build --locked --release --target \"${TARGET}\" --features v8_enable_sandbox"
+    },
+    {
+      "original_line": 1603,
+      "text": "2026-11-05T14:08:22.1174593Z \u001b[1m\u001b[92m    Finished\u001b[0m `release` profile [optimized] target(s) in 75m 27s",
+      "ansi_normalized": "2026-11-05T14:08:22.1174593Z     Finished `release` profile [optimized] target(s) in 75m 27s"
+    },
+    {
+      "original_line": 1633,
+      "text": "2026-11-05T14:08:27.8514475Z dist\\x86_64-pc-windows-msvc\\rusty_v8_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.lib.gz",
+      "ansi_normalized": "2026-11-05T14:08:27.8514475Z dist\\x86_64-pc-windows-msvc\\rusty_v8_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.lib.gz"
+    },
+    {
+      "original_line": 1634,
+      "text": "2026-11-05T14:08:27.8515348Z dist\\x86_64-pc-windows-msvc\\src_binding_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.rs",
+      "ansi_normalized": "2026-11-05T14:08:27.8515348Z dist\\x86_64-pc-windows-msvc\\src_binding_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.rs"
+    },
+    {
+      "original_line": 1635,
+      "text": "2026-11-05T14:08:27.8516139Z dist\\x86_64-pc-windows-msvc\\rusty_v8_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.sha256",
+      "ansi_normalized": "2026-11-05T14:08:27.8516139Z dist\\x86_64-pc-windows-msvc\\rusty_v8_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.sha256"
+    },
+    {
+      "original_line": 1648,
+      "text": "2026-11-05T14:08:27.8781394Z \u001b[36;1m  RUSTY_V8_ARCHIVE=\"${GITHUB_WORKSPACE}/${archive}\" \\\u001b[0m",
+      "ansi_normalized": "2026-11-05T14:08:27.8781394Z   RUSTY_V8_ARCHIVE=\"${GITHUB_WORKSPACE}/${archive}\" \\"
+    },
+    {
+      "original_line": 1649,
+      "text": "2026-11-05T14:08:27.8781838Z \u001b[36;1m  RUSTY_V8_SRC_BINDING_PATH=\"${GITHUB_WORKSPACE}/${binding}\" \\\u001b[0m",
+      "ansi_normalized": "2026-11-05T14:08:27.8781838Z   RUSTY_V8_SRC_BINDING_PATH=\"${GITHUB_WORKSPACE}/${binding}\" \\"
+    },
+    {
+      "original_line": 1650,
+      "text": "2026-11-05T14:08:27.8782307Z \u001b[36;1m  cargo +1.95.0 test -p codex-v8-poc --target \"${TARGET}\" --features sandbox --no-run\u001b[0m",
+      "ansi_normalized": "2026-11-05T14:08:27.8782307Z   cargo +1.95.0 test -p codex-v8-poc --target \"${TARGET}\" --features sandbox --no-run"
+    },
+    {
+      "original_line": 1833,
+      "text": "2026-11-05T14:09:35.8469860Z \u001b[1m\u001b[92m   Compiling\u001b[0m codex-v8-poc v0.0.0 (D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\v8-poc)",
+      "ansi_normalized": "2026-11-05T14:09:35.8469860Z    Compiling codex-v8-poc v0.0.0 (D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\v8-poc)"
+    },
+    {
+      "original_line": 1834,
+      "text": "2026-11-05T14:09:37.3293835Z \u001b[1m\u001b[92m    Finished\u001b[0m `test` profile [unoptimized + debuginfo] target(s) in 1m 09s",
+      "ansi_normalized": "2026-11-05T14:09:37.3293835Z     Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 09s"
+    },
+    {
+      "original_line": 1835,
+      "text": "2026-11-05T14:09:37.4595601Z \u001b[1m\u001b[92m  Executable\u001b[0m unittests src\\lib.rs (D:/cargo-target\\x86_64-pc-windows-msvc\\debug\\deps\\codex_v8_poc-4af192c2f01b06fc.exe)",
+      "ansi_normalized": "2026-11-05T14:09:37.4595601Z   Executable unittests src\\lib.rs (D:/cargo-target\\x86_64-pc-windows-msvc\\debug\\deps\\codex_v8_poc-4af192c2f01b06fc.exe)"
+    },
+    {
+      "original_line": 1879,
+      "text": "2026-11-05T14:09:41.6704029Z Artifact v8-canary-150.4.0-ptrcomp-sandbox-x86_64-pc-windows-msvc has been successfully uploaded! Final size is 40293724 bytes. Artifact ID is 13423480508",
+      "ansi_normalized": "2026-11-05T14:09:41.6704029Z Artifact v8-canary-150.4.0-ptrcomp-sandbox-x86_64-pc-windows-msvc has been successfully uploaded! Final size is 40293724 bytes. Artifact ID is 13423480508"
+    }
+  ],
+  "artifact_metadata": {
+    "id": 13423480508,
+    "name": "v8-canary-150.4.0-ptrcomp-sandbox-x86_64-pc-windows-msvc",
+    "size_in_bytes": 40293724,
+    "digest": "sha256:2cf68050455839ae7bec45da7e6e9915c2d021180c23f305cf8ddf41bc53d3d9",
+    "created_at": "2026-11-05T14:09:41Z",
+    "updated_at": "2026-11-05T14:09:41Z",
+    "expired": false
+  },
+  "artifact_zip_independently_downloaded": false,
+  "product_test_cases_executed_by_smoke": 0,
+  "smoke_scope": "Original Cargo --no-run compiles/links the product codex-v8-poc unit executable against the locally staged ptrcomp-sandbox release pair. It does not execute that binary or run any Rust test.",
+  "limits": [
+    "Only metadata and original full job log retained for this40MB release-pair artifact; no independent ZIP/member hash validation is claimed.",
+    "The product checkout is original PR merge9063, not the source-head checkout. This log itself does not emit the Git tree hash.",
+    "No cached test-result qualification is inferred from a source-build/cache step.",
+    "Original142 named exits do not acquire case-level PASS from this compilation-only smoke.",
+    "No new execution, CI rerun/cancellation, source/ref mutation, or release publication by reviewer."
+  ]
+}

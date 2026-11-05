@@ -1,0 +1,268 @@
+{
+  "schema": "hepta-original-success-named-review-v1",
+  "reviewed_at": "2026-11-05T13:12:19.445050+00:00",
+  "api_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "run_id": 41999114618,
+  "job_id": 127149582083,
+  "run_attempt": 1,
+  "terminal_job": {
+    "id": 127149582083,
+    "run_id": 41999114618,
+    "workflow_name": "Hepta Memory P0 native regressions",
+    "head_branch": "fix/r3-original-product-contracts-20261104",
+    "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114618",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTrgxoM8AAAAdmrSnAw",
+    "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127149582083",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114618/job/127149582083",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-05T09:02:28Z",
+    "started_at": "2026-11-05T12:32:53Z",
+    "completed_at": "2026-11-05T12:41:48Z",
+    "name": "Memory schema and final-use (ubuntu-24.04)",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-11-05T12:32:54Z",
+        "completed_at": "2026-11-05T12:32:55Z"
+      },
+      {
+        "name": "Checkout immutable pull-request source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-11-05T12:32:55Z",
+        "completed_at": "2026-11-05T12:34:31Z"
+      },
+      {
+        "name": "Bind source and initialize isolated evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-11-05T12:34:31Z",
+        "completed_at": "2026-11-05T12:34:31Z"
+      },
+      {
+        "name": "Install repository CI tools",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-11-05T12:34:31Z",
+        "completed_at": "2026-11-05T12:34:44Z"
+      },
+      {
+        "name": "Install pinned nextest",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-11-05T12:34:44Z",
+        "completed_at": "2026-11-05T12:34:45Z"
+      },
+      {
+        "name": "Install pinned Rust 1.95",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-11-05T12:34:45Z",
+        "completed_at": "2026-11-05T12:34:46Z"
+      },
+      {
+        "name": "Install Linux native Secret Service dependencies",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-11-05T12:34:46Z",
+        "completed_at": "2026-11-05T12:34:57Z"
+      },
+      {
+        "name": "Execute both original native regressions",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-11-05T12:34:57Z",
+        "completed_at": "2026-11-05T12:39:39Z"
+      },
+      {
+        "name": "Verify unique cases and original JUnit identity",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9,
+        "started_at": "2026-11-05T12:39:39Z",
+        "completed_at": "2026-11-05T12:39:39Z"
+      },
+      {
+        "name": "Strict Memory Clippy",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10,
+        "started_at": "2026-11-05T12:39:39Z",
+        "completed_at": "2026-11-05T12:41:40Z"
+      },
+      {
+        "name": "Verify canonical Memory Rust format",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11,
+        "started_at": "2026-11-05T12:41:40Z",
+        "completed_at": "2026-11-05T12:41:41Z"
+      },
+      {
+        "name": "Preserve native evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12,
+        "started_at": "2026-11-05T12:41:41Z",
+        "completed_at": "2026-11-05T12:41:42Z"
+      },
+      {
+        "name": "Ensure the test source remained immutable",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13,
+        "started_at": "2026-11-05T12:41:42Z",
+        "completed_at": "2026-11-05T12:41:43Z"
+      },
+      {
+        "name": "Post Checkout immutable pull-request source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 26,
+        "started_at": "2026-11-05T12:41:43Z",
+        "completed_at": "2026-11-05T12:41:43Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 27,
+        "started_at": "2026-11-05T12:41:43Z",
+        "completed_at": "2026-11-05T12:41:43Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127149582083",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "runner_id": 1000000816,
+    "runner_name": "GitHub Actions 1000000816",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  "job_log": {
+    "bytes": 1772763,
+    "sha256": "667d4dfadbe8b028ebe7bc26a73270f7af95c93b5f1a2e29be67238fd6bc3478",
+    "computed_git_blob": "f4fa34a7968728117a3cac61c79349e98df80313"
+  },
+  "catalog_identity": {
+    "bytes": 180651,
+    "sha256": "16df332bed13d79c0e2f0294d65218a0f83aaa1dd926c0694dfb1363b3b83752",
+    "computed_git_blob": "5ce46bbcb2f3979eb3a320ecf3c3d065000d9645"
+  },
+  "original_raw_preserved": true,
+  "reviewer_executed_tests": false,
+  "global_blocker_status_changed": false,
+  "scope_limits": [
+    "A named PASS is scoped to this actual source/platform/command.",
+    "No independent operator/Root/issuer/production acceptance is inferred.",
+    "No old-head result is transferred to this head."
+  ],
+  "checkout": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "named_pass_occurrences": 2,
+  "cases": [
+    {
+      "test": "cognitive_store::schema_tests::compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected",
+      "classname": "codex-hepta-memory",
+      "status": "PASS",
+      "time": "0.116",
+      "attributes": {
+        "name": "cognitive_store::schema_tests::compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected",
+        "classname": "codex-hepta-memory",
+        "timestamp": "2026-11-05T12:39:38.886+00:00",
+        "time": "0.116"
+      }
+    },
+    {
+      "test": "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send",
+      "classname": "codex-hepta-memory-extension",
+      "status": "PASS",
+      "time": "0.200",
+      "attributes": {
+        "name": "cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send",
+        "classname": "codex-hepta-memory-extension",
+        "timestamp": "2026-11-05T12:39:39.003+00:00",
+        "time": "0.200"
+      }
+    }
+  ],
+  "junit_originals": [
+    {
+      "member": "members-13414733756/junit.xml",
+      "identity": {
+        "bytes": 914,
+        "sha256": "bf1cf4858ee8373e60c671b2c0dc672140a338954362a9cf3453e10d12b56bdf",
+        "computed_git_blob": "b3986db687442a2c37f899de0ba9979e737b4dc4"
+      },
+      "tests": 2,
+      "root_attributes": {
+        "name": "nextest-run",
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "uuid": "d80e4a94-d60a-41f0-8bba-ad9e80e971ba",
+        "timestamp": "2026-11-05T12:39:38.884+00:00",
+        "time": "0.319"
+      }
+    }
+  ],
+  "other_original_source_and_scope_records": [
+    {
+      "member": "members-13414733756/native-result.json",
+      "identity": {
+        "bytes": 575,
+        "sha256": "3d97020f52824b545b1ed954afa246614572e9dee2167d8bf3f6f32a16ebc4d6",
+        "computed_git_blob": "9aeb2d035ca402bc152fe53b5ef0f02b8aa537c0"
+      },
+      "text": "{\n  \"source_sha\": \"5b6331250ff459033bd44d1a95daec70131277cc\",\n  \"source_tree\": \"b26598d0d97d8d51e723bb5582137315f2174d35\",\n  \"platform\": \"Linux\",\n  \"nextest_uuid\": \"d80e4a94-d60a-41f0-8bba-ad9e80e971ba\",\n  \"passed\": 2,\n  \"required_tests\": [\n    \"cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send\",\n    \"cognitive_store::schema_tests::compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected\"\n  ],\n  \"full_package_qualification\": false,\n  \"target_hardware_qualification\": false,\n  \"production_authorized\": false\n}\n"
+    },
+    {
+      "member": "members-13414733756/source.txt",
+      "identity": {
+        "bytes": 143,
+        "sha256": "786f429cf21e55c117677a8b32550250e0ead1a34258becb32dc0c4492214a79",
+        "computed_git_blob": "c3b5e97649f61ee2aafdcee7b1362c1ed8475ae8"
+      },
+      "text": "source=5b6331250ff459033bd44d1a95daec70131277cc tree=b26598d0d97d8d51e723bb5582137315f2174d35 parents=755374e93dba69214622f91c71a3ccac708d6a76\n"
+    }
+  ],
+  "original_142_matches": [],
+  "commands_and_summaries": [
+    {
+      "line_1based": 8094,
+      "text": "just test --locked -p codex-hepta-memory -p codex-hepta-memory-extension \\"
+    },
+    {
+      "line_1based": 8095,
+      "text": "  --lib --profile default --test-threads 1 --no-tests fail --retries 0 \\"
+    },
+    {
+      "line_1based": 10381,
+      "text": "     Summary [   0.319s] 2 tests run: 2 passed, 433 skipped"
+    },
+    {
+      "line_1based": 11650,
+      "text": "##[group]Run cargo +1.95.0 fmt -p codex-hepta-memory -p codex-hepta-memory-extension -- --check"
+    },
+    {
+      "line_1based": 11651,
+      "text": "cargo +1.95.0 fmt -p codex-hepta-memory -p codex-hepta-memory-extension -- --check"
+    }
+  ],
+  "retry_policy": "Original commands explicitly use --retries 0.",
+  "filter_and_early_return_limits": "JUnit has no skipped node among selected cases. Original console Summary filtering counts are preserved separately; no complete unselected inventory or universal absence of body-level early return is inferred."
+}

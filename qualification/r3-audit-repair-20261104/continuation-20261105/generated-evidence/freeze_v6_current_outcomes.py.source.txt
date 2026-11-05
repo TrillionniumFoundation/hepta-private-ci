@@ -1,0 +1,110 @@
+"""Freeze observed current outcomes without executing project or native code."""
+from pathlib import Path
+import base64
+import datetime
+import gzip
+import hashlib
+import io
+import json
+import tarfile
+
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "hepta-audit-fifth/v6-archives/current-outcomes-cut0063-v1"
+assert not OUT.exists(), OUT
+OUT.mkdir(parents=True)
+
+def identity(data):
+    return {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
+            "computed_git_blob": hashlib.sha1(f"blob {len(data)}\0".encode() + data).hexdigest()}
+
+def write_json(path, value):
+    raw = (json.dumps(value, ensure_ascii=False, indent=2) + "\n").encode()
+    path.write_bytes(raw)
+    return raw
+
+paths = [
+    "hepta-audit-fifth/inputs/b11-diagnostic-draft-publication-v1.json",
+    "ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/native-first-start/preparation-terminal.json",
+    "ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/native-first-start/preparation-final-source-guard.json",
+    "ci-audit/core-wait-span-20261105/native-actions/project-junit-failure-view-001.original.json",
+    "ci-audit/core-wait-span-20261105/native-actions/project-nonpass-status-pair-001.original.json",
+]
+paths += [f"research-audit/published-5b633-ci-20261105/snapshot-{n:04}/jobs-api-envelope.json" for n in range(60,64)]
+paths += ["ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/" + name for name in [
+    "nonpass-projection.json", "original-owning-projects-status.json", "core-same-process-parallel-status.json",
+    "core-same-process-parallel.stderr", "original-owning-projects.tail-65536.stdout",
+    "core-same-process-parallel.tail-16384.stdout", "export-manifest.json", "export-terminal.json",
+    "export-plan.json", "export_originals_v1.py", "export-process-start.json", "export-process-start.original-response.json",
+]]
+paths += ["research-audit/published-5b633-ci-20261105/terminal/v8-windows-arm-sandbox-127251874931/job.log"]
+assert len(paths) == len(set(paths))
+
+snapshot = json.loads((ROOT / paths[8]).read_bytes())
+assert snapshot["summary"]["head"] == "5b6331250ff459033bd44d1a95daec70131277cc"
+records = snapshot["records"]
+all_jobs = []
+actual_runs = None
+for record in records:
+    content = record["response"]["structuredContent"]["content"]
+    value = json.loads(content)
+    if record["label"] == "runs":
+        actual_runs = value["workflow_runs"]
+        assert len(actual_runs) == value["total_count"] == 19
+    elif record["label"].startswith("jobs-"):
+        assert len(value["jobs"]) == value["total_count"]
+        all_jobs += value["jobs"]
+from collections import Counter
+counts = dict(Counter(row["conclusion"] if row["status"] == "completed" else row["status"] for row in all_jobs))
+assert len(all_jobs) == len({r["id"] for r in all_jobs}) == 59
+assert counts == snapshot["summary"]["job_status"]
+assert len({r["id"] for r in actual_runs}) == 19
+scope = {
+    "frozen_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    "scope": "Complete observed API snapshots0060–0063, B11 Draft publication, C0 terminal and bounded ROG failure observations/projection.",
+    "source_snapshot": snapshot["summary"],
+    "root_recomputed_actual_job_count": len(all_jobs),
+    "root_recomputed_actual_job_states": counts,
+    "limits": [
+        "The ROG derived projection and native file tails/views are not the full29-original archive; its70-part transfer is pending separately.",
+        "The wrapper passed in project JUnit and both child/parent original stdout; the complete owning and direct-parallel gates failed.",
+        "C0 final source is e78; C1 did not execute because actual available memory was below the fixed32GiB prerequisite.",
+        "V8 ARM cancellation reason/actor is not established by the original log; downstream product smoke/upload did not execute.",
+        "B11 PR4884 is Draft and native Windows outcome remains pending; old B16 driver remains START_OUTCOME_UNKNOWN.",
+    ],
+}
+buf = io.BytesIO()
+rows = []
+with tarfile.open(fileobj=buf, mode="w", format=tarfile.PAX_FORMAT) as tar:
+    for rel in sorted(paths):
+        path = ROOT / rel
+        assert path.is_file() and not path.is_symlink(), path
+        raw = path.read_bytes()
+        member = "original/" + rel
+        info = tarfile.TarInfo(member)
+        info.size = len(raw)
+        info.mode = 0o644
+        info.mtime = 0
+        tar.addfile(info, io.BytesIO(raw))
+        rows.append({"member": member, **identity(raw)})
+archive = gzip.compress(buf.getvalue(), compresslevel=9, mtime=0)
+manifest = {"schema": "hepta-complete-original-files-v1", "scope": scope,
+            "file_count": len(rows), "total_original_bytes": sum(r["bytes"] for r in rows), "files": rows}
+raw_manifest = write_json(OUT / "original-files-manifest.json", manifest)
+parts = []
+for i, offset in enumerate(range(0, len(archive), 360000)):
+    chunk = archive[offset:offset+360000]
+    encoded = base64.b64encode(chunk) + b"\n"
+    name = f"original-outcomes.tar.gz.part{i:03}.b64.txt"
+    (OUT / name).write_bytes(encoded)
+    parts.append({"index": i, "name": name, "compressed_offset": offset,
+                  "file": identity(encoded), "decoded_chunk": identity(chunk)})
+write_json(OUT / "transport-manifest.json", {
+    "schema": "hepta-complete-original-byte-transport-v1", "scope": scope,
+    "archive": {"name": "original-outcomes.tar.gz", **identity(archive)},
+    "original_files_manifest": {"name": "original-files-manifest.json", **identity(raw_manifest)},
+    "part_count": len(parts), "parts": parts,
+})
+write_json(OUT / "scope-summary.json", scope)
+(OUT / "verify_archive.py").write_bytes((ROOT / "hepta-audit-fifth/v6-archives/core-transport-readiness-starts-v1/verify_archive.py").read_bytes())
+print(json.dumps({"files": len(rows), "original_bytes": manifest["total_original_bytes"],
+                  "archive": identity(archive), "parts": len(parts), "actual_job_states": counts}))

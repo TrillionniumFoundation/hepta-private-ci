@@ -1,0 +1,21 @@
+diff --git a/.github/workflows/hepta-windows-token-mechanism-probe.yml b/.github/workflows/hepta-windows-token-mechanism-probe.yml
+--- a/.github/workflows/hepta-windows-token-mechanism-probe.yml
++++ b/.github/workflows/hepta-windows-token-mechanism-probe.yml
+@@ -75,15 +75,8 @@
+           git status --porcelain=v1 > "$evidence/source-status-after.txt"
+           exit "${statuses[0]}"
+ 
+-      - name: Retain original target logs and XML without another test run
+-        if: always() && !cancelled()
+-        continue-on-error: true
+-        shell: pwsh
+-        run: |
+-          $output = Join-Path $env:RUNNER_TEMP 'b11-token-mechanism-probe'
+-          '//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests' | python .github/scripts/collect_bazel_failed_test_logs.py --testlogs-dir bazel-testlogs --output-dir $output
+-          exit $LASTEXITCODE
+-
++      # The unchanged wrapper already retains this exact target on both failure
++      # and console-reported success, including cached/missing evidence limits.
+       - name: Upload complete observation and original failure evidence
+         if: always() && !cancelled()
+         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0

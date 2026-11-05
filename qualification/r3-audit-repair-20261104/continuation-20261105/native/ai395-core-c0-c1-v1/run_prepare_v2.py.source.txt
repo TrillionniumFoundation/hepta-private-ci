@@ -1,0 +1,397 @@
+"""Prepare an independent Core source/target and seven real helpers, then exit.
+
+Only C0/C1 are implemented. No metadata/catalog/test/hygiene or B-driver action.
+The current-source metadata/full-test continuation needs a separate root guard.
+"""
+import base64
+import collections
+import datetime
+import gzip
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import shutil
+import stat
+import subprocess
+import sys
+import time
+import traceback
+
+
+ROOT = Path('/home/qq/work/hepta-core-musl-full-20261105')
+SOURCE = ROOT / 'source'
+TARGET = ROOT / 'target-dev-small'
+OUT = ROOT / 'evidence'
+PRODUCT_COMMIT = '5b6331250ff459033bd44d1a95daec70131277cc'
+PRODUCT_TREE = 'b26598d0d97d8d51e723bb5582137315f2174d35'
+CANDIDATE_TREE = 'e78c819b8b1f435f8b37bea17b4ffdc724961aa2'
+SUPPLY_COMMIT = 'cc33fc26c6fa0257f6dca0b6107e3892eec5aa72'
+SUPPLY_TREE = '65cfd91deea0fbd5b432c225e16d15106ed5f373'
+SUPPLY_PREFIX = 'qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/git-transport-v1'
+REPOSITORY = 'https://github.com/TrillionniumFoundation/hepta-private-ci.git'
+ENTRY_FREE = 200_000_000_000
+PHASE_FREE = 64_000_000_000
+BUILD_MEM = 32 * 1024**3
+FROZEN_RUNNER_SHA = '1201a4a2fec8d508f781f8f55f31ef1e60fb67747d08c7ff66794404128e9ed0'
+
+
+def need(ok, message):
+    if not ok:
+        raise RuntimeError(message)
+
+
+def now():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+
+def identity(raw):
+    return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
+            'git_blob': hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest()}
+
+
+def stat_id(s):
+    return (s.st_dev, s.st_ino, s.st_size, s.st_mode, s.st_nlink,
+            s.st_mtime_ns, s.st_ctime_ns)
+
+
+def read_stable(path):
+    p = Path(path)
+    fd = os.open(p, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    try:
+        first = os.fstat(fd)
+        need(stat.S_ISREG(first.st_mode), 'not regular: ' + str(p))
+        with os.fdopen(fd, 'rb', closefd=False) as stream:
+            raw = stream.read()
+        last = os.fstat(fd)
+        need(stat_id(first) == stat_id(last) == stat_id(p.lstat()),
+             'physical input changed while reading: ' + str(p))
+        return raw
+    finally:
+        os.close(fd)
+
+
+def pinned(path, expected):
+    raw = read_stable(path)
+    actual = identity(raw)
+    need(all(actual[k] == expected[k] for k in ('bytes', 'sha256')),
+         'pinned bytes mismatch: ' + str(path))
+    return raw
+
+
+def file_record(path):
+    p = Path(path)
+    return {'path': str(p), **identity(read_stable(p)),
+            'mode': stat.S_IMODE(p.stat().st_mode),
+            'executable': os.access(p, os.X_OK)}
+
+
+def absent(path):
+    try:
+        Path(path).lstat()
+    except FileNotFoundError:
+        return
+    raise RuntimeError('owned path must be absent: ' + str(path))
+
+
+def capacity(label, floor, memory_required=False):
+    disk = os.statvfs(ROOT if ROOT.exists() else ROOT.parent)
+    mem = {}
+    for line in Path('/proc/meminfo').read_text().splitlines():
+        if ':' in line:
+            key, value = line.split(':', 1)
+            mem[key] = value.strip()
+    available = int(mem['MemAvailable'].split()[0]) * 1024
+    result = {'label': label, 'at': now(), 'free_bytes': disk.f_bavail * disk.f_frsize,
+              'minimum_free_bytes': floor, 'mem_available_bytes': available,
+              'minimum_mem_available_bytes': BUILD_MEM if memory_required else None,
+              'cpu_count': os.cpu_count(), 'loadavg': Path('/proc/loadavg').read_text(),
+              'measured_peak': False}
+    need(result['free_bytes'] >= floor, 'cold capacity prerequisite: ' + json.dumps(result))
+    need(not memory_required or available >= BUILD_MEM,
+         'cold build memory prerequisite: ' + json.dumps(result))
+    return result
+
+
+def verify_prerequisites(readiness, environment, tools):
+    files = []
+    for original in readiness['files']:
+        path = original['path']
+        raw = pinned(path, {'bytes': original['read_bytes'], 'sha256': original['sha256']})
+        s = Path(path).lstat()
+        files.append({'path': path, **identity(raw), 'stat_identity': list(stat_id(s))})
+    by_path = {row['path']: row for row in files}
+    links = []
+    for original in readiness['links']:
+        path = Path(original['path'])
+        before = path.lstat()
+        need(stat.S_ISLNK(before.st_mode), 'SDK alias no longer symlink: ' + str(path))
+        text = os.readlink(path)
+        resolved = path.resolve(strict=True)
+        need(text == original['link_target'] and str(resolved) == original['resolved_path'],
+             'SDK alias drift: ' + str(path))
+        need(stat_id(before) == stat_id(path.lstat()), 'SDK alias changed while reading')
+        need(list(stat_id(resolved.stat())) == by_path[str(resolved)]['stat_identity'],
+             'SDK target changed after byte verification')
+        links.append({'path': str(path), 'link_target': text, 'resolved_path': str(resolved),
+                      'stat_identity': list(stat_id(before))})
+    need(len(files) == 171 and len(links) == 147, 'fixed readiness physical roster')
+    for tool in tools:
+        observed = by_path[tool['path']]
+        need(all(observed[k] == tool[k] for k in ('bytes', 'sha256')), 'tool pin mismatch')
+        resolved = shutil.which(tool['name'], path=environment['PATH'])
+        need(resolved and Path(resolved).resolve() == Path(tool['path']).resolve(),
+             'actual tool PATH resolution: ' + tool['name'])
+        need(os.access(tool['path'], os.X_OK), 'tool is not executable')
+    return {'at': now(), 'files': files, 'links': links, 'tool_count': len(tools),
+            'qualification': 'Current physical input reads only; historical version strings are unchanged.'}
+
+
+def save(name, raw):
+    p = OUT / name
+    with p.open('xb') as stream:
+        stream.write(raw)
+    return file_record(p)
+
+
+def save_json(name, value):
+    return save(name, (json.dumps(value, indent=2) + '\n').encode())
+
+
+def transport_command(label, argv, environment, commands):
+    before = capacity(label + '-before', PHASE_FREE)
+    so, se = OUT / (label + '.stdout'), OUT / (label + '.stderr')
+    started = time.monotonic()
+    result = None
+    print(json.dumps({'phase_start': label, 'argv': argv}), flush=True)
+    try:
+        with so.open('xb') as stdout, se.open('xb') as stderr:
+            result = subprocess.run(argv, cwd=ROOT, env=environment, stdout=stdout, stderr=stderr)
+    finally:
+        row = {'label': label, 'argv': argv, 'cwd': str(ROOT),
+               'exit_code': None if result is None else result.returncode,
+               'duration_seconds': time.monotonic() - started,
+               'stdout': file_record(so), 'stderr': file_record(se), 'capacity_before': before}
+        commands.append(row)
+        save_json(label + '-status.json', row)
+        save_json(label + '-capacity-after.json', capacity(label + '-after', PHASE_FREE))
+    print(json.dumps({'phase_terminal': label, 'exit_code': row['exit_code']}), flush=True)
+    need(row['exit_code'] == 0, 'source/input preparation failed: ' + label)
+    return so.read_bytes()
+
+
+def main(request, raw_request):
+    terminal = {'schema': 'ai395-independent-core-C0-C1-terminal-v1', 'started_at': now(),
+                'tests_executed': 0, 'metadata_executed': 0, 'catalogs_executed': 0,
+                'hygiene_executed': 0, 'prior_B_mutated': False, 'commands': []}
+    created = False
+    runner = None
+    inputs = None
+    code = 1
+    try:
+        need(request.get('execute') is True and request.get('root_execution_guard'), 'disabled')
+        need(request['stage'] == 'prepare', 'only C0/C1 preparation is implemented')
+        need(request['idempotency_key'] == 'hepta-ai395-core-cold-prepare-20261105-v1', 'fixed new Core key')
+        need(platform.node() == 'ai395' and platform.system() == 'Linux'
+             and platform.machine() == 'x86_64' and os.getuid() == os.geteuid() == 1000,
+             'actual configured host identity')
+        absent(ROOT)
+        need(ROOT.parent.resolve(strict=True) == ROOT.parent, 'owned parent must be physical')
+        readiness_raw = pinned(request['readiness']['path'], request['readiness'])
+        readiness = json.loads(readiness_raw)
+        need(readiness['status'] == 'PINNED_BYTES_AND_HOST_OBSERVED'
+             and readiness['exit_code'] == 0 and readiness['tests_executed'] == readiness['builds_executed'] == 0,
+             'actual readiness result prerequisite')
+        entry = capacity('cold-entry', ENTRY_FREE, memory_required=True)
+        environment = os.environ.copy()
+        environment.update(request['environment'])
+        for key, suffix in {'CARGO_HOME': 'cargo-home', 'CARGO_TARGET_DIR': 'target-dev-small',
+                            'DOTSLASH_CACHE': 'dotslash-cache', 'UV_CACHE_DIR': 'uv-cache',
+                            'PYTHONPYCACHEPREFIX': 'python-pycache', 'RUSTUP_HOME': 'rustup-home'}.items():
+            need(environment[key] == str(ROOT / suffix), 'new task writable path: ' + key)
+        need(environment['GIT_OPTIONAL_LOCKS'] == '0' and environment['CARGO_BUILD_JOBS'] == '4'
+             and environment['CARGO_INCREMENTAL'] == '0', 'reviewed build controls')
+        for name in ('RUSTFLAGS', 'CARGO_ENCODED_RUSTFLAGS', 'RUSTC_WRAPPER', 'RUSTC_WORKSPACE_WRAPPER',
+                     'CARGO_PROFILE_DEV_DEBUG', 'CARGO_PROFILE_DEV_OPT_LEVEL', 'RUST_TEST_THREADS',
+                     'CODEX_SKIP_BWRAP_BUILD', 'CODEX_TEST_BLOCKING_SNAPSHOT_CHILD',
+                     'GIT_INDEX_FILE', 'GIT_DIR', 'GIT_WORK_TREE', 'GIT_OBJECT_DIRECTORY',
+                     'GIT_ALTERNATE_OBJECT_DIRECTORIES'):
+            need(not os.environ.get(name), 'unreviewed injection variable name: ' + name)
+        initial_inputs = verify_prerequisites(readiness, environment, request['tools'])
+        ROOT.mkdir(mode=0o700)
+        created = True
+        OUT.mkdir(mode=0o700)
+        TARGET.mkdir()
+        save('execution-request.json', raw_request)
+        save_json('entry-capacity.json', entry)
+        save_json('prerequisites-initial.json', initial_inputs)
+        save('parent-readiness.original.json', readiness_raw)
+        git = next(t['path'] for t in request['tools'] if t['name'] == 'git')
+        cmd = lambda label, argv: transport_command(label, argv, environment, terminal['commands'])
+        cmd('source-init', [git, 'init', str(SOURCE)])
+        gitdir = str(SOURCE / '.git')
+        cmd('fetch-fixed-inputs', [git, '--git-dir', gitdir, 'fetch', '--no-tags', '--depth=1', REPOSITORY, SUPPLY_COMMIT])
+        actual = cmd('fixed-inputs-tree', [git, '--git-dir', gitdir, 'rev-parse', SUPPLY_COMMIT + '^{tree}']).decode().strip()
+        need(actual == SUPPLY_TREE, 'fixed supply tree')
+        counter = 0
+
+        def blob(name, expected):
+            nonlocal counter
+            need('/' not in name and name not in ('', '.', '..'), 'invalid fixed input member')
+            label = 'input-' + str(counter).zfill(2)
+            counter += 1
+            sha = cmd(label + '-path', [git, '--git-dir', gitdir, 'rev-parse',
+                      SUPPLY_COMMIT + ':' + SUPPLY_PREFIX + '/' + name]).decode().strip()
+            need(sha == expected['git_blob'], 'fixed input path identity')
+            raw = cmd(label + '-bytes', [git, '--git-dir', gitdir, 'cat-file', 'blob', sha])
+            need(identity(raw) == {k: expected[k] for k in ('bytes', 'sha256', 'git_blob')}, 'fixed input bytes')
+            return raw
+
+        manifest = json.loads(blob('transport-manifest.json', request['supply_manifest']))
+        packed = []
+        offset = 0
+        for part in manifest['parts']:
+            need(part['offset'] == offset, 'ordered source input parts')
+            data = base64.b64decode(blob(part['name'], part['encoded']).removesuffix(b'\n'), validate=True)
+            need(identity(data) == part['decoded'], 'decoded source input part')
+            packed.append(data)
+            offset += len(data)
+        packed = b''.join(packed)
+        need(identity(packed) == manifest['compressed_request'], 'complete original request compressed bytes')
+        original_raw = gzip.decompress(packed)
+        need(identity(original_raw) == manifest['source_request'], 'complete original request raw bytes')
+        original = json.loads(original_raw)
+        frozen_source = original['runner']['source'].encode()
+        need(hashlib.sha256(frozen_source).hexdigest() == FROZEN_RUNNER_SHA,
+             'fixed original parser/guard source')
+        nested = original['inputs']
+        raw_packed = base64.b64decode(nested['gzip_base64'], validate=True)
+        need(hashlib.sha256(raw_packed).hexdigest() == nested['gzip_sha256'], 'nested source maps compressed hash')
+        raw_inputs = gzip.decompress(raw_packed)
+        need(len(raw_inputs) == nested['bytes'] and hashlib.sha256(raw_inputs).hexdigest() == nested['sha256'],
+             'complete nested source maps/rosters bytes')
+        inputs = json.loads(raw_inputs)
+        save('original-ROG-request-input-only.json', original_raw)
+        save('original-V3-reference-runner.py', frozen_source)
+        namespace = {'__name__': 'frozen_original_V3_reference_only'}
+        exec(compile(frozen_source.decode(), 'fixed-original-V3-reference.py', 'exec'), namespace)
+        Base = namespace['Runner']
+        tree_hash = namespace['tree_hash']
+        product = {r['path']: r for r in inputs['product_leaves']}
+        need(len(product) == 10580 and tree_hash(product.values()) == PRODUCT_TREE, 'full product map')
+        candidate = dict(product)
+        for post in inputs['candidate_posts']:
+            raw = base64.b64decode(post['base64'], validate=True)
+            need(identity(raw) == post['identity'], 'candidate post bytes')
+            candidate[post['path']] = {'path': post['path'], 'mode': '100644',
+                                      'sha': post['identity']['git_blob'], 'type': 'blob', 'size': len(raw)}
+        need(len(inputs['candidate_posts']) == 2 and tree_hash(candidate.values()) == CANDIDATE_TREE,
+             'exact two-path reviewed candidate')
+        cmd('fetch-fixed-product', [git, '--git-dir', gitdir, 'fetch', '--no-tags', '--depth=1', REPOSITORY, PRODUCT_COMMIT])
+        actual = cmd('fixed-product-tree', [git, '--git-dir', gitdir, 'rev-parse', PRODUCT_COMMIT + '^{tree}']).decode().strip()
+        need(actual == PRODUCT_TREE, 'fixed product tree')
+        cmd('checkout-fixed-product', [git, '-C', str(SOURCE), 'checkout', '--detach', PRODUCT_COMMIT])
+
+        class ColdRunner(Base):
+            def capacity(self, label, minimum=PHASE_FREE, write=True):
+                value = capacity(label, max(minimum, PHASE_FREE),
+                                 memory_required=label == 'cold-normal-seven-helpers-before')
+                if write:
+                    self.save(label + '-capacity', value)
+                return value
+
+            def source_guard(self, label, write=True):
+                result = Base.source_guard(self, label, write=write)
+                observed = verify_prerequisites(readiness, self.env, request['tools'])
+                if write:
+                    self.save(label + '-prerequisites', observed)
+                return result
+
+        runner = ColdRunner.__new__(ColdRunner)
+        runner.created_owned_root = True
+        runner.root, runner.source, runner.target, runner.out = ROOT, SOURCE, TARGET, OUT
+        runner.env = environment
+        runner.commands, runner.reviews, runner.transitions, runner.failures = [], [], [], []
+        runner.run_ids = set()
+        runner.expected, runner.product, runner.candidate = product, product, candidate
+        runner.expected_tree = PRODUCT_TREE
+        runner.r = {'plan': {}, 'junit_path': str(SOURCE / 'codex-rs/target/nextest/local/junit.xml')}
+        runner.p = {'ordinary_head': PRODUCT_COMMIT, 'ordinary_index': file_record(SOURCE / '.git/index'),
+                    'locks': original['plan']['locks'], 'tools': request['tools'],
+                    'external_build_inputs': request['external_build_inputs']}
+        runner.source_guard('product-checkout')
+        for number, post in enumerate(inputs['candidate_posts']):
+            path = SOURCE / post['path']
+            before = read_stable(path)
+            need(identity(before)['git_blob'] == post['before'], 'candidate exact preimage')
+            save('candidate-preimage-' + str(number) + '.source.txt', before)
+            after = base64.b64decode(post['base64'], validate=True)
+            path.write_bytes(after)
+            path.chmod(0o644)
+            runner.transitions.append({'path': post['path'], 'before': identity(before), 'after': identity(after)})
+        runner.expected, runner.expected_tree = candidate, CANDIDATE_TREE
+        runner.source_guard('candidate-installed')
+        row = runner.command('cold-normal-seven-helpers', original['plan']['phases'][3]['commands'][0])
+        need(row['exit_code'] == 0, 'cold helper build failed; keep actual raw and stop')
+        wanted = {'test_arg0_preflight', 'codex-code-mode-host', 'codex-execve-wrapper',
+                  'test_stdio_server', 'test_streamable_http_server', 'codex-exec', 'codex'}
+        artifacts, finished = [], []
+        for line in Path(row['stdout']['path']).read_text().splitlines():
+            value = json.loads(line)
+            if value.get('reason') == 'build-finished':
+                finished.append(value)
+            if value.get('reason') == 'compiler-artifact' and value.get('executable') and value['target']['name'] in wanted:
+                path = Path(value['executable'])
+                need(path.resolve().is_relative_to(TARGET.resolve()), 'normal helper outside new target')
+                artifacts.append({'target': value['target']['name'], 'package_id': value['package_id'],
+                                  'features': value['features'], 'fresh': value['fresh'], **file_record(path)})
+        need(finished == [{'reason': 'build-finished', 'success': True}], 'one real successful build finish')
+        need(collections.Counter(r['target'] for r in artifacts) == collections.Counter(wanted),
+             'exact seven actual normal helpers')
+        save_json('normal-seven-helper-receipt.json', artifacts)
+        final_guard = runner.source_guard('preparation-complete')
+        checkpoint = {'schema': 'ai395-independent-core-C1-checkpoint-v1', 'state': 'C1_COMPLETE_BUILD_ONLY',
+                      'source_tree': CANDIDATE_TREE, 'ordinary_head': PRODUCT_COMMIT,
+                      'ordinary_index': runner.p['ordinary_index'], 'locks': final_guard['locks'],
+                      'environment': request['environment'], 'source_directory': str(SOURCE),
+                      'target_directory': str(TARGET), 'normal_helpers': artifacts,
+                      'build_command': row, 'source_guard': final_guard,
+                      'original_inputs': identity(original_raw), 'full_roster_count': len(inputs['full_roster']),
+                      'tests_executed': 0, 'metadata_executed': 0, 'catalogs_executed': 0,
+                      'continuation_requirement': 'Separate root-enabled C2/full request must pin this checkpoint AND preparation terminal exit0/final guards. No background wait or automatic continuation.'}
+        terminal['checkpoint'] = save_json('C1-checkpoint.json', checkpoint)
+        terminal['state'] = 'C0_C1_PREPARATION_COMPLETE_BUILD_ONLY'
+        code = 0
+    except BaseException as error:
+        terminal.update({'state': 'PREPARATION_STOPPED_AT_ACTUAL_FAILURE',
+                         'error': repr(error), 'traceback': traceback.format_exc()})
+    finally:
+        if runner is not None:
+            terminal['build_commands'] = runner.commands
+            terminal['source_transitions'] = runner.transitions
+            terminal['source_expected_at_stop'] = runner.expected_tree
+            try:
+                terminal['final_source_guard'] = runner.source_guard('preparation-final')
+            except BaseException as error:
+                terminal['final_guard_error'] = repr(error)
+                code = 1
+        if created:
+            try:
+                terminal['final_prerequisites'] = save_json('prerequisites-final.json',
+                    verify_prerequisites(readiness, environment, request['tools']))
+                terminal['final_capacity'] = capacity('preparation-final', PHASE_FREE)
+            except BaseException as error:
+                terminal['final_input_or_capacity_error'] = repr(error)
+                code = 1
+        terminal['completed_at'] = now()
+        terminal['controller_exit_code'] = code
+        if created:
+            save_json('preparation-terminal.json', terminal)
+        print(json.dumps({'preparation_terminal': terminal}), flush=True)
+    return code
+
+
+if __name__ == '__main__':
+    raw = sys.stdin.buffer.read()
+    raise SystemExit(main(json.loads(raw), raw))

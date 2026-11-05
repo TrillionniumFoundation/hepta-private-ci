@@ -1,0 +1,105 @@
+{
+  "schema": "original-agentd-qualification-after-full-disabled-v1",
+  "execute": false,
+  "root_execution_guard": null,
+  "stage": "AFTER_C3_ACTUAL_ROOT_REVIEW_BEFORE_ANY_HYGIENE",
+  "source_tree": null,
+  "prior_full_terminal": null,
+  "prior_full_review": null,
+  "capacity_binding": null,
+  "purpose": "Run the original three qualification_ lib tests once under their original explicit feature. The default full19563 tuple scope remains unchanged.",
+  "source_pins": {
+    "workflow": {
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "git_blob": "18a6d4e1108482653ff7560d9e64d91649e41236",
+      "lines": "159-160"
+    },
+    "Cargo.toml": "d94042bddf8fcf785e2963a3acc90afcab3dbd69",
+    "BUILD.bazel": "f9354d8ecab6b3d026468301af83238493b09cb3",
+    "runtime_tests.rs": "31a41d8cad53ee3f04a1106e245dc5c3f4392a5b"
+  },
+  "original_command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--features",
+    "qualification-cognitive-write",
+    "--lib",
+    "runtime::tests::qualification_",
+    "--test-threads=1"
+  ],
+  "planned_single_test_command": [
+    "just",
+    "test",
+    "--locked",
+    "--cargo-profile",
+    "dev-small",
+    "--no-tests",
+    "fail",
+    "--retries",
+    "0",
+    "--success-output",
+    "immediate",
+    "-p",
+    "codex-hepta-agentd",
+    "--features",
+    "qualification-cognitive-write",
+    "--lib",
+    "runtime::tests::qualification_",
+    "--test-threads=1"
+  ],
+  "preparation_commands": [
+    [
+      "cargo",
+      "metadata",
+      "--locked",
+      "--format-version",
+      "1",
+      "--features",
+      "codex-hepta-agentd/qualification-cognitive-write"
+    ],
+    [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--cargo-profile",
+      "dev-small",
+      "--message-format=json",
+      "-p",
+      "codex-hepta-agentd",
+      "--features",
+      "qualification-cognitive-write",
+      "--lib",
+      "-E",
+      "test(/^runtime::tests::qualification_/)"
+    ]
+  ],
+  "expected_eligible_case_names": [
+    "runtime::tests::qualification_host_binds_one_local_turn_and_replays_exactly_once",
+    "runtime::tests::qualification_prepare_takes_over_expired_registry_head_without_evidence",
+    "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence"
+  ],
+  "case_count": 3,
+  "feature": "qualification-cognitive-write",
+  "feature_context": "The actual new compiler/catalog program and requested-feature metadata must be recorded. The metadata graph and the package-scoped compiler context remain separately identified; old default243-case Agentd binary/hash is not reused as qualification evidence.",
+  "budgets": {
+    "nextest_profile": "local",
+    "watchdog_source": "Original inherited slow-timeout period30s x terminate-after2, without package-specific override.",
+    "original_setup_lease_ttl_seconds": 30,
+    "internal_expiry_wait": "Original physical deadline-based wait and exact assertions remain unchanged.",
+    "test_threads": "Original workflow1; not imposed on default full workspace.",
+    "retries": 0,
+    "add_no_fail_fast": false
+  },
+  "requirements": [
+    "Exact fresh eligible Counter equals these3 names, with distinct feature/compiler flags and program/helper identity before and after.",
+    "No one-case run followed by prefix rerun. This scope is once only.",
+    "No all-features; no production source/test/lock/deadline/skip mutation.",
+    "Keep original full raw/JUnit/default graph as its own qualification; later feature build does not relabel that evidence.",
+    "Scope runs only after C3 actual results root-reviewed and the concrete capacity/source/index/locks guard is enabled; all hygiene remains later."
+  ],
+  "native_executed": false
+}

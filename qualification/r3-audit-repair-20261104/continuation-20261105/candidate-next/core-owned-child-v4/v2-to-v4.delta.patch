@@ -1,0 +1,65 @@
+--- owned-child-v2
++++ owned-child-v4
+@@ -1221,6 +1221,8 @@
+ 
+     #[tokio::test]
+     async fn blocking_snapshot_waits_for_starting_environment() {
++        use std::io::Write as _;
++
+         const CASE: &str =
+             "environment_selection::tests::blocking_snapshot_waits_for_starting_environment";
+         const CHILD_MODE: &str = "CODEX_TEST_BLOCKING_SNAPSHOT_CHILD";
+@@ -1262,23 +1264,29 @@
+                 match child.0.as_mut().expect("owned child").try_wait() {
+                     Ok(Some(status)) => {
+                         child.0.take();
+-                        break Ok(status);
++                        break if std::time::Instant::now() <= deadline {
++                            Ok(status)
++                        } else {
++                            Err(format!("isolated snapshot completed after its five-second bound: {status}"))
++                        };
+                     }
+                     Ok(None) => {}
+                     Err(error) => break Err(format!("wait for isolated snapshot: {error}")),
+                 }
+                 if std::time::Instant::now() >= deadline {
+-                    break Err("isolated snapshot exceeded the original five-second bound".to_owned());
++                    break Err("isolated snapshot exceeded its five-second parent bound".to_owned());
+                 }
+                 tokio::time::sleep(Duration::from_millis(10)).await;
+             };
+             // On error, timeout, or cancellation, kill and reap only this child.
+             // Files avoid a pipe filling while the parent waits; read after reap.
+             drop(child);
+-            let stdout = std::fs::read_to_string(stdout_path).expect("read child stdout");
+-            let stderr = std::fs::read_to_string(stderr_path).expect("read child stderr");
+-            print!("{stdout}");
+-            eprint!("{stderr}");
++            let stdout = std::fs::read(stdout_path).expect("read child stdout");
++            let stderr = std::fs::read(stderr_path).expect("read child stderr");
++            std::io::stdout().write_all(&stdout).expect("forward child stdout");
++            std::io::stderr().write_all(&stderr).expect("forward child stderr");
++            let stdout = String::from_utf8(stdout).expect("UTF-8 child stdout");
++            let stderr = String::from_utf8(stderr).expect("UTF-8 child stderr");
+             let status = result.expect("isolated blocking snapshot must complete");
+             assert!(status.success(), "isolated blocking snapshot assertions failed: {status}");
+             assert_eq!(stderr.lines().filter(|line| *line == STARTED).count(), 1);
+@@ -1299,7 +1307,7 @@
+             );
+             return;
+         }
+-        eprintln!("\n{STARTED}");
++        writeln!(std::io::stderr(), "\n{STARTED}").expect("write original-body start marker");
+         let buffer: &'static std::sync::Mutex<Vec<u8>> =
+             Box::leak(Box::new(std::sync::Mutex::new(Vec::new())));
+         let subscriber = tracing_subscriber::fmt()
+@@ -1381,7 +1389,7 @@
+         }
+         .with_subscriber(subscriber)
+         .await;
+-        eprintln!("\n{FINISHED}");
++        writeln!(std::io::stderr(), "\n{FINISHED}").expect("write original-body completion marker");
+     }
+ 
+     #[tokio::test]

@@ -1,0 +1,65 @@
+{
+  "schema": "core-tracing-mechanism-actual-five-originals-v1",
+  "files": [
+    {
+      "native_path": "/home/qian-qi/work/hepta-core-wait-span-20261105/evidence/probe-shared-negative.stdout",
+      "native_version": "66306:39499823:213:1793887306701277425:1793887306701277425",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/mechanism-actual-priority-v1/probe-shared-negative.stdout",
+      "bytes": 213,
+      "sha256": "c4dd3b28f95f799d7e144702c763ffc71154d9a8fd30b937ada8a1cbf1c6d767",
+      "git_blob": "55caeb20bfe3fa020d84157eaee33d60c17c371a"
+    },
+    {
+      "native_path": "/home/qian-qi/work/hepta-core-wait-span-20261105/evidence/probe-shared-negative.stderr",
+      "native_version": "66306:39499824:182:1793887306701277425:1793887306701277425",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/mechanism-actual-priority-v1/probe-shared-negative.stderr",
+      "bytes": 182,
+      "sha256": "aa2bc80e4902d53e2706eac274ebcdad2525789f848e3fe48096d190c2e680a2",
+      "git_blob": "36ff0c27e3d431de891e0549f05203469cffad56"
+    },
+    {
+      "native_path": "/home/qian-qi/work/hepta-core-wait-span-20261105/evidence/probe-isolated-positive.stdout",
+      "native_version": "66306:39499831:656:1793887307602274950:1793887307602274950",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/mechanism-actual-priority-v1/probe-isolated-positive.stdout",
+      "bytes": 656,
+      "sha256": "123c73c49bee9990d722eecbd099a61e255ad3ebf526e359b35384ede822c535",
+      "git_blob": "e46fea0699913542e0155b7ab1adf9c5eb4fe36b"
+    },
+    {
+      "native_path": "/home/qian-qi/work/hepta-core-wait-span-20261105/evidence/probe-isolated-positive.stderr",
+      "native_version": "66306:39499832:0:1793887307588904139:1793887307588904139",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/mechanism-actual-priority-v1/probe-isolated-positive.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "native_path": "/home/qian-qi/work/hepta-core-wait-span-20261105/evidence/mechanism-causal-review.json",
+      "native_version": "66306:39499836:2941:1793887308045450155:1793887308045450155",
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/mechanism-actual-priority-v1/mechanism-causal-review.json",
+      "bytes": 2941,
+      "sha256": "d750fb8575a91498eba86dab801bcb83918cdecf8fb15304671e824cb62c3393",
+      "git_blob": "07f84f399ab6af2106a993aed4518affdc814745"
+    }
+  ],
+  "source_at_probe": "4a3374e22e16ce5c764288ad018cd9affadf94ea",
+  "native_job": "1a1ac0281fa-fc05-519e",
+  "direct_observation": {
+    "negative_exit": 101,
+    "negative_stdout": "Only standalone environments.wait_until_ready after explicit no-subscriber first registration.",
+    "negative_panic": "src/main.rs:117:9: shared-process parent/wait chain was suppressed",
+    "positive_exit": 0,
+    "positive_stdout": "Poisoned parent capture followed by owned clean child snapshot+wait chain; both exact completion markers present once.",
+    "controlled_library_mechanism_only": true,
+    "original_Windows_interleaving_observed": false
+  },
+  "binary_record": {
+    "path": "/home/qian-qi/work/hepta-core-wait-span-20261105/probe-target/debug/core-wait-span-callsite-probe",
+    "bytes": 1132120,
+    "sha256": "e717a2217c170f2f00cda79391df313db52a74dfceb73b2ab79ada908d7cfc62",
+    "git_blob": "90ed6b6cfa9348bdf0b818350c0d9227a07912d0",
+    "mode": 448,
+    "executable": true
+  },
+  "native_product_test_results": "Not claimed by these mechanism originals."
+}

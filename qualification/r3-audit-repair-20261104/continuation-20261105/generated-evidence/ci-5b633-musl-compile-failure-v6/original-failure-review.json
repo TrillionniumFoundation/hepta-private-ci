@@ -1,0 +1,499 @@
+{
+  "schema": "hepta-musl-original-compile-failure-v1",
+  "reviewed_at": "2026-11-05T13:01:07.560749+00:00",
+  "run_id": 41999115065,
+  "job_id": 127149584475,
+  "run_attempt": 1,
+  "api_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "checkout": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+  "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "source_unchanged": true,
+  "source_original": {
+    "schema_version": 1,
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "event": "pull_request",
+    "run_id": "41999115065",
+    "run_attempt": "1",
+    "workflow_ref": "TrillionniumFoundation/hepta-private-ci/.github/workflows/hepta-musl-product-smoke.yml@refs/pull/4797/merge",
+    "workflow_sha": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+    "expected_checkout": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+    "pr_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "checkout": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "parents": [
+      "63652be658ebed8d3052eb789b951793384fd5e4",
+      "5b6331250ff459033bd44d1a95daec70131277cc"
+    ],
+    "tracked_changes_before": "",
+    "runner": {
+      "os": "Linux",
+      "machine": "x86_64",
+      "kernel": "7.0.0-1017-azure",
+      "image_os": "ubuntu24",
+      "image_version": "20261026.354.1"
+    },
+    "inputs": {
+      ".github/workflows/hepta-musl-product-smoke.yml": "fb46a681b5c3cd47c76b20ef56048eae771d9e07",
+      ".github/actions/prepare-bazel-ci/action.yml": "f9508a1659e5f2c54a6ae5b263bb9328095438d7",
+      ".github/actions/setup-bazel-ci/action.yml": "ea3f3a6521b970484ac60d1cebf788092753555a",
+      ".github/scripts/run_bazel_with_buildbuddy.py": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+      ".bazelrc": "3d5877b283b887091af507f3672003f84c500687",
+      ".bazelversion": "b13d146a7b02b96e4c30340e69388d539c9721be",
+      "MODULE.bazel": "a21061a8b741fc724edb580e229eb86d9debdc4f",
+      "MODULE.bazel.lock": "1904db189003cb0b559f71958518e33a45fb6bb7",
+      "BUILD.bazel": "1f9970fdbd25413e7a4e9a98519ba44a735158d4",
+      "defs.bzl": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "bazel/platforms/release_binaries.bzl": "7a88987f54fce5d6062eb7258a7f8679975de90d",
+      "codex-rs/Cargo.lock": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+      "codex-rs/cli/BUILD.bazel": "a64e4a8d12045dcd4f83e2a02c262e52e87ef4c8",
+      "codex-rs/cli/src/main_impl.rs": "1bd3eb0bfb183f6a436ba56220906f91b49f0679"
+    }
+  },
+  "job_log": {
+    "bytes": 105003,
+    "sha256": "ed5311978453007def3f10d733ee6ad56cf640375b5f7c6fcb5c47b84b041065",
+    "computed_git_blob": "c75a81f62d3ea097c1c360e50559889024813f40"
+  },
+  "artifact": {
+    "artifact_id": 13416171572,
+    "bytes": 16764,
+    "sha256": "07ceebce2938a6b5a89617b60a40d92652ff1a1b9745d92f79115ec7113bf788",
+    "github_size_digest_match": true,
+    "all_crc_ok": true,
+    "members": [
+      {
+        "name": "artifact-manifest.json",
+        "bytes": 2451,
+        "sha256": "61c876d0a1d6073d12395d6d882d10a79b00332915fd9b58190f2fded3cc7565",
+        "git_blob": "6edbf6066b8d7b461b237d9687330feca30c7a25",
+        "crc32": 537785737
+      },
+      {
+        "name": "bazel-version.stderr",
+        "bytes": 103,
+        "sha256": "c84f1454c0550a2020bfc0c1477795dc8f86655abfaa7f1dcd529718159f0162",
+        "git_blob": "0ece02de78cdecaf39e2bb20c59d7d711041558e",
+        "crc32": 3425737610
+      },
+      {
+        "name": "bazel-version.stdout",
+        "bytes": 12,
+        "sha256": "975f11fdb2255b8f73742a67a3e471115f829095af0931945a505f8401740e21",
+        "git_blob": "21c7e63f0e02b4c976eb8b5d1f995c4d7c530e88",
+        "crc32": 601490586
+      },
+      {
+        "name": "build-events-projection.json",
+        "bytes": 7477,
+        "sha256": "594a6a8d7baa3362c267df043f9830c93b1ff4039517fad0952911d39c9b26f4",
+        "git_blob": "ae7fb972b49049fc26278088a68d55ae081edf07",
+        "crc32": 4275877530
+      },
+      {
+        "name": "build.stderr",
+        "bytes": 30278,
+        "sha256": "65775327701237d5b2e4807b3b900f568c2d7ff7cc4c263540c88fa823520eff",
+        "git_blob": "20c2bdab4e4e6739172ebca7a76840b2f6d0f0e8",
+        "crc32": 2295260173
+      },
+      {
+        "name": "build.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "crc32": 0
+      },
+      {
+        "name": "cquery-inner.stderr",
+        "bytes": 903,
+        "sha256": "c0d0879b698da83f072ec6e0e6760e1944b4ca0d2a7c0d372cd9361dbb10489e",
+        "git_blob": "f5e9435a857f9cbdcd34218cb5f136eca7446f40",
+        "crc32": 4040195695
+      },
+      {
+        "name": "cquery-inner.stdout",
+        "bytes": 186,
+        "sha256": "c1846b7f021fd7591374541f8778a9b8b1d242732b35a038efb72e21be766d9d",
+        "git_blob": "1463c0f255eb57595b6bd5901ed42ffc86ba1214",
+        "crc32": 715420614
+      },
+      {
+        "name": "cquery-outer.stderr",
+        "bytes": 8200,
+        "sha256": "0ef62d05b815bf5697a4942e1e6b50e9d1d30269f7485fb0b565ee367b694172",
+        "git_blob": "25ee57b8acc09aeb0c908fefac5946708e46da03",
+        "crc32": 1330877328
+      },
+      {
+        "name": "cquery-outer.stdout",
+        "bytes": 220,
+        "sha256": "9eecb48ecac43fd11d1c68c63224e8e240dd365856361b85a0d31c87a38c876e",
+        "git_blob": "1cf9dc728853fd57330a7c417cc2c7e62e584dc0",
+        "crc32": 3403537652
+      },
+      {
+        "name": "cquery-platform.stderr",
+        "bytes": 1994,
+        "sha256": "f41082d167fdd723d78f2941eb75830357de7efd4ff63cd14ca755c2f9f783d3",
+        "git_blob": "6ed72dd4278ae1999cbdc460a0f2b870e87242f5",
+        "crc32": 3279352093
+      },
+      {
+        "name": "cquery-platform.stdout",
+        "bytes": 104,
+        "sha256": "c107b71a63b6967892979ce418f750485a75e489838da6bbb9eff7075a4c0fcb",
+        "git_blob": "3ec12ffc87b8db1068f4c47365385073b9d55039",
+        "crc32": 2249143836
+      },
+      {
+        "name": "cquery-rust-bwrap.stderr",
+        "bytes": 903,
+        "sha256": "633172e98be3098666404d90a2946d6d92439782cc4600abbf6cde5c84bc82ca",
+        "git_blob": "6f5ed892415e13907b7dcc8bde401f28f242eba8",
+        "crc32": 2514114469
+      },
+      {
+        "name": "cquery-rust-bwrap.stdout",
+        "bytes": 1225,
+        "sha256": "f5ad35bb89655025a9712961b5bedc0444048bf0ca5442c4f0c96445bb121278",
+        "git_blob": "d85c04e38bbd591057bab556ce7c14eff0023851",
+        "crc32": 2788122506
+      },
+      {
+        "name": "cquery-rust-product.stderr",
+        "bytes": 903,
+        "sha256": "69d16d0ec89f4ec17e11e08bfd7dd61d968188da8e431bd60446b6a6b1cc2292",
+        "git_blob": "d8bee23e7bb18337a44de3d9e90260433b57bcb6",
+        "crc32": 2546585846
+      },
+      {
+        "name": "cquery-rust-product.stdout",
+        "bytes": 637,
+        "sha256": "866c401ef0f36401ecebce9ff3b838b9eb786195f7e134fbbffd5f2366058d3c",
+        "git_blob": "e9807a51ecf3d402aea0467f6e7852c87b8407ac",
+        "crc32": 3751741699
+      },
+      {
+        "name": "receipt.json",
+        "bytes": 9520,
+        "sha256": "b1ee07ff0951c49db0fee5d2c324dc26b18ef1b426689dbca10f1dfd77ec7c7d",
+        "git_blob": "edf45864c97ea3d54502dc4ddf069c8b3cb39f4d",
+        "crc32": 1839946528
+      },
+      {
+        "name": "source.json",
+        "bytes": 1995,
+        "sha256": "70c79e77b2af25e661b772030bee984f4f800f7af0d789a13443c9eb7a810bf5",
+        "git_blob": "f0214ded0cecdb66238fcf28285f8508a534b028",
+        "crc32": 2867430353
+      }
+    ]
+  },
+  "failure_class": "ACTUAL_MUSL_RUST_COMPILE_TYPE_ERROR",
+  "failed_target": "//codex-rs/linux-sandbox:linux-sandbox",
+  "product_target": "//codex-rs/cli:hepta_linux_amd64_musl",
+  "build_command": {
+    "name": "build",
+    "argv": [
+      "/usr/bin/python3",
+      ".github/scripts/run_bazel_with_buildbuddy.py",
+      "build",
+      "--config=ci-linux",
+      "--config=ci",
+      "-c",
+      "opt",
+      "--platforms=@rules_rs//rs/platforms:x86_64-unknown-linux-musl",
+      "--lockfile_mode=error",
+      "--remote_download_toplevel",
+      "--build_metadata=COMMIT_SHA=9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+      "--build_metadata=REPO_URL=https://github.com/TrillionniumFoundation/hepta-private-ci",
+      "--build_metadata=TAG_workflow=hepta-musl-product-smoke",
+      "--build_event_json_file=/home/runner/work/_temp/hepta-musl-product-build.bep.json",
+      "//codex-rs/cli:hepta_linux_amd64_musl"
+    ],
+    "timeout_seconds": null,
+    "attempt": 1,
+    "timed_out": false,
+    "exit_code": 1,
+    "elapsed_seconds": 664.1971512910001
+  },
+  "resolved_target_platform": "@@rules_rs+//rs/platforms:x86_64-unknown-linux-musl",
+  "rust_target_actions": [
+    {
+      "label": "@@//codex-rs/cli:hepta",
+      "platforms": [
+        "@@rules_rs+//rs/platforms:x86_64-unknown-linux-musl"
+      ],
+      "actions": [
+        {
+          "mnemonic": "Rustc",
+          "rust_target_flags": [
+            "--target=x86_64-unknown-linux-musl"
+          ],
+          "linker_target_flags": [
+            "--codegen=link-arg=x86_64-linux-musl"
+          ],
+          "stdlib_search_paths": [
+            "bazel-out/x86_64-unknown-linux-musl-opt/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-unknown-linux-musl/lib"
+          ],
+          "compiler_paths": [
+            "bazel-out/x86_64-unknown-linux-musl-opt/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_95_0_rust_toolchain/bin/rustc"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "@@//codex-rs/bwrap:bwrap",
+      "platforms": [
+        "@@rules_rs+//rs/platforms:x86_64-unknown-linux-musl"
+      ],
+      "actions": [
+        {
+          "mnemonic": "Rustc",
+          "rust_target_flags": [
+            "--target=x86_64-unknown-linux-musl"
+          ],
+          "linker_target_flags": [
+            "--codegen=link-arg=x86_64-linux-musl"
+          ],
+          "stdlib_search_paths": [
+            "bazel-out/x86_64-unknown-linux-musl-opt/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_95_0_rust_toolchain/lib/rustlib/x86_64-unknown-linux-musl/lib"
+          ],
+          "compiler_paths": [
+            "bazel-out/x86_64-unknown-linux-musl-opt/bin/external/rules_rs++toolchains+default_rust_toolchains/linux_x86_64_1_95_0_rust_toolchain/bin/rustc"
+          ]
+        }
+      ]
+    }
+  ],
+  "prebuild_commands": [
+    {
+      "name": "bazel-version",
+      "argv": [
+        "bazel",
+        "--version"
+      ],
+      "timeout_seconds": null,
+      "attempt": 1,
+      "timed_out": false,
+      "exit_code": 0,
+      "elapsed_seconds": 1.2364434419999952
+    },
+    {
+      "name": "cquery-platform",
+      "argv": [
+        "/usr/bin/python3",
+        ".github/scripts/run_bazel_with_buildbuddy.py",
+        "cquery",
+        "--config=ci-linux",
+        "--config=ci",
+        "-c",
+        "opt",
+        "--platforms=@rules_rs//rs/platforms:x86_64-unknown-linux-musl",
+        "--lockfile_mode=error",
+        "--remote_download_toplevel",
+        "--output=starlark",
+        "--starlark:expr=str(target.label)",
+        "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
+      ],
+      "timeout_seconds": null,
+      "attempt": 1,
+      "timed_out": false,
+      "exit_code": 0,
+      "elapsed_seconds": 12.739570697999994
+    },
+    {
+      "name": "cquery-outer",
+      "argv": [
+        "/usr/bin/python3",
+        ".github/scripts/run_bazel_with_buildbuddy.py",
+        "cquery",
+        "--config=ci-linux",
+        "--config=ci",
+        "-c",
+        "opt",
+        "--platforms=@rules_rs//rs/platforms:x86_64-unknown-linux-musl",
+        "--lockfile_mode=error",
+        "--remote_download_toplevel",
+        "--universe_scope=//codex-rs/cli:hepta_linux_amd64_musl",
+        "--output=starlark",
+        "--starlark:expr=str({\"label\": str(target.label), \"platforms\": [str(p) for p in build_options(target)[\"//command_line_option:platforms\"]], \"executable\": providers(target)[\"DefaultInfo\"].files_to_run.executable.path})",
+        "//codex-rs/cli:hepta_linux_amd64_musl"
+      ],
+      "timeout_seconds": null,
+      "attempt": 1,
+      "timed_out": false,
+      "exit_code": 0,
+      "elapsed_seconds": 63.149227138000015
+    },
+    {
+      "name": "cquery-inner",
+      "argv": [
+        "/usr/bin/python3",
+        ".github/scripts/run_bazel_with_buildbuddy.py",
+        "cquery",
+        "--config=ci-linux",
+        "--config=ci",
+        "-c",
+        "opt",
+        "--platforms=@rules_rs//rs/platforms:x86_64-unknown-linux-musl",
+        "--lockfile_mode=error",
+        "--remote_download_toplevel",
+        "--universe_scope=//codex-rs/cli:hepta_linux_amd64_musl",
+        "--output=starlark",
+        "--starlark:expr=str({\"label\": str(target.label), \"platforms\": [str(p) for p in build_options(target)[\"//command_line_option:platforms\"]], \"executable\": providers(target)[\"DefaultInfo\"].files_to_run.executable.path})",
+        "//codex-rs/cli:hepta"
+      ],
+      "timeout_seconds": null,
+      "attempt": 1,
+      "timed_out": false,
+      "exit_code": 0,
+      "elapsed_seconds": 1.5554018269999972
+    },
+    {
+      "name": "cquery-rust-product",
+      "argv": [
+        "/usr/bin/python3",
+        ".github/scripts/run_bazel_with_buildbuddy.py",
+        "cquery",
+        "--config=ci-linux",
+        "--config=ci",
+        "-c",
+        "opt",
+        "--platforms=@rules_rs//rs/platforms:x86_64-unknown-linux-musl",
+        "--lockfile_mode=error",
+        "--remote_download_toplevel",
+        "--universe_scope=//codex-rs/cli:hepta_linux_amd64_musl",
+        "--output=starlark",
+        "--starlark:expr=str({\"label\": str(target.label), \"platforms\": [str(p) for p in build_options(target)[\"//command_line_option:platforms\"]], \"actions\": [{\"mnemonic\": a.mnemonic, \"rust_target_flags\": [v for v in a.argv if v.startswith(\"--target=\")], \"linker_target_flags\": [v for v in a.argv if v.startswith(\"--codegen=link-arg=\") and v.endswith(\"-linux-musl\")], \"stdlib_search_paths\": [v for v in a.argv if \"/lib/rustlib/\" in v and v.endswith(\"/lib\")], \"compiler_paths\": [v for v in a.argv if v.endswith(\"/bin/rustc\")]} for a in target.actions if a.mnemonic == \"Rustc\"]})",
+        "//codex-rs/cli:hepta"
+      ],
+      "timeout_seconds": null,
+      "attempt": 1,
+      "timed_out": false,
+      "exit_code": 0,
+      "elapsed_seconds": 1.4485964990000184
+    },
+    {
+      "name": "cquery-rust-bwrap",
+      "argv": [
+        "/usr/bin/python3",
+        ".github/scripts/run_bazel_with_buildbuddy.py",
+        "cquery",
+        "--config=ci-linux",
+        "--config=ci",
+        "-c",
+        "opt",
+        "--platforms=@rules_rs//rs/platforms:x86_64-unknown-linux-musl",
+        "--lockfile_mode=error",
+        "--remote_download_toplevel",
+        "--universe_scope=//codex-rs/cli:hepta_linux_amd64_musl",
+        "--output=starlark",
+        "--starlark:expr=str({\"label\": str(target.label), \"platforms\": [str(p) for p in build_options(target)[\"//command_line_option:platforms\"]], \"actions\": [{\"mnemonic\": a.mnemonic, \"rust_target_flags\": [v for v in a.argv if v.startswith(\"--target=\")], \"linker_target_flags\": [v for v in a.argv if v.startswith(\"--codegen=link-arg=\") and v.endswith(\"-linux-musl\")], \"stdlib_search_paths\": [v for v in a.argv if \"/lib/rustlib/\" in v and v.endswith(\"/lib\")], \"compiler_paths\": [v for v in a.argv if v.endswith(\"/bin/rustc\")]} for a in target.actions if a.mnemonic == \"Rustc\"]})",
+        "//codex-rs/bwrap:bwrap"
+      ],
+      "timeout_seconds": null,
+      "attempt": 1,
+      "timed_out": false,
+      "exit_code": 0,
+      "elapsed_seconds": 1.3128377360000059
+    }
+  ],
+  "compiler_failure": {
+    "source_path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+    "source_line": 122,
+    "codes": [
+      "E0308",
+      "E0277"
+    ],
+    "message": "statfs.f_type is u64 on this musl target; PROC_SUPER_MAGIC is i64.",
+    "original_member": "members/build.stderr",
+    "member_identity": {
+      "bytes": 30278,
+      "sha256": "65775327701237d5b2e4807b3b900f568c2d7ff7cc4c263540c88fa823520eff",
+      "computed_git_blob": "20c2bdab4e4e6739172ebca7a76840b2f6d0f0e8"
+    },
+    "byte_start_inclusive": 16977,
+    "byte_end_exclusive": 20065,
+    "line_start_1based": 154,
+    "line_end_1based": 205,
+    "slice_identity": {
+      "bytes": 3088,
+      "sha256": "a8d9f05a2cf84211d47ac83366b1518ce99094594bd91ccad1b1ae5a428c1167",
+      "computed_git_blob": "5f18df3bcfe7b31402e7cd985803dd28a27e5558"
+    }
+  },
+  "cache_scope": "1691 remote cache hits, 1203 internal and 4330 remote processes reported; no fresh-cache claim.",
+  "product_binary_produced": false,
+  "elf_qualification_reached": false,
+  "version_help_process_smokes_reached": false,
+  "independent_static_candidate_review": {
+    "status": "STATIC_ACCEPTED_NOT_COMPILED_OR_EXECUTED",
+    "preimage": {
+      "bytes": 8228,
+      "sha256": "6b1df4d24e48d9eaf772c85e70ebca822b5fd23d3708b2c749158b9cb4350c68",
+      "computed_git_blob": "8f500e03938718820360ce2ad41f2286eb9071bd"
+    },
+    "postimage": {
+      "bytes": 8252,
+      "sha256": "b1353af4d2fa468e94a52b93bf9468050f56e734b2afb20c099b342ab85b5c03",
+      "computed_git_blob": "fe42212316589999fdfc0b1877c975bdafa4a8e7"
+    },
+    "patch": {
+      "bytes": 694,
+      "sha256": "af8ee4d1d6d614f318fba5a4e685c9653710a3745c9ee6462932d8362913f938",
+      "computed_git_blob": "5b3b84db742827e56318772095dc46b6cc82a210"
+    },
+    "only_change": "Convert both operands losslessly through i128::from before the same inequality.",
+    "all_other_source_bytes_equal": true,
+    "primary_sources_read": [
+      {
+        "path": "primary/gnu-b64-mod.rs",
+        "bytes": 7906,
+        "sha256": "4b6ba534576035f3dd89d6d89c520d4c0a98f3a3e24ece70dff5970d2047d446",
+        "computed_git_blob": "16b7bef085fe098dce25ec38ce43e3d8db3c33ee"
+      },
+      {
+        "path": "primary/gnu-x86_64-stat.rs",
+        "bytes": 20426,
+        "sha256": "1e7565934b7d0f8f2a7b6ecb4f99684a443adb7974323fcf423e57cf59b2b6aa",
+        "computed_git_blob": "89f84f39590a765b37d8467a893567cfc15e9988"
+      },
+      {
+        "path": "primary/libc-linux-like-mod.rs",
+        "bytes": 83988,
+        "sha256": "39afa8f72bdb7f6afa0dc9bed7e35ae0e78015dcbe520809a6324b8e58f3ca3c",
+        "computed_git_blob": "7fcc9a09aa50fbd7e5dfd3e04d4fe8e68bf0c9e5"
+      },
+      {
+        "path": "primary/musl-mod.rs",
+        "bytes": 28006,
+        "sha256": "74a2f066d6de433e55895b8f266c1e548fe6b511e6eff31be29acd9d0b6ca296",
+        "computed_git_blob": "d57fabb431e3bf2e2aedc3137604b9b4e79abd5c"
+      },
+      {
+        "path": "primary/rust-1.95-core-convert-num.rs",
+        "bytes": 27324,
+        "sha256": "5215209663e6901d625dfc40d6b0454b5dadd9d17b0ac41430b285eb2768bb08",
+        "computed_git_blob": "5bea429d52c533afbc41d22362a426cedec624fe"
+      }
+    ],
+    "primary_contracts": [
+      "Pinned libc musl statfs.f_type is c_ulong; GNU x86_64 __fsword_t is i64.",
+      "Pinned libc PROC_SUPER_MAGIC is c_long for this Linux target.",
+      "Rust 1.95 core conversion source provides From<i64> and From<u64> for i128."
+    ],
+    "preserved": [
+      "Same procfs equality requirement",
+      "same retained FD and inode checks",
+      "same parent-liveness behavior",
+      "all original budgets and controls"
+    ],
+    "gate": "A future exact-source original musl workflow must compile the existing product target and verify its actual ELF and --version/--help processes."
+  },
+  "limitations": [
+    "No workflow retry, dispatch or source change by this reviewer.",
+    "This is not the earlier resolver failure or the earlier GNU-symbol linker failure.",
+    "No musl product or full behavioral qualification was obtained."
+  ]
+}

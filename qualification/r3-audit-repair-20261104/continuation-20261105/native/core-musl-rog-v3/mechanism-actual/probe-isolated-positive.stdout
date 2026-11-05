@@ -1,0 +1,10 @@
+PROBE: no-subscriber first registration completed
+PROBE: capture-begin
+2026-11-05T14:01:47.591094Z  INFO environments.wait_until_ready{environment_id=remote}: core_wait_span_callsite_probe: new
+PROBE: capture-end
+PROBE: capture-begin
+2026-11-05T14:01:47.592149Z  INFO environments.snapshot{environment_count=1 non_blocking=false}: core_wait_span_callsite_probe: new
+2026-11-05T14:01:47.592176Z  INFO environments.snapshot{environment_count=1 non_blocking=false}:environments.wait_until_ready{environment_id=remote}: core_wait_span_callsite_probe: new
+PROBE: capture-end
+PROBE: clean-child-chain-passed
+PROBE: shared-poison-and-clean-child-isolation-passed

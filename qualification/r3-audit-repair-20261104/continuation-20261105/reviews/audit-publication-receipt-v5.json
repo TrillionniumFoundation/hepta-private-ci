@@ -1,0 +1,36 @@
+{
+  "schema": "hepta-audit-fifth-continuation-publication-receipt-v1",
+  "observed_utc": "2026-11-05 12:57:28 UTC",
+  "audit_branch": "audit/r3-evidence-20261105",
+  "commit": "c8d82c86b5695f50b4531883709ee990d3e6095e",
+  "tree": "bb2d851885027794a4a47d1455a9b38bcf19efc4",
+  "parent": "be6eddc503d909181ea195612c293f115d0447ea",
+  "actual_ref_and_commit_readback": true,
+  "complete_tree_review": {
+    "verified": true,
+    "base": "ca84f1e8ebfeca09d514e11c90f625a70c4cdfbc",
+    "tree": "bb2d851885027794a4a47d1455a9b38bcf19efc4",
+    "prior_leaves": 11235,
+    "new_leaves": 11445,
+    "registered_entries": 211,
+    "new_paths": 210,
+    "modified_existing_paths": [
+      "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md"
+    ],
+    "product_sources_unchanged": true,
+    "source_refs_unchanged_before_commit": true
+  },
+  "product": {
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "merge": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+    "draft": true,
+    "state": "open",
+    "product_ref_modified": false
+  },
+  "index_blob": "ca282a6c009f21eee3cc6c14f5c7843751972507",
+  "CI_primary_freeze": "snapshot0040 2026-11-05T12:40:31Z; later live outcomes are separate",
+  "all_blockers_closed": false,
+  "original_status_exit_classes_unchanged": true
+}

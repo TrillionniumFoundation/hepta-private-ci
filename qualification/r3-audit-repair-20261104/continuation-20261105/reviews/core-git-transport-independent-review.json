@@ -1,0 +1,42 @@
+{
+  "schema": "hepta-core-git-input-transport-independent-static-review-v1",
+  "observed_at": "2026-11-05T14:01:42.509665+00:00",
+  "verdict": "STATIC_ACCEPTED_NARROW_SCOPE",
+  "files": [
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/bootstrap_git_transport.py",
+      "bytes": 9750,
+      "sha256": "7550b80d29bd8c91e46122c0a18762bc09cf5c49d661721019149d544263b3c1",
+      "git_blob": "14ef6c13bb7733e2efe4a907fa9dac77a0fd7aab"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/load_staged_native_project.py",
+      "bytes": 2884,
+      "sha256": "e5a696ab2c543babc38ca000f72014216e53334ce01ccacd456b1b74ce7ea8ef",
+      "git_blob": "03e4b4385765a74fc66547ba310d63a1f2ac1c0f"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-v3-frozen-review.json",
+      "bytes": 3691,
+      "sha256": "d30ad81646360c1397c338cb04264169b9e8e6f9f86505ef0cb2e8d99ae571ff",
+      "git_blob": "0b186dd2171b14d03421e09c26b3924b20479e12"
+    }
+  ],
+  "full_source_read": true,
+  "facts": [
+    "Creates a new owned transport root and bare input Git repository; rejects existing/symlink root and staging paths and symlink parent ancestry. Prior partial upload fragments are neither reused nor removed.",
+    "Concrete root-bound supply commit/tree are checked after fetch. Each supplied manifest/member is bound by exact tree path/blob, byte length, SHA256, and Git blob hash. Strict base64 and ordered offsets precede full gzip/raw request verification.",
+    "Root authorization and original idempotency key are checked before publication; the supplied loader is compared with the enabled core request expected_loader. Local loader is byte-identical to the frozen V3 loader. Small-control bytes are bound by the root-pinned supply manifest.",
+    "Publication uses a newly created fsynced owned file and same-filesystem os.link, which fails if the final staging name exists. Only that invocation-owned temporary name is unlinked after success; final staging nlink and full bytes are checked again.",
+    "Unchanged V3 loader is invoked only after complete input verification; its full stdout/stderr remain the durable outer job streams. Loader exit is propagated and bootstrap terminal evidence is saved on success or failure.",
+    "No product source/target/index mutation is performed by this bootstrap before handing off to the separately authorized original V3 loader."
+  ],
+  "limits": [
+    "This review did not bind or execute a concrete supply commit/tree, invoke Git/network on a native host, or run product tests.",
+    "The original disabled 738-byte small control remains historical; an enabled control necessarily has a concrete execution guard and corresponding exact identity. No claim of byte equality to the disabled control.",
+    "Current transport command success, provider durability, available capacity, and actual unchanged V3 execution remain runtime gates; source-only review does not qualify them.",
+    "Existing authorized Git authentication is used through normal Git by the later owner; this reviewer did not read credentials or inspect unknown native jobs."
+  ],
+  "native_operations_by_reviewer": false,
+  "reviewer_modified_candidate": false
+}

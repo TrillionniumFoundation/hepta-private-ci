@@ -1,0 +1,157 @@
+{
+  "schema": "hepta-original-recovery-ui-cut-v1",
+  "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "created_at_utc": "2026-11-05T13:43:24.883695+00:00",
+  "scope": [
+    {
+      "directory": "windows-exec-recovery-source-127149584468",
+      "review": {
+        "bytes": 137858,
+        "sha256": "62a9317072171248b2ed60c2b731838ab5f8ab96ba59b6f36d2d899d05b45945",
+        "computed_git_blob": "d6755fb11956367642adaf1215770f12f2f16b41"
+      },
+      "actual_checkout": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "actual_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "summary": {
+        "selected_total": 388
+      },
+      "frozen_142_exact_name_intersection": []
+    },
+    {
+      "directory": "windows-exec-recovery-merge-127149584445",
+      "review": {
+        "bytes": 137843,
+        "sha256": "61f95da0dfebfb1412109d56cf09bbaaf5658ae9536ed941871b76ca8402ee38",
+        "computed_git_blob": "9a9603f1783d78c56d7b64c11ddb2f411ca821c9"
+      },
+      "actual_checkout": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+      "actual_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "summary": {
+        "selected_total": 388
+      },
+      "frozen_142_exact_name_intersection": []
+    },
+    {
+      "directory": "ui-browser-source-127149583647",
+      "review": {
+        "bytes": 240972,
+        "sha256": "e1dfcaeb904f7c85987cc54839cc9c7a0a1a27b5ef817211c9e65adf50227788",
+        "computed_git_blob": "6f53130bae80a77e803d68c7c2b55cad64220136"
+      },
+      "actual_checkout": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "actual_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "summary": {
+        "robrix_playwright_counts": [
+          6,
+          9,
+          1
+        ],
+        "product_status_playwright": 7,
+        "http_controls": [
+          60,
+          36
+        ],
+        "gateway_rust_counts": [
+          2,
+          5,
+          12,
+          9
+        ],
+        "pixel_report_checks": [
+          60,
+          78
+        ],
+        "frozen_142_hits": 0
+      },
+      "frozen_142_exact_name_intersection": []
+    },
+    {
+      "directory": "ui-browser-merge-127149583165",
+      "review": {
+        "bytes": 241684,
+        "sha256": "94e4681a5533a032d02dbdd278e8b82469d5abe36bd105846247863d835e9e06",
+        "computed_git_blob": "3e9257e99f39eb410a20a3ad64980d06667967a5"
+      },
+      "actual_checkout": "8baf9e4d1b6e7e1e6c349c9a1e8ecffb5d718734",
+      "actual_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "summary": {
+        "robrix_playwright_counts": [
+          6,
+          9,
+          1
+        ],
+        "product_status_playwright": 7,
+        "http_controls": [
+          60,
+          36
+        ],
+        "gateway_rust_counts": [
+          2,
+          5,
+          12,
+          9
+        ],
+        "pixel_report_checks": [
+          60,
+          78
+        ],
+        "frozen_142_hits": 0
+      },
+      "frozen_142_exact_name_intersection": []
+    },
+    {
+      "directory": "ui-native-source-127149583527",
+      "review": {
+        "bytes": 38608,
+        "sha256": "7377cd76d6d11945af970b51c4c4ae5561241a3b4e1c5a4ac7bd595c17a92fb6",
+        "computed_git_blob": "9d886c4a8a9c6ed969cb722f13b5fa042234ed96"
+      },
+      "actual_checkout": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "actual_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "summary": {
+        "selected_counts_by_profile": [
+          28,
+          31
+        ],
+        "selected_occurrences": 59,
+        "distinct_test_names_across_profiles": 31,
+        "junit_failures": 0,
+        "junit_skipped": 0,
+        "junit_gate_python_tests": 12,
+        "frozen_142_hits": 0
+      },
+      "frozen_142_exact_name_intersection": []
+    },
+    {
+      "directory": "ui-native-merge-127149583438",
+      "review": {
+        "bytes": 39158,
+        "sha256": "cb9e8c3320b505b3fd77a76ec20b9a824c2df9bf1e181fa80afe4a68962957e2",
+        "computed_git_blob": "665bc61f50a7d45d7ebb19d5d4d2dbe8964db840"
+      },
+      "actual_checkout": "43d70e6d236fc21a3296e8cbcc7d51825f825742",
+      "actual_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "summary": {
+        "selected_counts_by_profile": [
+          28,
+          31
+        ],
+        "selected_occurrences": 59,
+        "distinct_test_names_across_profiles": 31,
+        "junit_failures": 0,
+        "junit_skipped": 0,
+        "junit_gate_python_tests": 12,
+        "frozen_142_hits": 0
+      },
+      "frozen_142_exact_name_intersection": []
+    }
+  ],
+  "cut": "All six included jobs completed before snapshot0050 at2026-11-05T13:37:57.478Z; artifact retrieval/verification times are separately preserved.",
+  "limits": [
+    "Source/ordinary merge/browser merge/native merge remain distinct actual commits; each records product treeb265.",
+    "No original142 names intersect these additional original scopes; no original blocker status is changed.",
+    "Windows proxy PASS is platform-specific; Linux CONNECT behavior is not inferred.",
+    "UI SDK and library fixtures do not imply independent Root/owner/device acceptance; full per-report limitations remain binding.",
+    "No workflow was dispatched, rerun, cancelled, or changed by this reviewer."
+  ]
+}

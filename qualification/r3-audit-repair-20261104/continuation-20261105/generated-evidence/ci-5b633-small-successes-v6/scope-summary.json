@@ -1,0 +1,102 @@
+{
+  "schema": "hepta-completed-scope-summary-v1",
+  "group": "small-successes",
+  "reviews": [
+    {
+      "directory": "memory-linux-127149582083",
+      "job_id": 127149582083,
+      "source": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "named_pass_occurrences": 2,
+      "original_142_matches": [],
+      "original_review": {
+        "bytes": 10106,
+        "sha256": "13c675a2f86dca58dec2bb3fd0f30ec4fd1d8ad45d9885c61791b4af5cd87fe7",
+        "computed_git_blob": "63b81924c4d1894831950c1d6890204b41b4b31f"
+      }
+    },
+    {
+      "directory": "windows-memory-127149581896",
+      "job_id": 127149581896,
+      "source": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "named_pass_occurrences": 2,
+      "original_142_matches": [],
+      "original_review": {
+        "bytes": 10112,
+        "sha256": "5459f9e843fdf87da8904fd0f75ec8248839159991fad7a55b8547748dfb1eb4",
+        "computed_git_blob": "281f5a78d1a11330773eb5f2a7dd27309e1253ef"
+      }
+    },
+    {
+      "directory": "supervisor-linux-127149583259",
+      "job_id": 127149583259,
+      "source": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "named_pass_occurrences": 17,
+      "original_142_matches": [],
+      "original_review": {
+        "bytes": 17706,
+        "sha256": "cd1eb0be3f3686082ca19e8b717dc64081eca4c244ad96f26eea63f37658017a",
+        "computed_git_blob": "a1a13b6130cdcb7946fb3145fa18a30e1be41934"
+      }
+    },
+    {
+      "directory": "windows-supervisor-127149582849",
+      "job_id": 127149582849,
+      "source": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "named_pass_occurrences": 17,
+      "original_142_matches": [],
+      "original_review": {
+        "bytes": 17750,
+        "sha256": "5159d72a35658ca296e4900e3b307cc2c5f88e0ecaabc9c235a4732fb363d816",
+        "computed_git_blob": "9667d02e8aa018e6e80c0f98387d23b0c812811c"
+      }
+    },
+    {
+      "directory": "windows-private-127149582685",
+      "job_id": 127149582685,
+      "source": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "named_pass_occurrences": 53,
+      "original_142_matches": [],
+      "original_review": {
+        "bytes": 32146,
+        "sha256": "9643a69fe6597858e8060828248a5c9f784171b48afe84bfb62ce21ec66a2c2a",
+        "computed_git_blob": "360635b5b8a48e11be5ea53e4938c7a6d40ab05b"
+      }
+    },
+    {
+      "directory": "v8-intel-release-127251874956",
+      "job_id": 127251874956,
+      "source": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "named_pass_occurrences": 6,
+      "original_142_matches": [],
+      "original_review": {
+        "bytes": 9285,
+        "sha256": "cc6e4c2c8020c2807079c9f668a50c9e93753a6b47f77432d4ec0ae8785b45f2",
+        "computed_git_blob": "5d6825077eeb48d96ae2359bdf4f32e4dcd3e4f6"
+      }
+    },
+    {
+      "directory": "v8-intel-sandbox-127251875130",
+      "job_id": 127251875130,
+      "source": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "named_pass_occurrences": 6,
+      "original_142_matches": [],
+      "original_review": {
+        "bytes": 9289,
+        "sha256": "59df242dbc4f2a206195ccf3e18cae385bb51438891032d8ebd297f120225293",
+        "computed_git_blob": "2043097a638aaa8ec42b5e5b6c99426efe62dd49"
+      }
+    }
+  ],
+  "limits": [
+    "Per-job actual sources and platforms remain separate.",
+    "Nested test execution, case filtering, cache use and repeated names are explicitly retained in each review.",
+    "No original blocker status or exit condition is modified."
+  ]
+}

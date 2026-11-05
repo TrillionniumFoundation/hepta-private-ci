@@ -1,0 +1,104 @@
+{
+  "schema": "ai395-new-core-readiness-actual-v1",
+  "report": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-readiness-launch-v1/readiness.original.json",
+    "bytes": 229791,
+    "sha256": "c61d68f27c06ab53c0b2befc36a3b6cc2b56184e8d77fa4ee77cece37761bfd3",
+    "git_blob": "54b205c850d87f4759404950b6370b7a7992a282"
+  },
+  "native_version": "66306:73535399:229791:1793887518054201699:1793887518054201699",
+  "chunks": [
+    {
+      "original_response": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-actions/ai395-readiness-bytes-000.original.json",
+      "offset": 0,
+      "next_offset": 65536,
+      "chunk_sha256": "cb448331282aed016f01884d0d0453d7c6447297dc83833d022d0549e2a39e3b",
+      "eof": false
+    },
+    {
+      "original_response": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-actions/ai395-readiness-bytes-001.original.json",
+      "offset": 65536,
+      "next_offset": 131072,
+      "chunk_sha256": "ea2247ceaabc0bb73e096154abc60ca9ec4eccc97bc031ab1fe4b57646445958",
+      "eof": false
+    },
+    {
+      "original_response": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-actions/ai395-readiness-bytes-002.original.json",
+      "offset": 131072,
+      "next_offset": 196608,
+      "chunk_sha256": "9f4c8f3208857438928be570c725767c12843e473030e7d741f8fd443e1d68b9",
+      "eof": false
+    },
+    {
+      "original_response": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-actions/ai395-readiness-bytes-003.original.json",
+      "offset": 196608,
+      "next_offset": 229791,
+      "chunk_sha256": "e085da65f0328962039aead468c61487ce021875159471e19f223b697a4a1606",
+      "eof": true
+    }
+  ],
+  "job_id": "1a1ac07278f-fc05-51b8",
+  "process_status": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-actions/ai395-readiness-status-001.original.json",
+    "bytes": 1078,
+    "sha256": "e7a47c1291d7b9a3b8d8afd3a39ef8c60bdf3a6ca1f9326b94a527a91993760d",
+    "git_blob": "a9f6ea0af139d0b48ba5ca2ce8576e6b43a83a70"
+  },
+  "process_read": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-actions/ai395-readiness-read-001.original.json",
+    "bytes": 1221,
+    "sha256": "12246edb8ccacf88224eacf64838d2f9b4372cbbeb34fe393c81b4474dd5e7d9",
+    "git_blob": "ac9dfa67d3ca43eb3d3573ff402e38220e383d3d"
+  },
+  "source_mutation": false,
+  "builds_executed": 0,
+  "tests_executed": 0,
+  "host": {
+    "cpu_count": 32,
+    "euid": 1000,
+    "uid": 1000,
+    "uname": {
+      "machine": "x86_64",
+      "node": "ai395",
+      "processor": "",
+      "release": "7.0.0-38-generic",
+      "system": "Linux",
+      "version": "#38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:10:14 UTC 2026"
+    }
+  },
+  "capacity": {
+    "available_bytes": 333206835200,
+    "f_bavail": 81349325,
+    "f_bfree": 105758566,
+    "f_blocks": 480160322,
+    "f_frsize": 4096,
+    "minimum_capacity_not_evaluated": true,
+    "observed_at": "2026-11-05T14:05:14.081462+00:00",
+    "path": "/home/qq/work"
+  },
+  "memory_observation": {
+    "MemTotal": "128650956 kB",
+    "MemAvailable": "120596896 kB",
+    "SwapTotal": "8388604 kB",
+    "SwapFree": "3574784 kB"
+  },
+  "loadavg": "2.24 2.79 2.70 2/1126 2882294\n",
+  "files_observed": 171,
+  "links_observed": 147,
+  "future_core_before": {
+    "exists": false,
+    "observed_at": "2026-11-05T14:05:14.077704+00:00",
+    "path": "/home/qq/work/hepta-core-musl-full-20261105"
+  },
+  "future_core_after": {
+    "exists": false,
+    "observed_at": "2026-11-05T14:05:18.051781+00:00",
+    "path": "/home/qq/work/hepta-core-musl-full-20261105"
+  },
+  "tools_versions_are_historical": true,
+  "fresh_compile_capacity_qualified": false,
+  "observed_interval": [
+    "2026-11-05T14:05:14.077751+00:00",
+    "2026-11-05T14:05:18.051802+00:00"
+  ]
+}

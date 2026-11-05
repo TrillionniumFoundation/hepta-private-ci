@@ -1,0 +1,59 @@
+{
+  "schema": "hepta-v6-mechanism-group-registration-completion-v1",
+  "created_utc": "2026-11-05 15:37:11 UTC",
+  "prior_registration_correction": "reviews/v6-object-registration-provenance-correction-v1.json",
+  "second_create_tree_original_error": {
+    "error": "GitHub API error 422: {\"message\":\"tree.sha e46fea0699913542e0155b7ab1adf9c5eb4fe36b is not a valid blob\",\"documentation_url\":\"https://docs.github.com/rest/git/trees#create-a-tree\",\"status\":\"422\"}",
+    "error_code": "INVALID_ARGUMENT",
+    "error_data": {
+      "message": "tree.sha e46fea0699913542e0155b7ab1adf9c5eb4fe36b is not a valid blob",
+      "documentation_url": "https://docs.github.com/rest/git/trees#create-a-tree",
+      "status": "422"
+    }
+  },
+  "scope": "All six files in the mechanism-actual group were explicitly created and fully read back equal by root. Native originals and their source manifest remain byte-identical.",
+  "verified": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/mechanism-actual/manifest.json",
+      "bytes": 3759,
+      "sha256": "dbe9ebb70e35da5287cafea3568d41545abb7456e22b3753713c527b153ef3ad",
+      "blob": "c383b5095412320661ff2f5b8b479e71dfaf93d4",
+      "actual_create_full_get": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/mechanism-actual/mechanism-causal-review.json",
+      "bytes": 2941,
+      "sha256": "d750fb8575a91498eba86dab801bcb83918cdecf8fb15304671e824cb62c3393",
+      "blob": "07f84f399ab6af2106a993aed4518affdc814745",
+      "actual_create_full_get": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/mechanism-actual/probe-isolated-positive.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "actual_create_full_get": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/mechanism-actual/probe-isolated-positive.stdout",
+      "bytes": 656,
+      "sha256": "123c73c49bee9990d722eecbd099a61e255ad3ebf526e359b35384ede822c535",
+      "blob": "e46fea0699913542e0155b7ab1adf9c5eb4fe36b",
+      "actual_create_full_get": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/mechanism-actual/probe-shared-negative.stderr",
+      "bytes": 182,
+      "sha256": "aa2bc80e4902d53e2706eac274ebcdad2525789f848e3fe48096d190c2e680a2",
+      "blob": "36ff0c27e3d431de891e0549f05203469cffad56",
+      "actual_create_full_get": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/mechanism-actual/probe-shared-negative.stdout",
+      "bytes": 213,
+      "sha256": "c4dd3b28f95f799d7e144702c763ffc71154d9a8fd30b937ada8a1cbf1c6d767",
+      "blob": "55caeb20bfe3fa020d84157eaee33d60c17c371a",
+      "actual_create_full_get": true
+    }
+  ]
+}

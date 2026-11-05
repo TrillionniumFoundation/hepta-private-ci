@@ -1,0 +1,89 @@
+{
+  "schema": "hepta-core-first-launch-git-transport-root-guard-v1",
+  "reviewed_at": "2026-11-05T13:58:41.293778+00:00",
+  "decision": "APPROVED_FIRST_CORE_START_TRANSPORT_ONLY",
+  "product_qualification": false,
+  "reviewed_static_manifest": {
+    "schema": "core-musl-git-bootstrap-static-v1",
+    "status": "DISABLED_PENDING_ROOT_TRANSPORT_REVIEW",
+    "runner": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/bootstrap_git_transport.py",
+      "bytes": 9750,
+      "sha256": "7550b80d29bd8c91e46122c0a18762bc09cf5c49d661721019149d544263b3c1",
+      "git_blob": "14ef6c13bb7733e2efe4a907fa9dac77a0fd7aab"
+    },
+    "request": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/git-bootstrap-request-DISABLED-v1.json",
+      "bytes": 956,
+      "sha256": "ded96ee23dfbf7691601528a15b32807c5ca7b0d4678d6ae582212932fb694d2",
+      "git_blob": "1667a12ab94146d6e544ab278f256a2f6788be2e"
+    },
+    "process_start": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/git-bootstrap-process-start-DISABLED-v1.json",
+      "bytes": 11723,
+      "sha256": "d33fcbb92f2a5d139cddeffc5d1485caece74d02859d9ba9d8afd700a820b2ef",
+      "git_blob": "1839a3638dbd0ff3ab4c6984f8a7b9627cfa53d5"
+    },
+    "actual_supply_commit": "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72",
+    "actual_supply_tree": "65cfd91deea0fbd5b432c225e16d15106ed5f373",
+    "manifest_identity": {
+      "bytes": 3003,
+      "sha256": "ee359dcbb7fbb6187f6ba66276cae4fc95608ffd49f2a6c562905bbb5703d1cf",
+      "git_blob": "65d3fd87285dbeed12740a9c8e40dd1507cd2cf1"
+    },
+    "owned_root_must_be_absent": "/home/qian-qi/work/hepta-core-musl-git-transport-20261105-v1",
+    "staging": "Original V3 destination must be physically absent at bootstrap entry and atomic create-only publication. No overwrite or treatment of prior file_info timeout as missing.",
+    "minimum_free_bytes": 27013160352,
+    "allowance": "2GB new input-transport store plus original 25013160352B project floor; not a measured peak.",
+    "exact_preservation": "Enabled request1261663B/148243830f8a8c36ae7fe85822160c4a7dfd19bf5a06d0d3daef7c5ccc8edaaa, gzip926608B/98f1c3e0e36d268659e2522e7d6a82ec71c2855950b815fbb35ae008cd8e5083, loader2884B/e5a696ab2c543babc38ca000f72014216e53334ce01ccacd456b1b74ce7ea8ef and control776B/0ab430d641b80a4d33ab31609d5f912088c3e7ac2849b9f45aa3b79312cdb173 remain original bytes.",
+    "operations": "Git init/fetch/cat-file in absent task-owned bare store; pinned blob reads only; create-only new staging file; unchanged original V3 loader subprocess in same durable first Core job.",
+    "temporary_cleanup": "Only unlink the bootstrap-created temporary gzip name after an atomic hard-link create-only publish succeeds; final file then has nlink1. No unknown upload fragment inspected/deleted.",
+    "source_target_before_original_P0": "No writes; only target statvfs. Loader receives the original two environment overrides; transport Git noninteractive overrides are not added to the loader environment.",
+    "native_executed": false
+  },
+  "original_execution_guard": "d92b0ab0445382b266129c7f959e15497e0ac19e",
+  "published_supply": {
+    "commit": "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72",
+    "tree": "65cfd91deea0fbd5b432c225e16d15106ed5f373",
+    "new_evidence_leaves": 8,
+    "prior_11445_leaves_all_unchanged": true,
+    "manifest_blob": "65d3fd87285dbeed12740a9c8e40dd1507cd2cf1"
+  },
+  "prior_transport": {
+    "confirmed_upload_bytes": 393216,
+    "next_offset": 393216,
+    "same_chunk_two_tool_timeouts": true,
+    "commit_called": false,
+    "core_process_start_called": false,
+    "file_info_and_health_afterwards": "TOOL_TIMEOUT_NOT_ABSENCE_OR_HOST_DOWN",
+    "unknown_fragments": "PRESERVE_UNTOUCHED"
+  },
+  "root_review": [
+    "Entire9750-byte bootstrap and static request read; exact frozen local bytes independently rehashed.",
+    "Supply fetched through original existing noninteractive Git mechanism into new absent task-owned bare store; absolute pinned Git binary; no credential read/change.",
+    "Exact supply commit and tree, each manifest path/blob, complete bytes/Git/SHA identities, strict decoded parts and whole gzip/raw/loader/control are checked before publication.",
+    "Fresh space must include explicit2GB transport allowance plus original25,013,160,352-byte project prerequisite; this is a conservative bound, not measured peak.",
+    "Original staging must actually be absent both at entry and atomic no-clobber publication; failed file_info does not count as absence.",
+    "Only bootstrap-created temporary gzip name is unlinked after successful same-filesystem atomic hard-link publication; the final inode must have one link and exact bytes.",
+    "Original enabled request1261663B, V3 loader2884B, control776B and original first Core key remain exact; original V3 P0 guards run before any source or target mutation.",
+    "The transport-only noninteractive environment is not injected into V3 beyond its original two explicit overrides.",
+    "No unknown B16 driver source/target/request/key or service-internal upload state is accessed."
+  ],
+  "enable_only": [
+    "bootstrap request execute false to true",
+    "bootstrap transport_root_guard null to this actual Git blob SHA",
+    "process_start stdin replaced only by the exact serialized enabled bootstrap request"
+  ],
+  "allowed_first_call": {
+    "host": "rog",
+    "idempotency_key": "hepta-rog-core-musl-project-20261105-v1",
+    "timeout_seconds": 21600,
+    "source_and_tests": "Unchanged V3 phasesP0-P5 with original gates; P6 still separate review",
+    "call_count": 1
+  },
+  "stop_conditions": [
+    "Any prerequisite, source, identity, capacity, transport or original test failure retains its true result and stops as specified.",
+    "If this first process_start is unknown, preserve exact request/key and reconcile only attributable status; do not replay with a new key or different program.",
+    "No product ref update, main merge, release, activation, cache deletion, system-policy change or arbitrary process termination is authorized by this transport guard."
+  ]
+}

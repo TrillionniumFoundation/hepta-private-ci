@@ -1,0 +1,107 @@
+"""Prepare an additive evidence-only V6 plan; never mutate Git or V5."""
+from pathlib import Path
+import hashlib
+import json
+
+ROOT = Path(__file__).resolve().parent.parent
+OUT = ROOT / "hepta-audit-fifth"
+PREFIX = "qualification/r3-audit-repair-20261104/continuation-20261105"
+items = {}
+
+
+def load(path):
+    return json.loads((ROOT / path).read_bytes())
+
+
+def add(local, relative, role, pin=None):
+    path = Path(local)
+    path = path if path.is_absolute() else ROOT / path
+    raw = path.read_bytes()
+    identity = {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
+                "blob": hashlib.sha1(f"blob {len(raw)}\0".encode() + raw).hexdigest()}
+    destination = relative if relative.startswith(PREFIX + "/") else PREFIX + "/" + relative
+    assert destination not in items, destination
+    row = {"repository_path": destination, "local_file": str(path), "mode": "100644", **identity, "role": role}
+    if pin is not None:
+        assert identity["blob"] == pin.get("blob", pin.get("git_blob")), path
+        for key in ("bytes", "sha256"):
+            if key in pin:
+                assert identity[key] == pin[key], path
+        row["prior_object_verification"] = pin
+        row["object_verified_by"] = "Actual Git create/full GET, with root local bytes revalidated"
+    items[destination] = row
+
+
+base = "research-audit/published-5b633-ci-20261105"
+for folder, pin, name in [
+    ("immutable-v6-success-registry", "a8352968733a6448fda36f3d3d59d3120791bb7d", "ci-5b633-success-groups-v6-registry-plan.json"),
+    ("immutable-v6-musl-compile-failure-v2", "4f7a7e61d2de9d118098ec03ee9b80036f0f681b", "ci-5b633-musl-failure-v6-registry-plan.json"),
+]:
+    filename = f"{base}/{folder}/registry-plan.json"
+    for row in load(filename)["items"]:
+        assert row["actual_create_get"] is True
+        add(row["local_path"], row["repo_path"], "Complete original CI evidence with bounded per-job qualification", row)
+    add(filename, "generated-evidence/" + name, "Actual immutable source registry", {"blob": pin})
+
+core = "ci-audit/core-wait-span-20261105/owned-child-v4"
+for row in load(core + "/github-readback.json"):
+    assert row["create_and_get_byte_equal"] is True
+    add(row["path"], "candidate-next/core-owned-child-v4/" + Path(row["path"]).name,
+        "Reviewed Core fixture candidate; native and original Windows gates remain distinct", row)
+add(core + "/github-readback.json", "candidate-next/core-owned-child-v4/github-readback.json", "Actual source-object readback map")
+review = "research-audit/core-wait-span-independent-20261105"
+for row in load(review + "/github-readback-map.json")["items"]:
+    assert row["actual_create_get"] is True
+    add(row["local_path"], "reviews/core-owned-child-v4-independent-review.json", "Independent semantic review, not execution", row)
+add(review + "/github-readback-map.json", "reviews/core-owned-child-v4-independent-readback.json", "Actual review-object map")
+add(review + "/native-v3-and-mechanism-narrow-review.json", "reviews/core-musl-native-v3-independent-review.json",
+    "Independent staged-loader and mechanism review", {"blob": "f5f3296956a6a1b2f26b8aa360e95aa053e8f90b"})
+
+musl = "architecture-audit/musl-parent-procfs-type-20261105"
+for row in load(musl + "/git-objects.json")["files"]:
+    assert row["create_succeeded"] and row["get_byteequal"]
+    name = row["path"] + (".source.txt" if row["path"].endswith(".rs") else "")
+    add(musl + "/" + row["path"], "candidate-next/musl-procfs-type-v1/" + name,
+        "Cross-platform lossless comparison candidate and original ABI/failure evidence", row)
+add(musl + "/git-objects.json", "candidate-next/musl-procfs-type-v1/git-objects.json",
+    "Actual candidate source/evidence Git map", {"blob": "983cc17b5afded692b9812ef6d4b8b88415c721d"})
+
+selection = "architecture-audit/original-exit-selection-5b-20261105"
+for row in load(selection + "/git-object-map.json")["artifacts"]:
+    assert row["actual_create_and_get"]
+    name = row["name"] + (".source.txt" if row["name"].endswith(".py") else "")
+    add(selection + "/" + row["name"], "reviews/original-exit-selection-5b/" + name,
+        "Original exact-name selection and independent feature/catalog boundary", row)
+add(selection + "/git-object-map.json", "reviews/original-exit-selection-5b/git-object-map.json",
+    "Actual selection-review Git map", {"blob": "34de51ab1c4d8afeeb5552f755f869028fd094c5"})
+
+for directory, destination in [
+    ("pr-increment-1338", "generated-evidence/pr-increment-1338-v6"),
+    ("core-musl-native-request-v3", "native/core-musl-rog-v3/request-originals"),
+]:
+    for path in sorted((OUT / "v6-archives" / directory).iterdir()):
+        name = path.name + (".source.txt" if path.suffix == ".py" else "")
+        add(path, destination + "/" + name, "Complete lossless originals; independently reconstructed before registration")
+
+root_files = [
+    ("inputs/core-musl-native-root-execution-guard-v3.json", "native/core-musl-rog-v3/root-execution-guard.json", "d92b0ab0445382b266129c7f959e15497e0ac19e"),
+    ("inputs/v6-ci-archive-root-review.json", "reviews/v6-ci-archive-root-review.json", None),
+    ("inputs/canonical-product-direction-bridge-v1.json", "reviews/canonical-product-direction-bridge-v1.json", None),
+    ("inputs/canonical-fixed-directory-originals-v1.json", "generated-evidence/canonical-fixed-directory-originals-v1.json", None),
+    ("core-musl-initial-source-binding.json", "candidate-next/core-musl-initial-source-binding.json", None),
+    ("pr-increment-1338/manifest-and-root-review.json", "reviews/pr-increment-1338-root-review.json", None),
+    ("audit-publication-receipt-v5.json", "reviews/audit-publication-receipt-v5.json", None),
+    ("pr4797-body-update-v5-receipt.json", "reviews/pr4797-body-update-v5-receipt.json", None),
+    ("pr4797-body-after-v5.md", "reviews/pr4797-body-after-v5.md", None),
+    ("freeze_v6_inputs.py", "generated-evidence/freeze_v6_inputs.py.source.txt", None),
+    ("build_registration_v6.py", "generated-evidence/build_registration_v6.py.source.txt", None),
+]
+for local, destination, blob in root_files:
+    add(OUT / local, destination, "Root-reviewed exact-source/observation record", {"blob": blob} if blob else None)
+
+result = {"schema": "hepta-evidence-only-registration-plan-v6-seed", "base_audit_commit": "c8d82c86b5695f50b4531883709ee990d3e6095e",
+          "evidence_only": True, "native_execution_claimed_by_this_plan": False, "entry_count": len(items),
+          "items": sorted(items.values(), key=lambda r: r["repository_path"])}
+(OUT / "registration-plan-v6-seed.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")
+print(json.dumps({"entries": len(items), "existing_actual_objects": sum("prior_object_verification" in r for r in items.values()),
+                  "bytes": sum(r["bytes"] for r in items.values()), "max_blob_bytes": max(r["bytes"] for r in items.values())}))

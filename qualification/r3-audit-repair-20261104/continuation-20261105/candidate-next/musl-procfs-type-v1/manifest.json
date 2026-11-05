@@ -1,0 +1,273 @@
+{
+  "schema": "hepta-musl-parent-procfs-type-fix-v1",
+  "status": "STATIC_REVIEWED_UNEXECUTED_CANDIDATE",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "actual_musl_merge": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+    "actual_musl_merge_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "full_leaf_manifest": {
+      "path": "hepta-audit-fifth/inputs/product-5b-full-leaf-manifest.json",
+      "bytes": 2262883,
+      "sha256": "b2deb3758d48bcec2a07eb9fe6678248af8683478d765806a3c19bb682dd07b2",
+      "git_blob": "ec157b75bbf716ac43b2f7027b2821e76142c5a9"
+    }
+  },
+  "changes": [
+    {
+      "repository_path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "mode": "100644",
+      "preimage": {
+        "path": "architecture-audit/musl-parent-procfs-type-20261105/preimage-parent_lifecycle.rs",
+        "bytes": 8228,
+        "sha256": "6b1df4d24e48d9eaf772c85e70ebca822b5fd23d3708b2c749158b9cb4350c68",
+        "git_blob": "8f500e03938718820360ce2ad41f2286eb9071bd"
+      },
+      "postimage": {
+        "path": "architecture-audit/musl-parent-procfs-type-20261105/postimage-parent_lifecycle.rs",
+        "bytes": 8252,
+        "sha256": "b1353af4d2fa468e94a52b93bf9468050f56e734b2afb20c099b342ab85b5c03",
+        "git_blob": "fe42212316589999fdfc0b1877c975bdafa4a8e7"
+      },
+      "line": 122,
+      "additions": 1,
+      "deletions": 1,
+      "reason": "libc statfs.f_type is u64 on the actual x86_64 musl target while PROC_SUPER_MAGIC is i64; Rust rejects their direct comparison. Embed both values losslessly in i128 before the same inequality."
+    }
+  ],
+  "patch": {
+    "path": "architecture-audit/musl-parent-procfs-type-20261105/candidate.patch",
+    "bytes": 694,
+    "sha256": "af8ee4d1d6d614f318fba5a4e685c9653710a3745c9ee6462932d8362913f938",
+    "git_blob": "5b3b84db742827e56318772095dc46b6cc82a210"
+  },
+  "scope": {
+    "production_paths": 1,
+    "changed_tests": 0,
+    "new_tests": 0,
+    "dependency_changes": 0,
+    "workflow_changes": 0,
+    "lock_changes": 0,
+    "native_source_modified": false,
+    "refs_modified": false,
+    "compiler_invoked": false,
+    "tests_executed": false,
+    "static_cloud_git_roundtrip_only": true
+  },
+  "source_guard_leaves": [
+    {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8f500e03938718820360ce2ad41f2286eb9071bd",
+      "size": 8228
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6a52517913ad570b9468ec69bcb3c2741f1e40a",
+      "size": 13771
+    },
+    {
+      "path": "codex-rs/linux-sandbox/BUILD.bazel",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "984f870ba21bb97cf6c58bec6646f74caf82b350",
+      "size": 339
+    },
+    {
+      "path": "codex-rs/linux-sandbox/Cargo.toml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0f7c68a152a75cfc2f0369dc098dcf2b996185f2",
+      "size": 1187
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+      "size": 413768
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4713741651affd053bb8ae5aa8b5d76831c15c0e",
+      "size": 22548
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1904db189003cb0b559f71958518e33a45fb6bb7",
+      "size": 1738619
+    },
+    {
+      "path": ".github/workflows/hepta-musl-product-smoke.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fb46a681b5c3cd47c76b20ef56048eae771d9e07",
+      "size": 24716
+    },
+    {
+      "path": "AGENTS.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a22ff3bee70261f6061d598c31f0016e785a7a3c",
+      "size": 23303
+    }
+  ],
+  "original_failure": {
+    "workflow": "hepta-musl-product-smoke",
+    "run_id": 41999115065,
+    "job_id": 127149584475,
+    "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "actual_checkout": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "invocation": "be2d0ec1-a044-45bb-b5f4-5381294bc74d",
+    "job_log": {
+      "path": "research-audit/published-5b633-ci-20261105/terminal/musl-product-127149584475/job.log",
+      "bytes": 105003,
+      "sha256": "ed5311978453007def3f10d733ee6ad56cf640375b5f7c6fcb5c47b84b041065",
+      "git_blob": "c75a81f62d3ea097c1c360e50559889024813f40"
+    },
+    "build_stderr": {
+      "path": "research-audit/published-5b633-ci-20261105/terminal/musl-product-127149584475/members/build.stderr",
+      "bytes": 30278,
+      "sha256": "65775327701237d5b2e4807b3b900f568c2d7ff7cc4c263540c88fa823520eff",
+      "git_blob": "20c2bdab4e4e6739172ebca7a76840b2f6d0f0e8"
+    },
+    "error_slice": {
+      "path": "architecture-audit/musl-parent-procfs-type-20261105/original-compiler-error.log.txt",
+      "bytes": 1434,
+      "sha256": "9d67112c3c12934379cb4b41528ea04a75e3c2ee2bb7e8916cd2331afc2575d3",
+      "git_blob": "812a6997ad1af44d2c835f881743d77aa141426e",
+      "source_first_line": 177,
+      "source_last_line": 205
+    },
+    "errors": [
+      "E0308 expected u64, found i64",
+      "E0277 no PartialEq<i64> for u64"
+    ],
+    "build_command": {
+      "name": "build",
+      "argv": [
+        "/usr/bin/python3",
+        ".github/scripts/run_bazel_with_buildbuddy.py",
+        "build",
+        "--config=ci-linux",
+        "--config=ci",
+        "-c",
+        "opt",
+        "--platforms=@rules_rs//rs/platforms:x86_64-unknown-linux-musl",
+        "--lockfile_mode=error",
+        "--remote_download_toplevel",
+        "--build_metadata=COMMIT_SHA=9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+        "--build_metadata=REPO_URL=https://github.com/TrillionniumFoundation/hepta-private-ci",
+        "--build_metadata=TAG_workflow=hepta-musl-product-smoke",
+        "--build_event_json_file=/home/runner/work/_temp/hepta-musl-product-build.bep.json",
+        "//codex-rs/cli:hepta_linux_amd64_musl"
+      ],
+      "timeout_seconds": null,
+      "attempt": 1,
+      "timed_out": false,
+      "exit_code": 1,
+      "elapsed_seconds": 664.1971512910001
+    },
+    "resolver_outer_inner_and_rust_action_graph_succeeded": true,
+    "rust_action_graph_qualified": true,
+    "product_build_succeeded": false,
+    "elf_or_product_smokes_reached": false,
+    "qualified": false,
+    "artifact_archive": {
+      "path": "research-audit/published-5b633-ci-20261105/terminal/musl-product-127149584475/artifact-13416171572.zip",
+      "bytes": 16764,
+      "sha256": "07ceebce2938a6b5a89617b60a40d92652ff1a1b9745d92f79115ec7113bf788",
+      "git_blob": "e9404ee376f4b261098501dbc41822a9c9591550"
+    },
+    "artifact_members": 18,
+    "zip_crc_and_all_member_bytes_rechecked": true,
+    "artifact_verification": {
+      "path": "research-audit/published-5b633-ci-20261105/terminal/musl-product-127149584475/artifact-verification.json",
+      "bytes": 4573,
+      "sha256": "59887e78edf5743c454c12a313a333a9e7d60121e3238811e0d026e13763f537",
+      "git_blob": "80580e1816045fb83a66a82acbb1f5b2713bec6d"
+    },
+    "receipt": {
+      "path": "research-audit/published-5b633-ci-20261105/terminal/musl-product-127149584475/members/receipt.json",
+      "bytes": 9520,
+      "sha256": "b1ee07ff0951c49db0fee5d2c324dc26b18ef1b426689dbca10f1dfd77ec7c7d",
+      "git_blob": "edf45864c97ea3d54502dc4ddf069c8b3cb39f4d"
+    },
+    "source_receipt": {
+      "path": "research-audit/published-5b633-ci-20261105/terminal/musl-product-127149584475/members/source.json",
+      "bytes": 1995,
+      "sha256": "70c79e77b2af25e661b772030bee984f4f800f7af0d789a13443c9eb7a810bf5",
+      "git_blob": "f0214ded0cecdb66238fcf28285f8508a534b028"
+    },
+    "bep_projection": {
+      "path": "research-audit/published-5b633-ci-20261105/terminal/musl-product-127149584475/members/build-events-projection.json",
+      "bytes": 7477,
+      "sha256": "594a6a8d7baa3362c267df043f9830c93b1ff4039517fad0952911d39c9b26f4",
+      "git_blob": "ae7fb972b49049fc26278088a68d55ae081edf07"
+    }
+  },
+  "type_proof": {
+    "libc_lock_version": "0.2.191",
+    "libc_lock_checksum": "65cd87c9a6d60536580b316ad985726104730a5151c99845f2490428ef91240a",
+    "libc_resolved_commit": "ccc2ff4aaab962f7fde7b8edda7379c045b1ca12",
+    "libc_registry_archive_byte_equivalence_checked": false,
+    "actual_compiler_diagnostic_independently_establishes_u64_vs_i64": true,
+    "musl_source": "primary/musl-mod.rs:350-364 statfs.f_type c_ulong; x86_64 satisfies cfg",
+    "gnu_source": "primary/gnu-x86_64-stat.rs:16-17 __fsword_t; primary/gnu-b64-mod.rs:19-25 i64",
+    "constant_source": "primary/libc-linux-like-mod.rs:1521-1563 non-s390x PROC_SUPER_MAGIC c_long = 0x9fa0",
+    "conversion_source": "primary/rust-1.95-core-convert-num.rs:71-85 macro;112 i64 to i128;124 u64 to i128; stable since 1.26.0",
+    "semantic_argument": "i128 contains every value of i64 and u64 exactly. Equality with positive PROC_SUPER_MAGIC is therefore unchanged on GNU and well-typed on musl. Negative GNU f_type and large unsigned values cannot truncate or become the procfs magic.",
+    "primary_bundle": {
+      "path": "architecture-audit/musl-parent-procfs-type-20261105/primary-sources.json",
+      "bytes": 176256,
+      "sha256": "c0f578c3a26909335c30b31a5c5b4436a95f4d7f090a7fe1b41cf303e4d90b7e",
+      "git_blob": "1741a2b1a871ad0c338243bc21911b4f8ef84d89"
+    }
+  },
+  "preserved_contracts": [
+    "Same fstatfs result and syscall ordering; no extra FFI, FD ownership or runtime work.",
+    "All regular-file/dev/inode/readonly/no-O_PATH/unread-offset checks and rejection order unchanged.",
+    "FD_CLOEXEC, parent death arm, PF_EXITING/death-state check, and consume-before-user-fork unchanged.",
+    "Original three active parent controls and ignored support child unchanged; no assertion, timeout, retry, skip or capability policy changes.",
+    "No casts to narrower or differently signed types and no conditional target bypass.",
+    "Original musl canonical platform, inner product/bwrap Rust target, linker and stdlib assertions, static ELF checks and version/help process smokes unchanged."
+  ],
+  "original_owning_controls_unchanged": [
+    "parent_lifecycle::tests::exited_original_parent_is_rejected_after_actual_reparenting",
+    "parent_lifecycle::tests::rearmed_parent_death_terminates_probe_and_closes_fd_before_user_fork",
+    "parent_lifecycle::tests::ordinary_file_and_pre_read_proc_descriptor_are_rejected"
+  ],
+  "ignored_support_not_counted_as_positive": "parent_lifecycle::tests::owned_liveness_scenario",
+  "hygiene_causal_trace": {
+    "path": "architecture-audit/musl-parent-procfs-type-20261105/hygiene-causality.json",
+    "bytes": 3573,
+    "sha256": "f0f447e987fc5e2768685761668f66e4cf24b33168a178aced825f4cc8522453",
+    "git_blob": "4b07ab496b5d475096cedaa9d4571d5a8924d4ba"
+  },
+  "static_validation": {
+    "path": "architecture-audit/musl-parent-procfs-type-20261105/roundtrip-receipt.json",
+    "bytes": 1367,
+    "sha256": "66c1a889821797134a34c94744c524e425953efc94626d44e0be9bb82d4b5d97",
+    "git_blob": "4292d2d45105043d9d888b650a5fff66e9e7c929"
+  },
+  "acceptance_pending": {
+    "required_actual_musl_gate": "New exact candidate source through the unchanged hepta-musl-product-smoke workflow: actual explicit target build succeeds, then original ELF/static/hash and both CLI process smokes qualify. Prior failure remains the baseline.",
+    "existing_owning_regression": "Original Linux sandbox owning controls and project fix/fmt may be included by root/sole-native CI in the combined next source batch. No test body or selector is changed by this candidate.",
+    "source_guard": "Apply only when parent_lifecycle.rs is the exact 8f500 preimage; bind subsequent code tree and actual original commands.",
+    "qualification_limits": [
+      "Static ABI reasoning and cloud git apply are not a Rust compile or runtime result.",
+      "GNU compile/lint success alone is not musl target qualification.",
+      "This change does not establish full musl behavior or Alpine deployment acceptance.",
+      "No fresh CI was dispatched, no native process started, and no product branch/ref changed."
+    ]
+  }
+}

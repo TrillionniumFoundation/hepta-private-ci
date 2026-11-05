@@ -1,0 +1,323 @@
+{
+  "scope": "isolated cloud text/git operations only; no Rust/native/project tests",
+  "projection": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+  "checks_reached": [
+    "full four-path patch exact",
+    "full inverse exact",
+    "three small cohorts exact",
+    "three cohort inverses exact",
+    "V1 to V2 exact",
+    "V2 to V1 inverse exact",
+    "no whitespace diagnostics; no-index 1 is ordinary differing-file exit"
+  ],
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/diagnostic-pr-full.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/diagnostic-pr-full.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/diagnostic-pr-full.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/diagnostic-pr-full.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/01-label-custody-support.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/01-label-custody-support.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/02-probe-consumer.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/02-probe-consumer.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/03-independent-windows-workflow.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/03-independent-windows-workflow.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/03-independent-windows-workflow.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/03-independent-windows-workflow.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/02-probe-consumer.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/02-probe-consumer.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/01-label-custody-support.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/01-label-custody-support.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/v1-to-v2-output-visibility.delta.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/v1-to-v2-output-visibility.delta.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/v1-to-v2-output-visibility.delta.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/v1-to-v2-output-visibility.delta.patch"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-v2-roundtrip-x5ey3ob4",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--no-index",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/source/codex-rs/windows-sandbox-rs/src/token.rs",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token.rs"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--no-index",
+        "--check",
+        "/dev/null",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--no-index",
+        "--check",
+        "/dev/null",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--no-index",
+        "--check",
+        "/dev/null",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/execution-candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml"
+      ],
+      "cwd": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "previous_verifier_parser_error_preserved": "cloud-patch-verification-v1-failure.json"
+}

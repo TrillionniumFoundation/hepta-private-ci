@@ -1,0 +1,30 @@
+{
+  "schema": "hepta-v6-object-registration-provenance-correction-v1",
+  "recorded_utc": "2026-11-05 15:35:57 UTC",
+  "affected_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/mechanism-actual/mechanism-causal-review.json",
+  "bytes": 2941,
+  "sha256": "d750fb8575a91498eba86dab801bcb83918cdecf8fb15304671e824cb62c3393",
+  "git_blob": "07f84f399ab6af2106a993aed4518affdc814745",
+  "original_create_tree_failure": {
+    "error": "GitHub API error 422: {\"message\":\"tree.sha 07f84f399ab6af2106a993aed4518affdc814745 is not a valid blob\",\"documentation_url\":\"https://docs.github.com/rest/git/trees#create-a-tree\",\"status\":\"422\"}",
+    "error_code": "INVALID_ARGUMENT",
+    "error_data": {
+      "message": "tree.sha 07f84f399ab6af2106a993aed4518affdc814745 is not a valid blob",
+      "documentation_url": "https://docs.github.com/rest/git/trees#create-a-tree",
+      "status": "422"
+    }
+  },
+  "finding": "The planned Git SHA was the correct 40-character content identity, but the earlier plan marked the object actual-verified without sufficient create/read-back evidence. GitHub rejected the tree because that blob did not exist. The local content was not corrupt and the SHA was not truncated.",
+  "correction": {
+    "sha": "07f84f399ab6af2106a993aed4518affdc814745",
+    "create": {
+      "sha": "07f84f399ab6af2106a993aed4518affdc814745"
+    },
+    "rootFullGetByteEqual": true,
+    "originalRegistrationClaimNotSufficient": true
+  },
+  "preservation": "Original mechanism content, source manifest, prior claim and rejected tree response are retained; only registration provenance is corrected.",
+  "root_scan": "All 287 plan local files were read in full, SHA-1 recomputed with the Git blob header, and all matched their declared 40-hex content identities. This local scan alone does not establish remote object existence.",
+  "native_execution_changed": false,
+  "blocker_status_changed": false
+}

@@ -1,0 +1,688 @@
+{
+  "schema": "ai395-independent-core-C0-C1-terminal-v1",
+  "started_at": "2026-11-05T14:27:11.122127+00:00",
+  "tests_executed": 0,
+  "metadata_executed": 0,
+  "catalogs_executed": 0,
+  "hygiene_executed": 0,
+  "prior_B_mutated": false,
+  "commands": [
+    {
+      "label": "source-init",
+      "argv": [
+        "/usr/bin/git",
+        "init",
+        "/home/qq/work/hepta-core-musl-full-20261105/source"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105",
+      "exit_code": 0,
+      "duration_seconds": 0.0018765140557661653,
+      "stdout": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/source-init.stdout",
+        "bytes": 93,
+        "sha256": "a8e4c6cf41e49642c978f470b910729e5e45355050b732304b17bc60022cc713",
+        "git_blob": "2d67b218dc8d43d27f7921d1a08124320874ec70",
+        "mode": 384,
+        "executable": false
+      },
+      "stderr": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/source-init.stderr",
+        "bytes": 586,
+        "sha256": "3e70934f1909b0f5a846d62237fcc1509d733b9fb0321187024723dfc67176d3",
+        "git_blob": "e10488d7c1bb391925b92506eb406afe43b53d25",
+        "mode": 384,
+        "executable": false
+      },
+      "capacity_before": {
+        "label": "source-init-before",
+        "at": "2026-11-05T14:27:11.687880+00:00",
+        "free_bytes": 249203171328,
+        "minimum_free_bytes": 64000000000,
+        "mem_available_bytes": 121464672256,
+        "minimum_mem_available_bytes": null,
+        "cpu_count": 32,
+        "loadavg": "0.89 1.25 1.86 4/1092 2961615\n",
+        "measured_peak": false
+      }
+    },
+    {
+      "label": "fetch-fixed-inputs",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir",
+        "/home/qq/work/hepta-core-musl-full-20261105/source/.git",
+        "fetch",
+        "--no-tags",
+        "--depth=1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105",
+      "exit_code": 0,
+      "duration_seconds": 518.1496875219746,
+      "stdout": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/fetch-fixed-inputs.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": 384,
+        "executable": false
+      },
+      "stderr": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/fetch-fixed-inputs.stderr",
+        "bytes": 140,
+        "sha256": "012d6fb4c3354733dd04b380b423bd0432a5385dd0de6166d637b6511ac51fa3",
+        "git_blob": "00884b673b441bceb0a1b7149b171bd8cd88e9fa",
+        "mode": 384,
+        "executable": false
+      },
+      "capacity_before": {
+        "label": "fetch-fixed-inputs-before",
+        "at": "2026-11-05T14:27:11.690242+00:00",
+        "free_bytes": 249202659328,
+        "minimum_free_bytes": 64000000000,
+        "mem_available_bytes": 121456799744,
+        "minimum_mem_available_bytes": null,
+        "cpu_count": 32,
+        "loadavg": "0.89 1.25 1.86 2/1092 2961616\n",
+        "measured_peak": false
+      }
+    },
+    {
+      "label": "fixed-inputs-tree",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir",
+        "/home/qq/work/hepta-core-musl-full-20261105/source/.git",
+        "rev-parse",
+        "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72^{tree}"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105",
+      "exit_code": 0,
+      "duration_seconds": 0.0014918469823896885,
+      "stdout": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/fixed-inputs-tree.stdout",
+        "bytes": 41,
+        "sha256": "7dc4104d77bd993f43b4840cc6b614c16a935201f3996f4e510846c1b8d494d1",
+        "git_blob": "5002537cef69e67b51bcd2b7d7e9ef5710c5cd7f",
+        "mode": 384,
+        "executable": false
+      },
+      "stderr": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/fixed-inputs-tree.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": 384,
+        "executable": false
+      },
+      "capacity_before": {
+        "label": "fixed-inputs-tree-before",
+        "at": "2026-11-05T14:35:49.841192+00:00",
+        "free_bytes": 238282461184,
+        "minimum_free_bytes": 64000000000,
+        "mem_available_bytes": 31907373056,
+        "minimum_mem_available_bytes": null,
+        "cpu_count": 32,
+        "loadavg": "9.78 6.29 3.69 10/1766 2990892\n",
+        "measured_peak": false
+      }
+    },
+    {
+      "label": "input-00-path",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir",
+        "/home/qq/work/hepta-core-musl-full-20261105/source/.git",
+        "rev-parse",
+        "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72:qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/git-transport-v1/transport-manifest.json"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105",
+      "exit_code": 0,
+      "duration_seconds": 0.001152609009295702,
+      "stdout": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-00-path.stdout",
+        "bytes": 41,
+        "sha256": "da15b18088ac8343d94bb301e851484c49e21e1b0ea26ea23b4d1a948c0be704",
+        "git_blob": "19dd480e1891602a552a1be0a6d52b74152eb9d6",
+        "mode": 384,
+        "executable": false
+      },
+      "stderr": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-00-path.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": 384,
+        "executable": false
+      },
+      "capacity_before": {
+        "label": "input-00-path-before",
+        "at": "2026-11-05T14:35:49.843186+00:00",
+        "free_bytes": 238282448896,
+        "minimum_free_bytes": 64000000000,
+        "mem_available_bytes": 31906856960,
+        "minimum_mem_available_bytes": null,
+        "cpu_count": 32,
+        "loadavg": "9.78 6.29 3.69 10/1766 2990893\n",
+        "measured_peak": false
+      }
+    },
+    {
+      "label": "input-00-bytes",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir",
+        "/home/qq/work/hepta-core-musl-full-20261105/source/.git",
+        "cat-file",
+        "blob",
+        "65d3fd87285dbeed12740a9c8e40dd1507cd2cf1"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105",
+      "exit_code": 0,
+      "duration_seconds": 0.0012736559147015214,
+      "stdout": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-00-bytes.stdout",
+        "bytes": 3003,
+        "sha256": "ee359dcbb7fbb6187f6ba66276cae4fc95608ffd49f2a6c562905bbb5703d1cf",
+        "git_blob": "65d3fd87285dbeed12740a9c8e40dd1507cd2cf1",
+        "mode": 384,
+        "executable": false
+      },
+      "stderr": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-00-bytes.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": 384,
+        "executable": false
+      },
+      "capacity_before": {
+        "label": "input-00-bytes-before",
+        "at": "2026-11-05T14:35:49.844797+00:00",
+        "free_bytes": 238282436608,
+        "minimum_free_bytes": 64000000000,
+        "mem_available_bytes": 31905308672,
+        "minimum_mem_available_bytes": null,
+        "cpu_count": 32,
+        "loadavg": "9.78 6.29 3.69 10/1766 2990894\n",
+        "measured_peak": false
+      }
+    },
+    {
+      "label": "input-01-path",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir",
+        "/home/qq/work/hepta-core-musl-full-20261105/source/.git",
+        "rev-parse",
+        "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72:qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/git-transport-v1/request.json.gz.part000.b64.txt"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105",
+      "exit_code": 0,
+      "duration_seconds": 0.0009575659641996026,
+      "stdout": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-01-path.stdout",
+        "bytes": 41,
+        "sha256": "8e6a6e2125f3e7e326ba2c0f067e40756bcae7a1c0a8b238c36e6357d8b02ae0",
+        "git_blob": "3f2db1a8df172eea50f79c8de604023741783069",
+        "mode": 384,
+        "executable": false
+      },
+      "stderr": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-01-path.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": 384,
+        "executable": false
+      },
+      "capacity_before": {
+        "label": "input-01-path-before",
+        "at": "2026-11-05T14:35:49.846602+00:00",
+        "free_bytes": 238282424320,
+        "minimum_free_bytes": 64000000000,
+        "mem_available_bytes": 31904280576,
+        "minimum_mem_available_bytes": null,
+        "cpu_count": 32,
+        "loadavg": "9.78 6.29 3.69 10/1766 2990895\n",
+        "measured_peak": false
+      }
+    },
+    {
+      "label": "input-01-bytes",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir",
+        "/home/qq/work/hepta-core-musl-full-20261105/source/.git",
+        "cat-file",
+        "blob",
+        "ad067c7ddd9a6416098b8314b2f9859ded5d5cd4"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105",
+      "exit_code": 0,
+      "duration_seconds": 0.0022112620063126087,
+      "stdout": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-01-bytes.stdout",
+        "bytes": 480601,
+        "sha256": "933c172b41991941a106283ad21f092b5e9e6768cb913ac0d914024231d2367b",
+        "git_blob": "ad067c7ddd9a6416098b8314b2f9859ded5d5cd4",
+        "mode": 384,
+        "executable": false
+      },
+      "stderr": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-01-bytes.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": 384,
+        "executable": false
+      },
+      "capacity_before": {
+        "label": "input-01-bytes-before",
+        "at": "2026-11-05T14:35:49.847930+00:00",
+        "free_bytes": 238282412032,
+        "minimum_free_bytes": 64000000000,
+        "mem_available_bytes": 31904280576,
+        "minimum_mem_available_bytes": null,
+        "cpu_count": 32,
+        "loadavg": "9.78 6.29 3.69 10/1766 2990896\n",
+        "measured_peak": false
+      }
+    },
+    {
+      "label": "input-02-path",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir",
+        "/home/qq/work/hepta-core-musl-full-20261105/source/.git",
+        "rev-parse",
+        "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72:qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/git-transport-v1/request.json.gz.part001.b64.txt"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105",
+      "exit_code": 0,
+      "duration_seconds": 0.000911557930521667,
+      "stdout": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-02-path.stdout",
+        "bytes": 41,
+        "sha256": "07bcd5be99df2479cd511af1a262b69755114dc71185abe5134fb52e0bed1bdd",
+        "git_blob": "d3cc53540f699571b2c4c950783bd36457ff6906",
+        "mode": 384,
+        "executable": false
+      },
+      "stderr": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-02-path.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": 384,
+        "executable": false
+      },
+      "capacity_before": {
+        "label": "input-02-path-before",
+        "at": "2026-11-05T14:35:49.852572+00:00",
+        "free_bytes": 238281920512,
+        "minimum_free_bytes": 64000000000,
+        "mem_available_bytes": 31902257152,
+        "minimum_mem_available_bytes": null,
+        "cpu_count": 32,
+        "loadavg": "9.78 6.29 3.69 10/1766 2990897\n",
+        "measured_peak": false
+      }
+    },
+    {
+      "label": "input-02-bytes",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir",
+        "/home/qq/work/hepta-core-musl-full-20261105/source/.git",
+        "cat-file",
+        "blob",
+        "1ac6c1dcc838179e394de974740b06da35a384e1"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105",
+      "exit_code": 0,
+      "duration_seconds": 0.0022220719838514924,
+      "stdout": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-02-bytes.stdout",
+        "bytes": 480601,
+        "sha256": "f21469f49ea3172666a35cb8d6e5f26e283b82201f98918b000871fa49cad641",
+        "git_blob": "1ac6c1dcc838179e394de974740b06da35a384e1",
+        "mode": 384,
+        "executable": false
+      },
+      "stderr": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-02-bytes.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": 384,
+        "executable": false
+      },
+      "capacity_before": {
+        "label": "input-02-bytes-before",
+        "at": "2026-11-05T14:35:49.853939+00:00",
+        "free_bytes": 238281908224,
+        "minimum_free_bytes": 64000000000,
+        "mem_available_bytes": 31899676672,
+        "minimum_mem_available_bytes": null,
+        "cpu_count": 32,
+        "loadavg": "9.78 6.29 3.69 10/1766 2990898\n",
+        "measured_peak": false
+      }
+    },
+    {
+      "label": "input-03-path",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir",
+        "/home/qq/work/hepta-core-musl-full-20261105/source/.git",
+        "rev-parse",
+        "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72:qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/git-transport-v1/request.json.gz.part002.b64.txt"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105",
+      "exit_code": 0,
+      "duration_seconds": 0.0011173509992659092,
+      "stdout": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-03-path.stdout",
+        "bytes": 41,
+        "sha256": "f6731ddc49435a69f4d7bb76c5ebcd1ae8869a276bad6324ac4468d69c1182f5",
+        "git_blob": "1ee2b1dd6757402b77caa7c63a07f3ac11358b3c",
+        "mode": 384,
+        "executable": false
+      },
+      "stderr": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-03-path.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": 384,
+        "executable": false
+      },
+      "capacity_before": {
+        "label": "input-03-path-before",
+        "at": "2026-11-05T14:35:49.858604+00:00",
+        "free_bytes": 238281416704,
+        "minimum_free_bytes": 64000000000,
+        "mem_available_bytes": 31896440832,
+        "minimum_mem_available_bytes": null,
+        "cpu_count": 32,
+        "loadavg": "9.78 6.29 3.69 10/1766 2990899\n",
+        "measured_peak": false
+      }
+    },
+    {
+      "label": "input-03-bytes",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir",
+        "/home/qq/work/hepta-core-musl-full-20261105/source/.git",
+        "cat-file",
+        "blob",
+        "d99c26bf49e8f2fcc0cfe44d420622e4b1e76ea6"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105",
+      "exit_code": 0,
+      "duration_seconds": 0.0015366559382528067,
+      "stdout": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-03-bytes.stdout",
+        "bytes": 274281,
+        "sha256": "6407d9ea895d2be67de3bc86405e9e2fa00887a615bdeb4f54cd5f765aa24a0b",
+        "git_blob": "d99c26bf49e8f2fcc0cfe44d420622e4b1e76ea6",
+        "mode": 384,
+        "executable": false
+      },
+      "stderr": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/input-03-bytes.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": 384,
+        "executable": false
+      },
+      "capacity_before": {
+        "label": "input-03-bytes-before",
+        "at": "2026-11-05T14:35:49.860214+00:00",
+        "free_bytes": 238281404416,
+        "minimum_free_bytes": 64000000000,
+        "mem_available_bytes": 31891279872,
+        "minimum_mem_available_bytes": null,
+        "cpu_count": 32,
+        "loadavg": "9.78 6.29 3.69 10/1766 2990900\n",
+        "measured_peak": false
+      }
+    },
+    {
+      "label": "fetch-fixed-product",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir",
+        "/home/qq/work/hepta-core-musl-full-20261105/source/.git",
+        "fetch",
+        "--no-tags",
+        "--depth=1",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "5b6331250ff459033bd44d1a95daec70131277cc"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105",
+      "exit_code": 0,
+      "duration_seconds": 13.696760619990528,
+      "stdout": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/fetch-fixed-product.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": 384,
+        "executable": false
+      },
+      "stderr": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/fetch-fixed-product.stderr",
+        "bytes": 142,
+        "sha256": "c339a63eeab078ac3516015d2cb762cc71989a948d39bd8091d17da3af79e56e",
+        "git_blob": "b10fdd250e0a9c480c319ec87a644dadb2d70796",
+        "mode": 384,
+        "executable": false
+      },
+      "capacity_before": {
+        "label": "fetch-fixed-product-before",
+        "at": "2026-11-05T14:35:49.942808+00:00",
+        "free_bytes": 238279753728,
+        "minimum_free_bytes": 64000000000,
+        "mem_available_bytes": 31802425344,
+        "minimum_mem_available_bytes": null,
+        "cpu_count": 32,
+        "loadavg": "9.78 6.29 3.69 11/1766 2990901\n",
+        "measured_peak": false
+      }
+    },
+    {
+      "label": "fixed-product-tree",
+      "argv": [
+        "/usr/bin/git",
+        "--git-dir",
+        "/home/qq/work/hepta-core-musl-full-20261105/source/.git",
+        "rev-parse",
+        "5b6331250ff459033bd44d1a95daec70131277cc^{tree}"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105",
+      "exit_code": 0,
+      "duration_seconds": 0.0011544900480657816,
+      "stdout": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/fixed-product-tree.stdout",
+        "bytes": 41,
+        "sha256": "f7e508ee163eb9cb3f8dbdae25049d29c1caf07b6389490611079c33cf8157e4",
+        "git_blob": "cb5afc81fddb49d455f662203c8cd2048b2916d2",
+        "mode": 384,
+        "executable": false
+      },
+      "stderr": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/fixed-product-tree.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": 384,
+        "executable": false
+      },
+      "capacity_before": {
+        "label": "fixed-product-tree-before",
+        "at": "2026-11-05T14:36:03.640210+00:00",
+        "free_bytes": 238068969472,
+        "minimum_free_bytes": 64000000000,
+        "mem_available_bytes": 31254986752,
+        "minimum_mem_available_bytes": null,
+        "cpu_count": 32,
+        "loadavg": "9.62 6.42 3.78 11/1754 2991334\n",
+        "measured_peak": false
+      }
+    },
+    {
+      "label": "checkout-fixed-product",
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qq/work/hepta-core-musl-full-20261105/source",
+        "checkout",
+        "--detach",
+        "5b6331250ff459033bd44d1a95daec70131277cc"
+      ],
+      "cwd": "/home/qq/work/hepta-core-musl-full-20261105",
+      "exit_code": 0,
+      "duration_seconds": 0.5392637089826167,
+      "stdout": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/checkout-fixed-product.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "mode": 384,
+        "executable": false
+      },
+      "stderr": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/checkout-fixed-product.stderr",
+        "bytes": 84,
+        "sha256": "2e70d4d026f94fbba292bac75cf09f4c09f21b5d91e8fc961134bbacc989a61c",
+        "git_blob": "dd9d5baed7fcdff7ee376f694156fad33ddad40c",
+        "mode": 384,
+        "executable": false
+      },
+      "capacity_before": {
+        "label": "checkout-fixed-product-before",
+        "at": "2026-11-05T14:36:03.641651+00:00",
+        "free_bytes": 238068957184,
+        "minimum_free_bytes": 64000000000,
+        "mem_available_bytes": 31254470656,
+        "minimum_mem_available_bytes": null,
+        "cpu_count": 32,
+        "loadavg": "9.62 6.42 3.78 10/1754 2991335\n",
+        "measured_peak": false
+      }
+    }
+  ],
+  "state": "PREPARATION_STOPPED_AT_ACTUAL_FAILURE",
+  "error": "RuntimeError('cold build memory prerequisite: {\"label\": \"cold-normal-seven-helpers-before\", \"at\": \"2026-11-05T14:36:06.950002+00:00\", \"free_bytes\": 237601075200, \"minimum_free_bytes\": 64000000000, \"mem_available_bytes\": 29914468352, \"minimum_mem_available_bytes\": 34359738368, \"cpu_count\": 32, \"loadavg\": \"9.73 6.50 3.81 11/1709 2991417\\\\n\", \"measured_peak\": false}')",
+  "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 335, in main\n    row = runner.command('cold-normal-seven-helpers', original['plan']['phases'][3]['commands'][0])\n  File \"fixed-original-V3-reference.py\", line 208, in command\n  File \"<string>\", line 298, in capacity\n    value = capacity(label, max(minimum, PHASE_FREE),\n                     memory_required=label == 'cold-normal-seven-helpers-before')\n  File \"<string>\", line 112, in capacity\n    need(not memory_required or available >= BUILD_MEM,\n    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n         'cold build memory prerequisite: ' + json.dumps(result))\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 42, in need\n    raise RuntimeError(message)\nRuntimeError: cold build memory prerequisite: {\"label\": \"cold-normal-seven-helpers-before\", \"at\": \"2026-11-05T14:36:06.950002+00:00\", \"free_bytes\": 237601075200, \"minimum_free_bytes\": 64000000000, \"mem_available_bytes\": 29914468352, \"minimum_mem_available_bytes\": 34359738368, \"cpu_count\": 32, \"loadavg\": \"9.73 6.50 3.81 11/1709 2991417\\n\", \"measured_peak\": false}\n",
+  "build_commands": [],
+  "source_transitions": [
+    {
+      "path": "codex-rs/core/src/environment_selection.rs",
+      "before": {
+        "bytes": 73500,
+        "sha256": "04bdcec5996e2bae7187622fc7bc8a82784b70b916cb9c54618febd9f0101ca6",
+        "git_blob": "85d590f386ba81428e5ea3360d2e573d054cab4a"
+      },
+      "after": {
+        "bytes": 78458,
+        "sha256": "2357c4fc2c3750eb45ea2a940259f1d0b05175e39e040f3d8f2c0d4c35c283a2",
+        "git_blob": "3c08e1620e800c30c47d98cc775cb20d4650ac88"
+      }
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "before": {
+        "bytes": 8228,
+        "sha256": "6b1df4d24e48d9eaf772c85e70ebca822b5fd23d3708b2c749158b9cb4350c68",
+        "git_blob": "8f500e03938718820360ce2ad41f2286eb9071bd"
+      },
+      "after": {
+        "bytes": 8252,
+        "sha256": "b1353af4d2fa468e94a52b93bf9468050f56e734b2afb20c099b342ab85b5c03",
+        "git_blob": "fe42212316589999fdfc0b1877c975bdafa4a8e7"
+      }
+    }
+  ],
+  "source_expected_at_stop": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+  "final_source_guard": {
+    "label": "preparation-final",
+    "at": "2026-11-05T14:36:07.540613+00:00",
+    "source_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "leaf_count": 10580,
+    "ordinary_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "ordinary_index": {
+      "path": "/home/qq/work/hepta-core-musl-full-20261105/source/.git/index",
+      "bytes": 1401599,
+      "sha256": "b488256c0552f9ff6d6030b3a1738721dec54ffb5d2a2b56d99100943f04ed19",
+      "git_blob": "c96068a31d1b75d064d6764cc28db47fd73fec24",
+      "mode": 384,
+      "executable": false
+    },
+    "locks": {
+      "codex-rs/Cargo.lock": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/source/codex-rs/Cargo.lock",
+        "bytes": 413768,
+        "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a",
+        "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+        "mode": 384,
+        "executable": false
+      },
+      "MODULE.bazel.lock": {
+        "path": "/home/qq/work/hepta-core-musl-full-20261105/source/MODULE.bazel.lock",
+        "bytes": 1738619,
+        "sha256": "11f8a421224b9b05f32c4c14054e8868083d989fc497310c8d51e1156f189ca3",
+        "git_blob": "1904db189003cb0b559f71958518e33a45fb6bb7",
+        "mode": 384,
+        "executable": false
+      }
+    },
+    "untracked_relative_to_ordinary_index": [],
+    "unexpected_untracked": [],
+    "tool_pins_equal": true,
+    "external_build_inputs": {
+      "RUSTY_V8_ARCHIVE": {
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "bytes": 29366352,
+        "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+        "git_blob": "c6941f7873bdfb8ac18577c9844f234e76dc5ed6",
+        "mode": 384,
+        "executable": false
+      },
+      "RUSTY_V8_SRC_BINDING_PATH": {
+        "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+        "bytes": 39884,
+        "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+        "git_blob": "818270d5815fe0cce4bbf7f8f0b783291f93127e",
+        "mode": 384,
+        "executable": false
+      }
+    }
+  },
+  "final_prerequisites": {
+    "path": "/home/qq/work/hepta-core-musl-full-20261105/evidence/prerequisites-final.json",
+    "bytes": 151134,
+    "sha256": "fc7c7ab5f83e6acaf9488ca23162c92f2f8522431e4f68c5288e569da1d004ee",
+    "git_blob": "416acd8b073d8e0470e56f6aad675a59fbc0475a",
+    "mode": 384,
+    "executable": false
+  },
+  "final_capacity": {
+    "label": "preparation-final",
+    "at": "2026-11-05T14:36:08.569366+00:00",
+    "free_bytes": 237586751488,
+    "minimum_free_bytes": 64000000000,
+    "mem_available_bytes": 30213197824,
+    "minimum_mem_available_bytes": null,
+    "cpu_count": 32,
+    "loadavg": "9.73 6.50 3.81 11/1448 2991462\n",
+    "measured_peak": false
+  },
+  "completed_at": "2026-11-05T14:36:08.569429+00:00",
+  "controller_exit_code": 1
+}

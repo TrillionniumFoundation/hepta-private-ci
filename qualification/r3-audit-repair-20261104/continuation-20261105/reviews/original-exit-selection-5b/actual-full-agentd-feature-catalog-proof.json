@@ -1,0 +1,128 @@
+{
+  "schema": "actual-full-agentd-qualification-selection-v1",
+  "scope": "Original full metadata/catalog inspection only; no execution; historic source labels retained.",
+  "inputs": [
+    {
+      "label": "A_full_fb9",
+      "metadata": {
+        "path": "ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/workspace-metadata.stdout",
+        "bytes": 8163699,
+        "sha256": "3a53323eae920e2e53dcb3e334128a4aff63cfb51840793e9150d617d2c9ba18",
+        "git_blob": "3d2f7bfbd5fb2fc0fd219045444327e929820fdd"
+      },
+      "catalog": {
+        "path": "ci-audit/recovered-20261105/full-fb9-complete-archive/decoded-verified-v1/full-workspace-catalog.stdout",
+        "bytes": 2846923,
+        "sha256": "37aa98bace85dfa81d9c729820de24912d913bd85c3a10b60243f4dba67e4001",
+        "git_blob": "6215be8be0979a4af011c64de4043c934aeee81a"
+      },
+      "package_id": "path+file:///home/qian-qi/work/hepta-audit-r3-fullgate-20261104/source/codex-rs/hepta-agentd#codex-hepta-agentd@0.0.0",
+      "agentd_features": [
+        "default",
+        "production-cognitive-write"
+      ],
+      "package_features_definition": {
+        "default": [
+          "production-cognitive-write"
+        ],
+        "desktop-objective-ui": [
+          "dep:hepta-control-core"
+        ],
+        "production-cognitive-write": [],
+        "qualification-cognitive-write": [
+          "production-cognitive-write"
+        ],
+        "qualification-legacy-learning-write": [
+          "codex-hepta-learning-ledger/qualification-legacy-write"
+        ]
+      },
+      "exact_named_case_matches": [],
+      "qualification_prefix_matches": [],
+      "suite_total": 363,
+      "case_total": 19563,
+      "agentd_unit_count": 243,
+      "agentd_unit_binary_path": "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_hepta_agentd-2edf7023cb6a9aad",
+      "agentd_unit_binary_status": "listed",
+      "all_agentd_program_paths": [
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/codex_hepta_agentd-2edf7023cb6a9aad",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/authbus_text_product-23bf5c7ee53adca0",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/cognitive_product_e2e-556c98bce8b697bd",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/cognitive_store_product_writer-067f6d2d4f16891a",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/five_agent_rolling_upgrade-999c2298fb3f162f",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/fleet_harness_diagnostics-a3574027218c8fa6",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/intuition_policy_product-d43c883de84ded0e",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/kernel_evidence_product-10ea71406cbbd86d",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/optional_module_restart-a4adbd0c2b55c21d",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/plasticity_process_e2e-c297ae897ca9f371",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/queue_capacity_product-90fc68ccad82b49a",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/runtime_codex_product_e2e-d716e4895fd04059",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/runtime_shutdown_outcomes-0c8a9853914fe549",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/supervised_two_agents-e770e4cc004db9d8",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/supervisord_product_e2e-1ae9299a8e53400e",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/terminal_cell_owner-50e7029ba8cdf0b7",
+        "/home/qian-qi/work/hepta-audit-r3-fullgate-20261104/target-app-epoch2-20261105/dev-small/deps/two_agent_turn_recovery-c9adfc23af10317e"
+      ]
+    },
+    {
+      "label": "P4_build_only_4a",
+      "metadata": {
+        "path": "ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-v3-catalog-readonly-export-v1/decoded-verified-v1/02-full-metadata.stdout.original",
+        "bytes": 8296096,
+        "sha256": "b4090db792babde64575b11e7ae04df8245074b96a154048c4de08691e4a23e0",
+        "git_blob": "e1f0ddb638f8d46e24d94176c3993e7fa2a293fd"
+      },
+      "catalog": {
+        "path": "ci-audit/recovered-20261105/b16-ai395-cold-bootstrap-v1/p4-v3-catalog-readonly-export-v1/decoded-verified-v1/03-full-unfiltered-catalog.stdout.original",
+        "bytes": 2828836,
+        "sha256": "d4ca608073c2508e8ad5302b1188c7d2e21c6bf221a17688d77f625087e8d3f6",
+        "git_blob": "bdb4590509011c05005821d6b92c71f81f58098c"
+      },
+      "package_id": "path+file:///home/qq/work/hepta-audit-b16-20261105/source/codex-rs/hepta-agentd#codex-hepta-agentd@0.0.0",
+      "agentd_features": [
+        "default",
+        "production-cognitive-write"
+      ],
+      "package_features_definition": {
+        "default": [
+          "production-cognitive-write"
+        ],
+        "desktop-objective-ui": [
+          "dep:hepta-control-core"
+        ],
+        "production-cognitive-write": [],
+        "qualification-cognitive-write": [
+          "production-cognitive-write"
+        ],
+        "qualification-legacy-learning-write": [
+          "codex-hepta-learning-ledger/qualification-legacy-write"
+        ]
+      },
+      "exact_named_case_matches": [],
+      "qualification_prefix_matches": [],
+      "suite_total": 363,
+      "case_total": 19563,
+      "agentd_unit_count": 243,
+      "agentd_unit_binary_path": "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/codex_hepta_agentd-2edf7023cb6a9aad",
+      "agentd_unit_binary_status": "listed",
+      "all_agentd_program_paths": [
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/codex_hepta_agentd-2edf7023cb6a9aad",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/authbus_text_product-23bf5c7ee53adca0",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/cognitive_product_e2e-556c98bce8b697bd",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/cognitive_store_product_writer-067f6d2d4f16891a",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/five_agent_rolling_upgrade-999c2298fb3f162f",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/fleet_harness_diagnostics-a3574027218c8fa6",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/intuition_policy_product-d43c883de84ded0e",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/kernel_evidence_product-10ea71406cbbd86d",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/optional_module_restart-a4adbd0c2b55c21d",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/plasticity_process_e2e-c297ae897ca9f371",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/queue_capacity_product-90fc68ccad82b49a",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/runtime_codex_product_e2e-d716e4895fd04059",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/runtime_shutdown_outcomes-0c8a9853914fe549",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/supervised_two_agents-e770e4cc004db9d8",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/supervisord_product_e2e-1ae9299a8e53400e",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/terminal_cell_owner-50e7029ba8cdf0b7",
+        "/home/qq/work/hepta-audit-b16-20261105/target-dev-small/dev-small/deps/two_agent_turn_recovery-c9adfc23af10317e"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,327 @@
+{
+  "schema": "hepta-completed-scope-summary-v1",
+  "group": "gitqueue",
+  "reviews": [
+    {
+      "directory": "windows-gitqueue-source-127149583164",
+      "job_id": 127149583164,
+      "source": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "named_pass_occurrences": 72,
+      "original_142_matches": [
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        },
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        },
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        },
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        },
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "queued_input_and_unique_event_ids_round_trip",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        },
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        },
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        },
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        }
+      ],
+      "original_review": {
+        "bytes": 32920,
+        "sha256": "40c116baeb2ee54c061f7dec2d3df866ef7a141848f31077519a74831c8135bc",
+        "computed_git_blob": "8ac8043ed4c8db0c992379f5d6a917662927084c"
+      }
+    },
+    {
+      "directory": "windows-gitqueue-merge-127149583430",
+      "job_id": 127149583430,
+      "source": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+      "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+      "named_pass_occurrences": 72,
+      "original_142_matches": [
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        },
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        },
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        },
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        },
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "queued_input_and_unique_event_ids_round_trip",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        },
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        },
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        },
+        {
+          "blocker_id": "B13",
+          "binary": "codex-queue-extension::queue_service",
+          "test": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+          "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+          "separate_wine_target": null,
+          "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+          "platforms_to_observe": [
+            "ubuntu-24.04 GNU/RBE",
+            "ubuntu-24.04 musl-label/same GNU RBE",
+            "macos-15",
+            "macos-15-intel",
+            "Windows when original cfg permits"
+          ],
+          "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+          "case_origin": "frozen_named_exit_catalog",
+          "observed_status": "PASS"
+        }
+      ],
+      "original_review": {
+        "bytes": 32918,
+        "sha256": "3391b252cb193cd5f23560033bb964cce4767bb1d9b6159eccaf9c97d971b884",
+        "computed_git_blob": "6d3c3c3df36621093de010723c53eb7564cdba64"
+      }
+    }
+  ],
+  "limits": [
+    "Per-job actual sources and platforms remain separate.",
+    "Nested test execution, case filtering, cache use and repeated names are explicitly retained in each review.",
+    "No original blocker status or exit condition is modified."
+  ]
+}

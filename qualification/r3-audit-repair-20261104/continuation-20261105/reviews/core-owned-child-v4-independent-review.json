@@ -1,0 +1,86 @@
+{
+  "schema": "hepta-core-wait-span-independent-static-review-v4",
+  "reviewed_at": "2026-11-05T13:03:46.683851+00:00",
+  "verdict": "STATIC_ACCEPTED_NATIVE_QUALIFICATION_PENDING",
+  "base_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "original_case": "environment_selection::tests::blocking_snapshot_waits_for_starting_environment",
+  "sources": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/original/environment_selection.rs.source.txt",
+      "bytes": 73500,
+      "sha256": "04bdcec5996e2bae7187622fc7bc8a82784b70b916cb9c54618febd9f0101ca6",
+      "git_blob": "85d590f386ba81428e5ea3360d2e573d054cab4a"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/owned-child-v4/environment_selection.rs.source.txt",
+      "bytes": 78458,
+      "sha256": "2357c4fc2c3750eb45ea2a940259f1d0b05175e39e040f3d8f2c0d4c35c283a2",
+      "git_blob": "3c08e1620e800c30c47d98cc775cb20d4650ac88"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/owned-child-v4/owned-child.patch",
+      "bytes": 5552,
+      "sha256": "fe32995c1b57e9a6f9481e3fe98b20532a53ee5307030a5b782313c61e011006",
+      "git_blob": "9c4d10f63f5d9bea70875d8759b67d69b9da9cf1"
+    }
+  ],
+  "mechanical_checks": {
+    "original_case_body_bytes": 3621,
+    "original_case_body_sha256": "cc725eac77ac89dd9dc6af9d1aa2b363187f6435696dca32817d67287834f245",
+    "body_byte_equal": true,
+    "remove_only_added_prefix_suffix_restores_entire_original": true
+  },
+  "reviewed_contracts": [
+    "Original case remains in the same parallel test binary roster; its business body executes once in the owned same-binary exact-selector child.",
+    "Original three full span-chain assertions and inner five-second snapshot timeout are unchanged.",
+    "Parent adds a stricter five-second end-to-end bound measured before spawn; this is not represented as the original whole-test budget. Both pending and completed-after-deadline paths fail.",
+    "Command-private child mode; invalid mode rejects. Child has no recursively spawned test harness mode. No global environment mutation.",
+    "OwnedChild Drop kills and waits on the direct owned process on timeout, wait error or cancellation. Normal try_wait completion is reaped before captured file reads.",
+    "TempDir output files avoid blocking child pipes. Raw stdout and stderr are forwarded after reap, before result and UTF-8 assertions; no silent failed-body success.",
+    "Standalone stderr start/end markers each require exactly one occurrence; stdout requires exactly one running-1-test marker, the original exact name, and one successful 1-passed/0-failed/0-ignored summary.",
+    "A successful parent delegation return is not a test skip or capability early return.",
+    "No print lint allow was added; new forwarding uses std::io::Write and marker writes have leading newlines."
+  ],
+  "scope_limits": [
+    "The actual original Windows first-registration thread ordering was not observed.",
+    "This is a fixture isolation repair, not a tracing-core concurrency fix.",
+    "Actual compilation, Windows process startup within five seconds, full same-process parallel Core coverage and the original Windows Bazel sharded target remain pending.",
+    "The observed original body uses the loopback environment-info fixture with ShellSnapshot::disabled; no new process-tree cleanup guarantee is claimed."
+  ],
+  "rejected_previous_candidate": {
+    "status": "REJECTED_INCOMPLETE_NOT_APPLIED",
+    "description": "A second NoSubscriber Dispatch plus rebuilding does not exclude an earlier thread holding Rebuilder::JustOne and later overwriting callsite interest.",
+    "source": {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/upstream/tracing-core-0.1.36/callsite.rs.source.txt",
+      "bytes": 23168,
+      "sha256": "5379f10b434562dc431488b5206b291d5770337cc932b0dc4ee28c2901c53903",
+      "git_blob": "66bd0d349b946b5cc8120bbd736662b2d15767e7"
+    },
+    "line_anchors": {
+      "registration_push_before_rebuilder": "313-319",
+      "late_interest_write": "497-506",
+      "unlocked_JustOne_capture": "545-546",
+      "thread_default_lookup": "564"
+    }
+  },
+  "bazel_sharding_static_evidence": {
+    "defs": {
+      "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "lines": "378-424",
+      "fact": "Shard count belongs to outer workspace_root_test, not the inner rust_test executable."
+    },
+    "windows_launcher": {
+      "git_blob": "fa18c301dd22ca9023ba2f59801a8119dfbf8a69",
+      "lines": "24-39 and 71-98",
+      "fact": "The outer batch launcher applies TEST_SHARD selection and invokes the real Rust executable with exact names. current_exe does not re-enter the batch script."
+    },
+    "supporting_observed_pattern": "Current-head Git-utils Windows has 35 outer passes and one explicitly nested same-binary pass; this is pattern evidence, not qualification of Core."
+  },
+  "reviewer_executed": {
+    "native": false,
+    "cargo": false,
+    "project_tests": false,
+    "shared_source_mutation": false,
+    "ref_mutation": false
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "schema": "hepta-root-ai395-independent-core-C0-C1-execution-guard-v1",
+  "reviewed_at": "2026-11-05T14:24:43.888955+00:00",
+  "approved": true,
+  "authorization": "User requested a full audit and active blocker closure; this is a new isolated Core candidate build preparation within that task.",
+  "role": "C0_C1_BUILD_ONLY_NO_PRODUCT_QUALIFICATION",
+  "reviewed_manifest": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/manifest.json",
+    "bytes": 4104,
+    "sha256": "c539e28a67a2e6510ec2ab76ee6d4e32759f1d3eccb7315c2315748c1ec0edc9",
+    "git_blob": "e7aa401e532d0c37e78c1bf75bd651016381b4ee"
+  },
+  "reviewed_runner": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/run_prepare_v2.py",
+    "bytes": 20913,
+    "sha256": "ee8561b2a2a50a4914640032057e11417965e283cc0fcc954a0e360656075c12",
+    "git_blob": "3ecebfe6c74214f911bf5771506ab6b6ebbaf9d4"
+  },
+  "reviewed_disabled_request": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/request-DISABLED-v1.json",
+    "bytes": 4960,
+    "sha256": "8788c88ddba97e1febe06ee780089b1458c6d512e81420b17c635b9c70fd5bf6",
+    "git_blob": "377bf801ec7e422618c8aa52b75c40565c297f07"
+  },
+  "reviewed_disabled_process_start": {
+    "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/process-start-DISABLED-v1.json",
+    "bytes": 26966,
+    "sha256": "9ac04f41ee28b41b34ee204ec9a2aa4b55b5f3a1e8dc3bd1464308901cec7c0e",
+    "git_blob": "8d91a968673172e5bfef3e3e2eef6646e0d9de7f"
+  },
+  "actual_readiness_root_review_blob": "5bae7f2aee0faa29388e589a978da70a162cf07f",
+  "host": "ai395",
+  "owned_root_must_be_absent": "/home/qq/work/hepta-core-musl-full-20261105",
+  "idempotency_key": "hepta-ai395-core-cold-prepare-20261105-v1",
+  "timeout_seconds": 21600,
+  "source": {
+    "product_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "product_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "candidate_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+    "source_input_commit": "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72",
+    "source_input_tree": "65cfd91deea0fbd5b432c225e16d15106ed5f373",
+    "source_guard": "All 10580 leaves, exact two reviewed posts, fresh own ordinary 5b HEAD/index, unchanged locks; no borrowed ROG or B index."
+  },
+  "steps": [
+    "Revalidate actual readiness bytes, host, new-root absence, current physical171/147 prerequisites and capacity.",
+    "Create only the new Core root, source checkout, target, caches and evidence; fetch fixed supply and product inputs with noninteractive existing Git authentication.",
+    "Verify complete source maps/rosters and exact two candidate posts, then perform only the original normal seven-helper build.",
+    "Preserve complete stdout/stderr, helper executable hashes, command status and before/after source/tool/input guards.",
+    "Write C1 checkpoint and terminal report, require successful final guards, then exit naturally."
+  ],
+  "exact_helper_argv": [
+    "cargo",
+    "build",
+    "--locked",
+    "--profile",
+    "dev-small",
+    "--message-format=json-render-diagnostics",
+    "-p",
+    "codex-arg0",
+    "--bin",
+    "test_arg0_preflight",
+    "-p",
+    "codex-code-mode-host",
+    "--bin",
+    "codex-code-mode-host",
+    "-p",
+    "codex-shell-escalation",
+    "--bin",
+    "codex-execve-wrapper",
+    "-p",
+    "codex-rmcp-client",
+    "--bin",
+    "test_stdio_server",
+    "--bin",
+    "test_streamable_http_server",
+    "-p",
+    "codex-exec",
+    "--bin",
+    "codex-exec",
+    "-p",
+    "codex-cli",
+    "--bin",
+    "codex"
+  ],
+  "capacity": {
+    "entry_available_disk_bytes": 200000000000,
+    "phase_available_disk_bytes": 64000000000,
+    "entry_and_pre_build_MemAvailable_bytes": 34359738368,
+    "cargo_build_jobs": 4,
+    "measured_peak_guarantee": false
+  },
+  "scope_limits": [
+    "No metadata, catalog, tests, hygiene, automatic continuation or background wait loop in this request.",
+    "Do not reset/delete/clean any old source, target, cache, index or evidence; no signal to unrelated processes.",
+    "Pinned old B tools/SDK are read or executed only; every task-specific write cache including RUSTUP_HOME belongs to the new Core root; no rustup command.",
+    "The earlier B16 driver remains UNKNOWN and is not retried or repurposed.",
+    "C2/full requires a separately reviewed request bound to the actual C1 checkpoint, terminal exit0/final guards and reviewed ROG P4 results."
+  ],
+  "enabled_delta": "Only request.execute and request.root_execution_guard, and the containing process-start stdin; all actual argv, code, host, cwd, env, idempotency key and timeout remain byte-identical."
+}

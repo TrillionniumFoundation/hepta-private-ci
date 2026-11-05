@@ -1,0 +1,894 @@
+{
+  "schema": "hepta-original-ui-native-presentation-independent-projection-v1",
+  "api_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "run_id": 41999114715,
+  "run_attempt": 1,
+  "actual_checkout": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "actual_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "job_log": {
+    "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/ui-native-source-127149583527/job.log",
+    "bytes": 1515764,
+    "sha256": "de4756569ad0ef7ec4dc929ef9bab90b764579affde5ac8ca15d9d390b75bcf7",
+    "computed_git_blob": "87d2af152febc4232593c173bbc8ca78c75c01fa"
+  },
+  "artifact_verification": {
+    "schema": "hepta-exact-artifact-zip-verification-v1",
+    "artifact_id": 13416566850,
+    "acquisition": "exact_connector_url",
+    "github_size": 20740,
+    "github_digest": "sha256:254a5fbde968688d3ec8ef03dd4c282fcb7348554ad318e08d67bcb62e648cdb",
+    "archive": {
+      "bytes": 20740,
+      "sha256": "254a5fbde968688d3ec8ef03dd4c282fcb7348554ad318e08d67bcb62e648cdb",
+      "computed_git_blob": "6ab082e13f406134f11f14593305dec8b8baae6d"
+    },
+    "all_crc_valid": true,
+    "member_count": 21,
+    "members": [
+      {
+        "name": "_temp/native-presentation-evidence/cargo.txt",
+        "crc": 1380917119,
+        "bytes": 336,
+        "sha256": "bfd735e736b354adabe72cea24bc1b393488223889b6ab95e974fd8fb963552e",
+        "computed_git_blob": "39065890b2cf3af455643ce5e4b80a510e91f85c"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/clippy.log",
+        "crc": 2916132013,
+        "bytes": 11974,
+        "sha256": "d4f5b18079e3c75f784d3b818a236c582c93312623203ad73aa09785d16ada9d",
+        "computed_git_blob": "3a1251e816e3698b7aad41f2be07a7775e082700"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/headless-junit-start.json",
+        "crc": 2296433218,
+        "bytes": 601,
+        "sha256": "bc9ba3912dc59fde513a92a5931fffca0a50c938702bdf2a86798504f086a7cd",
+        "computed_git_blob": "c5c4da4d0511e3376ab916c9978afb56ed842a51"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/headless-junit.json",
+        "crc": 649353730,
+        "bytes": 976,
+        "sha256": "0a1c9ab28ec52708c5893013f0e6759b470ede2fbe5a28cbe9ca61386f9b8862",
+        "computed_git_blob": "d2734f4d52fe1c89464b0f809d0883846ce03bd9"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/headless-junit.xml",
+        "crc": 1270873007,
+        "bytes": 5739,
+        "sha256": "c37707d62c58c493f0e4829add18a3dccf0efaa8e3bdea8e6c82682193dfcd10",
+        "computed_git_blob": "d6b35261e2b79a63c3bf963839995a00372ae2c2"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/headless.json",
+        "crc": 536835155,
+        "bytes": 1682,
+        "sha256": "68b091093d303f6c48c738dfa65047ed1615a2fd692a7123786e76a286aaa15b",
+        "computed_git_blob": "559252f09a2a966b0fcce842346f47fc2ea5e71e"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/headless.json.cfd4197efa3b4e5bb7eb538e617c8bff.log",
+        "crc": 3364116914,
+        "bytes": 7360,
+        "sha256": "96599430c60524446212fc5b854f13ada79df5170d9f741eb0750b73447031d5",
+        "computed_git_blob": "8199aa822465b7bbdb7ee224c6120ddc8d7eed9b"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/junit-gate-tests.json",
+        "crc": 3444399357,
+        "bytes": 1489,
+        "sha256": "3d6ca4f46c8ca0958b376455734cfdef86c1f2ee4f5f8df11b41143eb4621163",
+        "computed_git_blob": "efa4ce88cd16df133b1107b2e48bb4491d83613e"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/junit-gate-tests.json.3cf6acd4aa9b4c9b8b56df0c5528925d.log",
+        "crc": 620033248,
+        "bytes": 111,
+        "sha256": "22e69128faed2c5b9f76178176222e7a4635dbd31155df18e4fad6455f8ab9ea",
+        "computed_git_blob": "0565df42a94243fe8558e344b20f3d1352cd65bf"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/native-junit-start.json",
+        "crc": 2512564674,
+        "bytes": 581,
+        "sha256": "0b429b2dbefeefa61d28267de9a1620e0868ee3da9ff822e1c5a7093daca44ad",
+        "computed_git_blob": "4a6d2451caad24577a3759d0c0e25e92e010f594"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/native-junit.json",
+        "crc": 913966213,
+        "bytes": 1251,
+        "sha256": "f9f822d7fd31f3b53795aa3fd71888222a665c3b1dc11e8b5cc06f195435065b",
+        "computed_git_blob": "28b958722fad7f0b741fca1ede22a8ebca67d763"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/native-junit.xml",
+        "crc": 741113706,
+        "bytes": 6327,
+        "sha256": "d693ce84eac484005b9d786166d816a2b4ab726d7929107bad1fdc0fcd0e8361",
+        "computed_git_blob": "b711f00db1704f2403097e22496ebdfba062aa9a"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/native.json",
+        "crc": 820901173,
+        "bytes": 1664,
+        "sha256": "f87d1a4121d7285bae83f755b890598598189c3f81c95f230e4e5729449febec",
+        "computed_git_blob": "5b01038b124edad50b2110eff8acb7edc27e8eb7"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/native.json.d2ae8a535d004b69a10424df30313d6e.log",
+        "crc": 2230470911,
+        "bytes": 20088,
+        "sha256": "22ca4eaf559e217362f43ff0c2f0d8e50352e44a4e8d670981a8285e5f46ba6c",
+        "computed_git_blob": "1d975cd478488427b87fed1af1777d84d5dffdbc"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/original-lock.sha256",
+        "crc": 3420935266,
+        "bytes": 104,
+        "sha256": "f4d5bcb18c1ba4665f4641e590fda07c0afe695bdcb5c5dabf3e845a77286aad",
+        "computed_git_blob": "2f922f51e28046f094f94aded9439289d2801cb1"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/system-inputs.txt",
+        "crc": 179155322,
+        "bytes": 461,
+        "sha256": "43a9c0c6b5c80a74406a3ba65b9b6a3842dd208c51d2890ad69beb3184d5dba9",
+        "computed_git_blob": "164993596a4624374d7d8867bb04c80009100fe3"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/rustc.txt",
+        "crc": 1583442468,
+        "bytes": 196,
+        "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+        "computed_git_blob": "b246e451c7cb89baf52e49a5c7995e70184fa73d"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/tested-head.txt",
+        "crc": 3122974184,
+        "bytes": 41,
+        "sha256": "f84c215900d9fe2321c73807296e7ec7e0d311f2b0e05d77d615285c684c3711",
+        "computed_git_blob": "fc417a005ad1719e34ae5284e6f52ef9ac828fa6"
+      },
+      {
+        "name": "_temp/native-presentation-evidence/tested-tree.txt",
+        "crc": 3324731924,
+        "bytes": 41,
+        "sha256": "f7e508ee163eb9cb3f8dbdae25049d29c1caf07b6389490611079c33cf8157e4",
+        "computed_git_blob": "cb5afc81fddb49d455f662203c8cd2048b2916d2"
+      },
+      {
+        "name": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/rust/target/nextest/native-composition-headless/junit.xml",
+        "crc": 1270873007,
+        "bytes": 5739,
+        "sha256": "c37707d62c58c493f0e4829add18a3dccf0efaa8e3bdea8e6c82682193dfcd10",
+        "computed_git_blob": "d6b35261e2b79a63c3bf963839995a00372ae2c2"
+      },
+      {
+        "name": "hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/rust/target/nextest/native-composition-native/junit.xml",
+        "crc": 741113706,
+        "bytes": 6327,
+        "sha256": "d693ce84eac484005b9d786166d816a2b4ab726d7929107bad1fdc0fcd0e8361",
+        "computed_git_blob": "b711f00db1704f2403097e22496ebdfba062aa9a"
+      }
+    ]
+  },
+  "runs": [
+    {
+      "receipt": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/ui-native-source-127149583527/members-13416566850/_temp/native-presentation-evidence/headless.json",
+        "bytes": 1682,
+        "sha256": "68b091093d303f6c48c738dfa65047ed1615a2fd692a7123786e76a286aaa15b",
+        "computed_git_blob": "559252f09a2a966b0fcce842346f47fc2ea5e71e"
+      },
+      "original": {
+        "after": {
+          "commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+          "dirty": false,
+          "parents": [
+            "755374e93dba69214622f91c71a3ccac708d6a76"
+          ],
+          "tree": "b26598d0d97d8d51e723bb5582137315f2174d35"
+        },
+        "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+        "before": {
+          "commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+          "dirty": false,
+          "parents": [
+            "755374e93dba69214622f91c71a3ccac708d6a76"
+          ],
+          "tree": "b26598d0d97d8d51e723bb5582137315f2174d35"
+        },
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "../apps/hepta-control-ui/rust/Cargo.toml",
+          "-p",
+          "hepta-robrix-ui",
+          "--no-default-features",
+          "--features",
+          "native-presentation",
+          "--lib",
+          "--profile",
+          "native-composition-headless"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 19.994947273000008,
+        "exit_code": 0,
+        "finished_at": "2026-11-05T12:54:53.338261+00:00",
+        "job": "native-presentation",
+        "lane": "source-head",
+        "log_bytes": 7360,
+        "log_file": "headless.json.cfd4197efa3b4e5bb7eb538e617c8bff.log",
+        "log_sha256": "96599430c60524446212fc5b854f13ada79df5170d9f741eb0750b73447031d5",
+        "minimum_tests": 5,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 28,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": "1",
+        "run_id": "41999114715",
+        "schema_version": 1,
+        "source_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "started_at": "2026-11-05T12:54:33.342860+00:00",
+        "status": "passed",
+        "tested_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "timed_out": false,
+        "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+      },
+      "log": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/ui-native-source-127149583527/members-13416566850/_temp/native-presentation-evidence/headless.json.cfd4197efa3b4e5bb7eb538e617c8bff.log",
+        "bytes": 7360,
+        "sha256": "96599430c60524446212fc5b854f13ada79df5170d9f741eb0750b73447031d5",
+        "computed_git_blob": "8199aa822465b7bbdb7ee224c6120ddc8d7eed9b"
+      },
+      "junit": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/ui-native-source-127149583527/members-13416566850/_temp/native-presentation-evidence/headless-junit.xml",
+        "bytes": 5739,
+        "sha256": "c37707d62c58c493f0e4829add18a3dccf0efaa8e3bdea8e6c82682193dfcd10",
+        "computed_git_blob": "d6b35261e2b79a63c3bf963839995a00372ae2c2"
+      },
+      "duplicate_junit_identical_not_double_counted": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/ui-native-source-127149583527/members-13416566850/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/rust/target/nextest/native-composition-headless/junit.xml",
+        "bytes": 5739,
+        "sha256": "c37707d62c58c493f0e4829add18a3dccf0efaa8e3bdea8e6c82682193dfcd10",
+        "computed_git_blob": "d6b35261e2b79a63c3bf963839995a00372ae2c2"
+      },
+      "junit_root_attributes": {
+        "name": "hepta-native-composition-headless",
+        "tests": "28",
+        "skipped": "0",
+        "failures": "0",
+        "errors": "0",
+        "uuid": "62e69671-758b-4cd1-a38e-034e5a57fcce",
+        "timestamp": "2026-11-05T12:54:53.267+00:00",
+        "time": "0.032"
+      },
+      "cases": [
+        {
+          "name": "ime_pointer_gate::tests::duplicate_start_does_not_unblock_an_existing_sequence",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.267+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "chat_source::tests::embedded_adoption_borrows_the_original_draft_and_exits_once",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.267+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "ime_pointer_gate::tests::capacity_failure_stays_closed_until_platform_reset",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.267+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "chat_source::tests::adoption_does_not_replace_an_existing_draft_or_construct_a_second_source",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.268+00:00",
+          "time": "0.006"
+        },
+        {
+          "name": "ime_pointer_gate::tests::independent_touch_motion_and_release_remain_forwarded",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.272+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "ime_pointer_gate::tests::ordinary_noncomposing_input_is_not_retained",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.273+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "ime_pointer_gate::tests::mouse_and_touch_identifiers_cannot_alias",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.273+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "ime_pointer_gate::tests::outside_release_cannot_blur_preedit_without_a_recorded_start",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.274+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "ime_pointer_gate::tests::rejected_click_stays_rejected_after_preedit_ends",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.276+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "native_presentation::tests::explicit_shutdown_and_later_drop_close_only_once",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.277+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "native_presentation::tests::console_bound_is_utf8_safe_explicit_and_does_not_clear_pending",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.277+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "native_presentation::tests::failed_adoption_or_abnormal_drop_also_closes_the_client",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.278+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::default_workspace_has_one_local_room_and_separate_empty_state",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.280+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::ime_blocks_destructive_actions_without_clearing_draft",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.281+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::edits_and_repeated_unavailable_send_never_insert_optimistic_messages",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.281+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "presentation::tests::font_reflow_does_not_replace_user_scroll_intent_and_jump_restores_tail",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.281+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "presentation::tests::newer_room_selection_rejects_old_composer_callbacks",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.284+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::observed_outcomes_are_preserved_without_inferred_completion",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.285+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::parent_tail_redraw_deduplicates_layout_and_does_not_replace_user_intent",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.286+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::queue_ack_and_lost_reply_are_composer_status_not_synthetic_messages",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.286+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::room_identity_survives_filtering_without_becoming_a_list_index",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.288+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::stale_room_and_principal_callbacks_cannot_edit_recycled_widgets",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.289+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::stream_updates_preserve_ids_and_resync_scroll_semantics",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.290+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::successful_room_navigation_returns_to_conversations_but_rejections_do_not",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.290+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "presentation::tests::tail_anchor_leaves_empty_lists_and_oversized_last_item_offsets_alone",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.292+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::tail_reflow_restore_never_overrides_new_user_input_or_scrollback",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.293+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "presentation::tests::unicode_previews_notes_and_filter_inputs_are_bounded",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.294+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::virtualized_windows_are_bounded_and_keep_complete_source_ids",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:54:53.295+00:00",
+          "time": "0.004"
+        }
+      ],
+      "gate": {
+        "status": "passed",
+        "mode": "headless",
+        "tested_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "junit_sha256": "c37707d62c58c493f0e4829add18a3dccf0efaa8e3bdea8e6c82682193dfcd10",
+        "junit_bytes": 5739,
+        "junit_file": "headless-junit.xml",
+        "execution_file": "headless.json",
+        "run_uuid": "62e69671-758b-4cd1-a38e-034e5a57fcce",
+        "total_passed_tests": 28,
+        "required_passed_tests": [
+          "chat_source::tests::adoption_does_not_replace_an_existing_draft_or_construct_a_second_source",
+          "chat_source::tests::embedded_adoption_borrows_the_original_draft_and_exits_once",
+          "native_presentation::tests::console_bound_is_utf8_safe_explicit_and_does_not_clear_pending",
+          "native_presentation::tests::explicit_shutdown_and_later_drop_close_only_once",
+          "native_presentation::tests::failed_adoption_or_abnormal_drop_also_closes_the_client"
+        ],
+        "scope": "Exact executed test-name coverage in this original --lib run; not renderer/device qualification"
+      },
+      "freshness_start": {
+        "schema": 1,
+        "mode": "headless",
+        "tested_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "junit": "/home/runner/work/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/rust/target/nextest/native-composition-headless/junit.xml",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "../apps/hepta-control-ui/rust/Cargo.toml",
+          "-p",
+          "hepta-robrix-ui",
+          "--no-default-features",
+          "--features",
+          "native-presentation",
+          "--lib",
+          "--profile",
+          "native-composition-headless"
+        ],
+        "prepared_at": "2026-11-05T12:54:33.311089+00:00"
+      },
+      "console_summary": [
+        "     Summary [   0.032s] 28 tests run: 28 passed, 0 skipped"
+      ]
+    },
+    {
+      "receipt": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/ui-native-source-127149583527/members-13416566850/_temp/native-presentation-evidence/native.json",
+        "bytes": 1664,
+        "sha256": "f87d1a4121d7285bae83f755b890598598189c3f81c95f230e4e5729449febec",
+        "computed_git_blob": "5b01038b124edad50b2110eff8acb7edc27e8eb7"
+      },
+      "original": {
+        "after": {
+          "commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+          "dirty": false,
+          "parents": [
+            "755374e93dba69214622f91c71a3ccac708d6a76"
+          ],
+          "tree": "b26598d0d97d8d51e723bb5582137315f2174d35"
+        },
+        "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+        "before": {
+          "commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+          "dirty": false,
+          "parents": [
+            "755374e93dba69214622f91c71a3ccac708d6a76"
+          ],
+          "tree": "b26598d0d97d8d51e723bb5582137315f2174d35"
+        },
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "../apps/hepta-control-ui/rust/Cargo.toml",
+          "-p",
+          "hepta-robrix-ui",
+          "--features",
+          "ui,native-host,native-presentation",
+          "--lib",
+          "--profile",
+          "native-composition-native"
+        ],
+        "command_exit_code": 0,
+        "elapsed_seconds": 62.32391698999999,
+        "exit_code": 0,
+        "finished_at": "2026-11-05T12:55:55.756025+00:00",
+        "job": "native-presentation",
+        "lane": "source-head",
+        "log_bytes": 20088,
+        "log_file": "native.json.d2ae8a535d004b69a10424df30313d6e.log",
+        "log_sha256": "22ca4eaf559e217362f43ff0c2f0d8e50352e44a4e8d670981a8285e5f46ba6c",
+        "minimum_tests": 8,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 31,
+        "output_limit_exceeded": false,
+        "returncode": 0,
+        "run_attempt": "1",
+        "run_id": "41999114715",
+        "schema_version": 1,
+        "source_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "started_at": "2026-11-05T12:54:53.431156+00:00",
+        "status": "passed",
+        "tested_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "timed_out": false,
+        "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+      },
+      "log": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/ui-native-source-127149583527/members-13416566850/_temp/native-presentation-evidence/native.json.d2ae8a535d004b69a10424df30313d6e.log",
+        "bytes": 20088,
+        "sha256": "22ca4eaf559e217362f43ff0c2f0d8e50352e44a4e8d670981a8285e5f46ba6c",
+        "computed_git_blob": "1d975cd478488427b87fed1af1777d84d5dffdbc"
+      },
+      "junit": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/ui-native-source-127149583527/members-13416566850/_temp/native-presentation-evidence/native-junit.xml",
+        "bytes": 6327,
+        "sha256": "d693ce84eac484005b9d786166d816a2b4ab726d7929107bad1fdc0fcd0e8361",
+        "computed_git_blob": "b711f00db1704f2403097e22496ebdfba062aa9a"
+      },
+      "duplicate_junit_identical_not_double_counted": {
+        "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/ui-native-source-127149583527/members-13416566850/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/rust/target/nextest/native-composition-native/junit.xml",
+        "bytes": 6327,
+        "sha256": "d693ce84eac484005b9d786166d816a2b4ab726d7929107bad1fdc0fcd0e8361",
+        "computed_git_blob": "b711f00db1704f2403097e22496ebdfba062aa9a"
+      },
+      "junit_root_attributes": {
+        "name": "hepta-native-composition-native",
+        "tests": "31",
+        "skipped": "0",
+        "failures": "0",
+        "errors": "0",
+        "uuid": "4a17686c-eb7a-4b48-b973-91875fb4305a",
+        "timestamp": "2026-11-05T12:55:55.616+00:00",
+        "time": "0.038"
+      },
+      "cases": [
+        {
+          "name": "ime_pointer_gate::tests::duplicate_start_does_not_unblock_an_existing_sequence",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.616+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "chat_source::tests::embedded_adoption_borrows_the_original_draft_and_exits_once",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.617+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "ime_pointer_gate::tests::capacity_failure_stays_closed_until_platform_reset",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.616+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "chat_source::tests::adoption_does_not_replace_an_existing_draft_or_construct_a_second_source",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.617+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "ime_pointer_gate::tests::mouse_and_touch_identifiers_cannot_alias",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.622+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "ime_pointer_gate::tests::independent_touch_motion_and_release_remain_forwarded",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.621+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "ime_pointer_gate::tests::ordinary_noncomposing_input_is_not_retained",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.622+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "ime_pointer_gate::tests::outside_release_cannot_blur_preedit_without_a_recorded_start",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.622+00:00",
+          "time": "0.007"
+        },
+        {
+          "name": "ime_pointer_gate::tests::rejected_click_stays_rejected_after_preedit_ends",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.627+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "native_launch::tests::an_unwound_loop_releases_admission_and_closes_the_pending_client_once",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.627+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "native_launch::tests::an_unadopted_loop_cannot_report_success_and_releases_pending_state",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.626+00:00",
+          "time": "0.008"
+        },
+        {
+          "name": "native_launch::tests::reentrant_admission_cannot_replace_the_first_composition",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.629+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "native_presentation::tests::console_bound_is_utf8_safe_explicit_and_does_not_clear_pending",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.631+00:00",
+          "time": "0.003"
+        },
+        {
+          "name": "native_presentation::tests::explicit_shutdown_and_later_drop_close_only_once",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.631+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::edits_and_repeated_unavailable_send_never_insert_optimistic_messages",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.634+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "native_presentation::tests::failed_adoption_or_abnormal_drop_also_closes_the_client",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.634+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "presentation::tests::default_workspace_has_one_local_room_and_separate_empty_state",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.634+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "presentation::tests::font_reflow_does_not_replace_user_scroll_intent_and_jump_restores_tail",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.635+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::ime_blocks_destructive_actions_without_clearing_draft",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.639+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::newer_room_selection_rejects_old_composer_callbacks",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.639+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::observed_outcomes_are_preserved_without_inferred_completion",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.639+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "presentation::tests::parent_tail_redraw_deduplicates_layout_and_does_not_replace_user_intent",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.640+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::queue_ack_and_lost_reply_are_composer_status_not_synthetic_messages",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.643+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "presentation::tests::room_identity_survives_filtering_without_becoming_a_list_index",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.643+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::stale_room_and_principal_callbacks_cannot_edit_recycled_widgets",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.644+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::stream_updates_preserve_ids_and_resync_scroll_semantics",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.644+00:00",
+          "time": "0.005"
+        },
+        {
+          "name": "presentation::tests::successful_room_navigation_returns_to_conversations_but_rejections_do_not",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.647+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::tail_anchor_leaves_empty_lists_and_oversized_last_item_offsets_alone",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.647+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::tail_reflow_restore_never_overrides_new_user_input_or_scrollback",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.648+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::unicode_previews_notes_and_filter_inputs_are_bounded",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.649+00:00",
+          "time": "0.004"
+        },
+        {
+          "name": "presentation::tests::virtualized_windows_are_bounded_and_keep_complete_source_ids",
+          "classname": "hepta-robrix-ui",
+          "timestamp": "2026-11-05T12:55:55.651+00:00",
+          "time": "0.003"
+        }
+      ],
+      "gate": {
+        "status": "passed",
+        "mode": "native",
+        "tested_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "junit_sha256": "d693ce84eac484005b9d786166d816a2b4ab726d7929107bad1fdc0fcd0e8361",
+        "junit_bytes": 6327,
+        "junit_file": "native-junit.xml",
+        "execution_file": "native.json",
+        "run_uuid": "4a17686c-eb7a-4b48-b973-91875fb4305a",
+        "total_passed_tests": 31,
+        "required_passed_tests": [
+          "chat_source::tests::adoption_does_not_replace_an_existing_draft_or_construct_a_second_source",
+          "chat_source::tests::embedded_adoption_borrows_the_original_draft_and_exits_once",
+          "native_launch::tests::an_unadopted_loop_cannot_report_success_and_releases_pending_state",
+          "native_launch::tests::an_unwound_loop_releases_admission_and_closes_the_pending_client_once",
+          "native_launch::tests::reentrant_admission_cannot_replace_the_first_composition",
+          "native_presentation::tests::console_bound_is_utf8_safe_explicit_and_does_not_clear_pending",
+          "native_presentation::tests::explicit_shutdown_and_later_drop_close_only_once",
+          "native_presentation::tests::failed_adoption_or_abnormal_drop_also_closes_the_client"
+        ],
+        "scope": "Exact executed test-name coverage in this original --lib run; not renderer/device qualification"
+      },
+      "freshness_start": {
+        "schema": 1,
+        "mode": "native",
+        "tested_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "junit": "/home/runner/work/hepta-private-ci/hepta-private-ci/apps/hepta-control-ui/rust/target/nextest/native-composition-native/junit.xml",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--manifest-path",
+          "../apps/hepta-control-ui/rust/Cargo.toml",
+          "-p",
+          "hepta-robrix-ui",
+          "--features",
+          "ui,native-host,native-presentation",
+          "--lib",
+          "--profile",
+          "native-composition-native"
+        ],
+        "prepared_at": "2026-11-05T12:54:53.399909+00:00"
+      },
+      "console_summary": [
+        "     Summary [   0.038s] 31 tests run: 31 passed, 0 skipped"
+      ]
+    }
+  ],
+  "junit_gate_unit_tests": {
+    "receipt": {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/ui-native-source-127149583527/members-13416566850/_temp/native-presentation-evidence/junit-gate-tests.json",
+      "bytes": 1489,
+      "sha256": "3d6ca4f46c8ca0958b376455734cfdef86c1f2ee4f5f8df11b41143eb4621163",
+      "computed_git_blob": "efa4ce88cd16df133b1107b2e48bb4491d83613e"
+    },
+    "original": {
+      "after": {
+        "commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "dirty": false,
+        "parents": [
+          "755374e93dba69214622f91c71a3ccac708d6a76"
+        ],
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35"
+      },
+      "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "before": {
+        "commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "dirty": false,
+        "parents": [
+          "755374e93dba69214622f91c71a3ccac708d6a76"
+        ],
+        "tree": "b26598d0d97d8d51e723bb5582137315f2174d35"
+      },
+      "command": [
+        "python3",
+        "apps/hepta-control-ui/test/test_native_composition_junit.py"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 0.5718040149999979,
+      "exit_code": 0,
+      "finished_at": "2026-11-05T12:54:33.149895+00:00",
+      "job": "native-presentation",
+      "lane": "source-head",
+      "log_bytes": 111,
+      "log_file": "junit-gate-tests.json.3cf6acd4aa9b4c9b8b56df0c5528925d.log",
+      "log_sha256": "22e69128faed2c5b9f76178176222e7a4635dbd31155df18e4fad6455f8ab9ea",
+      "minimum_tests": 12,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 12,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "run_attempt": "1",
+      "run_id": "41999114715",
+      "schema_version": 1,
+      "source_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "started_at": "2026-11-05T12:54:32.577552+00:00",
+      "status": "passed",
+      "tested_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "timed_out": false,
+      "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+    },
+    "log": {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/ui-native-source-127149583527/members-13416566850/_temp/native-presentation-evidence/junit-gate-tests.json.3cf6acd4aa9b4c9b8b56df0c5528925d.log",
+      "bytes": 111,
+      "sha256": "22e69128faed2c5b9f76178176222e7a4635dbd31155df18e4fad6455f8ab9ea",
+      "computed_git_blob": "0565df42a94243fe8558e344b20f3d1352cd65bf"
+    }
+  },
+  "frozen_142_exact_name_intersection": [],
+  "observed_summary": {
+    "selected_counts_by_profile": [
+      28,
+      31
+    ],
+    "selected_occurrences": 59,
+    "distinct_test_names_across_profiles": 31,
+    "junit_failures": 0,
+    "junit_skipped": 0,
+    "junit_gate_python_tests": 12,
+    "frozen_142_hits": 0
+  },
+  "limits": [
+    "Two copies of each original XML were byte-compared and counted once. Profile occurrences overlap and are not59 distinct definitions.",
+    "The original required control names are verified directly against XML; no workflow-summary-only inference is used.",
+    "The two library profiles are composition tests, not a native window/device rendering or independent trusted Root/owner acceptance. No B16/B19 whole closure is inferred.",
+    "The API head is5b but the base-merge native job actually tests43d70e6d, distinct from browser8baf9 and ordinary9063. Its before/after source tree is exactlyb265.",
+    "No separate binary identity capture beyond original workflow receipts is invented; fresh XML UUID/timestamp/source receipts and raw command output are preserved."
+  ],
+  "reviewed_at_utc": "2026-11-05T13:37:56.063787+00:00",
+  "native_or_browser_execution_by_reviewer": false
+}

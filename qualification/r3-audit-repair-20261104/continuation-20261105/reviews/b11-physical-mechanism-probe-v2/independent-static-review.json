@@ -1,0 +1,264 @@
+{
+  "schema": "b11_probe_v2_independent_static_review_v1",
+  "observed_at": "2026-11-05T14:47:41.173487+00:00",
+  "verdict": "STATIC_ACCEPTED_PENDING_WINDOWS",
+  "reviewer": "/root/research_audit",
+  "scope": "Full frozen V2 three-source candidate, corrected independent workflow, local bytes/official binding/API contract and evidence limits only; no Rust compile/fmt/test, no native operation or source/ref mutation.",
+  "base_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "base_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "author_manifest": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/manifest-v2.json",
+    "bytes": 18703,
+    "sha256": "9b39be778a28c6a8223fb4028d09176222a227ea098a9c3f24290a130711d895",
+    "git_blob": "dfbd4f609afa66239ca2b6d10fd584e882987bf3"
+  },
+  "full_source_patch": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/full.patch",
+    "bytes": 29379,
+    "sha256": "b0aab22c663dd596664716cd534c5d42df92cff45c122a35dd792a31acbbbe0b",
+    "git_blob": "42c16c379b9f4adb24567252f759045115871c4d"
+  },
+  "full_four_path_patch": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/diagnostic-pr-full.patch",
+    "bytes": 34018,
+    "sha256": "a79d83c11caece015ec56df3dd8508776001432bf273a97f998592ce4b40f488",
+    "git_blob": "f8869774509a4226328bc4dc28243e86a35f8779"
+  },
+  "source_postimages": [
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token.rs",
+      "bytes": 18437,
+      "sha256": "6d7ddb4a84561b28bc134139226f9be444cb0dc03c73038e7988e21e18339a77",
+      "git_blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "bytes": 13242,
+      "sha256": "80de0b271e57775c00661cfda26dd8b20b8894b040a2081d601c931982a2ecd7",
+      "git_blob": "3b850db502bef372592322dd1c1d2272e65a6a47"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "bytes": 14475,
+      "sha256": "5fe644714b4180dd4bbb988452a4c8464524149eda1a91af0af8879761f448ab",
+      "git_blob": "2a384792e8ba88518c26943716e8c3a39a523f9b"
+    }
+  ],
+  "workflow_postimage": {
+    "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/execution-candidate/.github/workflows/hepta-windows-token-mechanism-probe.yml",
+    "bytes": 4211,
+    "sha256": "8ab7b1e1d93c7c64fe4f40d5b4823912d22b7269d5ae5cc630d6fea8c35176a2",
+    "git_blob": "565e442d290309da85a72969226b5cf48049f072"
+  },
+  "production_preservation": {
+    "token_original": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/source/codex-rs/windows-sandbox-rs/src/token.rs",
+      "bytes": 18359,
+      "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac",
+      "git_blob": "8945d75fe172679479b738e6266cac99a6f7ed16"
+    },
+    "only_addition_bytes": 78,
+    "addition": "\n#[cfg(test)]\n#[path = \"token_integrity_probe_tests.rs\"]\nmod integrity_probe;\n",
+    "whole_preimage_equal_after_removing_registration": true,
+    "old_test_files_unchanged": [
+      {
+        "repository_path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/source/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+        "bytes": 6807,
+        "sha256": "8dc0ae01935586ac22001a5b567c148fa9ff744bf10e4de691c6fbe0993021da",
+        "git_blob": "a0cb1647d95f067fcf135bc9ea2a654ca3e5e7a2"
+      },
+      {
+        "repository_path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "bytes": 22681,
+        "sha256": "cda729e069f427b9fb197a75391ea30b3427a6b6c98a8ecb60d858328b808af0",
+        "git_blob": "042858ce22b784d7809612e2d80e35d29b559f1a"
+      },
+      {
+        "repository_path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-delete-boundary-20261105/source/codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+        "bytes": 43106,
+        "sha256": "f6b49b35c8c0aed98dc621ae179faa2ec6d5d33858c09223a38bf4784fa2b940",
+        "git_blob": "aea1ff8476ab8ce33642677a36b1609054888a4e"
+      },
+      {
+        "repository_path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+        "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/supervisor-fmt-repair-20261105/source/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+        "bytes": 16679,
+        "sha256": "b701ad01169eb9f64b62ad50099dfcda51b014a5c96dbc2080631fd2e6d7ee75",
+        "git_blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "OUTPUT_VISIBILITY",
+      "status": "FIXED_STATIC_V2",
+      "detail": "Direct std::io::Write to locked stderr with a leading newline is used for each observation; ordinary write failure propagates through Result. Only destructor cleanup output is best effort. No launcher nocapture or argument change is required to expose successful-test observations."
+    },
+    {
+      "id": "COLLECTOR_SCOPE",
+      "status": "FIXED_STATIC_WORKFLOW_V2",
+      "detail": "An unexecuted draft unconditionally supplied the target to the failed-only stdin collector. The final workflow removes that call. The unchanged fixed wrapper selects true failed targets and separately uses retention-console for allowlisted PASSED/FLAKY targets; this exact Windows unit target is in that allowlist."
+    },
+    {
+      "id": "SAME_OBJECT_RESTORATION",
+      "status": "STATIC_ACCEPTED",
+      "detail": "Only newly created owned TempDir objects are labelled; explicit Medium is set at creation, captured and compared before the desired label. Retained non-inheritable READ_CONTROL|WRITE_OWNER|FILE_READ_ATTRIBUTES handles share DELETE but do not request DELETE. Label set/readback/identity checks operate on those same handles. Surviving objects restore the complete original descriptor text; pending deleted objects close the observation handle and must subsequently be unnamed. This does not depend on clearing an absent label with a NULL SACL."
+    },
+    {
+      "id": "REVERT_AND_ERRORS",
+      "status": "STATIC_ACCEPTED",
+      "detail": "Synchronous impersonation RAII reverts before reporting/restoration/readback, and failed RevertToSelf aborts rather than contaminating another test. Every row object finish is attempted before result propagation. Setup, observation output, positive-control or restoration failure invalidates this fixture; there is no skip or fallback-success branch."
+    },
+    {
+      "id": "REAL_OPERATIONS",
+      "status": "STATIC_ACCEPTED_PENDING_EXECUTION",
+      "detail": "Four token subjects times two outside-label classes run fresh-path read, overwrite, create, remove-file and remove-directory operations. Effective thread IL/attributes/mandatory-policy are observed, and AccessCheck of parent 0x40 and child DELETE uses the same retained descriptors including labels. AccessCheck is separately reported and never substitutes for the physical operation results."
+    },
+    {
+      "id": "TOKEN_BOUNDARY",
+      "status": "STATIC_ACCEPTED_TEST_ONLY",
+      "detail": "The public production token constructors and original strict controls remain unchanged. The full-restricting read-capability alternative is private test code; its read SID is excluded from default-DACL GENERIC_ALL. The probe spawns no descendants and says nothing about loader, process, Job or backend qualification."
+    },
+    {
+      "id": "POSITIVE_AND_NEGATIVE_SCOPE",
+      "status": "QUALIFICATION_LIMIT",
+      "detail": "Probe success requires eight valid rows, expected effective token state, inside legitimate writes/deletes/readback, outside original reads, host outside mutations, and descriptor restoration/deletion checks. It deliberately does not assert outside denial. A PASS is observation validity only; all old strict/matrix tests and B11 remain independent and OPEN."
+    },
+    {
+      "id": "BUILD_REGISTRATION",
+      "status": "STATIC_ACCEPTED",
+      "detail": "token.rs has exactly one added cfg(test) path module. Existing crate registration uses src/**/*.rs; existing Windows unit target has the runner/setup binaries as test data. The independent workflow selects the original native outer unit label and MSVC platform, not a replacement filtered or mock case."
+    },
+    {
+      "id": "WORKFLOW_CONTRACT",
+      "status": "STATIC_ACCEPTED_PENDING_EXECUTION",
+      "detail": "Final workflow keeps 120-minute job, original target/platform/setup, no test filter/no new retries/no nocapture, complete tee console, source HEAD/tree/leaves/status snapshots and original PIPESTATUS[0] exit. Existing archive upload is always&&!cancelled. It records tee status separately rather than disguising it as Bazel status."
+    }
+  ],
+  "workflow_dependency_sources": [
+    {
+      "repository_path": ".github/scripts/run-bazel-ci.sh",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-mic-probe-independent-review-20261105/fixed-run-bazel-ci.sh.source.txt",
+      "bytes": 17448,
+      "sha256": "0136e087ddfac7c01bdacb03357d0353d328dea3b8cd86caf94e64bf10706482",
+      "git_blob": "42b59b6354b5933c8155b992519682c06d024ca1"
+    },
+    {
+      "repository_path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-mic-probe-independent-review-20261105/fixed-collector.py.source.txt",
+      "bytes": 16260,
+      "sha256": "55353f094531a4af974c519fadca01dcd0c8be6ece1f8b10efb70d24ae2a44eb",
+      "git_blob": "2142eeb382664d95f77d83ac7ae3da4459601abf"
+    },
+    {
+      "repository_path": ".github/actions/prepare-bazel-ci/action.yml",
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b11-mic-probe-independent-review-20261105/fixed-prepare-bazel-ci.yml.source.txt",
+      "bytes": 3255,
+      "sha256": "a5286f6896c99a71ee247afbad1dc0aa00d967352f33bb24d8cb97e4df5d978b",
+      "git_blob": "f9508a1659e5f2c54a6ae5b263bb9328095438d7"
+    }
+  ],
+  "official_binding_sources": [
+    {
+      "local_original": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-threading-0.52.0.json",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "repository_path": "crates/libs/sys/src/Windows/Win32/System/Threading/mod.rs",
+      "bytes": 136501,
+      "sha256": "6258ef99d17078002020644540a608a89cdf20436daefa3970a65348e6793c1c",
+      "git_blob": "6ee2c4ad6120e5a3ad34c87e67d6d9187304d9ac",
+      "independent_content_hash_verified": true
+    },
+    {
+      "local_original": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-systemservices-0.52.0.json",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "repository_path": "crates/libs/sys/src/Windows/Win32/System/SystemServices/mod.rs",
+      "bytes": 253400,
+      "sha256": "edd591c9ea164c7d6f4e7b7174f33054261a122a231f3ea8ce5cdacb5bcd2475",
+      "git_blob": "3d024dcbdf3061096f2a5e90a3762af7cca2bddd",
+      "independent_content_hash_verified": true
+    },
+    {
+      "local_original": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-security-0.52.0.json",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "repository_path": "crates/libs/sys/src/Windows/Win32/Security/mod.rs",
+      "bytes": 111353,
+      "sha256": "b35db507ad9380695f15b7ba798d0e677e08cc84b905577489d7e63994f00673",
+      "git_blob": "e474d1dfc62b7be1443f2b59eda8370477fdfa74",
+      "independent_content_hash_verified": true
+    },
+    {
+      "local_original": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/windows-foundation-0.52.0.json",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "repository_path": "crates/libs/sys/src/Windows/Win32/Foundation/mod.rs",
+      "bytes": 739086,
+      "sha256": "ee8378fd7a513d263aca8d5d441625965c746658f5a595f571d82e7a6cf71b36",
+      "git_blob": "6502b8224f3bebf23dca29c6ea1a68b47e7c7611",
+      "independent_content_hash_verified": true
+    },
+    {
+      "local_original": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/windows-sys-authorization-original-api.json",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "repository_path": "crates/libs/sys/src/Windows/Win32/Security/Authorization/mod.rs",
+      "bytes": 89139,
+      "sha256": "8f815ef1e07914982c627898d4dc071a703e86240e9a9f946878e3210bc23ac7",
+      "git_blob": "75767ccc1fd85b05762b66339e432b4e45ab711e",
+      "independent_content_hash_verified": true
+    },
+    {
+      "local_original": "/workspace/scratch/07dd58cc9630/research-audit/b11-current-boundary-design/windows-sys-filesystem-original-api.json",
+      "repository": "microsoft/windows-rs",
+      "ref": "0.52.0",
+      "repository_path": "crates/libs/sys/src/Windows/Win32/Storage/FileSystem/mod.rs",
+      "bytes": 296470,
+      "sha256": "62de1e36d41b1efdb8651c887dae8fbfb0ca2dc34e4d3a789e716f50e424630d",
+      "git_blob": "5cb313fe5ba69cbec6eee56b86ec13608744dae4",
+      "independent_content_hash_verified": true
+    },
+    {
+      "local_original": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/primary/rust-1.95-stdio-api.json",
+      "repository": "rust-lang/rust",
+      "ref": "1.95.0",
+      "repository_path": "library/std/src/io/stdio.rs",
+      "bytes": 44087,
+      "sha256": "83a4386e70e8d7127213c24854ffb985beac0efac8b8617275db0cc16babe040",
+      "git_blob": "2d80fe49e80a7ddb7a01792caf96f121527b7a52",
+      "independent_content_hash_verified": true
+    }
+  ],
+  "author_static_reconstruction": {
+    "identity": {
+      "local_path": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-mic-physical-probe-20261105/cloud-patch-verification-v2.json",
+      "bytes": 10867,
+      "sha256": "937023e125b671effb7d368146dbd0f6e84d857c3cf0ed2c4c8deb8caf1a6640",
+      "git_blob": "6fa3c3d0c1e9c4829dfb0bdb63fdd22b62a00cf5"
+    },
+    "scope": "Author existing 25 isolated cloud git commands read; no duplicate project execution. This reviewer independently checked source/postimage hashes and complete original token/test preservation."
+  },
+  "required_future_evidence": {
+    "native_windows_not_executed": true,
+    "exact_names_reference_only": [
+      "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+      "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+      "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+      "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+      "token::integrity_probe::integrity_mechanism_probe_observation_only"
+    ],
+    "must_read_actual_result": "Require actual source/merge checkout, complete per-case log/XML/attempts, eight row observations and final completion marker, errors and cache/skips. required-case-names.txt is a reference list, not an automatic proof that these cases ran.",
+    "missing_or_cached": "A missing original log or a cached result must remain labelled as such; collector completeness or mtime alone does not bind fresh execution. A build failure before test execution proves no row. Cancellation may prevent the always&&!cancelled upload.",
+    "original_failure_not_erased": "The original strict/matrix cases may still fail; the workflow preserves their actual Bazel exit rather than converting an observation-only PASS into isolation qualification."
+  },
+  "no_production_permission_change_approved_by_review": true,
+  "blocker_status_unchanged": "B11 OPEN; no actual MIC/DELETE_CHILD, cross-Low isolation, ambient-read production, loader/IPC/backend or Root/Current acceptance claim."
+}

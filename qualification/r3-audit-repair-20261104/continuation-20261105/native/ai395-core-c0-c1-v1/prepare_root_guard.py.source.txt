@@ -1,0 +1,92 @@
+"""Freeze root-reviewed C0/C1 authorization. Never launch a native command."""
+from pathlib import Path
+import ast
+import datetime
+import hashlib
+import json
+
+ROOT = Path(__file__).resolve().parent.parent
+SOURCE = ROOT / "ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1"
+OUT = ROOT / "hepta-audit-fifth/inputs"
+
+
+def identity(path):
+    raw = path.read_bytes()
+    return {"local_path": str(path), "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
+            "git_blob": hashlib.sha1(f"blob {len(raw)}\0".encode() + raw).hexdigest()}
+
+
+def read(path):
+    return json.loads(path.read_bytes())
+
+
+manifest = read(SOURCE / "manifest.json")
+for key in ("runner", "request", "process_start", "initial_draft", "delta"):
+    row = manifest[key]
+    actual = identity(Path(row["path"]))
+    assert all(actual[k] == row[k] for k in ("bytes", "sha256", "git_blob")), key
+runner = Path(manifest["runner"]["path"]).read_text()
+ast.parse(runner)
+initial = Path(manifest["initial_draft"]["path"]).read_text()
+assert runner == initial.replace("'PYTHONPYCACHEPREFIX': 'python-pycache'}.items():",
+    "'PYTHONPYCACHEPREFIX': 'python-pycache', 'RUSTUP_HOME': 'rustup-home'}.items():")
+request = read(Path(manifest["request"]["path"]))
+process = read(Path(manifest["process_start"]["path"]))
+assert request["execute"] is False and request["root_execution_guard"] is None
+assert process["host"] == "ai395" and process["executable"] == "/usr/bin/python3"
+assert process["args"] == ["-c", runner]
+assert process["stdin"] == Path(manifest["request"]["path"]).read_text()
+assert process["cwd"] == "/home/qq/work" and process["timeout_seconds"] == 21600
+assert process["idempotency_key"] == request["idempotency_key"] == "hepta-ai395-core-cold-prepare-20261105-v1"
+assert process["env"] == {"PYTHONDONTWRITEBYTECODE": "1", "GIT_OPTIONAL_LOCKS": "0"}
+assert request["stage"] == "prepare"
+assert request["readiness"]["sha256"] == "c61d68f27c06ab53c0b2befc36a3b6cc2b56184e8d77fa4ee77cece37761bfd3"
+base = Path("/home/qq/work/hepta-core-musl-full-20261105")
+for variable, suffix in {"CARGO_HOME": "cargo-home", "CARGO_TARGET_DIR": "target-dev-small",
+    "RUSTUP_HOME": "rustup-home", "DOTSLASH_CACHE": "dotslash-cache", "UV_CACHE_DIR": "uv-cache",
+    "PYTHONPYCACHEPREFIX": "python-pycache"}.items():
+    assert request["environment"][variable] == str(base / suffix)
+assert request["environment"]["CARGO_BUILD_JOBS"] == "4"
+assert request["environment"]["GIT_TERMINAL_PROMPT"] == "0"
+assert request["environment"]["GCM_INTERACTIVE"] == "never"
+original = read(OUT / "core-musl-native-ENABLED-v3.json")
+helpers = original["plan"]["phases"][3]["commands"][0]
+assert helpers[:2] == ["cargo", "build"] and all("/home/qian-qi" not in arg for arg in helpers)
+guard = {
+    "schema": "hepta-root-ai395-independent-core-C0-C1-execution-guard-v1",
+    "reviewed_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    "approved": True,
+    "authorization": "User requested a full audit and active blocker closure; this is a new isolated Core candidate build preparation within that task.",
+    "role": "C0_C1_BUILD_ONLY_NO_PRODUCT_QUALIFICATION",
+    "reviewed_manifest": identity(SOURCE / "manifest.json"),
+    "reviewed_runner": manifest["runner"],
+    "reviewed_disabled_request": manifest["request"],
+    "reviewed_disabled_process_start": manifest["process_start"],
+    "actual_readiness_root_review_blob": "5bae7f2aee0faa29388e589a978da70a162cf07f",
+    "host": "ai395", "owned_root_must_be_absent": str(base),
+    "idempotency_key": process["idempotency_key"], "timeout_seconds": 21600,
+    "source": {"product_commit": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "product_tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+        "candidate_tree": "e78c819b8b1f435f8b37bea17b4ffdc724961aa2",
+        "source_input_commit": "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72",
+        "source_input_tree": "65cfd91deea0fbd5b432c225e16d15106ed5f373",
+        "source_guard": "All 10580 leaves, exact two reviewed posts, fresh own ordinary 5b HEAD/index, unchanged locks; no borrowed ROG or B index."},
+    "steps": ["Revalidate actual readiness bytes, host, new-root absence, current physical171/147 prerequisites and capacity.",
+        "Create only the new Core root, source checkout, target, caches and evidence; fetch fixed supply and product inputs with noninteractive existing Git authentication.",
+        "Verify complete source maps/rosters and exact two candidate posts, then perform only the original normal seven-helper build.",
+        "Preserve complete stdout/stderr, helper executable hashes, command status and before/after source/tool/input guards.",
+        "Write C1 checkpoint and terminal report, require successful final guards, then exit naturally."],
+    "exact_helper_argv": helpers,
+    "capacity": {"entry_available_disk_bytes": 200000000000, "phase_available_disk_bytes": 64000000000,
+        "entry_and_pre_build_MemAvailable_bytes": 34359738368, "cargo_build_jobs": 4,
+        "measured_peak_guarantee": False},
+    "scope_limits": ["No metadata, catalog, tests, hygiene, automatic continuation or background wait loop in this request.",
+        "Do not reset/delete/clean any old source, target, cache, index or evidence; no signal to unrelated processes.",
+        "Pinned old B tools/SDK are read or executed only; every task-specific write cache including RUSTUP_HOME belongs to the new Core root; no rustup command.",
+        "The earlier B16 driver remains UNKNOWN and is not retried or repurposed.",
+        "C2/full requires a separately reviewed request bound to the actual C1 checkpoint, terminal exit0/final guards and reviewed ROG P4 results."],
+    "enabled_delta": "Only request.execute and request.root_execution_guard, and the containing process-start stdin; all actual argv, code, host, cwd, env, idempotency key and timeout remain byte-identical."}
+target = OUT / "ai395-core-c0-c1-root-execution-guard-v1.json"
+assert not target.exists(), target
+target.write_text(json.dumps(guard, ensure_ascii=False, indent=2) + "\n")
+print(json.dumps(identity(target)))

@@ -1,0 +1,73 @@
+"""Retain the first cut, correct one LF export to the actual decoded API bytes."""
+from pathlib import Path
+import base64,gzip,hashlib,io,json,tarfile,datetime
+ROOT=Path(__file__).resolve().parent.parent
+BASE=ROOT/'hepta-audit-fifth'
+OLD=BASE/'v6-archives/current-outcomes-cut0063-v1'
+OUT=BASE/'v6-archives/current-outcomes-cut0063-v2'
+assert not OUT.exists()
+OUT.mkdir()
+def ident(b):
+ return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'computed_git_blob':hashlib.sha1(f'blob {len(b)}\0'.encode()+b).hexdigest()}
+def write(path,x):
+ b=(json.dumps(x,ensure_ascii=False,indent=2)+'\n').encode();path.write_bytes(b);return b
+t=json.loads((OLD/'transport-manifest.json').read_bytes());m=json.loads((OLD/'original-files-manifest.json').read_bytes())
+compressed=b''.join(base64.b64decode((OLD/r['name']).read_bytes().strip(),validate=True) for r in t['parts'])
+assert ident(compressed)=={k:v for k,v in t['archive'].items() if k!='name'}
+data={}
+with tarfile.open(fileobj=io.BytesIO(gzip.decompress(compressed)),mode='r:') as tar:
+ for r in m['files']:
+  b=tar.extractfile(r['member']).read();assert ident(b)=={k:v for k,v in r.items() if k!='member'};data[r['member']]=b
+rel='research-audit/published-5b633-ci-20261105/terminal/v8-windows-arm-sandbox-127251874931/'
+envelope=(ROOT/rel/'job-log-api-envelope.json').read_bytes()
+actual=json.loads(envelope)['response']['structuredContent']['content'].encode('utf-8')
+current=(ROOT/rel/'job.log').read_bytes();before=data['original/'+rel+'job.log']
+assert actual==current and actual.replace(b'\r\n',b'\n')==before
+assert hashlib.sha256(actual).hexdigest()=='36ed4e52e87b3fe4612104898097e7ff937bd0a6008b90bcd5bc7cd182b25ade'
+assert hashlib.sha256(before).hexdigest()=='a8c7d0afe0df61a8b6199e9eaccc2c6e40f530ed823010c561961acba650e313'
+data['original/'+rel+'job.log']=actual
+data['original/'+rel+'job-log-api-envelope.json']=envelope
+data['original/'+rel+'raw-export-correction.json']=(ROOT/rel/'raw-export-correction.json').read_bytes()
+scope=dict(t['scope'])
+scope.update(frozen_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+ scope='Complete fixed observations; V8 ARM log is the exact connector-decoded UTF-8 original, independently matched to its API envelope.',
+ correction={'old_v1_archive':t['archive'],'old_LF_export':ident(before),'corrected_API_bytes':ident(actual),
+ 'API_envelope':ident(envelope),'CRLF_count':actual.count(b'\r\n'),'exact_CRLF_to_LF_reproduces_old_export':True,
+ 'old_v1_preserved_as_history':True,'new_observations_or_tests_added':False})
+scope['limits']+=['The v1 archive contains a line-ending-normalized ARM log export and is historical, not an exact native-log-byte claim. Its original identity is retained explicitly; cancellation facts are unchanged.']
+buf=io.BytesIO();rows=[]
+with tarfile.open(fileobj=buf,mode='w',format=tarfile.PAX_FORMAT) as tar:
+ for name,b in sorted(data.items()):
+  info=tarfile.TarInfo(name);info.size=len(b);info.mode=0o644;info.mtime=0;tar.addfile(info,io.BytesIO(b));rows.append({'member':name,**ident(b)})
+archive=gzip.compress(buf.getvalue(),compresslevel=9,mtime=0)
+raw_manifest=write(OUT/'original-files-manifest.json',{'schema':'hepta-complete-original-files-v1','scope':scope,'file_count':len(rows),'total_original_bytes':sum(r['bytes'] for r in rows),'files':rows})
+parts=[]
+for i,offset in enumerate(range(0,len(archive),360000)):
+ chunk=archive[offset:offset+360000];b=base64.b64encode(chunk)+b'\n';name=f'original-outcomes.tar.gz.part{i:03}.b64.txt';(OUT/name).write_bytes(b)
+ parts.append({'index':i,'name':name,'compressed_offset':offset,'file':ident(b),'decoded_chunk':ident(chunk)})
+write(OUT/'transport-manifest.json',{'schema':'hepta-complete-original-byte-transport-v1','scope':scope,'archive':{'name':'original-outcomes.tar.gz',**ident(archive)},'original_files_manifest':{'name':'original-files-manifest.json',**ident(raw_manifest)},'part_count':len(parts),'parts':parts})
+write(OUT/'scope-summary.json',scope)
+(OUT/'verify_archive.py').write_bytes((OLD/'verify_archive.py').read_bytes())
+review={'schema':'root_v8_arm_exact_api_bytes_correction_v1','old_v1_retained':True,'root_verified_API_equality':True,'root_verified_CRLF_equation':True,'old':ident(before),'actual':ident(actual),'envelope':ident(envelope),'scope':scope['correction'],'facts_unchanged':'Only canceled observed; actor/reason UNKNOWN, product test/stage/upload not executed.'}
+write(BASE/'inputs/v8-arm-raw-export-root-correction-v1.json',review)
+plan=json.loads((BASE/'registration-plan-v6-final-verified.json').read_bytes());prefix='qualification/r3-audit-repair-20261104/continuation-20261105/'
+old_rows=[r for r in plan['items'] if '/generated-evidence/current-outcomes-cut0063-v6/' in r['repository_path']]
+assert len(old_rows)==5
+for r in old_rows:
+ history=dict(r);history['repository_path']=r['repository_path'].replace('/current-outcomes-cut0063-v6/','/current-outcomes-cut0063-v6/history-v1-normalized-arm-export/')
+ history['role']='Historical first cut: ARM job.log is the exact retained LF export, not the connector-original line endings; correction record governs interpretation'
+ plan['items'].append(history)
+ path=OUT/Path(r['local_file']).name;b=path.read_bytes();x=ident(b)
+ r.update(local_file=str(path),bytes=x['bytes'],sha256=x['sha256'],blob=x['computed_git_blob'],actual_object_verified=False,
+          role='Corrected full24-file observed archive, exact API-decoded ARM log independently verified; ROG projection remains explicitly derived')
+ r.pop('verification',None)
+known_local={r['local_file'] for r in plan['items']}
+for path in sorted(OUT.iterdir()):
+ if str(path) not in known_local:
+  b=path.read_bytes();x=ident(b)
+  plan['items'].append({'repository_path':prefix+'generated-evidence/current-outcomes-cut0063-v6/'+path.name,'local_file':str(path),'mode':'100644','bytes':x['bytes'],'sha256':x['sha256'],'blob':x['computed_git_blob'],'role':'Additional complete corrected archive part','actual_object_verified':False})
+for path,dest in [(BASE/'inputs/v8-arm-raw-export-root-correction-v1.json','reviews/v8-arm-raw-export-root-correction-v1.json'),(Path(__file__),'generated-evidence/correct_v6_arm_original.py.source.txt')]:
+ b=path.read_bytes();x=ident(b);plan['items'].append({'repository_path':prefix+dest,'local_file':str(path),'mode':'100644','bytes':x['bytes'],'sha256':x['sha256'],'blob':x['computed_git_blob'],'role':'Exact-byte provenance correction, no change in execution facts','actual_object_verified':False})
+plan['items'].sort(key=lambda r:r['repository_path']);plan['entry_count']=len(plan['items'])
+write(BASE/'registration-plan-v6-corrected.json',plan)
+print(json.dumps({'files':len(rows),'bytes':sum(r['bytes'] for r in rows),'archive':ident(archive),'entries':len(plan['items']),'unverified':sum(not r['actual_object_verified'] for r in plan['items'])}))

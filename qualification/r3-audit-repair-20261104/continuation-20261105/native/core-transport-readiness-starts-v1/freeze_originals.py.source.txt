@@ -1,0 +1,103 @@
+"""Preserve already completed Core transport/readiness observations at one cut."""
+from pathlib import Path
+import base64
+import datetime
+import gzip
+import hashlib
+import io
+import json
+import shutil
+import tarfile
+
+ROOT = Path(__file__).resolve().parent.parent
+NATIVE = ROOT / "ci-audit/core-wait-span-20261105"
+OUT = ROOT / "hepta-audit-fifth/v6-archives/core-transport-readiness-starts-v1"
+assert not OUT.exists(), OUT
+OUT.mkdir(parents=True)
+
+
+def identity(raw):
+    return {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
+            "computed_git_blob": hashlib.sha1(f"blob {len(raw)}\0".encode() + raw).hexdigest()}
+
+
+def save(name, value):
+    (OUT / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n")
+
+
+files = []
+for name in ("ai395-readiness-launch-v1", "ai395-cold-prepare-v1", "ai395-cold-full-plan-v1", "mechanism-actual-priority-v1"):
+    files.extend(p for p in (NATIVE / name).rglob("*") if p.is_file())
+for name in ("bootstrap_git_transport.py", "git-bootstrap-request-DISABLED-v1.json",
+             "git-bootstrap-process-start-DISABLED-v1.json", "git-bootstrap-static-manifest-v1.json"):
+    files.append(NATIVE / name)
+actions = NATIVE / "native-actions"
+for path in actions.rglob("*"):
+    if not path.is_file():
+        continue
+    # Preserve only complete, already observed transport, readiness, initial
+    # reads and the fixed four-page result. Later failure originals get their own cut.
+    if (path.parent.name == "git-bootstrap-first-start"
+        or path.name.startswith(("upload-", "ai395-readiness-", "mechanism-"))
+        or path.name in ("rog-health-after-chunk6-unknown.original.json", "staging-file-info-after-chunk6-unknown.original.json",
+            "core-read-001.original.json", "core-read-002.original.json", "core-read-003.original.json",
+            "core-read-001.stdout.original", "core-read-001.stderr.original", "core-status-001.original.json",
+            "core-status-002.original.json", "core-status-background-004.original.json",
+            "core-status-background-004-result-000.original.json", "core-read-background-004.original.json")
+        or path.name in {f"core-read-background-004-result-{n:03}.original.json" for n in range(4)}):
+        files.append(path)
+files.extend(p for p in (ROOT / "research-audit/ai395-core-readiness-static-20261105").iterdir() if p.is_file())
+for name in ("core-musl-git-bootstrap-root-guard-v1.json", "core-musl-git-bootstrap-ENABLED-v1.json",
+             "core-musl-git-bootstrap-process-start-ENABLED-v1.json", "core-musl-git-transport-publication-v1.json",
+             "core-native-prerequisites-root-review-v1.json", "ai395-core-c0-c1-root-execution-guard-v1.json",
+             "ai395-core-c0-c1-request-ENABLED-v1.json", "ai395-core-c0-c1-process-start-ENABLED-v1.json"):
+    files.append(ROOT / "hepta-audit-fifth/inputs" / name)
+for name in ("git-transport-independent-narrow-review.json", "mechanism-actual-endpoint-review.json"):
+    files.append(ROOT / "research-audit/core-wait-span-independent-20261105" / name)
+files.append(Path(__file__).resolve())
+assert len(files) == len(set(files))
+scope = {
+    "frozen_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    "scope": "Complete observed transport failures, fixed Git bootstrap start, pinned tracing mechanism, new ai395 readonly readiness, and new C0/C1 concrete inputs/first launch.",
+    "ROG_job": "1a1ac0281fa-fc05-519e",
+    "readiness_job": "1a1ac07278f-fc05-51b8",
+    "C0_C1_job": "1a1ac1b40d7-fc05-5242",
+    "qualification_limits": ["ROG projects exited100 and direct Core parallel exited101; complete failure originals are collected separately. Mechanism controls do not qualify the product.",
+        "The four background delivery pages fully reconstruct one SDK process_read result; that result covers native stdout4846..21230 of21678 bytes, not the whole final native stream.",
+        "Readiness succeeded0 with171 files/147 links; it ran no build/test. Historical version strings are distinguished from fresh file bytes.",
+        "New C0/C1 first launch was accepted with a durable job ID; this archive does not claim its final build result or any full test execution.",
+        "The old B16 driver remains UNKNOWN and was not replayed."]}
+rows = []
+buffer = io.BytesIO()
+with tarfile.open(fileobj=buffer, mode="w", format=tarfile.GNU_FORMAT) as tar:
+    for path in sorted(files):
+        assert path.is_file() and not path.is_symlink()
+        before = path.stat()
+        raw = path.read_bytes()
+        after = path.stat()
+        assert (before.st_ino, before.st_size, before.st_mtime_ns) == (after.st_ino, after.st_size, after.st_mtime_ns)
+        member = "original/" + path.relative_to(ROOT).as_posix()
+        item = tarfile.TarInfo(member)
+        item.size, item.mode, item.mtime = len(raw), 0o644, 0
+        tar.addfile(item, io.BytesIO(raw))
+        rows.append({"member": member, **identity(raw)})
+packed = gzip.compress(buffer.getvalue(), mtime=0)
+original = {"schema": "hepta-complete-original-files-v1", "scope": scope, "file_count": len(rows),
+            "total_original_bytes": sum(r["bytes"] for r in rows), "files": rows}
+save("original-files-manifest.json", original)
+parts = []
+for index, offset in enumerate(range(0, len(packed), 360450)):
+    raw = packed[offset:offset + 360450]
+    encoded = base64.b64encode(raw) + b"\n"
+    name = f"original-inputs.tar.gz.part{index:03}.b64.txt"
+    (OUT / name).write_bytes(encoded)
+    parts.append({"index": index, "name": name, "compressed_offset": offset,
+                  "file": identity(encoded), "decoded_chunk": identity(raw)})
+save("transport-manifest.json", {"schema": "hepta-complete-original-byte-transport-v1", "scope": scope,
+    "archive": {"name": "original-inputs.tar.gz", **identity(packed)},
+    "original_files_manifest": {"name": "original-files-manifest.json", **identity((OUT / "original-files-manifest.json").read_bytes())},
+    "part_count": len(parts), "parts": parts})
+shutil.copyfile(ROOT / "research-audit/published-5b633-ci-20261105/immutable-v6-gitqueue/verify_archive.py", OUT / "verify_archive.py")
+save("scope-summary.json", scope)
+print(json.dumps({"originals": len(rows), "original_bytes": original["total_original_bytes"],
+                  "archive": identity(packed), "parts": len(parts)}))

@@ -1,0 +1,367 @@
+{
+  "schema": "hepta-main-blocking-queue-bounded-followup-v1",
+  "observed_at_utc": "2026-11-05T14:26:17.897940+00:00",
+  "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "run_id": 41999114842,
+  "attempt": 1,
+  "verdict": "QUEUE_CAUSE_UNKNOWN_NO_CURRENT_STATIC_SELF_LOCK_OR_LABEL_MISMATCH_ESTABLISHED",
+  "original_api": {
+    "path": "research-audit/published-5b633-ci-20261105/main-queue-followup-20261105T1422/raw-api-envelope.json",
+    "bytes": 3085288,
+    "sha256": "052af5cf22cab10c7374ab09e2ef4262140580ae2dd043b8c1ed143c2919e459",
+    "git_blob": "550cdd4e4cb32a4ceaf0688c20e10af51fbc9589"
+  },
+  "current_jobs_snapshot": {
+    "path": "research-audit/published-5b633-ci-20261105/snapshot-0058/jobs-api-envelope.json",
+    "bytes": 1143634,
+    "sha256": "c127160ed69ac63ac66715b4bc109a147f51c3e55b2ae58511145596314011df",
+    "git_blob": "7a8473b0ae2ebc45fb5896a9720f330310bd24d6"
+  },
+  "current_jobs": [
+    {
+      "id": 127168221039,
+      "run_id": 41999114842,
+      "workflow_name": "blocking-ci",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114842",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdm9EPbw",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127168221039",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114842/job/127168221039",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:42:55Z",
+      "started_at": "2026-11-05T09:42:55Z",
+      "completed_at": null,
+      "name": "Select blocking CI scope",
+      "steps": [],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127168221039",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": ""
+    },
+    {
+      "id": 127168221646,
+      "run_id": 41999114842,
+      "workflow_name": "blocking-ci",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114842",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdm9ERzg",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127168221646",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114842/job/127168221646",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:42:55Z",
+      "started_at": "2026-11-05T09:42:55Z",
+      "completed_at": null,
+      "name": "Codespell / Check for spelling errors",
+      "steps": [],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127168221646",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": ""
+    },
+    {
+      "id": 127168221756,
+      "run_id": 41999114842,
+      "workflow_name": "blocking-ci",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114842",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdm9ESPA",
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127168221756",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114842/job/127168221756",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:42:55Z",
+      "started_at": "2026-11-05T09:42:55Z",
+      "completed_at": null,
+      "name": "Blob size policy / Blob size policy",
+      "steps": [],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127168221756",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": ""
+    }
+  ],
+  "fixed_workflows": [
+    {
+      "logical_path": ".github/workflows/blocking-ci.yml",
+      "identity": {
+        "path": "research-audit/published-5b633-ci-20261105/main-queue-followup-20261105T1422/blocking-ci.yml.source.txt",
+        "bytes": 9486,
+        "sha256": "f1bcb14e114cb10553ce3691f7c48a216cc696a88549de8b1f63207b6218aa56",
+        "git_blob": "fd01ab5edac5d78c9bcfb78397a157a3d5ea7c71"
+      },
+      "concurrency": {
+        "group": "blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "true"
+      },
+      "jobs": {
+        "scope": {
+          "name": "Select blocking CI scope",
+          "needs": null,
+          "runs-on": "ubuntu-24.04",
+          "uses": null,
+          "environment": null,
+          "concurrency": null
+        },
+        "hepta-contract-gate": {
+          "name": "Hepta contract gate",
+          "needs": "scope",
+          "runs-on": null,
+          "uses": "./.github/workflows/hepta-contract-gate.yml",
+          "environment": null,
+          "concurrency": null
+        },
+        "bazel": {
+          "name": "Bazel",
+          "needs": "scope",
+          "runs-on": null,
+          "uses": "./.github/workflows/bazel.yml",
+          "environment": null,
+          "concurrency": null
+        },
+        "blob-size-policy": {
+          "name": "Blob size policy",
+          "needs": null,
+          "runs-on": null,
+          "uses": "./.github/workflows/blob-size-policy.yml",
+          "environment": null,
+          "concurrency": null
+        },
+        "cargo-deny": {
+          "name": "cargo-deny",
+          "needs": "scope",
+          "runs-on": null,
+          "uses": "./.github/workflows/cargo-deny.yml",
+          "environment": null,
+          "concurrency": null
+        },
+        "codespell": {
+          "name": "Codespell",
+          "needs": null,
+          "runs-on": null,
+          "uses": "./.github/workflows/codespell.yml",
+          "environment": null,
+          "concurrency": null
+        },
+        "repo-checks": {
+          "name": "repo-checks",
+          "needs": "scope",
+          "runs-on": null,
+          "uses": "./.github/workflows/repo-checks.yml",
+          "environment": null,
+          "concurrency": null
+        },
+        "rust-ci": {
+          "name": "rust-ci",
+          "needs": "scope",
+          "runs-on": null,
+          "uses": "./.github/workflows/rust-ci.yml",
+          "environment": null,
+          "concurrency": null
+        },
+        "sdk": {
+          "name": "sdk",
+          "needs": "scope",
+          "runs-on": null,
+          "uses": "./.github/workflows/sdk.yml",
+          "environment": null,
+          "concurrency": null
+        },
+        "hepta-scoped": {
+          "name": "Hepta scoped native checks",
+          "needs": "scope",
+          "runs-on": "ubuntu-24.04",
+          "uses": null,
+          "environment": null,
+          "concurrency": null
+        },
+        "lightweight": {
+          "name": "Lightweight prose and derived checks",
+          "needs": "scope",
+          "runs-on": "ubuntu-24.04",
+          "uses": null,
+          "environment": null,
+          "concurrency": null
+        },
+        "required": {
+          "name": "CI required",
+          "needs": [
+            "scope",
+            "hepta-contract-gate",
+            "bazel",
+            "blob-size-policy",
+            "cargo-deny",
+            "codespell",
+            "repo-checks",
+            "rust-ci",
+            "sdk",
+            "hepta-scoped",
+            "lightweight"
+          ],
+          "runs-on": "ubuntu-24.04",
+          "uses": null,
+          "environment": null,
+          "concurrency": null
+        }
+      }
+    },
+    {
+      "logical_path": ".github/workflows/codespell.yml",
+      "identity": {
+        "path": "research-audit/published-5b633-ci-20261105/main-queue-followup-20261105T1422/codespell.yml.source.txt",
+        "bytes": 1513,
+        "sha256": "10ee518ee74e77f8e3a078aa22f546af36aca6306598830ae4905cbe263f756e",
+        "git_blob": "06ea9c7226d265405c73850c449b3d6b96d82514"
+      },
+      "concurrency": null,
+      "jobs": {
+        "codespell": {
+          "name": "Check for spelling errors",
+          "needs": null,
+          "runs-on": "ubuntu-latest",
+          "uses": null,
+          "environment": null,
+          "concurrency": null
+        }
+      }
+    },
+    {
+      "logical_path": ".github/workflows/blob-size-policy.yml",
+      "identity": {
+        "path": "research-audit/published-5b633-ci-20261105/main-queue-followup-20261105T1422/blob-size-policy.yml.source.txt",
+        "bytes": 1682,
+        "sha256": "eb7d3d23ab1e6bc0257101f7e891943cace4077aa39f6e982546db6c920ff329",
+        "git_blob": "ac1e8f5ec3354017a76695e5a1f0e270cee440ba"
+      },
+      "concurrency": null,
+      "jobs": {
+        "check": {
+          "name": "Blob size policy",
+          "needs": null,
+          "runs-on": "ubuntu-24.04",
+          "uses": null,
+          "environment": null,
+          "concurrency": null
+        }
+      }
+    }
+  ],
+  "same_branch_runs_page_check": {
+    "total": 93,
+    "unique": 93,
+    "page1": 93,
+    "page2_terminal_empty": true,
+    "first_requested_at": "2026-11-05T14:24:17.614Z",
+    "last_observed_at": "2026-11-05T14:24:55.445Z",
+    "non_atomic_pages": true
+  },
+  "same_workflow_runs": [
+    {
+      "id": 41999114842,
+      "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "event": "pull_request",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:02:27Z",
+      "updated_at": "2026-11-05T09:42:55Z",
+      "run_attempt": 1
+    },
+    {
+      "id": 41975255726,
+      "head_sha": "0e139b599f0fe451f80fb7db4b2913bb9c679dce",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "created_at": "2026-11-05T05:38:12Z",
+      "updated_at": "2026-11-05T09:42:55Z",
+      "run_attempt": 1
+    },
+    {
+      "id": 41902318286,
+      "head_sha": "cabcb40d36e116beaa65750e1f674c52035da785",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-11-04T19:59:56Z",
+      "updated_at": "2026-11-04T20:52:10Z",
+      "run_attempt": 1
+    },
+    {
+      "id": 41875454075,
+      "head_sha": "ff72d462d74f9eb856aa9edbc368caad9c466708",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-11-04T17:13:25Z",
+      "updated_at": "2026-11-04T18:26:29Z",
+      "run_attempt": 1
+    },
+    {
+      "id": 41827879433,
+      "head_sha": "e729e6c2becb528e3a6b49c9e5bbea57bd26637a",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-11-04T12:16:42Z",
+      "updated_at": "2026-11-04T13:56:12Z",
+      "run_attempt": 1
+    }
+  ],
+  "pending_deployments": [],
+  "fixed_group": "blocking-ci-fix/r3-original-product-contracts-20261104",
+  "fixed_cancel_in_progress": true,
+  "direct_findings": [
+    "All three initial jobs are independent roots: scope has no needs; codespell and blob-size-policy reusable callers and callees have no needs or environment gates.",
+    "Current API labels exactly match fixed runs-on values; runner_id0/empty name/empty steps establish no actual runner allocation for these three jobs.",
+    "Bazel explicitly needs scope; absence of its platform matrix while scope has not run is consistent with the declared dependency graph.",
+    "Among all93 currently returned same-branch runs, exactly5 are this workflow and only current41999114842 is nonterminal. The old0e run41975255726 is completed/cancelled, updated09:42:55.",
+    "No pending deployments are reported for the current run. No environment field exists in these three fixed workflows."
+  ],
+  "api_boundaries": [
+    {
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/workflows/336746106/runs?per_page=100&page=1",
+      "response": {
+        "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+        "error_code": "INVALID_ARGUMENT"
+      }
+    },
+    {
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127168221039",
+      "response": {
+        "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+        "error_code": "INVALID_ARGUMENT"
+      }
+    }
+  ],
+  "limits": [
+    "The workflow-ID runs and check-run endpoints were rejected by connector URL allowlist; this is not evidence of repository authorization denial. The existing repository branch-runs endpoint was read successfully with a terminal empty page.",
+    "No organization runner inventory, runner-group policy, billing/quota, credentials or admin settings were probed. Standard label spelling and prior successful jobs do not establish present capacity.",
+    "No claim that cancelling or rerunning any job will resolve this queue. No mutation, dispatch, retry or cancellation was performed.",
+    "Current terminal records do not prove why earlier0e cancellations occurred; those actor/cause limits remain unchanged.",
+    "The inspected fixed job graph contains no circular dependency or currently listed same-workflow active predecessor; unseen provider scheduling or another control-plane cause remains possible."
+  ]
+}

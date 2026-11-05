@@ -1,0 +1,351 @@
+"""Build current audit reports from preserved original contracts and actual observations."""
+from pathlib import Path
+import copy
+import datetime
+import hashlib
+import json
+from collections import Counter
+
+ROOT = Path(__file__).resolve().parent.parent
+BASE = ROOT / "hepta-audit-fifth"
+OUT = BASE / "v6-deliverables"
+assert not OUT.exists(), OUT
+OUT.mkdir()
+old = json.loads((BASE / "v5-deliverables/continuation-blocker-progress-v3.json").read_bytes())
+projection_path = ROOT / "ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/nonpass-projection.json"
+projection_raw = projection_path.read_bytes()
+assert hashlib.sha256(projection_raw).hexdigest() == "9931149a3239406315e2b51e05b3a8c04f48fd9f97c37cbeb9d4145508e71cfb"
+projection = json.loads(projection_raw)
+cold_path = ROOT / "ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/native-first-start/preparation-terminal.json"
+cold_raw = cold_path.read_bytes()
+assert hashlib.sha256(cold_raw).hexdigest() == "cc5e7788d64efbf31fc2875b676419a4d4a56e3391fb714b32f600269f5dfb97"
+cold = json.loads(cold_raw)
+snapshot = json.loads((ROOT / "research-audit/published-5b633-ci-20261105/snapshot-0063/jobs-api-envelope.json").read_bytes())
+publication = json.loads((BASE / "inputs/b11-diagnostic-draft-publication-v1.json").read_bytes())
+now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+assert projection["source_tree"] == cold["final_source_guard"]["source_tree"] == "e78c819b8b1f435f8b37bea17b4ffdc724961aa2"
+assert projection["project_counts"] == {"PASS": 3962, "FAIL": 5}
+assert projection["project_wrapper_junit_case"]["result"] == "PASS"
+assert cold["build_commands"] == [] and cold["tests_executed"] == 0
+assert "cold build memory prerequisite" in cold["error"]
+assert publication["pull_request_create"]["number"] == 4884 and publication["pull_request_create"]["draft"]
+
+latest = {
+ "B02": "主候选仍为Draft #4797/head5b/treeb265。e78只含已审Core隔离与musl类型修复，原owning及同进程parallel实际非通过，未完成全量/hygiene；B11另发固定5b的诊断Draft #4884，不拼接资格。",
+ "B07": "同源默认full仍需覆盖22个Core integration与6个MCP unit原名。新recovery、UI、Objective成功与这组原退出名不相交；e78 owning结果有5个审批输出失败，原断言保留。",
+ "B08": "原5b Windows Core的3个具名PASS保留；remaining selection仍有1个Core integration原名。新跨平台recovery/UI/Objective不代替此门，e78尚未取得完整同源资格。",
+ "B09": "原5b Windows Core的7个terminalizer+2个steer具名PASS保留。新Windows/GNU/macOS ARM recovery各自完整原名通过，但与冻结142交集0；剩余1个Core integration和9个AppServer原名（含Unix turn_recover）仍按原选择验收。",
+ "B10": "默认full仍需14个原Core integration名字；原身份隔离、请求/连接/工具断言保持。新的并行agent恢复用例仅见TurnStarted后用户消息等待超时，静态发现默认provider/prewarm外部依赖；尚未证明该次运行卡在prewarm。",
+ "B11": "原严格删除缺口仍OPEN。固定5b上独立Draft #4884/headf02b9ae/treefc47759发布3commits/4paths/+605−0；test-only八行MIC/DELETE_CHILD/真实I/O探针及独立Windows原目标job已静审并实际触发，原5控制/生产token flags全保留。探针PASS仅证明观察fixture有效，不能当作隔离资格。",
+ "B12": "新5b Windows私有目录53原名PASS及两次真实冻结负控、精确恢复已留存，补充本项原scope；不扩张B11严格删除隔离。",
+ "B13": "5b Windows Git/Queue source与merge各35Gitutils+1重复嵌套执行+36Queue=72次/71不同名字；原B13 Queue八名实际PASS。第九个Agentd qualification需qualification-cognitive-write feature，默认full不包含。独立3qualification_原目标方案仍disabled，须经前置实际通过再执行，不重复1+3凑数。",
+ "B14": "新5b source与9063merge各13resume+121rollout+254exec-server=388原名PASS，resume35项原范围排除单列；保原90秒业务/清理语义。本项原scope闭合维持，未代替B15全平台。",
+ "B15": "最新冻结snapshot0063(14:55:04–05 UTC)19runs/59jobs=40S/2F/2skip/1cancel/14Q。5b原Windows Core日志链失败与musl类型编译失败保留；Windows ARM V8在上游build取消，stage/smoke/upload未执行、原因未知。e78 owning3962PASS/5FAIL/10ignored；同进程Core2432PASS/1FAIL/1ignored，full/hygiene未进入。32GiB前置使独立冷C1在编译前停止。",
+ "B16": "Foundation原24不同正向/27执行PASS、9不同负控/10执行有效及4次恢复QUALIFIED保持。旧driver三次同key调用结果仍UNKNOWN、无第四次重放；新ai395 Core C0/C1是另一owned任务，C0通过/C1未开始，不解决旧driver身份。Root/Current/issuer/normal UI/provider/真实目标接受仍未取得。",
+ "B18": "原科学HOLD与D−B退出门保持；没有新事前冻结独立D−B fit。13:37增量观察到的新Draft只含已有源归档/有限域控制/显式HOLD，不能借J−C、重放、构建、拒绝后回退或bookkeeping关闭原门。",
+ "B19": "新5b普通业务、Bao adapter、operator等fixture通过均保原有限范围；Bao11partial/2gap、Chain HOLD_NO_GO、HIA DENY_ALL/certificate=false和真实外部consumer接受仍分立。",
+ "B20": "新recovery selected成功不是原19握手/EOF名的替代。原c6实际App断连与父存活负控保持；同源最终原19名字和capability业务实际到达仍待齐全。",
+ "B21": "GNU recovery517与macOS ARM recovery521各source/merge通过，后者不是Intel。Windows x86 V8只完成no-run链接，Intel原PTY30仍未被新结果覆盖；原2/5秒、完整drain/退出/FD条件不变。",
+ "B22": "旧13原TUI名字证据与当时源保留，最新5b原完整Windows平台门尚未完成；新UI native/browser suite不能替代终端interrupt/shutdown的原13名字。",
+ "B23": "新GNU/macOS ARM recovery虽然含AppServer原selected范围通过，但与冻结142交集0，不替代原3signal/2drain及stdio/disabled同源最终门；原物理丢信号负控保持。",
+}
+new = copy.deepcopy(old)
+new.update(schema="hepta-continuation-blocker-progress-v4", recorded_utc=now,
+           prior_progress_record="continuation-blocker-progress-v3.json")
+for key in ("ci_job_snapshot_utc", "ci_job_snapshot", "ci_running_increment"):
+    if key in new:
+        new["historical_" + key] = new.pop(key)
+new["ci_latest_observation"] = {**snapshot["summary"], "snapshot": "0063", "non_atomic": True,
+    "job_total_can_expand_after_predecessors": True,
+    "business_qualification_not_inferred_from_job_success": True,
+    "original_archive": "generated-evidence/current-outcomes-cut0063-v6/transport-manifest.json"}
+new["current_core_musl_candidate"] = {
+    "tree": projection["source_tree"], "published_to_primary_PR": False,
+    "actual_ROG_job": "1a1ac0281fa-fc05-519e", "state": projection["terminal_state"],
+    "original_owning": {"catalog": 3977, "run": 3967, **projection["project_counts"], "ignored": 10, "exit_code": 100},
+    "same_process_parallel": {**projection["parallel_outer_counts"], "exit_code": 101},
+    "isolated_original_wrapper": projection["project_wrapper_junit_case"],
+    "wrapper_original_body_unchanged": True, "original_inner_and_parent_seconds": 5,
+    "failures": [{k:r[k] for k in ("binary_id","name","result","seconds")} for r in projection["project_nonpass_cases"]],
+    "parallel_failure": "agent::control::tests::resume_agent_from_rollout_skips_descendants_when_parent_resume_fails",
+    "five_project_failures_have_three_extra_stream_fd_EPERM_lines": True,
+    "host_causal_chain_fresh_proof_complete": False,
+    "full_gate": projection["full_gate"], "hygiene": projection["hygiene"],
+    "final_source_guard_error": projection["final_source_guard_error"],
+    "final_expected_source_tree": projection["final_expected_source_tree"],
+    "final_free_bytes": projection["final_free_bytes"],
+    "projection_identity": {"bytes": len(projection_raw), "sha256": hashlib.sha256(projection_raw).hexdigest()},
+    "full29_original_transfer_complete_at_cut": False,
+    "recorded_early_return_candidate_lines": len(projection["project_early_return_candidates"]),
+    "early_return_candidate_lines_are_not_unique_case_count": True,
+}
+new["independent_ai395_core_preparation"] = {
+    "actual_job": "1a1ac1b40d7-fc05-5242", "state": cold["state"], "exit_code": 1,
+    "C0_source_preparation_passed": True, "C1_build_executed": False,
+    "tests_executed": 0, "metadata_executed": 0, "catalogs_executed": 0, "hygiene_executed": 0,
+    "failure_kind": "PRE_BUILD_MEMORY_PREREQUISITE",
+    "available_before_C1_bytes": 29914468352, "required_before_C1_bytes": 34359738368,
+    "free_before_C1_bytes": 237601075200, "minimum_phase_free_bytes": 64000000000,
+    "source_tree": cold["final_source_guard"]["source_tree"],
+    "ordinary_head": cold["final_source_guard"]["ordinary_head"],
+    "ordinary_index": cold["final_source_guard"]["ordinary_index"],
+    "final_guard": True, "next_C2_full_enabled": False,
+    "old_B16_driver_resolved": False,
+}
+new["b11_diagnostic_PR"] = {
+    "number": 4884, "draft": True, "base": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "head": "f02b9ae98e8608210c92a3f53646147f5c7dc428", "tree": "fc47759c145d33122b3cab70235a617661556db8",
+    "commits": 3, "changed_paths": 4, "additions": 605, "deletions": 0,
+    "production_permissions_changed": False, "original_strict_and_matrix_controls_changed": False,
+    "actual_workflow_run": 42049112832, "native_outcome": "PENDING",
+    "probe_success_qualifies_isolation": False,
+}
+for row in new["items"]:
+    if row["id"] in latest:
+        if "latest_continuation_zh" in row:
+            row["prior_latest_continuation_v3_zh"] = row["latest_continuation_zh"]
+        row["latest_continuation_zh"] = latest[row["id"]]
+for a,b in zip(old["items"], new["items"]):
+    for field in ("id", "status", "original_exit_condition_zh", "closure_class"):
+        assert a[field] == b[field]
+assert Counter(r["closure_class"] for r in new["items"]) == new["counts"] == {"CLOSED_SCOPED":8,"OPEN":14,"SCIENTIFIC_HOLD":1}
+(OUT / "continuation-blocker-progress-v4.json").write_text(json.dumps(new,ensure_ascii=False,indent=2)+"\n")
+
+progress = '''# 持续审计与实际执行进度 V5
+
+**原23项：8项限定范围闭合、14项开放、1项科学HOLD。整体候选与全部blocker尚未闭合。** 本报告登记新通过，也逐项保留失败、取消、排队、早退和未知结果。最新主候选CI观察窗口为2026-11-05 14:55:04–14:55:05 UTC；非原子快照，不把后续观察写回旧时点。
+
+## 1. 三个独立源码状态
+
+| 状态 | 固定身份 | 当前资格 |
+|---|---|---|
+| 主产品Draft #4797 | head `5b6331250ff459033bd44d1a95daec70131277cc`；tree `b26598d0d97d8d51e723bb5582137315f2174d35`；base `63652be658ebed8d3052eb789b951793384fd5e4` | 新跨平台selected结果通过，但原Windows Core、musl失败；全量/最终平台门未闭合 |
+| 下一份Core＋musl候选 | tree `e78c819b8b1f435f8b37bea17b4ffdc724961aa2`，在5b上精确两路径 | ROG编译/metadata/catalog完成；owning和同进程parallel非通过；尚未完成full与hygiene，未推到主产品PR |
+| 独立B11诊断Draft #4884 | head `f02b9ae98e8608210c92a3f53646147f5c7dc428`；tree `fc47759c145d33122b3cab70235a617661556db8`；base5b | 实际发布3commits/4paths/+605−0，原Windows target工作流已触发；native结果待验 |
+
+两个Draft的用途与资格分开。诊断PR只新增测试观察与独立job，生产token权限、原严格断言和原预算未修改。e78和B11没有互相拼接成一个已通过候选。[源码与发布核验](reviews/b11-diagnostic-draft-publication-v1.json)
+
+## 2. 主候选CI：新增实际结果
+
+本次完整快照包含19个workflow run、59个job：**40 success、2 failure、2 skipped、1 cancelled、14 queued**。run顶层仍有4 queued；内部job可以已执行或终态，不能从run状态推断内部状态。主blocking的scope/blob初始job仍排队，Codespell已成功。此前完整branch-run分页和DAG/labels检查未证实并发死锁、environment等待或其它具体队列根因，没有取消或重跑来替换原记录。[完整原API观察及根审重算](generated-evidence/current-outcomes-cut0063-v6/scope-summary.json)
+
+| 已取得实际正文的范围 | 原始结果 | 不能据此扩张的资格 |
+|---|---|---|
+| Windows recovery source5b / merge9063 | 每份13resume＋121rollout＋254exec-server＝388不同名字PASS；resume原范围排除35项单列 | 不代替Windows strict token或全部平台；该范围与冻结142退出名交集0 |
+| GNU recovery source5b / merge9063 | 每份13＋125＋379＝517不同名字PASS；62项范围排除；实际proxy CONNECT通过 | 不是unfiltered full；与142交集0 |
+| macOS ARM recovery source5b / merge9063 | 每份13＋125＋383＝521不同名字PASS；76项范围排除；实际CONNECT通过 | 是ARM，不能替代Intel PTY；与142交集0 |
+| Windows Git/Queue source与merge | 每份35Gitutils＋1次重复嵌套执行＋36Queue＝72次执行、71不同名字；原B13 Queue八名PASS | 第九个Agentd qualification未被选择；不能把两份结果相加成独立测试总数 |
+| Windows private directory | 原53名PASS、两项有效冻结负控与精确恢复 | 补B12原范围，不能补B11外部delete拒绝 |
+| Objective source5b | Memory327、Agentd default242、desktop feature247＝816次配置内出现、574个不同名字；选中JUnit无失败/跳过 | 默认与desktop重复242名；缺qualification-cognitive-write、真实生产caller、独立Root/provider；控制台另有未具名早退/跳过限制 |
+| UI native source/merge | 28＋31＝59次配置内出现、31定义；Python原JUnit门12 | 不是实际桌面GPU、真实IME或Root/provider验收 |
+| UI browser source/merge | Playwright6/9/1、status7、HTTP60/36、gateway2/5/12/9等按原组保留 | 1745引用文件中只回读12份，1733未下载；synthetic WASM/CPU/CJK/IME明确appQualified=false |
+| Intel V8 release/sandbox | 各6项smoke实际通过；no-default-features、无Skipping | 大型发布资产未独立回读，不替代其它平台 |
+| Windows x86 V8 | 上游release build与产品`cargo test --no-run`链接成功 | **0个产品Rust用例执行**；artifact ZIP尚未独立回读 |
+
+以上每份source/merge的实际checkout分别绑定；UI native/browser merge有各自合成commit但相同b265树，不能一律写成9063。原失效、额外attempt、cache、skip/early-return分别保留。根审独立打开五份GNU/macOS ARM/Objective ZIP、96个内部文件并逐个复算JUnit名字；完整归档验证不等于已取得归档之外的资产。[根审JUnit结果](reviews/v6-unix-objective-root-review.json)；[recovery/UI范围](generated-evidence/ci-5b633-recovery-ui-v6/scope-summary.json)；[GNU/ARM/Objective范围](generated-evidence/ci-5b633-unix-recovery-objective-v6/scope-summary.json)
+
+### 保留的失败与取消
+
+5b原Windows Core正常8分片共2343不同用例＝2339PASS＋1FAIL＋3ignored，唯一失败是blocking snapshot原父子span断言；更早isolated四例全过不能覆盖此失败。musl原任务在`parent_lifecycle.rs`比较`f_type`的u64和`PROC_SUPER_MAGIC`的i64时编译失败，未到ELF/CLI/smoke。
+
+Windows ARM V8 job127251874931在上游`cargo +1.91.0 build --locked --release --target aarch64-pc-windows-msvc --features v8_enable_sandbox`阶段取消，原正文只有“The operation was canceled.”。stage、产品Cargo smoke、upload均SKIP，0产品测试。约120分钟与预算相邻只是时间关系，尚无原文证明取消actor或根因；没有把取消改称编译成功或主动重跑。[完整观察原件](generated-evidence/current-outcomes-cut0063-v6/transport-manifest.json)
+
+## 3. Core隔离与musl修复：已实际推进到失败边界
+
+Core候选保留原3621字节测试主体与全部三条日志链断言，原5秒inner预算不变；原父测试仍在正常测试清单中，用本binary的精确单例owned child隔离进程级tracing状态，增加5秒父总预算、完整原输出、精确单例/结果校验和自有子进程清理。此前六行Dispatch方案因仍有interest-cache竞态已拒绝晋升。固定tracing机制的实际负控exit101、正控exit0证明机制可达；原Windows失败的具体调度交错仍未被直接观察。
+
+musl候选只把两侧转换到i128作无损比较，GNU的i64与musl的u64均完整保留；未改procfs校验语义、权限或失败处理。GNU通过不能代替实际musl编译与smoke。[候选源码绑定](candidate-next/core-musl-initial-source-binding.json)
+
+ROG原任务`1a1ac0281fa-fc05-519e`已终态failed1、output_complete；不存在timeout或自动重试。实际顺序和结果：
+
+| 阶段 | 原结果 |
+|---|---|
+| 七个原normal helper构建 | exit0，191.735秒 |
+| 完整metadata与原project catalog | 分别exit0；catalog 3977项 |
+| owning项目原运行 | 3967执行＝3962JUnit PASS＋5FAIL；10ignored；exit100，42.981秒 |
+| Core同进程原并行libtest | 2432PASS＋1FAIL＋1ignored，0filtered；exit101，26.300秒 |
+| full / fix / fmt | full OPEN；hygiene NOT_STARTED |
+
+隔离的原snapshot用例在project JUnit实际PASS0.078秒，原raw含完整parent/wait链、child与parent各1PASS、start/pass marker各一次；同进程parallel也有child与parent同名ok及两marker。**这是该用例的实际局部通过，整体project和parallel仍失败。** 当前已完整回收原投影、原状态、完整stderr和相关raw范围；29完整原件压缩归档正在回收，此处不把投影当成全raw。[当前完整观察与限制](generated-evidence/current-outcomes-cut0063-v6/scope-summary.json)
+
+五个owning失败全部是原审批/权限用例，和旧fb9失败名单相交：一个审批持久化、四个request_permissions。当前原断言都收到连续三行`Failed to create stream fd: Operation not permitted`；四个业务输出尾分别是`partial-grant-ok`、`sticky-grant-ok`、`sticky-shell-feature-independent-ok`、`sticky-explicit-grant-ok`。未过滤输出或放宽断言。宿主login-profile/im-config链是待验证线索，新的host完整因果证据尚未齐全。
+
+parallel唯一失败是`resume_agent_from_rollout_skips_descendants_when_parent_resume_fails`，在原5秒用户消息记录等待中只见MCP完成和TurnStarted。其默认provider/prewarm静态依赖正在审查；既无thread/needle阶段证据，也不能把邻近401日志当作这次失败的因果。将准备受限于恢复树fixture的本地provider候选，保留真实用户ItemCompleted、原5秒和完整树恢复断言。
+
+最终source guard仍为e78/10580 leaves，原ordinary HEAD/index、双锁、工具和V8输入一致，`final_source_guard_error=null`。ROG终态剩余20,609,298,432B，不满足此前full空间条件；没有删除缓存或降低门槛。
+
+## 4. 独立冷节点：准备完成，编译未开始
+
+ai395只读readiness任务实际succeeded0，171文件/147链接全部按固定输入核验；初始容量充足。这份readiness只做读取，不含构建/测试。
+
+随后独立C0/C1任务`1a1ac1b40d7-fc05-5242`在新owned目录完成固定输入和5b fetch、checkout、两后像应用和整树/工具检查。C1首个helper之前实测MemAvailable＝29,914,468,352B，小于原32GiB＝34,359,738,368B门槛；free237,601,075,200B仍满足64GB空间余量。任务因此failed1，**build_commands为空，0Cargo、0metadata、0catalog、0tests、0hygiene**。
+
+最终源码e78、ordinary HEAD5b、fresh index `b488256c…`、双锁、工具/V8与untracked检查均通过。此结果应记为资源前置阻塞，不能记成源代码或编译失败。后续先做一次只读容量/身份复核，再审具体C1-only续接；不得重跑C0、降低32GiB门槛、清缓存或干预未知进程。C2全量和Agentd三个qualification_原例计划仍disabled。[原终态](native/ai395-core-c0-c1-v1/preparation-terminal.json)
+
+## 5. B11独立物理机制诊断
+
+[Draft #4884](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4884)只在固定5b上增加三个test路径和一个Windows工作流。完整10583leaf逐项核对，仅1个既有文件追加78字节cfg(test)挂接、3个新增；原生产token全文、strict三例与四格两例保持。原外层Bazel Windows sandbox unit target与120分钟预算保留，原失败exit透传；工作流实际触发run42049112832。
+
+探针对四token主体×Medium/Low outside cohort，记录有效线程token、原对象SD上的DELETE/DELETE_CHILD AccessCheck、真实read/overwrite/create/file-delete/directory-delete。所有对象在新TempDir内，label捕获/修改/核验/恢复使用同一持有handle；恢复、正向控制和八行完整性是fixture有效条件。没有新增outside必须拒绝的假定，也没有用probe PASS替代原严格合同。它不创建子进程，loader、IPC/backend、Job后代与实际产品隔离仍待各自验收。[实际发布复核](reviews/b11-diagnostic-draft-publication-v1.json)
+
+## 6. 原23项与后续顺序
+
+8项限定闭合为B01/B03/B04/B05/B06/B12/B14/B17；14项OPEN为B02/B07/B08/B09/B10/B11/B13/B15/B16/B19/B20/B21/B22/B23；B18保持SCIENTIFIC_HOLD。没有改写任何原退出条件或closure_class。[逐项最新ledger](continuation-blocker-progress-v4.json)
+
+当前执行顺序是：定位并修复真实失败 → owning与原parallel通过 → 满足资源门禁的原full → 需要feature的原Agentd三例 → 原fix/fmt及最终source绑定 → 同一发布head/base/merge的原平台CI → main资格。Windows严格删除机制和B16正常入口接线并行推进，各自保留原接受门。
+
+B16 Foundation已QUALIFIED的24不同正向/27执行、9不同有效负控/10执行、4次精确恢复不变；旧driver三次同key请求后仍START_OUTCOME_UNKNOWN，没有第四次重放。新Core节点任务不解决旧driver身份。Root checkpoint和Memory连接复用候选只有静态资格；真实Root/Current、独立issuer/signed objective、normal UI caller、provider/target仍是具体接受缺口。B18未通过的D−B科学门及B19外部接受也不能用工程绿色替代。[项目方向与具体计划V3](PROJECT_DIRECTION_AND_EXECUTION_PLAN_V3.zh-CN.md)
+'''
+(OUT / "CONTINUATION_PROGRESS_V5.zh-CN.md").write_text(progress)
+
+direction = '''# 项目发展方向与当前执行计划 V3
+
+**项目当前最优先的交付是一条由真实正常入口驱动、跨平台可验收、权限与效果可追踪的Hepta垂直流程。** 40模块、91工作包的方向已经齐备；当前瓶颈集中在整合候选的原平台验收、Windows严格删除边界和Root/Current到真实caller的最后接线。继续按这些具体门推进，避免从大量Draft/局部测试数推导产品完成度。
+
+本计划以主产品5b/treeb265为基准，canonical五文件与固定ff72源逐blob一致，候选e78只改Core/musl两路径，未改项目方向。原23项仍8限定闭合、14OPEN、1科学HOLD；完整最新执行事实见[进度V5](CONTINUATION_PROGRESS_V5.zh-CN.md)。本文件更新执行安排；原canonical文档维持原身份与职责。[五文档精确桥接](reviews/canonical-product-direction-bridge-v1.json)
+
+## 1. 项目全局结构和实际成熟度
+
+已核canonical范围为40模块、205接口合同、58协议、67领域、91工作包。91工作包中25为source_implemented、20为execution_pending、2为semantic_pending、43为planned、1为external。source_implemented描述源码存在状态，不等于产品接受通过；模块中production_implementation=false是声明边界，也不等于仓库没有生产代码。不得用25/91或当前job成功率作为项目完成百分比。
+
+| 实现线 | 模块 / 工作包 | 后续交付重点 | 必须取得的接受 |
+|---|---:|---|---|
+| Foundation | 7 / 14 | authority、身份、协议、Registry/arg0、继承资源与保护存储 | 同源Root handoff、权限拒绝、取消/重启/资源托管及物理效果 |
+| Runtime | 11 / 19 | Agentd装配、Codex会话和工具、监督、Queue/Lease、上下文与外部效果 | 原平台恢复/终态合同、exact owner/fence、正常caller而非shadow |
+| Memory | 9 / 13 | 当前指针/不可变revision、三池/恢复checkpoint、投影和事务可用性 | 真实Current、提交否决后的连接复用、取消仍持锁及重启一致性 |
+| Objective | 3 / 7 | 签名目标、FinalUse、计划与任务装配 | 真实issuer、目标期限/撤销、独立provider/target效果 |
+| Learning | 4 / 14 | 只读因果shadow、参数记忆、模型改进和回退 | 事前冻结独立数据、充分精度、完整失败/成本；原D−B科学门 |
+| Adaptive | 5 / 12 | 资源调度、可塑性、环境和工程反馈 | 固定预算、多规模负载、质量/尾延迟/成本与回滚 |
+| Engineering | 1 / 12 | CI、构建、跨平台资格、证据与交付 | 同head/base/merge全量门、可复现完整原件、真实发布接受 |
+
+Codex AppServer继续拥有session/thread/turn、模型和工具执行；Agentd负责Hepta装配、生命周期和组合。优化、学习、shadow admission不能自行扩大authority。正常入口主线保持`P0.8D-VERTICAL-SLICE`和`INT-2-AGENTD-CODEX-COMPOSITION`：UI/API → Objective → 有界Memory/Context → Agentd → Codex执行 → 可观察且可恢复的终态。
+
+全库原始清点在03:16–03:24 UTC完成：1103 open PR（1079 Draft/24非Draft）、5193 branches；155个PR以main为base、948个不以main为base；最大祖先跨度211。后续13:37的bounded增量和新#4884等记录分别留存，不能把初始人口统计伪装成实时总数。大量并行分支意味着整合、合同和来源管理的成本已经成为实际工程问题。[完整审计](../CURRENT_AUDIT_PROGRESS.zh-CN.md)
+
+## 2. 当前阻塞的依赖顺序
+
+| 批次 | 当前实际状态 | 下一具体动作 | 完成标准 |
+|---|---|---|---|
+| A：当前失败归因/最小修复 | e78隔离原例已PASS，owning仍5个输出失败、parallel仍1个用户记录超时 | 取得当前host startup来源；审最窄测试环境隔离；给恢复树fixture本地provider并保原5秒/真实事件 | 原断言与业务合同不变，原失败链可解释，owning和同进程parallel一次实际通过 |
+| B：冷构建与full | C0完成，C1因29.9GB可用内存低于32GiB未执行 | 一次只读容量/身份复核，审C1-only续接；不清缓存、不抢未知进程 | 原七helper构建成功、完整source/index/locks/SDK终态一致；然后才启用C2原full |
+| C：遗漏的feature范围 | 53个remaining原名字在default full，B13第九个不在 | full实际通过后、hygiene前一次运行原3个Agentd qualification_例 | 真实一次执行全部3名及对应feature；不以1＋3重复凑PASS |
+| D：hygiene与发布树 | e78未执行fix/fmt | 原测试门齐全后scoped fix→fmt；不再本地重测；保存最终树 | 最终提交/普通index/锁可追溯，实际head与CI消费源码一致 |
+| E：原平台和main | 5b仍2FAIL、1cancel、14Q；新B11诊断queued | 收齐真实原平台，修复具体失败；完成目标main更新与实际merge核验 | 原required全部成功，原负控有效，无缺失/early-return伪装业务PASS |
+| F：Windows严格隔离 | 现token外部delete允许；#4884探针待实测 | 读8物理行和原5控制，选择满足read/合法write/外部delete拒绝的最小生产接口 | 原攻击/权限/文件系统所有合同真实Windows通过；探针本身不构成闭合 |
+| G：正常产品入口 | Foundation限定范围QUALIFIED；driver状态UNKNOWN | 先解决可归属任务身份；随后driver→pool→checkpoint→owning，独立推进Current/normal caller代码 | 真Root/Session/签名Objective/provider/target任务、取消、丢ACK、重启的实际效果一致 |
+
+这些批次以实际前序终态推进，不能预报资源或CI何时完成。A/B/F可并行准备，C/D/E有明确前置；G不得把另一任务的build通过当作自己的driver完成。原full包含193workspace成员/1501解析节点与原19563目录项的范围应按实际catalog再核，不能以selected/project catalog替换。
+
+## 3. 23项blocker逐项工作清单
+
+以下原退出条件从冻结ledger逐字带入；新增证据只更新进度。限定闭合的八项维护已达范围，相关代码没有变化时不为增加计数重复执行。
+
+| ID | 当前分类 / 范围 | 下一动作或维护重点 | 原退出条件 |
+|---|---|---|---|
+'''
+actions = {
+ "B01":"维护固定时点的全分页、refs和增量，不以最新小窗口改写全库总数。",
+ "B02":"收敛主候选，完成A–E；新诊断分支只供取证，审完逐路径回入。",
+ "B03":"保持cwd展示与canonical路径原合同，原7例范围不扩张。",
+ "B04":"保持投影revision/current、更正/删除/重启，新的事务资格独立验收。",
+ "B05":"保持绝对helper/runfile定位，真实RPC失败按其阶段处理。",
+ "B06":"保持原正向权限前置及负控，平台不适用继续显式记录。",
+ "B07":"用默认full覆盖22个Core integration＋6个MCP原名并保负控。",
+ "B08":"补remaining Core integration原名和namespaced/wire/replay合同。",
+ "B09":"补Core/AppServer（含8个turn_recover）原名及原panic/cancel/watchdog负控。",
+ "B10":"保持连接/请求/身份/工具语义，修复fixture的外部依赖须单独解释。",
+ "B11":"读取#4884原目标和8物理行，设计最小满足合法read/write及outside拒绝的生产修复。",
+ "B12":"保存53例新补证、两冻结负控和恢复，不借此关闭严格delete。",
+ "B13":"保8个Queue原名PASS，补qualification feature的Agentd第九门。",
+ "B14":"保持原90秒及source/merge13resume范围；新head各388范围分列。",
+ "B15":"收齐实际full/hygiene/平台和main merge，不把排队、取消或no-run计业务PASS。",
+ "B16":"按driver→pool→checkpoint→owning→Current/FinalUse→normal UI推进；旧driver未知先解身份。",
+ "B17":"保已交终稿及全部失败/成本未知，不重训暴露确认集。",
+ "B18":"维持HOLD和强普通默认；新实验先冻结独立D−B输入/精度/成本。",
+ "B19":"Bao/Chain/HIA分别接真实外部版本、consumer和签名/撤销故障接受。",
+ "B20":"补同源原19握手/EOF与实际AppServer断连，早退不算执行。",
+ "B21":"原Intel30例与drain/child/FD/2秒5秒门；ARM recovery不可替代。",
+ "B22":"原Windows13个interrupt/shutdown名字及负控，真实stdout-ready/5秒不变。",
+ "B23":"原Unix3signal＋2drain、stdio/disabled同源CI；保原真实丢信号反例。",
+}
+for row in new["items"]:
+    fields = [row["id"], row["closure_class"] + " / " + row["name"], actions[row["id"]], row["original_exit_condition_zh"]]
+    direction += "| " + " | ".join(v.replace("|", "／").replace("\n", " ") for v in fields) + " |\n"
+direction += '''
+## 4. 正常产品入口要完成的接线
+
+Foundation的限定QUALIFIED证明了native连接生命周期、custody、取消、SQLite提交门与物理锁的原范围。它没有签发Current，也没有替代Root来源和真实caller。旧driver调用结果未知必须按原key与可归属身份解决，不能猜PID、改key重复执行或将无owned文件等价为未启动。
+
+| 接线 | 代码与控制可以继续推进 | 必须取得的真实接受 |
+|---|---|---|
+| 继承资源 → Root checkpoint transport | R2f1三路径/386新增候选的原编译与控制；FD/CLOEXEC、同步preflight与异步runtime注册分离 | 独立Root来源、host namespace、UID/PID/boot+birth/pidfd以及父死亡/错误lane拒绝 |
+| checkpoint → Current | 私有binder验证完整head CAS、继任、owner、epoch/generation、期限/撤销、独立floor/exact cut | 有权authority提供真实当前材料；可解码receipt或本地签名不自行产生权限 |
+| Current → 三池与恢复writer | 两个state/Memory pool与private recovery checkpoint绑定同一cut/owner；取消/替换/借出事务生命周期 | 真实SQLite所有受管写路径与跨进程/重启一致性，不能只靠池内门 |
+| writer → original_sender → ACK | 保bootstrap ACK、普通peer gate、exact duplicate比较、不同效果ACK各自语义 | 重复提交/取消/丢ACK/重启后的真实效果与authority/evidence/Memory一致 |
+| signed Objective / FinalUse → effect entry | 接实际issuer、scope/session、期限/撤销及单次进入；generation漂移拒绝 | 真实provider/target接受；shadow admission、SSH权限不授予FinalUse |
+| listener custody → normal UI | 原子发布、目录身份、inode/FD持有、peer与匹配inode cleanup、Registry/arg0/helper、paired Desktop pin | 正常Root→Agentd→Core/Session→UI完成任务与拒绝/恢复，不用临时mock冒充正常入口 |
+
+Memory拒绝COMMIT后的SQLx tracked transaction depth候选，需两个显式入口真实物理红绿：占住其它四连接，第五连接TEMP marker，真实SQLite531否决，证明autocommit与tracked状态分离；修后旧marker消失、读事务恢复、未提交数据不可见，新连接仍被原gate拒绝。候选只有静态资格；已有raw SQL Foundation通过不能补这条Transaction bookkeeping路径。保持默认pool、权限与driver边界，作为独立批次验收。
+
+## 5. 后续发展阶段与优先级
+
+| 阶段 | 交付目标 | 进入下一阶段的判断 |
+|---|---|---|
+| P0 跨平台基线 | 完成当前A–F，固定可复现候选/完整原件/必需CI | 同源产品回归与原权限合同通过；不以selected或诊断任务代全量 |
+| P1 正常垂直流程 | 一条真实UI/API目标到Agentd/Codex的有界任务，终态/取消/恢复都可用 | 实际Root/Current/FinalUse、provider/target、物理效果、Memory回执同链 |
+| P2 共享计算与可靠数据 | 明确逻辑Cells、真实并发、队列/Memory/上下文资源和持久化 | 64/256/1024/4096逻辑规模分别报告实测并发、CPU/RSS、p50/p95/p99、queue age、质量/token/完整成本 |
+| P3 固定预算shadow | 强普通基线下读取建议、规划与资源分配比较 | 独立预注册数据、预算、公平基线、全部失败；shadow不接生产authority |
+| P4 只读因果学习 | 小范围可解释改进、可审证书与受控评估 | 先达到有限组件接受，保独立未来holdout；不把记录重放当新实验 |
+| P5 长期学习与回滚 | 学习状态、遗忘/撤销、恢复、不可复活 | 漂移/污染/删除负控、回退到强普通默认、长期成本可算 |
+| P6 可塑性与工程自迭代 | 经审查的模块/调度/工程候选生成与验证 | 独立评价、受控变更范围、可靠回滚；优化不自授执行权 |
+| P7 具身与物理目标 | 真实环境的窄域任务与安全边界 | 明确真实传感/动作/目标接受，不由模拟分数外推 |
+| P8 外部系统兼容 | Bao/Chain/HIA按固定版本、接口与消费者渐进接入 | Bao真实consumer、Chain/WAN故障、HIA证书/撤销等分别闭合 |
+
+B18的原科学门始终是新的事前冻结2×2与重点D−B。现有J−C的有限规划正结果、验证拒绝后回退C、工程移植、重放一致性都不能重命名为D−B通过；OOD曾用于VAL、完整成本不足的限制继续保留。已有五fit不是数百世界的新独立fit；CPU/F32小模型也不能外推BF16/vLLM生产接受。新的研究采用独立未来数据和完整成本记录，未经采用门维持强普通默认。
+
+## 6. 执行纪律、进度汇报与完成定义
+
+每次集成只按真实路径差异和依赖接受，保reviewed ancestry，避免整包导入donor旧计划。#4855等donor已有通过必须取得自己的原raw与同源接受，不能借正文数字给本产品晋升。native任务仅操作可归属owned目录；资源门临近失效时停止启动，保已有证据与缓存。
+
+每批报告应有固定head/tree、原target与名字、selected/ignored/early-return、attempt/cache、有效负控、精确恢复与最终守卫。JUnit PASS与真实业务到达分开；compile/link-only与test execution分开；同一名字跨source/merge/feature重复执行不变成多个独立定义。
+
+全部blocker闭合的定义是原23项各自达到原退出条件，包括真实产品与外部接受，且新整合树通过required gates。当前尚未达到；资源前置、排队、任务身份未知与科学HOLD都有具体记录，不会靠删项、松断言、改退出条件或虚构证据消除。
+
+### 固定来源
+
+- [全量仓库审计](../CURRENT_AUDIT_PROGRESS.zh-CN.md)与[当前23项ledger](continuation-blocker-progress-v4.json)
+- [当前执行进度V5](CONTINUATION_PROGRESS_V5.zh-CN.md)与[此前详细技术计划V2](PROJECT_DIRECTION_AND_EXECUTION_PLAN_V2.zh-CN.md)
+- [canonical五文件同源桥接](reviews/canonical-product-direction-bridge-v1.json)与[原退出选择清单](reviews/original-exit-selection-5b/selection-checklist.json)
+- [完整新增CI原件](generated-evidence/ci-5b633-unix-recovery-objective-v6/transport-manifest.json)、[recovery/UI](generated-evidence/ci-5b633-recovery-ui-v6/transport-manifest.json)、[最新0060–0063原API及当前终态观察](generated-evidence/current-outcomes-cut0063-v6/transport-manifest.json)
+- [主产品Draft #4797](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4797)与[B11诊断Draft #4884](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4884)
+'''
+(OUT / "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V3.zh-CN.md").write_text(direction)
+
+latest_text = '''# 当前审计与修复状态
+
+**原23项仍为8项限定范围闭合、14项开放、1项科学HOLD。当前未达到所有blocker闭合或可发布状态。** 本轮已经推进实际修复、原生验证和跨平台CI，完整结果与下一步如下。
+
+## 当前交付
+
+- [项目发展方向与执行计划V3](PROJECT_DIRECTION_AND_EXECUTION_PLAN_V3.zh-CN.md)：40模块/91工作包、正常入口主线、23项原退出门和P0–P8阶段。
+- [最新执行进度V5](CONTINUATION_PROGRESS_V5.zh-CN.md)：新增实际通过、Core/musl失败、冷节点资源前置和B11诊断。
+- [原23项机器可读ledger](continuation-blocker-progress-v4.json)：原status/退出条件/closure_class完整保留。
+- [全量项目审计](../CURRENT_AUDIT_PROGRESS.zh-CN.md)：原全分页与固定源分析；后续增量不改写原时点总数。
+
+## 最新实际结果
+
+主产品[Draft #4797](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4797)仍为head5b633125/treeb26598d0、base63652be6。14:55:04–05 UTC完整非原子快照19runs/59jobs＝**40成功、2失败、2跳过、1取消、14排队**。Windows/GNU/macOS ARM recovery、Git/Queue、部分Objective/UI等原selected范围已实际通过并归档；不能替代原全量、Intel PTY、严格Windows隔离或真实Root/provider接受。
+
+新Core隔离与musl候选treee78c819b只有两路径。ROG实际七helper构建、metadata、catalog完成；原owning3977目录/3967执行＝3962JUnit PASS＋5FAIL、10ignored；同进程Core2432PASS＋1FAIL＋1ignored，0filtered。隔离的原snapshot用例在两范围实际通过，父子输出和原日志链齐全。整体仍非通过，full OPEN、fix/fmt未进入。五个审批失败均多出三行streamfd EPERM，另一并行恢复用例是原5秒用户记录等待超时；正在按各自因果修复，断言与预算保留。
+
+独立ai395 C0/C1任务完成精确源码准备与末态守卫，但开始首个helper前可用内存29,914,468,352B低于32GiB门槛，所以**没有编译或测试执行**。新source e78、index/锁/工具一致。先读当前容量并审C1-only续接，full与Agentd feature计划仍disabled；没有清缓存、放宽门槛或重放旧B16任务。
+
+Windows诊断[Draft #4884](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4884)已实际发布，固定5b上3commits/4paths/+605−0，专用原外层Windows target工作流已经触发。八行MIC/DELETE_CHILD/物理I/O探针保留原五个严格/四格控制和生产token权限。**probe PASS只是观察有效，不关闭B11。**
+
+Foundation原限定QUALIFIED保持：24不同正向/27规定执行PASS，9不同负控/10规定执行有效，4次精确恢复；352原路径完整归档。旧B16 driver三次同key调用结果仍UNKNOWN、无可归属job ID，未做第四次重放。Current/真实issuer/normal UI/provider/target，B18原D−B科学门，B19外部接受均仍开放。
+
+下一步按“失败定位/最小修复→owning/parallel→原full→必要feature→fix/fmt→同head/base/merge原平台→main”推进；Windows权限与正常产品入口各自并行完成。新通过不覆盖旧失败、取消、早退、缓存和未知。[最新原API及终态观察归档](generated-evidence/current-outcomes-cut0063-v6/transport-manifest.json)
+'''
+(OUT / "LATEST.zh-CN.md").write_text(latest_text)
+print(json.dumps({"files": [{"name":p.name,"bytes":p.stat().st_size} for p in sorted(OUT.iterdir())],
+                  "original23_contracts_preserved": True, "counts":new["counts"]},ensure_ascii=False))

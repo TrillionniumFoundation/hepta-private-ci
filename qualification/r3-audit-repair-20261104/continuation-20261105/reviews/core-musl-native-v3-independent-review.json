@@ -1,0 +1,120 @@
+{
+  "schema": "hepta-core-wait-span-native-v3-narrow-independent-review-v1",
+  "reviewed_at_utc": "2026-11-05T13:33:02.332468+00:00",
+  "verdict": "STATIC_ACCEPTED_FOR_REVIEWED_DELTA_AND_PROBE_ONLY",
+  "files": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native_project_runner_v3.py",
+      "bytes": 36195,
+      "sha256": "1201a4a2fec8d508f781f8f55f31ef1e60fb67747d08c7ff66794404128e9ed0",
+      "git_blob": "ecc9e19f2722dc6ee668ad5f42a10b6bfa2bfdde"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/runner-v2-to-v3.delta.patch",
+      "bytes": 9149,
+      "sha256": "598fa2ef338756c8df1a4ab0db7d45b757913049901d65e52aea27ad29cfcb0e",
+      "git_blob": "e4081cb501058edc19050bc76a1038de59d92ea7"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/load_staged_native_project.py",
+      "bytes": 2884,
+      "sha256": "e5a696ab2c543babc38ca000f72014216e53334ce01ccacd456b1b74ce7ea8ef",
+      "git_blob": "03e4b4385765a74fc66547ba310d63a1f2ac1c0f"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/package_staged_request.py",
+      "bytes": 4704,
+      "sha256": "4c20a866efa4a2eab77c3a4bec91bf5256670092afb2e988e560207c97ff85c6",
+      "git_blob": "5476606db5dbe8c1f301a18e811cecbd4e820a7c"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-v3-frozen-review.json",
+      "bytes": 3691,
+      "sha256": "d30ad81646360c1397c338cb04264169b9e8e6f9f86505ef0cb2e8d99ae571ff",
+      "git_blob": "0b186dd2171b14d03421e09c26b3924b20479e12"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-plan-v2.json",
+      "bytes": 23139,
+      "sha256": "88ea35cae2b64475db7deebf0307dbc360cf97538aa84428433ef4376336aef2",
+      "git_blob": "6b2dc811398e6e7f0c083911f16854068632cd12"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/core-unit-timeout-reference-v1.json",
+      "bytes": 11224,
+      "sha256": "5dde1a126be85b87d14bc6f9e8e9b21fa17df43bb00f50531026c12b6730e142",
+      "git_blob": "98fce3e3fc2feddccdefed14bec093b60b590791"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/mechanism-probe/Cargo.toml",
+      "bytes": 362,
+      "sha256": "38b0226f2932260e2a235ba7353e250382ab83fb5e9e793db76bf2b9d0cd8e65",
+      "git_blob": "bd7cda18232ae1880207851d47cfa492ed12bd01"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/mechanism-probe/src/main.rs",
+      "bytes": 6122,
+      "sha256": "2a106a24d0cc31256632f2e74e67d4ef3997b3804d847aa3198674dbbf3b7d29",
+      "git_blob": "d7282dc87ca45d6ac0875eea43d4e7db231f5ae4"
+    }
+  ],
+  "reviewed_scope": [
+    "Complete V2-to-V3 delta and staged loader/packager; constructor, environment/source guards, elapsed parallel bound, and final receipt branches in V3 runner.",
+    "Complete separate tracing mechanism probe Cargo manifest and main.rs.",
+    "Fixed 5b Core BUILD/defs/.bazelrc and the complete original Windows Core job log for actual timeout overrides."
+  ],
+  "findings": [
+    {
+      "topic": "staged transport",
+      "result": "Fixed path, no symlink parents/final symlink, regular single-link descriptor, size and before/after device/inode/time checks, packed/raw/runner/nested-input hashes and execute/root-guard/host/idempotency checks precede exec. Create-only destination is a commit expected_version=absent requirement in packaging, not a property proven by merely opening the loader path. No upload or transport executed in this review."
+    },
+    {
+      "topic": "constructor and final failure",
+      "result": "Partial Runner remains available after constructor failure. Key evidence fields are initialized before owned-root creation. Before root/out creation the complete failure receipt is stdout; after creation the final source guard is attempted. A final guard failure forces code 1 and OPEN_FINAL_GUARD_FAILURE; capacity or receipt-save errors also force nonzero. Existing source/index/lock guard remains fail-closed."
+    },
+    {
+      "topic": "build inputs",
+      "result": "source_guard invokes preflight_environment each time, so the newly pinned external build inputs are rechecked by path/bytes/SHA, not merely reported. GIT_OPTIONAL_LOCKS=0 requirement preserves the previously accepted no-index-refresh plan."
+    },
+    {
+      "topic": "parallel timeout reference",
+      "result": "The actual fixed target declares long. defs forwards it to workspace_root_test. Fixed .bazelrc and the complete original Core job log have no test_timeout override. The new runner requires natural elapsed duration <=900 seconds; it explicitly does not claim external Bazel timeout enforcement and does not kill the full Rust process at that bound. The original child/body 5-second budget is independent."
+    },
+    {
+      "topic": "mechanism probe",
+      "result": "Pinned tracing APIs and poll ordering are consistent with the intended first-registration cache mechanism: a live Dispatch allows TRACE max-level, a separate worker with no default subscriber first polls the shared parent callsite without creating the child callsite, and a later WithSubscriber poll can observe the fresh child callsite. The shared mode must reach its partial-span marker then fail at the designated final chain assertion with exit101; earlier setup/assertion failures are not causal qualification. Isolated mode uses a fresh owned same-executable child. This is a separate controlled mechanism probe, not proof of the observed CI thread interleaving."
+    }
+  ],
+  "fixed_timeout_evidence": [
+    {
+      "path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/original/core-BUILD.bazel",
+      "bytes": 2229,
+      "sha256": "7e4426b0956a9aedb523098a87378492e6cbfa34a4773ec9e52127039b2a0567",
+      "git_blob": "e0e99847ce29d3ce54437215d5f34ca64c14fb3c"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/b16-next-normal-chain-20261105/source-5b/defs.bzl",
+      "bytes": 34630,
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+      "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/architecture-audit/original-exit-selection-5b-20261105/source/.bazelrc",
+      "bytes": 14926,
+      "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa",
+      "git_blob": "3d5877b283b887091af507f3672003f84c500687"
+    },
+    {
+      "path": "/workspace/scratch/07dd58cc9630/research-audit/published-5b633-ci-20261105/terminal/windows-core-lifecycle-127149546323/job.log",
+      "bytes": 702243,
+      "sha256": "95e2beb757a2984141f5ca26a91ee44a949947e261a8643b611e97dc31141a3f",
+      "git_blob": "8b0dcbe5f6f917f4f97d5efa7becc5f02b5a5a31"
+    }
+  ],
+  "limits": [
+    "No native process, Cargo, Rust compilation, product or parser tests, upload, CI dispatch, or ref/source mutation performed.",
+    "3977 project and19563 full named rosters are preserved author manifest inputs; this narrow review does not requalify or independently execute those scopes.",
+    "The previous six-line Dispatch candidate remains REJECTED_INCOMPLETE. The accepted case change is fixture process isolation, not a tracing-core production race repair.",
+    "Static approval does not replace the final root execution guard or qualification receipts."
+  ]
+}

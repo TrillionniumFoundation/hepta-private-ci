@@ -1,0 +1,79 @@
+{
+  "schema": "hepta-core-native-prerequisites-root-original-review-v1",
+  "reviewed_at": "2026-11-05T14:21:03.680277+00:00",
+  "mechanism_manifest": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/mechanism-actual-priority-v1/manifest.json",
+    "bytes": 3759,
+    "sha256": "dbe9ebb70e35da5287cafea3568d41545abb7456e22b3753713c527b153ef3ad",
+    "git_blob": "c383b5095412320661ff2f5b8b479e71dfaf93d4"
+  },
+  "controlled_mechanism": {
+    "negative_exit": 101,
+    "positive_exit": 0,
+    "five_originals_rehashed": true,
+    "same_poison_then_clean_child_parent_wait_chain_observed": true,
+    "original_Windows_interleaving_observed": false,
+    "product_test_qualification": false
+  },
+  "readiness_original": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/ai395-readiness-launch-v1/readiness.original.json",
+    "bytes": 229791,
+    "sha256": "c61d68f27c06ab53c0b2befc36a3b6cc2b56184e8d77fa4ee77cece37761bfd3",
+    "git_blob": "54b205c850d87f4759404950b6370b7a7992a282"
+  },
+  "readiness_original_sdk_chunks": [
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-actions/ai395-readiness-bytes-000.original.json",
+      "bytes": 87959,
+      "sha256": "d7f25fa7843f93c1d5f68cf68112a810dd171df4b8a59515903739ef6ac080e8",
+      "git_blob": "b816c18be50d0bd4aa444d4917b96eb4f157fcee"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-actions/ai395-readiness-bytes-001.original.json",
+      "bytes": 87964,
+      "sha256": "2b79da39ba8961021d78a610d148b2eecec9d5a579c15a6ba225afba36dd233e",
+      "git_blob": "13fc9938a3a0310472e84934807c5d4c0d5550b0"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-actions/ai395-readiness-bytes-002.original.json",
+      "bytes": 87965,
+      "sha256": "a656f4a9fb77bdbf4468120f1d55e4be6809b1a23d0e9da5c50ffd9bfe148e46",
+      "git_blob": "cf7438c0056814d0ac5a32c68a81e6fbb6ed6c36"
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-actions/ai395-readiness-bytes-003.original.json",
+      "bytes": 44824,
+      "sha256": "a507e0bafade0e6539dcb81e22cc1293bb0f09b452bf19ddbb997e24483cef9e",
+      "git_blob": "cabadaec475c96b0973961dcf990df7e8616be30"
+    }
+  ],
+  "authoritative_status_original": {
+    "local_path": "/workspace/scratch/07dd58cc9630/ci-audit/core-wait-span-20261105/native-actions/ai395-readiness-status-001.original.json",
+    "bytes": 1078,
+    "sha256": "e7a47c1291d7b9a3b8d8afd3a39ef8c60bdf3a6ca1f9326b94a527a91993760d",
+    "git_blob": "a9f6ea0af139d0b48ba5ca2ce8576e6b43a83a70"
+  },
+  "readiness_result": {
+    "job_id": "1a1ac07278f-fc05-51b8",
+    "state": "succeeded",
+    "exit_code": 0,
+    "complete_report_reconstructed_from_four_same_version_chunks": true,
+    "all_171_file_pins_and_147_link_pins_matched": true,
+    "observed_interval": [
+      "2026-11-05T14:05:14.077751+00:00",
+      "2026-11-05T14:05:18.051802+00:00"
+    ],
+    "available_disk_bytes": 333206835200,
+    "available_memory_bytes": 123491221504,
+    "cpu_count": 32,
+    "new_core_root_absent_before_and_after": true,
+    "builds": 0,
+    "tests": 0
+  },
+  "limits": [
+    "This is review of complete recorded observations, not a new native read or launch.",
+    "Historical tool version strings were copied; fresh file bytes and SDK links were observed.",
+    "A future cold build must re-read capacity and validate its own new source, tools, graph, catalog and outputs.",
+    "The old B16 driver remains unknown; this separate readiness job gives no evidence about its execution."
+  ]
+}

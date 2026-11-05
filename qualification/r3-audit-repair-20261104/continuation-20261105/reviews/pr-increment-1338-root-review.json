@@ -1,0 +1,314 @@
+{
+  "schema": "hepta-bounded-pr-increment-root-review-20261105T1338",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "window_cutoff_utc": "2026-11-05T12:04:00Z",
+  "observed_start_utc": "2026-11-05 13:37:39 UTC",
+  "observed_end_utc": "2026-11-05 13:37:40 UTC",
+  "query": {
+    "state": "all",
+    "sort": "updated",
+    "direction": "desc",
+    "per_page": 30,
+    "pages": [
+      1,
+      2
+    ]
+  },
+  "records_examined": 60,
+  "updated_in_inclusive_window": 14,
+  "new_numbers_since_prior_max_4872": [
+    4873,
+    4874,
+    4875,
+    4876,
+    4877,
+    4878,
+    4879,
+    4880
+  ],
+  "is_new_repository_total": false,
+  "non_atomic_pagination": true,
+  "rows": [
+    {
+      "number": 4877,
+      "title": "fix(agentd): require PQ authority on ordinary PoN and HTTP effects",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T12:57:56Z",
+      "updated_at": "2026-11-05T13:35:07Z",
+      "head": {
+        "ref": "fix/hepta-pon-effect-pq-20261105-2c2b",
+        "sha": "9ce5c86ceb640e912ef0f23cce1730cb6c48d67e"
+      },
+      "base": {
+        "ref": "fix/hepta-ordinary-pq-effects-20261104",
+        "sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+      }
+    },
+    {
+      "number": 4855,
+      "title": "W0–W7: unify R3 safety, CI and recovery candidate with explicit qualification gates",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T07:42:31Z",
+      "updated_at": "2026-11-05T13:21:45Z",
+      "head": {
+        "ref": "integration/unified-w0-w7-20261105-4d868a11",
+        "sha": "dbec41758b5334c7a465ffaa57db731f770b2fb3"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "732e934ba496d90fbe042b8d41d479ef901643e5"
+      }
+    },
+    {
+      "number": 4880,
+      "title": "research(ndu): enforce actual-clock execution and gate frozen-LLM confirmation",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T13:19:38Z",
+      "updated_at": "2026-11-05T13:19:38Z",
+      "head": {
+        "ref": "research/ndu-walltime-contract-20261105",
+        "sha": "5c0093cb62ca4b5007df733f470fc8922ffdafc8"
+      },
+      "base": {
+        "ref": "research/ndu-identification-bounds-20261105",
+        "sha": "9397449e630f3d255753f2e9d2f9a51e7bb1440e"
+      }
+    },
+    {
+      "number": 4853,
+      "title": "P0/P1: repair original #4826 CI failures on exact R3",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:54:05Z",
+      "updated_at": "2026-11-05T13:18:13Z",
+      "head": {
+        "ref": "codex/4826-full-ci-repair-20261105",
+        "sha": "203bd9ff19924b7bcd3f043b9d31c16338f19dc7"
+      },
+      "base": {
+        "ref": "codex/organ-intermediate-diagnosis-20261105-r3",
+        "sha": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6"
+      }
+    },
+    {
+      "number": 4873,
+      "title": "research(hcsn): implement HX kernels, separate A/B mechanisms and reproducible experiments",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T12:33:24Z",
+      "updated_at": "2026-11-05T13:18:08Z",
+      "head": {
+        "ref": "research/hcsn-hx-20261105",
+        "sha": "1d3ece6f3594fe69170e87d7e0ec433c47e9fb5e"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "732e934ba496d90fbe042b8d41d479ef901643e5"
+      }
+    },
+    {
+      "number": 4879,
+      "title": "research(ndu): bound decision-relevant information cost and test deadline failures",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T13:15:19Z",
+      "updated_at": "2026-11-05T13:15:19Z",
+      "head": {
+        "ref": "research/ndu-identification-bounds-20261105",
+        "sha": "9397449e630f3d255753f2e9d2f9a51e7bb1440e"
+      },
+      "base": {
+        "ref": "research/ndu-identification-reference-20261105",
+        "sha": "27961e167fb62d05e27eb6a86f7585ce1ed2e950"
+      }
+    },
+    {
+      "number": 4878,
+      "title": "research(ndu): add exact paid identification and censored-time controls",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T13:14:11Z",
+      "updated_at": "2026-11-05T13:14:11Z",
+      "head": {
+        "ref": "research/ndu-identification-reference-20261105",
+        "sha": "27961e167fb62d05e27eb6a86f7585ce1ed2e950"
+      },
+      "base": {
+        "ref": "research/ndu-jac-gap-20261105",
+        "sha": "728364108332a756aa6f7dbd4e576d98feb55a3a"
+      }
+    },
+    {
+      "number": 4843,
+      "title": "Fix original P1 CI failures while preserving qualification gates",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T06:21:17Z",
+      "updated_at": "2026-11-05T13:02:54Z",
+      "head": {
+        "ref": "fix/p1-original-ci-closure-20261105",
+        "sha": "7504ab322f229321b6e06a16895ebaabe9b3d32a"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "732e934ba496d90fbe042b8d41d479ef901643e5"
+      }
+    },
+    {
+      "number": 4797,
+      "title": "fix: restore r3 product contracts and preserve exact-source qualification",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-04T12:16:38Z",
+      "updated_at": "2026-11-05T13:01:04Z",
+      "head": {
+        "ref": "fix/r3-original-product-contracts-20261104",
+        "sha": "5b6331250ff459033bd44d1a95daec70131277cc"
+      },
+      "base": {
+        "ref": "integration/ui-objective-20261103-product",
+        "sha": "63652be658ebed8d3052eb789b951793384fd5e4"
+      }
+    },
+    {
+      "number": 4876,
+      "title": "research(ndu): diagnose JAC gap and certify empirical planning parity",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T12:53:52Z",
+      "updated_at": "2026-11-05T12:53:52Z",
+      "head": {
+        "ref": "research/ndu-jac-gap-20261105",
+        "sha": "728364108332a756aa6f7dbd4e576d98feb55a3a"
+      },
+      "base": {
+        "ref": "research/ndu-jac-source-publication-20261105-gpt6-01",
+        "sha": "cea77b5e6ff25b05bad7e9fbf88578fd84f198e9"
+      }
+    },
+    {
+      "number": 4875,
+      "title": "feat(ndu): add staged portfolio validation and independent evidence gates",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T12:52:28Z",
+      "updated_at": "2026-11-05T12:52:28Z",
+      "head": {
+        "ref": "codex/ndu-portfolio-validation-20261105",
+        "sha": "0ea61fb707fbcc399ea2318238652efe411c6535"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "732e934ba496d90fbe042b8d41d479ef901643e5"
+      }
+    },
+    {
+      "number": 4869,
+      "title": "Integrate bound run recovery and exact source qualification for 40 modules",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T10:33:03Z",
+      "updated_at": "2026-11-05T12:40:58Z",
+      "head": {
+        "ref": "integration/modules40-source-recovery-20261105-a9f4ebc7",
+        "sha": "5e917b9f5fb3e841dbcaefcd5bbbf59b32f20411"
+      },
+      "base": {
+        "ref": "integration/unified-w0-w7-20261105-4d868a11",
+        "sha": "e65a53ddfc872ef66edc63dff8f28d4414817c60"
+      }
+    },
+    {
+      "number": 4874,
+      "title": "archive(library): preserve two exact security regression source blobs [HOLD]",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T12:39:55Z",
+      "updated_at": "2026-11-05T12:39:55Z",
+      "head": {
+        "ref": "audit/library-two-repro-20261105-gpt6",
+        "sha": "b352e00b793f52e6691c1a9ff3676085f1d8c224"
+      },
+      "base": {
+        "ref": "main",
+        "sha": "732e934ba496d90fbe042b8d41d479ef901643e5"
+      }
+    },
+    {
+      "number": 4872,
+      "title": "research(ndu): publish bounded joint-control source and falsifying evidence [HOLD]",
+      "state": "open",
+      "draft": true,
+      "created_at": "2026-11-05T11:57:39Z",
+      "updated_at": "2026-11-05T12:04:00Z",
+      "head": {
+        "ref": "research/ndu-jac-source-publication-20261105-gpt6-01",
+        "sha": "cea77b5e6ff25b05bad7e9fbf88578fd84f198e9"
+      },
+      "base": {
+        "ref": "research/ndu-decision-exact-20261104",
+        "sha": "bde82cc66099ccdfe198d2c02f4536b70c91731c"
+      }
+    }
+  ],
+  "pr4855_actual_fixed_increment": {
+    "from": "f6905bf16e0b6395648e377c6fa444e026c4d3a1",
+    "to": "dbec41758b5334c7a465ffaa57db731f770b2fb3",
+    "commits": 2,
+    "status": "ahead",
+    "files": [
+      {
+        "path": "codex-rs/core/src/state_db_bridge_tests.rs",
+        "blob": "d50b58e6399bde1d4b885778c18a1a8a1d367832",
+        "additions": 1,
+        "deletions": 1,
+        "exists_in_product_5b": false
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_service_consumers_root.rs",
+        "blob": "caf3a754ad60958e55256365085740a9e94c46d8",
+        "additions": 8,
+        "deletions": 0,
+        "exists_in_product_5b": false
+      }
+    ],
+    "decision": "Both new paths are absent in product5b. Do not import these donor-specific fixture/API repairs as Core/musl product fixes."
+  },
+  "observations": [
+    {
+      "numbers": [
+        4873,
+        4875,
+        4876,
+        4878,
+        4879,
+        4880
+      ],
+      "scope": "New research drafts; PR text reports bounded reference/CPU work and pending or rejected efficacy/retention/LLM gates. Original B18 D-minus-B adoption gate is unchanged.",
+      "qualification": "PR_DECLARATIONS_ONLY_NOT_INDEPENDENT_NATIVE_REVIEW"
+    },
+    {
+      "numbers": [
+        4877
+      ],
+      "scope": "Ordinary HTTP/PoN PQ authority and mandatory dispatch-lease work is a separately based draft. Its initial missing tracked compile-time input is recorded as setup/compile failure; no product native pass or real Chain execution is inferred.",
+      "qualification": "SEPARATE_SOURCE_AND_DEPENDENCY_CHAIN"
+    },
+    {
+      "numbers": [
+        4874
+      ],
+      "scope": "Exact-source archive of two security reproducers is custody evidence, not production security or this product qualification.",
+      "qualification": "SOURCE_CUSTODY_ONLY"
+    }
+  ],
+  "limits": [
+    "No branch merge, base change, product source mutation or original blocker closure is performed.",
+    "Updated rows include the previous anchor PR4872 at exactly12:04:00; the inclusive count is14, not14 newly created PRs.",
+    "Page responses and selected donor compare are preserved complete, including full body declarations and non-window rows.",
+    "Full original project inventory counts retain their own earlier observation cut; this bounded increment is not a fresh repository-wide total."
+  ]
+}

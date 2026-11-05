@@ -1,0 +1,85 @@
+{
+  "schema": "musl-procfs-hygiene-causality-v1",
+  "finding": "The invalid mixed-type expression predates final A hygiene; it was present in the original App production candidate. Final scoped justfix only removed two same-type casts from the test st_dev/st_ino tuple. Final rustfmt changed production layout and line number, not this expression.",
+  "hygiene_introduced_this_expression": false,
+  "original_expression_line": 96,
+  "published_expression_line": 122,
+  "files": [
+    {
+      "path": "architecture-audit/app-parent-liveness-candidate-20261105/candidate/codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "bytes": 7437,
+      "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6",
+      "git_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+      "relevant_lines": [
+        {
+          "line": 96,
+          "text": "            || filesystem.f_type != libc::PROC_SUPER_MAGIC"
+        }
+      ]
+    },
+    {
+      "path": "architecture-audit/app-parent-liveness-candidate-20261105/full.patch",
+      "bytes": 27742,
+      "sha256": "85edd8c88956ed3d27f7a90a5793cdf38f3c61c1c78043fa14ece1028542dd73",
+      "git_blob": "5847179e988ea0719766cd25be293e09efd882c3",
+      "relevant_lines": [
+        {
+          "line": 259,
+          "text": "+            || filesystem.f_type != libc::PROC_SUPER_MAGIC"
+        },
+        {
+          "line": 544,
+          "text": "+            assert_ne!((actual.st_dev as u64, actual.st_ino as u64), (device, inode));"
+        }
+      ]
+    },
+    {
+      "path": "ci-audit/recovered-20261105/final-A-scoped-fix.patch",
+      "bytes": 875,
+      "sha256": "3041dac86b27f1a87eba186ceed5bd165c8fa004a7e44bd5ec693781b214abbb",
+      "git_blob": "e43c9285b0060eb7b8f6dc9f18692ac3d1167894",
+      "relevant_lines": [
+        {
+          "line": 9,
+          "text": "-            assert_ne!((actual.st_dev as u64, actual.st_ino as u64), (device, inode));"
+        },
+        {
+          "line": 10,
+          "text": "+            assert_ne!((actual.st_dev, actual.st_ino), (device, inode));"
+        }
+      ]
+    },
+    {
+      "path": "ci-audit/recovered-20261105/final-A-fmt-complete-v1/large-decoded/original-fmt.patch",
+      "bytes": 66988,
+      "sha256": "870bebd231538f636a89e4e23b87b2933429ae75d9977b9c88b6141a92afa66d",
+      "git_blob": "99ca4fb388b31cc0e0cbd6ed5646a0c77357b1c9",
+      "relevant_lines": []
+    },
+    {
+      "path": "architecture-audit/a-hygiene-independent-review-20261105/fmt-preimages/codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "bytes": 7437,
+      "sha256": "2568b9008d8b6db84b40ace134c5aef6b493d316bfe1d977aab8290b58b64db6",
+      "git_blob": "ffc5774508ab4a069a6bcb70f27950300b86fbfe",
+      "relevant_lines": [
+        {
+          "line": 96,
+          "text": "            || filesystem.f_type != libc::PROC_SUPER_MAGIC"
+        }
+      ]
+    },
+    {
+      "path": "architecture-audit/a-hygiene-independent-review-20261105/fmt-postimages/codex-rs/linux-sandbox/src/parent_lifecycle.rs",
+      "bytes": 8228,
+      "sha256": "6b1df4d24e48d9eaf772c85e70ebca822b5fd23d3708b2c749158b9cb4350c68",
+      "git_blob": "8f500e03938718820360ce2ad41f2286eb9071bd",
+      "relevant_lines": [
+        {
+          "line": 122,
+          "text": "            || filesystem.f_type != libc::PROC_SUPER_MAGIC"
+        }
+      ]
+    }
+  ],
+  "clippy_reasoning": "Both GNU i64 to i128 operands are genuine widening conversions, unlike the removed u64 to u64 test casts. Actual subsequent original GNU lint remains pending and does not establish musl compilation."
+}

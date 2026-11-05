@@ -1,0 +1,306 @@
+{
+  "schema": "hepta-complete-original-byte-transport-v1",
+  "scope": {
+    "frozen_at": "2026-11-05T15:13:21.150155+00:00",
+    "scope": "Complete fixed observations; V8 ARM log is the exact connector-decoded UTF-8 original, independently matched to its API envelope.",
+    "source_snapshot": {
+      "collected_from": "2026-11-05T14:55:04.543Z",
+      "collected_to": "2026-11-05T14:55:05.519Z",
+      "run_count": 19,
+      "run_status": {
+        "skipped": 2,
+        "queued": 4,
+        "success": 11,
+        "failure": 2
+      },
+      "job_count": 59,
+      "job_status": {
+        "failure": 2,
+        "success": 40,
+        "skipped": 2,
+        "queued": 14,
+        "cancelled": 1
+      },
+      "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "draft": true,
+      "changes": [
+        {
+          "id": 127251874931,
+          "run_id": 41999115000,
+          "name": "Build ptrcomp-sandbox aarch64-pc-windows-msvc from source",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "runner_id": 1000000884,
+          "runner_name": "GitHub Actions 1000000884",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-11-05T12:50:15Z",
+              "completed_at": "2026-11-05T12:50:16Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-11-05T12:50:16Z",
+              "completed_at": "2026-11-05T12:50:34Z"
+            },
+            {
+              "name": "Run ./.github/actions/setup-ci",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-11-05T12:50:34Z",
+              "completed_at": "2026-11-05T12:50:54Z"
+            },
+            {
+              "name": "Configure git for upstream checkout",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-11-05T12:50:54Z",
+              "completed_at": "2026-11-05T12:50:54Z"
+            },
+            {
+              "name": "Check out upstream rusty_v8",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-11-05T12:50:54Z",
+              "completed_at": "2026-11-05T12:52:34Z"
+            },
+            {
+              "name": "Set up Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-11-05T12:52:34Z",
+              "completed_at": "2026-11-05T12:52:35Z"
+            },
+            {
+              "name": "Set up Codex Rust toolchain for Cargo smoke",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7,
+              "started_at": "2026-11-05T12:52:35Z",
+              "completed_at": "2026-11-05T12:52:49Z"
+            },
+            {
+              "name": "Install rusty_v8 Rust toolchain",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8,
+              "started_at": "2026-11-05T12:52:49Z",
+              "completed_at": "2026-11-05T12:53:02Z"
+            },
+            {
+              "name": "Write upstream submodule status",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9,
+              "started_at": "2026-11-05T12:53:02Z",
+              "completed_at": "2026-11-05T12:53:05Z"
+            },
+            {
+              "name": "Restore upstream source-build cache",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10,
+              "started_at": "2026-11-05T12:53:05Z",
+              "completed_at": "2026-11-05T12:53:05Z"
+            },
+            {
+              "name": "Install and start sccache",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11,
+              "started_at": "2026-11-05T12:53:05Z",
+              "completed_at": "2026-11-05T12:53:07Z"
+            },
+            {
+              "name": "Install Chromium clang for ARM64 MSVC cross build",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12,
+              "started_at": "2026-11-05T12:53:07Z",
+              "completed_at": "2026-11-05T12:53:17Z"
+            },
+            {
+              "name": "Build upstream rusty_v8 sandbox release pair",
+              "status": "completed",
+              "conclusion": "cancelled",
+              "number": 13,
+              "started_at": "2026-11-05T12:53:17Z",
+              "completed_at": "2026-11-05T14:50:33Z"
+            },
+            {
+              "name": "Stage upstream sandbox release pair",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 14,
+              "started_at": "2026-11-05T14:50:33Z",
+              "completed_at": "2026-11-05T14:50:33Z"
+            },
+            {
+              "name": "Smoke link staged artifact with Cargo",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 15,
+              "started_at": "2026-11-05T14:50:33Z",
+              "completed_at": "2026-11-05T14:50:33Z"
+            },
+            {
+              "name": "Upload staged artifacts",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 16,
+              "started_at": "2026-11-05T14:50:33Z",
+              "completed_at": "2026-11-05T14:50:33Z"
+            },
+            {
+              "name": "Check for a clean worktree",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 17,
+              "started_at": "2026-11-05T14:50:33Z",
+              "completed_at": "2026-11-05T14:50:33Z"
+            },
+            {
+              "name": "Post Restore upstream source-build cache",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 31,
+              "started_at": "2026-11-05T14:50:33Z",
+              "completed_at": "2026-11-05T14:50:33Z"
+            },
+            {
+              "name": "Post Set up Python",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 32,
+              "started_at": "2026-11-05T14:50:33Z",
+              "completed_at": "2026-11-05T14:50:33Z"
+            },
+            {
+              "name": "Post Check out upstream rusty_v8",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 33,
+              "started_at": "2026-11-05T14:50:33Z",
+              "completed_at": "2026-11-05T14:50:51Z"
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 34,
+              "started_at": "2026-11-05T14:50:51Z",
+              "completed_at": "2026-11-05T14:50:55Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 35,
+              "started_at": "2026-11-05T14:50:55Z",
+              "completed_at": "2026-11-05T14:50:55Z"
+            }
+          ]
+        }
+      ]
+    },
+    "root_recomputed_actual_job_count": 59,
+    "root_recomputed_actual_job_states": {
+      "failure": 2,
+      "success": 40,
+      "skipped": 2,
+      "queued": 14,
+      "cancelled": 1
+    },
+    "limits": [
+      "The ROG derived projection and native file tails/views are not the full29-original archive; its70-part transfer is pending separately.",
+      "The wrapper passed in project JUnit and both child/parent original stdout; the complete owning and direct-parallel gates failed.",
+      "C0 final source is e78; C1 did not execute because actual available memory was below the fixed32GiB prerequisite.",
+      "V8 ARM cancellation reason/actor is not established by the original log; downstream product smoke/upload did not execute.",
+      "B11 PR4884 is Draft and native Windows outcome remains pending; old B16 driver remains START_OUTCOME_UNKNOWN.",
+      "The v1 archive contains a line-ending-normalized ARM log export and is historical, not an exact native-log-byte claim. Its original identity is retained explicitly; cancellation facts are unchanged."
+    ],
+    "correction": {
+      "old_v1_archive": {
+        "name": "original-outcomes.tar.gz",
+        "bytes": 338203,
+        "sha256": "54ce92f95d29afdbe589d8cca63c6d0d0f16894b19e896eec71959dc159326a9",
+        "computed_git_blob": "a8386447a83b5de8a0fe89f8f18dea90cb54aeef"
+      },
+      "old_LF_export": {
+        "bytes": 157330,
+        "sha256": "a8c7d0afe0df61a8b6199e9eaccc2c6e40f530ed823010c561961acba650e313",
+        "computed_git_blob": "c4e00e6db917ba7d942dc7e792d4a5008ef6d8e5"
+      },
+      "corrected_API_bytes": {
+        "bytes": 159107,
+        "sha256": "36ed4e52e87b3fe4612104898097e7ff937bd0a6008b90bcd5bc7cd182b25ade",
+        "computed_git_blob": "c2ed0bf58d1e3b9cba521555eb6975e84b408a95"
+      },
+      "API_envelope": {
+        "bytes": 169061,
+        "sha256": "427a21d599b1cabd8b3acba8f3f6033c0f09c340f5f3e3249fc9825a63366401",
+        "computed_git_blob": "4c7e26a9ddbcc0d22c19506e54be3d82b6bb9025"
+      },
+      "CRLF_count": 1777,
+      "exact_CRLF_to_LF_reproduces_old_export": true,
+      "old_v1_preserved_as_history": true,
+      "new_observations_or_tests_added": false
+    }
+  },
+  "archive": {
+    "name": "original-outcomes.tar.gz",
+    "bytes": 365556,
+    "sha256": "57fe21247cdb2bf76254c210b56d500a6ef43da240b860bbc362ee7b541947d2",
+    "computed_git_blob": "117c21ecd185dd3d2325af6077b38b4b699373dc"
+  },
+  "original_files_manifest": {
+    "name": "original-files-manifest.json",
+    "bytes": 17439,
+    "sha256": "0731ef88bcae82f52ead0e36f8bae131f147a8d56251e8cec3e075427236e172",
+    "computed_git_blob": "9752c5476056bef579de32bf389020dd1044d159"
+  },
+  "part_count": 2,
+  "parts": [
+    {
+      "index": 0,
+      "name": "original-outcomes.tar.gz.part000.b64.txt",
+      "compressed_offset": 0,
+      "file": {
+        "bytes": 480001,
+        "sha256": "cef2298d67d63109909b399d85d7a17a15ad30e4660b98420d78ddccca3e45eb",
+        "computed_git_blob": "72cf0a2855bb3b21f1233e249521eb1cb2bb0e57"
+      },
+      "decoded_chunk": {
+        "bytes": 360000,
+        "sha256": "022b31fde2d19b6376fc6effc1632a97ac1ec0ab70c5ee8c9354030d52463984",
+        "computed_git_blob": "e6c82dcad38cfe8c0f78c13631035f242812e41e"
+      }
+    },
+    {
+      "index": 1,
+      "name": "original-outcomes.tar.gz.part001.b64.txt",
+      "compressed_offset": 360000,
+      "file": {
+        "bytes": 7409,
+        "sha256": "eae37641f672df915e1b2588edc6ecf464af476619d4ad5572da521a54cd4a21",
+        "computed_git_blob": "462ddda0ff9797cf5fff9d5758f3103741e81b76"
+      },
+      "decoded_chunk": {
+        "bytes": 5556,
+        "sha256": "3f5645463cb5b19b7b2c0736455e2fcccce1cf7b3a2e822b0c5d478aceec01b6",
+        "computed_git_blob": "af375ae2376796f03bc401587b431e027820ed8a"
+      }
+    }
+  ]
+}

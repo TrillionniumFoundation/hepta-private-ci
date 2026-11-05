@@ -1,0 +1,609 @@
+{
+  "schema": "hepta-original-queue-v8-ci-cut0059-v1",
+  "created_at_utc": "2026-11-05T14:33:03.918177+00:00",
+  "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "cut": "snapshot0059 2026-11-05T14:30:36.907Z–14:30:38.257Z; earlier snapshots, queue reads and V8 terminal times retained independently.",
+  "snapshots": [
+    {
+      "snapshot": 51,
+      "identity": {
+        "bytes": 1142012,
+        "sha256": "4cfae01aa1b41918b5f416b32968530b7e60bb280a166607662226b5705ee549",
+        "computed_git_blob": "b46613ba00e5e2d5e49f4b0dfff3d886813c6c3c"
+      },
+      "original_envelope_header": {
+        "schema": "github-original-ci-api-snapshot-v1",
+        "observed_from": "2026-11-05T13:44:36.340Z",
+        "observed_until": "2026-11-05T13:44:37.507Z",
+        "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+        "run_count": 19,
+        "job_count": 59
+      },
+      "first_requested_at": "2026-11-05T13:44:36.340Z",
+      "last_recorded_observed_at": "2026-11-05T13:44:37.500Z",
+      "runs": {
+        "skipped": 2,
+        "queued": 4,
+        "success": 11,
+        "failure": 2
+      },
+      "job_count": 59,
+      "jobs": {
+        "failure": 2,
+        "success": 38,
+        "skipped": 2,
+        "queued": 15,
+        "in_progress": 2
+      },
+      "all_pages_complete_unique": true,
+      "timestamp_limit": "Per-row API observation times are non-atomic."
+    },
+    {
+      "snapshot": 52,
+      "identity": {
+        "bytes": 1142511,
+        "sha256": "f74dc2d25b49c0d714ceccf56d7519bb3e989e904af9a18a6910091ad3e5502b",
+        "computed_git_blob": "e88ff96d78e673913124d4b8268c401690056760"
+      },
+      "original_envelope_header": {
+        "schema": "hepta-original-ci-api-snapshot-v1",
+        "requested_at": "2026-11-05T13:48:40.572Z",
+        "timestamp_semantics": {
+          "requested_at": "Collection start before the independent GETs.",
+          "records_observed_at": "Dispatch timestamp immediately before awaiting each GET, not an individual response-completion timestamp.",
+          "response_collection_completed_by": "2026-11-05T13:48:47Z"
+        }
+      },
+      "first_requested_at": "2026-11-05T13:48:40.572Z",
+      "last_recorded_observed_at": "2026-11-05T13:48:40.572Z",
+      "runs": {
+        "skipped": 2,
+        "queued": 4,
+        "success": 11,
+        "failure": 2
+      },
+      "job_count": 59,
+      "jobs": {
+        "failure": 2,
+        "success": 38,
+        "skipped": 2,
+        "queued": 15,
+        "in_progress": 2
+      },
+      "all_pages_complete_unique": true,
+      "timestamp_limit": "Snapshot0052 retains its original author correction: per-row observed_at was a dispatch stamp, not response completion. Use its recorded collection bracket."
+    },
+    {
+      "snapshot": 53,
+      "identity": {
+        "bytes": 1141915,
+        "sha256": "d702c7366a8e2879529d16067305af18fce327fc65322c4f202dc32ebdeed671",
+        "computed_git_blob": "a5674c5f0033a370b437764781e51a8255bfe43d"
+      },
+      "original_envelope_header": {
+        "schema": "hepta-original-ci-api-snapshot-v1",
+        "requested_at": "2026-11-05T13:56:09.328Z",
+        "completed_at": "2026-11-05T13:56:11.167Z"
+      },
+      "first_requested_at": "2026-11-05T13:56:09.328Z",
+      "last_recorded_observed_at": "2026-11-05T13:56:11.154Z",
+      "runs": {
+        "skipped": 2,
+        "queued": 4,
+        "success": 11,
+        "failure": 2
+      },
+      "job_count": 59,
+      "jobs": {
+        "failure": 2,
+        "success": 38,
+        "skipped": 2,
+        "queued": 15,
+        "in_progress": 2
+      },
+      "all_pages_complete_unique": true,
+      "timestamp_limit": "Per-row API observation times are non-atomic."
+    },
+    {
+      "snapshot": 54,
+      "identity": {
+        "bytes": 1141915,
+        "sha256": "18a8a7da7d70350cd574e824287aada7d6e98e80148d4c90a55e75638e040299",
+        "computed_git_blob": "7b716bea3c623ea63f512536b3347d97cb83a64f"
+      },
+      "original_envelope_header": {
+        "schema": "hepta-original-ci-api-snapshot-v1",
+        "requested_at": "2026-11-05T14:00:40.905Z",
+        "completed_at": "2026-11-05T14:00:42.156Z"
+      },
+      "first_requested_at": "2026-11-05T14:00:40.906Z",
+      "last_recorded_observed_at": "2026-11-05T14:00:42.144Z",
+      "runs": {
+        "skipped": 2,
+        "queued": 4,
+        "success": 11,
+        "failure": 2
+      },
+      "job_count": 59,
+      "jobs": {
+        "failure": 2,
+        "success": 38,
+        "skipped": 2,
+        "queued": 15,
+        "in_progress": 2
+      },
+      "all_pages_complete_unique": true,
+      "timestamp_limit": "Per-row API observation times are non-atomic."
+    },
+    {
+      "snapshot": 55,
+      "identity": {
+        "bytes": 1141915,
+        "sha256": "8f205d58006d09394d740d707d1684e106cd6867d5e8c9c06a85ce6b797ae96b",
+        "computed_git_blob": "e68ca60a5f940364892c9eb712325e551d1c3afc"
+      },
+      "original_envelope_header": {
+        "schema": "hepta-original-ci-api-snapshot-v1",
+        "requested_at": "2026-11-05T14:05:58.817Z",
+        "completed_at": "2026-11-05T14:06:00.249Z"
+      },
+      "first_requested_at": "2026-11-05T14:05:58.817Z",
+      "last_recorded_observed_at": "2026-11-05T14:06:00.238Z",
+      "runs": {
+        "skipped": 2,
+        "queued": 4,
+        "success": 11,
+        "failure": 2
+      },
+      "job_count": 59,
+      "jobs": {
+        "failure": 2,
+        "success": 38,
+        "skipped": 2,
+        "queued": 15,
+        "in_progress": 2
+      },
+      "all_pages_complete_unique": true,
+      "timestamp_limit": "Per-row API observation times are non-atomic."
+    },
+    {
+      "snapshot": 56,
+      "identity": {
+        "bytes": 1150137,
+        "sha256": "2816c3391ba8e1fe24681153e4bd94912f2806035b36af28bb6ee02fc341f3c5",
+        "computed_git_blob": "44a4b4cb6291a4c1c8dd2654c38a6c2c412b1826"
+      },
+      "original_envelope_header": {
+        "schema": "hepta-exact-head-original-ci-snapshot-v1",
+        "snapshot": "0056",
+        "summary": {
+          "collected_from": "2026-11-05T14:13:28.701Z",
+          "collected_to": "2026-11-05T14:13:30.242Z",
+          "run_count": 19,
+          "run_status": {
+            "skipped": 2,
+            "queued": 4,
+            "success": 11,
+            "failure": 2
+          },
+          "job_count": 59,
+          "job_status": {
+            "failure": 2,
+            "success": 39,
+            "skipped": 2,
+            "queued": 15,
+            "in_progress": 1
+          },
+          "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+          "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+          "draft": true,
+          "changes": [
+            {
+              "id": 127251874901,
+              "run_id": 41999115000,
+              "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
+              "status": "completed",
+              "conclusion": "success",
+              "runner_id": 1000000883,
+              "runner_name": "GitHub Actions 1000000883",
+              "steps": [
+                {
+                  "name": "Set up job",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 1,
+                  "started_at": "2026-11-05T12:50:16Z",
+                  "completed_at": "2026-11-05T12:50:17Z"
+                },
+                {
+                  "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 2,
+                  "started_at": "2026-11-05T12:50:17Z",
+                  "completed_at": "2026-11-05T12:50:33Z"
+                },
+                {
+                  "name": "Run ./.github/actions/setup-ci",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 3,
+                  "started_at": "2026-11-05T12:50:33Z",
+                  "completed_at": "2026-11-05T12:50:53Z"
+                },
+                {
+                  "name": "Configure git for upstream checkout",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 4,
+                  "started_at": "2026-11-05T12:50:53Z",
+                  "completed_at": "2026-11-05T12:50:53Z"
+                },
+                {
+                  "name": "Check out upstream rusty_v8",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 5,
+                  "started_at": "2026-11-05T12:50:53Z",
+                  "completed_at": "2026-11-05T12:52:27Z"
+                },
+                {
+                  "name": "Set up Python",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 6,
+                  "started_at": "2026-11-05T12:52:27Z",
+                  "completed_at": "2026-11-05T12:52:27Z"
+                },
+                {
+                  "name": "Set up Codex Rust toolchain for Cargo smoke",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 7,
+                  "started_at": "2026-11-05T12:52:27Z",
+                  "completed_at": "2026-11-05T12:52:39Z"
+                },
+                {
+                  "name": "Install rusty_v8 Rust toolchain",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 8,
+                  "started_at": "2026-11-05T12:52:39Z",
+                  "completed_at": "2026-11-05T12:52:49Z"
+                },
+                {
+                  "name": "Write upstream submodule status",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 9,
+                  "started_at": "2026-11-05T12:52:49Z",
+                  "completed_at": "2026-11-05T12:52:51Z"
+                },
+                {
+                  "name": "Restore upstream source-build cache",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 10,
+                  "started_at": "2026-11-05T12:52:51Z",
+                  "completed_at": "2026-11-05T12:52:52Z"
+                },
+                {
+                  "name": "Install and start sccache",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 11,
+                  "started_at": "2026-11-05T12:52:52Z",
+                  "completed_at": "2026-11-05T12:52:53Z"
+                },
+                {
+                  "name": "Install Chromium clang for ARM64 MSVC cross build",
+                  "status": "completed",
+                  "conclusion": "skipped",
+                  "number": 12,
+                  "started_at": "2026-11-05T12:52:53Z",
+                  "completed_at": "2026-11-05T12:52:53Z"
+                },
+                {
+                  "name": "Build upstream rusty_v8 sandbox release pair",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 13,
+                  "started_at": "2026-11-05T12:52:53Z",
+                  "completed_at": "2026-11-05T14:08:22Z"
+                },
+                {
+                  "name": "Stage upstream sandbox release pair",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 14,
+                  "started_at": "2026-11-05T14:08:22Z",
+                  "completed_at": "2026-11-05T14:08:27Z"
+                },
+                {
+                  "name": "Smoke link staged artifact with Cargo",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 15,
+                  "started_at": "2026-11-05T14:08:27Z",
+                  "completed_at": "2026-11-05T14:09:37Z"
+                },
+                {
+                  "name": "Upload staged artifacts",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 16,
+                  "started_at": "2026-11-05T14:09:37Z",
+                  "completed_at": "2026-11-05T14:09:41Z"
+                },
+                {
+                  "name": "Check for a clean worktree",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 17,
+                  "started_at": "2026-11-05T14:09:41Z",
+                  "completed_at": "2026-11-05T14:09:42Z"
+                },
+                {
+                  "name": "Post Restore upstream source-build cache",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 31,
+                  "started_at": "2026-11-05T14:09:42Z",
+                  "completed_at": "2026-11-05T14:09:50Z"
+                },
+                {
+                  "name": "Post Set up Python",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 32,
+                  "started_at": "2026-11-05T14:09:50Z",
+                  "completed_at": "2026-11-05T14:09:50Z"
+                },
+                {
+                  "name": "Post Check out upstream rusty_v8",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 33,
+                  "started_at": "2026-11-05T14:09:50Z",
+                  "completed_at": "2026-11-05T14:09:56Z"
+                },
+                {
+                  "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 34,
+                  "started_at": "2026-11-05T14:09:56Z",
+                  "completed_at": "2026-11-05T14:09:58Z"
+                },
+                {
+                  "name": "Complete job",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 35,
+                  "started_at": "2026-11-05T14:09:58Z",
+                  "completed_at": "2026-11-05T14:09:58Z"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "first_requested_at": "2026-11-05T14:13:28.701Z",
+      "last_recorded_observed_at": "2026-11-05T14:13:30.239Z",
+      "runs": {
+        "skipped": 2,
+        "queued": 4,
+        "success": 11,
+        "failure": 2
+      },
+      "job_count": 59,
+      "jobs": {
+        "failure": 2,
+        "success": 39,
+        "skipped": 2,
+        "queued": 15,
+        "in_progress": 1
+      },
+      "all_pages_complete_unique": true,
+      "timestamp_limit": "Per-row API observation times are non-atomic."
+    },
+    {
+      "snapshot": 57,
+      "identity": {
+        "bytes": 1143634,
+        "sha256": "7360b94cb544659e6cc5bc652b98c6226c27c54937aba53b8e94dc8304f27528",
+        "computed_git_blob": "c3936126fafa0490ca14859c35a3e33a33bffd27"
+      },
+      "original_envelope_header": {
+        "schema": "hepta-exact-head-original-ci-snapshot-v1",
+        "snapshot": "0057",
+        "summary": {
+          "collected_from": "2026-11-05T14:19:23.705Z",
+          "collected_to": "2026-11-05T14:19:26.080Z",
+          "run_count": 19,
+          "run_status": {
+            "skipped": 2,
+            "queued": 4,
+            "success": 11,
+            "failure": 2
+          },
+          "job_count": 59,
+          "job_status": {
+            "failure": 2,
+            "success": 39,
+            "skipped": 2,
+            "queued": 15,
+            "in_progress": 1
+          },
+          "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+          "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+          "draft": true,
+          "changes": []
+        }
+      },
+      "first_requested_at": "2026-11-05T14:19:23.705Z",
+      "last_recorded_observed_at": "2026-11-05T14:19:26.077Z",
+      "runs": {
+        "skipped": 2,
+        "queued": 4,
+        "success": 11,
+        "failure": 2
+      },
+      "job_count": 59,
+      "jobs": {
+        "failure": 2,
+        "success": 39,
+        "skipped": 2,
+        "queued": 15,
+        "in_progress": 1
+      },
+      "all_pages_complete_unique": true,
+      "timestamp_limit": "Per-row API observation times are non-atomic."
+    },
+    {
+      "snapshot": 58,
+      "identity": {
+        "bytes": 1143634,
+        "sha256": "c127160ed69ac63ac66715b4bc109a147f51c3e55b2ae58511145596314011df",
+        "computed_git_blob": "7a8473b0ae2ebc45fb5896a9720f330310bd24d6"
+      },
+      "original_envelope_header": {
+        "schema": "hepta-exact-head-original-ci-snapshot-v1",
+        "snapshot": "0058",
+        "summary": {
+          "collected_from": "2026-11-05T14:25:18.499Z",
+          "collected_to": "2026-11-05T14:25:19.712Z",
+          "run_count": 19,
+          "run_status": {
+            "skipped": 2,
+            "queued": 4,
+            "success": 11,
+            "failure": 2
+          },
+          "job_count": 59,
+          "job_status": {
+            "failure": 2,
+            "success": 39,
+            "skipped": 2,
+            "queued": 15,
+            "in_progress": 1
+          },
+          "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+          "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+          "draft": true,
+          "changes": []
+        }
+      },
+      "first_requested_at": "2026-11-05T14:25:18.499Z",
+      "last_recorded_observed_at": "2026-11-05T14:25:19.709Z",
+      "runs": {
+        "skipped": 2,
+        "queued": 4,
+        "success": 11,
+        "failure": 2
+      },
+      "job_count": 59,
+      "jobs": {
+        "failure": 2,
+        "success": 39,
+        "skipped": 2,
+        "queued": 15,
+        "in_progress": 1
+      },
+      "all_pages_complete_unique": true,
+      "timestamp_limit": "Per-row API observation times are non-atomic."
+    },
+    {
+      "snapshot": 59,
+      "identity": {
+        "bytes": 1143634,
+        "sha256": "9e437e1e7d2ef034a02aeb7975909beb6f60fb86dc07f2a06f4b8b1e7ebd399d",
+        "computed_git_blob": "bb918370b7b655c3435d9af3d772dfd34bcca4dd"
+      },
+      "original_envelope_header": {
+        "schema": "hepta-exact-head-original-ci-snapshot-v1",
+        "snapshot": "0059",
+        "summary": {
+          "collected_from": "2026-11-05T14:30:36.907Z",
+          "collected_to": "2026-11-05T14:30:38.257Z",
+          "run_count": 19,
+          "run_status": {
+            "skipped": 2,
+            "queued": 4,
+            "success": 11,
+            "failure": 2
+          },
+          "job_count": 59,
+          "job_status": {
+            "failure": 2,
+            "success": 39,
+            "skipped": 2,
+            "queued": 15,
+            "in_progress": 1
+          },
+          "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+          "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+          "draft": true,
+          "changes": []
+        }
+      },
+      "first_requested_at": "2026-11-05T14:30:36.907Z",
+      "last_recorded_observed_at": "2026-11-05T14:30:38.255Z",
+      "runs": {
+        "skipped": 2,
+        "queued": 4,
+        "success": 11,
+        "failure": 2
+      },
+      "job_count": 59,
+      "jobs": {
+        "failure": 2,
+        "success": 39,
+        "skipped": 2,
+        "queued": 15,
+        "in_progress": 1
+      },
+      "all_pages_complete_unique": true,
+      "timestamp_limit": "Per-row API observation times are non-atomic."
+    }
+  ],
+  "snapshot_groups": {
+    "prior_gap_after_last_frozen0050": [
+      51,
+      52,
+      53,
+      54,
+      55
+    ],
+    "new_V8_terminal_and_followups": [
+      56,
+      57,
+      58,
+      59
+    ]
+  },
+  "latest_jobs": {
+    "queued": 15,
+    "in_progress": 1,
+    "success": 39,
+    "failure": 2,
+    "skipped": 2
+  },
+  "queue_review": {
+    "bytes": 14197,
+    "sha256": "f5b1580ff8a7e12aa96196c8f02de91811950f61a73f5e34db044d75fc187da9",
+    "computed_git_blob": "e51ecce1d088481488a86a586ec59bb2e8491bb0"
+  },
+  "v8_review": {
+    "bytes": 9480,
+    "sha256": "d030e126be7b15a4b61fa65378fd13b477d866799ae6a66c6b33c3b029e66e9e",
+    "computed_git_blob": "ae8ffad91e1f38d9e6feae75b606924c59ae2714"
+  },
+  "limits": [
+    "Complete original19-run/59-job API pages are observations, not an atomic scheduler snapshot. Top-level queued does not imply no internal execution.",
+    "The main blocking three initial jobs remain unallocated. Exact source/labels/dependencies, empty pending deployments and full93 same-branch run page plus terminal empty page do not establish a queue cause.",
+    "Two connector URL endpoint rejections are preserved; they do not prove repository permission denial or billing/runner policy.",
+    "Windows x86 staged V8 product smoke is actual --no-run compile/link success, not Rust test execution; its40MB ZIP is not independently downloaded in this batch.",
+    "All previous immutable cuts and unknown earlier cancellation causes remain unchanged. No new CI execution, retry, cancellation, setting or ref mutation."
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "schema": "ai395-independent-core-cold-C0-C1-request-v1",
+  "execute": false,
+  "root_execution_guard": null,
+  "stage": "prepare",
+  "idempotency_key": "hepta-ai395-core-cold-prepare-20261105-v1",
+  "readiness": {
+    "path": "/home/qq/work/hepta-core-readiness-20261105-v1/readiness.json",
+    "bytes": 229791,
+    "sha256": "c61d68f27c06ab53c0b2befc36a3b6cc2b56184e8d77fa4ee77cece37761bfd3",
+    "git_blob": "54b205c850d87f4759404950b6370b7a7992a282"
+  },
+  "supply_manifest": {
+    "bytes": 3003,
+    "sha256": "ee359dcbb7fbb6187f6ba66276cae4fc95608ffd49f2a6c562905bbb5703d1cf",
+    "git_blob": "65d3fd87285dbeed12740a9c8e40dd1507cd2cf1"
+  },
+  "environment": {
+    "CARGO_BUILD_JOBS": "4",
+    "CARGO_HOME": "/home/qq/work/hepta-core-musl-full-20261105/cargo-home",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "CARGO_TARGET_DIR": "/home/qq/work/hepta-core-musl-full-20261105/target-dev-small",
+    "DOTSLASH_CACHE": "/home/qq/work/hepta-core-musl-full-20261105/dotslash-cache",
+    "GCM_INTERACTIVE": "never",
+    "GIT_TERMINAL_PROMPT": "0",
+    "NEXTEST_PROFILE": "local",
+    "OPENSSL_INCLUDE_DIR": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/include",
+    "OPENSSL_LIB_DIR": "/home/qq/work/hepta-audit-b16-20261105/tools/openssl-3.5.5-1ubuntu3.7/sysroot/usr/lib/x86_64-linux-gnu",
+    "PATH": "/home/qq/work/hepta-audit-b16-20261105/tools/bin:/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin",
+    "PKG_CONFIG_PATH": "/home/qq/work/hepta-audit-b16-20261105/tools/libcap-2.75-10ubuntu2/pkgconfig",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RUSTUP_HOME": "/home/qq/work/hepta-core-musl-full-20261105/rustup-home",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "RUSTY_V8_ARCHIVE": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "GIT_OPTIONAL_LOCKS": "0",
+    "UV_CACHE_DIR": "/home/qq/work/hepta-core-musl-full-20261105/uv-cache",
+    "UV_PYTHON_DOWNLOADS": "never",
+    "PYTHONPYCACHEPREFIX": "/home/qq/work/hepta-core-musl-full-20261105/python-pycache"
+  },
+  "tools": [
+    {
+      "name": "rustc",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "bytes": 644784,
+      "sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6"
+    },
+    {
+      "name": "cargo",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "bytes": 42185192,
+      "sha256": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66"
+    },
+    {
+      "name": "cargo-clippy",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo-clippy",
+      "bytes": 1263912,
+      "sha256": "b71b1263063707608daa1e9b231ad9d87507c11d6aa178ede2b01d8372d5effb"
+    },
+    {
+      "name": "rustfmt",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rustup-home/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "bytes": 5295560,
+      "sha256": "56b31ad3ec8fe0277a2884a189e243b8f04e9b48e5fd22e547c1516c5f8fd34c"
+    },
+    {
+      "name": "just",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/just",
+      "bytes": 5452040,
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    {
+      "name": "cargo-nextest",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/cargo-nextest",
+      "bytes": 24038232,
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    {
+      "name": "bazel",
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/bin/bazel",
+      "bytes": 77023347,
+      "sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8"
+    },
+    {
+      "name": "git",
+      "path": "/usr/bin/git",
+      "bytes": 4547768,
+      "sha256": "ed8b2df973b28c0fb773b9c0dc0816d3ee2b3835bb932d9153c21417bb51b362"
+    }
+  ],
+  "external_build_inputs": {
+    "RUSTY_V8_ARCHIVE": {
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "bytes": 29366352,
+      "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583"
+    },
+    "RUSTY_V8_SRC_BINDING_PATH": {
+      "path": "/home/qq/work/hepta-audit-b16-20261105/tools/rusty-v8/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "bytes": 39884,
+      "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506"
+    }
+  }
+}

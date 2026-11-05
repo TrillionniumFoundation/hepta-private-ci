@@ -1,0 +1,409 @@
+{
+  "schema": "hepta-complete-original-files-v1",
+  "scope": {
+    "frozen_at": "2026-11-05T15:13:21.150155+00:00",
+    "scope": "Complete fixed observations; V8 ARM log is the exact connector-decoded UTF-8 original, independently matched to its API envelope.",
+    "source_snapshot": {
+      "collected_from": "2026-11-05T14:55:04.543Z",
+      "collected_to": "2026-11-05T14:55:05.519Z",
+      "run_count": 19,
+      "run_status": {
+        "skipped": 2,
+        "queued": 4,
+        "success": 11,
+        "failure": 2
+      },
+      "job_count": 59,
+      "job_status": {
+        "failure": 2,
+        "success": 40,
+        "skipped": 2,
+        "queued": 14,
+        "cancelled": 1
+      },
+      "head": "5b6331250ff459033bd44d1a95daec70131277cc",
+      "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "draft": true,
+      "changes": [
+        {
+          "id": 127251874931,
+          "run_id": 41999115000,
+          "name": "Build ptrcomp-sandbox aarch64-pc-windows-msvc from source",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "runner_id": 1000000884,
+          "runner_name": "GitHub Actions 1000000884",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-11-05T12:50:15Z",
+              "completed_at": "2026-11-05T12:50:16Z"
+            },
+            {
+              "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-11-05T12:50:16Z",
+              "completed_at": "2026-11-05T12:50:34Z"
+            },
+            {
+              "name": "Run ./.github/actions/setup-ci",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-11-05T12:50:34Z",
+              "completed_at": "2026-11-05T12:50:54Z"
+            },
+            {
+              "name": "Configure git for upstream checkout",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-11-05T12:50:54Z",
+              "completed_at": "2026-11-05T12:50:54Z"
+            },
+            {
+              "name": "Check out upstream rusty_v8",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-11-05T12:50:54Z",
+              "completed_at": "2026-11-05T12:52:34Z"
+            },
+            {
+              "name": "Set up Python",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-11-05T12:52:34Z",
+              "completed_at": "2026-11-05T12:52:35Z"
+            },
+            {
+              "name": "Set up Codex Rust toolchain for Cargo smoke",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7,
+              "started_at": "2026-11-05T12:52:35Z",
+              "completed_at": "2026-11-05T12:52:49Z"
+            },
+            {
+              "name": "Install rusty_v8 Rust toolchain",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8,
+              "started_at": "2026-11-05T12:52:49Z",
+              "completed_at": "2026-11-05T12:53:02Z"
+            },
+            {
+              "name": "Write upstream submodule status",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9,
+              "started_at": "2026-11-05T12:53:02Z",
+              "completed_at": "2026-11-05T12:53:05Z"
+            },
+            {
+              "name": "Restore upstream source-build cache",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10,
+              "started_at": "2026-11-05T12:53:05Z",
+              "completed_at": "2026-11-05T12:53:05Z"
+            },
+            {
+              "name": "Install and start sccache",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11,
+              "started_at": "2026-11-05T12:53:05Z",
+              "completed_at": "2026-11-05T12:53:07Z"
+            },
+            {
+              "name": "Install Chromium clang for ARM64 MSVC cross build",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12,
+              "started_at": "2026-11-05T12:53:07Z",
+              "completed_at": "2026-11-05T12:53:17Z"
+            },
+            {
+              "name": "Build upstream rusty_v8 sandbox release pair",
+              "status": "completed",
+              "conclusion": "cancelled",
+              "number": 13,
+              "started_at": "2026-11-05T12:53:17Z",
+              "completed_at": "2026-11-05T14:50:33Z"
+            },
+            {
+              "name": "Stage upstream sandbox release pair",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 14,
+              "started_at": "2026-11-05T14:50:33Z",
+              "completed_at": "2026-11-05T14:50:33Z"
+            },
+            {
+              "name": "Smoke link staged artifact with Cargo",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 15,
+              "started_at": "2026-11-05T14:50:33Z",
+              "completed_at": "2026-11-05T14:50:33Z"
+            },
+            {
+              "name": "Upload staged artifacts",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 16,
+              "started_at": "2026-11-05T14:50:33Z",
+              "completed_at": "2026-11-05T14:50:33Z"
+            },
+            {
+              "name": "Check for a clean worktree",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 17,
+              "started_at": "2026-11-05T14:50:33Z",
+              "completed_at": "2026-11-05T14:50:33Z"
+            },
+            {
+              "name": "Post Restore upstream source-build cache",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 31,
+              "started_at": "2026-11-05T14:50:33Z",
+              "completed_at": "2026-11-05T14:50:33Z"
+            },
+            {
+              "name": "Post Set up Python",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 32,
+              "started_at": "2026-11-05T14:50:33Z",
+              "completed_at": "2026-11-05T14:50:33Z"
+            },
+            {
+              "name": "Post Check out upstream rusty_v8",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 33,
+              "started_at": "2026-11-05T14:50:33Z",
+              "completed_at": "2026-11-05T14:50:51Z"
+            },
+            {
+              "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 34,
+              "started_at": "2026-11-05T14:50:51Z",
+              "completed_at": "2026-11-05T14:50:55Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 35,
+              "started_at": "2026-11-05T14:50:55Z",
+              "completed_at": "2026-11-05T14:50:55Z"
+            }
+          ]
+        }
+      ]
+    },
+    "root_recomputed_actual_job_count": 59,
+    "root_recomputed_actual_job_states": {
+      "failure": 2,
+      "success": 40,
+      "skipped": 2,
+      "queued": 14,
+      "cancelled": 1
+    },
+    "limits": [
+      "The ROG derived projection and native file tails/views are not the full29-original archive; its70-part transfer is pending separately.",
+      "The wrapper passed in project JUnit and both child/parent original stdout; the complete owning and direct-parallel gates failed.",
+      "C0 final source is e78; C1 did not execute because actual available memory was below the fixed32GiB prerequisite.",
+      "V8 ARM cancellation reason/actor is not established by the original log; downstream product smoke/upload did not execute.",
+      "B11 PR4884 is Draft and native Windows outcome remains pending; old B16 driver remains START_OUTCOME_UNKNOWN.",
+      "The v1 archive contains a line-ending-normalized ARM log export and is historical, not an exact native-log-byte claim. Its original identity is retained explicitly; cancellation facts are unchanged."
+    ],
+    "correction": {
+      "old_v1_archive": {
+        "name": "original-outcomes.tar.gz",
+        "bytes": 338203,
+        "sha256": "54ce92f95d29afdbe589d8cca63c6d0d0f16894b19e896eec71959dc159326a9",
+        "computed_git_blob": "a8386447a83b5de8a0fe89f8f18dea90cb54aeef"
+      },
+      "old_LF_export": {
+        "bytes": 157330,
+        "sha256": "a8c7d0afe0df61a8b6199e9eaccc2c6e40f530ed823010c561961acba650e313",
+        "computed_git_blob": "c4e00e6db917ba7d942dc7e792d4a5008ef6d8e5"
+      },
+      "corrected_API_bytes": {
+        "bytes": 159107,
+        "sha256": "36ed4e52e87b3fe4612104898097e7ff937bd0a6008b90bcd5bc7cd182b25ade",
+        "computed_git_blob": "c2ed0bf58d1e3b9cba521555eb6975e84b408a95"
+      },
+      "API_envelope": {
+        "bytes": 169061,
+        "sha256": "427a21d599b1cabd8b3acba8f3f6033c0f09c340f5f3e3249fc9825a63366401",
+        "computed_git_blob": "4c7e26a9ddbcc0d22c19506e54be3d82b6bb9025"
+      },
+      "CRLF_count": 1777,
+      "exact_CRLF_to_LF_reproduces_old_export": true,
+      "old_v1_preserved_as_history": true,
+      "new_observations_or_tests_added": false
+    }
+  },
+  "file_count": 24,
+  "total_original_bytes": 5361456,
+  "files": [
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/native-first-start/preparation-final-source-guard.json",
+      "bytes": 2137,
+      "sha256": "afa8f019661e419b35fd9e82f30d67b2f52ec447916108775c7e29da8b431d07",
+      "computed_git_blob": "1e04d8914a369dfa0b3e044d9ca83fd446f4b0e3"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/ai395-cold-prepare-v1/native-first-start/preparation-terminal.json",
+      "bytes": 27472,
+      "sha256": "cc5e7788d64efbf31fc2875b676419a4d4a56e3391fb714b32f600269f5dfb97",
+      "computed_git_blob": "a1d37955c77eef8dded34b4d4ffe2519219eb359"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/native-actions/project-junit-failure-view-001.original.json",
+      "bytes": 22604,
+      "sha256": "aaf59b82d5a5f32474c32dbecd3e2805062b3a3413fa8f79df0fdc77080608a9",
+      "computed_git_blob": "210967b930f2931e29f39f016dde6ca1360c38ba"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/native-actions/project-nonpass-status-pair-001.original.json",
+      "bytes": 3903,
+      "sha256": "8d0328c6f25635a865cbecaa87b3ea122cde9497665e240ef73b70aea57887c5",
+      "computed_git_blob": "49dfa4fcf411a451868a4e8791bbff459726b6f8"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/core-same-process-parallel-status.json",
+      "bytes": 1194,
+      "sha256": "64fa9f873d59c9bd7351830ee939215e49cd193f4054fc03b38aec4a3e6abfb7",
+      "computed_git_blob": "5c51896afdbeaad2f22afd0b03bc1a82a13a6fce"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/core-same-process-parallel.stderr",
+      "bytes": 3197,
+      "sha256": "952bb0c28a972829fb86ab717a3bbd77b64a1334a7a4ea0deb2c0ca39408cb8d",
+      "computed_git_blob": "57f6f5ab1056e5a157671dc72570b140af5c037f"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/core-same-process-parallel.tail-16384.stdout",
+      "bytes": 16384,
+      "sha256": "c77acdc6950e209ad04d829945627e31d0ac4cf641de511390ffef4632f44c65",
+      "computed_git_blob": "d0809366a3ffd16c3d400c840f4ff4fbd01551d7"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/export-manifest.json",
+      "bytes": 53278,
+      "sha256": "8a30fd1939e75a997ae3d8cb305673ef2ed6f233952855dd498937839aa84b29",
+      "computed_git_blob": "4fa8c17b473bd78d1caf04c0c9f4ca4d57c68ea1"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/export-plan.json",
+      "bytes": 822,
+      "sha256": "a90c1b1a2ea1cfe24462b3a4a1d57a2b2c8b9a4c22d8bec7c34e63493471a1d6",
+      "computed_git_blob": "5bc16e3887af7ef020ad9b4b840311db9c3ce640"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/export-process-start.json",
+      "bytes": 10820,
+      "sha256": "70f3b861535525e449fefc615212eabb35133e22165602ec867f0a966fe8078c",
+      "computed_git_blob": "0622b0f94a20c50c86c8f6185b4df94fdb2b3587"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/export-process-start.original-response.json",
+      "bytes": 11964,
+      "sha256": "b782b31cec8ea170edf3772683b6f49a149c32f9d6e6bb4f5dbb6a7180d6c588",
+      "computed_git_blob": "cd20ec3e0c28f602af0354d523f61685793f8d44"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/export-terminal.json",
+      "bytes": 994,
+      "sha256": "12857cc855dfeb0db2916128bbfe9e3f953b69a9fb99b780c77395e52044d838",
+      "computed_git_blob": "0ef9edbb9712dcc762a11d332265183fcc5939c7"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/export_originals_v1.py",
+      "bytes": 10299,
+      "sha256": "73a07789f5e12854de00787cfdb7f92aef6fc80cfa69a4788354d31e543b1ba9",
+      "computed_git_blob": "3aff967fa38b60d177caa9c03351ff8e3037c496"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/nonpass-projection.json",
+      "bytes": 145424,
+      "sha256": "9931149a3239406315e2b51e05b3a8c04f48fd9f97c37cbeb9d4145508e71cfb",
+      "computed_git_blob": "99dd6edb6401a82f9f7664c2a64e6aac5155d403"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/original-owning-projects-status.json",
+      "bytes": 1247,
+      "sha256": "d883fe7676b050bfcadded0b3a75db506ff9354058ac884382718dd2d971cdca",
+      "computed_git_blob": "8faa4dea902b6c31d41ada7c46cd66b5f6b06692"
+    },
+    {
+      "member": "original/ci-audit/core-wait-span-20261105/project-nonpass-priority-v1/original-owning-projects.tail-65536.stdout",
+      "bytes": 65536,
+      "sha256": "e865c017bbc2bbbffc2368282a189ff7a67fab08a934900b7237615d2cec3298",
+      "computed_git_blob": "e504a5cf03182ac9b56ec2e71b1e40eab05da9d3"
+    },
+    {
+      "member": "original/hepta-audit-fifth/inputs/b11-diagnostic-draft-publication-v1.json",
+      "bytes": 55947,
+      "sha256": "9a513f55b7183fb997970ec3960cb4c435369dca333d38ec4ff45533ccaeed71",
+      "computed_git_blob": "962a23b6d5e6b439fc2911de6ed119df9248c0d2"
+    },
+    {
+      "member": "original/research-audit/published-5b633-ci-20261105/snapshot-0060/jobs-api-envelope.json",
+      "bytes": 1149952,
+      "sha256": "d19a5dc4c82cd21365aff510874c7e928301c4b6bd7e64c9546a2c4315f3b6c4",
+      "computed_git_blob": "2b4c651528167ba62bed2b99ff24e487a89d954d"
+    },
+    {
+      "member": "original/research-audit/published-5b633-ci-20261105/snapshot-0061/jobs-api-envelope.json",
+      "bytes": 1147147,
+      "sha256": "8c674c55f1097baca6353255e2f3d92541f228114ee95f053e2f1677fc940815",
+      "computed_git_blob": "162aa8ecd1b9314cb7f118797449d0f6921b1dff"
+    },
+    {
+      "member": "original/research-audit/published-5b633-ci-20261105/snapshot-0062/jobs-api-envelope.json",
+      "bytes": 1147147,
+      "sha256": "9ed8750bdfc205237803b2f602d127daba60c12c40b61137e3f3891e0cb830f0",
+      "computed_git_blob": "17451a827b67b870d5d45bb25684bdbfc16f9440"
+    },
+    {
+      "member": "original/research-audit/published-5b633-ci-20261105/snapshot-0063/jobs-api-envelope.json",
+      "bytes": 1154897,
+      "sha256": "050a20f4837dac2e18e7147d69b53e0108039aa47f473cc21477a46046f42e97",
+      "computed_git_blob": "cfd136b5d9a3e7727b653c0e19eded0563500509"
+    },
+    {
+      "member": "original/research-audit/published-5b633-ci-20261105/terminal/v8-windows-arm-sandbox-127251874931/job-log-api-envelope.json",
+      "bytes": 169061,
+      "sha256": "427a21d599b1cabd8b3acba8f3f6033c0f09c340f5f3e3249fc9825a63366401",
+      "computed_git_blob": "4c7e26a9ddbcc0d22c19506e54be3d82b6bb9025"
+    },
+    {
+      "member": "original/research-audit/published-5b633-ci-20261105/terminal/v8-windows-arm-sandbox-127251874931/job.log",
+      "bytes": 159107,
+      "sha256": "36ed4e52e87b3fe4612104898097e7ff937bd0a6008b90bcd5bc7cd182b25ade",
+      "computed_git_blob": "c2ed0bf58d1e3b9cba521555eb6975e84b408a95"
+    },
+    {
+      "member": "original/research-audit/published-5b633-ci-20261105/terminal/v8-windows-arm-sandbox-127251874931/raw-export-correction.json",
+      "bytes": 923,
+      "sha256": "b944eb21f49d72f0338be890edfb040a67a13d231a595a6727e33fc90b981f6b",
+      "computed_git_blob": "3134567c9371d0aeb36c782e795c68b2d76550be"
+    }
+  ]
+}

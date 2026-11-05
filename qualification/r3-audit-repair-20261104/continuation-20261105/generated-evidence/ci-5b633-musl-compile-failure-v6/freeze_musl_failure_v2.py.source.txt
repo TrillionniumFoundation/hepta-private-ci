@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+"""Freeze the original 5b musl compile failure, without executing project code."""
+import base64
+from datetime import datetime, timezone
+import gzip
+import hashlib
+import io
+import json
+from pathlib import Path
+import tarfile
+
+ROOT = Path(__file__).resolve().parent
+HERE = ROOT / 'terminal/musl-product-127149584475'
+OUT = ROOT / 'immutable-v6-musl-compile-failure-v2'
+OUT.mkdir(exist_ok=False)
+AUTHOR = ROOT.parent.parent / 'architecture-audit/musl-parent-procfs-type-20261105'
+
+
+def identity(raw):
+    return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
+            'computed_git_blob': hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest()}
+
+
+def save(name, value):
+    (OUT / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
+
+
+receipt = json.loads((HERE / 'members/receipt.json').read_bytes())
+source = json.loads((HERE / 'members/source.json').read_bytes())
+assert receipt['source'] == '9063c52a063b6f26c48e9418f6d8dbd14e9e06ff'
+assert receipt['tree'] == 'b26598d0d97d8d51e723bb5582137315f2174d35'
+assert receipt['rust_action_graph_qualified'] and receipt['source_unchanged']
+assert not receipt['qualified'] and receipt['terminal_product_sha256'] is None
+build = next(row for row in receipt['commands'] if row['name'] == 'build')
+assert build['exit_code'] == 1 and not build['timed_out'] and build['attempt'] == 1
+assert all(row['exit_code'] == 0 for row in receipt['commands'] if row['name'] != 'build')
+stderr = (HERE / 'members/build.stderr').read_bytes()
+start = stderr.rfind(b'\nERROR:', 0, stderr.index(b'error[E0308]')) + 1
+end = stderr.index(b'\n', stderr.index(b'error: aborting due to 2 previous errors')) + 1
+failure = stderr[start:end]
+assert b'expected `u64`, found `i64`' in failure and b'error[E0277]' in failure
+(OUT / 'original-compiler-failure.log.txt').write_bytes(failure)
+pre = (AUTHOR / 'preimage-parent_lifecycle.rs').read_bytes()
+post = (AUTHOR / 'postimage-parent_lifecycle.rs').read_bytes()
+old = b'filesystem.f_type != libc::PROC_SUPER_MAGIC'
+new = b'i128::from(filesystem.f_type) != i128::from(libc::PROC_SUPER_MAGIC)'
+assert pre.count(old) == post.count(new) == 1 and pre.replace(old, new) == post
+assert identity(pre)['computed_git_blob'] == '8f500e03938718820360ce2ad41f2286eb9071bd'
+assert identity(post)['computed_git_blob'] == 'fe42212316589999fdfc0b1877c975bdafa4a8e7'
+primary = []
+for path in sorted((AUTHOR / 'primary').glob('*.rs')):
+    primary.append({'path': str(path.relative_to(AUTHOR)), **identity(path.read_bytes())})
+save('original-failure-review.json', {
+    'schema': 'hepta-musl-original-compile-failure-v1',
+    'reviewed_at': datetime.now(timezone.utc).isoformat(),
+    'run_id': 41999115065, 'job_id': 127149584475, 'run_attempt': 1,
+    'api_head': '5b6331250ff459033bd44d1a95daec70131277cc',
+    'checkout': receipt['source'], 'tree': receipt['tree'],
+    'source_unchanged': receipt['source_unchanged'], 'source_original': source,
+    'job_log': identity((HERE / 'job.log').read_bytes()),
+    'artifact': json.loads((HERE / 'artifact-verification.json').read_bytes()),
+    'failure_class': 'ACTUAL_MUSL_RUST_COMPILE_TYPE_ERROR',
+    'failed_target': '//codex-rs/linux-sandbox:linux-sandbox',
+    'product_target': receipt['target'], 'build_command': build,
+    'resolved_target_platform': receipt['resolved_target_platform'],
+    'rust_target_actions': receipt['rust_target_actions'],
+    'prebuild_commands': receipt['commands'][:-1],
+    'compiler_failure': {'source_path': 'codex-rs/linux-sandbox/src/parent_lifecycle.rs',
+        'source_line': 122, 'codes': ['E0308', 'E0277'],
+        'message': 'statfs.f_type is u64 on this musl target; PROC_SUPER_MAGIC is i64.',
+        'original_member': 'members/build.stderr', 'member_identity': identity(stderr),
+        'byte_start_inclusive': start, 'byte_end_exclusive': end,
+        'line_start_1based': stderr[:start].count(b'\n') + 1,
+        'line_end_1based': stderr[:end].count(b'\n'), 'slice_identity': identity(failure)},
+    'cache_scope': '1691 remote cache hits, 1203 internal and 4330 remote processes reported; no fresh-cache claim.',
+    'product_binary_produced': False, 'elf_qualification_reached': False,
+    'version_help_process_smokes_reached': False,
+    'independent_static_candidate_review': {
+        'status': 'STATIC_ACCEPTED_NOT_COMPILED_OR_EXECUTED',
+        'preimage': identity(pre), 'postimage': identity(post),
+        'patch': identity((AUTHOR / 'candidate.patch').read_bytes()),
+        'only_change': 'Convert both operands losslessly through i128::from before the same inequality.',
+        'all_other_source_bytes_equal': True,
+        'primary_sources_read': primary,
+        'primary_contracts': [
+            'Pinned libc musl statfs.f_type is c_ulong; GNU x86_64 __fsword_t is i64.',
+            'Pinned libc PROC_SUPER_MAGIC is c_long for this Linux target.',
+            'Rust 1.95 core conversion source provides From<i64> and From<u64> for i128.'
+        ],
+        'preserved': ['Same procfs equality requirement', 'same retained FD and inode checks',
+                      'same parent-liveness behavior', 'all original budgets and controls'],
+        'gate': 'A future exact-source original musl workflow must compile the existing product target and verify its actual ELF and --version/--help processes.'
+    },
+    'limitations': ['No workflow retry, dispatch or source change by this reviewer.',
+                    'This is not the earlier resolver failure or the earlier GNU-symbol linker failure.',
+                    'No musl product or full behavioral qualification was obtained.']
+})
+files = [Path(__file__), *sorted(path for path in HERE.rglob('*') if path.is_file())]
+buffer = io.BytesIO()
+rows = []
+with tarfile.open(fileobj=buffer, mode='w') as archive:
+    for file in files:
+        raw = file.read_bytes()
+        name = str(file.relative_to(ROOT))
+        rows.append({'member': name, **identity(raw)})
+        entry = tarfile.TarInfo(name)
+        entry.size, entry.mode, entry.mtime = len(raw), 0o644, 0
+        archive.addfile(entry, io.BytesIO(raw))
+compressed = gzip.compress(buffer.getvalue(), mtime=0)
+assert gzip.decompress(compressed) == buffer.getvalue()
+save('original-files-manifest.json', {'schema': 'hepta-immutable-original-file-index-v1',
+    'file_count': len(rows), 'total_original_bytes': sum(row['bytes'] for row in rows), 'files': rows})
+parts = []
+for index, offset in enumerate(range(0, len(compressed), 360448)):
+    chunk = compressed[offset:offset + 360448]
+    name = f'original-ci.tar.gz.part{index:03d}.b64.txt'
+    encoded = base64.b64encode(chunk) + b'\n'
+    (OUT / name).write_bytes(encoded)
+    parts.append({'index': index, 'name': name, 'compressed_offset': offset,
+                  'file': identity(encoded), 'decoded_chunk': identity(chunk)})
+save('transport-manifest.json', {'schema': 'hepta-immutable-ci-transport-v1',
+    'archive': {'name': 'original-ci.tar.gz', **identity(compressed)},
+    'original_files_manifest': {'name': 'original-files-manifest.json', **identity((OUT / 'original-files-manifest.json').read_bytes())},
+    'part_count': len(parts), 'parts': parts})
+(OUT / 'verify_archive.py').write_bytes((ROOT / 'immutable-v5-snapshot0030/verify_archive.py').read_bytes())
+print(json.dumps({'files': len(rows), 'original_bytes': sum(row['bytes'] for row in rows),
+                  'parts': len(parts), 'archive': identity(compressed)}))

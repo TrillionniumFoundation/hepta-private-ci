@@ -1,0 +1,182 @@
+#!/usr/bin/env python3
+"""Project exact names from already downloaded CI originals, without running tests."""
+from collections import Counter
+from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+import re
+import xml.etree.ElementTree as ET
+
+ROOT = Path(__file__).resolve().parent
+CATALOG_PATH = ROOT.parent / 'next-head-ci-plan-20261105/named-exit-cases.json'
+CATALOG = json.loads(CATALOG_PATH.read_bytes())['cases']
+HEAD = '5b6331250ff459033bd44d1a95daec70131277cc'
+MERGE = '9063c52a063b6f26c48e9418f6d8dbd14e9e06ff'
+TREE = 'b26598d0d97d8d51e723bb5582137315f2174d35'
+ANSI = re.compile(r'\x1b\[[0-9;]*[A-Za-z]')
+
+
+def identity(raw):
+    return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
+            'computed_git_blob': hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest()}
+
+
+def normalized_lines(raw):
+    for number, line in enumerate(raw.decode('utf-8').splitlines(), 1):
+        clean = ANSI.sub('', line)
+        clean = re.sub(r'^\d{4}-\d{2}-\d{2}T\S+ ', '', clean)
+        yield number, clean
+
+
+def raw_line_evidence(raw, pattern):
+    regex = re.compile(pattern)
+    return [{'line_1based': number, 'text': line} for number, line in normalized_lines(raw) if regex.search(line)]
+
+
+def libtest_rows(raw):
+    rows = []
+    for number, line in normalized_lines(raw):
+        match = re.fullmatch(r'test ([A-Za-z0-9_:]+)( - should panic)? \.\.\. (ok|FAILED|ignored(?:,.*)?)', line)
+        if match:
+            rows.append({'test': match[1], 'status': match[3], 'should_panic': bool(match[2]), 'line_1based': number})
+    return rows
+
+
+def catalog_matches(rows):
+    found = {row['test'] for row in rows if row.get('status') in ('ok', 'PASS')}
+    keys = ('blocker_id', 'binary', 'test', 'bazel_target', 'separate_wine_target', 'windows_cfg_scope', 'platforms_to_observe', 'original_budget_policy', 'case_origin')
+    return [{**{key: item.get(key) for key in keys if key in item}, 'observed_status': 'PASS'} for item in CATALOG if item['test'] in found]
+
+
+snapshot_path = ROOT / 'snapshot-0045/jobs-api-envelope.json'
+snapshot = json.loads(snapshot_path.read_bytes())
+job_records = [r for r in snapshot['records'] if r['label'].startswith('jobs-')]
+
+
+def base_review(directory, job_id):
+    root = ROOT / 'terminal' / directory
+    raw = (root / 'job.log').read_bytes()
+    matches = [(r, j) for r in job_records for j in json.loads(r['response']['structuredContent']['content'])['jobs'] if j['id'] == job_id]
+    assert len(matches) == 1
+    record, job = matches[0]
+    assert job['status'] == 'completed' and job['conclusion'] == 'success'
+    api = {'source_snapshot': '0045', 'source_snapshot_identity': identity(snapshot_path.read_bytes()), 'record': record}
+    (root / 'terminal-job-api-envelope.json').write_text(json.dumps(api, ensure_ascii=False, indent=2) + '\n')
+    return root, raw, {'schema': 'hepta-original-success-named-review-v1',
+        'reviewed_at': datetime.now(timezone.utc).isoformat(),
+        'api_head': HEAD, 'run_id': job['run_id'], 'job_id': job_id, 'run_attempt': 1,
+        'terminal_job': job, 'job_log': identity(raw),
+        'catalog_identity': identity(CATALOG_PATH.read_bytes()),
+        'original_raw_preserved': True, 'reviewer_executed_tests': False,
+        'global_blocker_status_changed': False,
+        'scope_limits': ['A named PASS is scoped to this actual source/platform/command.',
+                         'No independent operator/Root/issuer/production acceptance is inferred.',
+                         'No old-head result is transferred to this head.']}
+
+
+def finish(root, review):
+    path = root / 'original-case-review.json'
+    assert not path.exists(), path
+    path.write_text(json.dumps(review, ensure_ascii=False, indent=2) + '\n')
+    print(json.dumps({'directory': root.name, 'review': identity(path.read_bytes()),
+                      'named_pass_occurrences': review.get('named_pass_occurrences'),
+                      'original_142_match_count': len(review.get('original_142_matches', []))}))
+
+
+for lane, job_id, artifact_id, checkout in [
+    ('source', 127149583164, 13415207261, HEAD),
+    ('merge', 127149583430, 13415148242, MERGE),
+]:
+    root, raw, review = base_review(f'windows-gitqueue-{lane}-{job_id}', job_id)
+    members = root / f'members-{artifact_id}' / 'bazel-process-evidence'
+    source = json.loads((members / 'source.json').read_bytes())
+    retained = json.loads((members / 'retained.json').read_bytes())
+    assert source['head'] == checkout and source['tree'] == TREE
+    cases = []
+    targets = []
+    for label, basename, distinct, occurrences in [
+        ('//codex-rs/git-utils:git-utils-unit-tests', 'git-utils-unit-tests', 35, 36),
+        ('//codex-rs/ext/queue:queue-queue_service-test', 'queue-queue_service-test', 36, 36),
+    ]:
+        log = (members / f'{basename}-test.log').read_bytes()
+        rows = libtest_rows(log)
+        assert len(rows) == occurrences and len({r['test'] for r in rows}) == distinct
+        assert all(r['status'] == 'ok' for r in rows)
+        xml_path = members / f'{basename}-test.xml'
+        xml = ET.fromstring(xml_path.read_bytes())
+        xml_cases = list(xml.iter('testcase'))
+        assert len(xml_cases) == 1 and not list(xml.iter('failure')) and not list(xml.iter('error'))
+        targets.append({'target': label, 'log_identity': identity(log),
+            'xml_identity': identity(xml_path.read_bytes()), 'xml_scope': 'one Bazel wrapper testcase, not the named Rust inventory',
+            'named_pass_occurrences': len(rows), 'distinct_names': distinct, 'cases': rows,
+            'summaries': raw_line_evidence(log, r'^running |^test result:')})
+        cases.extend(rows)
+    review.update({'checkout': checkout, 'tree': TREE, 'source_original': source,
+        'retained_original': retained, 'targets': targets,
+        'named_pass_occurrences': 72, 'distinct_names': 71,
+        'nested_execution': {'test': 'info::tests::git_metadata_commands_do_not_inherit_stdin',
+            'additional_execution': 1, 'retry': False, 'child_filtered_out': 34},
+        'original_142_matches': catalog_matches(cases),
+        'commands_and_target_results': raw_line_evidence(raw, r'run-bazel-ci\.sh|--nocache_test_results|flaky_test_attempts|^//codex-rs/(git-utils|ext/queue):|^Executed|^INFO: .*processes'),
+        'cache_and_retry_scope': 'Original command disables cached test results. Build action cache hits are separate. No explicit flaky_test_attempts option is asserted; observed target statuses are PASS, with no FLAKY or retry member. The nested Git-utils child is not a retry.',
+        'workingtree_lock_encoding': 'Original Windows hashes are retained; separate exact LF-to-CRLF review 75a12d82d7a830ede3a294a7649df1fb7d2d3f1f explains both locks. Git tree identity is not used to claim LF working bytes.',
+        'remaining_B13_gate': 'The ninth Agentd cognitive-write qualification target was not selected by these two targets.'})
+    assert len(review['original_142_matches']) == 8
+    assert {x['blocker_id'] for x in review['original_142_matches']} == {'B13'}
+    finish(root, review)
+
+
+for directory, job_id, expected in [
+    ('memory-linux-127149582083', 127149582083, 2),
+    ('windows-memory-127149581896', 127149581896, 2),
+    ('supervisor-linux-127149583259', 127149583259, 17),
+    ('windows-supervisor-127149582849', 127149582849, 17),
+]:
+    root, raw, review = base_review(directory, job_id)
+    xmls = sorted(root.glob('members-*/*.xml'))
+    rows, xml_evidence = [], []
+    for path in xmls:
+        tree = ET.fromstring(path.read_bytes())
+        assert not list(tree.iter('failure')) and not list(tree.iter('error')) and not list(tree.iter('skipped'))
+        found = [{'test': node.attrib['name'], 'classname': node.attrib.get('classname'),
+                  'status': 'PASS', 'time': node.attrib.get('time'), 'attributes': node.attrib}
+                 for node in tree.iter('testcase')]
+        rows.extend(found)
+        xml_evidence.append({'member': str(path.relative_to(root)), 'identity': identity(path.read_bytes()),
+                             'tests': len(found), 'root_attributes': tree.attrib})
+    assert len(rows) == expected and len({(r['classname'], r['test']) for r in rows}) == expected
+    assert f'HEAD is now at {HEAD[:10]}' in raw.decode() or f'HEAD is now at {HEAD[:7]}' in raw.decode()
+    other = []
+    for path in sorted(root.glob('members-*/*')):
+        if path.name in ('source.txt', 'native-result.json'):
+            other.append({'member': str(path.relative_to(root)), 'identity': identity(path.read_bytes()), 'text': path.read_text()})
+    review.update({'checkout': HEAD, 'tree': TREE,
+        'named_pass_occurrences': expected, 'cases': rows, 'junit_originals': xml_evidence,
+        'other_original_source_and_scope_records': other,
+        'original_142_matches': catalog_matches(rows),
+        'commands_and_summaries': raw_line_evidence(raw, r'just test|--lib --profile default|--retries 0|Summary|cargo \+1\.95\.0 fmt'),
+        'retry_policy': 'Original commands explicitly use --retries 0.',
+        'filter_and_early_return_limits': 'JUnit has no skipped node among selected cases. Original console Summary filtering counts are preserved separately; no complete unselected inventory or universal absence of body-level early return is inferred.'})
+    finish(root, review)
+
+
+for kind, job_id, sandbox in [('release', 127251874956, False), ('sandbox', 127251875130, True)]:
+    root, raw, review = base_review(f'v8-intel-{kind}-{job_id}', job_id)
+    rows = libtest_rows(raw)
+    assert len(rows) == len({r['test'] for r in rows}) == 6 and all(r['status'] == 'ok' for r in rows)
+    text = raw.decode()
+    assert f'HEAD is now at {MERGE[:7]}' in text
+    assert 'cargo_args=(test -p codex-v8-poc --no-default-features)' in text
+    assert f'SANDBOX: {str(sandbox).lower()}' in text
+    review.update({'checkout': MERGE, 'tree': TREE, 'platform': 'x86_64-apple-darwin',
+        'sandbox_variant': sandbox, 'named_pass_occurrences': 6, 'cases': rows,
+        'original_142_matches': catalog_matches(rows),
+        'command_scope': 'Pinned Cargo 1.95.0 tests codex-v8-poc using the staged matching archive and binding, --no-default-features, and --features sandbox only when SANDBOX=true.',
+        'smoke_command_and_result_lines': raw_line_evidence(raw, r'cargo_args|RUSTY_V8_ARCHIVE=|RUSTY_V8_SRC_BINDING_PATH=|CARGO_1_95:|SANDBOX:|test result:'),
+        'actual_native_smoke_executed': True,
+        'large_release_zip_downloaded_by_reviewer': False,
+        'limitations': ['Six original staged-library smoke tests passed for this one native target/variant.',
+                        'Large uploaded release ZIP bytes were not independently downloaded or qualified here.',
+                        'No full CodeMode, other platform, product musl, or external acceptance is inferred.']})
+    finish(root, review)

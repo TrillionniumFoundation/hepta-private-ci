@@ -1,0 +1,893 @@
+{
+  "schema": "hepta-original-success-named-review-v1",
+  "reviewed_at": "2026-11-05T13:12:19.422804+00:00",
+  "api_head": "5b6331250ff459033bd44d1a95daec70131277cc",
+  "run_id": 41999114838,
+  "job_id": 127149583430,
+  "run_attempt": 1,
+  "terminal_job": {
+    "id": 127149583430,
+    "run_id": 41999114838,
+    "workflow_name": "Native Windows Bazel process environment",
+    "head_branch": "fix/r3-original-product-contracts-20261104",
+    "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114838",
+    "run_attempt": 1,
+    "node_id": "CR_kwDOTrgxoM8AAAAdmrSsRg",
+    "head_sha": "5b6331250ff459033bd44d1a95daec70131277cc",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127149583430",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41999114838/job/127149583430",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-05T09:02:28Z",
+    "started_at": "2026-11-05T12:42:27Z",
+    "completed_at": "2026-11-05T12:48:44Z",
+    "name": "Original Bazel Git and queue process controls (base-merge)",
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-11-05T12:42:28Z",
+        "completed_at": "2026-11-05T12:42:28Z"
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-11-05T12:42:28Z",
+        "completed_at": "2026-11-05T12:42:44Z"
+      },
+      {
+        "name": "Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-11-05T12:42:44Z",
+        "completed_at": "2026-11-05T12:43:03Z"
+      },
+      {
+        "name": "Record unchanged source and original runner configuration",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-11-05T12:43:03Z",
+        "completed_at": "2026-11-05T12:43:05Z"
+      },
+      {
+        "name": "Run original Bazel process suites without cached test results",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-11-05T12:43:05Z",
+        "completed_at": "2026-11-05T12:48:38Z"
+      },
+      {
+        "name": "Retain the actual test logs and unchanged-input checks",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-11-05T12:48:38Z",
+        "completed_at": "2026-11-05T12:48:38Z"
+      },
+      {
+        "name": "Upload original process evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-11-05T12:48:38Z",
+        "completed_at": "2026-11-05T12:48:40Z"
+      },
+      {
+        "name": "Check for a clean worktree",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-11-05T12:48:40Z",
+        "completed_at": "2026-11-05T12:48:40Z"
+      },
+      {
+        "name": "Post Prepare Bazel CI",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 15,
+        "started_at": "2026-11-05T12:48:40Z",
+        "completed_at": "2026-11-05T12:48:40Z"
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-11-05T12:48:40Z",
+        "completed_at": "2026-11-05T12:48:43Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-11-05T12:48:43Z",
+        "completed_at": "2026-11-05T12:48:43Z"
+      }
+    ],
+    "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127149583430",
+    "labels": [
+      "windows-latest"
+    ],
+    "runner_id": 1000000848,
+    "runner_name": "GitHub Actions 1000000848",
+    "runner_group_id": 0,
+    "runner_group_name": "GitHub Actions"
+  },
+  "job_log": {
+    "bytes": 316876,
+    "sha256": "855e60e815f9c79eb0898691cf22ae9df130f68e3d721f662fc1bd68c7a304c2",
+    "computed_git_blob": "0313265e208996a459eeae94c112b6afcf8d9e03"
+  },
+  "catalog_identity": {
+    "bytes": 180651,
+    "sha256": "16df332bed13d79c0e2f0294d65218a0f83aaa1dd926c0694dfb1363b3b83752",
+    "computed_git_blob": "5ce46bbcb2f3979eb3a320ecf3c3d065000d9645"
+  },
+  "original_raw_preserved": true,
+  "reviewer_executed_tests": false,
+  "global_blocker_status_changed": false,
+  "scope_limits": [
+    "A named PASS is scoped to this actual source/platform/command.",
+    "No independent operator/Root/issuer/production acceptance is inferred.",
+    "No old-head result is transferred to this head."
+  ],
+  "checkout": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+  "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+  "source_original": {
+    "head": "9063c52a063b6f26c48e9418f6d8dbd14e9e06ff",
+    "tree": "b26598d0d97d8d51e723bb5582137315f2174d35",
+    "run_id": "41999114838",
+    "run_attempt": "1",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "cpu_count": 4,
+    "input_git_objects": "100644 blob 3d5877b283b887091af507f3672003f84c500687\t.bazelrc\n100644 blob 1904db189003cb0b559f71958518e33a45fb6bb7\tMODULE.bazel.lock\n100644 blob 71fc8fa78b5afa076835b29790a5e6b0bd772558\tcodex-rs/Cargo.lock\n100644 blob ece6922f7b389aa7b23336c34567955cf2755a89\tcodex-rs/ext/queue/BUILD.bazel\n100644 blob 13afd7f2c536c5622fc7f8cc3fe68c0cc1a59cc1\tcodex-rs/ext/queue/tests/queue_service.rs\n100644 blob 346fd3f8f4c6885b7fa1b688bd192531945f39d0\tcodex-rs/git-utils/BUILD.bazel\n100644 blob 3ce0431434d0c0e4bbde65eb68bce27cc572d9c6\tcodex-rs/git-utils/src/git_process.rs\n100644 blob 5cb1aab4e3f4727a59bd662fafab0b5ffb430a97\tcodex-rs/git-utils/src/git_process_tests.rs\n100644 blob b06035f72d227b4069da677e8104617ae5616283\tcodex-rs/utils/pty/src/win/job.rs\n100644 blob 6f588ec3057fddfea35170e28e74036162ce6a23\tdefs.bzl\n100644 blob fa18c301dd22ca9023ba2f59801a8119dfbf8a69\tworkspace_root_test_launcher.bat.tpl\n",
+    "inputs": {
+      ".bazelrc": "0a5924ef90c0df166fb23744c650e1721106a7af0717c4f693f814208657c822",
+      "defs.bzl": "22eaf0e2f909b007faf90f2b1700a9b3175106d59889cb3dfc65191bf71fb50e",
+      "workspace_root_test_launcher.bat.tpl": "18b3945fd54e6a6e8e3413ec465289ad53ea252caff9fa9f9bb0b9cdc30962e5",
+      "MODULE.bazel.lock": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+      "codex-rs/Cargo.lock": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+      "codex-rs/git-utils/BUILD.bazel": "29d7aeb0cbd9f282eecca996fd40a75428bb75936964b58d73a4f7967f50f688",
+      "codex-rs/git-utils/src/git_process.rs": "da7c71b4a257113ab2a63ff3d84648640732934357d04f70e50cda344b4dbead",
+      "codex-rs/git-utils/src/git_process_tests.rs": "1a26298796193903a0ac38672de11bd124384d1ea396b19d326669911d4b4647",
+      "codex-rs/ext/queue/BUILD.bazel": "918ee78665bd24d8c6fef4d3aa68e9d4d15356b65120c96833be828656592d02",
+      "codex-rs/ext/queue/tests/queue_service.rs": "faa7808afad7ddb01cb413983e19ba84faed071cd4d8bff967f36d0e2a42f5ad",
+      "codex-rs/utils/pty/src/win/job.rs": "112293607f90d6614ffab4c5499a0bbeff743e3b1e4885739ccff41c47d48d43"
+    },
+    "environment": {
+      "TEMP": "D:/tmp",
+      "TMP": "D:/tmp",
+      "BAZEL_OUTPUT_BASE": "D:/o",
+      "BAZEL_OUTPUT_USER_ROOT": "D:/b",
+      "RUST_TEST_THREADS": null
+    },
+    "scope": [
+      "//codex-rs/git-utils:git-utils-unit-tests",
+      "//codex-rs/ext/queue:queue-queue_service-test"
+    ],
+    "diagnostic_only": false,
+    "pre_test_powershell_probe": false
+  },
+  "retained_original": {
+    "unchanged_inputs": true,
+    "logs": [
+      {
+        "source": "D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\testlogs\\codex-rs\\git-utils\\git-utils-unit-tests\\test.log",
+        "file": "git-utils-unit-tests-test.log",
+        "bytes": 4328,
+        "sha256": "e327ed6b989312315a34d53111d1b060fa40e8f52395c5c0431d275f68455da6"
+      },
+      {
+        "source": "D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\testlogs\\codex-rs\\git-utils\\git-utils-unit-tests\\test.xml",
+        "file": "git-utils-unit-tests-test.xml",
+        "bytes": 4665,
+        "sha256": "fb7665d2271b653d0f3b2b152d5888cde0afd32956d0b9dd3d99e3e5acc8cbab"
+      },
+      {
+        "source": "D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\testlogs\\codex-rs\\ext\\queue\\queue-queue_service-test\\test.log",
+        "file": "queue-queue_service-test-test.log",
+        "bytes": 2852,
+        "sha256": "e87c54c72e024173bf6c033174851bb71a63559276c6a890ac036c8502eb11f9"
+      },
+      {
+        "source": "D:\\o\\execroot\\_main\\bazel-out\\windows_x86_64_msvc-fastbuild\\testlogs\\codex-rs\\ext\\queue\\queue-queue_service-test\\test.xml",
+        "file": "queue-queue_service-test-test.xml",
+        "bytes": 3197,
+        "sha256": "107aad21678f658bdf8f581416a2b1938b159018649db3e10dd475fe0d908b56"
+      }
+    ]
+  },
+  "targets": [
+    {
+      "target": "//codex-rs/git-utils:git-utils-unit-tests",
+      "log_identity": {
+        "bytes": 4328,
+        "sha256": "e327ed6b989312315a34d53111d1b060fa40e8f52395c5c0431d275f68455da6",
+        "computed_git_blob": "6a765bdccbfccd485162cdf7063e45054d2d29a0"
+      },
+      "xml_identity": {
+        "bytes": 4665,
+        "sha256": "fb7665d2271b653d0f3b2b152d5888cde0afd32956d0b9dd3d99e3e5acc8cbab",
+        "computed_git_blob": "c94a6df5d0d529e2a80093ca1cc2f165ae7943d6"
+      },
+      "xml_scope": "one Bazel wrapper testcase, not the named Rust inventory",
+      "named_pass_occurrences": 36,
+      "distinct_names": 35,
+      "cases": [
+        {
+          "test": "apply::tests::apply_modify_conflict",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 5
+        },
+        {
+          "test": "apply::tests::extract_paths_handles_quoted_headers",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 6
+        },
+        {
+          "test": "apply::tests::extract_paths_ignores_dev_null_header",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 7
+        },
+        {
+          "test": "apply::tests::extract_paths_unescapes_c_style_in_quoted_headers",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 8
+        },
+        {
+          "test": "apply::tests::parse_output_unescapes_quoted_paths",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 9
+        },
+        {
+          "test": "apply::tests::apply_add_success",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 10
+        },
+        {
+          "test": "apply::tests::apply_modify_skipped_missing_index",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 11
+        },
+        {
+          "test": "baseline::tests::diff_reports_added_modified_and_deleted_files",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 12
+        },
+        {
+          "test": "baseline::tests::ensure_recovers_from_unborn_repository",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 13
+        },
+        {
+          "test": "baseline::tests::reset_creates_fresh_baseline",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 14
+        },
+        {
+          "test": "apply::tests::apply_then_revert_success",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 15
+        },
+        {
+          "test": "baseline::tests::status_scan_does_not_write_added_file_blobs",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 16
+        },
+        {
+          "test": "baseline::tests::reset_drops_previous_history",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 17
+        },
+        {
+          "test": "apply::tests::preflight_blocks_partial_changes",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 24
+        },
+        {
+          "test": "branch::tests::merge_base_returns_none_when_branch_missing",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 29
+        },
+        {
+          "test": "fsmonitor::tests::detects_supported_builtin_fsmonitor_values",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 30
+        },
+        {
+          "test": "apply::tests::revert_preflight_does_not_stage_index",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 52
+        },
+        {
+          "test": "branch::tests::merge_base_returns_shared_commit",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 59
+        },
+        {
+          "test": "info::tests::canonicalize_git_remote_url_handles_ghe_without_lowercasing_path",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 60
+        },
+        {
+          "test": "info::tests::canonicalize_git_remote_url_normalizes_github_variants",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 61
+        },
+        {
+          "test": "info::tests::canonicalize_git_remote_url_rejects_non_repository_values",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 62
+        },
+        {
+          "test": "info::tests::git_metadata_commands_do_not_inherit_stdin",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 65
+        },
+        {
+          "test": "info::tests::git_metadata_commands_do_not_inherit_stdin",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 69
+        },
+        {
+          "test": "branch::tests::merge_base_prefers_upstream_when_remote_ahead",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 70
+        },
+        {
+          "test": "status::tests::canceling_one_consumer_preserves_the_shared_status_scan",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 71
+        },
+        {
+          "test": "status::tests::canceling_the_last_consumer_allows_a_fresh_status_scan",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 72
+        },
+        {
+          "test": "status::tests::completed_status_requests_are_not_reused_while_a_consumer_retains_them",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 73
+        },
+        {
+          "test": "status::tests::completed_status_requests_start_fresh_scans_and_prune_expired_entries",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 74
+        },
+        {
+          "test": "info::tests::local_git_branches_excludes_detached_head_entry",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 75
+        },
+        {
+          "test": "status::tests::status_requests_do_not_reuse_a_shutdown_runtime_scan",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 76
+        },
+        {
+          "test": "status::tests::concurrent_status_requests_share_one_repository_scan",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 77
+        },
+        {
+          "test": "status::tests::status_requests_do_not_share_pending_scans_between_runtimes",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 78
+        },
+        {
+          "test": "status::tests::status_requests_do_not_share_different_repositories",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 79
+        },
+        {
+          "test": "status::tests::status_requests_from_sibling_directories_use_the_known_worktree_root",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 80
+        },
+        {
+          "test": "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 81
+        },
+        {
+          "test": "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 82
+        }
+      ],
+      "summaries": [
+        {
+          "line_1based": 4,
+          "text": "running 35 tests"
+        },
+        {
+          "line_1based": 64,
+          "text": "running 1 test"
+        },
+        {
+          "line_1based": 67,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 34 filtered out; finished in 0.22s"
+        },
+        {
+          "line_1based": 84,
+          "text": "test result: ok. 35 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.79s"
+        }
+      ]
+    },
+    {
+      "target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "log_identity": {
+        "bytes": 2852,
+        "sha256": "e87c54c72e024173bf6c033174851bb71a63559276c6a890ac036c8502eb11f9",
+        "computed_git_blob": "875b30a830eab67badfa927ba7f95f0cbeb92ed1"
+      },
+      "xml_identity": {
+        "bytes": 3197,
+        "sha256": "107aad21678f658bdf8f581416a2b1938b159018649db3e10dd475fe0d908b56",
+        "computed_git_blob": "ca1f679d6b439382ea34b92db5b2353ec8c40d9d"
+      },
+      "xml_scope": "one Bazel wrapper testcase, not the named Rust inventory",
+      "named_pass_occurrences": 36,
+      "distinct_names": 36,
+      "cases": [
+        {
+          "test": "capacity_rejection_preserves_the_admitted_client_identity",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 5
+        },
+        {
+          "test": "conflicting_queued_client_ids_fail_closed_before_core_submission",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 6
+        },
+        {
+          "test": "corrupt_rollout_blocks_queue_replay_and_preserves_the_item",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 7
+        },
+        {
+          "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 8
+        },
+        {
+          "test": "duplicate_queued_client_ids_dispatch_to_core_once",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 9
+        },
+        {
+          "test": "editing_reordering_and_deleting_preserve_queue_identity",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 10
+        },
+        {
+          "test": "exact_reconcile_conflicting_payload_fails_before_second_admission",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 11
+        },
+        {
+          "test": "exact_and_legacy_bindings_for_the_same_turn_join_once",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 12
+        },
+        {
+          "test": "exact_reconcile_is_one_idempotent_queue_admission",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 13
+        },
+        {
+          "test": "exact_reconcile_rejects_expected_digest_drift_without_a_row",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 14
+        },
+        {
+          "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 15
+        },
+        {
+          "test": "explicitly_started_rejected_queue_messages_remain_durable",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 16
+        },
+        {
+          "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 17
+        },
+        {
+          "test": "invalid_local_attachments_do_not_mutate_queue",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 18
+        },
+        {
+          "test": "interrupted_turns_pause_queued_messages_but_failed_turns_drain_them",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 19
+        },
+        {
+          "test": "invalid_head_is_skipped_and_a_live_user_turn_is_accepted",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 20
+        },
+        {
+          "test": "local_attachments_are_snapshotted_before_enqueue_and_update",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 21
+        },
+        {
+          "test": "non_user_input_cannot_enter_the_user_message_queue",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 22
+        },
+        {
+          "test": "legacy_client_id_without_payload_digest_is_readable_but_cannot_join",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 23
+        },
+        {
+          "test": "persisted_client_id_with_conflicting_payload_fails_closed_from_compressed_rollout",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 24
+        },
+        {
+          "test": "persisted_admission_reconciles_compressed_rollout",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 25
+        },
+        {
+          "test": "queued_input_and_unique_event_ids_round_trip",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 26
+        },
+        {
+          "test": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 27
+        },
+        {
+          "test": "queued_text_limit_is_enforced_across_all_input_items",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 28
+        },
+        {
+          "test": "queued_text_limit_counts_characters_and_ignores_non_text_items",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 29
+        },
+        {
+          "test": "raw_queue_store_enqueue_cannot_bypass_reconcile_reservation",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 30
+        },
+        {
+          "test": "registered_queue_lifecycle_starts_messages_in_fifo_order",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 31
+        },
+        {
+          "test": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 32
+        },
+        {
+          "test": "resumed_idle_dispatches_input_without_a_loaded_manager",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 33
+        },
+        {
+          "test": "same_client_id_bound_to_two_turns_is_ambiguous_and_fails_closed",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 34
+        },
+        {
+          "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 35
+        },
+        {
+          "test": "rejected_queue_messages_remain_durable_and_block_followups",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 36
+        },
+        {
+          "test": "starting_a_selected_item_while_active_leaves_it_queued",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 37
+        },
+        {
+          "test": "starting_a_selected_item_preserves_the_remaining_queue",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 38
+        },
+        {
+          "test": "two_queue_services_across_state_runtimes_submit_one_exact_binding",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 39
+        },
+        {
+          "test": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+          "status": "ok",
+          "should_panic": false,
+          "line_1based": 40
+        }
+      ],
+      "summaries": [
+        {
+          "line_1based": 4,
+          "text": "running 36 tests"
+        },
+        {
+          "line_1based": 42,
+          "text": "test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 53.91s"
+        }
+      ]
+    }
+  ],
+  "named_pass_occurrences": 72,
+  "distinct_names": 71,
+  "nested_execution": {
+    "test": "info::tests::git_metadata_commands_do_not_inherit_stdin",
+    "additional_execution": 1,
+    "retry": false,
+    "child_filtered_out": 34
+  },
+  "original_142_matches": [
+    {
+      "blocker_id": "B13",
+      "binary": "codex-queue-extension::queue_service",
+      "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+      "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "separate_wine_target": null,
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "case_origin": "frozen_named_exit_catalog",
+      "observed_status": "PASS"
+    },
+    {
+      "blocker_id": "B13",
+      "binary": "codex-queue-extension::queue_service",
+      "test": "completion_panic_retains_exact_authority_in_settlement_guardian",
+      "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "separate_wine_target": null,
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "case_origin": "frozen_named_exit_catalog",
+      "observed_status": "PASS"
+    },
+    {
+      "blocker_id": "B13",
+      "binary": "codex-queue-extension::queue_service",
+      "test": "core_error_after_started_never_releases_ambiguous_dispatch",
+      "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "separate_wine_target": null,
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "case_origin": "frozen_named_exit_catalog",
+      "observed_status": "PASS"
+    },
+    {
+      "blocker_id": "B13",
+      "binary": "codex-queue-extension::queue_service",
+      "test": "rollout_flush_before_dispatch_db_completion_recovers_without_resubmit",
+      "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "separate_wine_target": null,
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "case_origin": "frozen_named_exit_catalog",
+      "observed_status": "PASS"
+    },
+    {
+      "blocker_id": "B13",
+      "binary": "codex-queue-extension::queue_service",
+      "test": "queued_input_and_unique_event_ids_round_trip",
+      "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "separate_wine_target": null,
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "case_origin": "frozen_named_exit_catalog",
+      "observed_status": "PASS"
+    },
+    {
+      "blocker_id": "B13",
+      "binary": "codex-queue-extension::queue_service",
+      "test": "reserved_to_persisted_legacy_row_deletion_emits_queue_changed",
+      "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "separate_wine_target": null,
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "case_origin": "frozen_named_exit_catalog",
+      "observed_status": "PASS"
+    },
+    {
+      "blocker_id": "B13",
+      "binary": "codex-queue-extension::queue_service",
+      "test": "queue_empty_observer_waits_for_owned_database_ack_after_turn_complete",
+      "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "separate_wine_target": null,
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "case_origin": "frozen_named_exit_catalog",
+      "observed_status": "PASS"
+    },
+    {
+      "blocker_id": "B13",
+      "binary": "codex-queue-extension::queue_service",
+      "test": "externally_changed_queues_dispatch_independently_and_retry_failed_wakes",
+      "bazel_target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "separate_wine_target": null,
+      "windows_cfg_scope": "NO_NEW_CFG_ASSUMPTION; ORIGINAL_TARGET_AND_FIXED_SOURCE_APPLY",
+      "platforms_to_observe": [
+        "ubuntu-24.04 GNU/RBE",
+        "ubuntu-24.04 musl-label/same GNU RBE",
+        "macos-15",
+        "macos-15-intel",
+        "Windows when original cfg permits"
+      ],
+      "original_budget_policy": "KEEP_EXACT_SOURCE_AND_HARNESS_BUDGET; NO_NEW_TEST_COMMAND",
+      "case_origin": "frozen_named_exit_catalog",
+      "observed_status": "PASS"
+    }
+  ],
+  "commands_and_target_results": [
+    {
+      "line_1based": 1063,
+      "text": "##[group]Run ./.github/scripts/run-bazel-ci.sh \\"
+    },
+    {
+      "line_1based": 1064,
+      "text": "./.github/scripts/run-bazel-ci.sh \\"
+    },
+    {
+      "line_1based": 1075,
+      "text": "  --nocache_test_results \\"
+    },
+    {
+      "line_1based": 2537,
+      "text": "INFO: 3169 processes: 2210 remote cache hit, 955 internal, 6 local."
+    },
+    {
+      "line_1based": 2540,
+      "text": "//codex-rs/ext/queue:queue-queue_service-test                            PASSED in 54.2s"
+    },
+    {
+      "line_1based": 2541,
+      "text": "//codex-rs/git-utils:git-utils-unit-tests                                PASSED in 93.5s"
+    },
+    {
+      "line_1based": 2543,
+      "text": "Executed 2 out of 2 tests: 2 tests pass."
+    }
+  ],
+  "cache_and_retry_scope": "Original command disables cached test results. Build action cache hits are separate. No explicit flaky_test_attempts option is asserted; observed target statuses are PASS, with no FLAKY or retry member. The nested Git-utils child is not a retry.",
+  "workingtree_lock_encoding": "Original Windows hashes are retained; separate exact LF-to-CRLF review 75a12d82d7a830ede3a294a7649df1fb7d2d3f1f explains both locks. Git tree identity is not used to claim LF working bytes.",
+  "remaining_B13_gate": "The ninth Agentd cognitive-write qualification target was not selected by these two targets."
+}

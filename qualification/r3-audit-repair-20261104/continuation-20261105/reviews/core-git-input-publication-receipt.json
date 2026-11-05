@@ -1,0 +1,111 @@
+{
+  "schema": "hepta-core-musl-git-input-checkpoint-publication-v1",
+  "published_at": "2026-11-05 13:51:58 UTC",
+  "branch": "audit/r3-evidence-20261105",
+  "parent": "c8d82c86b5695f50b4531883709ee990d3e6095e",
+  "commit": "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72",
+  "tree": "65cfd91deea0fbd5b432c225e16d15106ed5f373",
+  "entries": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/git-transport-v1/request.json.gz.part000.b64.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ad067c7ddd9a6416098b8314b2f9859ded5d5cd4"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/git-transport-v1/request.json.gz.part001.b64.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1ac6c1dcc838179e394de974740b06da35a384e1"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/git-transport-v1/request.json.gz.part002.b64.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d99c26bf49e8f2fcc0cfe44d420622e4b1e76ea6"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/git-transport-v1/load_staged_native_project.py.source.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "03e4b4385765a74fc66547ba310d63a1f2ac1c0f"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/git-transport-v1/small-control.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "64938d43cb62be227f86a530d0f13394c24f3d5c"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/git-transport-v1/transport-manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "65d3fd87285dbeed12740a9c8e40dd1507cd2cf1"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/git-transport-v1/root-execution-guard.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d92b0ab0445382b266129c7f959e15497e0ac19e"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native/core-musl-rog-v3/git-transport-v1/README.zh-CN.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5a484322f7d02e2bcf47b0b99b21def2456acec9"
+    }
+  ],
+  "old_leaves": 11445,
+  "new_leaves": 11453,
+  "all_previous_leaves_unchanged": true,
+  "product_ref_updated": false,
+  "native_started": false,
+  "commit_get": {
+    "sha": "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72",
+    "node_id": "C_kwDOTrgxoNoAKGNjMzNmYzI2YzZmYTAyNTdmNmRjYTBiNjEwN2UzODkyZWVjNWFhNzI",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/cc33fc26c6fa0257f6dca0b6107e3892eec5aa72",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/cc33fc26c6fa0257f6dca0b6107e3892eec5aa72",
+    "author": {
+      "name": "Franksudoman",
+      "email": "273670192+Franksudoman@users.noreply.github.com",
+      "date": "2026-11-05T13:51:55Z"
+    },
+    "committer": {
+      "name": "Franksudoman",
+      "email": "273670192+Franksudoman@users.noreply.github.com",
+      "date": "2026-11-05T13:51:55Z"
+    },
+    "tree": {
+      "sha": "65cfd91deea0fbd5b432c225e16d15106ed5f373",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/65cfd91deea0fbd5b432c225e16d15106ed5f373"
+    },
+    "message": "audit: checkpoint exact Core and musl native inputs before first launch\n\nPreserve the approved V3 request, loader, guard and complete hash-bound gzip parts. Record interrupted upload transport without claiming native execution. Add evidence only; retain every previous product and audit leaf unchanged.",
+    "parents": [
+      {
+        "sha": "c8d82c86b5695f50b4531883709ee990d3e6095e",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/c8d82c86b5695f50b4531883709ee990d3e6095e",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/c8d82c86b5695f50b4531883709ee990d3e6095e"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "ref_update": {
+    "success": true
+  },
+  "ref_get": {
+    "ref": "refs/heads/audit/r3-evidence-20261105",
+    "node_id": "REF_kwDOTrgxoNoAJXJlZnMvaGVhZHMvYXVkaXQvcjMtZXZpZGVuY2UtMjAyNjExMDU",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/audit/r3-evidence-20261105",
+    "object": {
+      "sha": "cc33fc26c6fa0257f6dca0b6107e3892eec5aa72",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/cc33fc26c6fa0257f6dca0b6107e3892eec5aa72"
+    }
+  }
+}
