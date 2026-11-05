@@ -177,6 +177,7 @@ pub struct PreparedCellStepV1 {
 pub struct InferredCellStepV1 {
     pub(crate) prepared: PreparedCellStepV1,
     pub(crate) output: NeuronModelOutputV1,
+    pub(crate) not_before_micros: u64,
 }
 
 #[derive(Debug)]
@@ -187,13 +188,17 @@ pub struct CellStateProposalV1 {
     pub(crate) deadline_micros: u64,
     pub(crate) tick: SparseTick,
     pub(crate) abstain_candidate: StableId,
+    pub(crate) decided_at_micros: u64,
+    pub(crate) settled_at_micros: u64,
 }
 
 impl CellStateProposalV1 {
     /// Record late delivery without authorizing a late action. Actual model
     /// usage is preserved; both builtin owners call this before publication.
     pub fn settle_at(mut self, now_micros: u64) -> Result<Self, CellExecutionError> {
-        if now_micros < self.tick.monotonic_micros {
+        if now_micros < self.tick.monotonic_micros
+            || now_micros < self.decided_at_micros || now_micros < self.settled_at_micros
+        {
             return Err(CellExecutionError::DeadlineExceeded);
         }
         if now_micros >= self.deadline_micros {
@@ -206,6 +211,7 @@ impl CellStateProposalV1 {
             self.receipt.selected_candidate = self.abstain_candidate.clone();
             self.receipt.deadline_exceeded = true;
         }
+        self.settled_at_micros = now_micros;
         Ok(self)
     }
 

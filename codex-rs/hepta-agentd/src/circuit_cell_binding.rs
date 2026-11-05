@@ -1,6 +1,7 @@
 //! Frozen Circuit-to-Cell routing. A registry shares one inference/state owner
 //! across its cells; it never installs bundles or grants tool/effect authority.
 
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
 use codex_hepta_automation::BoundedCircuitDefinitionV2;
@@ -52,7 +53,14 @@ impl CircuitCellRegistryV1 {
             return Err(CircuitCellErrorV1::InvalidBinding);
         }
         let mut keys = BTreeSet::new();
+        let mut cells = BTreeMap::new();
         for binding in &bindings {
+            let cell_digest = binding.cell.semantic_digest()?;
+            if cells.insert(binding.cell.cell_id.as_str(), cell_digest)
+                .is_some_and(|previous| previous != cell_digest)
+            {
+                return Err(CircuitCellErrorV1::InvalidBinding);
+            }
             if !keys.insert((binding.program_id.as_str(), binding.node_id.as_str())) {
                 return Err(CircuitCellErrorV1::InvalidBinding);
             }

@@ -1,5 +1,6 @@
-//! Deterministic bounded circuit reducer. Dispatches are computation admissions,
-//! never external-effect grants. The durable owner commits them before use.
+//! Deterministic bounded circuit reducer. Dispatches describe computation intent.
+//! Execution additionally requires the durable owner's sealed claim; pure DTOs
+//! grant neither computation nor external-effect authority.
 
 use std::collections::BTreeMap;
 

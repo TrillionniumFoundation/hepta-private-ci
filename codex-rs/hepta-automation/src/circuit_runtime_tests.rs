@@ -248,12 +248,11 @@ fn rejected_receipts_leave_original_state_and_reservation_unchanged() {
     let definition = definition();
     let run = CircuitRunV2::prepare(&definition, &start(), &fence(/*generation*/ 1)).expect("run");
     let (run, work) = advance(&run, &definition, /*now_ms*/ 10);
-    for changed in ["invocation", "route", "work"] {
+    for changed in ["invocation", "route"] {
         let mut receipt = completion(&work[0], &["done"], "output");
         match changed {
             "invocation" => receipt.invocation_digest = digest("other-scope"),
             "route" => receipt.selected_edges = vec!["undeclared-edge".to_string()],
-            "work" => receipt.actual_work = 6,
             _ => unreachable!(),
         }
         assert!(run.reduce(&definition, &CircuitEventV2::Complete { completion: receipt }, /*now_ms*/ 11).is_err());
@@ -317,4 +316,65 @@ fn shared_subprogram_dag_has_bounded_validation_and_exact_longest_depth() {
     definition.programs[15].nodes[0].kind = CircuitNodeKindV2::Subcircuit { program: "p0".to_string(), max_work: 5 };
     definition.programs[15].edges.push(edge("recursive-exit", "success", "failure"));
     assert!(definition.validate().is_err());
+}
+
+#[test]
+fn observed_work_overrun_is_charged_in_full_and_stops_admission() {
+    let mut definition = definition();
+    definition.limits.work_budget = 5;
+    let run = CircuitRunV2::prepare(&definition, &start(), &fence(/*generation*/ 1)).expect("run");
+    let (run, work) = advance(&run, &definition, /*now_ms*/ 10);
+    let mut receipt = completion(&work[0], &["done"], "overrun");
+    receipt.actual_work = 7;
+    let (run, dispatched) = run.reduce(&definition, &CircuitEventV2::Complete { completion: receipt }, /*now_ms*/ 11)
+        .expect("record known physical work even beyond reservation");
+    assert!(dispatched.is_empty());
+    assert_eq!((run.outcome(), run.stop_reason(), run.budget().spent(), run.budget().available(), run.budget().reserved()),
+        (Some(CircuitExitV2::Failed), Some(CircuitStopReasonV2::WorkBudget), 7, 0, 0));
+}
+
+#[test]
+fn overrun_does_not_refund_another_branches_unknown_work() {
+    let mut definition = join_definition(CircuitJoinV2::All);
+    definition.limits.work_budget = 9;
+    let (run, work) = fork(&definition);
+    let (run, _) = run.reduce(&definition, &CircuitEventV2::MarkIndeterminate {
+        activation_id: work[1].activation_id, observation_digest: digest("unknown-right"),
+    }, /*now_ms*/ 13).expect("unknown");
+    let mut left = completion(&work[0], &["left-join"], "left-overrun");
+    left.actual_work = 6;
+    let (run, _) = run.reduce(&definition, &CircuitEventV2::Complete { completion: left }, /*now_ms*/ 14)
+        .expect("full overrun charge");
+    assert_eq!((run.outcome(), run.unresolved(), run.budget().spent(), run.budget().reserved(), run.budget().available()),
+        (None, 1, 7, 4, 0));
+    let mut right = completion(&work[1], &[], "right-final");
+    right.outcome = CircuitExitV2::Abstained;
+    let (run, _) = run.reduce(&definition, &CircuitEventV2::Reconcile { completion: right }, /*now_ms*/ 15)
+        .expect("settle the original unknown invocation");
+    assert_eq!((run.outcome(), run.budget().spent(), run.budget().reserved(), run.budget().available()),
+        (Some(CircuitExitV2::Failed), 10, 0, 0));
+}
+
+#[test]
+fn child_overrun_debt_propagates_to_every_parent_without_double_charging() {
+    let mut definition = child_definition(/*reservation*/ 5);
+    definition.limits.work_budget = 5;
+    let mut leaf = definition.programs[1].clone();
+    leaf.program_id = "leaf".to_string();
+    definition.programs[1].nodes[0].kind = CircuitNodeKindV2::Subcircuit {
+        program: "leaf".to_string(), max_work: 5,
+    };
+    definition.programs[1].edges.retain(|edge| edge.edge_id == "done");
+    definition.programs.push(leaf);
+    let run = CircuitRunV2::prepare(&definition, &start(), &fence(/*generation*/ 1)).expect("run");
+    let (run, work) = advance(&run, &definition, /*now_ms*/ 10);
+    assert_eq!(work[0].program_id, "leaf");
+    let mut actual = completion(&work[0], &["done"], "leaf-overrun");
+    actual.actual_work = 8;
+    let (run, _) = run.reduce(&definition, &CircuitEventV2::Complete { completion: actual }, /*now_ms*/ 11)
+        .expect("parent reservations are settled using actual child work");
+    assert_eq!((run.outcome(), run.stop_reason(), run.budget().spent(), run.budget().available()),
+        (Some(CircuitExitV2::Failed), Some(CircuitStopReasonV2::WorkBudget), 8, 0));
+    assert!(run.instances.values().all(|instance|
+        instance.budget.spent() == 8 && instance.budget.reserved() == 0 && instance.returned));
 }

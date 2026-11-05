@@ -2,6 +2,7 @@
 //! The host supplies an exclusive regular file and an independent durable
 //! AnchorWitnessStore. Frames bind policy receipts and sparse ticks; recovery
 //! recomputes checkpoints without executing a model. No effect rights.
+//! Hosts preserve the monotonic Cell clock epoch across this journal's lifetime.
 
 use std::fs::File;
 use std::io::Read;
@@ -23,7 +24,7 @@ use crate::cell_owner::CellPartitionOwnerV1;
 use crate::cell_types::*;
 use crate::journal_lock::LockedFile;
 
-const MAGIC: &[u8; 8] = b"HPTACJ02";
+const MAGIC: &[u8; 8] = b"HPTACJ03";
 const HEADER_BYTES: usize = 40;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
 
@@ -276,7 +277,7 @@ impl<W: AnchorWitnessStore> CellStateOwnerV1 for CellOwnerJournalV1<W> {
             return Ok(receipt);
         }
         let proposal = proposal.settle_at(now_micros)?;
-        let payload = encode_commit(index, &proposal);
+        let payload = encode_commit(index, &proposal, now_micros);
         self.persist(payload)?;
         // Exclusive mutable ownership preserves the validated CAS while file
         // and witness are written; only the target partition is then updated.

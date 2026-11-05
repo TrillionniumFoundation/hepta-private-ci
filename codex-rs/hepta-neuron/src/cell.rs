@@ -133,9 +133,9 @@ pub fn decide_cell(
     inferred: InferredCellStepV1,
     now_micros: u64,
 ) -> Result<CellStateProposalV1, CellExecutionError> {
-    let InferredCellStepV1 { prepared, output } = inferred;
+    let InferredCellStepV1 { prepared, output, not_before_micros } = inferred;
     let PreparedCellStepV1 { definition, snapshot, input, encoded, model_request } = prepared;
-    if now_micros < input.monotonic_micros {
+    if now_micros < input.monotonic_micros || now_micros < not_before_micros {
         return Err(CellExecutionError::DeadlineExceeded);
     }
     let sequence = snapshot.checkpoint.as_ref().map_or(0, SparseCheckpoint::sequence)
@@ -221,6 +221,8 @@ pub fn decide_cell(
         deadline_micros: input.deadline_micros,
         tick,
         abstain_candidate,
+        decided_at_micros: now_micros,
+        settled_at_micros: now_micros,
     })
 }
 

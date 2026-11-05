@@ -296,6 +296,9 @@ mod intelligence_ingress;
 mod intelligence_product;
 mod intuition_policy;
 mod lane_b_runtime;
+mod circuit_cell;
+mod circuit_cell_binding;
+mod circuit_cell_output;
 mod neuron_runtime;
 #[cfg(target_os = "linux")]
 mod notes_bootstrap;
@@ -591,6 +594,17 @@ pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunRecovery;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
+pub use circuit_cell::AgentdCircuitCellOwnerV1;
+pub use circuit_cell::CircuitCellErrorV1;
+pub use circuit_cell::CircuitCellExecutionV1;
+pub use circuit_cell::CircuitCellTimeV1;
+pub use circuit_cell_binding::CircuitCellBindingV1;
+pub use circuit_cell_binding::CircuitCellRegistryV1;
+pub use circuit_cell_binding::CircuitCellRouteV1;
+pub use circuit_cell_binding::circuit_cell_operation_id_v1;
+pub use circuit_cell_binding::circuit_cell_route_policy_digest_v1;
+pub use circuit_cell_binding::circuit_cell_scope_digest_v1;
+pub use circuit_cell_output::circuit_cell_output_schema_v1;
 pub use neuron_runtime::AgentdNeuronOwner;
 #[cfg(target_os = "linux")]
 pub use notes_bootstrap::AgentdNotesStartupRelease;

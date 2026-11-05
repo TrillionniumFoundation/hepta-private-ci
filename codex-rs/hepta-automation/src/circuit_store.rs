@@ -20,7 +20,6 @@ use crate::circuit_journal;
 use crate::circuit_journal::encode;
 use crate::circuit_journal::unavailable;
 use crate::circuit_profile::hash;
-use crate::circuit_profile::invalid;
 use crate::circuit_profile::text;
 
 impl AutomationStore {
@@ -115,49 +114,13 @@ impl AutomationStore {
     ) -> Result<CircuitCommandReceiptV2, TaskFlowError> {
         text(run_id)?;
         text(command_id)?;
-        if encode(event)?.len() > 131_072 {
-            return Err(invalid("circuit command exceeds byte bound"));
-        }
-        let command_digest = hash("hepta.circuit.command.v2", event)?;
         let mut tx = self.taskflow_pool().begin_with("BEGIN IMMEDIATE").await.map_err(unavailable)?;
         let history = circuit_journal::load(&mut tx, self.owner_agent_id(), run_id).await?
             .ok_or_else(|| TaskFlowError::Conflict("unknown circuit run".to_string()))?;
-        if let Some(existing) = history.commands.get(command_id) {
-            if existing != &command_digest {
-                return Err(TaskFlowError::Conflict("circuit command ID has different bytes".to_string()));
-            }
-            tx.commit().await.map_err(unavailable)?;
-            return Ok(CircuitCommandReceiptV2 {
-                status: CircuitCommandStatusV2::AlreadyApplied, run: history.run, dispatches: Vec::new(),
-            });
-        }
-        // Keep a bounded reconciliation allowance after the normal event budget.
-        // Each unresolved computation can be marked and resolved once; another
-        // 64 lease records remain available. No limit silently grants new work.
-        let maximum = u64::from(history.definition.limits.max_events)
-            + 2 * u64::from(history.definition.limits.max_activations) + 64;
-        if history.run.revision >= maximum {
-            return Err(invalid("circuit recovery history bound reached"));
-        }
-        let (run, dispatches) = event.replay(Some(&history.run), &history.definition, self.owner_agent_id())?;
-        let state_json = encode(&run)?;
-        if state_json.len() > 8_388_608 {
-            return Err(invalid("circuit state exceeds byte bound"));
-        }
-        let last_digest = circuit_journal::event_digest(&run, command_id, &command_digest, &history.last_digest)?;
-        let changed = sqlx::query("UPDATE circuit_v2_runs
-             SET revision = ?, state_json = ?, state_digest = ?, last_event_digest = ?
-             WHERE owner_agent_id = ? AND run_id = ? AND revision = ? AND state_digest = ?")
-            .bind(i64::try_from(run.revision).map_err(|_| invalid("revision overflow"))?)
-            .bind(state_json).bind(run.state_digest()?.as_str()).bind(last_digest.as_str())
-            .bind(self.owner_agent_id().as_str()).bind(run_id)
-            .bind(i64::try_from(history.run.revision).map_err(|_| invalid("revision overflow"))?)
-            .bind(history.run.state_digest()?.as_str()).execute(&mut *tx).await.map_err(unavailable)?;
-        if changed.rows_affected() != 1 {
-            return Err(TaskFlowError::StaleFence);
-        }
-        circuit_journal::append(&mut tx, &run, command_id, event, &history.last_digest).await?;
+        let receipt = circuit_journal::persist_transition(
+            &mut tx, &history, self.owner_agent_id(), command_id, event,
+        ).await?;
         tx.commit().await.map_err(unavailable)?;
-        Ok(CircuitCommandReceiptV2 { status: CircuitCommandStatusV2::Applied, run, dispatches })
+        Ok(receipt)
     }
 }

@@ -10,6 +10,8 @@ use sqlx::Sqlite;
 use sqlx::Transaction;
 
 use crate::BoundedCircuitDefinitionV2;
+use crate::CircuitCommandReceiptV2;
+use crate::CircuitCommandStatusV2;
 use crate::CircuitRunV2;
 use crate::TaskFlowError;
 use crate::circuit_history::CircuitLedgerEventV2;
@@ -124,7 +126,7 @@ pub(crate) async fn load(
         return Err(corrupt("circuit definition binding changed"));
     }
     let max_events = u64::from(definition.limits.max_events)
-        + 2 * u64::from(definition.limits.max_activations) + 64;
+        + 3 * u64::from(definition.limits.max_activations) + 64;
     let mut run = None;
     let mut commands = BTreeMap::new();
     let mut previous = Sha256Digest::for_bytes(b"hepta.circuit.genesis.v2");
@@ -193,4 +195,53 @@ pub(crate) async fn load(
         return Err(corrupt("circuit projection differs from its causal history"));
     }
     Ok(Some(CircuitHistoryV2 { definition, run, commands, last_digest: previous }))
+}
+
+/// Shared transaction tail for ordinary commands and the sealed computation
+/// claim. The caller has already loaded history under the SQLite writer lock.
+pub(crate) async fn persist_transition(
+    tx: &mut Transaction<'_, Sqlite>,
+    history: &CircuitHistoryV2,
+    owner: &AgentId,
+    command_id: &str,
+    event: &CircuitLedgerEventV2,
+) -> Result<CircuitCommandReceiptV2, TaskFlowError> {
+    if encode(event)?.len() > 131_072 {
+        return Err(invalid("circuit command exceeds byte bound"));
+    }
+    let command_digest = hash("hepta.circuit.command.v2", event)?;
+    if let Some(existing) = history.commands.get(command_id) {
+        if existing != &command_digest {
+            return Err(TaskFlowError::Conflict("circuit command ID has different bytes".to_string()));
+        }
+        return Ok(CircuitCommandReceiptV2 {
+            status: CircuitCommandStatusV2::AlreadyApplied, run: history.run.clone(), dispatches: Vec::new(),
+        });
+    }
+    // Reserve claim/unknown/reconciliation slots for every admitted activation
+    // beyond the normal event horizon, plus a bounded lease-transition allowance.
+    let maximum = u64::from(history.definition.limits.max_events)
+        + 3 * u64::from(history.definition.limits.max_activations) + 64;
+    if history.run.revision >= maximum {
+        return Err(invalid("circuit recovery history bound reached"));
+    }
+    let (run, dispatches) = event.replay(Some(&history.run), &history.definition, owner)?;
+    let state_json = encode(&run)?;
+    if state_json.len() > 8_388_608 {
+        return Err(invalid("circuit state exceeds byte bound"));
+    }
+    let last_digest = event_digest(&run, command_id, &command_digest, &history.last_digest)?;
+    let changed = sqlx::query("UPDATE circuit_v2_runs
+         SET revision = ?, state_json = ?, state_digest = ?, last_event_digest = ?
+         WHERE owner_agent_id = ? AND run_id = ? AND revision = ? AND state_digest = ?")
+        .bind(i64::try_from(run.revision).map_err(|_| invalid("revision overflow"))?)
+        .bind(state_json).bind(run.state_digest()?.as_str()).bind(last_digest.as_str())
+        .bind(owner.as_str()).bind(&run.run_id)
+        .bind(i64::try_from(history.run.revision).map_err(|_| invalid("revision overflow"))?)
+        .bind(history.run.state_digest()?.as_str()).execute(&mut **tx).await.map_err(unavailable)?;
+    if changed.rows_affected() != 1 {
+        return Err(TaskFlowError::StaleFence);
+    }
+    append(tx, &run, command_id, event, &history.last_digest).await?;
+    Ok(CircuitCommandReceiptV2 { status: CircuitCommandStatusV2::Applied, run, dispatches })
 }

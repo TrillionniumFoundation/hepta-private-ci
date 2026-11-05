@@ -28,6 +28,7 @@ use codex_hepta_types::AuthorityPosture;
 use crate::CircuitCellBindingV1;
 use crate::CircuitCellRegistryV1;
 use crate::circuit_cell_output::encode_output;
+use crate::circuit_cell_output::encode_receipt;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CircuitCellErrorV1 {
@@ -112,11 +113,15 @@ where
         if time.circuit_millis < admission.observed_at_ms() {
             return Err(CircuitCellErrorV1::ReconciliationRequired);
         }
+        let admission_deadline = admission.lease_expires_at_ms().min(admission.run_deadline_ms());
         let read_only = admission.reconciliation_only()
-            || time.circuit_millis >= admission.lease_expires_at_ms();
-        let decision = if let Some(receipt) = self.state_owner.lookup(
-            &input.scope, &input.operation_id, request_digest,
-        )? {
+            || time.circuit_millis >= admission_deadline;
+        let committed = match self.state_owner.lookup(&input.scope, &input.operation_id, request_digest) {
+            Ok(receipt) => receipt,
+            Err(CellExecutionError::InferencePending) => None,
+            Err(error) => return Err(error.into()),
+        };
+        let decision = if let Some(receipt) = committed {
             receipt
         } else {
             let pending = self.state_owner.pending_inference(&input.scope)?;
@@ -134,7 +139,7 @@ where
                         let before_infer = clock();
                         if before_infer.circuit_millis < time.circuit_millis
                             || before_infer.cell_micros < time.cell_micros
-                            || before_infer.circuit_millis >= admission.lease_expires_at_ms()
+                            || before_infer.circuit_millis >= admission_deadline
                         {
                             return Err(CircuitCellErrorV1::ReconciliationRequired);
                         }
@@ -191,6 +196,7 @@ fn finish(
     let mut receipt_bytes = b"hepta.circuit.cell-completion.v1\0".to_vec();
     receipt_bytes.extend_from_slice(dispatch.invocation_digest.as_str().as_bytes());
     receipt_bytes.extend_from_slice(output_digest.as_str().as_bytes());
+    receipt_bytes.extend_from_slice(&encode_receipt(&decision)?);
     let completion = CircuitCompletionV2 {
         activation_id: dispatch.activation_id,
         invocation_digest: dispatch.invocation_digest.clone(),
