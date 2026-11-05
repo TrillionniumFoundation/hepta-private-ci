@@ -14,6 +14,15 @@ mod effect_executor;
 
 mod authorized_effect;
 mod automation_taskflow;
+mod circuit_budget;
+mod circuit_compute;
+mod circuit_history;
+mod circuit_journal;
+mod circuit_profile;
+mod circuit_progress;
+mod circuit_runtime;
+mod circuit_state;
+mod circuit_store;
 mod dispatch_recovery;
 mod effect_dispatch_ledger;
 mod lifecycle;
@@ -49,6 +58,28 @@ pub use authorized_effect::AuthorizedProviderEffectRequest;
 pub use authorized_effect::ProviderEffectTaskFlowDriver;
 pub use automation_taskflow::AutomationTaskFlowDispatch;
 pub use automation_taskflow::admission_receipt_digest;
+pub use circuit_budget::CircuitBudgetV2;
+pub use circuit_history::CircuitLeaseClaimV2;
+pub use circuit_profile::BoundedCircuitDefinitionV2;
+pub use circuit_profile::CircuitEdgeV2;
+pub use circuit_profile::CircuitExitV2;
+pub use circuit_profile::CircuitJoinV2;
+pub use circuit_profile::CircuitLimitsV2;
+pub use circuit_profile::CircuitNodeKindV2;
+pub use circuit_profile::CircuitNodeV2;
+pub use circuit_profile::CircuitProfileV2;
+pub use circuit_profile::CircuitProgramV2;
+pub use circuit_state::CircuitActivationStatusV2;
+pub use circuit_state::CircuitActivationV2;
+pub use circuit_state::CircuitCommandReceiptV2;
+pub use circuit_state::CircuitCommandStatusV2;
+pub use circuit_state::CircuitCommandV2;
+pub use circuit_state::CircuitCompletionV2;
+pub use circuit_state::CircuitDispatchV2;
+pub use circuit_state::CircuitEventV2;
+pub use circuit_state::CircuitRunV2;
+pub use circuit_state::CircuitStartV2;
+pub use circuit_state::CircuitStopReasonV2;
 pub use lifecycle::AutomationMissedRunPolicy;
 pub use lifecycle::AutomationOccurrence;
 pub use lifecycle::AutomationOccurrenceState;
@@ -150,4 +181,12 @@ pub use taskflow_step::TaskFlowStepState;
 pub use timer_lifecycle::TimerDrainStatus;
 pub use timer_lifecycle::TimerPhase;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 19;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 20;
+
+#[cfg(test)]
+#[path = "circuit_runtime_tests.rs"]
+mod circuit_runtime_tests;
+
+#[cfg(test)]
+#[path = "circuit_store_tests.rs"]
+mod circuit_store_tests;

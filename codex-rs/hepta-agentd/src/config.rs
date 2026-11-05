@@ -118,6 +118,7 @@ pub struct AgentdConfig {
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
+    learning_iteration_bootstrap: Option<crate::LearningIterationRuntimeBootstrapV1>,
     intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
@@ -279,6 +280,7 @@ impl AgentdConfig {
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
             plasticity_bootstrap: None,
+            learning_iteration_bootstrap: None,
             intuition_policy_host: None,
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,
@@ -715,6 +717,24 @@ impl AgentdConfig {
         self.plasticity_bootstrap.take()
     }
 
+    /// Explicit control-owner opt-in. Work runs separately from foreground turns.
+    /// The governed plasticity owner must also be attached before runtime start.
+    pub fn with_learning_iteration_bootstrap(
+        mut self,
+        bootstrap: crate::LearningIterationRuntimeBootstrapV1,
+    ) -> Result<Self, AgentdError> {
+        bootstrap.require_identity(&self.identity)?;
+        if self.learning_iteration_bootstrap.is_some() {
+            return Err(AgentdError::Invalid("learning iteration owner already configured".into()));
+        }
+        self.learning_iteration_bootstrap = Some(bootstrap);
+        Ok(self)
+    }
+
+    pub(crate) fn take_learning_iteration_bootstrap(&mut self) -> Option<crate::LearningIterationRuntimeBootstrapV1> {
+        self.learning_iteration_bootstrap.take()
+    }
+
     /// Attach the authenticated current intuition-policy product caller.
     /// The caller is pinned to this exact Agentd identity/generation and owns
     /// no model, scorer, RNG or learning facts itself.
@@ -814,6 +834,7 @@ impl AgentdConfig {
             || self.cognitive_retrieval_context.is_some()
             || self.cognitive_retrieval_learning.is_some()
             || self.plasticity_bootstrap.is_some()
+            || self.learning_iteration_bootstrap.is_some()
             || self.intuition_policy_host.is_some()
             || self.intelligence_product_runner.is_some()
             || self.intelligence_invocation_provider.is_some()
