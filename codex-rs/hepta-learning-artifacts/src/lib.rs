@@ -7,6 +7,7 @@
 
 mod admin;
 mod admission_v3;
+mod cell_bundle;
 mod closure_v2;
 mod dataset_revocation;
 mod durable_snapshots;
@@ -35,6 +36,16 @@ pub use admission_v3::WithdrawalBoundArtifactAdmissionV3;
 pub use admission_v3::admit_manifest_at_withdrawal_head_v3;
 pub use admission_v3::validate_artifact_publication_v3;
 pub use admission_v3::verify_artifact_admission_v3;
+pub use cell_bundle::CellBundleComponentsV1;
+pub use cell_bundle::CellBundleCutoverPlanV1;
+pub use cell_bundle::CellBundleCutoverReceiptV1;
+pub use cell_bundle::CellBundleError;
+pub use cell_bundle::CellCompatibilityBundleV1;
+pub use cell_bundle::CellStatePartitionV1;
+pub use cell_bundle::CellStateTransitionV1;
+pub use cell_bundle::CellTrainingLineageV1;
+pub use cell_bundle::prepare_cell_bundle_cutover_v1;
+pub use cell_bundle::validate_cell_bundle_readback_v1;
 pub use closure_v2::ArtifactClosureError;
 pub use closure_v2::ArtifactLifecycleEventV1;
 pub use closure_v2::ArtifactLifecycleStateV1;
