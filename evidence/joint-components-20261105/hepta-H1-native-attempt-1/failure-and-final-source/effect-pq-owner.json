@@ -1,0 +1,57 @@
+{
+  "after": {
+    "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+    "dirty": false,
+    "parents": [
+      "e458e534017dd479e382e84331fa1a6078c3abb4"
+    ],
+    "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+    "dirty": false,
+    "parents": [
+      "e458e534017dd479e382e84331fa1a6078c3abb4"
+    ],
+    "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(automation_effect_host::pq::tests::)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 47.23800226603635,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-05T19:09:38.515257+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 37038,
+  "log_file": "effect-pq-owner.json.df451d7e91554c9db29443ad9e242b8c.log",
+  "log_sha256": "ea7479a4d1d000df6d3b3d275a2837fac4e4fa809e024f10af728dfbe81b2178",
+  "minimum_tests": 11,
+  "observed_failed_tests": 2,
+  "observed_passed_tests": 9,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "started_at": "2026-11-05T19:08:51.260388+00:00",
+  "status": "failed",
+  "tested_sha": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source"
+}

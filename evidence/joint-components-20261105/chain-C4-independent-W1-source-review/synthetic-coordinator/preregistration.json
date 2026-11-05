@@ -1,0 +1,67 @@
+{
+  "build_observation_delta": "Only --message-format=json-render-diagnostics is added to the documented offline/locked/release/jobs2/two-example command; source/profile/features unchanged. No native argv beyond argv0 differs.",
+  "capture_helper": {
+    "actual_example_combination_native_validated": false,
+    "bytes": 6917,
+    "implementation_modified": false,
+    "local_path": "model_storage/pq_effect_migration/native/test_elf_capture.py",
+    "sha256": "64489779d88a399040e20f939fe878f8d20fa86a60b435a2d7896186dc64d87a"
+  },
+  "collector_scope": "One actual captured ELF per native child, including ancestry/start ticks and post-open identity checks; selector is not a Rust test count. No capture is failure.",
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "desktop_or_cargo_executed": false,
+  "execution_owner_after_root_review": "/root/w1_audit",
+  "files": [
+    {
+      "bytes": 30270,
+      "path": "run_c4_synthetic_census.py",
+      "sha256": "856a61b997d26efa7d62f8176c745eb7a236e5e75db4f4e8cf50d90a09eb14c7"
+    },
+    {
+      "bytes": 6995,
+      "path": "validate_prelaunch.py",
+      "sha256": "6c15d47224a18abc1ffa9069d7fbc22e346537ad09bd3416af3aa62318ace92f"
+    },
+    {
+      "bytes": 1509,
+      "path": "prelaunch-static-checks.json",
+      "sha256": "3f624aeca3606ad8b968791a116a81e92c04774cd85d42befcbd5082ce7f7b2b"
+    },
+    {
+      "bytes": 7206,
+      "path": "README.md",
+      "sha256": "86e14498d00c494f8f823fc5a6095b8a491448801fdf2d2b4e012d89505f8f53"
+    }
+  ],
+  "frozen_source_mutated": false,
+  "native_qualification": false,
+  "new_external_limits": {
+    "build_seconds": 900,
+    "collector_finish_each_seconds": 60,
+    "identity_each_seconds": 30,
+    "metadata_seconds": 120,
+    "outer_seconds": 3600,
+    "preflight_seconds": 120,
+    "reader_each_seconds": 180,
+    "source_guard_each_seconds": 600
+  },
+  "new_limits_are_not_original_owner_budgets": true,
+  "original_native_limits": {
+    "children": 2,
+    "cleanup": "exact-C4 bounded_process.run_bounded unchanged",
+    "seconds_per_child": 300,
+    "stderr_bytes_per_child": 1048576,
+    "stdout_bytes_per_child": 268435456
+  },
+  "public_service_or_global_work_hardness_claim": false,
+  "reviewer": "/root/pq_recovery",
+  "schema": "C4-synthetic-external-owner-preregistration-v1",
+  "static_checks": {
+    "AST_and_parameter_binding_only": true,
+    "count": 23,
+    "invented_binding_dictionaries_are_native_evidence": false,
+    "receipt": "prelaunch-static-checks.json"
+  },
+  "status": "PREPARED_NOT_EXECUTED",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14"
+}

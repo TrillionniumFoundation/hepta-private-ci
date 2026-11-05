@@ -1,0 +1,172 @@
+{
+  "schema": "root-H1-early-completed-gates-review-v1",
+  "source_commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "source_tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+  "job_id": "1a1ad12b87d-fc05-5860",
+  "created_unix_ms": 1793905047677,
+  "outer_budget_seconds": 5400,
+  "completed_gates_verified": [
+    {
+      "name": "dependencies",
+      "passed": 0,
+      "failed": 0,
+      "wrapper_elapsed_seconds": 4.6748403020901605,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_before_equals_after": true
+    },
+    {
+      "name": "execution-source-controls",
+      "passed": 135,
+      "failed": 0,
+      "wrapper_elapsed_seconds": 38.26959449297283,
+      "log_sha256": "6cb98e508c8ddb26991cf6e150267373e01718372602474122f491fcbf683867",
+      "source_before_equals_after": true
+    },
+    {
+      "name": "diverse-source-controls",
+      "passed": 32,
+      "failed": 0,
+      "wrapper_elapsed_seconds": 3.7939732080558315,
+      "log_sha256": "2579e7dfbc38e985774589647c68877353532ea9a8ffaf887d766a3f09f29d13",
+      "source_before_equals_after": true
+    },
+    {
+      "name": "dispatcher",
+      "passed": 14,
+      "failed": 0,
+      "wrapper_elapsed_seconds": 297.29044430702925,
+      "log_sha256": "19600c1fda5e76e71ef577605b42e97f6ea32997493b96c66f7bb74ab3cfeb24",
+      "source_before_equals_after": true,
+      "actual_captured_image_sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+      "actual_captured_image_bytes": 504265656,
+      "captured_processes": 14,
+      "actual_retained_ELF_locally_rehashed_after_export": false
+    },
+    {
+      "name": "product",
+      "passed": 3,
+      "failed": 0,
+      "wrapper_elapsed_seconds": 30.92200724896975,
+      "log_sha256": "ae27e73d95afcff0d7317eb341c4d939b6c224f6d71fcd1dd86401b6a99c171e",
+      "source_before_equals_after": true,
+      "actual_captured_image_sha256": "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31",
+      "actual_captured_image_bytes": 120073792,
+      "captured_processes": 3,
+      "actual_retained_ELF_locally_rehashed_after_export": false
+    }
+  ],
+  "collector_utility_tests": 3,
+  "collector_controls_are_Rust_product_tests": false,
+  "native_job_terminal_observed": false,
+  "full_H1_qualification": false,
+  "large_actual_ELF_bytes_locally_exported": false,
+  "source_guard_scope": "complete tracked source before the ongoing H1 job, with each completed gate clean before/after; final whole-job guard remains pending",
+  "files": [
+    {
+      "path": "collector-controls.json",
+      "bytes": 264,
+      "sha256": "611e460da869a8a69b1afcaa5ff5d572ca60560df1f7cabb192cb1d72f9932bd"
+    },
+    {
+      "path": "collector-controls.log",
+      "bytes": 516,
+      "sha256": "a595c33eb8d98ac00229ee88c584d1f4cc40957b3c495b01656b9e3bc9f489d8"
+    },
+    {
+      "path": "completed-python-logs.raw.json",
+      "bytes": 34757,
+      "sha256": "8ace9b201009bba0cfe490d16827f91dccb863136ace77a2ccab0a3d8bb7f9cc"
+    },
+    {
+      "path": "dependencies.json",
+      "bytes": 1475,
+      "sha256": "1d9451afa2bc9f83b3401242ee2197e09b6b5d32afd8ad60686861c06f4821cf"
+    },
+    {
+      "path": "dependencies.json.7eb54e9cfaa44ddeaec9ec8df84ee3e1.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "dispatcher.executed-binaries.json",
+      "bytes": 20528,
+      "sha256": "45eb025aaef8c4ccfe17fbf09927faf65de8d6e110558d3ed42dfb2c65194056"
+    },
+    {
+      "path": "dispatcher.json",
+      "bytes": 1595,
+      "sha256": "a524ed880bb9234157dc66469743246cfb49c537908a8fc6db81a17f29cea84f"
+    },
+    {
+      "path": "dispatcher.json.a37c7f7ed57e46b68698abece15a7ad8.log",
+      "bytes": 41451,
+      "sha256": "19600c1fda5e76e71ef577605b42e97f6ea32997493b96c66f7bb74ab3cfeb24"
+    },
+    {
+      "path": "diverse-source-controls.json",
+      "bytes": 1541,
+      "sha256": "ba5097e518a1c9e6a9994608e44aea8d518dda695644decde313c1176b920cad"
+    },
+    {
+      "path": "diverse-source-controls.json.7c4aa9ba532b43cb8289e7948147a1b1.log",
+      "bytes": 6233,
+      "sha256": "2579e7dfbc38e985774589647c68877353532ea9a8ffaf887d766a3f09f29d13"
+    },
+    {
+      "path": "early-readback.raw.json",
+      "bytes": 24487,
+      "sha256": "722386d07469b935b3e0a7930bd6d694ee74d111770ffe6bda8063e11f77f3d6"
+    },
+    {
+      "path": "execution-source-controls.json",
+      "bytes": 1553,
+      "sha256": "beecf4db159fe06966f74197d4d0c24097ac5dda365d10e8cac55290b91d132a"
+    },
+    {
+      "path": "execution-source-controls.json.8adbf7b309a741ea863c699d843662d1.log",
+      "bytes": 26717,
+      "sha256": "6cb98e508c8ddb26991cf6e150267373e01718372602474122f491fcbf683867"
+    },
+    {
+      "path": "full-source-before.json",
+      "bytes": 841,
+      "sha256": "9417e98b7b5143630e7cc249dea2ce9882dd12c23f02aa32b7c6c97a27b63b8e"
+    },
+    {
+      "path": "launch.raw.json",
+      "bytes": 3935,
+      "sha256": "c975fbc996541ca27927fd4ad9e5beb67f11cbd9af391fb0a6730cea92c44363"
+    },
+    {
+      "path": "native-environment.json",
+      "bytes": 6664,
+      "sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+    },
+    {
+      "path": "pipeline-status.early.json",
+      "bytes": 6960,
+      "sha256": "dbe1b6ef11ea65f32cab520684f885cf79656892e35144a91c866afeceb91ea4"
+    },
+    {
+      "path": "pipeline-status.recovery-owner.snapshot.json",
+      "bytes": 42020,
+      "sha256": "6b1c71b9e7d00b8db2d20b05e52e3ab220fc13892f2dce3b78e205eaf7acb540"
+    },
+    {
+      "path": "product.executed-binaries.json",
+      "bytes": 4422,
+      "sha256": "223bbcbe58885b515b41f2958e6c7798e0b95cac5573c5ba443cf1ac30c36e8d"
+    },
+    {
+      "path": "product.json",
+      "bytes": 1569,
+      "sha256": "205d8db64b5b4872e5d85bd6fc2ec6b3800528ec6fcb0fe6924f8152506483d5"
+    },
+    {
+      "path": "product.json.c7b9f66daeea436e80894f981b0b62a3.log",
+      "bytes": 27451,
+      "sha256": "ae27e73d95afcff0d7317eb341c4d939b6c224f6d71fcd1dd86401b6a99c171e"
+    }
+  ],
+  "joint_gate_status": "HOLD"
+}

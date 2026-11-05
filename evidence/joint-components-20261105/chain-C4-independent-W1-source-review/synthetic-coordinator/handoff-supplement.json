@@ -1,0 +1,58 @@
+{
+  "schema": "C4-synthetic-census-frozen-handoff-supplement-v1",
+  "status": "FROZEN_AUTHORIZED_AFTER_H1_RELEASE_NOT_EXECUTED",
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "coordinator": {
+    "path": "pq_recovery/w1-independent-c4/synthetic-coordinator/run_c4_synthetic_census.py",
+    "bytes": 30270,
+    "sha256": "856a61b997d26efa7d62f8176c745eb7a236e5e75db4f4e8cf50d90a09eb14c7",
+    "frozen": true
+  },
+  "unchanged_capture_helper": {
+    "path": "model_storage/pq_effect_migration/native/test_elf_capture.py",
+    "bytes": 6917,
+    "sha256": "64489779d88a399040e20f939fe878f8d20fa86a60b435a2d7896186dc64d87a",
+    "implementation_modified": false
+  },
+  "independent_collector_review": {
+    "path": "model_storage/synthetic-collector-review/review.json",
+    "bytes": 3439,
+    "sha256": "dae1ada5b79f8f104ff05c403b042ace4ca6658c5348b0d0c2ce6702b8766ed9",
+    "reviewer": "/root/model_storage",
+    "concrete_new_blockers_found": [],
+    "desktop_cargo_collector_native_execution": false
+  },
+  "existing_preregistration": {
+    "path": "pq_recovery/w1-independent-c4/synthetic-coordinator/preregistration.json",
+    "sha256": "2507beb2790a9dd81c5765700abf4e9a8fbdbe9f0f857ccfc08ed137554ce8e8"
+  },
+  "existing_delivery_manifest": {
+    "path": "pq_recovery/w1-independent-c4/delivery-manifest-v4.json",
+    "sha256": "4ef555373281e3232644444baa0742bdfee3d0582a883511b5b478704e9fd583",
+    "modified_by_this_supplement": false
+  },
+  "authorization": {
+    "owner": "/root",
+    "executor": "/root/w1_audit",
+    "condition": "Only after the H1 execution reaches an authoritative terminal state and all owned descendants/resource use are released.",
+    "ordered_children": [
+      0,
+      1
+    ],
+    "attempts_per_child_run": 1,
+    "native_seconds_per_child": 300,
+    "stdout_limit_bytes_per_child": 268435456,
+    "stderr_limit_bytes_per_child": 1048576,
+    "new_external_total_seconds": 3600,
+    "original_native_limits_changed": false,
+    "other_runner_900_or_5_second_limits_claimed_as_original": false,
+    "no_sampling_or_desktop_process_started_by_reviewer": true
+  },
+  "scope_limits": [
+    "Model/root reviews and 23 prelaunch checks are static preparation, not native or timing evidence.",
+    "Actual ELF capture and full source before/after remain required at execution; no old binary or elapsed time is filled in.",
+    "This supplement does not edit any frozen coordinator, source, prior delivery manifest or preregistered budget.",
+    "C4 complete raw cost recalculation is pending separate raw delivery and root assignment. Historical C2 data is not C4 evidence."
+  ]
+}

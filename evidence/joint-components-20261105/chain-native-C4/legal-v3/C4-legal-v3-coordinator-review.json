@@ -1,0 +1,69 @@
+{
+  "path": "w1/run_frozen_w1_legal_v3_c4.py",
+  "bytes": 13013,
+  "sha256": "0ea3e88a8fbbfdd4669bbbe5840ebdbcb6a9bcea26af4ba21f41b128cd92b997",
+  "native_control_argv_identical_to_original_workflow": true,
+  "commands": [
+    [
+      "factorial-kernel-tests",
+      [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-crypto-primitives",
+        "--lib",
+        "pon_work::legal_attempt::",
+        "--",
+        "--test-threads=1"
+      ]
+    ],
+    [
+      "factorial-example-tests",
+      [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-pon-node",
+        "--example",
+        "pon_w1_legal_strategy_v3",
+        "--",
+        "--test-threads=1"
+      ]
+    ],
+    [
+      "original-legal-v3",
+      [
+        "env",
+        "-u",
+        "CARGO_INCREMENTAL",
+        "python3",
+        "-B",
+        "scripts/ci/run_w1_false_trace_reuse_v1.py",
+        "--arch",
+        "x64",
+        "--local",
+        "--legal-strategy-v3"
+      ]
+    ]
+  ],
+  "executed": false,
+  "component_scope": true,
+  "original_complete_window_seconds": 10800,
+  "original_runner_native_inner_budgets": {
+    "build": 900,
+    "per_shard": 300,
+    "termination_grace": 5
+  },
+  "selected_native_control_local_cap_seconds": 900,
+  "runtime_process_snapshot": "pid/ppid/start_ticks and /proc/self/cgroup before execution, for exact owned-group follow-up; no child sampling or argv changes"
+}

@@ -1,0 +1,32 @@
+{
+  "atomic_snapshot": false,
+  "encoding": "utf-8",
+  "files": [
+    {
+      "eof": true,
+      "path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/effect-pq-owner.json",
+      "sha256": "a7cbad67e646de936b66750c257e2fa414e220fd669b7782dbe2fc5efb248f14",
+      "size": 1669,
+      "text": "{\n  \"after\": {\n    \"commit\": \"9f785cb201ba12ab0ae0f0d341c0f7912cc65efc\",\n    \"dirty\": false,\n    \"parents\": [\n      \"e458e534017dd479e382e84331fa1a6078c3abb4\"\n    ],\n    \"tree\": \"24804b21d0306b617e12fa3f5b9454a12ed4ad41\"\n  },\n  \"base_sha\": \"1556a4df6e279055fd8196f81a4ca2fe0f19384a\",\n  \"before\": {\n    \"commit\": \"9f785cb201ba12ab0ae0f0d341c0f7912cc65efc\",\n    \"dirty\": false,\n    \"parents\": [\n      \"e458e534017dd479e382e84331fa1a6078c3abb4\"\n    ],\n    \"tree\": \"24804b21d0306b617e12fa3f5b9454a12ed4ad41\"\n  },\n  \"command\": [\n    \"just\",\n    \"test\",\n    \"--locked\",\n    \"-p\",\n    \"codex-hepta-agentd\",\n    \"--lib\",\n    \"-E\",\n    \"test(automation_effect_host::pq::tests::)\",\n    \"--no-capture\",\n    \"--retries\",\n    \"0\",\n    \"--test-threads=1\"\n  ],\n  \"command_exit_code\": 100,\n  \"elapsed_seconds\": 47.23800226603635,\n  \"error\": \"required tests were not observed passing\",\n  \"exit_code\": 100,\n  \"finished_at\": \"2026-11-05T19:09:38.515257+00:00\",\n  \"job\": null,\n  \"lane\": \"source-head\",\n  \"log_bytes\": 37038,\n  \"log_file\": \"effect-pq-owner.json.df451d7e91554c9db29443ad9e242b8c.log\",\n  \"log_sha256\": \"ea7479a4d1d000df6d3b3d275a2837fac4e4fa809e024f10af728dfbe81b2178\",\n  \"minimum_tests\": 11,\n  \"observed_failed_tests\": 2,\n  \"observed_passed_tests\": 9,\n  \"output_limit_exceeded\": false,\n  \"returncode\": 100,\n  \"run_attempt\": null,\n  \"run_id\": null,\n  \"schema_version\": 1,\n  \"source_sha\": \"9f785cb201ba12ab0ae0f0d341c0f7912cc65efc\",\n  \"started_at\": \"2026-11-05T19:08:51.260388+00:00\",\n  \"status\": \"failed\",\n  \"tested_sha\": \"9f785cb201ba12ab0ae0f0d341c0f7912cc65efc\",\n  \"timed_out\": false,\n  \"working_directory\": \"/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source\"\n}\n",
+      "version": "2050:59826563:1669:1793905778515084259:1793905778520084112"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/full-source-after.json",
+      "sha256": "9417e98b7b5143630e7cc249dea2ce9882dd12c23f02aa32b7c6c97a27b63b8e",
+      "size": 841,
+      "text": "{\n  \"identity\": {\n    \"commit\": \"9f785cb201ba12ab0ae0f0d341c0f7912cc65efc\",\n    \"tree\": \"24804b21d0306b617e12fa3f5b9454a12ed4ad41\",\n    \"parents\": [\n      \"e458e534017dd479e382e84331fa1a6078c3abb4\"\n    ],\n    \"dirty\": false\n  },\n  \"raw_git_blob_bytes_match\": true,\n  \"tracked_count\": 11839,\n  \"tracked_bytes\": 183369088,\n  \"index_count\": 11839,\n  \"missing\": [],\n  \"hidden\": [],\n  \"tree_inventory_sha256\": \"b55a235f367feb2298814481c69e09436c50284de8c29c242c03e4c907643d58\",\n  \"guard_sha256\": \"e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1\",\n  \"cargo_lock_sha256\": \"0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663\",\n  \"toolchain_file_sha256\": \"e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380\",\n  \"nextest_config_sha256\": \"65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803\"\n}\n",
+      "version": "2050:59825459:841:1793905781358620737:1793905781367000335"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/configuration-after.json",
+      "sha256": "da762835dd9b37f00fee55e68f96a91c950d9dbb0a8b52bfaff860ab194f0ebb",
+      "size": 1113,
+      "text": "{\n  \"before\": {\n    \"/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config\": \"24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8\",\n    \"/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree\": \"bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276\",\n    \"/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree\": \"443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454\"\n  },\n  \"after\": {\n    \"/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config\": \"24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8\",\n    \"/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree\": \"bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276\",\n    \"/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree\": \"443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454\"\n  },\n  \"unchanged\": true\n}\n",
+      "version": "2050:59826565:1113:1793905781369977183:1793905781378000012"
+    }
+  ],
+  "snapshot_scope": "independent_file",
+  "truncated": false
+}

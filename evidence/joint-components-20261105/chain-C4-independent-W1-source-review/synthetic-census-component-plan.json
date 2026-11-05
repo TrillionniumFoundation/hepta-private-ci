@@ -1,0 +1,270 @@
+{
+  "schema": "C4-existing-synthetic-census-component-plan-v1",
+  "status": "STATIC_SOURCE_PLAN_NOT_EXECUTED",
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "reviewer": "/root/pq_recovery",
+  "frozen_source_mutated": false,
+  "commands_executed": false,
+  "scope": "Only the two existing synthetic census children; not the full 17-child owner campaign, Mode-A, five routing tiles, learning, live task admission or cold complete-model qualification.",
+  "build": {
+    "cwd": "<complete clean exact-C4 repository root>",
+    "precondition_argv": [
+      "bash",
+      "scripts/project-preflight.sh"
+    ],
+    "toolchain": "1.95.0",
+    "original_documented_argv": [
+      "cargo",
+      "build",
+      "--offline",
+      "--locked",
+      "--release",
+      "--manifest-path",
+      "trillionnium/Cargo.toml",
+      "-p",
+      "trnm-crypto-primitives",
+      "--jobs",
+      "2",
+      "--example",
+      "pon_work_expensive_v1",
+      "--example",
+      "pon_shared_material_v1"
+    ],
+    "documentation": "evidence/pon-work-expensive-v1-20261105/README.md:451-470",
+    "features": "Cargo package defaults; do not add --all-features or pq-native-openssl",
+    "profile": "Cargo release default; no RUSTFLAGS or profile overrides",
+    "dependency_prefetch_argv": [
+      "cargo",
+      "fetch",
+      "--locked",
+      "--manifest-path",
+      "trillionnium/Cargo.toml"
+    ],
+    "native_build_timeout_in_owner_or_reproduction_doc": null,
+    "scope": "The documented build produces two examples. Only pon_work_expensive_v1 is executed in this component plan; shared-material and model generators are not executed. Build/setup have separate receipts and are not charged into the two 300-second native child deadlines."
+  },
+  "seed": {
+    "value": "d74433233739073f8237d5efa7d7fe9f2bf7b686a4634c425c2dabc6bed68944",
+    "source": "evidence/pon-work-expensive-v1-20261105/reproduction.json.exact_current_native_replay.derived_seed",
+    "source_git_blob": "3d7786976af8eb2b18a2ab20e56bc10b27ff28ec",
+    "role": "Predeclared historical mathematical stream replay under the newly built exact-C4 binary",
+    "fresh_mode_a_reveal": false,
+    "historical_execution_inherited": false,
+    "timings_expected_to_repeat": false
+  },
+  "children": [
+    {
+      "name": "synthetic-target-0",
+      "argv": [
+        "<C4-native-ELF>/pon_work_expensive_v1",
+        "--work-expensive-v1",
+        "--attempts",
+        "64",
+        "--samples",
+        "8",
+        "--reuse",
+        "16",
+        "--target-index",
+        "0",
+        "--seed",
+        "d74433233739073f8237d5efa7d7fe9f2bf7b686a4634c425c2dabc6bed68944"
+      ],
+      "stdin_hex": "",
+      "material_argument_absent": true,
+      "target_hex": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "timeout_seconds": 300,
+      "stdout_limit_bytes": 268435456,
+      "stderr_limit_bytes": 1048576,
+      "expected_requested_cells": 1080,
+      "reader_argv": [
+        "python3",
+        "-B",
+        "scripts/pon_work_expensive_reader_v1.py",
+        "<new-receipt-dir>/synthetic-target-0/native.jsonl",
+        "--out",
+        "<new-receipt-dir>/synthetic-target-0/reader.json",
+        "--calibration-samples",
+        "2",
+        "--budgets-ns",
+        "1000000",
+        "5000000",
+        "20000000"
+      ]
+    },
+    {
+      "name": "synthetic-target-1",
+      "argv": [
+        "<C4-native-ELF>/pon_work_expensive_v1",
+        "--work-expensive-v1",
+        "--attempts",
+        "64",
+        "--samples",
+        "8",
+        "--reuse",
+        "16",
+        "--target-index",
+        "1",
+        "--seed",
+        "d74433233739073f8237d5efa7d7fe9f2bf7b686a4634c425c2dabc6bed68944"
+      ],
+      "stdin_hex": "",
+      "material_argument_absent": true,
+      "target_hex": "07ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "timeout_seconds": 300,
+      "stdout_limit_bytes": 268435456,
+      "stderr_limit_bytes": 1048576,
+      "expected_requested_cells": 1080,
+      "reader_argv": [
+        "python3",
+        "-B",
+        "scripts/pon_work_expensive_reader_v1.py",
+        "<new-receipt-dir>/synthetic-target-1/native.jsonl",
+        "--out",
+        "<new-receipt-dir>/synthetic-target-1/reader.json",
+        "--calibration-samples",
+        "2",
+        "--budgets-ns",
+        "1000000",
+        "5000000",
+        "20000000"
+      ]
+    }
+  ],
+  "child_execution_owner": {
+    "original_functions": "run_work_expensive_campaign_v1.py::exchange -> bounded_process.py::run_bounded",
+    "original_args": "run_bounded(argv, b'', timeout=300, stdout_limit=256*1024*1024, stderr_limit=1024*1024, cwd=C4_ROOT)",
+    "whole_ownership": "deadline begins before Popen; bounded pipe read, wait and process-group cleanup; retain raw, stderr and terminal receipt even on failure",
+    "term_grace_seconds": null,
+    "no_inherited_5_second_grace": true,
+    "sum_native_deadlines_seconds": 600,
+    "is_whole_build_reader_campaign_deadline": false
+  },
+  "expected": {
+    "native_schema": "pon-work-expensive-native-v2",
+    "reader_schema": "pon-work-expensive-reader-v2",
+    "class_names": [
+      "periodic-dense-fixture",
+      "full-rank-field",
+      "zero",
+      "identity",
+      "rank-one",
+      "sparse-diagonal",
+      "continuity-maintenance-v1",
+      "left-zero-right-rank-one",
+      "right-zero-left-rank-one"
+    ],
+    "arm_names": [
+      "lazy-full-limb",
+      "prepared-generic",
+      "prepared-structured",
+      "tiled-classical",
+      "tiled-strassen-one-level",
+      "paired-product",
+      "blocked-zero",
+      "blocked-zero-integer-paired",
+      "blocked-one-zero-rank-one",
+      "maintenance-periodic",
+      "maintenance-integer-paired",
+      "maintenance-prefix",
+      "maintenance-limb",
+      "scalar-original",
+      "lazy-full-limb-sparse"
+    ],
+    "class_count_per_child": 9,
+    "samples": 8,
+    "attempts_per_supported_cell": 64,
+    "actual_reuse_attempts": 16,
+    "epochs_per_complete_cell": 4,
+    "requested_cells_per_child": 1080,
+    "requested_cells_total": 2160,
+    "maximum_attempts_if_all_cells_supported": 138240,
+    "maximum_setups_if_all_cells_supported": 8640,
+    "unsupported_cells_allowed_with_one_paid_constructor_zero_attempts": true,
+    "dense_sparse_complete_cells_each_per_child": 72,
+    "dense_sparse_attempts_each_per_child": 4608,
+    "dense_sparse_setups_each_per_child": 288,
+    "expected_failed_cells": 0,
+    "all_15_arms_complete_required": false
+  },
+  "reader_and_binding_requirements": [
+    "Apply the unchanged original standalone reader to each preserved full raw stream; require successful parser exit and report.status == complete.",
+    "Also require the observed native-record schema is v2 and observed_arms equals the exact 15-arm source array: the original reader intentionally accepts legacy v1/14-arm streams.",
+    "Bind report seed, target, attempts_per_arm=64, samples=8, reuse_attempts=16 and exactly the nine expected materials to the predeclared command; reader cannot infer the caller's requested counts.",
+    "Require the raw run_summary requested_cells=1080 and completed_cells+unsupported_cells+failed_cells=1080 per child, with failed_cells=0; retain legitimate unsupported constructor costs instead of calling all 1080 cells complete.",
+    "Require both Dense and Sparse complete in all 72 class/sample cells per child, each with 64 actual attempts and four setups. Never treat zero-attempt or unsupported arm as a fast result.",
+    "The reader checks same-task stream equality across arms, canonical fields, ticket hashing, all misses, both successful native/scalar verdicts on each hit, phase sums, setup epochs, actual lifetimes and cache teardown boundaries.",
+    "Independently compare material task/A/B identities and per-class/sample trace_sequence_sha256 across the two target reports. Source challenges omit target; work IDs include target.",
+    "Require authoritative child exit=0, no ProcessFailure/timeout/output overflow, exact-source before/after guards and locked-build/actual-executed-ELF binding separately. A valid self-reported JSONL stream is not native execution proof.",
+    "Preserve failed/truncated output and reader errors with their own raw hashes; do not silently retry, select a faster sample, lower defaults or promote partial cells."
+  ],
+  "timing_and_inference_limits": [
+    "Producer timing sums disjoint actual setup, all 64 attempts including misses, proof cleanup and completed epoch teardown. Material construction and identity/rank preparation are separate.",
+    "Observed cell clocks, whole native run clocks and external child envelopes overlap producer/verification timings; do not add nested envelopes.",
+    "All hits run both full native and scalar verifier entry points, each separately timed; proof generation and record/hash/output overhead have explicit different scopes.",
+    "Keep original 2 calibration + 6 evaluation samples and original 1ms/5ms/20ms postprocessed prefix budgets; prefixes settle only actual destroyed cache epochs and are not executed early-stop trials.",
+    "Use per-class, per-target, same-sample Dense/Sparse comparisons and ratio of aggregate like-for-like costs. The original reader's arm selection uses calibration aggregate CPU and a fixed tie order, then evaluates later samples.",
+    "Eight samples do not balance fifteen arm positions. Dense is first and Sparse last in sample zero; Sparse immediately precedes Dense in samples one through seven. Keep this original schedule and disclose possible order/cache effects; do not claim randomized or balanced comparison.",
+    "Finite nine-class/fifteen-arm results can expose known cheaper legal strategies. They cannot prove a global attacker lower bound, ordinary task eligibility, public service liveness, WAN behavior, honest-failure budget or model utility.",
+    "Reuse is sixteen attempts per constructed task, not sixteen winners; these counts/recipes/challenge domains cannot be pooled with original legal-v3 H1/H8/H64 or reused-v3 H4.",
+    "Material creation internally includes all nine recipes; full-rank setup must not be billed as unavoidable cost for an attacker who only needs canonical zero/one-zero input.",
+    "This plan executes no material generator, NumPy baseline, learning trial, Mode-A or five-tile routing stage."
+  ],
+  "sources": [
+    {
+      "path": "scripts/ci/run_work_expensive_campaign_v1.py",
+      "git_blob": "dba09f0efa05ef56595dc764c9a89c8595b58063",
+      "bytes": 33613
+    },
+    {
+      "path": "scripts/pon_work_expensive_reader_v1.py",
+      "git_blob": "ead1eed53c01c5d8d78112515f95a79e89669f58",
+      "bytes": 24990
+    },
+    {
+      "path": "trillionnium/crates/trnm-crypto-primitives/examples/pon_work_expensive_v1.rs",
+      "git_blob": "c258df9b422991ed29b56d03d7f43c7b6d125a9d",
+      "bytes": 40448
+    },
+    {
+      "path": "trillionnium/crates/trnm-crypto-primitives/examples/support/w1_material.rs",
+      "git_blob": "83ab348459f3e5cae409d4dcffba359ef90aaf64",
+      "bytes": 7114
+    },
+    {
+      "path": "formal/pon-nakamoto-v1/bounded_process.py",
+      "git_blob": "b8579d1ea76e8c84214570f3f08d84595bfc77b6",
+      "bytes": 8627
+    },
+    {
+      "path": "formal/pon-nakamoto-v1/experiments/shared_cell_operator_v1.py",
+      "git_blob": "735f0b1a5bfd738dc709d5c195aaa3136d9d968e",
+      "bytes": 50193
+    },
+    {
+      "path": "evidence/pon-work-expensive-v1-20261105/README.md",
+      "git_blob": "a0275e9c439a02638ebabfaf54cd59193b5f15cd",
+      "bytes": 32504
+    },
+    {
+      "path": "evidence/pon-work-expensive-v1-20261105/reproduction.json",
+      "git_blob": "3d7786976af8eb2b18a2ab20e56bc10b27ff28ec",
+      "bytes": 39300
+    },
+    {
+      "path": "rust-toolchain.toml",
+      "git_blob": "8770b1d875864c5356dc4abad904b69ec484817f",
+      "bytes": 86
+    },
+    {
+      "path": "trillionnium/Cargo.toml",
+      "git_blob": "44df8f8d5eec880d10da42c12a903c03658cfc65",
+      "bytes": 2204
+    },
+    {
+      "path": "trillionnium/crates/trnm-crypto-primitives/Cargo.toml",
+      "git_blob": "3dd35460a48061e6a3fafdbe6bf815f65e241852",
+      "bytes": 943
+    }
+  ]
+}

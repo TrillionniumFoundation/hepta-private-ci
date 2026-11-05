@@ -1,0 +1,53 @@
+{
+  "schema": "C4-existing-offline-material-input-readback-v1",
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "scope": "Read/hash/canonical/partition arithmetic only; no generator, numpy baseline, model inference, Cargo or native cost execution. This is not full verify_bundle execution or authenticity of historical source rights.",
+  "input_root": "evidence/pon-native-node-v1/model-current/model",
+  "files": [
+    {
+      "path": "evidence/pon-native-node-v1/model-current/model/model.json",
+      "bytes": 14174,
+      "sha256": "d07ae8ce412746b5cc7289f65be3a5fb0e417aa3ad747aa71c2e3d1fd2f3514e",
+      "git_blob": "16894c31cefe5e5edda80e7b4b42ed60a23769f6"
+    },
+    {
+      "path": "evidence/pon-native-node-v1/model-current/model/consumer.json",
+      "bytes": 227036,
+      "sha256": "f75d027312966d7316795629ba7ae0dfd82c2ccbaece417db30b8a28b4210051",
+      "git_blob": "02ea421b7b14cd5198af6bc20d0a9188da2279cb"
+    },
+    {
+      "path": "evidence/pon-native-node-v1/model-current/model/evaluation-bundle.json",
+      "bytes": 80283,
+      "sha256": "e2a67320971f6620dc4c67c4114eb9fcf3389d4b9925daedfbb471f9936b8570",
+      "git_blob": "c2a1cc28844ec5f7e68f88fb481935b3489a6b30"
+    }
+  ],
+  "model_schema": "hepta-source-owner-linear-256-v1",
+  "model_source": "9fedf7ecbbe07177069c030592b4e03dcffebb81",
+  "model_artifact": "d6ac3f24a43045dda6af862344918688b5fbb047599d423e27c567cf670ccfc2",
+  "default_bundle_hash": "485d1ddac3f10b859599297ede15c5703517952d3f507cdc3efea7f14214429e",
+  "bundle_scope": "controlled-local-frozen-inputs-not-authorized-future-evidence",
+  "model_equals_embedded_candidate": true,
+  "consumer_partition_equal": true,
+  "consumer_rows": 213,
+  "default_batch_offset": 0,
+  "default_batch_size": 64,
+  "default_baseline_repetitions": 100,
+  "full_material_directory_present_in_git_tree": false,
+  "original_generator": "formal/pon-nakamoto-v1/experiments/shared_cell_operator_v1.py --material-only --out <new-directory>",
+  "generated_required_files": [
+    "manifest.json",
+    "model.json",
+    "tasks.json",
+    "tile-0/material.bin",
+    "tile-1/material.bin",
+    "tile-2/material.bin",
+    "tile-3/material.bin",
+    "tile-4/material.bin"
+  ],
+  "full_owner_is_only_synthetic": false,
+  "model_material_generated_in_this_review": false,
+  "P1_cold_complete_model_claim": false
+}

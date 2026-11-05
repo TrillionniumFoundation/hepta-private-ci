@@ -1,0 +1,52 @@
+{
+  "schema": "root-C4-legal-v3-outer-receipt-review-v1",
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "job_id": "1a1acdfc3c9-fc05-5767",
+  "terminal_unix_ms": 1793903536445,
+  "outer_manifest_and_authoritative_terminal_verified": true,
+  "original_full_raw_and_ELF_export_independently_rehashed": false,
+  "raw_data_recalculated": false,
+  "source_before_equals_after": true,
+  "tracked_entries": 10357,
+  "tracked_bytes": 985270534,
+  "original_manifest_reported_sha256": "7f4a596357d7908605f13135b8e5be61ac3d7cb554887ec4d205708bbca36716",
+  "original_grid_reported": "PASS 30/30",
+  "elf_reported_sha256": "5fac508b448d0815173f3802438b5a0b48479fbe15fd1e4b701e981159606740",
+  "outer_elapsed_seconds": 1826.0716021750122,
+  "original_runner_elapsed_seconds": 1512.311208808,
+  "scope": "Outer manifest, coordinator bytes and authoritative durable job terminal verified now; independently rehash full original raw receipts and ELF only after export. Kernel/example controls are 9+6, not cost samples. Four verifier labels contain only three distinct arithmetic kernels; producer 2x2 is four.",
+  "files": [
+    {
+      "path": "C4-legal-manifest.json",
+      "bytes": 13139,
+      "sha256": "9fb57646c5cb5f1e7f7ddf393dff2e87678c105c3c8f6a32a024113172ea8243"
+    },
+    {
+      "path": "C4-legal-terminal.json",
+      "bytes": 952,
+      "sha256": "b65402ff4fda93e236eb679fb5776ad4592ce24b18b2f0a2857efaf6ebfad0e1"
+    },
+    {
+      "path": "C4-legal-launch.json",
+      "bytes": 1372,
+      "sha256": "a7243cee969d309b642b66fa79a1382977e3c5d37d1c81affbc13c9e0f337339"
+    },
+    {
+      "path": "C4-legal-final-read.json",
+      "bytes": 17112,
+      "sha256": "861566d006b810754482292290cc3e934a08cdc71442b28cc12ab380a04743b4"
+    },
+    {
+      "path": "C4-legal-v3-coordinator-review.json",
+      "bytes": 1645,
+      "sha256": "6b32fee1ca9ed1cf28e17cb4aec1119dd52ff13ee4ffa7bef667107240e2a516"
+    },
+    {
+      "path": "run_frozen_w1_legal_v3_c4.py",
+      "bytes": 13013,
+      "sha256": "0ea3e88a8fbbfdd4669bbbe5840ebdbcb6a9bcea26af4ba21f41b128cd92b997"
+    }
+  ],
+  "joint_gate_status": "HOLD"
+}

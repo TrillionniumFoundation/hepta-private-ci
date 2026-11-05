@@ -1,0 +1,83 @@
+{
+  "class_arrays_equal": true,
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "cost_sampling_executed": false,
+  "count_arithmetic_checked": true,
+  "native_executed": false,
+  "qualification": false,
+  "reader_and_native_arm_arrays_equal": true,
+  "runtime_imports_executed": false,
+  "schema": "C4-synthetic-census-plan-static-checks-v1",
+  "source_blob_and_size_checks": 11,
+  "source_files": [
+    {
+      "bytes": 33613,
+      "git_blob": "dba09f0efa05ef56595dc764c9a89c8595b58063",
+      "path": "scripts/ci/run_work_expensive_campaign_v1.py",
+      "sha256": "91a60f0244cb15df81a79aa512a746436186c95bd6ed3d8e884e374d6031e510"
+    },
+    {
+      "bytes": 24990,
+      "git_blob": "ead1eed53c01c5d8d78112515f95a79e89669f58",
+      "path": "scripts/pon_work_expensive_reader_v1.py",
+      "sha256": "946d5e18b9feaff58a5c6817ee26fb831548ce253791f668b184834f36ffa8f3"
+    },
+    {
+      "bytes": 40448,
+      "git_blob": "c258df9b422991ed29b56d03d7f43c7b6d125a9d",
+      "path": "trillionnium/crates/trnm-crypto-primitives/examples/pon_work_expensive_v1.rs",
+      "sha256": "86cce1ac568a4542f37922ac88887f1e9a0c8071d233cd4be1fc0da19cf4364e"
+    },
+    {
+      "bytes": 7114,
+      "git_blob": "83ab348459f3e5cae409d4dcffba359ef90aaf64",
+      "path": "trillionnium/crates/trnm-crypto-primitives/examples/support/w1_material.rs",
+      "sha256": "ca6196f9067ea3ac86a2d743c13de9c9cac0715e4ae652654cdd6592a6d0cf9a"
+    },
+    {
+      "bytes": 8627,
+      "git_blob": "b8579d1ea76e8c84214570f3f08d84595bfc77b6",
+      "path": "formal/pon-nakamoto-v1/bounded_process.py",
+      "sha256": "16fa98206e75db5e925a31508e889df9d1968c32f518554f52c2a0711047b356"
+    },
+    {
+      "bytes": 50193,
+      "git_blob": "735f0b1a5bfd738dc709d5c195aaa3136d9d968e",
+      "path": "formal/pon-nakamoto-v1/experiments/shared_cell_operator_v1.py",
+      "sha256": "5c2c6d900c6a6898a5d5eb8b28d48a44217159b0efe11fb84d8f0f58277dbaf6"
+    },
+    {
+      "bytes": 32504,
+      "git_blob": "a0275e9c439a02638ebabfaf54cd59193b5f15cd",
+      "path": "evidence/pon-work-expensive-v1-20261105/README.md",
+      "sha256": "e5d7989f31924e2b1e9b515f398ab62f23723b51dffbb589aecc7e5e6d81f36b"
+    },
+    {
+      "bytes": 39300,
+      "git_blob": "3d7786976af8eb2b18a2ab20e56bc10b27ff28ec",
+      "path": "evidence/pon-work-expensive-v1-20261105/reproduction.json",
+      "sha256": "b52ffe27ea38ce8935e8f54f4036850fd56d119142386972ba53e0347919dbd5"
+    },
+    {
+      "bytes": 86,
+      "git_blob": "8770b1d875864c5356dc4abad904b69ec484817f",
+      "path": "rust-toolchain.toml",
+      "sha256": "24ef3b9d3edbd850aa386cb0a98e10450b0030991a4537cb359f54d49dbbb33a"
+    },
+    {
+      "bytes": 2204,
+      "git_blob": "44df8f8d5eec880d10da42c12a903c03658cfc65",
+      "path": "trillionnium/Cargo.toml",
+      "sha256": "48e0094090202b3b6d12331965be846a34c2a454ff3dc3717a532f228e4dd50b"
+    },
+    {
+      "bytes": 943,
+      "git_blob": "3dd35460a48061e6a3fafdbe6bf815f65e241852",
+      "path": "trillionnium/crates/trnm-crypto-primitives/Cargo.toml",
+      "sha256": "3f06e812783fc7fa5037ecfb4550a58edea0ef68675b4062115e4b06088d6b24"
+    }
+  ],
+  "status": "PASS",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "two_native_argv_exactly_equal_recorded_replay_except_ELF_path": true
+}

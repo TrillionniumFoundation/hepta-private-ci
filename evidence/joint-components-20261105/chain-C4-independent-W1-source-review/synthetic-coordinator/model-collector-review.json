@@ -1,0 +1,53 @@
+{
+  "schema": "c4-synthetic-frozen-collector-independent-static-review-v1",
+  "reviewer": "model_storage",
+  "scope": "Exact coordinator/collector combination and concrete failure/argument paths; no native qualification",
+  "inputs": [
+    {
+      "role": "coordinator",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/w1-independent-c4/synthetic-coordinator/run_c4_synthetic_census.py",
+      "bytes": 30270,
+      "sha256": "856a61b997d26efa7d62f8176c745eb7a236e5e75db4f4e8cf50d90a09eb14c7"
+    },
+    {
+      "role": "capture",
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/test_elf_capture.py",
+      "bytes": 6917,
+      "sha256": "64489779d88a399040e20f939fe878f8d20fa86a60b435a2d7896186dc64d87a"
+    },
+    {
+      "role": "bounded_process",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/w1-independent-c4/source/formal/pon-nakamoto-v1/bounded_process.py",
+      "bytes": 8627,
+      "sha256": "16fa98206e75db5e925a31508e889df9d1968c32f518554f52c2a0711047b356"
+    },
+    {
+      "role": "native_example",
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/w1-independent-c4/source/trillionnium/crates/trnm-crypto-primitives/examples/pon_work_expensive_v1.rs",
+      "bytes": 40448,
+      "sha256": "86cce1ac568a4542f37922ac88887f1e9a0c8071d233cd4be1fc0da19cf4364e"
+    }
+  ],
+  "concrete_new_blockers_found": [],
+  "source_findings": [
+    "Capture is bound to the live coordinator PID and /proc start_ticks before the native child, and the returned record is checked against that exact pair.",
+    "Each target has an independent collector; original bounded_process retains/reaps its direct group leader after final process-group kill, and native arguments after argv[0] remain exact.",
+    "Cargo JSON identifies one exact default release example source/artifact; actual launch is a hash-named byte-identical copy in the same examples directory, with pre/post SHA256 and inode checks.",
+    "The unchanged collector matches the expected crate/hash basename and exact --work-expensive-v1 selector; native main consumes args().skip(1), and the reviewed example does not use argv[0]/current_exe for source or material selection.",
+    "Per target success requires one actual executing-image record, exact build SHA, exact launch path/device/inode, coordinator PID/start_ticks, both subtree and post-open verification flags, exact selector, and retained-image readback SHA.",
+    "Native and reader failures preserve stdout/stderr and set process/component/report failure; missing/ambiguous/mismatched capture cannot pass.",
+    "Original child limits remain 300 seconds with stdout 256MiB and stderr 1MiB; new external coordination limits are labelled separately."
+  ],
+  "limits": [
+    "No native child, collector, original reader or Cargo was executed by this review.",
+    "Polling may miss short execution; absence is a rejection, not inferred execution credit.",
+    "The legacy observed_selected_tests field denotes one CLI selector here, not a count of Rust tests.",
+    "If collector finish reports an alive thread, it remains a failed/incomplete capture; no stable complete-image claim is justified.",
+    "Prelaunch 23 checks were read as peer evidence, not rerun or attributed to this review."
+  ],
+  "production_files_modified": 0,
+  "desktop_processes_started": 0,
+  "cargo_commands_run": 0,
+  "native_tests_run": 0,
+  "qualification": false
+}

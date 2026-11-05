@@ -1,0 +1,85 @@
+{
+  "C4_actual_raw_independently_recomputed": false,
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "executor": "/root/w1_audit",
+  "files": [
+    {
+      "bytes": 21054,
+      "path": "assessment.md",
+      "sha256": "0b16ed01316acdbaec3877a75b583cd5de71a2322cc63bd32c2714f64d1feda2"
+    },
+    {
+      "bytes": 14088,
+      "path": "structured-producer-entry-audit.md",
+      "sha256": "9dcccc40ba28280ad027a2713e6584765b349cc78050555adc296a702dac2eee"
+    },
+    {
+      "bytes": 14520,
+      "path": "source-inventory.json",
+      "sha256": "a92491a16881b335bff93dcff87caa9a566a3c79ad60e4f5e1395b8595f7f9aa"
+    },
+    {
+      "bytes": 20235,
+      "path": "example-byte-audit.json",
+      "sha256": "c722e4572d9754b23fa642e6d16abb5dbf516fd91ad8edadba88f3983c484296"
+    },
+    {
+      "bytes": 31612,
+      "path": "c4-example-tree-inventory.json",
+      "sha256": "2ce9c6ae9648f86d25ff9e7e27666d41cf1e71b56db70a92e4e5918a00861001"
+    },
+    {
+      "bytes": 7063,
+      "path": "workflow-entry-scan.json",
+      "sha256": "a67c527943d40e982f3d45d67ccff95c05899bf2758759f18687a6b6103ffc57"
+    },
+    {
+      "bytes": 7979,
+      "path": "c4-source-retrieval.json",
+      "sha256": "4592226405f409fc4d907e343850ca2766c7eabdf2ba8cdfc6ea8e17fd17e2d5"
+    },
+    {
+      "bytes": 2393,
+      "path": "material-input-readback.json",
+      "sha256": "b90fabdaceb88fa76cfa264c7a6c87aea482422a17783ede2db5fb21dccae490"
+    },
+    {
+      "bytes": 764,
+      "path": "synthetic-census-extra-source-expected.json",
+      "sha256": "4159841de5216228bf066f96ddbfbdd9b54d9d2c0bb629b9d4e63f808f131fef"
+    },
+    {
+      "bytes": 1855,
+      "path": "synthetic-census-extra-source-readback.json",
+      "sha256": "9403e52733b07338c95e82e6c263ac9a8ecaa96214aea3753fb8199e1744ad41"
+    },
+    {
+      "bytes": 12195,
+      "path": "synthetic-census-component-plan.json",
+      "sha256": "5dfcebe872bf6b5bb1f928203f767e7fe964e51bd6224f64119067395d7b4788"
+    },
+    {
+      "bytes": 10446,
+      "path": "synthetic-census-component-plan.md",
+      "sha256": "2b4c910fcd71995eedaa6e5a155446cb65ca11964ec31f1063dcd347d720b612"
+    },
+    {
+      "bytes": 3268,
+      "path": "synthetic-census-plan-static-checks.json",
+      "sha256": "22ff568ea7b3e41e6203cd8be539ae2fcb663b4ce269b719b13eb6adac4a48e4"
+    },
+    {
+      "bytes": 1592,
+      "path": "delivery-manifest.json",
+      "sha256": "6553a3fa4e0c95896e9f9e11ba97c59776dea806f80993e2219e367d5274747a"
+    }
+  ],
+  "history": "delivery-manifest.json is preserved byte-for-byte as the original version",
+  "native_executed": false,
+  "qualification": "HOLD",
+  "reviewer": "/root/pq_recovery",
+  "sampling_executed": false,
+  "schema": "C4-independent-W1-cost-source-review-delivery-v2",
+  "scope": "Independent read-only source, measurement interface and original two-child synthetic census plan; no native sampling or model generation",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14"
+}
