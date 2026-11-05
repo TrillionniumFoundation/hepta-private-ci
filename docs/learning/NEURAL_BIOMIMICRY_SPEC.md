@@ -444,7 +444,15 @@ runtime identity; `decide_cell` returns a complete legal behavior policy and sta
 proposal; `commit_cell_step` CAS-publishes state/receipt through the existing owner.
 `propose_cell_update` consumes an immutable dataset, fixed value/credit profile,
 trainable-parameter mask and budget and returns only a candidate artifact.
-These names describe implementation work, not existing exported Rust symbols.
+The Cell framework source candidate now exports these functions from
+`codex-rs/hepta-neuron/src/cell.rs`, `cell_inference.rs` and `cell_update.rs`.
+`infer_cell` requires a mutable state owner and durably records the exact request
+before dispatch; `recover_cell_inference` only reads that original request.
+`enter_cell_step` returns an already committed decision without another model
+call. An unknown outcome retains pending state; late admitted results preserve
+actual cost and force abstention. These source interfaces are not native-test,
+target-host, ordinary-startup or production-admission evidence. See
+[the refactor qualification boundary](../../qualification/cell-framework-20261105/README.md).
 
 Use existing exact stable IDs/digests/generations for identity fields and monotonic
 logical deadlines for ordering. Bound observations by the admitted tokenizer/input
