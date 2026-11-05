@@ -141,8 +141,21 @@ pub struct CellDecisionReceiptV1 {
     pub selected_candidate: StableId,
     pub confidence_ppm: u32,
     pub ood_ppm: u32,
+    pub deadline_exceeded: bool,
     pub cost: CellExecutionCostV1,
     pub authority: AuthorityPosture,
+}
+
+/// Durable intent recorded before dispatch. This is a complete replay binding,
+/// not a capability to call a worker. Once saved, only readback may resolve it.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CellInferenceAdmissionV1 {
+    pub snapshot: CellOwnerSnapshotV1,
+    pub operation_id: StableId,
+    pub semantic_request_digest: Digest32,
+    pub model_request: NeuronModelRequestV1,
+    pub deadline_micros: u64,
+    pub admitted_at_micros: u64,
 }
 
 #[derive(Debug)]
@@ -173,9 +186,29 @@ pub struct CellStateProposalV1 {
     pub(crate) receipt: CellDecisionReceiptV1,
     pub(crate) deadline_micros: u64,
     pub(crate) tick: SparseTick,
+    pub(crate) abstain_candidate: StableId,
 }
 
 impl CellStateProposalV1 {
+    /// Record late delivery without authorizing a late action. Actual model
+    /// usage is preserved; both builtin owners call this before publication.
+    pub fn settle_at(mut self, now_micros: u64) -> Result<Self, CellExecutionError> {
+        if now_micros < self.tick.monotonic_micros {
+            return Err(CellExecutionError::DeadlineExceeded);
+        }
+        if now_micros >= self.deadline_micros {
+            if !self.receipt.policy.iter().any(|p| p.candidate_id == self.abstain_candidate && p.allowed) {
+                return Err(CellExecutionError::InvalidInput);
+            }
+            for entry in &mut self.receipt.policy {
+                entry.probability_ppm = if entry.candidate_id == self.abstain_candidate { 1_000_000 } else { 0 };
+            }
+            self.receipt.selected_candidate = self.abstain_candidate.clone();
+            self.receipt.deadline_exceeded = true;
+        }
+        Ok(self)
+    }
+
     pub fn expected_snapshot(&self) -> &CellOwnerSnapshotV1 {
         &self.snapshot
     }
@@ -196,7 +229,18 @@ impl CellStateProposalV1 {
 /// The state owner atomically checks the exact snapshot, including writer epoch,
 /// source/deletion frontier and definition, and saves BOTH policy and checkpoint.
 /// Uncertain outcomes require readback of the same operation before new work.
+/// Commit closes its matching admission atomically with state and receipt.
 pub trait CellStateOwnerV1 {
+    /// Atomically save the full original request before any dispatch. A durable
+    /// owner must witness this boundary before returning success. Re-admission,
+    /// including an identical pending request, must never authorize dispatch.
+    fn admit_inference(&mut self, admission: CellInferenceAdmissionV1) -> Result<(), CellExecutionError>;
+
+    fn pending_inference(
+        &self,
+        scope: &CellScopeV1,
+    ) -> Result<Option<CellInferenceAdmissionV1>, CellExecutionError>;
+
     /// Check the stable operation ID before encoding or inference. Reusing the
     /// ID with different semantics conflicts irrespective of state revision.
     /// An uncertain writer returns CommitUncertain until authoritative readback.
@@ -240,6 +284,8 @@ pub enum CellExecutionError {
     CommitConflict,
     OperationConflict,
     OperationAlreadyCommitted,
+    InferencePending,
+    InferenceNotAdmitted,
     JournalCorrupt,
     AcknowledgedHistoryMissing,
     CommitUncertain,

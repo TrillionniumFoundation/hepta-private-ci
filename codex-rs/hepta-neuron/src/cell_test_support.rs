@@ -1,4 +1,6 @@
 use crate::*;
+use codex_hepta_infer_core::NeuronFeatureReceiptV1;
+use codex_hepta_infer_core::NeuronFeatureRequestV1;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
@@ -209,11 +211,44 @@ pub(crate) fn feature_receipt(
 }
 
 pub(crate) fn proposal(
-    owner: &impl CellStateOwnerV1,
+    owner: &mut impl CellStateOwnerV1,
     request: CellStepInputV1,
 ) -> CellStateProposalV1 {
     let now = request.monotonic_micros;
     let prepared = checked(prepare_cell_step(&definition(), owner, &Encoder, request, now));
-    let inferred = checked(infer_cell(prepared, &mut Model { calls: 0, latency: 20 }, now + 1));
+    let inferred = checked(infer_cell(prepared, owner, &mut Model { calls: 0, latency: 20 }, now + 1));
     checked(decide_cell(inferred, now + 2))
 }
+
+pub(crate) struct RecordedControl {
+    pub(crate) executions: usize,
+    pub(crate) reads: usize,
+    pub(crate) failure: Option<NeuronModelError>,
+    pub(crate) receipt: Option<NeuronFeatureReceiptV1>,
+}
+
+impl RecordedControl {
+    pub(crate) fn new() -> Self {
+        Self { executions: 0, reads: 0, failure: None, receipt: None }
+    }
+}
+
+impl NeuronInferenceControlPort for RecordedControl {
+    fn execute_feature(&mut self, request: &NeuronFeatureRequestV1) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
+        self.executions += 1;
+        let receipt = feature_receipt(request, /*latency*/20);
+        self.receipt = Some(receipt.clone());
+        match self.failure {
+            Some(error) => Err(error),
+            None => Ok(receipt),
+        }
+    }
+}
+
+impl CellInferenceReadbackPortV1 for RecordedControl {
+    fn read_feature(&mut self, _: &NeuronFeatureRequestV1) -> Result<Option<NeuronFeatureReceiptV1>, NeuronModelError> {
+        self.reads += 1;
+        Ok(self.receipt.clone())
+    }
+}
+

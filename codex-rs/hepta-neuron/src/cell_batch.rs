@@ -8,11 +8,12 @@ use codex_hepta_infer_core::neuron_feature_request_digest_v1;
 use codex_hepta_types::StableId;
 
 use crate::InferenceControlModelPort;
-use crate::NeuronInferenceControlPort;
 use crate::NeuronModelError;
 use crate::NeuronModelPort;
-use crate::NeuronModelRequestV1;
 use crate::cell_types::*;
+use crate::cell_inference::ReceiptPort;
+use crate::cell_inference::admission_for_step;
+use crate::cell_inference::feature_request;
 use crate::runtime_types::validate_model_output;
 
 /// The inference.control owner authenticates observations and retains dispatch
@@ -23,31 +24,6 @@ pub trait CellMicrobatchInferenceControlPortV1 {
         &mut self,
         requests: &[NeuronFeatureRequestV1],
     ) -> Result<Vec<NeuronFeatureReceiptV1>, NeuronModelError>;
-}
-
-struct ReceiptPort(NeuronFeatureReceiptV1);
-
-impl NeuronInferenceControlPort for ReceiptPort {
-    fn execute_feature(
-        &mut self,
-        _: &NeuronFeatureRequestV1,
-    ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
-        Ok(self.0.clone())
-    }
-}
-
-fn feature_request(request: &NeuronModelRequestV1) -> NeuronFeatureRequestV1 {
-    NeuronFeatureRequestV1 {
-        request_id: request.request_id.clone(),
-        generation: request.generation,
-        model_id: request.model_id.clone(),
-        encoder_digest: request.encoder_digest,
-        head_digest: request.head_digest,
-        weights_digest: request.weights_digest,
-        input_digest: request.input_digest,
-        feature_vector_q24: request.feature_vector_q24.clone(),
-        expected_output_width: request.expected_output_width,
-    }
 }
 
 pub struct CellBatchResultV1 {
@@ -101,6 +77,7 @@ impl CellBatchQueueV1 {
 
     pub fn dispatch_next(
         &mut self,
+        owner: &mut impl CellStateOwnerV1,
         model: &mut impl CellMicrobatchInferenceControlPortV1,
         now_micros: u64,
     ) -> Vec<CellBatchResultV1> {
@@ -137,7 +114,16 @@ impl CellBatchQueueV1 {
                     result: Err(CellExecutionError::DeadlineExceeded),
                 });
             } else {
-                ready.push((prepared, queue_age));
+                let admitted = admission_for_step(&prepared, now_micros)
+                    .and_then(|admission| owner.admit_inference(admission));
+                match admitted {
+                    Ok(()) => ready.push((prepared, queue_age)),
+                    Err(error) => completed.push(CellBatchResultV1 {
+                        scope: prepared.input.scope,
+                        operation_id: prepared.input.operation_id,
+                        result: Err(error),
+                    }),
+                }
             }
         }
         if ready.is_empty() {

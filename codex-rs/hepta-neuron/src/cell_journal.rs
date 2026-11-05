@@ -17,12 +17,13 @@ use crate::JournalAnchor;
 use crate::cell_journal_codec::MAX_FRAME_BYTES;
 use crate::cell_journal_codec::apply_record;
 use crate::cell_journal_codec::encode_commit;
+use crate::cell_journal_codec::encode_admission;
 use crate::cell_journal_codec::encode_reset;
 use crate::cell_owner::CellPartitionOwnerV1;
 use crate::cell_types::*;
 use crate::journal_lock::LockedFile;
 
-const MAGIC: &[u8; 8] = b"HPTACJ01";
+const MAGIC: &[u8; 8] = b"HPTACJ02";
 const HEADER_BYTES: usize = 40;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
 
@@ -161,7 +162,9 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         self.require_healthy()?;
         let index = self.partition_index(scope)?;
         self.owner.check_reset(scope, source_frontier, writer_epoch)?;
-        self.persist(encode_reset(index, source_frontier, writer_epoch))?;
+        let payload = encode_reset(index, source_frontier, writer_epoch);
+        self.check_reserved_capacity(payload.len(), self.owner.pending_count())?;
+        self.persist(payload)?;
         if let Err(error) = self.owner.reset_at_frontier(scope, source_frontier, writer_epoch) {
             self.healthy = false;
             return Err(error);
@@ -175,6 +178,18 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
 
     fn require_healthy(&self) -> Result<(), CellExecutionError> {
         if self.healthy { Ok(()) } else { Err(CellExecutionError::CommitUncertain) }
+    }
+
+    fn check_reserved_capacity(&self, payload_bytes: usize, remaining_pending: usize) -> Result<(), CellExecutionError> {
+        let reserved_records = remaining_pending as u64;
+        let sequence = self.head.map_or(0, |a| a.sequence);
+        let reserved_bytes = reserved_records * (MAX_FRAME_BYTES as u64 + 36);
+        if sequence + 1 + reserved_records > self.max_records as u64
+            || self.length + payload_bytes as u64 + 36 + reserved_bytes > MAX_JOURNAL_BYTES
+        {
+            return Err(CellExecutionError::CapacityExceeded);
+        }
+        Ok(())
     }
 
     fn persist(&mut self, payload: Vec<u8>) -> Result<(), CellExecutionError> {
@@ -206,6 +221,25 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
 }
 
 impl<W: AnchorWitnessStore> CellStateOwnerV1 for CellOwnerJournalV1<W> {
+    fn admit_inference(&mut self, admission: CellInferenceAdmissionV1) -> Result<(), CellExecutionError> {
+        self.require_healthy()?;
+        let index = self.partition_index(&admission.snapshot.scope)?;
+        self.owner.check_admission(&admission)?;
+        let payload = encode_admission(index, &admission);
+        self.check_reserved_capacity(payload.len(), self.owner.pending_count() + 1)?;
+        self.persist(payload)?;
+        if let Err(error) = self.owner.admit_inference(admission) {
+            self.healthy = false;
+            return Err(error);
+        }
+        Ok(())
+    }
+
+    fn pending_inference(&self, scope: &CellScopeV1) -> Result<Option<CellInferenceAdmissionV1>, CellExecutionError> {
+        self.require_healthy()?;
+        self.owner.pending_inference(scope)
+    }
+
     fn snapshot(&self, scope: &CellScopeV1) -> Result<CellOwnerSnapshotV1, CellExecutionError> {
         self.require_healthy()?;
         self.owner.snapshot(scope)
@@ -241,6 +275,7 @@ impl<W: AnchorWitnessStore> CellStateOwnerV1 for CellOwnerJournalV1<W> {
         if let Some(receipt) = self.owner.check_commit(&proposal, now_micros)? {
             return Ok(receipt);
         }
+        let proposal = proposal.settle_at(now_micros)?;
         let payload = encode_commit(index, &proposal);
         self.persist(payload)?;
         // Exclusive mutable ownership preserves the validated CAS while file
