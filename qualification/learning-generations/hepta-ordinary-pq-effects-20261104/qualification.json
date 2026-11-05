@@ -67,18 +67,135 @@
         "PASS [   0.757s] (151/333) codex-hepta-contracts final_use::tests::pq::entry_tests::pq_final_use_all_entries_keep_explicit_revocation_precedence",
         "PASS [   0.976s] (234/333) codex-hepta-contracts final_use::tests::pq::entry_tests::pq_final_use_all_entries_require_the_exact_claimed_head"
       ],
-      "failure_reason": "Existing Unix trust services: EPERM / Operation not permitted. No test was changed to skip this failure."
+      "failure_reason": "Existing Unix trust services: EPERM / Operation not permitted. No test was changed to skip this failure.",
+      "public_initial_admission_passes": [
+        "PASS [   0.368s] (278/333) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::public_initial_tests::classical_public_history_does_not_authorize_new_runtime_material",
+        "PASS [   0.555s] (282/333) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::public_initial_tests::public_initial_expired_current_is_sticky_and_cannot_be_revived",
+        "PASS [   2.553s] (333/333) codex-hepta-learning-artifacts selection::initial_smollm_genesis::tests::public_initial_tests::public_initial_admission_rejects_profile_crossing_and_changed_factors"
+      ],
+      "source_commit": "1993db5510afb9764a4a4a60e5bd0f48862411ab",
+      "log_bytes": 58549
     },
     "host_regression": {
       "command": "just test -p codex-hepta-infer-worker-host --lib --locked --retries 0 -E 'test(ordinary_open_) | test(ordinary_pq_) | test(pq_study_role_wire_) | test(ordinary_study_pq_)'",
-      "status": "RUNNING",
-      "native_result": null
+      "status": "TESTS_FAILED_UNDER_DIAGNOSTIC_LINK",
+      "native_result": {
+        "exit_code": 100,
+        "binaries": 1,
+        "run": 6,
+        "passed": 3,
+        "failed": 3,
+        "skipped_reported": 178,
+        "skip_scope": "Filter exclusions and existing ignored tests as reported by nextest; no new skip added.",
+        "log_bytes": 29171,
+        "log_sha256": "ffb9e6a90b830f11421395e668397035cf87366786bee1abd8cc0d6a7ff721de",
+        "failure_reason": "Unix services returned EPERM / Operation not permitted.",
+        "passed_tests": [
+          "final_use_authorizer::tests::ordinary_open_rejects_missing_or_classic_profile_before_creating_state",
+          "final_use_authorizer::tests::ordinary_open_does_not_reactivate_or_change_existing_classic_state",
+          "smollm_cognitive_host::initial::tests::neural_study::roles::pq_tests::pq_study_role_wire_verifies_signatures_without_installation_activation"
+        ],
+        "failed_tests": [
+          "final_use_authorizer::pq_test_support::tests::ordinary_pq_services_close_on_abort_and_drop",
+          "final_use_authorizer::pq_test_support::tests::ordinary_pq_config_reopens_original_spent_nonce_and_frontier",
+          "smollm_cognitive_host::initial::tests::neural_study::roles::pq_tests::ordinary_study_pq_roles_authenticate_and_reopen_the_original_training_ledger"
+        ]
+      },
+      "source_commit": "1993db5510afb9764a4a4a60e5bd0f48862411ab",
+      "build_jobs": 1,
+      "incremental": false,
+      "interrupted_attempt": {
+        "status": "UNKNOWN_AFTER_EXECUTION_TRANSPORT_LOSS",
+        "source_commit": "1993db5510afb9764a4a4a60e5bd0f48862411ab",
+        "build_jobs": 2,
+        "exit_code": null,
+        "native_result": null,
+        "native_passes_claimed": 0,
+        "partial_log_bytes": 63110,
+        "partial_log_sha256": "ad43f22ba2ce7d1bb310392c462800db0681d8eb83e5cf4e15908a8537db98cc",
+        "last_stage": "dependency compilation; no test result observed",
+        "reason": "execution environment became unavailable; session recovery timed out and original processes were absent after recovery"
+      },
+      "default_link_attempt": {
+        "status": "BUILD_FAILED_AT_LINK",
+        "source_commit": "1993db5510afb9764a4a4a60e5bd0f48862411ab",
+        "exit_code": 101,
+        "native_tests_executed": 0,
+        "native_passes_claimed": 0,
+        "log_bytes": 77667,
+        "log_sha256": "472df088d5d738d817ae1909ac18dfad1fd128303846678881d665085c7f6ebf",
+        "failure": "collect2: fatal error: ld terminated with signal 7 [Bus error]",
+        "root_cause": "not established; shared disk and memory pressure observed"
+      },
+      "diagnostic_link_flags": [
+        "--threads=1",
+        "--strip-debug",
+        "--no-mmap-output-file"
+      ],
+      "diagnostic_link_wrapper": "host-test-linker.sh",
+      "diagnostic_invocation": {
+        "path_prefix": "/workspace/scratch/0bc97e9264aa/validation/host-linker-bin",
+        "cc_symlink_target": "qualification/learning-generations/hepta-ordinary-pq-effects-20261104/host-test-linker.sh",
+        "target_directory": "/workspace/scratch/0bc97e9264aa/target",
+        "cache": "Reused dependency objects from the failed default build; final host library test link reran.",
+        "wrapper_sha256": "9aff5a8cb574041aafd5aa2be4a6eeaa4c703ae014106964aac2968d350b2a2a",
+        "binary_bytes": 507279024,
+        "binary_sha256": "f9e12138f529c779a7cc2238dcd524e1514749437ce075e9189ba1a4dc8efa4c",
+        "default_link_success_claimed": false,
+        "runtime_permissions_changed": false
+      }
     },
     "scoped_fix": {
-      "status": "PENDING"
+      "command": "just fix -p codex-hepta-contracts -p codex-hepta-learning-artifacts -p codex-hepta-infer-worker-host --locked",
+      "status": "FAILED_ENOSPC",
+      "exit_code": 101,
+      "failure": "Failed to create target/debug/.fingerprint/windows-strings-8fca535b12185871: No space left on device (os error 28).",
+      "lint_completed": false,
+      "source_changes_made_by_fix": false,
+      "input_source": "1993db5510afb9764a4a4a60e5bd0f48862411ab plus the three comment-only edits; before the parallel endpoint guard was incorporated.",
+      "log_bytes": 284,
+      "log_sha256": "5bb6fe5d9ee8a3255123b61f6604f143c0c9a23d90d2bc25764b506b27a731eb"
     },
     "format": {
-      "status": "PENDING"
+      "status": "PASS",
+      "commands": [
+        {
+          "command": [
+            "just",
+            "fmt",
+            "--base",
+            "4c93a641945044f904a656cbf1d23e358a074d52"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "just",
+            "fmt",
+            "--check",
+            "--base",
+            "4c93a641945044f904a656cbf1d23e358a074d52"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "source_scope": "All delivered Rust source bytes, including 484ce165 and the three comment-only changes.",
+      "receipt_sha256": "0a126282de63537486ec9e4651a7c8f8b0c4a1dc30ac290bbdb217b38c89daad",
+      "rust_tests_rerun_after_fix_or_format": false
     }
   },
   "prior_environment_observations": {
@@ -121,8 +238,107 @@
     "Atomic cross-owner provider admission after external frontier observation",
     "Other modules explicit classical effect constructors",
     "Account/payment/debt and Chain settlement integration",
+    "Ordinary AuthBus PQ settlement wiring",
     "Node/session/resource authority, governance, rotation, recovery and legacy migration",
-    "Independent deployment custody and WAN qualification"
+    "Independent deployment custody and WAN qualification",
+    "Successful scoped Clippy/fix on the delivered tree",
+    "Native execution of the later clock/frontier endpoint-separation controls"
   ],
-  "remote_ci_result_used": false
+  "remote_ci_result_used": false,
+  "surface_status": {
+    "accounts_payments_jobs_settlement": {
+      "closed": false,
+      "change": "No Chain code or AuthBus settlement wiring change."
+    },
+    "identity_discovery_resources": {
+      "closed": false,
+      "change": "Original resource limits retained; no network/session/recovery authority qualification."
+    },
+    "cell_publication_current": {
+      "closed": false,
+      "change": "PQ profile required at ordinary neural consumers; publication and dynamic root/selector authority remain open."
+    },
+    "final_use_runtime": {
+      "closed": false,
+      "change": "Current external frontier and exact claimed head checked at four entry implementations; distributed admission and other classical constructors remain open."
+    },
+    "governance_updates_recovery": {
+      "closed": false,
+      "change": "No governance root, software-update or recovery policy change."
+    },
+    "history_cold_start_import": {
+      "closed": false,
+      "change": "Ordinary open rejects implicit classical activation; complete ownership/nonce/root migration is not implemented."
+    }
+  },
+  "signing_contract": {
+    "existing_canonical_encodings_reused": true,
+    "common_six_surface_envelope_finalized": false,
+    "artifact_selector_currentness_proposal": "selector-currentness-contract.md",
+    "proposal_implemented": false
+  },
+  "explicit_classical_from_config_remains_effect_capable": true,
+  "source_scope": "Exact source used by the native runs; delivery_source separately identifies the later delivered tree.",
+  "delivery_source": {
+    "commit": "7335636b2cbde4077e354dcb3156a04b9ee6e8a9",
+    "tree": "0f389ab54ea47274ad3f4933a8e86ca4f6ddfbd0",
+    "source_sha256": {
+      "codex-rs/hepta-contracts/PQ_FINAL_USE.md": "c2ebaab74e82f9895f06809c912cc5f7f87e0366b66ab31b49e6bd57663393f5",
+      "codex-rs/hepta-contracts/src/final_use.rs": "b829c56d411d0db2b59c4ccfa01ae8d881fcc0dc86b78db55efe460988d6ff54",
+      "codex-rs/hepta-contracts/src/final_use_live_owner.rs": "d1e8206836893e8ee145fcea1c0e4d24d778457418acfe4e9c54e0f74a051673",
+      "codex-rs/hepta-contracts/src/final_use_pq_entry_tests.rs": "9880dd5b060ea74e326b415fe02bd77de90300b239abf33eca757a4f87a1de2a",
+      "codex-rs/hepta-contracts/src/final_use_pq_frontier_tests.rs": "e34b2da9a14601687b5e45f937c2e30c99e84fee4d9a46d1ec66eb69673f986c",
+      "codex-rs/hepta-contracts/src/final_use_pq_tests.rs": "3f197f33ad2d792399d7d0355f870de7671b9e363e196f2e5a375847fc316553",
+      "codex-rs/hepta-infer-worker-host/src/authority_trust_unix_tests.rs": "f851e1b10c8cf91e3571c2144d6c6c60194d59ba5e1f9ff891f42bf84ec8e4a4",
+      "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs": "0f4b6b1c3508ffc579052a13bc67b5686b1a9327ce28df83ed170081b2bac20c",
+      "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs": "8248dce487954198981a1359d1f4848be140b5230952e0231068dc27c0a87195",
+      "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_path_tests.rs": "5dea0536135f7eb8c88b5ca44630f561392461302042d2a573015c0c8ab264e6",
+      "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq_resource_tests.rs": "ebec367dbe082ecc10489798723505443f1d331d5c23b30a0dabac8af5529e21",
+      "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_pq_test_support.rs": "7040d7ca7d585ef3de57562c17f8244c12c97ab1a921f7764d3de1fa6ea9c3dc",
+      "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_pq_test_support_tests.rs": "898e650bc10df64694c360c41651b4a9dc99a119b21671f054f59abe2cc14fa3",
+      "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs": "3b4a43592db6f40f9eb0a4b8b24a34051c3d7f86c91022307aab5430af4055c1",
+      "codex-rs/hepta-infer-worker-host/src/smollm_cognitive_host.rs": "dfe68305c76ba4a94a4f006679ecad51660c3c2c40ebefa40e80f2345830d863",
+      "codex-rs/hepta-infer-worker-host/src/smollm_initial_agentd_tests.rs": "e56784d3765cd5dfc649e39f8ef876528a932037969b46f1eb962576ce0addb9",
+      "codex-rs/hepta-infer-worker-host/src/smollm_initial_cleanup_tests.rs": "7b37e43ace334c8ae6296253bebe62b1c43afbc88bf93d7b2e2fd3081b6740c4",
+      "codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs": "085492f971eb7e774c6faeef3639809b191505e1e519feb016a2bfc07f716cdc",
+      "codex-rs/hepta-infer-worker-host/src/smollm_initial_positive_tests.rs": "c81516f4db1385a98de8a0a191c80c2e96d577c32ee4242edbf90fad149dc507",
+      "codex-rs/hepta-infer-worker-host/src/smollm_initial_pq_inputs_tests.rs": "6435b4a5f02be992daeeed9aef9cf6937c04c08555561eeeccb00615ac34628a",
+      "codex-rs/hepta-infer-worker-host/src/smollm_initial_query_tests.rs": "deba39ea26e974a002737cdd534dc0f4e08d0547c496e2c0e014f639e1ff4471",
+      "codex-rs/hepta-infer-worker-host/src/smollm_neural_study_tests.rs": "4d7ad30e3217ce17b076bcb361b40873d6241732a9064600b1ab4e42c6a9320c",
+      "codex-rs/hepta-infer-worker-host/src/smollm_public_initial_loop_tests.rs": "af3369779cb880f62e4c36637d37ed0da1de1aa54990ef9adfb5e51c445b4825",
+      "codex-rs/hepta-infer-worker-host/src/smollm_study_install_tests.rs": "1c0cf9159f53de4a0633ecdd78d379d864c48677b18e7abf487d11f0fb2385bf",
+      "codex-rs/hepta-infer-worker-host/src/smollm_study_ordinary_tests.rs": "7b6a98c0f234202c0b0659834ffc1d107cf8e1f859999b15b2c6ef93bcc39a8b",
+      "codex-rs/hepta-infer-worker-host/src/smollm_study_pq_authority_tests.rs": "d3077640b24384f2b8ea93f922c5e66c5f47864bba0665e183a343ffe565c097",
+      "codex-rs/hepta-infer-worker-host/src/smollm_study_pq_roles_tests.rs": "748ff7db953fc6492d4bba2991f15ac72068403d462f9f28898e8de5ae987161",
+      "codex-rs/hepta-infer-worker-host/src/smollm_study_roles_tests.rs": "d99bd9b1d229cd165ff08453e12cfd1aa642b7a7eda0d569973ddb70b0860523",
+      "codex-rs/hepta-learning-artifacts/src/selected_initial_smollm_pq_tests.rs": "c01691d22f1351ff080257ebdd846fc7fe6745105c16dc48c986d4964cb87fb1",
+      "codex-rs/hepta-learning-artifacts/src/selected_public_initial_smollm.rs": "e2a48d4e5a9291acfd31885c7512baea24f4b3155df92ce867fa2466b877311d",
+      "codex-rs/hepta-learning-artifacts/src/selected_public_initial_smollm_tests.rs": "e554438c120bf13031653c995675800985690e0e909b262a5e89add18d17385a",
+      "codex-rs/hepta-learning-artifacts/src/selection.rs": "ba325f8b3ad813dbcc61fa95bf7d85706f34356584773c7d1f7896bca17d6a42"
+    },
+    "native_tests_on_delivered_tree": "NOT_RUN"
+  },
+  "post_test_changes": [
+    {
+      "commit": "484ce165522026d915c4cf526cd7df2effab632c",
+      "kind": "parallel_production_guard_and_tests",
+      "change": "Reject equal canonical PQ clock/frontier paths before trust clients and local owner open.",
+      "native_tests": "NOT_RUN",
+      "source_review": "No additional blocker observed; canonical path separation does not qualify independent custody or every filesystem alias.",
+      "evidence": "evidence/pq-final-use-endpoint-separation-20261104/README.md"
+    },
+    {
+      "commit": "7335636b2cbde4077e354dcb3156a04b9ee6e8a9",
+      "kind": "comments_only",
+      "change": "Clarify that explicit classical from_config can authorize effects; add two opaque-argument name comments.",
+      "runtime_behavior_changed": false
+    }
+  ],
+  "retention": {
+    "fresh_raw_logs": "Local validation directory; hashes and exact results retained in this Git record. Raw logs and the 507 MB host test binary are not uploaded.",
+    "historical_raw_logs": "Lost at the original environment reset; observations only in the retained tool transcript.",
+    "reproduction_default": "reproduce.sh",
+    "diagnostic_reproduction": "Separate README command with host-test-linker.sh; default reproduction does not silently enable it."
+  },
+  "record_updated_utc": "2026-11-05T01:41:34.488576+00:00"
 }

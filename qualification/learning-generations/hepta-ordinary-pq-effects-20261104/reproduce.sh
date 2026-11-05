@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 # Run from a checkout containing the qualified source. Keep every result.
+# Uses the default linker. The README documents the separate diagnostic run.
 set -uo pipefail
 
 qualification_root=$(git rev-parse --show-toplevel) || exit 2
 qualification_output=${1:-$(mktemp -d)}
 mkdir -p "$qualification_output" || exit 2
 qualification_output=$(cd "$qualification_output" && pwd) || exit 2
+if ! (set -o noclobber; : >"$qualification_output/status.tsv") 2>/dev/null; then
+    printf '%s\n' 'Choose a fresh output directory; status.tsv already exists.' >&2
+    exit 2
+fi
 cd "$qualification_root" || exit 2
 
 case $(uname -s) in
