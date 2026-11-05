@@ -53,9 +53,10 @@ fn real_gen2_gen3_forwards_score_only_after_original_holdout_consumption() -> na
         return Err("native configuration bound".into());
     }
     let input: native::Input = serde_json::from_slice(&raw)?;
-    if input.schema != "hepta-smollm-neural-comparison-native-v1"
+    if input.schema != "hepta-smollm-neural-comparison-native-v2"
         || [
             &input.python,
+            &input.runtime_snapshot,
             &input.chain,
             &input.materials,
             &input.baseline_parent,
