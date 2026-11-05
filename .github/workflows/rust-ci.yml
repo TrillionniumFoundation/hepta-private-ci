@@ -33,6 +33,8 @@ jobs:
           python3 scripts/hepta_ci_history.py --commit "$BASE_SHA" --commit "$HEAD_SHA"
       - name: Test fast-feedback failure semantics
         run: python3 -m unittest discover -s scripts -p 'test_hepta_rust_ci_feedback.py' -v
+      - name: Test dependency prewarm source custody
+        run: python3 -m unittest discover -s scripts -p 'test_hepta_ci_chef.py' -v
       - name: Detect changed paths (no external action)
         id: detect
         shell: bash
@@ -61,7 +63,7 @@ jobs:
           argument_comment_lint_package=false
           workflows=false
           for f in "${files[@]}"; do
-            [[ $f == codex-rs/* || $f == .cargo/* || $f == justfile || $f == rust-toolchain || $f == rust-toolchain.toml || $f == scripts/hepta_workspace.py || $f == scripts/test_hepta_workspace.py || $f == scripts/test_hepta_rust_ci_feedback.py ]] && codex=true
+            [[ $f == codex-rs/* || $f == .cargo/* || $f == justfile || $f == rust-toolchain || $f == rust-toolchain.toml || $f == scripts/hepta_workspace.py || $f == scripts/test_hepta_workspace.py || $f == scripts/test_hepta_rust_ci_feedback.py || $f == scripts/hepta_ci_chef.py || $f == scripts/test_hepta_ci_chef.py ]] && codex=true
             [[ $f == tools/argument-comment-lint/* || $f == .github/workflows/rust-ci.yml || $f == .github/workflows/rust-ci-full.yml ]] && argument_comment_lint_package=true
             [[ $f == .github/* ]] && workflows=true
           done
