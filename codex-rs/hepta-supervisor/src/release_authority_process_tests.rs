@@ -160,9 +160,46 @@ fn delayed_matrix_spawn_rechecks_current_publication_after_agent_becomes_healthy
     supervisor.start_release(&fleet.first, release, now)?;
     assert_eq!(control.spawn_count(&fleet.first), 1);
     assert_eq!(control.matrix_spawn_count(&fleet.first), 0);
-    publisher.advance_clock_to(expires + 1);
+    // First commit the primary's CURRENT selection under valid publication.
+    // Hold back only the public companion binding, so no Matrix process enters
+    // before the independently delayed companion admission below.
+    let binding_path = supervisor
+        .record(&fleet.first)?
+        .layout
+        .matrix_public_binding()
+        .to_path_buf();
+    let held_binding = fleet._temp.path().join("held-matrix-binding.json");
+    std::fs::rename(&binding_path, &held_binding)?;
     control.set_healthy(&fleet.first);
-    let _ = supervisor.tick(now);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(
+        supervisor
+            .record(&fleet.first)?
+            .release_state
+            .current
+            .as_ref(),
+        Some(&id)
+    );
+    assert_eq!(control.matrix_spawn_count(&fleet.first), 0);
+    let waiting = supervisor
+        .snapshot(&fleet.first)
+        .expect("primary is healthy before companion admission");
+    assert!(waiting.healthy);
+    assert!(
+        waiting
+            .matrix
+            .last_error
+            .as_ref()
+            .is_some_and(|error| error.contains("public binding is absent"))
+    );
+    let retry_at = supervisor
+        .slots
+        .get(&fleet.first)
+        .and_then(|slot| slot.matrix.retry_at)
+        .ok_or("missing original Matrix retry deadline")?;
+    std::fs::rename(&held_binding, &binding_path)?;
+    publisher.advance_clock_to(expires + 1);
+    assert_eq!(supervisor.tick(retry_at), TickReport::default());
     let snapshot = supervisor
         .snapshot(&fleet.first)
         .expect("paired agent snapshot");
@@ -177,6 +214,48 @@ fn delayed_matrix_spawn_rechecks_current_publication_after_agent_becomes_healthy
             .as_ref()
             .is_some_and(|error| error.contains("M15 current publication rejected"))
     );
+    assert_eq!(control.matrix_spawn_count(&fleet.first), 0);
+    Ok(())
+}
+
+#[test]
+fn primary_health_after_publication_expiry_preserves_selection_and_blocks_companion()
+-> QualificationResult<()> {
+    let (mut publisher, fleet) = pq_fleet()?;
+    let id = publish(
+        &mut publisher,
+        &fleet,
+        "primary-health-expiry",
+        /*matrix*/ true,
+    )?;
+    let expires = publisher.current_unix_seconds() + 5;
+    publisher.publish_member_ids(&fleet.registry, std::slice::from_ref(&id), expires)?;
+    let release = AgentRelease::try_from(fleet.registry.resolve_release(&fleet.first, &id)?)?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    supervisor.start_release(&fleet.first, release, now)?;
+    let before = supervisor.record(&fleet.first)?.release_state;
+    publisher.advance_clock_to(expires + 1);
+    control.set_healthy(&fleet.first);
+    let report = supervisor.tick(now);
+    assert_eq!(report.faults.len(), 1);
+    assert_eq!(report.faults[0].agent_id, fleet.first);
+    assert!(
+        report.faults[0]
+            .message
+            .contains("M15 current publication rejected")
+    );
+    assert_eq!(supervisor.record(&fleet.first)?.release_state, before);
+    let snapshot = supervisor
+        .snapshot(&fleet.first)
+        .expect("primary health observation");
+    assert!(snapshot.active);
+    assert!(snapshot.healthy);
+    assert!(!snapshot.matrix.active);
+    assert_eq!(control.spawn_count(&fleet.first), 1);
     assert_eq!(control.matrix_spawn_count(&fleet.first), 0);
     Ok(())
 }
