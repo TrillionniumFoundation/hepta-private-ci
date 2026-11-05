@@ -1,0 +1,198 @@
+{
+  "all_checks_passed": true,
+  "checks": {
+    "all_registered_git_blobs_match_remote": true,
+    "counterexamples_reconstructed": true,
+    "local_registered_source_bytes": true,
+    "manifest_itself_matches_remote": true,
+    "panel_reanalysis": true,
+    "phase_and_runner_binding": true,
+    "process_exit_and_reaping": true,
+    "process_log_hash": true,
+    "published_commit_and_tree": true,
+    "registered_low_risk_path_limit": true,
+    "retained_failure_absent": true,
+    "six_panel_roster_complete": true,
+    "source_bytes_still_unchanged": true,
+    "start_result_registration_same_source": true
+  },
+  "cost_boundary": "Review body timing below is additional one-time review work; it is not included in the original phase receipt and excludes review interpreter startup, imports and GitHub readback.",
+  "counterexample_absolute_errors": {
+    "duration_correct_gradient": 2.7755575615628914e-17,
+    "duration_correlation": 0.0,
+    "duration_wrong_factorization": 0.0,
+    "duration_wrong_gradient": 0.0,
+    "entropic_gradient": 8.326672684688674e-17,
+    "entropic_value": 0.0,
+    "upfront_cost": 0.0,
+    "wrong_delayed_cost": 0.0
+  },
+  "low_risk_path_reanalysis": [
+    {
+      "eta": 1e-06,
+      "gradient_error": 2.7755575615628914e-17,
+      "reported_error_fields_match": true,
+      "value_error": 0.0
+    },
+    {
+      "eta": 1e-09,
+      "gradient_error": 1.3877787807814457e-17,
+      "reported_error_fields_match": true,
+      "value_error": 5.551115123125783e-17
+    },
+    {
+      "eta": 1e-12,
+      "gradient_error": 9.540979117872439e-18,
+      "reported_error_fields_match": true,
+      "value_error": 5.551115123125783e-17
+    },
+    {
+      "eta": 1e-30,
+      "gradient_error": 2.7755575615628914e-17,
+      "reported_error_fields_match": true,
+      "value_error": 5.551115123125783e-17
+    }
+  ],
+  "manifest_sha256": "ad82b7cc46814ebad787ea1ebb3f66a0282fb00e61ba9b6c308eda839d026bc3",
+  "maximum_closed_form_gradient_error": 2.7755575615628914e-17,
+  "maximum_recorded_bellman_error": 2.220446049250313e-16,
+  "maximum_recorded_gradient_error": 4.163336342344337e-17,
+  "new_algorithm_or_production_qualification": false,
+  "panel_reanalysis": [
+    {
+      "closed_recursive_gradient_error": 2.7755575615628914e-17,
+      "closed_recursive_value_error": 5.551115123125783e-17,
+      "closed_static_path_gradient_error": 0.0,
+      "closed_static_path_value_error": 0.0,
+      "closed_tree_optimal_error": 2.220446049250313e-16,
+      "eta": 0.0,
+      "nested_minus_static": 5.551115123125783e-17,
+      "objective_flag_correct": true,
+      "rate": 0.0,
+      "recorded_bellman_error_recomputed": 2.220446049250313e-16,
+      "recorded_gradient_error_recomputed": 4.163336342344337e-17,
+      "reported_error_fields_match": true,
+      "risk_scaled_static_path_error": 5.551115123125783e-17,
+      "seven_trees_and_eight_paths": true
+    },
+    {
+      "closed_recursive_gradient_error": 2.7755575615628914e-17,
+      "closed_recursive_value_error": 2.7755575615628914e-17,
+      "closed_static_path_gradient_error": 0.0,
+      "closed_static_path_value_error": 0.0,
+      "closed_tree_optimal_error": 0.0,
+      "eta": 0.0,
+      "nested_minus_static": -2.7755575615628914e-17,
+      "objective_flag_correct": true,
+      "rate": 0.13,
+      "recorded_bellman_error_recomputed": 0.0,
+      "recorded_gradient_error_recomputed": 2.7755575615628914e-17,
+      "reported_error_fields_match": true,
+      "risk_scaled_static_path_error": 2.7755575615628914e-17,
+      "seven_trees_and_eight_paths": true
+    },
+    {
+      "closed_recursive_gradient_error": 1.0408340855860843e-17,
+      "closed_recursive_value_error": 0.0,
+      "closed_static_path_gradient_error": 0.0,
+      "closed_static_path_value_error": 0.0,
+      "closed_tree_optimal_error": 0.0,
+      "eta": 0.2,
+      "nested_minus_static": 0.0,
+      "objective_flag_correct": true,
+      "rate": 0.0,
+      "recorded_bellman_error_recomputed": 0.0,
+      "recorded_gradient_error_recomputed": 1.0408340855860843e-17,
+      "reported_error_fields_match": true,
+      "risk_scaled_static_path_error": 0.0,
+      "seven_trees_and_eight_paths": true
+    },
+    {
+      "closed_recursive_gradient_error": 2.7755575615628914e-17,
+      "closed_recursive_value_error": 2.7755575615628914e-17,
+      "closed_static_path_gradient_error": 0.0,
+      "closed_static_path_value_error": 0.0,
+      "closed_tree_optimal_error": 0.0,
+      "eta": 0.2,
+      "nested_minus_static": -0.0006300859863698771,
+      "objective_flag_correct": true,
+      "rate": 0.13,
+      "recorded_bellman_error_recomputed": 0.0,
+      "recorded_gradient_error_recomputed": 2.7755575615628914e-17,
+      "reported_error_fields_match": true,
+      "risk_scaled_static_path_error": 2.7755575615628914e-17,
+      "seven_trees_and_eight_paths": true
+    },
+    {
+      "closed_recursive_gradient_error": 1.734723475976807e-17,
+      "closed_recursive_value_error": 2.7755575615628914e-17,
+      "closed_static_path_gradient_error": 0.0,
+      "closed_static_path_value_error": 0.0,
+      "closed_tree_optimal_error": 0.0,
+      "eta": 2.0,
+      "nested_minus_static": -2.7755575615628914e-17,
+      "objective_flag_correct": true,
+      "rate": 0.0,
+      "recorded_bellman_error_recomputed": 0.0,
+      "recorded_gradient_error_recomputed": 1.734723475976807e-17,
+      "reported_error_fields_match": true,
+      "risk_scaled_static_path_error": 2.7755575615628914e-17,
+      "seven_trees_and_eight_paths": true
+    },
+    {
+      "closed_recursive_gradient_error": 1.3877787807814457e-17,
+      "closed_recursive_value_error": 0.0,
+      "closed_static_path_gradient_error": 0.0,
+      "closed_static_path_value_error": 0.0,
+      "closed_tree_optimal_error": 0.0,
+      "eta": 2.0,
+      "nested_minus_static": -0.008909765777752765,
+      "objective_flag_correct": true,
+      "rate": 0.13,
+      "recorded_bellman_error_recomputed": 0.0,
+      "recorded_gradient_error_recomputed": 1.3877787807814457e-17,
+      "reported_error_fields_match": true,
+      "risk_scaled_static_path_error": 2.7755575615628914e-17,
+      "seven_trees_and_eight_paths": true
+    }
+  ],
+  "process_cost": {
+    "abnormal_exit_cost_is_only_measured_lower_bound": false,
+    "child_cpu_seconds": 0.143103,
+    "child_peak_rss_bytes": 13893632,
+    "supervisor_cpu_seconds": 0.0009500000000000064,
+    "wall_seconds": 0.15146016099970439
+  },
+  "recorded_risk_neutral_limit": [
+    {
+      "eta": 0.1,
+      "gradient_error": 0.0019231608623167806,
+      "value_error": 0.003851496472546123
+    },
+    {
+      "eta": 0.001,
+      "gradient_error": 1.91643594147084e-05,
+      "value_error": 3.885295276701006e-05
+    },
+    {
+      "eta": 1e-06,
+      "gradient_error": 1.916364260334813e-08,
+      "value_error": 3.885639027201293e-08
+    },
+    {
+      "eta": 1e-09,
+      "gradient_error": 1.9163615139206058e-11,
+      "value_error": 3.885633481637285e-11
+    }
+  ],
+  "result_sha256": "b018b91f34d379d358cbbb5aa135774dc3f3f4169ce59d91225dd83a287acb75",
+  "review_body_cpu_seconds": 0.10414010699999998,
+  "review_body_wall_seconds": 0.12934128100096132,
+  "review_source_sha256": "4691ee234b265c97d756f712a801304b689b2d02563bbac528c2bcb34f423dca",
+  "reviewer_disclosure": "The semantic implementation author performed this separate reanalysis. Arithmetic is independently reconstructed; this is not independent institutional review.",
+  "schema": "ndu.semantic-output-review.v1",
+  "scope": "Read-only reanalysis of the registered six panels and four path-limit cases; no additional scientific experiment.",
+  "source_commit": "062b6dd7c730c4795ae617f4c85278dd2ac821d7",
+  "source_file_count": 23,
+  "source_tree": "84ee113d287030e115c791d9481d0c719b2ab92c"
+}
