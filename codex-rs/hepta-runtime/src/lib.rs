@@ -7,6 +7,10 @@
 
 #![forbid(unsafe_code)]
 
+mod cell_lifecycle;
+mod cell_lifecycle_journal;
+mod cell_lifecycle_recovery;
+mod cell_lifecycle_transition;
 mod organs;
 mod topology_execution;
 
@@ -48,6 +52,18 @@ use sqlx::SqliteConnection;
 use sqlx::sqlite::SqliteConnectOptions;
 use zeroize::Zeroizing;
 
+pub use cell_lifecycle::RuntimeCellLifecycleError;
+pub use cell_lifecycle::RuntimeCellLifecycleIntentV1;
+pub use cell_lifecycle::RuntimeCellLifecycleObservationV1;
+pub use cell_lifecycle::RuntimeCellLifecycleObserverV1;
+pub use cell_lifecycle::RuntimeCellLifecyclePlanV1;
+pub use cell_lifecycle::RuntimeCellLifecycleSnapshotV1;
+pub use cell_lifecycle::RuntimeCellLifecycleStageV1;
+pub use cell_lifecycle::RuntimeCellStructuralChangeV1;
+pub use cell_lifecycle_journal::RuntimeCellLifecycleAnchorStoreV1;
+pub use cell_lifecycle_journal::RuntimeCellLifecycleAnchorV1;
+pub use cell_lifecycle_journal::RuntimeCellLifecycleJournalV1;
+pub use cell_lifecycle_journal::runtime_cell_lifecycle_journal_scope_v1;
 pub use topology_execution::RuntimeTopologyApplyReceiptV1;
 pub use topology_execution::RuntimeTopologyApplyRequestV1;
 pub use topology_execution::RuntimeTopologyExecutionError;
