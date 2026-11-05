@@ -664,7 +664,9 @@ impl AutomationStore {
         let decoded: TaskFlowTransition = serde_json::from_str(&payload)
             .map_err(|_| corrupt("provider absence transition payload"))?;
         if transition != "requeued_proven_absent" || decoded != expected_transition {
-            return Err(corrupt("provider absence requeue differs from cancelled step"));
+            return Err(corrupt(
+                "provider absence requeue differs from cancelled step",
+            ));
         }
         let revision = to_u64(
             event
@@ -692,7 +694,9 @@ impl AutomationStore {
             .try_get("command_digest")
             .map_err(|_| corrupt("provider absence command digest column"))?;
         if stored_digest != Sha256Digest::for_bytes(&bytes).as_str() {
-            return Err(corrupt("provider absence requeue differs from immutable step fence"));
+            return Err(corrupt(
+                "provider absence requeue differs from immutable step fence",
+            ));
         }
         tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
         Ok(Some(receipt))

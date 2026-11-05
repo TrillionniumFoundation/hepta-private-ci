@@ -191,7 +191,10 @@ async fn settled_absence_fact_read_survives_reopen_and_new_owner_without_redispa
             .expect("original immutable step")
             .expect("step");
         assert_eq!(settled.state, TaskFlowStepState::Reconciled);
-        assert_eq!(settled.final_outcome, Some(TaskFlowReconcileOutcome::Cancelled));
+        assert_eq!(
+            settled.final_outcome,
+            Some(TaskFlowReconcileOutcome::Cancelled)
+        );
         assert_eq!(settled.fence, owner);
         store.close().await;
         let reopened = AutomationStore::open(&fixture.layout)
@@ -229,7 +232,10 @@ async fn settled_absence_fact_read_survives_reopen_and_new_owner_without_redispa
             )
             .await
             .expect("start after historical absence");
-        let before = reopened.taskflow_run(&effect.run_id).await.expect("new run");
+        let before = reopened
+            .taskflow_run(&effect.run_id)
+            .await
+            .expect("new run");
         assert_eq!(
             reopened
                 .read_settled_authorized_taskflow_effect_absence(
@@ -242,7 +248,10 @@ async fn settled_absence_fact_read_survives_reopen_and_new_owner_without_redispa
             Some(settled)
         );
         assert_eq!(
-            reopened.taskflow_run(&effect.run_id).await.expect("unchanged run"),
+            reopened
+                .taskflow_run(&effect.run_id)
+                .await
+                .expect("unchanged run"),
             before
         );
         assert!(
@@ -265,14 +274,28 @@ async fn settled_absence_fact_read_survives_reopen_and_new_owner_without_redispa
             "a historical fact cannot authorize another dispatch"
         );
         assert_eq!(driver.calls, 1);
-        assert_eq!(authority.capacity().expect("authority capacity").used_nonces, 1);
+        assert_eq!(
+            authority
+                .capacity()
+                .expect("authority capacity")
+                .used_nonces,
+            1
+        );
         reopened.close().await;
     }
 }
 
 #[tokio::test]
 async fn settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence() {
-    for fault in ["unknown", "unsettled", "proof", "intent", "payload", "fence", "settlement_time"] {
+    for fault in [
+        "unknown",
+        "unsettled",
+        "proof",
+        "intent",
+        "payload",
+        "fence",
+        "settlement_time",
+    ] {
         let fixture = Fixture::new();
         let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
         let sqlite_home = AbsolutePathBuf::from_absolute_path(
@@ -321,12 +344,11 @@ async fn settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidenc
             );
         } else if fault == "unsettled" {
             assert!(matches!(result, Err(AuthorizedEffectError::TaskFlow(_))));
-            let recorded: String = sqlx::query_scalar(
-                "SELECT observation FROM taskflow_effect_dispatch_observations",
-            )
-            .fetch_one(&pool)
-            .await
-            .expect("absence recorded before the interrupted projection");
+            let recorded: String =
+                sqlx::query_scalar("SELECT observation FROM taskflow_effect_dispatch_observations")
+                    .fetch_one(&pool)
+                    .await
+                    .expect("absence recorded before the interrupted projection");
             assert_eq!(recorded, "proven_absent");
         } else {
             assert!(matches!(
@@ -337,7 +359,10 @@ async fn settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidenc
             ));
         }
         if matches!(fault, "unknown" | "unsettled") {
-            let before = store.taskflow_run(&effect.run_id).await.expect("run before read");
+            let before = store
+                .taskflow_run(&effect.run_id)
+                .await
+                .expect("run before read");
             assert_eq!(
                 store
                     .read_settled_authorized_taskflow_effect_absence(
@@ -351,7 +376,10 @@ async fn settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidenc
                 "{fault}"
             );
             assert_eq!(
-                store.taskflow_run(&effect.run_id).await.expect("run after read"),
+                store
+                    .taskflow_run(&effect.run_id)
+                    .await
+                    .expect("run after read"),
                 before
             );
         } else {
@@ -367,7 +395,8 @@ async fn settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidenc
                     .is_some()
             );
             let value = Sha256Digest::for_bytes(b"injected-absence-corruption");
-            let mutation = || match fault {
+            let mutation = || {
+                match fault {
                 "proof" => sqlx::query(
                     "UPDATE taskflow_step_outbox SET receipt_digest = ? WHERE event_kind = 'reconciled'",
                 ).bind(value.as_str()),
@@ -381,12 +410,17 @@ async fn settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidenc
                     "UPDATE taskflow_events SET recorded_at_ms = recorded_at_ms + 1 WHERE transition = 'requeued_proven_absent'",
                 ),
                 _ => unreachable!("enumerated fault"),
+            }
             };
             assert!(mutation().execute(&pool).await.is_err());
             if fault == "settlement_time" {
-                sqlx::query("DROP TRIGGER taskflow_events_no_update").execute(&pool).await
+                sqlx::query("DROP TRIGGER taskflow_events_no_update")
+                    .execute(&pool)
+                    .await
             } else {
-                sqlx::query("DROP TRIGGER taskflow_step_outbox_no_update").execute(&pool).await
+                sqlx::query("DROP TRIGGER taskflow_step_outbox_no_update")
+                    .execute(&pool)
+                    .await
             }
             .expect("explicit corrupt-import injection");
             let changed = mutation()
@@ -407,13 +441,25 @@ async fn settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidenc
                     if message == "provider absence requeue differs from immutable step fence"
                 ));
             } else {
-                assert!(matches!(read,
-                    Err(AuthorizedEffectError::TaskFlow(TaskFlowError::Corrupt(_) | TaskFlowError::Conflict(_)))
-                ), "{fault}");
+                assert!(
+                    matches!(
+                        read,
+                        Err(AuthorizedEffectError::TaskFlow(
+                            TaskFlowError::Corrupt(_) | TaskFlowError::Conflict(_)
+                        ))
+                    ),
+                    "{fault}"
+                );
             }
         }
         assert_eq!(driver.calls, 1);
-        assert_eq!(authority.capacity().expect("authority capacity").used_nonces, 1);
+        assert_eq!(
+            authority
+                .capacity()
+                .expect("authority capacity")
+                .used_nonces,
+            1
+        );
         pool.close().await;
         store.close().await;
     }
