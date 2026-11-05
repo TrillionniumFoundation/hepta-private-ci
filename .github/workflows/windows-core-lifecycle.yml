@@ -151,6 +151,8 @@ jobs:
               raise SystemExit("the three exact ownership regressions did not all execute and pass")
           PY
 
+      # The workspace launcher treats any libtest argument as an unsharded request.
+      # Leave this complete target argument-free so each declared shard runs its own cases.
       - name: Exercise the complete Core unit target under normal sharding
         if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
         env:
@@ -163,7 +165,7 @@ jobs:
             --windows-msvc-host-platform -- \
             test --platforms=//:windows_x86_64_msvc \
             --cache_test_results=no --flaky_test_attempts=1 \
-            --test_output=all --test_arg=--nocapture -- \
+            --test_output=all -- \
             //codex-rs/core:core-unit-tests \
             2>&1 | tee "$output/core-unit-target.log"
 

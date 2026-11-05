@@ -124,7 +124,7 @@ jobs:
           source = json.loads((out / "source.json").read_text())
           target = "//codex-rs/cli:hepta_linux_amd64_musl"
           inner_target = "//codex-rs/cli:hepta"
-          target_platform = "@llvm//platforms:linux_amd64_musl"
+          target_platform = "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
           wrapper = [sys.executable, ".github/scripts/run_bazel_with_buildbuddy.py"]
           # The explicit target platform follows ci-linux; GNU host/exec platforms are unchanged.
           # Keep ci when the existing wrapper removes credentialed ci-linux in keyless mode.
@@ -182,12 +182,6 @@ jobs:
                   if shutil.which(program) is None:
                       raise RuntimeError("required runner tool is unavailable: " + program)
               run("bazel-version", ["bazel", "--version"])
-              bep = Path(os.environ["RUNNER_TEMP"]) / "hepta-musl-product-build.bep.json"
-              run("build", [*wrapper, "build", *options,
-                            "--build_metadata=COMMIT_SHA=" + source["checkout"],
-                            "--build_metadata=REPO_URL=https://github.com/TrillionniumFoundation/hepta-private-ci",
-                            "--build_metadata=TAG_workflow=hepta-musl-product-smoke",
-                            "--build_event_json_file=" + str(bep), target])
               expression = (
                   'str({"label": str(target.label), '
                   '"platforms": [str(p) for p in build_options(target)["//command_line_option:platforms"]], '
@@ -219,7 +213,52 @@ jobs:
                       raise RuntimeError("configured executable is not a relative Bazel output")
                   records.append(row)
               receipt["configured_targets"] = records
+              # Inspect the configured Rust actions before executing the build.
+              # Platform labels alone do not establish the Rust target ABI.
+              rust_expression = (
+                  'str({"label": str(target.label), '
+                  '"platforms": [str(p) for p in build_options(target)["//command_line_option:platforms"]], '
+                  '"actions": [{"mnemonic": a.mnemonic, '
+                  '"rust_target_flags": [v for v in a.argv if v.startswith("--target=")], '
+                  '"linker_target_flags": [v for v in a.argv if v.startswith("--codegen=link-arg=") and v.endswith("-linux-musl")], '
+                  '"stdlib_search_paths": [v for v in a.argv if "/lib/rustlib/" in v and v.endswith("/lib")], '
+                  '"compiler_paths": [v for v in a.argv if v.endswith("/bin/rustc")]} '
+                  'for a in target.actions if a.mnemonic == "Rustc"]})'
+              )
+              rust_records = []
+              for name, label in (("product", inner_target), ("bwrap", "//codex-rs/bwrap:bwrap")):
+                  raw = run("cquery-rust-" + name, [*wrapper, "cquery", *options,
+                            "--universe_scope=" + target, "--output=starlark",
+                            "--starlark:expr=" + rust_expression, label])
+                  rows = [ast.literal_eval(line) for line in raw.decode().splitlines() if line.strip()]
+                  selected = [row for row in rows if row["platforms"] == [resolved_platform]]
+                  if len(selected) != 1 or selected[0]["label"] not in (label, "@@" + label):
+                      raise RuntimeError("expected one product-configured Rust target for " + label)
+                  row = selected[0]
+                  if len(row["actions"]) != 1:
+                      raise RuntimeError("expected one Rustc action for " + label)
+                  action = row["actions"][0]
+                  if action["rust_target_flags"] != ["--target=x86_64-unknown-linux-musl"]:
+                      raise RuntimeError("Rust action does not target musl: " + label)
+                  if action["linker_target_flags"] != ["--codegen=link-arg=x86_64-linux-musl"]:
+                      raise RuntimeError("Rust action does not use the musl C linker target: " + label)
+                  expected_stdlib = "/lib/rustlib/x86_64-unknown-linux-musl/lib"
+                  if not action["stdlib_search_paths"] or any(
+                      not path.endswith(expected_stdlib) for path in action["stdlib_search_paths"]
+                  ):
+                      raise RuntimeError("Rust action does not use the musl standard library: " + label)
+                  if len(action["compiler_paths"]) != 1:
+                      raise RuntimeError("expected one configured Rust compiler for " + label)
+                  rust_records.append(row)
+              receipt["rust_target_actions"] = rust_records
+              receipt["rust_action_graph_qualified"] = True
               save()
+              bep = Path(os.environ["RUNNER_TEMP"]) / "hepta-musl-product-build.bep.json"
+              run("build", [*wrapper, "build", *options,
+                            "--build_metadata=COMMIT_SHA=" + source["checkout"],
+                            "--build_metadata=REPO_URL=https://github.com/TrillionniumFoundation/hepta-private-ci",
+                            "--build_metadata=TAG_workflow=hepta-musl-product-smoke",
+                            "--build_event_json_file=" + str(bep), target])
               execroot = Path(run("execution-root", [*wrapper, "info", "execution_root"]).decode().strip()).resolve(strict=True)
               output_base = Path(run("output-base", [*wrapper, "info", "output_base"]).decode().strip()).resolve(strict=True)
               if not execroot.is_relative_to(output_base):
@@ -371,7 +410,8 @@ jobs:
           receipt["product_unchanged"] = (
               receipt["terminal_product_sha256"] is not None
               and receipt["terminal_product_sha256"] == receipt.get("product", {}).get("sha256"))
-          receipt["qualified"] = bool(receipt.get("qualified") and receipt["source_unchanged"]
+          receipt["qualified"] = bool(receipt.get("qualified") and receipt.get("rust_action_graph_qualified")
+                                      and receipt["source_unchanged"]
                                       and receipt["product_unchanged"])
           receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
           manifest = []
