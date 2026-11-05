@@ -342,11 +342,15 @@ if payload.get("prompt") == {blocked_prompt_json}:
     Ok(())
 }
 
-fn write_async_user_prompt_submit_hook(home: &Path, gated: bool) -> Result<()> {
+fn write_async_user_prompt_submit_hook(home: &Path, gated_prompt: Option<&str>) -> Result<()> {
     let script_path = home.join("async_user_prompt_submit_hook.py");
     let started_path = home.join("async_user_prompt_submit_started");
     let finished_path = home.join("async_user_prompt_submit_finished");
     let release_path = home.join("async_user_prompt_submit_release");
+    let gated_prompt = match gated_prompt {
+        Some(prompt) => serde_json::to_string(prompt)?,
+        None => "None".to_string(),
+    };
     let script = format!(
         r#"import json
 from pathlib import Path
@@ -354,8 +358,11 @@ import sys
 import time
 
 prompt = json.load(sys.stdin).get("prompt")
+gated_prompt = {gated_prompt}
+if gated_prompt is not None and prompt != gated_prompt:
+    sys.exit(0)
 Path(r"{started_path}").write_text(prompt, encoding="utf-8")
-while {gated} and not Path(r"{release_path}").exists():
+while gated_prompt is not None and not Path(r"{release_path}").exists():
     time.sleep(0.01)
 print(json.dumps({{
     "continue": False,
@@ -372,7 +379,6 @@ Path(r"{finished_path}").write_text(prompt, encoding="utf-8")
         started_path = started_path.display(),
         finished_path = finished_path.display(),
         release_path = release_path.display(),
-        gated = if gated { "True" } else { "False" },
     );
     let hooks = serde_json::json!({
         "hooks": {
@@ -1637,7 +1643,7 @@ async fn async_hook_context_is_injected_into_the_active_turn() -> Result<()> {
 
     let test = test_codex()
         .with_pre_build_hook(|home| {
-            write_async_user_prompt_submit_hook(home, /*gated*/ false)
+            write_async_user_prompt_submit_hook(home, /*gated_prompt*/ None)
                 .expect("write immediate async user prompt submit hook");
         })
         .with_config(trust_discovered_hooks)
@@ -1738,7 +1744,9 @@ async fn async_hook_finishing_while_idle_waits_for_the_next_turn() -> Result<()>
 
     let test = test_codex()
         .with_pre_build_hook(|home| {
-            write_async_user_prompt_submit_hook(home, /*gated*/ true)
+            // Only the first prompt owns the delayed result under test. A new
+            // hook result during the follow-up would request another model sample.
+            write_async_user_prompt_submit_hook(home, Some("finish before the async hook"))
                 .expect("write gated async user prompt submit hook");
         })
         .with_config(trust_discovered_hooks)
