@@ -4,6 +4,7 @@ use std::io;
 use std::io::Read;
 use std::io::Write;
 use std::net::Shutdown;
+use std::os::fd::AsRawFd;
 use std::os::unix::net::UnixDatagram;
 use std::os::unix::net::UnixStream;
 use std::sync::Arc;
@@ -44,7 +45,7 @@ impl AgentdNotesChannel {
                 "Notes requires an inherited unnamed socketpair",
             ));
         }
-        stream.set_nonblocking(false)?;
+        stream.set_nonblocking(true)?;
         Ok(Self {
             stream: Mutex::new(stream),
             disabled: AtomicBool::new(false),
@@ -325,6 +326,7 @@ fn exchange(stream: &mut UnixStream, request: &[u8]) -> io::Result<Vec<u8>> {
     }
     let mut response = vec![0; length];
     read_before(stream, &mut response, deadline)?;
+    remaining(deadline)?;
     Ok(response)
 }
 
@@ -337,11 +339,14 @@ fn remaining(deadline: Instant) -> io::Result<Duration> {
 
 fn write_before(stream: &mut UnixStream, mut bytes: &[u8], deadline: Instant) -> io::Result<()> {
     while !bytes.is_empty() {
-        stream.set_write_timeout(Some(remaining(deadline)?))?;
+        remaining(deadline)?;
         match stream.write(bytes) {
             Ok(0) => return Err(io::Error::new(io::ErrorKind::WriteZero, "Notes write")),
             Ok(count) => bytes = &bytes[count..],
             Err(error) if error.kind() == io::ErrorKind::Interrupted => continue,
+            Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
+                wait_ready(stream, libc::POLLOUT, deadline)?;
+            }
             Err(error) => return Err(error),
         }
     }
@@ -350,15 +355,50 @@ fn write_before(stream: &mut UnixStream, mut bytes: &[u8], deadline: Instant) ->
 
 fn read_before(stream: &mut UnixStream, mut bytes: &mut [u8], deadline: Instant) -> io::Result<()> {
     while !bytes.is_empty() {
-        stream.set_read_timeout(Some(remaining(deadline)?))?;
+        remaining(deadline)?;
         match stream.read(bytes) {
             Ok(0) => return Err(io::Error::new(io::ErrorKind::UnexpectedEof, "Notes read")),
             Ok(count) => bytes = &mut bytes[count..],
             Err(error) if error.kind() == io::ErrorKind::Interrupted => continue,
+            Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
+                wait_ready(stream, libc::POLLIN, deadline)?;
+            }
             Err(error) => return Err(error),
         }
     }
     Ok(())
+}
+
+fn wait_ready(stream: &UnixStream, events: libc::c_short, deadline: Instant) -> io::Result<()> {
+    loop {
+        let milliseconds = remaining(deadline)?.as_millis().saturating_add(1);
+        let timeout = i32::try_from(milliseconds).unwrap_or(i32::MAX);
+        let mut descriptor = libc::pollfd {
+            fd: stream.as_raw_fd(),
+            events,
+            revents: 0,
+        };
+        // The borrowed stream owns this descriptor throughout the call. The
+        // pointer covers exactly one initialized pollfd and poll does not retain it.
+        let ready = unsafe { libc::poll(std::ptr::from_mut(&mut descriptor), 1, timeout) };
+        if ready < 0 {
+            let error = io::Error::last_os_error();
+            if error.kind() == io::ErrorKind::Interrupted {
+                continue;
+            }
+            return Err(error);
+        }
+        remaining(deadline)?;
+        if ready == 0 {
+            continue;
+        }
+        if descriptor.revents & libc::POLLNVAL != 0 {
+            return Err(io::Error::from_raw_os_error(libc::EBADF));
+        }
+        // HUP/ERR can coexist with a complete queued reply. The original read
+        // or write decides between those bytes, EOF and the actual native error.
+        return Ok(());
+    }
 }
 
 #[cfg(test)]

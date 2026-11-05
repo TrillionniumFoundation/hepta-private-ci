@@ -110,6 +110,64 @@ fn inherited_socketpair_preserves_exact_frame_bytes() -> TestResult {
 }
 
 #[test]
+fn closed_peer_partial_reply_is_unknown_and_cannot_resend() -> TestResult {
+    let (owner, mut application) = UnixStream::pair()?;
+    let channel = AgentdNotesChannel::from_private_channel(owner)?;
+    let peer = std::thread::spawn(move || -> io::Result<Vec<u8>> {
+        let mut prefix = [0; 4];
+        application.read_exact(&mut prefix)?;
+        let mut request = vec![0; u32::from_be_bytes(prefix) as usize];
+        application.read_exact(&mut request)?;
+        application.write_all(&3_u32.to_be_bytes())?;
+        application.write_all(b"ac")?;
+        Ok(request)
+    });
+    let error = channel
+        .exchange(b"effect")
+        .expect_err("partial reply cannot establish the effect outcome");
+    assert!(error.contains("ambiguous"));
+    assert!(channel.disabled.load(Ordering::Acquire));
+    let error = channel
+        .exchange(b"effect")
+        .expect_err("ambiguous stream cannot resend an effect");
+    assert!(error.contains("unavailable"));
+    assert_eq!(peer.join().expect("application thread")?, b"effect");
+    Ok(())
+}
+
+#[test]
+fn expired_io_deadline_neither_consumes_nor_sends_ready_bytes() -> TestResult {
+    let (mut owner, mut application) = UnixStream::pair()?;
+    owner.set_nonblocking(true)?;
+    application.write_all(b"ack")?;
+    let deadline = Instant::now();
+    let mut response = [0; 3];
+    assert_eq!(
+        read_before(&mut owner, &mut response, deadline)
+            .expect_err("expired deadline cannot consume a ready reply")
+            .kind(),
+        io::ErrorKind::TimedOut
+    );
+    owner.read_exact(&mut response)?;
+    assert_eq!(&response, b"ack");
+    assert_eq!(
+        write_before(&mut owner, b"effect", deadline)
+            .expect_err("expired deadline cannot send on a ready socket")
+            .kind(),
+        io::ErrorKind::TimedOut
+    );
+    application.set_nonblocking(true)?;
+    assert_eq!(
+        application
+            .read(&mut [0; 1])
+            .expect_err("no request bytes sent after expiry")
+            .kind(),
+        io::ErrorKind::WouldBlock
+    );
+    Ok(())
+}
+
+#[test]
 fn named_socket_is_not_a_bootstrap_channel() -> TestResult {
     let directory = tempfile::tempdir()?;
     let path = directory.path().join("not-private.sock");
