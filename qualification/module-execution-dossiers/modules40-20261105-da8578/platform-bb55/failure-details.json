@@ -1,0 +1,36 @@
+{
+  "candidate": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+  "sourceTree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+  "failures": [
+    {
+      "runId": 42058691802,
+      "jobId": 127354031805,
+      "sourceHeadSha": "bb55b0d7d263c396ec504c45393d938c3428dae5",
+      "sourceTree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+      "observedAtUtc": "2026-11-05 16:03:22 UTC",
+      "jobStatus": "completed",
+      "jobConclusion": "failure",
+      "runnerId": 1000001905,
+      "jobCompletedAt": "2026-11-05T16:01:50Z",
+      "firstConcreteError": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs:82: hel ==> help, hell, heal",
+      "firstConcreteErrorLogLine": 246,
+      "firstConcreteErrorAt": "2026-11-05T16:01:47.7561320Z",
+      "executionBinding": {
+        "commit": "d5c18539ee6f256c52d1f80d40d3b74ec9075ebf",
+        "commitEvidence": "logs/job-127354031805.log",
+        "tree": "19116ccdf440a1cddc2a29f3d709ebe1a3cd06c1",
+        "treeEvidence": "logs/job-127354031805.executed-commit.raw.json",
+        "parents": [
+          "07378034e060f23259bc99c7367f12b1284140f3",
+          "bb55b0d7d263c396ec504c45393d938c3428dae5"
+        ],
+        "treeBindingMethod": "Immutable commit API for the exact checkout commit printed by the executed job; not a live PR merge lookup."
+      },
+      "fullLog": "logs/job-127354031805.log",
+      "excerpt": "logs/job-127354031805.excerpt.txt",
+      "logManifest": "logs/job-127354031805.manifest.json",
+      "logFetchedAtUtc": "2026-11-05T16:03:54.839Z",
+      "readOnly": true
+    }
+  ]
+}
