@@ -1,5 +1,10 @@
 # Admission hardening: retained verification evidence
 
+Remote status is preserved in `ci-queue-status.json`: run 42051127746 for exact
+source `e455cfb761c8e41d8add94a7790e9d0e51fdff2d` remained queued at the
+2026-11-05 15:19 UTC observation, with no executed job or downloadable artifact.
+The workflow was left queued. It is not counted as a passing test or new native run.
+
 These are protocol and accounting controls, not new language-model samples.
 The source immediately before evidence/documentation commits is
 `e030911758aba44a7718390ff2ca7510cbe65a24`. All 16 top-level Python Git blob

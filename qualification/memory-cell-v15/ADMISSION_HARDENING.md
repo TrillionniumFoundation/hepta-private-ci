@@ -6,6 +6,13 @@ This increment combines the actual ancestry of native-transition PR #4847
 parents. It strengthens the research reference; it does not activate production
 Control, train a new language model, or establish economic benefit.
 
+Publication: [draft PR #4885](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4885).
+The exact-source scoped workflow
+[42051127746](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42051127746)
+targets `e455cfb761c8e41d8add94a7790e9d0e51fdff2d`. At the retained
+2026-11-05 15:19 UTC observation it remained queued; no job had executed and no
+artifact was available. Local success is not substituted for this missing result.
+
 ## Reproduced problems and corrections
 
 | Problem observed on the recorded predecessor | Current behavior |
@@ -15,7 +22,7 @@ Control, train a new language model, or establish economic benefit.
 | A valid-looking ledger could be reused for another data set, workload, cohort or lawful input identity | Receipts bind all of these identities as well as bundle, protocol settings and deployment horizon |
 | Different executor closures shared one backing counter; identical models appeared to gain `1.0` | Each arm starts from an independently serialized host snapshot in a fresh interpreter; the same A/A fixture now has gain `0.0` |
 | A caller replaced the public protocol after registration, reducing 10,000 planned looks to one | Execution and confidence use the original frozen protocol; the reassignment is reported and refuses admission |
-| In-process code could hang indefinitely; launch failures or cancellation could lose the denominator or worker | Bounded workers return every registered case; incomplete arms refuse resource qualification; owned workers are cleaned up |
+| In-process code could hang indefinitely; launch errors could lose the denominator, and cancellation could leak the worker | Timeouts, worker failures and launch errors retain every registered case in returned results; incomplete arms refuse resource qualification. Host cancellation propagates after owned-worker cleanup; durable cancellation/unknown recording remains the host's responsibility |
 | Per-process CPU limits allowed joined children to exceed the declared arm budget | Measured worker plus reaped-child CPU is checked after execution; an overrun refuses qualification |
 | Importable callback functions lost their configured module globals in a fresh interpreter | Callback defining modules are serialized by value under a scoped registry lock |
 | Historical device verification compared old executions to the latest authority source | Old source bytes remain pinned separately; current checks prove only current source behavior |
@@ -76,8 +83,10 @@ imports depend on the pinned runtime and must be controlled by the experiment.
 
 The worker uses POSIX CPU, address-space and output-file limits plus per-query and
 whole-arm deadlines. A terminal marker and strict output framing distinguish
-completed execution from partial output. Failed or unstarted cases remain in the
-registered denominator. The parent retains the leader PID until group cleanup and
+completed execution from partial output. Returned failed or unstarted cases remain
+in the registered denominator. Host cancellation propagates after process cleanup;
+the caller must durably record that cancellation or unknown outcome. The parent
+retains the leader PID until group cleanup and
 `wait4`, preventing cleanup from signalling an unrelated process after PID reuse.
 
 These are trusted-evaluation controls, not an adversarial-code sandbox. CPU and
@@ -117,8 +126,8 @@ python qualification/memory-cell-v15/device_qualification/verify_receipts.py
 ```
 
 `verify.py` writes to `evidence/checks.*`; preserve each run before another run
-replaces those outputs. The scoped CI does this for both modes, verifies historical
-receipts and compiles the unchanged native transition subset with Rust 1.95.0.
+replaces those outputs. The scoped CI is configured to preserve both modes, verify
+historical receipts and compile the unchanged native subset with Rust 1.95.0.
 The runner's test-process resource totals are verification costs, not deployment
 costs. See the exact executed-source receipts for counts, environments and status.
 The local `just fmt` attempt failed because `just` is unavailable; no Rust source
@@ -142,6 +151,9 @@ was changed in this increment. Scoped native formatting/compilation belongs to C
   The inspected V14 LoRA checkpoint has weights and AdamW state but lacks a
   separately persisted RNG state and sampler cursor. It cannot prove exact
   training continuation; a newly complete checkpoint needs its own experiment.
+  This does not erase V13's earlier full-state small-adapter continuation on three
+  CI VMs under its recorded numerical profile; that result does not qualify the
+  different V14 checkpoint or the current V15 native service integration.
 - Whole-plan split/merge admission, long-term retention and net value still need
   independent future workloads, equal legal information and total budgets,
   strong retrieval/ridge/Head controls, and measured complete costs. More nodes,

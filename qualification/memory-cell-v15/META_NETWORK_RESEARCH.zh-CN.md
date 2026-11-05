@@ -10,15 +10,20 @@ Hepta Neuron 可以成为 Memory Cell 内部的状态更新器、读出器或价
 
 | 固定来源 | 已验证或已记录的范围 | 尚不能据此认定 |
 |---|---|---|
+| 历史 [V13 / #4532](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4532)，执行源码 `8ae2d91947203a868f880312df823004b7289f25` | 小型特征 Adapter 的真实训练；固定数值 profile 下三台 CI VM 的参数、Adam、RNG、sampler 完整状态续训，原 13 项严格检查通过 | 当前 V15 原生 owner 接线、不同数值 profile 下逐位一致、异构个人设备部署或全网经济收益 |
 | [#4817](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4817)，证据归档 `379c21c2e625c3a3dfbb514e11b9e8fe2213cda8` | Python／SQLite 参考协议、53 项限定测试；Mac→pocket4 的持久保存、不同进程冷计算、签名 owner 交接 | 原生生产接入、权威整盘回退防护、真实语言模型跨设备迁移或收益 |
 | [#4847](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4847)，候选 `4675d776489f1c1f2c832451e44fcd4bad3f583f` | 已保存的 57 项协议验证；Rust 五种迁移转换；Mac 与 x230 分别匹配 64 条状态序列中的 1,536 次操作及完整历史 | 全 V15 原生等价、密码学／持久事务适配、模型训练迁移或全仓 CI 通过 |
 | [#4864](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4864)，`c8a8bdc5ef9ac060f2c6abf3dc7e561953f8b684` | 预先注册 cohort、训练／校准／选择／最终来源隔离、输入权限对齐与有限多次检验修正 | 持久实验注册服务、真实独立未来数据或完整成本测量 |
 | 本轮合并与修复，见 [ADMISSION_HARDENING.md](ADMISSION_HARDENING.md) | 本地普通和 `-O` 各 93/93 项通过；8 项旧误批准反例全部拒绝，合格人工正例保留；独立 worker、成本身份和历史来源校验 | 新语言模型收益、实际完整成本或生产服务完整验收 |
 | V14 固定证据及 V15 复算 | 原有 96 条语义请求：lexical ridge 为 81/96，MiniLM ridge 为 84/96，BERT LoRA 三个 seed 为 35/39/58；21 个结构候选被拒绝 | 严格总预算相等的胜负、长期稳定收益或新独立样本 |
 
-原 [CI 41981272551](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41981272551) 的历史来源身份校验失败已保存。本轮修复把当时执行的源码归档与当前代码分别验证，不改写旧签名与成本，明确输出旧回执不构成当前设备代码资格。独立复核还验证：同时改归档与全部可改 metadata，仍不能通过固定 verifier 的 manifest 身份检查。新候选的远端 CI 终态单独记在本轮验收材料中；本地通过不等于远端通过。1,536 次相关状态转换也不是 1,536 个独立科学样本。[R1–R6]
+原 [CI 41981272551](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41981272551) 的历史来源身份校验失败已保存。本轮修复把当时执行的源码归档与当前代码分别验证，不改写旧签名与成本，明确输出旧回执不构成当前设备代码资格。独立复核还验证：同时改归档与全部可改 metadata，仍不能通过固定 verifier 的 manifest 身份检查。新候选的远端 CI 状态单独记在本轮验收材料中；本地通过不等于远端通过。1,536 次相关状态转换也不是 1,536 个独立科学样本。[R1–R6]
+
+本轮已推送 [草稿 PR #4885](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4885)。限定 [CI 42051127746](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42051127746) 绑定 `e455cfb761c8e41d8add94a7790e9d0e51fdff2d`；截至保存的 2026-11-05 15:19 UTC 状态仍在排队，没有已执行 job 或 artifact。因此本轮只报告实际取得的本地资格，远端新 CI／原生编译验收保持未完成，原运行未被取消。
 
 V14 的三个 seed 重用了相同请求；不同 Encoder 的预训练知识与资源使用也不同。另一个事实绑定任务中 KV 的 192/192 与这里的语义任务不是同一个分母。既不能用其中一个结果贬低全部 KV，也不能把更强 Encoder 带来的收益全部归给 Memory Cell。现有结果尚未证明参数记忆、学习分裂或节点扩张带来稳定净收益。
+
+这也不等于“参数没有学到记忆”。V14 事实任务的 LoRA 为 164/161/174 of 192，关闭 LoRA 而保留训练后的 Head 后降至 32/24/37；这一干预支持参数分支确实参与承载新绑定。与此同时，同任务 KV／BM25 为 192/192，所记录开销更低。组件具有真实学习作用、网络协议可以恢复，以及整体方案优于强对照，是三项分别取得证据的结论。[R7–R8]
 
 ## 2. Cell 如何分化：六类语义与共同契约
 
@@ -98,6 +103,8 @@ Switch 与 Mixtral 支持条件计算，但普通 MoE 专家不是具有独立�
 模型版本与记忆版本可以不同，但一次可执行发布必须固定它们的合法组合。建议 bundle 清单绑定模型／Head、记忆快照、Encoder、tokenizer、schema、索引、路由器、校准、运行时、来源依赖；继续训练还绑定 optimizer、RNG、sampler、步数及数值条件。逐个下载几个 `latest` 文件会产生未经验证的组合。
 
 本轮检查到的 V14 LoRA 归档保存了参数与 AdamW 状态，却没有独立 RNG 状态和 sampler 游标。它可作为冷加载推理验证的候选材料，但不能证明精确续训恢复。后来补存这些状态，应从新检查点开展延续实验；不能把补存内容倒填为历史实验已经具备的条件。
+
+这一缺口专指所检查的 V14 LoRA 归档。V13 的小型特征 Adapter 已有三 VM 完整状态续训证据，不能将其抹去；也不能把该旧模型、固定数值 profile 的结果转授给当前 V15 的原生服务或另一个 Transformer checkpoint。V13 首次逐位续训失败与第二次限定成功都应继续保留。[R7]
 
 唯一 owner 表示：在权威目录的一个已提交版本中，每个 Cell 至多有一个被允许写入的主体。它允许多个只读副本，不意味着某个物理节点永远持有所有权。应区分用户／服务主体、节点凭证、进程 incarnation、Cell ID、owner generation 和 bundle digest；字符串主机名或 IP 不是独立身份凭证。
 
@@ -220,6 +227,8 @@ Q_{be}=\frac{F_p-F_b+U(u_p-u_b)+T(s_p-s_b)+(m_p-m_b)+(r_p-r_b)}{q_b-q_p}.
 - **R4**：[原生限定资格记录](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/4675d776489f1c1f2c832451e44fcd4bad3f583f/qualification/memory-cell-v15/evidence/native-transfer-20261105/QUALIFICATION.json)；[V14 固定证据复算](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/379c21c2e625c3a3dfbb514e11b9e8fe2213cda8/qualification/memory-cell-v15/evidence/v14_audit.json)。
 - **R5**：[冻结 cohort 原始增量，c8a8bdc5](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c8a8bdc5ef9ac060f2c6abf3dc7e561953f8b684/qualification/memory-cell-v15/COHORT_REPRODUCE.md)。
 - **R6**：[本轮实现、反例与复现说明](ADMISSION_HARDENING.md)；[同一 probe 的前后对照](evidence/cost-admission-20261105/README.md)；[准确源码验证材料](evidence/admission-hardening-20261105/)。
+- **R7**：[V13 实际训练与三 VM 续训资格，#4532](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4532)；[保留的两次迁移结果](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/fb145d471406d9c68f7c5f501ef71f0379e76f9e/qualification/memory-cell-v13/MIGRATION_RESULTS.md)。本轮读取原记录，未重新执行其训练。
+- **R8**：[V14 真实参数记忆、路由与结构结果，ae63a79e](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/ae63a79ee3aafb1c9e1e042cac2c04921a7a897d/qualification/memory-cell-v14/README.md)。
 
 ### 原始论文与作者文档
 

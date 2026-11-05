@@ -6,6 +6,13 @@ resource budgets and complete cost receipts, freezes execution settings, isolate
 each arm in a bounded worker, and separates historical-device evidence from current
 source checks. Historical results below retain their original source scope.
 
+The current increment is [draft PR #4885](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4885).
+Local normal and optimized Python each passed **93/93**; historical-identity
+controls passed **9/9**. At the recorded 2026-11-05 15:19 UTC observation,
+[scoped CI 42051127746](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42051127746)
+was still queued, with no executed job or artifact. This is not a new remote CI
+success or whole-repository qualification; see the retained queue snapshot.
+
 This directory adds an executable reference for ownership, version publication,
 migration, structural admission, and evidence-bound evaluation. It also independently
 audits the existing real-model V14 evidence. It is stacked on
@@ -14,7 +21,7 @@ audits the existing real-model V14 evidence. It is stacked on
 **Status: research reference; no new neural-memory benefit, complete distributed
 qualification, Rust runtime integration, or production activation is claimed.**
 A bounded, controller-relayed Mac-to-pocket4 persistence and ownership experiment
-is recorded separately from the 53-case automated suite.
+is recorded separately from the original 53-case automated suite.
 
 The current Chinese design and comparison report is
 [META_NETWORK_RESEARCH.zh-CN.md](META_NETWORK_RESEARCH.zh-CN.md); the original
