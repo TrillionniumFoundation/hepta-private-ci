@@ -457,14 +457,27 @@ async fn assert_resume_materializes_the_same_live_thread(
         let ThreadResumeResponse {
             thread: resumed, ..
         } = timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(resume_id)).await??;
+        // Materialization may expose the Windows verbatim spelling of the same
+        // rollout path. Compare native spellings without changing path identity.
         assert_eq!(
             (
                 &resumed.id,
                 &resumed.session_id,
-                &resumed.path,
+                resumed
+                    .path
+                    .as_ref()
+                    .map(codex_utils_path::normalize_for_native_workdir),
                 &resumed.turns
             ),
-            (&thread.id, &thread.session_id, &thread.path, &thread.turns),
+            (
+                &thread.id,
+                &thread.session_id,
+                thread
+                    .path
+                    .as_ref()
+                    .map(codex_utils_path::normalize_for_native_workdir),
+                &thread.turns
+            ),
         );
         assert!(resumed.turns.is_empty());
         assert_eq!(resumed.history_mode, history_mode);
