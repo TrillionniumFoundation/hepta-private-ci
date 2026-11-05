@@ -9,6 +9,50 @@ use codex_hepta_fleet::ReleaseBinding;
 pub struct UnknownRecoveryObservation {
     pub release_state_generation: u64,
     pub admission_frontier_sha256: Sha256Digest,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub predecessor: Option<UnknownRecoveryPredecessorV1>,
+}
+
+/// Explicit observation of the externally anchored predecessor. Constructing
+/// these bytes is not a current-owner admission; the recovery owner rechecks it.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct UnknownRecoveryPredecessorV1 {
+    pub schema_version: u32,
+    pub anchor_generation: u64,
+    pub anchor_sha256: Sha256Digest,
+}
+
+impl UnknownRecoveryPredecessorV1 {
+    pub fn from_anchor(
+        anchor: &codex_hepta_fleet::ReleaseIntentAnchorV1,
+    ) -> Result<Self, ProductionAuthorityError> {
+        let digest = anchor
+            .sha256()
+            .map_err(|error| ProductionAuthorityError::Invalid(error.to_string()))?;
+        Ok(Self {
+            schema_version: 1,
+            anchor_generation: anchor.generation,
+            anchor_sha256: Sha256Digest::from_sha256_output(digest.into()),
+        })
+    }
+
+    /// Explicit absence must come from a fresh external owner observation.
+    /// A missing local file is never sufficient to construct live permission.
+    pub fn from_absent(agent_id: &AgentId) -> Self {
+        let digest = codex_hepta_fleet::ReleaseIntentAnchorV1::absent_sha256(agent_id);
+        Self {
+            schema_version: 1,
+            anchor_generation: 0,
+            anchor_sha256: Sha256Digest::from_sha256_output(digest.into()),
+        }
+    }
+
+    pub fn valid_for(&self, agent_id: &AgentId) -> bool {
+        self.schema_version == 1
+            && Sha256Digest::parse(self.anchor_sha256.as_str()).is_ok()
+            && (self.anchor_generation > 0 || self == &Self::from_absent(agent_id))
+    }
 }
 
 pub fn absent_release_transaction_digest() -> Sha256Digest {
@@ -16,6 +60,18 @@ pub fn absent_release_transaction_digest() -> Sha256Digest {
 }
 
 pub(super) fn valid_namespace(decision: &ProductionRecoveryDecision, unknown: bool) -> bool {
+    if decision.completion_observation.is_some()
+        || decision.retained_publication_observation.is_some()
+        || matches!(
+            decision.outcome,
+            ProductionRecoveryOutcome::ConfirmUnknownPublication
+                | ProductionRecoveryOutcome::ConfirmCommittedPublication
+                | ProductionRecoveryOutcome::ConfirmRolledBackPublication
+                | ProductionRecoveryOutcome::RetryRetainedPublication
+        )
+    {
+        return false;
+    }
     if unknown {
         decision.schema_version == 2
             && decision.namespace == "hepta:production:recovery:abandon-unknown:v2"
@@ -24,7 +80,8 @@ pub(super) fn valid_namespace(decision: &ProductionRecoveryDecision, unknown: bo
                 .unknown_observation
                 .as_ref()
                 .is_some_and(|observation| {
-                    observation.release_state_generation > 0
+                    observation.predecessor.is_none()
+                        && observation.release_state_generation > 0
                         && Sha256Digest::parse(observation.admission_frontier_sha256.as_str())
                             .is_ok()
                 })
@@ -50,47 +107,17 @@ impl H7H89ProductionGrantSigner {
         issued_at_unix_seconds: u64,
         expires_at_unix_seconds: u64,
     ) -> Result<ProductionRecoveryDecision, ProductionAuthorityError> {
-        intent
-            .validate()
-            .map_err(|error| ProductionAuthorityError::Invalid(error.to_string()))?;
-        if source.release_id.as_str() != intent.source_release || !intent.requires_recovery() {
-            return Err(ProductionAuthorityError::RecoveryBinding);
-        }
-        let mut decision = ProductionRecoveryDecision {
-            schema_version: 2,
-            namespace: "hepta:production:recovery:abandon-unknown:v2".to_string(),
-            agent_id: intent.agent_id.clone(),
-            grant_sha256: intent.grant_sha256.clone(),
-            intent_sha256: intent.intent_sha256.clone(),
-            release_transaction_sha256: absent_release_transaction_digest(),
-            observed_release: intent.source_release.clone(),
-            observed_manifest_sha256: Sha256Digest::parse(source.manifest_sha256.clone())
-                .map_err(|_| ProductionAuthorityError::RecoveryBinding)?,
-            observed_agentd_sha256: Sha256Digest::parse(source.agentd_program_sha256.clone())
-                .map_err(|_| ProductionAuthorityError::RecoveryBinding)?,
-            observed_matrixd_sha256: source
-                .matrixd_program_sha256
-                .as_ref()
-                .map(|value| Sha256Digest::parse(value.clone()))
-                .transpose()
-                .map_err(|_| ProductionAuthorityError::RecoveryBinding)?,
-            outcome: ProductionRecoveryOutcome::AbandonUnknown,
-            unknown_observation: Some(UnknownRecoveryObservation {
-                release_state_generation,
-                admission_frontier_sha256: Sha256Digest::parse(
-                    source.admission_frontier_sha256.clone(),
-                )
-                .map_err(|_| ProductionAuthorityError::RecoveryBinding)?,
-            }),
-            expected_lifecycle_generation: lifecycle_generation,
+        let mut decision = super::unsigned::abandon_unknown(
+            &self.signer_id,
+            self.signer_epoch,
+            intent,
+            source,
+            release_state_generation,
+            lifecycle_generation,
             authority_epoch,
-            signer_id: self.signer_id.clone(),
-            signer_epoch: self.signer_epoch,
             issued_at_unix_seconds,
             expires_at_unix_seconds,
-            signature_base64: String::new(),
-            decision_sha256: Sha256Digest::for_bytes(b"pending"),
-        };
+        )?;
         decision.decision_sha256 = decision.payload_digest();
         decision.signature_base64 =
             STANDARD.encode(self.signing_key.sign(&decision.signing_bytes()).to_bytes());
