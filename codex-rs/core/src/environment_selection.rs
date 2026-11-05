@@ -1267,7 +1267,9 @@ url = "ws://127.0.0.1:8765"
                         break if std::time::Instant::now() <= deadline {
                             Ok(status)
                         } else {
-                            Err(format!("isolated snapshot completed after its five-second bound: {status}"))
+                            Err(format!(
+                                "isolated snapshot completed after its five-second bound: {status}"
+                            ))
                         };
                     }
                     Ok(None) => {}
@@ -1283,17 +1285,32 @@ url = "ws://127.0.0.1:8765"
             drop(child);
             let stdout = std::fs::read(stdout_path).expect("read child stdout");
             let stderr = std::fs::read(stderr_path).expect("read child stderr");
-            std::io::stdout().write_all(&stdout).expect("forward child stdout");
-            std::io::stderr().write_all(&stderr).expect("forward child stderr");
+            std::io::stdout()
+                .write_all(&stdout)
+                .expect("forward child stdout");
+            std::io::stderr()
+                .write_all(&stderr)
+                .expect("forward child stderr");
             let stdout = String::from_utf8(stdout).expect("UTF-8 child stdout");
             let stderr = String::from_utf8(stderr).expect("UTF-8 child stderr");
             let status = result.expect("isolated blocking snapshot must complete");
-            assert!(status.success(), "isolated blocking snapshot assertions failed: {status}");
+            assert!(
+                status.success(),
+                "isolated blocking snapshot assertions failed: {status}"
+            );
             assert_eq!(stderr.lines().filter(|line| *line == STARTED).count(), 1);
             assert_eq!(stderr.lines().filter(|line| *line == FINISHED).count(), 1);
-            assert_eq!(stdout.lines().filter(|line| *line == "running 1 test").count(), 1);
+            assert_eq!(
+                stdout
+                    .lines()
+                    .filter(|line| *line == "running 1 test")
+                    .count(),
+                1
+            );
             assert!(
-                stdout.lines().any(|line| line.starts_with(&format!("test {CASE} ..."))),
+                stdout
+                    .lines()
+                    .any(|line| line.starts_with(&format!("test {CASE} ..."))),
                 "isolated child must run the original exact case"
             );
             let summaries: Vec<_> = stdout

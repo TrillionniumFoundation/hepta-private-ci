@@ -4696,7 +4696,10 @@ async fn resume_agent_from_rollout_skips_descendants_when_parent_resume_fails() 
                     "wire_api".to_string(),
                     TomlValue::String("responses".to_string()),
                 ),
-                ("requires_openai_auth".to_string(), TomlValue::Boolean(false)),
+                (
+                    "requires_openai_auth".to_string(),
+                    TomlValue::Boolean(false),
+                ),
                 ("supports_websockets".to_string(), TomlValue::Boolean(false)),
             ])),
         ),
