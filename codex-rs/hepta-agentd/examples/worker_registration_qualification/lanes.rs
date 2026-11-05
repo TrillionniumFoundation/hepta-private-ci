@@ -41,6 +41,55 @@ pub(super) fn run(mode: &str, socket: UnixDatagram, agent: &AgentId, generation:
                 "original_proof":proof, "initial_frontier":initial, "next_frontier":next,
                 "after_exact_conflict":after_conflict, "effect_owner_created":false})
         }
+        "lanes-root-head-revoked" => {
+            let executor = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
+            let mut lanes = executor.block_on(registration.receive_worker_lanes(Duration::from_secs(5)))?;
+            let bootstrap = lanes.bootstrap_observation().clone();
+            let before = lanes.read_observation()?;
+            let original_proof = lanes.read_original_writer_proof()?;
+            let initial = lanes.load_frontier()?;
+            assert!(!bootstrap.effect_authorization_available && !before.effect_authorization_available);
+            let ready = serde_json::json!({"kind":"worker_floor_ready_before_original_revoke",
+                "bootstrap":&bootstrap, "observation":&before, "writer_proof":&original_proof,
+                "frontier":initial, "effect_authorization_available":false});
+            let bytes = serde_json::to_vec(&ready)?;
+            assert!(bytes.len() <= 64 * 1024);
+            {
+                let mut output = std::io::stdout().lock();
+                output.write_all(&(bytes.len() as u32).to_be_bytes())?;
+                output.write_all(&bytes)?;
+                output.flush()?;
+            }
+            let mut advance = [0];
+            std::io::stdin().read_exact(&mut advance)?;
+            assert_eq!(advance, [2]);
+            // The original Root must still serve its new observation and the
+            // exact same live writer proof. No alternative issuer is selected.
+            let current = lanes.read_observation()?;
+            let current_proof = lanes.read_original_writer_proof()?;
+            assert_eq!(current_proof, original_proof);
+            assert!(!current.effect_authorization_available);
+            let first_load = lanes.load_frontier();
+            let retry_load = lanes.load_frontier();
+            let later_observation = lanes.read_observation();
+            let first_error = first_load.as_ref().err().map(|error| format!("{error:?}"));
+            let retry_error = retry_load.as_ref().err().map(|error| format!("{error:?}"));
+            let later_error = later_observation.as_ref().err().map(|error| error.to_string());
+            // Report the real original behavior, including accepted stale
+            // values on the unfixed source. The parent owns the regression
+            // assertion; this Child does not synthesize a refused outcome.
+            let report = serde_json::json!({"kind":"worker_floor_current_head_result",
+                "current_observation":current, "current_writer_proof":current_proof,
+                "initial_load_refused":first_load.is_err(), "initial_load_frontier":first_load.ok(),
+                "initial_load_error":first_error,
+                "retry_load_refused":retry_load.is_err(), "retry_load_frontier":retry_load.ok(),
+                "retry_load_error":retry_error,
+                "later_observation_refused":later_observation.is_err(),
+                "later_observation_error":later_error, "effect_authorization_available":false});
+            drop(lanes);
+            executor.shutdown_timeout(Duration::from_secs(1));
+            report
+        }
         "lanes-second-offer-no-ack" => {
             let (mut sealed, _root) = receive_root_production_handoff(unacknowledged, Duration::from_secs(5))?;
             sealed.rewind()?;

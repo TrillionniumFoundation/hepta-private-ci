@@ -229,3 +229,6 @@ fn root_worker_fresh_floor_requires_the_original_current_starting_or_running_age
 
 #[path = "worker_root_journal_root_tests.rs"]
 mod journals;
+
+#[path = "worker_root_current_head_root_tests.rs"]
+mod current_head;
