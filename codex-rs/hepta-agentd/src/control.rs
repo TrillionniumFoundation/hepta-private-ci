@@ -6,6 +6,7 @@ use std::time::Duration;
 
 use codex_uds::UnixListener;
 use codex_uds::UnixStream;
+use tokio::io::AsyncBufRead;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
@@ -17,11 +18,14 @@ use tokio_util::sync::CancellationToken;
 use crate::AGENTD_CONTROL_OVERLOAD_FRAME;
 use crate::AGENTD_CONTROL_SCHEMA_VERSION;
 use crate::AgentdError;
+use crate::AgentdMethod;
 use crate::AgentdPayload;
 use crate::AgentdRequest;
 use crate::AgentdResponse;
 use crate::AgentdState;
 use crate::MAX_CONTROL_FRAME_BYTES;
+use crate::control_packet::AdmittedEffectPacketV1;
+use crate::control_packet::PACKET_CONNECTION_CAPACITY;
 use crate::error::io_context;
 
 const CONNECTION_CAPACITY: usize = 32;
@@ -34,6 +38,7 @@ pub(crate) struct AgentdControlServer {
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
+    effect_packets: Arc<Semaphore>,
 }
 
 impl AgentdControlServer {
@@ -53,6 +58,7 @@ impl AgentdControlServer {
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
+            effect_packets: Arc::new(Semaphore::new(PACKET_CONNECTION_CAPACITY)),
         })
     }
 
@@ -81,6 +87,7 @@ impl AgentdControlServer {
                 continue;
             };
             let state = Arc::clone(&self.state);
+            let effect_packets = Arc::clone(&self.effect_packets);
             let cancellation = self.cancellation.child_token();
             let execution =
                 crate::NeuralCognitiveExecutionV1::with_deadline(deadline, cancellation.clone());
@@ -94,7 +101,7 @@ impl AgentdControlServer {
                     tokio::time::Instant::from_std(execution.deadline()),
                     codex_uds::guard_future_before_deadline(
                         execution.deadline(),
-                        serve_connection(stream, state, &execution),
+                        serve_connection(stream, state, effect_packets, &execution),
                     ),
                 )
                 .await;
@@ -119,17 +126,14 @@ impl Drop for AgentdControlServer {
 async fn serve_connection(
     stream: UnixStream,
     state: Arc<AgentdState>,
+    effect_packets: Arc<Semaphore>,
     execution: &crate::NeuralCognitiveExecutionV1,
 ) -> Result<(), AgentdError> {
     let (reader, mut writer) = tokio::io::split(stream);
-    let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
-    let mut frame = Vec::new();
-    let count = reader.read_until(b'\n', &mut frame).await?;
-    if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !frame.ends_with(b"\n") {
-        return Err(AgentdError::Protocol(
-            "agentd control request must be one bounded newline JSON frame".to_string(),
-        ));
-    }
+    // Keep the same buffer for the header and raw body: a single client write
+    // may already have placed packet bytes in BufReader's unread buffer.
+    let mut reader = BufReader::new(reader);
+    let frame = read_request_frame(&mut reader).await?;
     let request: AgentdRequest = serde_json::from_slice(&frame)?;
     let response = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
         error_response(
@@ -140,15 +144,57 @@ async fn serve_connection(
             "unsupported agentd control schema",
         )
     } else {
-        match state
-            .response_with_execution(
-                request.request_id,
-                request.spawn_generation,
-                request.method,
-                execution,
-            )
-            .await
-        {
+        let result = match &request.method {
+            AgentdMethod::AutomationExecuteEffectPacketV1 {
+                intent, wire_len, ..
+            } => {
+                match AdmittedEffectPacketV1::read(
+                    &mut reader,
+                    *wire_len,
+                    &intent.payload_digest,
+                    effect_packets,
+                    execution,
+                )
+                .await
+                {
+                    Ok(packet) => {
+                        if execution.check().is_err() {
+                            Err(AgentdError::Protocol(
+                                "agentd packet request expired or was cancelled before execution"
+                                    .to_string(),
+                            ))
+                        } else {
+                            state
+                                .response_with_packet(
+                                    request.request_id,
+                                    request.spawn_generation,
+                                    request.method,
+                                    Some(&packet),
+                                    execution,
+                                )
+                                .await
+                        }
+                    }
+                    Err(AgentdError::Overloaded { .. }) => {
+                        writer.write_all(AGENTD_CONTROL_OVERLOAD_FRAME).await?;
+                        writer.shutdown().await?;
+                        return Ok(());
+                    }
+                    Err(error) => Err(error),
+                }
+            }
+            _ => {
+                state
+                    .response_with_execution(
+                        request.request_id,
+                        request.spawn_generation,
+                        request.method,
+                        execution,
+                    )
+                    .await
+            }
+        };
+        match result {
             Ok(response) => response,
             Err(error) => error_response(
                 &state,
@@ -169,6 +215,20 @@ async fn serve_connection(
     writer.write_all(&bytes).await?;
     writer.shutdown().await?;
     Ok(())
+}
+
+pub(crate) async fn read_request_frame(
+    reader: &mut (impl AsyncBufRead + Unpin),
+) -> Result<Vec<u8>, AgentdError> {
+    let mut reader = reader.take(MAX_CONTROL_FRAME_BYTES + 1);
+    let mut frame = Vec::new();
+    let count = reader.read_until(b'\n', &mut frame).await?;
+    if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !frame.ends_with(b"\n") {
+        return Err(AgentdError::Protocol(
+            "agentd control request must be one bounded newline JSON frame".to_string(),
+        ));
+    }
+    Ok(frame)
 }
 
 fn error_response(

@@ -31,6 +31,7 @@ mod cognitive_retrieval_context;
 mod cognitive_retrieval_learning;
 mod config;
 mod control;
+mod control_packet;
 mod error;
 mod event_buffer;
 mod evidence_frontier;

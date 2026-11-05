@@ -65,6 +65,26 @@ impl AgentdState {
         method: crate::AgentdMethod,
         execution: &crate::NeuralCognitiveExecutionV1,
     ) -> Result<AgentdResponse, AgentdError> {
+        self.response_with_packet(
+            request_id,
+            spawn_generation,
+            method,
+            /*packet*/ None,
+            execution,
+        )
+        .await
+    }
+
+    /// The packet token is produced only after complete bounded transport
+    /// admission; a JSON header alone must never reach an effect sink.
+    pub(crate) async fn response_with_packet(
+        &self,
+        request_id: u64,
+        spawn_generation: u64,
+        method: crate::AgentdMethod,
+        packet: Option<&crate::control_packet::AdmittedEffectPacketV1>,
+        execution: &crate::NeuralCognitiveExecutionV1,
+    ) -> Result<AgentdResponse, AgentdError> {
         if spawn_generation != self.identity.spawn_generation {
             return Err(AgentdError::GenerationFenced(format!(
                 "request spawn generation {spawn_generation} does not match {}",
@@ -114,7 +134,7 @@ impl AgentdState {
                     )
                     .map_err(AgentdError::Protocol)?,
                 ];
-                if self.automation_effect_host().is_some() {
+                if let Some(host) = self.automation_effect_host() {
                     capabilities.push(
                         crate::AgentdCapability::new(
                             crate::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT,
@@ -123,6 +143,7 @@ impl AgentdState {
                         )
                         .map_err(AgentdError::Protocol)?,
                     );
+
                 }
                 if self.evidence.get().is_some() {
                     capabilities.push(
