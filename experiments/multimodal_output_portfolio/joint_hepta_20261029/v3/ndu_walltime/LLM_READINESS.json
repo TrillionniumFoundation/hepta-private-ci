@@ -1,0 +1,25 @@
+{
+  "schema": "ndu.frozen-llm-readiness.v1",
+  "checked_date": "2026-11-05",
+  "status": "NOT_RUN_NO_MODEL_OR_ENDPOINT",
+  "observed": {
+    "torch_installed": false,
+    "transformers_installed": false,
+    "local_model_cache_present": false,
+    "configured_model_endpoint_or_standard_api_key_present": false
+  },
+  "missing_scientific_inputs": [
+    "accessible frozen model with verified immutable revision",
+    "independent task families and disjoint development/confirmation split",
+    "frozen model decoding and full action/observation protocol",
+    "complete provider, tool, training, validation and inference cost prices",
+    "same-information strong baselines and paired confirmation evaluation"
+  ],
+  "available": [
+    "POSIX measured-clock execution adapter",
+    "14 source-bound behavior tests with real waited subprocesses",
+    "retained failure, timeout, cancellation and invalid-output costs"
+  ],
+  "large_scale_training_gate": "HOLD",
+  "reason": "No independent real-task net-benefit evidence; no scaling claim from finite model or fixture qualification"
+}
