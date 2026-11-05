@@ -146,7 +146,8 @@ Request params:
 
 ```json
 {
-  "clientName": "my-client"
+  "clientName": "my-client",
+  "processExitObservation": true
 }
 ```
 
@@ -155,6 +156,7 @@ Response:
 ```json
 {
   "sessionId": "00000000-0000-4000-8000-000000000001",
+  "processExitObservation": true,
   "environmentInfo": {
     "shell": { "name": "bash", "path": "/bin/bash" },
     "cwd": "file:///workspace"
@@ -463,8 +465,8 @@ provider from Codex auth state before starting remote mode.
 Initialize:
 
 ```json
-{"id":1,"method":"initialize","params":{"clientName":"example-client"}}
-{"id":1,"result":{"sessionId":"00000000-0000-4000-8000-000000000001","environmentInfo":{"shell":{"name":"bash","path":"/bin/bash"},"cwd":"file:///tmp"}}}
+{"id":1,"method":"initialize","params":{"clientName":"example-client","processExitObservation":true}}
+{"id":1,"result":{"sessionId":"00000000-0000-4000-8000-000000000001","processExitObservation":true,"environmentInfo":{"shell":{"name":"bash","path":"/bin/bash"},"cwd":"file:///tmp"}}}
 {"method":"initialized","params":{}}
 ```
 
