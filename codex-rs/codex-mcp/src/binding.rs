@@ -122,6 +122,19 @@ impl McpBinding {
             .cloned()
     }
 
+    /// Binds a trusted configured hook to a permitted tool, including tools hidden
+    /// from the model. The caller must enforce hook trust and governance checks;
+    /// model tool dispatch must continue to use `prepare_call`.
+    pub fn prepare_configured_hook_call(
+        &self,
+        server: &str,
+        tool: &str,
+    ) -> Option<PreparedMcpCall> {
+        self.calls
+            .get(&(server.to_string(), tool.to_string()))
+            .cloned()
+    }
+
     pub fn has_servers(&self) -> bool {
         self.connections.has_servers()
     }

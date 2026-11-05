@@ -46,7 +46,7 @@ impl HookMcpExecutor for CoreHookMcpExecutor {
                     call.tool
                 )
             })?;
-            let prepared_call = binding.prepare_call(&call.server, &call.tool).ok_or_else(|| {
+            let prepared_call = binding.prepare_configured_hook_call(&call.server, &call.tool).ok_or_else(|| {
                 anyhow::anyhow!(
                     "MCP server `{}` or tool `{}` is not connected and available",
                     call.server,
