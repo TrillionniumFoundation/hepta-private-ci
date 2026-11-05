@@ -308,6 +308,16 @@
         "win::observation_tests::query_failure_after_native_signal_is_not_pending",
         "win::observation_tests::signaled_process_can_have_exit_code_259"
       ]
+    },
+    {
+      "id": "setup-handle-inheritance-controls",
+      "package": "codex-windows-sandbox",
+      "expectedTestCount": 2,
+      "requiredTests": [
+        "setup_process::tests::inherit_console_setup_does_not_inherit_ambient_handles",
+        "setup_process::tests::no_window_setup_does_not_inherit_ambient_handles"
+      ],
+      "filter": "test(=setup_process::tests::inherit_console_setup_does_not_inherit_ambient_handles) | test(=setup_process::tests::no_window_setup_does_not_inherit_ambient_handles)"
     }
   ]
 }
