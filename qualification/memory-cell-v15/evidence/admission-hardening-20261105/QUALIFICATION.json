@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.memory.v15.admission-hardening.local-qualification.v1",
+  "code_commit_before_evidence": "e030911758aba44a7718390ff2ca7510cbe65a24",
+  "parents_combined": [
+    "4675d776489f1c1f2c832451e44fcd4bad3f583f",
+    "c8a8bdc5ef9ac060f2c6abf3dc7e561953f8b684"
+  ],
+  "normal": {
+    "passed": true,
+    "tests": 93,
+    "python_optimize": 0,
+    "wall_seconds": 90.46089980899706
+  },
+  "optimized": {
+    "passed": true,
+    "tests": 93,
+    "python_optimize": 1,
+    "wall_seconds": 58.56375952500093
+  },
+  "same_sources_in_both_modes": true,
+  "history_regressions": {
+    "tests": 9,
+    "exit_code": 0
+  },
+  "historical_device_review": {
+    "passed": true,
+    "signed_objects": 16,
+    "new_host_execution": false,
+    "qualifies_current_device_code": false
+  },
+  "admission_counterexamples": {
+    "old_false_approvals": 8,
+    "new_false_approvals": 0,
+    "positive_control_preserved": true,
+    "synthetic_costs": true
+  },
+  "scientific_efficacy_samples_added": 0,
+  "new_language_training": false,
+  "production_activation_allowed": false,
+  "full_cost_net_benefit_established": false,
+  "whole_authority_rollback_protection": false,
+  "persistent_look_ledger_implemented": false,
+  "local_native_toolchain_available": false,
+  "just_fmt_exit_code": 127,
+  "ci": "Pending separate exact-source workflow evidence; local results are not a CI claim.",
+  "scope": "Synthetic protocol/worker/identity regressions; no product efficacy or full deployment cost measurement."
+}

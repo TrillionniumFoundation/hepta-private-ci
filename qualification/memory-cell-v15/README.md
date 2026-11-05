@@ -1,6 +1,10 @@
 # Memory Cell V15: typed memory and verifiable lifecycle research
 
-2026-11-05 follow-up: [frozen cohort admission and reproducibility](COHORT_REPRODUCE.md) extends the evaluator with phase/source isolation, explicit information parity and finite monitoring correction. Historical results below retain their original source scope.
+2026-11-05 follow-up: the native-transition and [frozen-cohort](COHORT_REPRODUCE.md)
+branches are combined. [Admission hardening](ADMISSION_HARDENING.md) binds actual
+resource budgets and complete cost receipts, freezes execution settings, isolates
+each arm in a bounded worker, and separates historical-device evidence from current
+source checks. Historical results below retain their original source scope.
 
 This directory adds an executable reference for ownership, version publication,
 migration, structural admission, and evidence-bound evaluation. It also independently
@@ -12,7 +16,9 @@ qualification, Rust runtime integration, or production activation is claimed.**
 A bounded, controller-relayed Mac-to-pocket4 persistence and ownership experiment
 is recorded separately from the 53-case automated suite.
 
-The complete Chinese research report is [RESEARCH.zh-CN.md](RESEARCH.zh-CN.md).
+The current Chinese design and comparison report is
+[META_NETWORK_RESEARCH.zh-CN.md](META_NETWORK_RESEARCH.zh-CN.md); the original
+report remains [RESEARCH.zh-CN.md](RESEARCH.zh-CN.md).
 Its architecture permits KV, retrieval, centroid/ridge, shared-encoder heads and
 Transformer/LoRA cells. Typed semantics and permissions are independent of the
 chosen numerical representation. More cells or parameters are not acceptance criteria.
@@ -22,7 +28,9 @@ chosen numerical representation. More cells or parameters are not acceptance cri
 | File | Purpose |
 |---|---|
 | `authority.py` | SQLite WAL/FULL authority; signed requests/receipts; exact owner, monotone epoch and bundle CAS; immutable component bytes; source/permission freshness; transfer and reshape state machines |
-| `admission.py` | Prospective paired evaluation with the same memory/training-input/executor/budget identities; separate executor instances; independent cluster bounds; complete-cost and retention refusal |
+| `admission.py` | Frozen prospective paired evaluation; same lawful information and actual common budget; independently reported quality/resource/economic qualification; complete-cost and retention refusal |
+| `isolated_runner.py` | Fresh interpreter/private working directory per arm; trusted callback snapshots; per-process CPU/address-space limits, arm deadline, joined-CPU postcheck and complete failure denominator |
+| `cohort.py` | Registered candidate roster, phase/source separation, logical source-unit deduplication and finite planned-look correction |
 | `integration_tests.py` | Loads verified serialized finite-model bytes, executes the evaluator, and connects its decision to publication; synthetic contract fixture only |
 | `authority_tests.py` | Real concurrent processes, process-kill commit boundaries, cold restore, migration and authorization controls |
 | `review_tests.py` | Independent adversarial tests, including frozen-input and executor-state counterexamples found during review |
@@ -112,12 +120,13 @@ test. `evidence/checks.log` preserves the scoped runner output. `verify.py` repo
 validation-process CPU/wall/RSS only; these are not memory-service deployment costs.
 The positive admission fixtures use artificial resource values and finite selectors.
 
-The final local scoped run passed **53/53 cases**: 22 authority cases, 11 paired
+The original local scoped run passed **53/53 cases**: 22 authority cases, 11 paired
 admission cases, 19 independent adversarial cases and one verified-bytes integration
 case. There were no skips, and Python source hashes were unchanged during execution.
 Its 10.238-second wall time is a validation cost, not a model-serving benchmark.
-Earlier independent review receipts remain labeled with their own source identities;
-the unified `checks.json` is the final local source receipt.
+Earlier independent review receipts remain labeled with their own source identities.
+Running `verify.py` replaces its default `checks.*` outputs; retained evidence for
+the new increment is under `evidence/admission-hardening-20261105/`.
 
 The independent GitHub-hosted Linux run also passed **53/53** at exact commit
 `7eac806adfa4e8dc3ebf182788484b3b06ad196f`:
@@ -172,7 +181,7 @@ reproduction instructions are in [`device_qualification/`](device_qualification/
 
 ## Remaining qualification boundaries
 
-- Each execution of the 53-case automated suite uses one Linux host and one
+- Each automated reference-suite execution uses one Linux host and one
   authoritative SQLite filesystem. The separate Mac-to-pocket4 experiment still
   uses one Mac authority. Neither provides replicated consensus, an independent
   monotone witness or protection against rollback of the whole authority filesystem.
@@ -191,8 +200,14 @@ reproduction instructions are in [`device_qualification/`](device_qualification/
   and a frozen prospective experiment. It cannot infer those facts from a digest.
   Its statistical bound covers task outcomes, not uncertain future costs. Deployment
   admission must supply conservative cost estimates or separately bound that uncertainty.
-  A hung predictor requires an externally bounded worker; the in-process evaluator
-  only counts completed deadline overruns as failures.
+  The current evaluator uses externally bounded workers and counts uncompleted
+  requests as failures. This isolates Python heaps and relative working files,
+  not external services, shared absolute paths or hostile code. CPU/address-space
+  hard limits are per process; joined-child CPU is checked after execution. A
+  production aggregate process-tree budget requires additional supervision.
+- Registration and settings are frozen within one evaluation object. A persistent
+  experiment/look ledger is not implemented: the trusted host must reserve looks
+  before dispatch, preserve unknown outcomes and prevent adaptive holdout reuse.
 - No new long-term language retention, strict full-budget superiority or positive
   learned split/merge result is established. Existing negative evidence remains valid.
 
