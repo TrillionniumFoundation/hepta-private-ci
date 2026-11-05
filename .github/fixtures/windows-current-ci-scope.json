@@ -145,6 +145,20 @@
         "tests::driver_terminal_tests::driver_sender_drop_keeps_unknown_exit_and_drains_output"
       ],
       "filter": "test(=tests::driver_terminal_tests::driver_sender_drop_keeps_unknown_exit_and_drains_output)"
+    },
+    {
+      "id": "runner-native-custody",
+      "package": "codex-windows-sandbox",
+      "expectedTestCount": 6,
+      "requiredTests": [
+        "elevated::runner_client::process::owner::custody_tests::reservation_and_confirmed_exit_release_only_their_exact_slot",
+        "elevated::runner_client::process::owner::custody_tests::session_custody_survives_taken_terminator_and_driver_disconnect",
+        "elevated::runner_client::process::owner::custody_tests::dropped_sync_error_retains_owner_until_late_same_handle_observation",
+        "elevated::runner_client::process::owner::custody_tests::unarmed_startup_abort_keeps_custody_until_zero_wait_terminal_query",
+        "elevated::runner_client::process::owner::custody_tests::failure_fences_admission_before_native_abort_or_wait",
+        "elevated::runner_client::process::owner::custody_tests::cleanup_query_access_failures_fence_without_reclassifying_original_work"
+      ],
+      "filter": "test(=elevated::runner_client::process::owner::custody_tests::reservation_and_confirmed_exit_release_only_their_exact_slot) | test(=elevated::runner_client::process::owner::custody_tests::session_custody_survives_taken_terminator_and_driver_disconnect) | test(=elevated::runner_client::process::owner::custody_tests::dropped_sync_error_retains_owner_until_late_same_handle_observation) | test(=elevated::runner_client::process::owner::custody_tests::unarmed_startup_abort_keeps_custody_until_zero_wait_terminal_query) | test(=elevated::runner_client::process::owner::custody_tests::failure_fences_admission_before_native_abort_or_wait) | test(=elevated::runner_client::process::owner::custody_tests::cleanup_query_access_failures_fence_without_reclassifying_original_work)"
     }
   ]
 }

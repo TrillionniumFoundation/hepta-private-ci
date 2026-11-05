@@ -98,6 +98,8 @@ impl RunnerProcessOwner {
         self.failed = true;
         // Admission is fenced before cleanup can block or perform an abort.
         self.publish_custody();
+        #[cfg(test)]
+        custody_tests::after_failure_fence();
         let result = match self.abort_and_reconcile() {
             Ok(code) => error.context(format!("retained runner native exit observed: {code}")),
             Err(cleanup) => error.context(format!(
@@ -165,3 +167,7 @@ mod tests;
 #[cfg(test)]
 #[path = "runner_owned_job_tests.rs"]
 mod job_tests;
+
+#[cfg(test)]
+#[path = "runner_custody_tests.rs"]
+mod custody_tests;
