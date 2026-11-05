@@ -19,8 +19,8 @@ use tokio::sync::Mutex;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 
-use super::RunProcessParams;
-use super::run_process;
+use super::runtime::RunProcessParams;
+use super::runtime::run_process;
 use super::terminal_size_from_protocol;
 use crate::error_code::internal_error;
 use crate::error_code::invalid_params;
