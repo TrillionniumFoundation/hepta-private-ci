@@ -389,3 +389,18 @@ fn desktop_policy_two_successors_keep_one_original_issuer_then_revocation_fences
     );
     assert_eq!(serde_json::to_value(f.state()).unwrap(), preserved);
 }
+
+#[test]
+fn revoked_original_issuer_cannot_acknowledge_an_already_published_desktop_pair() {
+    let f = Fixture::new();
+    f.replace(&f.old, &f.next).unwrap();
+    let before = serde_json::to_value(f.state()).unwrap();
+    f.registry
+        .revoke("desktop-issuer-authority", 1, [8; 32])
+        .unwrap();
+
+    // The writer is still live and the exact successor is already installed.
+    // Neither fact replaces the original issuer's revoked authority.
+    assert!(f.replace(&f.old, &f.next).is_err());
+    assert_eq!(serde_json::to_value(f.state()).unwrap(), before);
+}
