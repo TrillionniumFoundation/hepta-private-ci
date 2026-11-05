@@ -1,0 +1,340 @@
+{
+  "accounting_cpu_s": {
+    "adaptive_reference": 1.2162864129999993,
+    "complete_child_envelope": 17.613827,
+    "internal_envelope": 17.461725525,
+    "qualification": 2.712767927,
+    "service": 11.318451029,
+    "setup": 0.001983004999999996,
+    "subtotals": 17.437511709,
+    "supervisor": 0.36480399999999996,
+    "training": 2.188023335
+  },
+  "action_counts": {
+    "adaptive_reference/CHECK": 9,
+    "adaptive_reference/ORACLE": 9,
+    "adaptive_reference/REPAIR": 9,
+    "adaptive_reference/STOP": 9,
+    "failure_qualification/CHECK": 4,
+    "failure_qualification/ORACLE": 1,
+    "model_qualification/CHECK": 27,
+    "model_qualification/ORACLE": 9,
+    "model_qualification/REPAIR": 18,
+    "service/ORACLE": 108,
+    "service/REPAIR": 216,
+    "service/STOP": 108
+  },
+  "adaptive_reference_ce": 0.8757424020424661,
+  "adaptive_reference_mean_tariff": 0.12000000000000001,
+  "cells": [
+    {
+      "ce": 0.815,
+      "cpu_s": 0.09415594866666667,
+      "inference": "fixed",
+      "method": "inherited_flat_ce",
+      "n": 9,
+      "p95_wall_s": 0.10630558779885177,
+      "p99_wall_s": 0.10654743515959125,
+      "quality": 1.0,
+      "seed": 51001,
+      "tariff": 0.185,
+      "wall_s": 0.09760274055507681
+    },
+    {
+      "ce": 0.815,
+      "cpu_s": 0.12316166311111114,
+      "inference": "dynamic",
+      "method": "inherited_flat_ce",
+      "n": 9,
+      "p95_wall_s": 0.287227986200014,
+      "p99_wall_s": 0.3844432428409345,
+      "quality": 1.0,
+      "seed": 51001,
+      "tariff": 0.185,
+      "wall_s": 0.12333307744443624
+    },
+    {
+      "ce": 0.815,
+      "cpu_s": 0.12127874911111104,
+      "inference": "fixed",
+      "method": "recursive_ce",
+      "n": 9,
+      "p95_wall_s": 0.2420124416006728,
+      "p99_wall_s": 0.3077245715202298,
+      "quality": 1.0,
+      "seed": 51001,
+      "tariff": 0.185,
+      "wall_s": 0.12673331544445116
+    },
+    {
+      "ce": 0.815,
+      "cpu_s": 0.10291852644444441,
+      "inference": "dynamic",
+      "method": "recursive_ce",
+      "n": 9,
+      "p95_wall_s": 0.12426722699892707,
+      "p99_wall_s": 0.1250343213987071,
+      "quality": 1.0,
+      "seed": 51001,
+      "tariff": 0.185,
+      "wall_s": 0.10314664522229577
+    },
+    {
+      "ce": 0.815,
+      "cpu_s": 0.09392697333333337,
+      "inference": "fixed",
+      "method": "inherited_flat_ce",
+      "n": 9,
+      "p95_wall_s": 0.11122157019999576,
+      "p99_wall_s": 0.11382014683884335,
+      "quality": 1.0,
+      "seed": 51031,
+      "tariff": 0.185,
+      "wall_s": 0.09563505255533124
+    },
+    {
+      "ce": 0.815,
+      "cpu_s": 0.12457202955555566,
+      "inference": "dynamic",
+      "method": "inherited_flat_ce",
+      "n": 9,
+      "p95_wall_s": 0.2310605454003962,
+      "p99_wall_s": 0.26236721388195294,
+      "quality": 1.0,
+      "seed": 51031,
+      "tariff": 0.185,
+      "wall_s": 0.12988743611155465
+    },
+    {
+      "ce": 0.815,
+      "cpu_s": 0.09025822100000012,
+      "inference": "fixed",
+      "method": "recursive_ce",
+      "n": 9,
+      "p95_wall_s": 0.1061081126004865,
+      "p99_wall_s": 0.10692095132064423,
+      "quality": 1.0,
+      "seed": 51031,
+      "tariff": 0.185,
+      "wall_s": 0.09214960022210208
+    },
+    {
+      "ce": 0.815,
+      "cpu_s": 0.09487911211111116,
+      "inference": "dynamic",
+      "method": "recursive_ce",
+      "n": 9,
+      "p95_wall_s": 0.1123491207988991,
+      "p99_wall_s": 0.11387936975821504,
+      "quality": 1.0,
+      "seed": 51031,
+      "tariff": 0.185,
+      "wall_s": 0.09631099200002306
+    },
+    {
+      "ce": 0.815,
+      "cpu_s": 0.09089831855555532,
+      "inference": "fixed",
+      "method": "inherited_flat_ce",
+      "n": 9,
+      "p95_wall_s": 0.10278796219863578,
+      "p99_wall_s": 0.10786532923826599,
+      "quality": 1.0,
+      "seed": 51061,
+      "tariff": 0.185,
+      "wall_s": 0.09135746388831952
+    },
+    {
+      "ce": 0.815,
+      "cpu_s": 0.12016723888888908,
+      "inference": "dynamic",
+      "method": "inherited_flat_ce",
+      "n": 9,
+      "p95_wall_s": 0.2136052191992348,
+      "p99_wall_s": 0.2512056358404516,
+      "quality": 1.0,
+      "seed": 51061,
+      "tariff": 0.185,
+      "wall_s": 0.12133995922178858
+    },
+    {
+      "ce": 0.815,
+      "cpu_s": 0.10527396844444453,
+      "inference": "fixed",
+      "method": "recursive_ce",
+      "n": 9,
+      "p95_wall_s": 0.1353687609982444,
+      "p99_wall_s": 0.1375517417973606,
+      "quality": 1.0,
+      "seed": 51061,
+      "tariff": 0.185,
+      "wall_s": 0.1099880956676821
+    },
+    {
+      "ce": 0.815,
+      "cpu_s": 0.09611492066666649,
+      "inference": "dynamic",
+      "method": "recursive_ce",
+      "n": 9,
+      "p95_wall_s": 0.1314526200025284,
+      "p99_wall_s": 0.14865921680218888,
+      "quality": 1.0,
+      "seed": 51061,
+      "tariff": 0.185,
+      "wall_s": 0.09859303811228731
+    }
+  ],
+  "checks": 5126,
+  "contrasts": [
+    {
+      "causal_service_saving_established": false,
+      "ce_effects": {
+        "inference_on_flat": 0.0,
+        "inference_on_recursive": 0.0,
+        "interaction": 0.0,
+        "training_on_dynamic": 0.0,
+        "training_on_fixed": 0.0
+      },
+      "observed_recursive_cpu_saving_s": 0.018360222666666634,
+      "qualified_break_even_services": null,
+      "seed": 51001
+    },
+    {
+      "causal_service_saving_established": false,
+      "ce_effects": {
+        "inference_on_flat": 0.0,
+        "inference_on_recursive": 0.0,
+        "interaction": 0.0,
+        "training_on_dynamic": 0.0,
+        "training_on_fixed": 0.0
+      },
+      "observed_recursive_cpu_saving_s": -0.004620891111111039,
+      "qualified_break_even_services": null,
+      "seed": 51031
+    },
+    {
+      "causal_service_saving_established": false,
+      "ce_effects": {
+        "inference_on_flat": 0.0,
+        "inference_on_recursive": 0.0,
+        "interaction": 0.0,
+        "training_on_dynamic": 0.0,
+        "training_on_fixed": 0.0
+      },
+      "observed_recursive_cpu_saving_s": 0.00915904777777804,
+      "qualified_break_even_services": null,
+      "seed": 51061
+    }
+  ],
+  "errors": [],
+  "full_cost_amortization_qualified": false,
+  "input_identities": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/rl_audit/evidence/review_tools/REMOTE_READBACK.json": {
+      "bytes": 3102,
+      "sha256": "2625ca80c246bafadd09c899b0775c0471df027c2f5fde55bbcbc04c8d103b64"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/rl_audit/evidence/run_20261105_001/COMPLETION.json": {
+      "bytes": 626,
+      "sha256": "e30d398ecac2134b7420c9ffc380945d7dd7c0d6e63ab1e1471b232a442612b7"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/rl_audit/evidence/run_20261105_001/REGISTRATION.json": {
+      "bytes": 14469,
+      "sha256": "a7e638dee11639a7f5d46fea9f563cf1b8f901f7800c30cd681cc745a0dd9df1"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/rl_audit/evidence/run_20261105_001/tools/PROCESS_RECEIPT.json": {
+      "bytes": 2015,
+      "sha256": "c4f9563fff0e4a1da30bf416c3bb17279f72f3f52b54acae33f96dd7ecec19d3"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/rl_audit/evidence/run_20261105_001/tools/run/RESULT.json": {
+      "bytes": 296396,
+      "sha256": "d68366af90d1f7c63c5a23345f6f4ca7e477cbe698de921762e0f2c09a78863a"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/rl_audit/evidence/run_20261105_001/tools/run/records_000.json": {
+      "bytes": 52466,
+      "sha256": "ef391fd94608356b176de63ce0ebd05e3e919d76dec82d039a44c60ef5fa15ef"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/rl_audit/evidence/run_20261105_001/tools/run/records_001.json": {
+      "bytes": 52401,
+      "sha256": "0d83e99888b2838de59ac7aca51fe679914d068e932a039cfb62f968958adc25"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/rl_audit/evidence/run_20261105_001/tools/run/records_002.json": {
+      "bytes": 52445,
+      "sha256": "c09c63855ed98e4bb178559f094238b732df78af9bf79916e3321dc41a87ad91"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/rl_audit/evidence/run_20261105_001/tools/run/records_003.json": {
+      "bytes": 52454,
+      "sha256": "523b3b2c43ba5b6698df2a1177d89295e4def3ef6c292fa968468ee727a52a40"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/rl_audit/evidence/run_20261105_001/tools/run/records_004.json": {
+      "bytes": 52457,
+      "sha256": "1206e0b9231224eeb1b6ce5bc68e6840ec30ac5a25ba868c0aff382b049ca9d6"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/rl_audit/evidence/run_20261105_001/tools/run/records_005.json": {
+      "bytes": 52428,
+      "sha256": "cacac1427e0438b2b8d30f678ed913e0d7e6483e88125bec1c6180916a7dce52"
+    }
+  },
+  "invocations_by_scope": {
+    "adaptive_reference": 27,
+    "failure_qualification": 5,
+    "model_qualification": 54,
+    "service": 324
+  },
+  "learned_greedy_ce": 0.815,
+  "new_algorithm_established": false,
+  "passed": true,
+  "raw_record_parts": 6,
+  "review_limits": [
+    "Read-only evidence recomputation; no service, training or official rsEAC reexecution.",
+    "Reviewer helped implement the tool source; this is a separate arithmetic implementation, not independent authorship or administrative evaluation.",
+    "Identical RRSTOP service programs in all four cells; wall/CPU fluctuations do not establish a causal work saving.",
+    "Repeated known templates; each cell has only nine observations and three fit seeds overall.",
+    "Action research credits and the parent meter's physical-resource tariff are different reported scopes; neither is a measured monetary bill.",
+    "Provisioning and external acquisition prices remain unknown; no full-cost break-even is qualified."
+  ],
+  "reviewed_at_utc": "2026-11-05T09:22:14.131059+00:00",
+  "schema": "hepta.tools-detached-arithmetic-review.v1",
+  "service_rows": 108,
+  "source_commit": "062b6dd7c730c4795ae617f4c85278dd2ac821d7",
+  "tariff_by_scope": {
+    "adaptive_reference": 1.08,
+    "failure_qualification": 0.08,
+    "model_qualification": 2.0249999999999995,
+    "service": 19.979999999999908
+  },
+  "total_optimizer_updates": 3000,
+  "training": [
+    {
+      "action_disagreements": 0,
+      "flat_cpu_s": 0.04161711000000001,
+      "maximum_parameter_difference": 5.329070518200751e-15,
+      "recursive_cpu_s": 0.60829446,
+      "recursive_to_flat_cpu_ratio": 14.61645126247353,
+      "seed": 51001,
+      "updates_across_two_fits": 1000,
+      "updates_per_fit": 500
+    },
+    {
+      "action_disagreements": 0,
+      "flat_cpu_s": 0.030187760000000008,
+      "maximum_parameter_difference": 5.329070518200751e-15,
+      "recursive_cpu_s": 0.7157483009999999,
+      "recursive_to_flat_cpu_ratio": 23.709884436606085,
+      "seed": 51031,
+      "updates_across_two_fits": 1000,
+      "updates_per_fit": 500
+    },
+    {
+      "action_disagreements": 0,
+      "flat_cpu_s": 0.03385285699999985,
+      "maximum_parameter_difference": 1.0658141036401503e-14,
+      "recursive_cpu_s": 0.7583228470000003,
+      "recursive_to_flat_cpu_ratio": 22.400556827448973,
+      "seed": 51061,
+      "updates_across_two_fits": 1000,
+      "updates_per_fit": 500
+    }
+  ],
+  "whole_process_reported_peak_rss_bytes": 48222208,
+  "whole_process_wall_s": 18.1490401810006
+}

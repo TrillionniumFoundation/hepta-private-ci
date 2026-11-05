@@ -1,0 +1,587 @@
+{
+  "claims": {
+    "all_registered_phases_completed": true,
+    "finite_semantics_validated": true,
+    "full_multistep_actor_critic_tested": false,
+    "full_training_effect_identified": false,
+    "future_holdout_tested": false,
+    "independent_organization_evaluation": false,
+    "non_equivalent_learning_algorithm_tested": false,
+    "official_rseac_executed": false,
+    "qualified_full_cost_break_even_services": null,
+    "real_frozen_llm_executed": false,
+    "real_rule_tools_executed": true,
+    "stable_structural_learning_advantage_established": false
+  },
+  "completion": {
+    "all_registered_phases_completed": true,
+    "cost_scope": "Each phase's complete waited process; enclosed measurements are subtotals. Outer launcher, provisioning and publication remain separate.",
+    "new_algorithm_established": false,
+    "phase_exit_codes": {
+      "semantics": 0,
+      "structure": 0,
+      "tools": 0
+    },
+    "phase_results_valid": {
+      "semantics": true,
+      "structure": true,
+      "tools": true
+    },
+    "requested_phases_completed": true,
+    "scientific_superiority_established": false,
+    "source_bytes_unchanged": true,
+    "source_commit": "062b6dd7c730c4795ae617f4c85278dd2ac821d7",
+    "source_error": null
+  },
+  "cost_scope": "Phase envelopes include imports, child startup, waited descendants and serialization; enclosed clocks are subtotals. Provisioning, acquisition, outer launcher, review/publication and real monetary fees are not all measured.",
+  "input_review_sha256": {
+    "review_semantics/REVIEW.json": "901e62377dc85bc766988584b3fc3362adb579b618b61762065b09ca50786dd5",
+    "review_structure_20261105_001/REVIEW.json": "b2fa83e849a5d92d30ea5996dc98d38cd1dda0c621a1607d398815b30b79215e",
+    "review_tools/REVIEW.json": "eb05ddf510b43b69e4718553ad9d195f5a6ccbefaf83df22f85f500493b1ad3c"
+  },
+  "observed_validation": {
+    "inherited_exact_factorial_unittest_passed": 27,
+    "just_fmt_attempt": "exit 127: just not available",
+    "new_unittest_passed": 41,
+    "ruff_version": "0.15.13",
+    "scoped_ruff_passed": true,
+    "validation_source": "Commands observed during implementation and freeze; no fabricated retained test transcript.",
+    "whole_workspace_or_remote_ci_pass_claimed": false
+  },
+  "process_envelopes": {
+    "semantics": {
+      "abnormal_exit_cost_is_only_measured_lower_bound": false,
+      "child_cpu_seconds": 0.143103,
+      "child_peak_rss_bytes": 13893632,
+      "child_reaped": true,
+      "exit_code": 0,
+      "supervisor_cpu_seconds": 0.0009500000000000064,
+      "wall_seconds": 0.15146016099970439
+    },
+    "structure": {
+      "abnormal_exit_cost_is_only_measured_lower_bound": false,
+      "child_cpu_seconds": 12.104501,
+      "child_peak_rss_bytes": 64413696,
+      "child_reaped": true,
+      "exit_code": 0,
+      "supervisor_cpu_seconds": 0.13271499999999997,
+      "wall_seconds": 12.152979750997474
+    },
+    "tools": {
+      "abnormal_exit_cost_is_only_measured_lower_bound": false,
+      "child_cpu_seconds": 17.613827,
+      "child_peak_rss_bytes": 48222208,
+      "child_reaped": true,
+      "exit_code": 0,
+      "supervisor_cpu_seconds": 0.36480399999999996,
+      "wall_seconds": 18.1490401810006
+    }
+  },
+  "raw_archive": {
+    "archive_bytes": 3915296,
+    "archive_sha256": "40d71a9d29ae28ec90d16fbdb0ba9327a51180f19fd52ce725ce4d327452289d",
+    "files": 76,
+    "packaging_check": "formal_001_archive/PACKAGING_CHECK.json",
+    "parts": 9,
+    "path": "formal_001_archive/",
+    "raw_bytes": 13240578
+  },
+  "review_disclosure": "Reviewers participated in implementation. Independently reconstructed arithmetic and checkpoint inference are not independent authorship, institutional evaluation, retraining or physical clock provenance.",
+  "run": "run_20261105_001",
+  "schema": "hepta.ndu-full-validation-summary.v1",
+  "semantics": {
+    "counterexamples": {
+      "duration_GAE": {
+        "correct_action_values": [
+          0.25,
+          0.5
+        ],
+        "correct_gradient": [
+          -0.06249999999999997,
+          0.0625
+        ],
+        "fixed_step_action_values": [
+          1.0,
+          0.5
+        ],
+        "fixed_step_gradient": [
+          0.125,
+          -0.125
+        ],
+        "interpretation": "gamma=0.5 instead of gamma**duration reverses the actor update even with exact continuation values; lambda=1 cannot repair the discount mismatch",
+        "rate": 0.6931471805599453
+      },
+      "duration_correlation": {
+        "branches": [
+          [
+            0.5,
+            1,
+            0
+          ],
+          [
+            0.5,
+            3,
+            2
+          ]
+        ],
+        "correct_expected_discounted_value": 0.7290000000000001,
+        "discount_per_unit": 0.9,
+        "incorrect_product_of_expectations": 0.8145
+      },
+      "entropic_GAE": {
+        "entropic": {
+          "gradient": [
+            0.20473530879567828,
+            -0.20473530879567836
+          ],
+          "value": -0.3544668164552882
+        },
+        "eta": 2,
+        "interpretation": "ordinary expected-return advantages optimize a different objective; both action randomization and environmental outcomes are risk exposed",
+        "ordinary_expected_return": {
+          "gradient": [
+            -0.125,
+            0.125
+          ],
+          "value": 0.75
+        }
+      },
+      "upfront_cost": {
+        "correct_value": -0.15000000000000002,
+        "cost": 0.4,
+        "delivered_payoff": 1,
+        "discount_per_unit": 0.5,
+        "duration": 2,
+        "incorrect_discounted_cost_value": 0.15
+      }
+    },
+    "independent_path_risk_limit": [
+      {
+        "eta": 1e-06,
+        "gradient_error": 2.7755575615628914e-17,
+        "value_error": 0.0
+      },
+      {
+        "eta": 1e-09,
+        "gradient_error": 1.3877787807814457e-17,
+        "value_error": 5.551115123125783e-17
+      },
+      {
+        "eta": 1e-12,
+        "gradient_error": 9.540979117872439e-18,
+        "value_error": 5.551115123125783e-17
+      },
+      {
+        "eta": 1e-30,
+        "gradient_error": 2.7755575615628914e-17,
+        "value_error": 5.551115123125783e-17
+      }
+    ],
+    "maximum_closed_form_gradient_error": 2.7755575615628914e-17,
+    "maximum_recorded_bellman_error": 2.220446049250313e-16,
+    "maximum_recorded_gradient_error": 4.163336342344337e-17,
+    "recorded_risk_neutral_limit": [
+      {
+        "eta": 0.1,
+        "gradient_error": 0.0019231608623167806,
+        "value_error": 0.003851496472546123
+      },
+      {
+        "eta": 0.001,
+        "gradient_error": 1.91643594147084e-05,
+        "value_error": 3.885295276701006e-05
+      },
+      {
+        "eta": 1e-06,
+        "gradient_error": 1.916364260334813e-08,
+        "value_error": 3.885639027201293e-08
+      },
+      {
+        "eta": 1e-09,
+        "gradient_error": 1.9163615139206058e-11,
+        "value_error": 3.885633481637285e-11
+      }
+    ]
+  },
+  "source_commit": "062b6dd7c730c4795ae617f4c85278dd2ac821d7",
+  "source_manifest_sha256": "ad82b7cc46814ebad787ea1ebb3f66a0282fb00e61ba9b6c308eda839d026bc3",
+  "source_tree": "84ee113d287030e115c791d9481d0c719b2ab92c",
+  "structure": {
+    "all_panel_and_seed_data": "review_structure_20261105_001/REVIEW.json",
+    "base_means": [
+      {
+        "arm": "linear/direct_gradient",
+        "expected_net_value": -0.16256199289275744,
+        "expected_regret": 0.00017424271474514015,
+        "gradient_mse": 0.00031803772390581384,
+        "inference_cpu_ns": 11909145.2,
+        "mean_fee": 0.01086125,
+        "observed_net_value": -0.1512734303383014,
+        "panel": "base",
+        "parameters": [
+          6
+        ],
+        "seeds": [
+          101,
+          211,
+          307,
+          401,
+          503
+        ],
+        "training_cpu_s": 0.00022701200000000001
+      },
+      {
+        "arm": "neural/direct_gradient",
+        "expected_net_value": -0.16253963064485627,
+        "expected_regret": 0.00015188046684398005,
+        "gradient_mse": 0.0010073303734655502,
+        "inference_cpu_ns": 8735828.0,
+        "mean_fee": 0.010967265625,
+        "observed_net_value": -0.151757969144882,
+        "panel": "base",
+        "parameters": [
+          62
+        ],
+        "seeds": [
+          101,
+          211,
+          307,
+          401,
+          503
+        ],
+        "training_cpu_s": 0.0101943466
+      },
+      {
+        "arm": "quadratic/value",
+        "expected_net_value": -0.16248186007419188,
+        "expected_regret": 9.41098961795904e-05,
+        "gradient_mse": 0.0006843492840709974,
+        "inference_cpu_ns": 18189284.4,
+        "mean_fee": 0.010861249999999998,
+        "observed_net_value": -0.15103331547272297,
+        "panel": "base",
+        "parameters": [
+          6
+        ],
+        "seeds": [
+          101,
+          211,
+          307,
+          401,
+          503
+        ],
+        "training_cpu_s": 0.0002917908
+      }
+    ],
+    "counts": {
+      "checkpoints": 480,
+      "checks": 41761,
+      "complete": 645,
+      "decisions": 82560,
+      "equivalent_Z_pairs": 150,
+      "records": 660,
+      "unidentified": 15
+    },
+    "display_baseline": "quadratic/value; post-hoc consistent descriptive display, not a preregistered primary contrast",
+    "limits": [
+      "Timing summaries are recomputed from recorded clocks, not independently measured.",
+      "Label/update receipts and hashes do not independently prove the optimizer execution.",
+      "Seven intervention categories are not a matched-capacity or matched-CPU efficacy experiment.",
+      "Five seeds per panel are descriptive; no winner selection, superiority test or future-window claim.",
+      "Action credits omit a physical-compute tariff; no complete net-gain or amortization conclusion."
+    ],
+    "maximum_arithmetic_errors": {
+      "curl": 6.423897871976614e-13,
+      "direct_Z_gradient": 6.23945339839338e-14,
+      "expected_net_value": 5.551115123125783e-17,
+      "expected_quality": 1.1102230246251565e-16,
+      "expected_regret": 4.163336342344337e-17,
+      "gradient_mse": 1.3877787807814457e-17,
+      "inference_cpu_ns": 0.0,
+      "mean_fee": 0.0,
+      "normalization_mean": 0.0,
+      "normalization_scale": 0.0,
+      "observed_net_p05": 1.1102230246251565e-16,
+      "observed_net_value": 5.551115123125783e-17,
+      "observed_quality": 5.551115123125783e-17,
+      "raw_expected_net": 2.220446049250313e-16,
+      "raw_fees": 0.0,
+      "raw_observed_quality": 2.220446049250313e-16,
+      "stop_no_update_fraction": 0.0,
+      "value_mse": 2.7755575615628914e-17,
+      "wall_p95_ns": 0.0,
+      "wall_p99_ns": 0.0
+    }
+  },
+  "tools": {
+    "accounting_cpu_s": {
+      "adaptive_reference": 1.2162864129999993,
+      "complete_child_envelope": 17.613827,
+      "internal_envelope": 17.461725525,
+      "qualification": 2.712767927,
+      "service": 11.318451029,
+      "setup": 0.001983004999999996,
+      "subtotals": 17.437511709,
+      "supervisor": 0.36480399999999996,
+      "training": 2.188023335
+    },
+    "adaptive_reference_ce": 0.8757424020424661,
+    "adaptive_reference_mean_tariff": 0.12000000000000001,
+    "cells": [
+      {
+        "ce": 0.815,
+        "cpu_s": 0.09415594866666667,
+        "inference": "fixed",
+        "method": "inherited_flat_ce",
+        "n": 9,
+        "p95_wall_s": 0.10630558779885177,
+        "p99_wall_s": 0.10654743515959125,
+        "quality": 1.0,
+        "seed": 51001,
+        "tariff": 0.185,
+        "wall_s": 0.09760274055507681
+      },
+      {
+        "ce": 0.815,
+        "cpu_s": 0.12316166311111114,
+        "inference": "dynamic",
+        "method": "inherited_flat_ce",
+        "n": 9,
+        "p95_wall_s": 0.287227986200014,
+        "p99_wall_s": 0.3844432428409345,
+        "quality": 1.0,
+        "seed": 51001,
+        "tariff": 0.185,
+        "wall_s": 0.12333307744443624
+      },
+      {
+        "ce": 0.815,
+        "cpu_s": 0.12127874911111104,
+        "inference": "fixed",
+        "method": "recursive_ce",
+        "n": 9,
+        "p95_wall_s": 0.2420124416006728,
+        "p99_wall_s": 0.3077245715202298,
+        "quality": 1.0,
+        "seed": 51001,
+        "tariff": 0.185,
+        "wall_s": 0.12673331544445116
+      },
+      {
+        "ce": 0.815,
+        "cpu_s": 0.10291852644444441,
+        "inference": "dynamic",
+        "method": "recursive_ce",
+        "n": 9,
+        "p95_wall_s": 0.12426722699892707,
+        "p99_wall_s": 0.1250343213987071,
+        "quality": 1.0,
+        "seed": 51001,
+        "tariff": 0.185,
+        "wall_s": 0.10314664522229577
+      },
+      {
+        "ce": 0.815,
+        "cpu_s": 0.09392697333333337,
+        "inference": "fixed",
+        "method": "inherited_flat_ce",
+        "n": 9,
+        "p95_wall_s": 0.11122157019999576,
+        "p99_wall_s": 0.11382014683884335,
+        "quality": 1.0,
+        "seed": 51031,
+        "tariff": 0.185,
+        "wall_s": 0.09563505255533124
+      },
+      {
+        "ce": 0.815,
+        "cpu_s": 0.12457202955555566,
+        "inference": "dynamic",
+        "method": "inherited_flat_ce",
+        "n": 9,
+        "p95_wall_s": 0.2310605454003962,
+        "p99_wall_s": 0.26236721388195294,
+        "quality": 1.0,
+        "seed": 51031,
+        "tariff": 0.185,
+        "wall_s": 0.12988743611155465
+      },
+      {
+        "ce": 0.815,
+        "cpu_s": 0.09025822100000012,
+        "inference": "fixed",
+        "method": "recursive_ce",
+        "n": 9,
+        "p95_wall_s": 0.1061081126004865,
+        "p99_wall_s": 0.10692095132064423,
+        "quality": 1.0,
+        "seed": 51031,
+        "tariff": 0.185,
+        "wall_s": 0.09214960022210208
+      },
+      {
+        "ce": 0.815,
+        "cpu_s": 0.09487911211111116,
+        "inference": "dynamic",
+        "method": "recursive_ce",
+        "n": 9,
+        "p95_wall_s": 0.1123491207988991,
+        "p99_wall_s": 0.11387936975821504,
+        "quality": 1.0,
+        "seed": 51031,
+        "tariff": 0.185,
+        "wall_s": 0.09631099200002306
+      },
+      {
+        "ce": 0.815,
+        "cpu_s": 0.09089831855555532,
+        "inference": "fixed",
+        "method": "inherited_flat_ce",
+        "n": 9,
+        "p95_wall_s": 0.10278796219863578,
+        "p99_wall_s": 0.10786532923826599,
+        "quality": 1.0,
+        "seed": 51061,
+        "tariff": 0.185,
+        "wall_s": 0.09135746388831952
+      },
+      {
+        "ce": 0.815,
+        "cpu_s": 0.12016723888888908,
+        "inference": "dynamic",
+        "method": "inherited_flat_ce",
+        "n": 9,
+        "p95_wall_s": 0.2136052191992348,
+        "p99_wall_s": 0.2512056358404516,
+        "quality": 1.0,
+        "seed": 51061,
+        "tariff": 0.185,
+        "wall_s": 0.12133995922178858
+      },
+      {
+        "ce": 0.815,
+        "cpu_s": 0.10527396844444453,
+        "inference": "fixed",
+        "method": "recursive_ce",
+        "n": 9,
+        "p95_wall_s": 0.1353687609982444,
+        "p99_wall_s": 0.1375517417973606,
+        "quality": 1.0,
+        "seed": 51061,
+        "tariff": 0.185,
+        "wall_s": 0.1099880956676821
+      },
+      {
+        "ce": 0.815,
+        "cpu_s": 0.09611492066666649,
+        "inference": "dynamic",
+        "method": "recursive_ce",
+        "n": 9,
+        "p95_wall_s": 0.1314526200025284,
+        "p99_wall_s": 0.14865921680218888,
+        "quality": 1.0,
+        "seed": 51061,
+        "tariff": 0.185,
+        "wall_s": 0.09859303811228731
+      }
+    ],
+    "checks": 5126,
+    "contrasts": [
+      {
+        "causal_service_saving_established": false,
+        "ce_effects": {
+          "inference_on_flat": 0.0,
+          "inference_on_recursive": 0.0,
+          "interaction": 0.0,
+          "training_on_dynamic": 0.0,
+          "training_on_fixed": 0.0
+        },
+        "observed_recursive_cpu_saving_s": 0.018360222666666634,
+        "qualified_break_even_services": null,
+        "seed": 51001
+      },
+      {
+        "causal_service_saving_established": false,
+        "ce_effects": {
+          "inference_on_flat": 0.0,
+          "inference_on_recursive": 0.0,
+          "interaction": 0.0,
+          "training_on_dynamic": 0.0,
+          "training_on_fixed": 0.0
+        },
+        "observed_recursive_cpu_saving_s": -0.004620891111111039,
+        "qualified_break_even_services": null,
+        "seed": 51031
+      },
+      {
+        "causal_service_saving_established": false,
+        "ce_effects": {
+          "inference_on_flat": 0.0,
+          "inference_on_recursive": 0.0,
+          "interaction": 0.0,
+          "training_on_dynamic": 0.0,
+          "training_on_fixed": 0.0
+        },
+        "observed_recursive_cpu_saving_s": 0.00915904777777804,
+        "qualified_break_even_services": null,
+        "seed": 51061
+      }
+    ],
+    "invocations_by_scope": {
+      "adaptive_reference": 27,
+      "failure_qualification": 5,
+      "model_qualification": 54,
+      "service": 324
+    },
+    "learned_greedy_ce": 0.815,
+    "raw_record_parts": 6,
+    "review_limits": [
+      "Read-only evidence recomputation; no service, training or official rsEAC reexecution.",
+      "Reviewer helped implement the tool source; this is a separate arithmetic implementation, not independent authorship or administrative evaluation.",
+      "Identical RRSTOP service programs in all four cells; wall/CPU fluctuations do not establish a causal work saving.",
+      "Repeated known templates; each cell has only nine observations and three fit seeds overall.",
+      "Action research credits and the parent meter's physical-resource tariff are different reported scopes; neither is a measured monetary bill.",
+      "Provisioning and external acquisition prices remain unknown; no full-cost break-even is qualified."
+    ],
+    "service_rows": 108,
+    "tariff_by_scope": {
+      "adaptive_reference": 1.08,
+      "failure_qualification": 0.08,
+      "model_qualification": 2.0249999999999995,
+      "service": 19.979999999999908
+    },
+    "total_optimizer_updates": 3000,
+    "training": [
+      {
+        "action_disagreements": 0,
+        "flat_cpu_s": 0.04161711000000001,
+        "maximum_parameter_difference": 5.329070518200751e-15,
+        "recursive_cpu_s": 0.60829446,
+        "recursive_to_flat_cpu_ratio": 14.61645126247353,
+        "seed": 51001,
+        "updates_across_two_fits": 1000,
+        "updates_per_fit": 500
+      },
+      {
+        "action_disagreements": 0,
+        "flat_cpu_s": 0.030187760000000008,
+        "maximum_parameter_difference": 5.329070518200751e-15,
+        "recursive_cpu_s": 0.7157483009999999,
+        "recursive_to_flat_cpu_ratio": 23.709884436606085,
+        "seed": 51031,
+        "updates_across_two_fits": 1000,
+        "updates_per_fit": 500
+      },
+      {
+        "action_disagreements": 0,
+        "flat_cpu_s": 0.03385285699999985,
+        "maximum_parameter_difference": 1.0658141036401503e-14,
+        "recursive_cpu_s": 0.7583228470000003,
+        "recursive_to_flat_cpu_ratio": 22.400556827448973,
+        "seed": 51061,
+        "updates_across_two_fits": 1000,
+        "updates_per_fit": 500
+      }
+    ]
+  }
+}
