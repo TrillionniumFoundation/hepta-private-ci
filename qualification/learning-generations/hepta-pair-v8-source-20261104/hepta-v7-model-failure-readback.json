@@ -1,0 +1,328 @@
+{
+  "schema": "hepta-v7-ordinary-failed-observation-readback-v1",
+  "artifact": {
+    "run_id": 41784382328,
+    "artifact_id": 13303361039,
+    "sha256": "5d0e0532c677de39a6d41ca514ecd59a9664faecf3a8da85510bbd8a8610bc30",
+    "bytes": 3448474
+  },
+  "source": {
+    "hepta_commit": "231324ad953794e93615cf3bf6d9f50fbc71240e",
+    "hepta_tree": "4570c9ec7c8bb2ccaaffd989b89d9545c72cc7ac",
+    "hepta_source_before_equals_after": true,
+    "chain_commit": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+    "chain_execution_profile": "hepta-integrated-chain-execution-v7",
+    "new_chain_73_or_hepta_v8_execution_evidence": false
+  },
+  "member_sha256": {
+    "three-rounds-native.json": "4c862909ced195b74eefe8b273a2f01438c57b385371c21c432d81246cd9548d",
+    "n/p/round-1/phase-outcomes.json": "38739ce798ea9bd2b1bf1f6c333e7d13011225749b29cc32d62499dac17b4f37",
+    "n/p/ordinary-0/ordinary-session-result.json": "09f13f8d48116676b51d38ee515fb780c99403e51430c8319f59278113fa5480",
+    "required-outcomes.json": "57c7c96773d756fcf5a780fafd307920fe51245e2635dacb690396d2bc1d4668",
+    "three-rounds-native.json.245e0ad4ae854ae197aa498a978d3537.log": "d701b5ef84a014dbd5490493c9c79fdf0e28ca50776af60e4f6559c7d075a2dd"
+  },
+  "native": {
+    "after": {
+      "commit": "231324ad953794e93615cf3bf6d9f50fbc71240e",
+      "dirty": false,
+      "parents": [
+        "c65104116fe5f34e315a4ab1043a2b5b6519070c"
+      ],
+      "tree": "4570c9ec7c8bb2ccaaffd989b89d9545c72cc7ac"
+    },
+    "base_sha": "4c6b1f0cc9ec50689d86a83bed0433ea0bd4c168",
+    "before": {
+      "commit": "231324ad953794e93615cf3bf6d9f50fbc71240e",
+      "dirty": false,
+      "parents": [
+        "c65104116fe5f34e315a4ab1043a2b5b6519070c"
+      ],
+      "tree": "4570c9ec7c8bb2ccaaffd989b89d9545c72cc7ac"
+    },
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-infer-worker-host",
+      "--lib",
+      "--profile",
+      "hepta-public-initial-v2",
+      "-E",
+      "test(real_public_initial_three_rounds_hold_and_read_original_current)",
+      "--run-ignored",
+      "only",
+      "--no-capture"
+    ],
+    "command_exit_code": 100,
+    "elapsed_seconds": 294.1512640870001,
+    "error": "required tests were not observed passing",
+    "exit_code": 100,
+    "finished_at": "2026-11-04T06:55:53.757330+00:00",
+    "job": "cold-ordinary-three-rounds",
+    "lane": "source-head",
+    "log_bytes": 34011,
+    "log_file": "three-rounds-native.json.245e0ad4ae854ae197aa498a978d3537.log",
+    "log_sha256": "d701b5ef84a014dbd5490493c9c79fdf0e28ca50776af60e4f6559c7d075a2dd",
+    "minimum_tests": 1,
+    "observed_failed_tests": 1,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 100,
+    "run_attempt": "1",
+    "run_id": "41784382328",
+    "schema_version": 1,
+    "source_sha": "231324ad953794e93615cf3bf6d9f50fbc71240e",
+    "started_at": "2026-11-04T06:50:59.605630+00:00",
+    "status": "failed",
+    "tested_sha": "231324ad953794e93615cf3bf6d9f50fbc71240e",
+    "timed_out": false,
+    "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci/hepta"
+  },
+  "required_outcomes": {
+    "schema": "hepta-public-initial-required-outcomes-v2",
+    "outcomes": {
+      "REQUIRED_CLI_OUTCOME": "success",
+      "SCOPED_RUST_OUTCOME": "success",
+      "COLD_RUNTIME_OUTCOME": "success",
+      "MATERIALS_OUTCOME": "success",
+      "ORDINARY_OUTCOME": "success",
+      "PROPOSAL_ROUNDS_OUTCOME": "failure",
+      "DESCENDANTS_OUTCOME": "success",
+      "LINT_OUTCOME": "skipped"
+    },
+    "model_target_available": true,
+    "all_required_outcomes_passed": false,
+    "original_full_rust_gate_required": true,
+    "product_qualification": false,
+    "three_installed_upgrades_proven": false
+  },
+  "round_1_phase_observations": [
+    {
+      "name": "train-candidate",
+      "outcome": "success",
+      "exit_code": 0,
+      "stop_reason": null,
+      "child_cpu_ns": 42939957000,
+      "sampled_peak_rss_bytes": 3109675008,
+      "waited_child_peak_rss_bytes": 3109347328,
+      "observed_wall_ns": 32893159570,
+      "exit_observation_profile": {
+        "base_observer_source_sha256": "c1aa0ab8889e2cbe2efd8cc80ae4f9bbb52b464aebc756a51cc5bd872c3dd086",
+        "diagnostic_source_sha256": "d15f4ddc914475ecc8ab473a16f8916b7dd805d8b39d741e49a9d2f63d8fe320",
+        "maximum_drain_ns": 100000000,
+        "observer_source_sha256": "aae68f92393e5e88c5aaa02095b5990200c121834bec05d8b3a11cd3f09ffc50",
+        "profile": "linux-owned-exit-worker-pidfd-v4"
+      },
+      "owned_child_reap_resolved": true
+    },
+    {
+      "name": "train-current-backbone",
+      "outcome": "success",
+      "exit_code": 0,
+      "stop_reason": null,
+      "child_cpu_ns": 8191937000,
+      "sampled_peak_rss_bytes": 1002024960,
+      "waited_child_peak_rss_bytes": 1157283840,
+      "observed_wall_ns": 7200304787,
+      "exit_observation_profile": {
+        "base_observer_source_sha256": "c1aa0ab8889e2cbe2efd8cc80ae4f9bbb52b464aebc756a51cc5bd872c3dd086",
+        "diagnostic_source_sha256": "d15f4ddc914475ecc8ab473a16f8916b7dd805d8b39d741e49a9d2f63d8fe320",
+        "maximum_drain_ns": 100000000,
+        "observer_source_sha256": "aae68f92393e5e88c5aaa02095b5990200c121834bec05d8b3a11cd3f09ffc50",
+        "profile": "linux-owned-exit-worker-pidfd-v4"
+      },
+      "owned_child_reap_resolved": true
+    },
+    {
+      "name": "train-fresh-budget-matched-lora",
+      "outcome": "success",
+      "exit_code": 0,
+      "stop_reason": null,
+      "child_cpu_ns": 41337206000,
+      "sampled_peak_rss_bytes": 3099521024,
+      "waited_child_peak_rss_bytes": 3099090944,
+      "observed_wall_ns": 31308139154,
+      "exit_observation_profile": {
+        "base_observer_source_sha256": "c1aa0ab8889e2cbe2efd8cc80ae4f9bbb52b464aebc756a51cc5bd872c3dd086",
+        "diagnostic_source_sha256": "d15f4ddc914475ecc8ab473a16f8916b7dd805d8b39d741e49a9d2f63d8fe320",
+        "maximum_drain_ns": 100000000,
+        "observer_source_sha256": "aae68f92393e5e88c5aaa02095b5990200c121834bec05d8b3a11cd3f09ffc50",
+        "profile": "linux-owned-exit-worker-pidfd-v4"
+      },
+      "owned_child_reap_resolved": true
+    },
+    {
+      "name": "train-budget-matched-full-tune",
+      "outcome": "success",
+      "exit_code": 0,
+      "stop_reason": null,
+      "child_cpu_ns": 65171162000,
+      "sampled_peak_rss_bytes": 4095762432,
+      "waited_child_peak_rss_bytes": 4095348736,
+      "observed_wall_ns": 39660987115,
+      "exit_observation_profile": {
+        "base_observer_source_sha256": "c1aa0ab8889e2cbe2efd8cc80ae4f9bbb52b464aebc756a51cc5bd872c3dd086",
+        "diagnostic_source_sha256": "d15f4ddc914475ecc8ab473a16f8916b7dd805d8b39d741e49a9d2f63d8fe320",
+        "maximum_drain_ns": 100000000,
+        "observer_source_sha256": "aae68f92393e5e88c5aaa02095b5990200c121834bec05d8b3a11cd3f09ffc50",
+        "profile": "linux-owned-exit-worker-pidfd-v4"
+      },
+      "owned_child_reap_resolved": true
+    },
+    {
+      "name": "train-randomized-rank-matched-lora",
+      "outcome": "success",
+      "exit_code": 0,
+      "stop_reason": null,
+      "child_cpu_ns": 8298890000,
+      "sampled_peak_rss_bytes": 1136414720,
+      "waited_child_peak_rss_bytes": 1157603328,
+      "observed_wall_ns": 7257499337,
+      "exit_observation_profile": {
+        "base_observer_source_sha256": "c1aa0ab8889e2cbe2efd8cc80ae4f9bbb52b464aebc756a51cc5bd872c3dd086",
+        "diagnostic_source_sha256": "d15f4ddc914475ecc8ab473a16f8916b7dd805d8b39d741e49a9d2f63d8fe320",
+        "maximum_drain_ns": 100000000,
+        "observer_source_sha256": "aae68f92393e5e88c5aaa02095b5990200c121834bec05d8b3a11cd3f09ffc50",
+        "profile": "linux-owned-exit-worker-pidfd-v4"
+      },
+      "owned_child_reap_resolved": true
+    },
+    {
+      "name": "evaluate-candidate",
+      "outcome": "success",
+      "exit_code": 0,
+      "stop_reason": null,
+      "child_cpu_ns": 43643007000,
+      "sampled_peak_rss_bytes": 1000431616,
+      "waited_child_peak_rss_bytes": 1155760128,
+      "observed_wall_ns": 16246592352,
+      "exit_observation_profile": {
+        "base_observer_source_sha256": "c1aa0ab8889e2cbe2efd8cc80ae4f9bbb52b464aebc756a51cc5bd872c3dd086",
+        "diagnostic_source_sha256": "d15f4ddc914475ecc8ab473a16f8916b7dd805d8b39d741e49a9d2f63d8fe320",
+        "maximum_drain_ns": 100000000,
+        "observer_source_sha256": "aae68f92393e5e88c5aaa02095b5990200c121834bec05d8b3a11cd3f09ffc50",
+        "profile": "linux-owned-exit-worker-pidfd-v4"
+      },
+      "owned_child_reap_resolved": true
+    },
+    {
+      "name": "evaluate-current-backbone",
+      "outcome": "success",
+      "exit_code": 0,
+      "stop_reason": null,
+      "child_cpu_ns": 35999825000,
+      "sampled_peak_rss_bytes": 1002422272,
+      "waited_child_peak_rss_bytes": 1157746688,
+      "observed_wall_ns": 14065140660,
+      "exit_observation_profile": {
+        "base_observer_source_sha256": "c1aa0ab8889e2cbe2efd8cc80ae4f9bbb52b464aebc756a51cc5bd872c3dd086",
+        "diagnostic_source_sha256": "d15f4ddc914475ecc8ab473a16f8916b7dd805d8b39d741e49a9d2f63d8fe320",
+        "maximum_drain_ns": 100000000,
+        "observer_source_sha256": "aae68f92393e5e88c5aaa02095b5990200c121834bec05d8b3a11cd3f09ffc50",
+        "profile": "linux-owned-exit-worker-pidfd-v4"
+      },
+      "owned_child_reap_resolved": true
+    },
+    {
+      "name": "evaluate-fresh-budget-matched-lora",
+      "outcome": "success",
+      "exit_code": 0,
+      "stop_reason": null,
+      "child_cpu_ns": 39771629000,
+      "sampled_peak_rss_bytes": 1002254336,
+      "waited_child_peak_rss_bytes": 1157632000,
+      "observed_wall_ns": 15200760479,
+      "exit_observation_profile": {
+        "base_observer_source_sha256": "c1aa0ab8889e2cbe2efd8cc80ae4f9bbb52b464aebc756a51cc5bd872c3dd086",
+        "diagnostic_source_sha256": "d15f4ddc914475ecc8ab473a16f8916b7dd805d8b39d741e49a9d2f63d8fe320",
+        "maximum_drain_ns": 100000000,
+        "observer_source_sha256": "aae68f92393e5e88c5aaa02095b5990200c121834bec05d8b3a11cd3f09ffc50",
+        "profile": "linux-owned-exit-worker-pidfd-v4"
+      },
+      "owned_child_reap_resolved": true
+    },
+    {
+      "name": "evaluate-budget-matched-full-tune",
+      "outcome": "success",
+      "exit_code": 0,
+      "stop_reason": null,
+      "child_cpu_ns": 37923727000,
+      "sampled_peak_rss_bytes": 1540399104,
+      "waited_child_peak_rss_bytes": 1540272128,
+      "observed_wall_ns": 15393091187,
+      "exit_observation_profile": {
+        "base_observer_source_sha256": "c1aa0ab8889e2cbe2efd8cc80ae4f9bbb52b464aebc756a51cc5bd872c3dd086",
+        "diagnostic_source_sha256": "d15f4ddc914475ecc8ab473a16f8916b7dd805d8b39d741e49a9d2f63d8fe320",
+        "maximum_drain_ns": 100000000,
+        "observer_source_sha256": "aae68f92393e5e88c5aaa02095b5990200c121834bec05d8b3a11cd3f09ffc50",
+        "profile": "linux-owned-exit-worker-pidfd-v4"
+      },
+      "owned_child_reap_resolved": true
+    },
+    {
+      "name": "evaluate-randomized-rank-matched-lora",
+      "outcome": "failed",
+      "exit_code": 0,
+      "stop_reason": "rss-observation-unavailable",
+      "child_cpu_ns": 44833214000,
+      "sampled_peak_rss_bytes": 1025200128,
+      "waited_child_peak_rss_bytes": 1155592192,
+      "observed_wall_ns": 16784858507,
+      "exit_observation_profile": {
+        "base_observer_source_sha256": "c1aa0ab8889e2cbe2efd8cc80ae4f9bbb52b464aebc756a51cc5bd872c3dd086",
+        "diagnostic_source_sha256": "d15f4ddc914475ecc8ab473a16f8916b7dd805d8b39d741e49a9d2f63d8fe320",
+        "maximum_drain_ns": 100000000,
+        "observer_source_sha256": "aae68f92393e5e88c5aaa02095b5990200c121834bec05d8b3a11cd3f09ffc50",
+        "profile": "linux-owned-exit-worker-pidfd-v4"
+      },
+      "owned_child_reap_resolved": true,
+      "original_missing_sample": {
+        "error_errno": null,
+        "error_type": null,
+        "exit_classification_error": "ExitObservationError",
+        "reason": "vmrss-missing",
+        "same_sample_exit_classification": {
+          "attempted": true,
+          "borrowed_owner_present": true,
+          "diagnostic_only": true,
+          "error_errno": null,
+          "error_type": "ExitObservationError",
+          "initial_state": "Z",
+          "initial_threads": 3,
+          "missing_sample_ns": 2409216792874,
+          "precondition": "owned-zombie-leader",
+          "rejection_code": "exit-task-set",
+          "result": "unavailable",
+          "source": "original-child-status-read-before-return"
+        }
+      }
+    }
+  ],
+  "ordinary_initial_observation": {
+    "context_reads": 1,
+    "current_before": {
+      "file_digest": "75790902ac5adf1661284cd2b8cf4c3fdb16f5818671bebbc54905ad72242571",
+      "head_digest": "b4cd5a26bbf83c7b7aee737c3f3a97edb63c3e067b3466c0f2e22c36bec60b5a",
+      "record_count": 1,
+      "signed_head_generation": 1
+    },
+    "current_after": {
+      "file_digest": "75790902ac5adf1661284cd2b8cf4c3fdb16f5818671bebbc54905ad72242571",
+      "head_digest": "b4cd5a26bbf83c7b7aee737c3f3a97edb63c3e067b3466c0f2e22c36bec60b5a",
+      "record_count": 1,
+      "signed_head_generation": 1
+    },
+    "training_rounds": 0,
+    "beneficial_releases": 0,
+    "product_qualification_issued": false
+  },
+  "conclusion": {
+    "three_matched_rounds_completed": false,
+    "valid_no_update_acceptance": false,
+    "qualified_model_improvement": false,
+    "failure": "round-1 evaluate-randomized-rank-matched-lora: exit code 0 but rss-observation-unavailable, original same-sample exit-task-set rejection; later snapshots and terminal wait4 do not erase the missing observation",
+    "resource_budgets_modified": false,
+    "source_changed": false
+  }
+}

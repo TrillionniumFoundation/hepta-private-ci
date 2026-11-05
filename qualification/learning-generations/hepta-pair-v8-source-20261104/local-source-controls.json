@@ -1,0 +1,388 @@
+{
+  "chain_actual_ordered_merge": "88f899241b1050b1be5bc55f2c1b077b1afa1c10",
+  "chain_base": "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+  "chain_commit": "73ab6e9a83bcc836e261d93f9bb23ceafe556758",
+  "chain_merge_parents": [
+    "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+    "73ab6e9a83bcc836e261d93f9bb23ceafe556758"
+  ],
+  "chain_tree": "65a2100f3feccc29a096a3348c109d77f0a656c2",
+  "execution_closure_files": 42,
+  "format": {
+    "after_diff_sha256": "c8b146bc2d72c1ac5788715a48e79c74c3937c56bbf8044280c9c1c881129bd8",
+    "before_diff_sha256": "c8b146bc2d72c1ac5788715a48e79c74c3937c56bbf8044280c9c1c881129bd8",
+    "commands": [
+      {
+        "command": [
+          "uv",
+          "tool",
+          "run",
+          "--from",
+          "rust-just==1.51.0",
+          "just",
+          "fmt"
+        ],
+        "cwd": "codex-rs",
+        "output": "",
+        "returncode": 0
+      },
+      {
+        "command": [
+          "uv",
+          "tool",
+          "run",
+          "--from",
+          "rust-just==1.51.0",
+          "just",
+          "fmt",
+          "--check",
+          "--base",
+          "4c6b1f0cc9ec50689d86a83bed0433ea0bd4c168"
+        ],
+        "cwd": "codex-rs",
+        "output": "",
+        "returncode": 0
+      }
+    ],
+    "diff_scope": "the ten source files listed in source_files",
+    "selected_chain_commit": "73ab6e9a83bcc836e261d93f9bb23ceafe556758",
+    "tested_source_unchanged_by_formatter": true,
+    "tests_rerun_after_format": false
+  },
+  "hepta_patch_base_commit": "231324ad953794e93615cf3bf6d9f50fbc71240e",
+  "hepta_published_successor_commit": null,
+  "hepta_pull_request": 4696,
+  "hepta_ref": "codex/p0-pair-pressure-20261103",
+  "hepta_repository": "TrillionniumFoundation/hepta-private-ci",
+  "historical_profiles_unchanged": {
+    "smollm2-initial-positive-zero-v1.profile": "561414aec8b51f2a18ae3948dd44a321f924b1e12961a8e0139774b42387fcf0",
+    "smollm2-initial-positive-zero-v1.safetensors.header": "fd757f8de795870802477dcd626dfa0186fe8728d83f16f31d872cd2f89bbdb0",
+    "smollm2-public-initial-v2.execution-sources-v1.json": "4b92ec8b9aa385148dc7bfc4d35630a05b5ced93fef1c503305ff8e28d0b1e6a",
+    "smollm2-public-initial-v2.execution-sources-v2.json": "7db8bb705a7bf17e08aba973a7a4d2f9c14693d4a6af782abdc7c254dc91699a",
+    "smollm2-public-initial-v2.execution-sources-v3.json": "9dcd7666bb6462712356ee73a5f17d5d3fdecfea44a3ff8dad01dca10a25dfa3",
+    "smollm2-public-initial-v2.execution-sources-v4.json": "cc88782c649504cbab886ba5040f183e27fb87d278d682492d68253101bc8f31",
+    "smollm2-public-initial-v2.execution-sources-v5.json": "57ebcfa34d3e578679c3040fab3e4065683bd032592a183574767d5d3eaa9404",
+    "smollm2-public-initial-v2.execution-sources-v6.json": "2ed9941e5e2051f4773364b2e379c9e8866a0fde0a3a5afd6f5b5357244d5dc8",
+    "smollm2-public-initial-v2.execution-sources-v7.json": "f39b96cbac0e429c7fc3712217a9fdbbe03248d2b5c12e4ebe1fe15be7a5eef8",
+    "smollm2-public-initial-v2.plan.json": "01ec1a644f37b9fc7a4c6616f589768df97f8eed7a289b5de86afadaa7ce6165",
+    "smollm2-public-initial-v2.profile": "695d12e8dce5c289a063effdbcc2289148b4708a4a6ead77199da734e0dba2c8",
+    "smollm2-public-initial-v2.sources.json": "c4a529e9710f18feaa4996457991876d3999d36bdde285903e72d7180f8bbd0c",
+    "smollm2-public-initial-v2.target.json": "ebc8ac84999a91acb823d1bf8959a7dbc61fe20d7ba137f11affe426605d9852"
+  },
+  "historical_v7_model_failure_readback": {
+    "chain_commit": "a10c39025cdc03d3265b031d6547b11e0350da2c",
+    "file": "hepta-v7-model-failure-readback.json",
+    "hepta_commit": "231324ad953794e93615cf3bf6d9f50fbc71240e",
+    "matched_rounds_native_exit": 100,
+    "observed_failure": "rss-observation-unavailable after original same-sample exit-task-set rejection (initial Threads=3); later diagnostic snapshot Threads=2 does not validate or erase the missing original observation",
+    "qualifies_v8_or_73_source": false,
+    "round_one": "9 of 10 phases successful; randomized rank-matched LoRA child exited 0 but its resource observation was invalid",
+    "sha256": "e153ca7ed8d607dfe57635b0d2896e70067cedca3e38e89b2d955a2c7b0a5469",
+    "three_round_success": false,
+    "valid_no_update": false
+  },
+  "installation_authorized": false,
+  "local_controls": {
+    "actual_consumer_modules_without_mocks": 7,
+    "actual_head_and_ordered_merge_source_readers": true,
+    "actual_host_local_refusal": true,
+    "actual_registry_rows": 49,
+    "current_pq_binary_reader_tests": 7,
+    "execution_source_tests": 81,
+    "failed": 0,
+    "final_chain_host_controls": 78,
+    "final_chain_original_native_reader_controls": 109,
+    "historical_v7_refused_on_final_chain": true,
+    "model_executed": false,
+    "native_service_executed": false,
+    "selected_chain_commit": "73ab6e9a83bcc836e261d93f9bb23ceafe556758",
+    "site_packages_enabled_for_consumer_imports": false,
+    "total": 275
+  },
+  "local_log_hashes": {
+    "chain-73-host-controls.log": "f3ae6f8180b9c142d5c2fe31b0e0642177b27b7013238e5dbd7072eb0bb95d2d",
+    "chain-73-reader-controls.log": "cb1fb004dcb048521c2acd59309b88662f92af70e88d86fef9fd5f961ec460cd",
+    "v8-actual-consumer-imports.json": "fd99eb75a15550e30470b9c9de04e1c759032a52d966e0b39c6f46c2fb6650a1",
+    "v8-chain-controls.json": "5d6388a052ae7452c4ff56e99480bfed511dee55a4298236c4bad405e3e8ed42",
+    "v8-execution-source-controls.log": "1d4a62017271f6efa6b836ed4ac1e60fc543604fa5131b7d18a7d726436971ab",
+    "v8-final-format.json": "8279e92828d0d5d20d89102240415a7c7e47b4850d9b4df3ce7806f33693d3ab",
+    "v8-hepta-controls.json": "a1fda95f8048ba1c9abd0234ac9beab1626062fccd7fe80dd789da26b370f880",
+    "v8-pq-binary-controls.log": "3eeac20ffedf2c00716a8957a96cbc4a35a1882fdddfe1b5cb5d1906f329a25c",
+    "v8-real-chain-rejects-v7.json": "f972cd5fd12f006ea2094b30381108d2ad8deeb630fbebaf0ad4332ad98796dc",
+    "v8-real-chain-source.json": "b873408a06a9498576d917900b6896eb50a407a6fc0184afd6a19d7c606c78e8",
+    "v8-workflow-binding-controls.json": "097bdebba935c320706c18473b69e94d87a22259ed2bb0eb9c6ed35e2d0b68f4"
+  },
+  "manifest_sha256": "e712ccdd8218e81ade0ac7202f00259fc60c1ebd5f10a468323b7298df406ab5",
+  "ordinary_authorization_audit": {
+    "audit_chain_source_retains_its_original_label": "c77d0aa7becceb80fd0b811a7c5387c2fd1f73f0",
+    "audited_chain_runtime_blobs_match_selected_73_source": [
+      "trillionnium/crates/trnm-mvcc-fee/src/pon_executor/pq_accounts_v2.rs",
+      "trillionnium/crates/trnm-mvcc-fee/src/pon_executor.rs",
+      "trillionnium/crates/trnm-service-settlement/src/store.rs",
+      "trillionnium/crates/trnm-service-settlement/src/engine.rs"
+    ],
+    "file": "ordinary-authorization-audit.json",
+    "ordinary_pq_enabled": false,
+    "runtime_source_blobs_unchanged_at_v8_index": [
+      "codex-rs/hepta-infer-worker-host/src/smollm_public_initial_loop_tests.rs",
+      "codex-rs/hepta-infer-worker-host/src/smollm_initial_agentd_tests.rs",
+      "codex-rs/hepta-infer-worker-host/src/smollm_initial_host_tests.rs",
+      "codex-rs/hepta-infer-worker-host/src/smollm_initial_host.rs",
+      "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs",
+      "codex-rs/hepta-contracts/src/final_use.rs",
+      "codex-rs/hepta-contracts/src/final_use_pq.rs",
+      "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "codex-rs/hepta-learning-artifacts/src/owner_current_store.rs",
+      "codex-rs/hepta-agentd/src/cognitive_process_current.rs",
+      "codex-rs/hepta-contracts/PQ_FINAL_USE.md",
+      "codex-rs/hepta-agentd/PQ_INSTALLATION.md",
+      "codex-rs/hepta-infer-worker-host/src/smollm_neural_settled_read.rs",
+      "codex-rs/hepta-authbus/src/crypto_profile.rs",
+      "codex-rs/hepta-authbus/src/settlement_store.rs",
+      "codex-rs/hepta-agentd/src/config.rs"
+    ],
+    "sha256": "e1a02e9a886fceb792219be22f2448be1ac2e8d8dac9f6530a54e95d742ce654",
+    "source_inspection_only": true,
+    "v8_workflow_sha256": "32b9db1df9db132272174b3bf263961f74508bef8ee4eb2dc61f662644d1f54a"
+  },
+  "ordinary_model_effect_authorization": {
+    "current_and_selector": "classical Ed25519 via Fixture::with_profile -> with_study_objective",
+    "explicit_pq_constructor_with_external_cas_exists": true,
+    "final_use": "authority.json omits authentication_profile; UnixFinalUseAuthorizer::open -> from_config leaves pq and frontier_store unset",
+    "ordinary_fixture_selects_explicit_pq_constructor": false,
+    "source_profile_does_not_enable_pq": true,
+    "whole_effect_pq_migration_complete": false
+  },
+  "original_pipeline_failures": {
+    "format_archive_sha256": "87fdea935e4140391e4b3c354b5e0f2eb7017e33bc83644f778f424ef5eede48",
+    "format_artifact_id": 13301972290,
+    "format_job": 126424725497,
+    "format_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41784382491/job/126424725497",
+    "format_log_sha256": "003a9c2e2d0f58e5e8a4a7f3b754648a6ac37e590cef011841678fc86c11e457",
+    "missing_host_excerpt": [
+      {
+        "line": 9488,
+        "lines": [
+          "2026-11-04T06:42:06.3612305Z ##[endgroup]",
+          "2026-11-04T06:42:06.3886423Z /usr/bin/python3: can't open file '/home/runner/work/hepta-private-ci/hepta-private-ci/chain/scripts/ci/history_fixed_parent_v2.py': [Errno 2] No such file or directory",
+          "2026-11-04T06:42:06.3933390Z ##[error]Process completed with exit code 2.",
+          "2026-11-04T06:42:06.3993310Z ##[group]Run set -euo pipefail"
+        ]
+      },
+      {
+        "line": 9521,
+        "lines": [
+          "2026-11-04T06:42:06.4038049Z ##[endgroup]",
+          "2026-11-04T06:42:06.4275087Z /usr/bin/python3: can't open file '/home/runner/work/hepta-private-ci/hepta-private-ci/chain/scripts/ci/history_fixed_parent_v2.py': [Errno 2] No such file or directory",
+          "2026-11-04T06:42:06.4316852Z ##[error]Process completed with exit code 2.",
+          "2026-11-04T06:42:06.4450310Z ##[group]Run set -euo pipefail"
+        ]
+      }
+    ],
+    "pair_job": 126423031861,
+    "pair_job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41784382491/job/126423031861",
+    "pull_request": 4696,
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "run_attempt": 1,
+    "schema": "hepta-v7-observed-runtime-failures-v1",
+    "source_commit": "231324ad953794e93615cf3bf6d9f50fbc71240e",
+    "source_tree": "4570c9ec7c8bb2ccaaffd989b89d9545c72cc7ac",
+    "workflow_run": 41784382491
+  },
+  "pq_artifact_retention": {
+    "directory": "pon-pair/current-pq-v8/",
+    "native_executions_not_locally_claimed": true,
+    "retains_before_after_binary_observations": true,
+    "retains_provider_source_and_49_exact_selector_receipts": true
+  },
+  "product_qualification": false,
+  "production_activation": false,
+  "profile": "hepta-integrated-chain-execution-v8",
+  "remaining_gates": {
+    "new_hepta_effect_recovery_and_windows_ledger": "not executed",
+    "new_hepta_installed_cell": "not executed",
+    "new_hepta_native_pair_head_merge_x64_arm64": "not executed",
+    "new_hepta_ordinary_real_model": "not executed",
+    "original_16_attacker_four_second_business_confirmation": "open; local source controls and separate 24-attacker F0 do not qualify this gate"
+  },
+  "runtime_results_inherited_from_v7": false,
+  "schema": "hepta-v8-prepublication-source-control-observation-v1",
+  "selected_chain_service_failure_readback": {
+    "f0_four_second_result": "0/6; BASELINE_MUST_PASS",
+    "file": "chain73-service-failure-readback.json",
+    "is_original_16_attacker_four_second_acceptance": false,
+    "qualified": false,
+    "separate_native_campaign": "24 processes / 30 seconds; three runs, 27 scheduled rounds: 6 confirmed, 9 observed non-confirmation, 12 unobserved",
+    "sha256": "5700cfbec693e3785e605bac1966cae085d6adb94145e2ced9d804a18dc6c5f6",
+    "source_commit": "73ab6e9a83bcc836e261d93f9bb23ceafe556758"
+  },
+  "separate_final_chain_component_observation": {
+    "binary_sha256": {
+      "trnm_crypto_primitives-0183a7ec533a0553": "6f53d4da4ff6c44031d790f5729f690c8ab0e3d0db594371bc337071286dfa7e",
+      "trnm_data_availability-4afa79d63a34aeeb": "ddbeff14b679790d6c7149a3bd4229bd935aba2a9dde709a88db3acf23a9c8bb"
+    },
+    "command": "cargo test --locked --offline --manifest-path trillionnium/Cargo.toml -p trnm-crypto-primitives -p trnm-data-availability --lib -- --test-threads=1",
+    "commit": "73ab6e9a83bcc836e261d93f9bb23ceafe556758",
+    "failed": 0,
+    "ignored": 0,
+    "log_sha256": "0593c1afd3a5ae2c3e226b52becb9ab1899443402867112c78cdd3aef03f7847",
+    "original_business_acceptance": false,
+    "package_tests": {
+      "trnm-crypto-primitives": 133,
+      "trnm-data-availability": 186
+    },
+    "production_activation": false,
+    "runtime_profile": "unchanged test profile; Rust 1.95.0",
+    "schema": "trnm-committed-native-component-observation-v1",
+    "source_after_sha256": "9daf8b5ad3d88792642ec5d4971b84cce184971286983b75dfbc894da40dd1a4",
+    "source_before_sha256": "9daf8b5ad3d88792642ec5d4971b84cce184971286983b75dfbc894da40dd1a4",
+    "strict_clippy": {
+      "command": "cargo clippy --locked --offline --manifest-path trillionnium/Cargo.toml -p trnm-crypto-primitives -p trnm-data-availability --all-targets -- -D warnings",
+      "log_sha256": "5604fc8f0c276397a55db4bd7008236712075c0ad37d3b3a0f1fe362b1b85a36",
+      "result": "PASS"
+    },
+    "tracked_source_clean_after": true,
+    "tree": "65a2100f3feccc29a096a3348c109d77f0a656c2"
+  },
+  "separate_final_chain_component_observation_sha256": "1a520dc404653e345f2b2ff72bd400f4e3e03a3ce95acd64561e1b1226c5902f",
+  "separate_final_chain_source_controls": {
+    "included_in_local_275_test_total": false,
+    "observation": {
+      "all_commands_exit_zero": true,
+      "checks": [
+        {
+          "command": "python3 -m unittest discover -s formal/pon-nakamoto-v1/experiments -p test_architecture_compare.py -v",
+          "exit": 0,
+          "log_sha256": "d65c29a6aede3ac465b699b4aa92b09b2638e5dab4f0ada91af62eb1a8f53d04",
+          "name": "architecture_reader",
+          "seconds": 1.3415501460003725
+        },
+        {
+          "command": "python3 scripts/ci/test_architecture_host_ci.py",
+          "exit": 0,
+          "log_sha256": "22748d2451c5fd4d70ed6f901903b31f1ca0712a38f6bbfdabdb36a84aa32d43",
+          "name": "architecture_host",
+          "seconds": 0.6331384020013502
+        },
+        {
+          "command": "python3 scripts/ci/test_ci_source_integrity.py",
+          "exit": 0,
+          "log_sha256": "bfd1da62c4c94e8c51c55eded7af0fda8533ddcfe1d06407fb8759de8ce87972",
+          "name": "source_integrity",
+          "seconds": 2.7710641369994846
+        },
+        {
+          "command": "python3 scripts/ci/test_pq_chain_claim_guard.py",
+          "exit": 0,
+          "log_sha256": "71ec5858b0e32eeeb99bf9a482e013ff541b35232c958e2ce6f44c1562bf7c5f",
+          "name": "pq_claim_guard",
+          "seconds": 0.24176428699865937
+        },
+        {
+          "command": "cargo metadata --manifest-path trillionnium/Cargo.toml --locked --offline --format-version 1 --no-deps",
+          "exit": 0,
+          "log_sha256": "09fab5195bf54271012d4c42b27867fae45c9cc811b6899cfe124f0af879b0ea",
+          "name": "locked workspace graph",
+          "seconds": 0.017449956998461857
+        },
+        {
+          "command": "python3 scripts/ci/check_pq_research_integration.py",
+          "exit": 0,
+          "log_sha256": "8f22903e62d0b4b2e4cf248cb6a6e606a1cd2aec29d1ea87f2f3141c2e8553cc",
+          "name": "full current PQ corpus",
+          "seconds": 0.2558170299998892
+        },
+        {
+          "command": "python3 scripts/ci/test_pq_research_integration.py",
+          "exit": 0,
+          "log_sha256": "a043ba9ce9f1e43020115ebe169d161f6a422cf4ad15f4680981af7349e7c9ea",
+          "name": "pq_corpus_negatives",
+          "seconds": 15.143902276002336
+        },
+        {
+          "command": "cargo fmt --manifest-path trillionnium/Cargo.toml --all --check",
+          "exit": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "name": "workspace_fmt_final",
+          "seconds": 11.686035157999868
+        },
+        {
+          "command": "python3 scripts/ci/check_repository.py",
+          "exit": 0,
+          "log_sha256": "491defd89728dee9dc7870d705da8742ea8a00d23ae6954265cb7013d1d47fd6",
+          "name": "repository_final",
+          "seconds": 52.98431136100044
+        }
+      ],
+      "clean": true,
+      "head": "73ab6e9a83bcc836e261d93f9bb23ceafe556758",
+      "qualification": false,
+      "schema": "trnm-committed-source-controls-v1",
+      "tree": "65a2100f3feccc29a096a3348c109d77f0a656c2"
+    },
+    "receipt_sha256": "9031b66ab9a5bb07301ce6f91e143717e89dfdc88c265a62a2043150ff93cc61"
+  },
+  "source_files": {
+    ".github/workflows/hepta-pon-native-pair.yml": {
+      "bytes": 100756,
+      "git_blob": "48826f276751e3d56a978f1cc48ec53a9e604634",
+      "sha256": "a86006e124b8098c81f709743bcc5152ccd911dda47f5a0796dcd572f9653774"
+    },
+    ".github/workflows/hepta-public-initial-v2.yml": {
+      "bytes": 31442,
+      "git_blob": "1ead54b0d892fd43f640fb6852f3529ece871e7b",
+      "sha256": "32b9db1df9db132272174b3bf263961f74508bef8ee4eb2dc61f662644d1f54a"
+    },
+    "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v8.json": {
+      "bytes": 7086,
+      "git_blob": "c8ba72ae8c29826f632a937b6addceeb8e6320ff",
+      "sha256": "e712ccdd8218e81ade0ac7202f00259fc60c1ebd5f10a468323b7298df406ab5"
+    },
+    "scripts/hepta_ci_pq_binary_v7.py": {
+      "bytes": 7028,
+      "git_blob": "e2380f1aa78d8f0abb85ac9b38b31d19d9172d04",
+      "sha256": "828383a820fefb721c8b545f903bc6fd2ecd2785270b995b6aa2258ed1767d22"
+    },
+    "scripts/hepta_smollm_execution_source_v1.py": {
+      "bytes": 11098,
+      "git_blob": "07633b2c74043abfa4a2f0e6996536a980762fc3",
+      "sha256": "fb714e7872dbba2baa1e7ff34ab249194c285bc9e2c8664da443cda999e22e11"
+    },
+    "scripts/test_hepta_ci_pq_binary_v7.py": {
+      "bytes": 5718,
+      "git_blob": "a7b67117a39cfb19b8a1ad9115aca4f9859913ae",
+      "sha256": "67e756830485f371dd00cf61c66a1918ffb48e0c7b63fcabf1415c1d6866e942"
+    },
+    "scripts/test_hepta_smollm_execution_source_v1.py": {
+      "bytes": 21438,
+      "git_blob": "2c86ff8b23db9a3dc826e02a112029771312864d",
+      "sha256": "de6636c3c8e180abf1a3ad6fbe4fe825ef821c6b31cf07cd6dba771d8bdb9232"
+    },
+    "scripts/test_hepta_smollm_execution_source_v6.py": {
+      "bytes": 12287,
+      "git_blob": "b03cdc56ae61af431e8df6850e72f6c906c9bf70",
+      "sha256": "06844391b75cd5179c8b1e65172df360e5026bea1364bf41ecc9b76fa83ef1f3"
+    },
+    "scripts/test_hepta_smollm_execution_source_v7.py": {
+      "bytes": 11520,
+      "git_blob": "7194fc2b1be1fd0a90a151febbd1b0786b7c2ce1",
+      "sha256": "babc0d3ef5b99bc6d137e1e344ecafc8b67dd1e23a19d5ffcfaee2f5760fd622"
+    },
+    "scripts/test_hepta_smollm_execution_source_v8.py": {
+      "bytes": 11520,
+      "git_blob": "595baf011c841825cbf7370807b50a45b0c551bb",
+      "sha256": "d937b3943fbc4b88b90c159844c4abafe988fc0f8bf1f8d0c10e50447ae0a06e"
+    }
+  },
+  "source_patch_sha256": "c8b146bc2d72c1ac5788715a48e79c74c3937c56bbf8044280c9c1c881129bd8",
+  "unpublished_faae_draft_results_retained_separately": true,
+  "unpublished_faae_draft_results_reused": false,
+  "w1_prior_source_readback": {
+    "file": "w1-base-source-readback.json",
+    "measured_source": "40a5ba25e40fd5eda5b04fc1c3811320d438de11",
+    "qualifies_selected_chain_source": false,
+    "sha256": "ea2be4c37f7e782ae2360be17b9962efd2edf5a4f7d48e5bf0cbd11d5320652c"
+  }
+}

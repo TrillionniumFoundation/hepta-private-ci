@@ -142,9 +142,16 @@ async fn existing_pq_checkpoint_cannot_bootstrap_a_missing_owner_policy() {
         .initialize_authbus_restore_checkpoint(external)
         .await
         .unwrap();
-    // Build the actual pre-0015 schema while retaining its original issuer and
-    // external checkpoint. Only the unused new schema and its ledger row are
-    // absent, as on an older installation; normal open must perform the upgrade.
+    let complete_ledger: Vec<(i64, String, Vec<u8>)> = sqlx::query_as(
+        "SELECT version, description, checksum FROM _sqlx_migrations ORDER BY version",
+    )
+    .fetch_all(&store.pool)
+    .await
+    .unwrap();
+    // Remove only the unused owner-policy schema and its migration receipt,
+    // retaining the original issuer, external checkpoint and every independent
+    // migration. Normal open must restore the missing policy migration without
+    // treating that empty table as authority to initialize an already-used store.
     sqlx::raw_sql(
         "DROP TRIGGER authbus_owner_policy_monotonic;
         DROP TRIGGER authbus_owner_policy_no_delete;
@@ -154,22 +161,29 @@ async fn existing_pq_checkpoint_cannot_bootstrap_a_missing_owner_policy() {
     .execute(&store.pool)
     .await
     .unwrap();
+    let incomplete_ledger: Vec<(i64, String, Vec<u8>)> = sqlx::query_as(
+        "SELECT version, description, checksum FROM _sqlx_migrations ORDER BY version",
+    )
+    .fetch_all(&store.pool)
+    .await
+    .unwrap();
     assert_eq!(
-        sqlx::query_scalar::<_, i64>("SELECT MAX(version) FROM _sqlx_migrations")
-            .fetch_one(&store.pool)
-            .await
-            .unwrap(),
-        14
+        incomplete_ledger,
+        complete_ledger
+            .iter()
+            .filter(|(version, _, _)| *version != 15)
+            .cloned()
+            .collect::<Vec<_>>()
     );
     store.close().await;
     let reopened = HeptaEvidenceStore::open(&config).await.unwrap();
-    assert_eq!(
-        sqlx::query_scalar::<_, i64>("SELECT MAX(version) FROM _sqlx_migrations")
-            .fetch_one(&reopened.pool)
-            .await
-            .unwrap(),
-        15
-    );
+    let restored_ledger: Vec<(i64, String, Vec<u8>)> = sqlx::query_as(
+        "SELECT version, description, checksum FROM _sqlx_migrations ORDER BY version",
+    )
+    .fetch_all(&reopened.pool)
+    .await
+    .unwrap();
+    assert_eq!(restored_ledger, complete_ledger);
     assert!(matches!(
         reopened
             .pin_authbus_issuer_with_owner_policy(

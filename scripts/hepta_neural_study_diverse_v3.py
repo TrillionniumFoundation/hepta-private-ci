@@ -26,7 +26,7 @@ SCHEMA = work.STUDY_SCHEMA
 TRAINING_COMMIT = "c5728d02a7b64909302252f4986e33b56b91faa2"
 TRAINING_TREE = "b4508063fae0a4bfdd081e62531dc008e83c8961"
 EXCLUSION_SHA = "946d33b8f3cd95949f8eaf3623948639cf68c58214ad8b8f191ae0c2088606e4"
-if original.EXECUTION_SOURCE_PROFILE == original.execution_source.PROFILE_V5:
+if original.EXECUTION_SOURCE_PROFILE in original.execution_source.registered_trees():
     selected = original.execution_source.checked_manifest(
         original.EXECUTION_SOURCE_PROFILE
     )
@@ -34,7 +34,10 @@ if original.EXECUTION_SOURCE_PROFILE == original.execution_source.PROFILE_V5:
 
 
 def checkout_training_tree(path):
-    if original.EXECUTION_SOURCE_PROFILE == original.execution_source.PROFILE_V5:
+    if (
+        original.EXECUTION_SOURCE_PROFILE
+        in original.execution_source.registered_trees()
+    ):
         original.execution_source.verify(path, original.EXECUTION_SOURCE_PROFILE)
     require(
         path.is_absolute()
@@ -197,7 +200,10 @@ def train(value, input_pin):
         Path(value["runtime_chain"]),
     )
     training_commit = checkout_training_tree(training_chain)
-    if original.EXECUTION_SOURCE_PROFILE == original.execution_source.PROFILE_V5:
+    if (
+        original.EXECUTION_SOURCE_PROFILE
+        in original.execution_source.registered_trees()
+    ):
         original.execution_source.verify(
             runtime_chain, original.EXECUTION_SOURCE_PROFILE
         )
