@@ -127,6 +127,30 @@ class Qualification(unittest.TestCase):
         self.assertEqual(result["termination"], "invalid_verifier")
         self.assertEqual(result["delivered_quality"], 0)
 
+    def test_duplicate_controller_action_cannot_override_admission(self):
+        # Python's permissive JSON decoder otherwise chooses the final action,
+        # turning a deliberately ambiguous tool request into a valid STOP.
+        controller = worker('print(\'{"action":"probe","action":"STOP","payload":7}\')', 0.07)
+        result = self.run_case("duplicate_controller_action", controller)
+        self.assertEqual(result["termination"], "controller_invalid_output_or_launch")
+        self.assertEqual(result["delivered_quality"], 0.0)
+        self.assertAlmostEqual(result["attempt_fees"], 0.07)
+
+    def test_nested_duplicate_controller_key_is_rejected(self):
+        controller = worker(
+            'print(\'{"action":"STOP","payload":{"key":0,"key":7}}\')', 0.07)
+        result = self.run_case("nested_duplicate", controller)
+        self.assertEqual(result["termination"], "controller_invalid_output_or_launch")
+        self.assertEqual(result["delivered_quality"], 0.0)
+        self.assertAlmostEqual(result["attempt_fees"], 0.07)
+
+    def test_duplicate_verifier_quality_cannot_create_reward(self):
+        verifier = worker('print(\'{"quality":0,"quality":1}\')', 0.09)
+        result = self.run_case("duplicate_verifier_quality", verifier=verifier)
+        self.assertEqual(result["termination"], "verifier_invalid_output_or_launch")
+        self.assertEqual(result["delivered_quality"], 0.0)
+        self.assertAlmostEqual(result["attempt_fees"], 0.10)
+
     def test_cancellation_after_model_call_keeps_fee_without_delivery(self):
         counter = iter([False, True])
         result = self.run_case("cancel_after_call", cancelled=lambda:next(counter))
