@@ -3,6 +3,34 @@
 use super::*;
 
 impl AuthorityLeaseVerifier {
+    /// Keep an exact live writer fenced while distinguishing retained readback
+    /// from a new issuer use. The parent result is observed under this SAME
+    /// original lock and clock sample. It is not a new authorization token:
+    /// callers must require Ok before every new signature, counter or CAS.
+    /// Err can only accompany an exact retained read with no new authority.
+    /// The callback must not reenter this registry or extend retained expiry.
+    pub fn with_pinned_issuer_readback_boundary<T>(
+        &self,
+        issuer_pin: (&str, u64),
+        token: LeaseVerifiedUseToken,
+        expected: &AuthorityLeaseBinding,
+        boundary: impl FnOnce(
+            Result<&AuthorityLease, AuthorityLeaseError>,
+            &AuthorityLease,
+            u64,
+        ) -> T,
+    ) -> Result<T, AuthorityLeaseError> {
+        self.pair_token_owner(&token, expected)?;
+        let state = self.lock_state()?;
+        let now = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
+        // An alias revoked as the writer cannot enter even historical readback.
+        validate_live(&token.lease, &state, token.lease.revision, expected, now)?;
+        let issuer = live_pinned_issuer(issuer_pin, &state, now);
+        let result = boundary(issuer, &token.lease, state.store_revision);
+        drop(state);
+        Ok(result)
+    }
+
     /// Hold one live pinned issuer and one opaque same-owner token together.
     /// The issuer is loaded and checked from this original locked state, never
     /// from an earlier read or a peer-supplied lease clone. If the pin aliases

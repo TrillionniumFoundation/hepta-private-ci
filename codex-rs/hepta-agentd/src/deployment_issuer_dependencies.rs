@@ -2,6 +2,42 @@
 use super::*;
 
 impl DeploymentFinalUseIssuer {
+    pub(in crate::deployment_issuer) fn with_issuer_writer_readback<T>(
+        &self,
+        registration: &HostAuthorityWriterRegistration,
+        token_verifier: &AuthorityLeaseVerifier,
+        readback_or_dispatch: impl FnOnce(
+            Result<&AuthorityLease, AuthorityLeaseError>,
+        ) -> io::Result<T>,
+    ) -> io::Result<T> {
+        registration.validate()?;
+        let pinned = self
+            .lease
+            .as_ref()
+            .ok_or_else(|| io::Error::other("protected issuer required"))?;
+        let writer = &registration.authority_lease;
+        let token = token_verifier
+            .verify_use(&writer.lease_id, writer.revision, &writer.binding)
+            .map_err(lease_error)?;
+        pinned
+            .verifier
+            .with_pinned_issuer_readback_boundary(
+                pinned.identity(),
+                token,
+                &writer.binding,
+                |issuer, actual_writer, _| {
+                    if actual_writer != writer {
+                        return Err(io::Error::new(
+                            io::ErrorKind::PermissionDenied,
+                            "registered writer lease changed",
+                        ));
+                    }
+                    readback_or_dispatch(issuer)
+                },
+            )
+            .map_err(lease_error)?
+    }
+
     pub(crate) fn with_live_issuer_writer_registration<T>(
         &self,
         registration: &HostAuthorityWriterRegistration,

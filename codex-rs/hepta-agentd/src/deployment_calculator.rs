@@ -129,7 +129,7 @@ impl RootCalculatorGrantAdmission {
             .as_ref()
             .ok_or_else(|| denied("protected canonical issuer required"))?
             .verifier;
-        self.writer.with_live(canonical, |_| {
+        issuer.with_live_issuer_writer_registration(&self.writer, canonical, |_| {
             if issuer.retained_writer_authorization(&self.writer)? != self.proof {
                 return Err(denied("registered writer proof changed"));
             }
@@ -196,34 +196,22 @@ impl RootCalculatorGrantAdmission {
             ));
         }
         let writer = &self.writer.authority_lease;
-        let writer_token = canonical
-            .verify_use(&writer.lease_id, writer.revision, &writer.binding)
-            .map_err(root::lease_error)?;
-        let effect_token = self
-            .registry
-            .verifier()
-            .verify_use(&effect.lease_id, effect.revision, &expected)
-            .map_err(root::lease_error)?;
-
-        canonical
-            .with_joint_dispatch_boundary(
-                writer_token,
-                &writer.binding,
-                effect_token,
-                &expected,
-                |actual_writer, actual_effect, _| {
-                    if actual_writer != writer || actual_effect != &effect {
-                        return Err(denied("Calculator signing boundary changed"));
-                    }
-                    issuer.issue_registered_final_use(
-                        binding,
-                        &self.writer,
-                        &self.proof,
-                        writer.expires_at_unix_ms.min(effect.expires_at_unix_ms),
-                    )
-                },
-            )
-            .map_err(root::lease_error)?
+        issuer.with_live_issuer_writer_effect(
+            &self.writer,
+            &effect,
+            &self.registry.verifier(),
+            |parent| {
+                issuer.issue_registered_final_use(
+                    binding,
+                    &self.writer,
+                    &self.proof,
+                    parent
+                        .expires_at_unix_ms
+                        .min(writer.expires_at_unix_ms)
+                        .min(effect.expires_at_unix_ms),
+                )
+            },
+        )
     }
 
     fn lease_id(&self, binding: &FinalUseBinding) -> io::Result<String> {

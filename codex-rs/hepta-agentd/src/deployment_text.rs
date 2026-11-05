@@ -6,6 +6,7 @@ use crate::AgentdIdentity;
 use crate::AuthBusTextBody;
 use crate::AuthBusTextIngress;
 use codex_hepta_contracts::authority_lease::AuthorityLease;
+use codex_hepta_contracts::authority_lease::AuthorityLeaseError;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 use codex_hepta_types::Digest32;
 
@@ -151,17 +152,18 @@ impl DeploymentFinalUseIssuer {
         {
             return Err(io::Error::other("protected registered writer required"));
         }
-        registration.with_live(leases, |_| {
+        self.with_issuer_writer_readback(registration, leases, |parent| {
             if self.retained_writer_authorization(registration)? != *proof {
                 return Err(io::Error::other("retained writer proof changed"));
             }
-            self.text_until(
+            self.text_until_checked(
                 identity,
                 request_id,
                 body,
                 operation,
                 Some(&registration.authority_lease),
                 None,
+                Some(parent),
             )
         })
     }
@@ -170,10 +172,23 @@ impl DeploymentFinalUseIssuer {
         &self,
         identity: &AgentdIdentity,
         request_id: &str,
+        body: AuthBusTextBody,
+        operation: TextIssuerOperation,
+        lease: Option<&AuthorityLease>,
+        human: Option<&TextHumanBinding>,
+    ) -> io::Result<AuthBusTextIngress> {
+        self.text_until_checked(identity, request_id, body, operation, lease, human, None)
+    }
+
+    fn text_until_checked(
+        &self,
+        identity: &AgentdIdentity,
+        request_id: &str,
         mut body: AuthBusTextBody,
         operation: TextIssuerOperation,
         lease: Option<&AuthorityLease>,
         human: Option<&TextHumanBinding>,
+        parent: Option<Result<&AuthorityLease, AuthorityLeaseError>>,
     ) -> io::Result<AuthBusTextIngress> {
         if request_id.is_empty()
             || request_id.len() > 192
@@ -241,6 +256,17 @@ impl DeploymentFinalUseIssuer {
                 "original text signature not retained",
             ));
         }
+        // Exact retained readback above creates no authority. From this point
+        // onward a protected issuer MUST have a live parent from the current
+        // same-owner boundary before any intent, counter, signature or CAS.
+        let parent = match parent {
+            Some(parent) => Some(parent.map_err(root::lease_error)?),
+            None if self.lease.is_none() => None,
+            None => return Err(io::Error::other("live original issuer required for new text")),
+        };
+        if let Some(parent) = parent {
+            Self::validate_issuer_lease_time(parent, state.head.authority_epoch, now)?;
+        }
         // A missing past number is permanently closed, regardless of the
         // requested prefix/body. Retirement cannot enable a replacement send.
         if intent_sequence <= state.text_intent_sequence {
@@ -274,7 +300,8 @@ impl DeploymentFinalUseIssuer {
             expires_at_ms: now
                 .checked_add(policy.lifetime_ms)
                 .ok_or_else(|| io::Error::other("text expiry overflow"))?
-                .min(lease.map_or(u64::MAX, |lease| lease.expires_at_unix_ms)),
+                .min(lease.map_or(u64::MAX, |lease| lease.expires_at_unix_ms))
+                .min(parent.map_or(u64::MAX, |parent| parent.expires_at_unix_ms)),
             signature_hex: "0".repeat(128),
             body: Some(body.clone()),
             human_binding: human.cloned(),

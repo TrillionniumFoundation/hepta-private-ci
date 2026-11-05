@@ -37,17 +37,18 @@ impl DeploymentFinalUseIssuer {
                 "protected registered human writer required",
             ));
         }
-        registration.with_live(leases, |_| {
+        self.with_issuer_writer_readback(registration, leases, |parent| {
             if self.retained_writer_authorization(registration)? != *proof {
                 return Err(io::Error::other("retained human writer proof changed"));
             }
-            self.text_until(
+            self.text_until_checked(
                 identity,
                 request.request_id,
                 request.body,
                 request.operation,
                 Some(&registration.authority_lease),
                 Some(request.human),
+                Some(parent),
             )
         })
     }
