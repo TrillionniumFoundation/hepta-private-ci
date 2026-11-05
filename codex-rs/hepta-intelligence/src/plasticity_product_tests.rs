@@ -175,7 +175,7 @@ impl Fixture {
             CrossFoldPlanV1 {
                 plan_id: id("plasticity-plan"),
                 claim_scope: EvaluationClaimScopeV1::Qualification,
-                candidate_id: update_id.clone(),
+                candidate_id: update_id,
                 baseline_id: admission.baseline_id.clone(),
                 objective_digest: admission.objective_digest,
                 dataset_digest,
