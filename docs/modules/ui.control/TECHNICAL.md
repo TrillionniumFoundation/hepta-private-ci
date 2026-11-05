@@ -325,6 +325,12 @@ by the renderer. Native Send and Stop use original widget actions and room-bound
 capability checks after the sole IME router. Default composition methods refuse
 both operations. The original editor restores its SDK selection and undo history
 when a complete edit is rejected, and discards checkpoints on room/epoch changes.
+Full-state composition completion also follows that transaction when the SDK
+emits no text-change action: the same focused editor must finish composition
+with its preview intact. Changed commits and cancellations retain their original
+action path; stale rooms and rejected drafts retain their original fences and
+rollback behavior. The added SDK cases and original browser cases still require
+execution on the fixed source.
 See `apps/hepta-control-ui/rust/robrix-ui/NATIVE_COMPOSITION.md` for resource,
 lifecycle and acceptance requirements. Native pixels, physical input and AT-SPI
 results require execution against the selected source; API presence is not an

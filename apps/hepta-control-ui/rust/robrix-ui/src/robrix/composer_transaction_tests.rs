@@ -234,3 +234,6 @@ fn actual_sdk_cancel_preserves_committed_draft_after_ignored_previews() {
     );
     assert_eq!(workspace.draft(), &committed);
 }
+
+#[path = "composer_full_state_tests.rs"]
+mod full_state;
