@@ -11,6 +11,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 
 use crate::ClusterConfidencePlan;
 use crate::CrossFoldPartitionV1;
@@ -512,6 +513,43 @@ fn product_runner_binds_estimator_receipts_and_persists_signed_decision() {
     assert_eq!(sink.persisted, vec![qualified.publication_digest]);
     assert!(!qualified.authority.grants_any());
 
+    let decision_mutations: [fn(&mut ProductQualificationReceiptV1); 9] = [
+        |receipt| receipt.decision.decision.evaluation_id = id("substituted-evaluation"),
+        |receipt| receipt.decision.decision.candidate_id = id("substituted-candidate"),
+        |receipt| receipt.decision.decision.baseline_id = id("substituted-baseline"),
+        |receipt| {
+            receipt.decision.decision.disposition = match receipt.decision.decision.disposition {
+                IndependentEvaluationDispositionV1::EligibleForIndependentSelection => {
+                    IndependentEvaluationDispositionV1::Ineligible
+                }
+                IndependentEvaluationDispositionV1::Ineligible
+                | IndependentEvaluationDispositionV1::InsufficientEvidence => {
+                    IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+                }
+            };
+        },
+        |receipt| {
+            receipt.decision.decision.disposition = match receipt.decision.decision.disposition {
+                IndependentEvaluationDispositionV1::InsufficientEvidence => {
+                    IndependentEvaluationDispositionV1::Ineligible
+                }
+                IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+                | IndependentEvaluationDispositionV1::Ineligible => {
+                    IndependentEvaluationDispositionV1::InsufficientEvidence
+                }
+            };
+        },
+        |receipt| receipt.decision.decision.failed_metrics = vec![id("substituted-failed-metric")],
+        |receipt| receipt.decision.decision.evidence_digest = digest("substituted-decision-evidence"),
+        |receipt| receipt.decision.trust_digest = digest("substituted-trust"),
+        |receipt| receipt.decision.authentication_digest = digest("substituted-authentication"),
+    ];
+    for mutate in decision_mutations {
+        let mut changed = qualified.clone();
+        mutate(&mut changed);
+        assert!(changed.validate_integrity().is_err());
+    }
+
     let mut changed_generator = qualified;
     changed_generator.generator.principal_id = id("substituted-generator");
     assert!(changed_generator.validate_integrity().is_err());
@@ -559,4 +597,72 @@ fn product_runner_never_releases_holdout_before_fenced_consumption() {
             .is_err()
     );
     assert_eq!(fixture.provider.release_count, 0);
+}
+
+#[test]
+fn product_runner_rejects_changed_plans_before_consuming_or_releasing_holdout() {
+    let changes: [fn(&mut TemporalEvaluationPlan); 3] = [
+        |plan| plan.fold.training_watermark += 1,
+        |plan| plan.ope.outcome_watermark += 1,
+        |plan| plan.confidence.family_alpha_ppm += 1,
+    ];
+    for change in changes {
+        for change_candidate in [true, false] {
+            let mut fixture = fixture();
+            let frozen = match freeze_product_evaluation_plan_v1(
+                fixture.cross_fold.clone(),
+                fixture.roles.clone(),
+                fixture.sources.clone(),
+                &fixture.candidate_plan,
+                &fixture.baseline_plan,
+            ) {
+                Ok(value) => value,
+                Err(error) => panic!("freeze product plan: {error}"),
+            };
+            let owner = match FencedFinalHoldoutOwnerV1::initialize(
+                MemoryCas::default(),
+                digest("holdout-plan-integrity-binding"),
+                HoldoutWriterFenceV1 {
+                    owner_id: id("evaluation-owner"),
+                    generation: 1,
+                    lease_digest: digest("lease-1"),
+                },
+            ) {
+                Ok(value) => value,
+                Err(error) => panic!("fenced owner: {error}"),
+            };
+            let mut runner = ProductEvaluationRunnerV1::new(owner);
+            let original_anchor = runner.holdout_anchor();
+            let mut candidate = fixture.candidate_plan.clone();
+            let mut baseline = fixture.baseline_plan.clone();
+            change(if change_candidate {
+                &mut candidate
+            } else {
+                &mut baseline
+            });
+            let invalid = runner.evaluate_temporal_comparison(
+                &frozen,
+                &candidate,
+                &baseline,
+                &mut fixture.provider,
+            );
+            assert_eq!(
+                (runner.holdout_anchor(), fixture.provider.release_count),
+                (original_anchor, 0)
+            );
+            assert!(matches!(
+                invalid,
+                Err(ProductEvaluationError::Binding("temporal execution plan"))
+            ));
+
+            let valid = runner.evaluate_temporal_comparison(
+                &frozen,
+                &fixture.candidate_plan,
+                &fixture.baseline_plan,
+                &mut fixture.provider,
+            );
+            assert!(valid.is_ok(), "unchanged frozen plan: {valid:?}");
+            assert_eq!(fixture.provider.release_count, 1);
+        }
+    }
 }
