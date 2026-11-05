@@ -1,0 +1,87 @@
+name: Hepta cell differentiation qualification
+
+on:
+  push:
+    branches: [work/cell-differentiation-20261105]
+    paths:
+      - codex-rs/hepta-neuron/**
+      - codex-rs/hepta-plasticity/**
+      - qualification/cell-differentiation/**
+      - .github/workflows/hepta-cell-differentiation.yml
+  pull_request:
+    paths:
+      - codex-rs/hepta-neuron/**
+      - codex-rs/hepta-plasticity/**
+      - qualification/cell-differentiation/**
+      - .github/workflows/hepta-cell-differentiation.yml
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-cell-differentiation-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  native:
+    name: Native Cell contracts and plasticity proposal owners
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Bind exact source and repository toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/cell-native-evidence"
+          git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/cell-native-evidence/source.txt"
+          cp codex-rs/rust-toolchain.toml "$RUNNER_TEMP/cell-native-evidence/"
+          sha256sum codex-rs/Cargo.lock > "$RUNNER_TEMP/cell-native-evidence/lock.sha256"
+      - name: Run the existing package test entry point
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-neuron -p codex-hepta-plasticity \
+            2>&1 | tee "$RUNNER_TEMP/cell-native-evidence/tests.log"
+      - name: Lint the affected packages
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-neuron -p codex-hepta-plasticity \
+            --all-targets -- -D clippy::correctness -D clippy::await_holding_lock \
+            -D clippy::await_holding_invalid_type \
+            2>&1 | tee "$RUNNER_TEMP/cell-native-evidence/clippy.log"
+      - name: Check formatting without rewriting the tested source
+        if: always()
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-neuron --package codex-hepta-plasticity -- --check \
+            2>&1 | tee "$RUNNER_TEMP/cell-native-evidence/format.log"
+          git diff --check
+          git diff --exit-code
+      - name: Retain exact native results including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-differentiation-native-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/cell-native-evidence/
+          if-no-files-found: error
+          retention-days: 14
