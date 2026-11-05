@@ -17,6 +17,43 @@ import time
 ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
 
 
+SHARD_PACKAGES = {
+    "owners": frozenset({
+        "codex-state", "codex-git-utils", "codex-mcp", "codex-hepta-memory",
+        "codex-hepta-operator-acceptance", "codex-hepta-shadow-qualification",
+    }),
+    "process": frozenset({
+        "codex-windows-sandbox", "codex-utils-pty", "codex-core",
+        "codex-exec-server", "codex-exec-server-protocol",
+    }),
+}
+
+
+def scope_digest(manifest: dict) -> str:
+    # A content checksum, not an owner signature or effect authority.
+    data = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(data).hexdigest()
+
+
+def selected_groups(manifest: dict, shard: str | None = None) -> list[dict]:
+    groups = manifest["groups"]
+    ids = [group["id"] for group in groups]
+    cases = [(group["package"], name) for group in groups for name in group["requiredTests"]]
+    packages = set().union(*SHARD_PACKAGES.values())
+    if (len(groups) != 19 or len(cases) != 167 or len(set(ids)) != 19
+            or len(set(cases)) != 167
+            or any(not re.fullmatch(r"[a-z0-9-]+", name) for name in ids)
+            or any(group["expectedTestCount"] != len(group["requiredTests"]) for group in groups)
+            or {group["package"] for group in groups} != packages
+            or SHARD_PACKAGES["owners"] & SHARD_PACKAGES["process"]):
+        raise ValueError("the original 19 groups / 167 exact cases must remain a fixed partition")
+    if shard is None:
+        return groups
+    if shard not in SHARD_PACKAGES:
+        raise ValueError("unknown original Windows shard")
+    return [group for group in groups if group["package"] in SHARD_PACKAGES[shard]]
+
+
 def assess(group: dict, returncode: int, log: str) -> dict:
     text = ANSI.sub("", log)
     starts = re.findall(r"Starting (\d+) tests? across", text)
@@ -72,29 +109,33 @@ def valid_source(expected: str, before: dict, after: dict) -> bool:
     )
 
 
+def original_command(group: dict) -> list[str]:
+    return [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        group["package"],
+        "--lib",
+        "--cargo-profile",
+        "dev-small",
+        "-E",
+        group["filter"],
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+    ]
+
+
 def execute_groups(
     root: Path, output: Path, groups: list[dict], invoke=None
 ) -> list[dict]:
     results = []
     for group in groups:
-        command = [
-            "just",
-            "test",
-            "--locked",
-            "-p",
-            group["package"],
-            "--lib",
-            "--cargo-profile",
-            "dev-small",
-            "-E",
-            group["filter"],
-            "--test-threads",
-            "1",
-            "--no-tests",
-            "fail",
-            "--retries",
-            "0",
-        ]
+        command = original_command(group)
         path = output / (group["id"] + ".log")
         started = time.monotonic()
         if invoke is None:
@@ -113,7 +154,8 @@ def execute_groups(
             path.write_text(text, encoding="utf-8")
         result = assess(group, code, text)
         result.update(
-            command=command, durationSeconds=round(time.monotonic() - started, 3)
+            command=command, durationSeconds=round(time.monotonic() - started, 3),
+            logSha256=hashlib.sha256(path.read_bytes()).hexdigest()
         )
         results.append(result)
         (output / "groups.json").write_text(json.dumps(results, indent=2) + "\n")
@@ -191,6 +233,30 @@ def publish_sandbox_helpers(root: Path, target: Path, cargo_log: str) -> list[di
     return artifacts
 
 
+def export_sandbox_helper_evidence(output: Path, artifacts: list[dict]) -> None:
+    """Retain the actual published helper bytes for the independent aggregate."""
+    directory = output / "sandbox-helper-binaries"
+    directory.mkdir(exist_ok=False)
+    for item in artifacts:
+        binary, sibling = Path(item["source"]), Path(item["testSibling"])
+        if any(path.is_symlink() or not path.is_file() for path in (binary, sibling)):
+            raise ValueError("sandbox helper evidence source is missing or redirected")
+        data = binary.read_bytes()
+        if (not data.startswith(b"MZ") or len(data) != item["bytes"]
+                or hashlib.sha256(data).hexdigest() != item["sha256"]
+                or sibling.read_bytes() != data):
+            raise ValueError("sandbox helper changed before evidence export")
+        destination = directory / (item["name"] + ".exe")
+        with destination.open("xb") as stream:
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        if (destination.read_bytes() != data or binary.read_bytes() != data
+                or sibling.read_bytes() != data):
+            raise ValueError("sandbox helper changed during evidence export")
+        item["evidenceFile"] = "sandbox-helper-binaries/" + destination.name
+
+
 def prepare_sandbox_helpers(root: Path, output: Path) -> dict:
     command = [
         "cargo",
@@ -223,12 +289,14 @@ def prepare_sandbox_helpers(root: Path, output: Path) -> dict:
                 Path(os.environ["CARGO_TARGET_DIR"]),
                 log.read_text(encoding="utf-8", errors="replace"),
             )
+            export_sandbox_helper_evidence(output, result["artifacts"])
             result["passed"] = True
     except Exception as error:
         # This is a failed prerequisite, never a skipped original regression.
         # Keep running the declared groups so every original result is retained.
         result["error"] = f"{type(error).__name__}: {error}"
     result["durationSeconds"] = round(time.monotonic() - started, 3)
+    result["logSha256"] = hashlib.sha256(log.read_bytes()).hexdigest() if log.exists() else None
     (output / "sandbox-helper-preparation.json").write_text(
         json.dumps(result, indent=2) + "\n", encoding="utf-8"
     )
@@ -240,6 +308,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--expected-head", required=True)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--shard", choices=tuple(SHARD_PACKAGES))
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     output = args.output.resolve()
@@ -261,6 +330,18 @@ def main() -> int:
     manifest = json.loads(
         (root / ".github/fixtures/windows-current-ci-scope.json").read_text()
     )
+    groups = selected_groups(manifest, args.shard)
+    workflow = {
+        "runId": os.environ.get("GITHUB_RUN_ID"),
+        "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+        "runnerName": os.environ.get("RUNNER_NAME"),
+        "runnerOs": os.environ.get("RUNNER_OS"),
+    }
+    if args.shard and (
+        not all(re.fullmatch(r"[1-9][0-9]*", workflow[key] or "") for key in ("runId", "runAttempt"))
+        or not workflow["runnerName"] or workflow["runnerOs"] != "Windows"
+    ):
+        raise RuntimeError("shard receipts require the current native Windows workflow identity")
     temporary = {
         "originalTemp": os.environ.get("TEMP"),
         "originalTmp": os.environ.get("TMP"),
@@ -276,19 +357,28 @@ def main() -> int:
     (output / "temporary-environment.json").write_text(
         json.dumps(temporary, indent=2) + "\n"
     )
-    helpers = prepare_sandbox_helpers(root, output)
-    results = execute_groups(root, output, manifest["groups"])
+    helpers = (prepare_sandbox_helpers(root, output)
+               if any(group["package"] == "codex-windows-sandbox" for group in groups) else None)
+    results = execute_groups(root, output, groups)
     after = source(root)
+    (output / "source-after.json").write_text(json.dumps(after, indent=2) + "\n")
     intact = valid_source(args.expected_head, before, after)
     passed = (
-        intact and helpers["passed"] and all(result["passed"] for result in results)
+        intact and (helpers is None or helpers["passed"]) and all(result["passed"] for result in results)
     )
     receipt = {
-        "schema": "hepta.windows-current-ci-receipt.v1",
+        "schema": "hepta.windows-current-ci-shard-receipt.v1" if args.shard else "hepta.windows-current-ci-receipt.v1",
+        "shard": args.shard,
+        "declaredScopeDigest": scope_digest(manifest),
+        "workflow": workflow,
+        "nativePaths": {
+            "checkout": str(root),
+            "target": str(Path(os.environ["CARGO_TARGET_DIR"]).resolve()),
+        },
+        "compilerSha256": hashlib.sha256((output / "compiler.txt").read_bytes()).hexdigest(),
         "createdAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "status": "PASS_DECLARED_WINDOWS_SCOPE"
-        if passed
-        else "FAIL_DECLARED_WINDOWS_SCOPE",
+        "status": ("PASS_DECLARED_WINDOWS_SHARD" if passed else "FAIL_DECLARED_WINDOWS_SHARD")
+        if args.shard else ("PASS_DECLARED_WINDOWS_SCOPE" if passed else "FAIL_DECLARED_WINDOWS_SCOPE"),
         "sourceBefore": before,
         "sourceAfter": after,
         "sourceUnchanged": intact,
