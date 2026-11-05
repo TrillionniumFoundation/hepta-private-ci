@@ -138,7 +138,7 @@
 +            FromWasmSyncImeState::to_js_code(),
 --- a/src/os/web/web.js
 +++ b/src/os/web/web.js
-@@ -1,0 +2,263 @@
+@@ -1,0 +2,266 @@
 +
 +// BEGIN MAKEPAD WEB IME BRIDGE
 +// DOM is the native editor/IME buffer. Rust TextInput remains the model owner.
@@ -253,6 +253,9 @@
 +            this.composition = null;
 +            this.pending_commit = null;
 +        }
++        // A final owner sync may reject or normalize the commit. Late native
++        // input still belongs to that commit; replay the owner's latest state.
++        if (this.pending_commit) this.pending_commit.state = state;
 +        this.write(state);
 +        this.last_state = this.state();
 +    }
@@ -402,17 +405,17 @@
 +    }
 +}
 +// END MAKEPAD WEB IME BRIDGE
-@@ -1192 +1455 @@
+@@ -1192 +1458 @@
 -        this.text_copy_response = args.response
 +        this.text_copy_response = makepad_ime_string(args.response)
-@@ -1399,0 +1663 @@
+@@ -1399,0 +1666 @@
 +        if (this.ime) this.ime.show();
-@@ -1402,0 +1667,4 @@
+@@ -1402,0 +1670,4 @@
 +    FromWasmSyncImeState(args) {
 +        if (this.ime) this.ime.sync(args);
 +    }
 +
-@@ -1403,0 +1672,9 @@
+@@ -1403,0 +1675,9 @@
 +        if (this.ime) {
 +            const old_area = this.text_area;
 +            const had_focus = document.activeElement === old_area;
@@ -422,16 +425,16 @@
 +            old_area.remove();
 +            this.bind_keyboard(had_focus);
 +        }
-@@ -3312,0 +3590 @@
+@@ -3312,0 +3593 @@
 +            if (this.ime && this.ime.active) this.ime.flush();
-@@ -3325,0 +3604 @@
+@@ -3325,0 +3607 @@
 +            if (this.ime && this.ime.active) this.ime.flush();
-@@ -3333,0 +3613 @@
+@@ -3333,0 +3616 @@
 +            if (this.ime && this.ime.active) this.ime.flush();
-@@ -3551 +3831 @@
+@@ -3551 +3834 @@
 -    bind_keyboard() {
 +    bind_keyboard(focus = true) {
-@@ -3600,72 +3880,35 @@
+@@ -3600,72 +3883,35 @@
 -        //document.addEventListener('focusout', this.onFocusOut.bind(this))
 -        var was_paste = false;
 -        this.neutralize_ime = false;
@@ -539,7 +542,7 @@
 +            }});
 +            this.do_wasm_pump();
 +            ime.flush();
-@@ -3673,120 +3916,7 @@
+@@ -3673,120 +3919,7 @@
 -        ta.addEventListener('input', e => this.handlers.on_input(e));
 -
 -        // add composition events handling, this is the standard way to handle IME input
@@ -667,10 +670,10 @@
 +                is_repeat: event.repeat, time: event.timeStamp / 1000,
 +                modifiers: pack_key_modifier(event),
 +            }});
-@@ -3795 +3925,2 @@
+@@ -3795 +3928,2 @@
 -        ta.addEventListener('keyup', e => this.handlers.on_keyup(e));
 +        ta.addEventListener('keydown', event => this.handlers.on_keydown(event));
 +        ta.addEventListener('keyup', event => this.handlers.on_keyup(event));
-@@ -3797 +3928 @@
+@@ -3797 +3931 @@
 -        ta.focus();
 +        if (focus) ta.focus();

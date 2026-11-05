@@ -37,6 +37,17 @@ impl ComposerTransaction {
         }
     }
 
+    /// Detect before dispatch: the pinned SDK emits Changed for full-state
+    /// previews, but not when only the marked range ends. Firefox insertText
+    /// uses that commit path. Publish it after the SDK has ended preedit.
+    pub(crate) fn commits_unchanged_preedit(input: &TextInputRef, event: &Event) -> bool {
+        matches!(event, Event::TextInput(event)
+            if event.full_state_sync.as_ref().is_some_and(|state|
+                state.composition.is_none()
+                    && input.is_composing()
+                    && state.text == input.text()))
+    }
+
     pub(crate) fn edit(
         &mut self,
         cx: &mut Cx,

@@ -306,8 +306,9 @@ pub struct RoomScreen {
 }
 impl Widget for RoomScreen {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        let input = self.view.text_input(cx, ids!(message_input));
+        let unchanged_commit = ComposerTransaction::commits_unchanged_preedit(&input, event);
         if let Some(workspace) = scope.data.get_mut::<ChatWorkspace>() {
-            let input = self.view.text_input(cx, ids!(message_input));
             self.composer_transaction
                 .checkpoint(&input, workspace, self.active_key);
         }
@@ -319,6 +320,11 @@ impl Widget for RoomScreen {
             return;
         };
         let input = self.view.text_input(cx, ids!(message_input));
+        if unchanged_commit {
+            self.composer_transaction
+                .edit(cx, &input, workspace, source, input.text());
+            self.view.redraw(cx);
+        }
         let follow_latest = workspace
             .timeline()
             .is_none_or(|timeline| timeline.scroll.at_end);
