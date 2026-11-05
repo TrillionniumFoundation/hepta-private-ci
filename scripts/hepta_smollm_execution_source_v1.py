@@ -78,10 +78,10 @@ MANIFEST_SHA256_V11 = "a951e866f66b0e251fc5a9f81d02a7f86954d1b3ca8ac483890fcb23a
 # A new cancellation-capable source must be frozen independently of V11.
 # Frozen only after the reviewed Chain candidate was published with this exact tree.
 PROFILE_V12 = "hepta-integrated-chain-execution-v12"
-CHAIN_COMMIT_V12 = "b5ef97b29c2e8b738525a2e3326dd60784c46e72"
-CHAIN_TREE_V12 = "020880f22725e93cabb65c6e7eda3cbbd3c2405a"
+CHAIN_COMMIT_V12 = "8df4b21d893906570d48f5beafabb3b31e0aefbc"
+CHAIN_TREE_V12 = "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14"
 MANIFEST_NAME_V12 = "smollm2-public-initial-v2.execution-sources-v12.json"
-MANIFEST_SHA256_V12 = "4b49e0b611eb0c8bad4992319edba7d73d59cec6fbdd37978b6cd0be986d2a21"
+MANIFEST_SHA256_V12 = "4d178376231d3063d122045a5978f3474b2e59eb5c7e38d7ac9c89c39f10b931"
 RUNTIME_SOURCES_V11 = frozenset(
     (
         "formal/pon-nakamoto-v1/contract_wire.py",
