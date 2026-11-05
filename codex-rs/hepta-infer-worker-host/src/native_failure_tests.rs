@@ -216,6 +216,9 @@ async fn worker_loss_before_cleanup_preserves_timeout_usage_and_owner_loss() -> 
         return Err("unreachable failure child return".into());
     }
 
+    let Some(host_completion) = super::test_process::isolate_host(TEST_NAME).await? else {
+        return Ok(());
+    };
     // core_test_support registers the production arg0 helper dispatch.
     let codex_self_exe = std::env::current_exe()?;
     let server = responses::start_mock_server().await;
@@ -402,5 +405,6 @@ async fn worker_loss_before_cleanup_preserves_timeout_usage_and_owner_loss() -> 
         );
     }
     host.shutdown().await;
+    host_completion.complete()?;
     Ok(())
 }

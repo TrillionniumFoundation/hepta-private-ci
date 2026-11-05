@@ -1261,3 +1261,7 @@ mod tests;
 #[cfg(all(test, unix))]
 #[path = "native_failure_tests.rs"]
 mod failure_tests;
+
+#[cfg(all(test, unix))]
+#[path = "native_test_process.rs"]
+mod test_process;

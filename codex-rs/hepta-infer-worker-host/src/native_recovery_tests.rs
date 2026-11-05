@@ -71,6 +71,13 @@ async fn real_agentd_reconciles_reopened_worker_without_replaying_provider() -> 
         return Ok(());
     }
 
+    let Some(host_completion) = super::super::test_process::isolate_host(
+        "native_app_server::recovery::tests::real_agentd_reconciles_reopened_worker_without_replaying_provider",
+    )
+    .await?
+    else {
+        return Ok(());
+    };
     let server = responses::start_mock_server().await;
     let mut completed = responses::ev_completed("recovery-response");
     completed["response"]["usage"]["output_tokens"] = serde_json::json!(17);
@@ -254,5 +261,6 @@ async fn real_agentd_reconciles_reopened_worker_without_replaying_provider() -> 
     }
     assert_eq!(response_mock.requests().len(), 1);
     host.shutdown().await;
+    host_completion.complete()?;
     Ok(())
 }

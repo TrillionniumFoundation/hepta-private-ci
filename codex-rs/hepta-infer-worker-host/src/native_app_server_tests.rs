@@ -444,6 +444,14 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     use codex_hepta_infer_core::durable_control::native::NativeReservationState;
     use core_test_support::responses;
 
+    let Some(host_completion) = super::test_process::isolate_host(
+        "native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone",
+    )
+    .await?
+    else {
+        return Ok(());
+    };
+
     const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
     const MODEL: &str = "mock-model";
     const ACCEPT_REQUEST_ID: &str = "cognitive-final-use-accept";
@@ -674,6 +682,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let _ = std::fs::remove_file(&journal);
     issuer.await??;
     host.shutdown().await;
+    host_completion.complete()?;
     Ok(())
 }
 
