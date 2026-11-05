@@ -3,6 +3,7 @@ use crate::desktop::DesktopCapability;
 use crate::desktop::LaunchDesktop;
 use crate::prepared_filesystem::PreparedFilesystemAclContext;
 use crate::token::PreparedFilesystemToken;
+use crate::token::create_full_filesystem_token_from;
 use anyhow::Context;
 use anyhow::Result;
 use anyhow::ensure;
@@ -50,12 +51,17 @@ impl PreparedProcessContext {
     /// An internal mechanism, not production admission. Its eventual caller must
     /// supply the separate loader and lifetime qualification first. Consuming
     /// these owners does not itself provide that production admission.
+    /// The full token is created from this exact consumed ACL context, never a
+    /// caller-supplied output token paired with a different or narrower plan.
     pub(crate) fn prepare(
-        token: PreparedFilesystemToken,
-        filesystem: PreparedFilesystemAclContext,
+        base: BorrowedHandle<'_>,
+        mut filesystem: PreparedFilesystemAclContext,
         capability: DesktopCapability,
         logs_base_dir: Option<&Path>,
     ) -> Result<Self> {
+        // Refuse source/ACL drift before creating a private desktop or Job. The
+        // token retains its own query/duplicate source handle before base may close.
+        let token = create_full_filesystem_token_from(base, &mut filesystem, &capability)?;
         let mut owners = PreparedFilesystemOwners {
             token,
             filesystem,
@@ -118,3 +124,7 @@ fn token_version(token: HANDLE) -> Result<[u32; 4]> {
         statistics.ModifiedId.HighPart as u32,
     ])
 }
+
+#[cfg(test)]
+#[path = "prepared_process_context_tests.rs"]
+mod tests;
