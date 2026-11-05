@@ -91,9 +91,7 @@ pub(crate) fn verify_secure_directory(path: &Path, label: &str) -> Result<(), Ac
 }
 
 pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, AcceptanceError> {
-    let (mut file, parent_pin) = open_reader(path)?;
-    #[cfg(not(windows))]
-    let _ = parent_pin;
+    let (mut file, _parent_pin) = open_reader(path)?;
     let before = file.metadata()?;
     verify_regular_metadata(&before, "input artifact")?;
     #[cfg(windows)]
@@ -109,7 +107,7 @@ pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, Acce
         return Err(invalid("input artifact exceeds its read bound"));
     }
     #[cfg(windows)]
-    parent_pin.verify(&file, path, &windows_before, "input artifact")?;
+    _parent_pin.verify(&file, path, &windows_before, "input artifact")?;
     let after_fd = file.metadata()?;
     let after_path = std::fs::metadata(path)?;
     let after_link = std::fs::symlink_metadata(path)?;
@@ -123,9 +121,7 @@ pub(crate) fn secure_read(path: &Path, max_bytes: usize) -> Result<Vec<u8>, Acce
 }
 
 pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError> {
-    let (mut file, parent_pin) = open_reader(path)?;
-    #[cfg(not(windows))]
-    let _ = parent_pin;
+    let (mut file, _parent_pin) = open_reader(path)?;
     let before = file.metadata()?;
     verify_regular_metadata(&before, "manifest artifact")?;
     #[cfg(windows)]
@@ -143,7 +139,7 @@ pub(crate) fn secure_hash(path: &Path) -> Result<(String, u64), AcceptanceError>
         hasher.update(&buffer[..count]);
     }
     #[cfg(windows)]
-    parent_pin.verify(&file, path, &windows_before, "manifest artifact")?;
+    _parent_pin.verify(&file, path, &windows_before, "manifest artifact")?;
     let after_fd = file.metadata()?;
     let after_path = std::fs::metadata(path)?;
     let after_link = std::fs::symlink_metadata(path)?;
