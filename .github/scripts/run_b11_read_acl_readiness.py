@@ -19,7 +19,7 @@ import xml.etree.ElementTree as ET
 TARGET = "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests"
 TARGET_PATH = "codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup-bin-unit-tests"
 CONTROL_SCRIPT = ".github/scripts/run_b11_acl_identity_counterfactual.py"
-CONTROL_BLOB = "3680db31233e47ba7fad99f31a7019c4536288bb"
+CONTROL_BLOB = "e6a191a2d3c66c740aa3cb2ccd42c3e4fdb6880e"
 PINS = {
     "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs": "c39b298b7889dc3669e1ee7e2816f7e77568e955",
     "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6",
@@ -140,6 +140,7 @@ def helper_results(control, log, xml):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--evidence", type=Path, required=True)
+    parser.add_argument("--bash-executable", type=Path, required=True)
     args = parser.parse_args()
     if os.name != "nt":
         raise RuntimeError("this original setup-bin gate requires native Windows")
@@ -159,6 +160,8 @@ def main():
     final_error = None
     head = control.git(root, "rev-parse", "HEAD").decode().strip()
     try:
+        bash = control.git_bash_record(args.bash_executable)
+        control.save(evidence, "git-bash-executable.json", bash)
         previous = original / "acl-identity-counterfactual"
         prior = json.loads((previous / "counterfactual-terminal.json").read_text(encoding="utf-8"))
         control.require(prior.get("status") == "VALID_NEGATIVE_AND_EXACT_RESTORE"
@@ -175,7 +178,7 @@ def main():
         archive.mkdir()
         env = os.environ.copy()
         env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(archive)
-        argv = ["bash", "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
+        argv = [bash["path"], "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
                 "--print-failed-test-logs", "--windows-msvc-host-platform", "--remote-download-toplevel", "--", "test",
                 "--platforms=//:windows_x86_64_msvc", "--skip_incompatible_explicit_targets",
                 "--test_tag_filters=-argument-comment-lint", "--test_verbose_timeout_warnings", "--test_output=all",

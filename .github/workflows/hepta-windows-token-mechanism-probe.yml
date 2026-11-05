@@ -94,8 +94,14 @@ jobs:
         run: |
           set -euo pipefail
           evidence="$(cygpath -u "${RUNNER_TEMP}")/b11-token-mechanism-probe"
+          bash_executable="$BASH"
+          if [[ "$bash_executable" != *.exe ]]; then
+            bash_executable="${bash_executable}.exe"
+          fi
+          test -f "$bash_executable"
           python3 .github/scripts/run_b11_acl_identity_counterfactual.py \
-            --evidence "$(cygpath -w "$evidence")"
+            --evidence "$(cygpath -w "$evidence")" \
+            --bash-executable "$(cygpath -aw "$bash_executable")"
 
       - name: Run the original setup helper target after exact restoration
         id: read_acl_helper_target
@@ -106,8 +112,14 @@ jobs:
         run: |
           set -euo pipefail
           evidence="$(cygpath -u "${RUNNER_TEMP}")/b11-token-mechanism-probe"
+          bash_executable="$BASH"
+          if [[ "$bash_executable" != *.exe ]]; then
+            bash_executable="${bash_executable}.exe"
+          fi
+          test -f "$bash_executable"
           python3 .github/scripts/run_b11_read_acl_readiness.py \
-            --evidence "$(cygpath -w "$evidence")"
+            --evidence "$(cygpath -w "$evidence")" \
+            --bash-executable "$(cygpath -aw "$bash_executable")"
 
       # The unchanged wrapper already retains this exact target on both failure
       # and console-reported success, including cached/missing evidence limits.

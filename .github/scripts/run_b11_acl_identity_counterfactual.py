@@ -45,6 +45,14 @@ def digest(body):
             "git_blob": hashlib.sha1(b"blob " + str(len(body)).encode() + b"\0" + body).hexdigest()}
 
 
+def git_bash_record(path):
+    require(os.name == "nt", "the explicit Git Bash executable requires native Windows")
+    require(path.is_absolute() and path.name.casefold() == "bash.exe",
+            "Git Bash must be an explicit absolute Windows bash.exe path")
+    require(path.is_file(), "the workflow's explicit Git Bash executable does not exist")
+    return {"path": str(path), **digest(path.read_bytes())}
+
+
 def save(directory, name, value):
     (directory / name).write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
@@ -144,6 +152,7 @@ def target_terminal(console, expected):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--evidence", type=Path, required=True)
+    parser.add_argument("--bash-executable", type=Path, required=True)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     original = args.evidence.resolve(strict=True)
@@ -163,6 +172,8 @@ def main():
     entry = None
     head = git(root, "rev-parse", "HEAD").decode().strip()
     try:
+        bash = git_bash_record(args.bash_executable)
+        save(evidence, "git-bash-executable.json", bash)
         entry = source_guard(root, head, POSITIVE, False)
         save(evidence, "source-entry.json", entry)
         require(git(root, "show", f"HEAD:{SOURCE}") == canonical(source.read_bytes(), POSITIVE, SOURCE),
@@ -203,7 +214,7 @@ def main():
             positive_archive.mkdir()
             positive_env = os.environ.copy()
             positive_env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(positive_archive)
-            positive_argv = ["bash", "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
+            positive_argv = [bash["path"], "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
                              "--print-failed-test-logs", "--windows-msvc-host-platform", "--remote-download-toplevel", "--", "test",
                              "--platforms=//:windows_x86_64_msvc", "--skip_incompatible_explicit_targets",
                              "--test_tag_filters=-argument-comment-lint", "--test_verbose_timeout_warnings", "--test_output=all",
@@ -265,7 +276,7 @@ def main():
         negative_archive.mkdir()
         env = os.environ.copy()
         env["CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"] = str(negative_archive)
-        argv = ["bash", "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
+        argv = [bash["path"], "./.github/scripts/run-bazel-ci.sh", "--print-failed-action-summary",
                 "--print-failed-test-logs", "--windows-msvc-host-platform", "--remote-download-toplevel", "--", "test",
                 "--platforms=//:windows_x86_64_msvc", "--skip_incompatible_explicit_targets",
                 "--test_tag_filters=-argument-comment-lint", "--test_verbose_timeout_warnings", "--test_output=all",
