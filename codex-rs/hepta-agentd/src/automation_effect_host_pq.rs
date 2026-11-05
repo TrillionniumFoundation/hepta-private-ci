@@ -306,3 +306,6 @@ fn invalid(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::Invalid(format!("PQ automation effect authority: {error}"))
 }
 
+#[cfg(all(test, target_os = "linux"))]
+#[path = "automation_effect_host_pq_tests.rs"]
+mod tests;

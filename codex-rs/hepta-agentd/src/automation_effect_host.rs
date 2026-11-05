@@ -1664,8 +1664,12 @@ fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u
     if !path.is_absolute() {
         return Err(AgentdError::Invalid(format!("{label} must be absolute")));
     }
-    // All content and permission checks refer to the same open file. A later
-    // pathname replacement cannot redirect the bounded read to another inode.
+    // Reject special files before open as well as checking the opened file.
+    // All content and permission checks below refer to that same descriptor.
+    let initial = fs::symlink_metadata(path)?;
+    if !initial.is_file() || initial.file_type().is_symlink() {
+        return Err(AgentdError::Invalid(format!("{label} must be a regular non-symlink file")));
+    }
     let mut file = fs::File::open(path)?;
     let metadata = file.metadata()?;
     let named = fs::symlink_metadata(path)?;
