@@ -1,0 +1,101 @@
+{
+  "E_G_shared_Gram_setup_cpu_seconds": 1.3504454879999734,
+  "TRAIN_all_control_scoring_cpu_seconds": 100.78008379099997,
+  "candidate_construction_scope": "Common full TRAIN preparation + common E Gram setup + endpoint method + own finite path + selected model serialization. This excludes other experimental arms, source bookkeeping and all held-out evaluation; it is not an end-to-end training speedup.",
+  "excluded_unknown_costs": [
+    "Base-model training",
+    "Unrecovered earlier searches",
+    "Agent/editor and external tool orchestration",
+    "Controller startup imports/final receipt writes",
+    "Energy and economic CPU-to-utility conversion"
+  ],
+  "finite_path_cpu_seconds": {
+    "E": 3.8051761400000217,
+    "EA": 4.1019102610000004,
+    "EU": 4.542920538000004,
+    "G": 2.908170093999985
+  },
+  "full_research_economic_net_value_qualified": false,
+  "heldout_evaluator_cpu_seconds": 122.33403962700078,
+  "heldout_policy_decision_and_initialization_cpu_seconds": {
+    "C": 4.376129939000805,
+    "E": 3.9475688039996157,
+    "EA": 3.8064537700000187,
+    "EU": 4.062940059000027,
+    "E_gated": 2.908627282999589,
+    "G": 3.765305857999408,
+    "G_gated": 2.89722859400041,
+    "J": 5.790242927998861,
+    "M": 7.337401538000734,
+    "P": 4.446150904000319,
+    "R": 6.252958260000298
+  },
+  "holdout_J_full_cold_planning_cpu_seconds": 101.13491629300046,
+  "matched_candidate_construction_G_over_E_ratio": 1.0377306108569166,
+  "matched_candidate_construction_cpu_seconds": {
+    "E": 167.378052159,
+    "G": 173.69332831099993
+  },
+  "measured_child_cpu_sum_before_reporting_seconds": 875.0444200000001,
+  "measured_phase_receipts": {
+    "execution_r1": {
+      "child_peak_rss_bytes": 260947968,
+      "child_total_cpu_seconds": 535.948697,
+      "controller_cpu_seconds": 0.34864672900000004,
+      "elapsed_wall_seconds": 537.5946901529987,
+      "exit_code": 0
+    },
+    "independent_verification": {
+      "child_peak_rss_bytes": 111558656,
+      "child_total_cpu_seconds": 332.887897,
+      "controller_cpu_seconds": 0.303442463,
+      "elapsed_wall_seconds": 369.1687016249998,
+      "exit_code": 0
+    },
+    "posthoc/execution_r1": {
+      "child_peak_rss_bytes": 30871552,
+      "child_total_cpu_seconds": 3.1301039999999998,
+      "controller_cpu_seconds": 0.3230444819999999,
+      "elapsed_wall_seconds": 3.2706287910004903,
+      "exit_code": 0
+    },
+    "posthoc/freeze_receipt": {
+      "child_peak_rss_bytes": 23023616,
+      "child_total_cpu_seconds": 0.16507699999999997,
+      "controller_cpu_seconds": 0.0033920179999999966,
+      "elapsed_wall_seconds": 0.17028502299945103,
+      "exit_code": 0
+    },
+    "preparation": {
+      "child_peak_rss_bytes": 43089920,
+      "child_total_cpu_seconds": 2.0037570000000002,
+      "controller_cpu_seconds": 0.15309394999999992,
+      "elapsed_wall_seconds": 2.0334552570002415,
+      "exit_code": 0
+    },
+    "protocol_freeze": {
+      "child_peak_rss_bytes": 25079808,
+      "child_total_cpu_seconds": 0.174421,
+      "controller_cpu_seconds": 0.30311704500000003,
+      "elapsed_wall_seconds": 0.1776180229990132,
+      "exit_code": 0
+    },
+    "semantic_checks": {
+      "child_peak_rss_bytes": 28495872,
+      "child_total_cpu_seconds": 0.734467,
+      "controller_cpu_seconds": 0.0009545660000001011,
+      "elapsed_wall_seconds": 0.7363381960003608,
+      "exit_code": 0
+    }
+  },
+  "no_addition_of_nested_component_times_to_process_total": true,
+  "policy_timing_scope": "Measured Python decision blocks, each arm/world has cold features; J planning above is additional, and evaluator timings also include shared truth diagnostics. Not production latency or an equal-hardware neural-throughput benchmark.",
+  "shared_TRAIN_input_state_feature_own_teacher_cpu_seconds": 161.05948561900004,
+  "solver_cpu_seconds": {
+    "E": 0.216799991999995,
+    "EA": 0.188173126000013,
+    "EU": 0.17206295000001148,
+    "G": 4.370659789999966
+  },
+  "worker_complete_child_cpu_seconds": 535.948697
+}

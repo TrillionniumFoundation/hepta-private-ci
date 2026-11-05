@@ -1,0 +1,86 @@
+{
+  "decision": "READY_FOR_ONE_BOUNDED_SYNTHETIC_CPU_ENGINEERING_RUN",
+  "execution_budgets": {
+    "cgroup_cpu_core_fraction": 0.5,
+    "cgroup_memory_max_bytes": 3221225472,
+    "cgroup_tasks_max": 32,
+    "child_wall_seconds": 420,
+    "cpu_hard_seconds": 190,
+    "cpu_soft_seconds": 180,
+    "enclosing_runtime_seconds_required": 450,
+    "file_size_max_bytes": 67108864
+  },
+  "fixes": [
+    "Bound both candidate manifests to content IDs, adapter hashes, parent job manifest hash and common base ID.",
+    "Validate declared scorer/action target profiles and exact tensor key sets.",
+    "Pin tokenizer.py and empty laya_cell package init; require learn namespace init remain absent.",
+    "Assert loaded parameters and outputs are CPU float32 and model stays eval.",
+    "Record actual Python version rather than assuming Python 3.12.",
+    "Explicitly encode with max_len=1024.",
+    "Capture actual encoder last_hidden_state statistics and hash on each complete forward.",
+    "Check complete factor bytes after each parent/child/restored copy and on normal/exception exit.",
+    "Check parent action augmentation has zero B, preserving base action head.",
+    "Reject nonfinite independent head reference; maintain original atol=rtol=2e-5.",
+    "Require all 12 forwards and bitwise-restored final outputs; compare encoder bytes across all three phases.",
+    "Revalidate base snapshot, all captured source hashes, manifests and adapter bytes after execution.",
+    "Verify actual enclosing cgroup v2 CPU/memory/tasks caps before child launch.",
+    "Child-only empty CUDA/HIP/ROCR device visibility, offline flags and single-thread settings.",
+    "Require current RUNNING=0 and MemAvailable >= 8 GiB before importing and loading model."
+  ],
+  "input_scope": {
+    "expected_full_forwards_total": 12,
+    "phases": [
+      "parent",
+      "child",
+      "restored"
+    ],
+    "real_private_rows": 0,
+    "synthetic_public_unlabeled_states": 4
+  },
+  "model_executed_during_review": false,
+  "production_files_modified": false,
+  "qualification_boundaries": [
+    "This is complete-path CPU engineering qualification, not held-out price forecasting or PnL measurement.",
+    "Old scale-1000 fixed-tolerance failure is retained; this probe neither replaces nor cures that failed gate.",
+    "No optimizer, backward, training service mutation, broker request, production model write or production rollback is invoked.",
+    "Actual CPU/F32 results do not establish GPU, FP16/BF16 or production rollback qualification.",
+    "Parent action factors absent from scorer-only manifest are source-initialized with zero B; only their function, not a historical unrecorded A tensor, represents the parent.",
+    "Resource admission is a momentary check, not a reservation; systemd cgroup caps remain mandatory.",
+    "CPU or memory budget exhaustion is a preserved failed attempt, not grounds for silent widening.",
+    "Private source copies and raw logs are intermediate material and must not be included in public deliverables."
+  ],
+  "reviewed_files": {
+    "head_probe_helpers.py": {
+      "ast_and_compile": "PASS",
+      "bytes": 23103,
+      "sha256": "dee2de37754edbebdc2c80b7ff1796ae8575d7e6d58c70ed4cd8267362f34f6c"
+    },
+    "probe_full_encoder.py": {
+      "ast_and_compile": "PASS",
+      "bytes": 20360,
+      "sha256": "f4246efa5baf5dfdbd5fc21e1638f49f1af4038fd3b7644d41d8591e0d37d5ae"
+    },
+    "supervise_full_encoder.py": {
+      "ast_and_compile": "PASS",
+      "bytes": 4904,
+      "sha256": "09c845903ac6b018bcfb37ea1ef01632a9c8953e64fcfeb55bc9cb116d301469"
+    }
+  },
+  "reviewed_source_sha256": {
+    "dataset.py": "bdc75bbfbe2b6d6ff674d36b86ddc5502f263cb5cca7ba3f01fb9cb878fea22b",
+    "integrity.py": "85b038abf31b281a6972d48ac2ed96c2124353f47c17316dcdb10b331de01694",
+    "laya_common_excerpt.py": "778767e9dd30d5c9cd2d851ec2b4aa4befbeff088597ef1a08c5388a08edba63",
+    "model.py": "64bfa801f4d98c795f64d76fedea70c377b5b9225a26d73c426893e5338be29d",
+    "resident_model.py": "5d4c0dc65fd5b765f4f01e949220854a352ef5cb2e984e5551d2470ec4f34cdb",
+    "tokenizer.py": "23c270172ffa944060cce3bd0b3cda343da119ee16990d938b99b38f49e34770"
+  },
+  "reviewed_utc": "2026-11-05T05:23:51.118265+00:00",
+  "reviewer": "independent_agent_mit_research",
+  "schema": "hepta.wsp.full_encoder.preexecution_review.v1",
+  "verification_performed": [
+    "Read exact pinned model, resident_model, dataset, integrity and tokenizer implementations.",
+    "Read installed Laya DecisionModel and build_model excerpt; loader itself checks pinned installed Git blob IDs.",
+    "AST parse and compile all three scripts without executing model/importing Torch.",
+    "Helper identity unchanged."
+  ]
+}

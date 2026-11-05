@@ -1,0 +1,108 @@
+{
+  "approved_scope": "One read-only diagnostic of all existing fit23 OOD16 validation and32 TEST worlds; no new seed, sample, parameter, threshold or qualification.",
+  "categories": "Exclusive sum of evaluator-law performance difference: own_target_violation first; otherwise own_positive_evaluator_negative; otherwise other. Contributions use evaluator E reach. Counts are union changed-state counts across both law supports/common prefixes and are not independent samples or necessarily positive evaluator reach.",
+  "complete_worlds": 48,
+  "confirmatory": false,
+  "domains": [
+    "ood"
+  ],
+  "example_rule": "Smallest-index TEST world attaining the minimum already-frozen E-minus-C expected utility among all32 existing fit23 OOD TEST worlds; all48 records remain available.",
+  "failure": "Preserve partial diagnostic outputs and complete process receipt; original failed scientific qualification remains unchanged.",
+  "fit": 23,
+  "frozen_utc": "2026-11-05T04:19:52.197289+00:00",
+  "identities": [
+    "For each own/evaluator law separately: V_E(initial)-V_C(initial)=sum_s unnormalized_reach_E(s)*(Q_C(s,action_E)-V_C(s)); no training-occupancy normalization.",
+    "Evaluator-law first common-prefix partition stops at the first action difference, summing reach_prefix(s)*(complete V_E(s)-complete V_C(s)).",
+    "At fixed hidden representation, sum_i delta_margin_weight_i*h_i equals actual C-to-E head margin shift within declared F64 tolerance.",
+    "Terminal-anchor score margin between selected E and C actions equals own one-step C advantage because the terminal decoder is protected."
+  ],
+  "identity_tolerance": 2e-13,
+  "input_files": {
+    "INPUT_MANIFEST.json": {
+      "bytes": 29988,
+      "sha256": "ce5e28baf13018410c21f23db26c1c8bde38f28c637dc5f09741d53df2402c8e"
+    },
+    "PROTOCOL_FROZEN.json": {
+      "bytes": 12991,
+      "sha256": "226713c4ceab5ebf4da08e62d495a529ddb41a461bec1ce3f7f6ffbecab981dd"
+    },
+    "execution_r1/PROCESS_RECEIPT.json": {
+      "bytes": 1012,
+      "sha256": "5e3a17fbb824af58142fa76ba77603ef46349527d1fc48b34799e9c70a8d36a5"
+    },
+    "execution_r1/run/ALL_GATES_BEFORE_TEST.json": {
+      "bytes": 5995,
+      "sha256": "c7755adf777f890ad98023cf7aa061bed6a7a7fbb3e5512bcdb2aadad8c25784"
+    },
+    "execution_r1/run/RESULTS.json": {
+      "bytes": 16545,
+      "sha256": "9c68c58c13e75df6839560c4bed03896989c2061207e59a4672e5dafc82e89bd"
+    },
+    "execution_r1/run/fit_23_CANDIDATES.json.gz": {
+      "bytes": 341705,
+      "sha256": "0ba6af9a4d1dddc6d5c115216bd8d04cb42f1dfde5ca26db0fdef9023f8897f7"
+    },
+    "execution_r1/run/models/fit_23_C.json.gz": {
+      "bytes": 172558,
+      "sha256": "2037bf93f45bf19cd27f73201e57bedc41ddea08243728eaa466d8f7e3555693"
+    },
+    "execution_r1/run/models/fit_23_E.json.gz": {
+      "bytes": 172560,
+      "sha256": "49069db5fd6e2eea28df52fc8a28259897fa4f18028fdfa8e2b91d1f0e78bc8f"
+    },
+    "execution_r1/run/test_23_ood_RESULTS.json.gz": {
+      "bytes": 50168,
+      "sha256": "d367730bc74feb425f0eea09f3e0350804ca6dac2d8afd7c343ce10704c2b879"
+    },
+    "execution_r1/run/validation_23_ood_RESULTS.json.gz": {
+      "bytes": 25400,
+      "sha256": "40830961909b8a3f25c2b16236c927c784549a894129380bd80eae37eb3161f5"
+    },
+    "execution_r1/run/worlds/test_23_ood.json.gz": {
+      "bytes": 1539,
+      "sha256": "4e850c5260411535372aa84bec8b2d037bd6b0cb0eab3983ceeffb2c2e784d20"
+    },
+    "execution_r1/run/worlds/validation_23_ood.json.gz": {
+      "bytes": 1022,
+      "sha256": "1f28c677804f6d4dc491efde68019c38fbc66f2d410ac648c27022ad6f6397bf"
+    },
+    "independent_verification/VERIFIED.json": {
+      "bytes": 1287,
+      "sha256": "4e2f99513f79c5b11cd0be8f7db7b3093f1bab718665805202b879bde8caf07d"
+    }
+  },
+  "interpretation": "One-step follow-C counterfactual, complete edited-policy suffix effect, head/target mismatch and law-specific preference are separate quantities. These are fixed-world policy identities, not independent causal interventions on individual weights.",
+  "main_result_already_observed": true,
+  "prohibition": "No candidate edits, reseeding, sample replacement, gate changes, new confirmatory comparisons or diagnostic-result-driven retry.",
+  "resource_caps": {
+    "controller_wall_seconds": 150,
+    "numeric_threads": 1,
+    "worker_CPU_seconds": 60,
+    "worker_wall_seconds": 120
+  },
+  "schema": "hepta-value-edit-posthoc-first-divergence-and-performance-difference-v1",
+  "sign_tolerance": 1e-12,
+  "source_files": {
+    "artifact_io.py": {
+      "bytes": 2031,
+      "sha256": "cdf524ff7a3fe729a1b62136ab987156526ac4d1e3e73d061c76520df473770a"
+    },
+    "posthoc/diagnose.py": {
+      "bytes": 18102,
+      "sha256": "819d6e2eb812baba5f0f66670bbcec71f4f2071a3b2366d07b4c282347e575db"
+    },
+    "posthoc/freeze_diagnostic.py": {
+      "bytes": 4513,
+      "sha256": "4c58d26d0b87f9f515e8819522c2060c5912f972f10c1d3183a921548579bf07"
+    },
+    "vendor/planning.py": {
+      "bytes": 12785,
+      "sha256": "2fbd9b00861d3ff932c81b975b60e39dc9d4e9138e160a99222e6fdc6eb0a687"
+    }
+  },
+  "source_law_binding": "All main-protocol source hashes and all INPUT_MANIFEST files must remain unchanged before this run.",
+  "source_sha256": "819d6e2eb812baba5f0f66670bbcec71f4f2071a3b2366d07b4c282347e575db",
+  "status": "FROZEN_POSTHOC_BEFORE_DIAGNOSTIC_EXECUTION",
+  "test_worlds": 32,
+  "validation_worlds": 16
+}

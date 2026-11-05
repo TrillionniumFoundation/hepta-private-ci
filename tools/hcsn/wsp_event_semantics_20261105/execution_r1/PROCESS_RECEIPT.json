@@ -1,0 +1,23 @@
+{
+  "child_peak_rss_bytes": 59842560,
+  "child_system_cpu_seconds": 0.08455,
+  "child_total_cpu_seconds": 2.059894,
+  "child_user_cpu_seconds": 1.975344,
+  "command": [
+    "python",
+    "run_diagnostic.py",
+    "--protocol",
+    "PROTOCOL_FROZEN.json",
+    "--output",
+    "execution_r1/run"
+  ],
+  "controller_partial_cpu_seconds": 0.003790980999999999,
+  "ended_utc": "2026-11-05T05:18:07.654646+00:00",
+  "exit_code": 0,
+  "schema": "hepta-ctmc-semantic-whole-child-cost-v1",
+  "scope": "Whole child including imports and final writes; controller imports/final receipt writes, editor, prior training, energy and production costs excluded/unknown.",
+  "source_sha256": "dba06c62a8050e01f0e9f55b5062c1c3a47100e807e4aa127d5be7284a906279",
+  "started_utc": "2026-11-05T05:18:05.529838+00:00",
+  "timed_out": false,
+  "wall_seconds": 2.1248596389996237
+}

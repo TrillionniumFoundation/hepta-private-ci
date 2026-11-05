@@ -1,0 +1,84 @@
+{
+  "complete_child_cpu_seconds_sum": 2.247689,
+  "complete_child_phases": {
+    "execution_r1": {
+      "child_peak_rss_bytes": 59842560,
+      "child_system_cpu_seconds": 0.08455,
+      "child_total_cpu_seconds": 2.059894,
+      "child_user_cpu_seconds": 1.975344,
+      "command": [
+        "python",
+        "run_diagnostic.py",
+        "--protocol",
+        "PROTOCOL_FROZEN.json",
+        "--output",
+        "execution_r1/run"
+      ],
+      "controller_partial_cpu_seconds": 0.003790980999999999,
+      "ended_utc": "2026-11-05T05:18:07.654646+00:00",
+      "exit_code": 0,
+      "schema": "hepta-ctmc-semantic-whole-child-cost-v1",
+      "scope": "Whole child including imports and final writes; controller imports/final receipt writes, editor, prior training, energy and production costs excluded/unknown.",
+      "source_sha256": "dba06c62a8050e01f0e9f55b5062c1c3a47100e807e4aa127d5be7284a906279",
+      "started_utc": "2026-11-05T05:18:05.529838+00:00",
+      "timed_out": false,
+      "wall_seconds": 2.1248596389996237
+    },
+    "independent_record_check": {
+      "child_peak_rss_bytes": 19378176,
+      "child_system_cpu_seconds": 0.015621,
+      "child_total_cpu_seconds": 0.12132799999999999,
+      "child_user_cpu_seconds": 0.105707,
+      "command": [
+        "python",
+        "verify_diagnostic.py",
+        "--run",
+        "execution_r1/run",
+        "--output",
+        "independent_record_check/VERIFIED.json"
+      ],
+      "controller_partial_cpu_seconds": 0.0011684599999999962,
+      "ended_utc": "2026-11-05T05:18:17.671217+00:00",
+      "exit_code": 0,
+      "schema": "hepta-ctmc-semantic-whole-child-cost-v1",
+      "scope": "Whole child including imports and final writes; controller imports/final receipt writes, editor, prior training, energy and production costs excluded/unknown.",
+      "source_sha256": "dba06c62a8050e01f0e9f55b5062c1c3a47100e807e4aa127d5be7284a906279",
+      "started_utc": "2026-11-05T05:18:17.506181+00:00",
+      "timed_out": false,
+      "wall_seconds": 0.16508454899667413
+    },
+    "protocol_freeze_receipt": {
+      "child_peak_rss_bytes": 11403264,
+      "child_system_cpu_seconds": 0.020035,
+      "child_total_cpu_seconds": 0.066467,
+      "child_user_cpu_seconds": 0.046432,
+      "command": [
+        "python",
+        "freeze_protocol.py",
+        "--source-package",
+        "/workspace/scratch/237419f85815/value_edit"
+      ],
+      "controller_partial_cpu_seconds": 0.0011619750000000026,
+      "ended_utc": "2026-11-05T05:17:58.517190+00:00",
+      "exit_code": 0,
+      "schema": "hepta-ctmc-semantic-whole-child-cost-v1",
+      "scope": "Whole child including imports and final writes; controller imports/final receipt writes, editor, prior training, energy and production costs excluded/unknown.",
+      "source_sha256": "dba06c62a8050e01f0e9f55b5062c1c3a47100e807e4aa127d5be7284a906279",
+      "started_utc": "2026-11-05T05:17:58.398847+00:00",
+      "timed_out": false,
+      "wall_seconds": 0.12560069799656048
+    }
+  },
+  "maximum_child_peak_rss_bytes": 59842560,
+  "nested_timers_not_added": true,
+  "not_a_training_replacement_speedup": true,
+  "schema": "hepta-event-semantics-cost-ledger-v1",
+  "sequential_child_wall_seconds_sum": 2.4155448859928583,
+  "unknown_or_excluded": [
+    "Editor/agent inference and orchestration",
+    "Controller imports and final receipt writes",
+    "Post-run documentation/metadata packaging",
+    "Historical training and diagnostics",
+    "Power, energy, economic CPU conversion and production execution"
+  ]
+}

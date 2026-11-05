@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.wsp.independent-ci-audit.v1",
+  "repository": "TrillionniumFoundation/hepta-runtime",
+  "head": "bc38fb82244b946907886704b3c677bf00761cb9",
+  "run_id": 41966037157,
+  "job_id": 127043147126,
+  "run_attempt": 1,
+  "status": "completed",
+  "conclusion": "success",
+  "run_updated_at": "2026-11-05T04:45:12Z",
+  "decoded_log": {
+    "sha256": "fc235b118bb45a28bf2ea21a599af588f6deaf6ce733ec5fbc81028343f001f8",
+    "utf8_bytes": 844833
+  },
+  "source_identity": [
+    "2026-11-05T04:09:40.6608944Z \u001b[36;1mprintf 'SOURCE_HEAD_SHA=%s\\n' \"$EXPECTED_HEAD_SHA\"\u001b[0m",
+    "2026-11-05T04:09:40.6723603Z SOURCE_HEAD_SHA=bc38fb82244b946907886704b3c677bf00761cb9"
+  ],
+  "test_summaries": [
+    "2026-11-05T04:29:00.6043313Z      Summary [ 198.929s] 1816 tests run: 1816 passed, 41 skipped",
+    "2026-11-05T04:39:53.6865504Z      Summary [ 195.369s] 1796 tests run: 1796 passed, 29 skipped"
+  ],
+  "executed_job_steps": 22,
+  "prospective_merge_validation": "skipped",
+  "scope": "Official exact-head engineering CI only; no new scientific efficacy claim"
+}

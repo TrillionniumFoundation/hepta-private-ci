@@ -1,0 +1,208 @@
+{
+  "arms": {
+    "C": "Exact previous continuation incumbent; strong no-edit model baseline",
+    "E": "Anchored one-step targets, occupancy mixture, direct solve, five-alpha own-value selection; primary weight arm",
+    "EA": "Unanchored raw one-step Q_C targets, occupancy mixture, direct solve and identical five-alpha selection",
+    "EU": "Anchored one-step targets, uniform full support, direct solve and identical five-alpha selection",
+    "E_gated": "E if the fixed new validation gate accepts, else exact complete C",
+    "G": "Same as E with matched quadratic PGD and identical five-alpha selection",
+    "G_gated": "G if the same fixed gate accepts, else exact complete C",
+    "J": "No weight edit: full checkpoint-own-law Bellman program; planning control",
+    "M": "Exact previously frozen DQ old full-optimal-Q MSE model; no new fitting/selection",
+    "P": "No weight edit: C continuation plus own analytic terminal posterior; program control",
+    "R": "Single random edit norm-matched to final E"
+  },
+  "fits": [
+    11,
+    23,
+    37,
+    53,
+    71
+  ],
+  "frozen_utc": "2026-11-05T03:54:55.163265+00:00",
+  "holdout": {
+    "OOD_scope": "OOD is relative to original TRAIN; new validation exposes that distribution, TEST is new instances of that exposed domain.",
+    "domains": [
+      "iid",
+      "ood"
+    ],
+    "exclusion": "Exact schedule-content comparison against all2416 available same-task historical unique schedules and all new schedules; collision stops entire run, no replacement.",
+    "failed_gate": "Reject and serialize full C; require canonical model SHA and complete deterministic gzip file bytes to match C. Accepted candidates have restoration=null/not applicable.",
+    "gate": "Per fit E/G endpoint solver must converge, neither domain may lose versus C, equal-domain mean gain >=.005. EU/EA/M/R/P/J remain secondary frozen controls without validation tuning.",
+    "generator": "PCG64 full SHA256 integer from canonical [protocol_sha,fit,split,domain,'public-schedule']; original public domains and six-tick schedule sampling order.",
+    "minimum_validation_mean_gain": 0.005,
+    "ordering": [
+      "source/protocol freeze",
+      "all 5 fits, all 100 path heads, all TRAIN selection and raw models frozen",
+      "generate/score complete new validation",
+      "freeze every gate/model",
+      "generate/score complete new TEST"
+    ],
+    "repeated_holdout_adaptation_allowed": false,
+    "test_per_fit_domain": 32,
+    "unknown_history": "Unseen external trials and unavailable original formal-confirmation content are not excluded by a known-content hash registry.",
+    "validation_per_fit_domain": 16
+  },
+  "independent_verification": {
+    "holdout_replay": "All4960 held-out world/arm pairs through a separate literal-head, recursive eight-behavior evaluator; require node count equality and absolute metric difference <=2e-13; shared original core/law source explicitly retained.",
+    "local_event_chain_not_external_timestamp_proof": true,
+    "source": "verify_records.py; it does not import task_graph.py or run_experiment.py",
+    "stored_records": "Model preservation, rational norm membership, finite path identity, selection, seeds/content exclusion, local event order, exact failed-gate rollback and closed-form-df4 interval recomputation.",
+    "train_replay": "Every6400 TRAIN world/path pair through the old pinned recursive executor; require exact float utility equality, not the new DAG code."
+  },
+  "inference": {
+    "controls_and_ablations": "All raw/gated arms and behavior/error metrics retained; other95% intervals descriptive only, no additional confirmatory claim.",
+    "interval": "Paired Student-t df4 across five old fit means, two-sided Bonferroni-two familywise alpha.05; conditional model-assumption interval for this fixed training family, not distribution-free or new-fit replication.",
+    "minimum_lower_bound_gain": 0.005,
+    "new_training_fit_count": 0,
+    "no_world_pseudoreplication": true,
+    "not_a_new_Hepta_two_by_two_D_minus_B_factorial": true,
+    "primary_contrasts": [
+      "E_gated-C IID",
+      "E_gated-C OOD"
+    ],
+    "primary_family_size": 2,
+    "qualification": "All E source/norm/numerical gates and both primary lower bounds strictly >.005. Record G/EU/EA numerical failures separately; they do not become qualified candidates.",
+    "reused_training_fit_count": 5
+  },
+  "information_boundary": {
+    "candidate_interface_has_no_truth_law_member": true,
+    "evaluator": "Independent pinned environment transition tables and original fitted confusion; truth used only after all candidates freeze.",
+    "inputs": "All original 64 TRAIN public schedules per fit and exact stored checkpoint transition/emission tables; input package excludes original Q/posterior/label/VAL rows.",
+    "interface_isolation_is_not_a_security_sandbox_claim": true,
+    "law_authority": "Exact supplied model tables; no idealized regeneration from nominal physics.",
+    "teacher": "Q_C(s,a): immediate task reward/fee followed by fixed C under checkpoint own law, with all finite transitions integrated.",
+    "terminal_anchor": "a_T is first argmax of unchanged C STOP/SUBMIT scores. Y_a=T_pred(a_T)+Q_C(s,a)-T_own(a_T). All three terminal actions are always legal in the pinned task.",
+    "truth_asset_loaded_by_pinned_definition_loader_before_fit": true,
+    "truth_scores_used_for_candidate_targets_or_selection": false
+  },
+  "local_freeze_is_not_external_preregistration": true,
+  "optimization": {
+    "alphas": [
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "declared_radius": "L2 change <=0.5||C_Q||; solver radius uses inward factor (1-1e-8); exact rational checks on actually stored IEEE F64 differences.",
+    "direct": "Existing spectral secular trust-region solver with independent Cholesky/KKT diagnostics; no gradient steps.",
+    "editable_parameters": 147,
+    "fresh_base_training": false,
+    "full_traditional_retraining_comparison": false,
+    "gradient": "Same quadratic as E, same data/start/radius; projected gradient at 1/L, own Frank-Wolfe gap <=1e-8, maximum100000 steps; no access to direct optimum for stopping.",
+    "gradient_baseline_optimization": true,
+    "lambda_value": 0.0001,
+    "numerical_diagnostics_are_not_outward_error_optimality_proofs": true,
+    "occupancy_mixture": 0.9,
+    "path_arms": [
+      "E",
+      "G",
+      "EU",
+      "EA"
+    ],
+    "protected_belief_parameters": 49,
+    "random": "One PCG64 seed from [protocol_sha,fit,'single-final-E-norm-matched-random']; random delta norm matches final selected and serialized E. If E is zero, R is C. No random search or alpha selection.",
+    "random_norm_relative_tolerance": 1e-10,
+    "selection": "Every path arm separately picks the first exact maximum of mean complete own-law TRAIN utility among its five stored-F64 heads; ascending alpha means ties pick smallest alpha. No tolerance-based tie adaptation.",
+    "stored_path_definition": "stored_point(C_Q,alpha*(endpoint_Q-C_Q),same safe radius); actual serialized head, norm and reconstructed full-model identity retained before scoring.",
+    "zero_edit_in_every_fitted_path": true
+  },
+  "prior_work_not_repeated": "The old 125-point three-bias grid and old full-optimal-Q uniform MSE compilation are known failures; this is one fixed new hypothesis, not a search over more post-holdout hypotheses.",
+  "purpose": "Test whether terminal-anchored one-step incumbent advantages and own occupancy weighting produce a useful pure continuation-head direction, selected only by complete own-law TRAIN utility.",
+  "reporting": {
+    "compute_comparison": "Direct versus PGD is only the matched147-parameter fixed-feature quadratic and finite path; report shared preprocessing and whole experiment separately, no complete-training speedup claim.",
+    "controller_cost_limit": "Receipt controller CPU covers main body only, after imports and before final receipt write. That missing overhead, agent/editor cost, unknown earlier trials and base-model training are not recoverable full costs.",
+    "costs": "Input preparation, semantic checks, all shared graph/feature/own-target work, all solver and finite path candidates, serialization, controls, validation, TEST and independent verification measured separately. J includes own planning/verification/serialization/load; feature caches are cold separately for each held-out arm.",
+    "failures_retained": true,
+    "full_worker_process_receipts": true,
+    "no_energy_or_dollar_inference": true,
+    "no_free_oracle_or_free_program_baseline_claim": true,
+    "utility": "Original finite task includes requested-read, repair and simulated elapsed fees. Actual CPU has no measured economic conversion; full NDU economic net gain is not qualified."
+  },
+  "resource_caps": {
+    "RSS_scope": "Measured peak RSS checked at budget points, not a hard virtual address limit.",
+    "controller_wall_seconds": 1830,
+    "failure": "Stop and preserve all partial files/costs; do not reduce fits/worlds, tune another candidate or rerun changed scientific source under this protocol.",
+    "numeric_threads": 1,
+    "peak_rss_target_bytes": 1073741824,
+    "verification_cpu_seconds": 900,
+    "verification_wall_seconds": 1200,
+    "worker_cpu_seconds": 1200,
+    "worker_wall_seconds": 1800
+  },
+  "schema": "hepta-terminal-anchored-incumbent-value-edit-v1",
+  "scope_limits": [
+    "Finite fixed-deadline sign task only; not first-passage or financial Call/Put repair",
+    "No live Trader or private market data and no remote training",
+    "No full-network continuous global-optimality claim; only selection from fixed finite directions",
+    "No weight gain attribution to P/J program changes",
+    "No result-driven extra candidate round; defects/results remain visible",
+    "PGD is gradient optimization, but this is not comparison with complete base retraining"
+  ],
+  "source_environment": {
+    "numpy": "2.3.5",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "scipy": "1.17.0"
+  },
+  "source_files": {
+    "INPUT_MANIFEST.json": {
+      "bytes": 29988,
+      "sha256": "ce5e28baf13018410c21f23db26c1c8bde38f28c637dc5f09741d53df2402c8e"
+    },
+    "PROTOCOL_PROPOSAL.json": {
+      "bytes": 5637,
+      "sha256": "3b52c22d38d98ed0ad5b5b11474075969a4738800f8bae5c4857e598af69ef04"
+    },
+    "artifact_io.py": {
+      "bytes": 2031,
+      "sha256": "cdf524ff7a3fe729a1b62136ab987156526ac4d1e3e73d061c76520df473770a"
+    },
+    "freeze_protocol.py": {
+      "bytes": 13170,
+      "sha256": "1f488a81c97212b26b282b54282607430464c7e5ba805fdb6cefe18eae2d727f"
+    },
+    "measure_process.py": {
+      "bytes": 2862,
+      "sha256": "64e85e07ab6695409dccab89187f06fbff984f27184104eb5e3b4a8770d2903a"
+    },
+    "prepare_inputs.py": {
+      "bytes": 6519,
+      "sha256": "2bc40de43680031dd82371627fa1d210fe619cfdd58b6a2bb6a62f1e0b409b21"
+    },
+    "run_experiment.py": {
+      "bytes": 27815,
+      "sha256": "718d0a2a6bccb014ac593d9263f8e9b3637d7abd4c020c7f6d7eadf6e47aa930"
+    },
+    "task_graph.py": {
+      "bytes": 11798,
+      "sha256": "c76e7e477f2001455f7d21ba0e1de3d0364fe759cb7a15c75668834e204e10ac"
+    },
+    "test_semantics.py": {
+      "bytes": 2599,
+      "sha256": "8e0c0ebac043b1b3e352e33a7e8e82efc312ca117c58507c33ed9b851fd38eac"
+    },
+    "verify_records.py": {
+      "bytes": 24878,
+      "sha256": "7b6402589c9eaf8004c4103ae3da09272ae0c850e8f647d3afaa70a1d2f50d1c"
+    }
+  },
+  "state_caps": {
+    "full_per_world": 20000,
+    "markov_per_world": 20000,
+    "training_rows_per_fit": 200000
+  },
+  "status": "FROZEN_BEFORE_ANY_CANDIDATE_FIT_OR_NEW_HOLDOUT",
+  "training": {
+    "all_original_worlds_required": true,
+    "endpoint_representation": "Frozen 85 input to tanh48 hidden features plus bias; only first three rows of the 4x49 augmented head can change.",
+    "mixed_weight": "Per world, 0.9 incumbent-own-law occupancy normalized over continuation-eligible states plus 0.1 uniform over all eligible full states; divide equally over legal continuation actions and over 64 worlds.",
+    "policy_execution": "Pinned checked-head replay: original explicit F64 reduction of augmented [hidden,1] features; this is not an F32/native production qualification.",
+    "reference": "Each TRAIN C value must match the old recursive checked-head executor exactly; candidate score traversal uses actual stored F64 head argmax decisions.",
+    "state_identity": "Canonical full original state including sunk charges, observation history, pending I/O, elapsed time and budgets.",
+    "state_order": "Pinned deterministic DFS insertion order; topology is stable tick sort; every continuation advances exactly one tick.",
+    "teacher_opportunity_diagnostic": "TRAIN-only exact anchored-policy rollout recorded as a diagnostic; it is not a new held-out arm or a weight edit.",
+    "uniform_control": "Same eligible-state/legal-continuation normalization with occupancy mixture zero.",
+    "worlds_per_fit": 64
+  }
+}

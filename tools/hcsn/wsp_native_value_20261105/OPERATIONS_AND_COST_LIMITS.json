@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.wsp.operational-attempt-and-cost-boundaries.v1",
+  "scope": "Derived account of preliminary read/transport attempts in this continuation; authoritative scientific attempts and costs remain in their original process receipts.",
+  "preliminary_attempts": [
+    {
+      "host": "pocket4",
+      "action": "Start a read-only Python probe using a non-absolute executable name.",
+      "result": "The runtime rejected the request because an absolute executable path is required.",
+      "correction": "Use the observed absolute system Python path.",
+      "model_execution": false,
+      "production_mutation": false,
+      "complete_cost": "not independently metered"
+    },
+    {
+      "host": "pocket4",
+      "action": "Initial service query used the system manager rather than the user manager.",
+      "result": "That query did not establish the actual resident service status and is not used as evidence of stopped training services.",
+      "correction": "Bind the actual user service MainPID and effective configuration; the retained strict audit and head probes use the user service manager.",
+      "model_execution": false,
+      "production_mutation": false,
+      "complete_cost": "not independently metered"
+    },
+    {
+      "action": "Public snapshot transport initially parsed and reserialized JSON across runtimes.",
+      "result": "The original-byte hash gate rejected the local textual representation.",
+      "correction_record": "pocket4/RECORD_TRANSPORT_CORRECTION.json",
+      "model_execution": false,
+      "production_mutation": false,
+      "complete_cost": "not independently metered"
+    }
+  ],
+  "metering_rules": [
+    "Complete waited child-process CPU includes the child interpreter startup, imports and final output where the owning receipt states that scope.",
+    "Internal feature, target, candidate, kernel and verifier timers can overlap their enclosing process and are not added twice.",
+    "Supervisor CPU scope is stated separately and does not imply that supervisor startup/final receipt writing was measured.",
+    "Native compilation/tests, native corpus execution, scientific execution, independent replay and Pocket4 head probes are different workloads.",
+    "The only published science run used the frozen source/protocol; the diagnostic follow-up uses exposed existing worlds and is marked post hoc.",
+    "GitHub object publication, source acquisition/transport, orchestration, external service work, LLM inference, historical training and CI charges are not completely metered by the local scientific receipts.",
+    "Unknown costs, energy and prices remain unknown; no complete economic net gain or equal-qualified-quality speedup is inferred."
+  ],
+  "actual_trader_value_qualified": false,
+  "production_model_installed": false,
+  "orders_sent_by_this_work": 0
+}

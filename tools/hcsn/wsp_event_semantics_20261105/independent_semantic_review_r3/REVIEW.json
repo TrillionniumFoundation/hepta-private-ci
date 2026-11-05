@@ -1,0 +1,132 @@
+{
+  "conclusions": {
+    "bank_is_endpoint_forecast": true,
+    "equal_tick_mass_does_not_imply_equal_downstream_or_future_behavior": true,
+    "first_hit_includes_time_zero_atom": true,
+    "repair_is_sensor_and_fee_not_a_commanded_latent_reset": true,
+    "stored_generator_has_endogenous_reset": true,
+    "strict_upper_endpoint_complement_includes_equality": true,
+    "two_sided_first_exit_requires_surviving_mass": true
+  },
+  "endpoint_first_hit_cases": 2880,
+  "fits": [
+    {
+      "boundary_to_interior_rate_max": 1.0206028990286777,
+      "boundary_to_interior_rate_min": 1.0206028990286777,
+      "fit": 11,
+      "independent_ode_first_world_id": "train_fit11_0000",
+      "independent_ode_function_evaluations": 2040,
+      "train_worlds": 64
+    },
+    {
+      "boundary_to_interior_rate_max": 0.9995530818159508,
+      "boundary_to_interior_rate_min": 0.9995530818159507,
+      "fit": 23,
+      "independent_ode_first_world_id": "train_fit23_0000",
+      "independent_ode_function_evaluations": 2064,
+      "train_worlds": 64
+    },
+    {
+      "boundary_to_interior_rate_max": 1.001957255524325,
+      "boundary_to_interior_rate_min": 1.001957255524325,
+      "fit": 37,
+      "independent_ode_first_world_id": "train_fit37_0000",
+      "independent_ode_function_evaluations": 2136,
+      "train_worlds": 64
+    },
+    {
+      "boundary_to_interior_rate_max": 0.9769351608211668,
+      "boundary_to_interior_rate_min": 0.9769351608211665,
+      "fit": 53,
+      "independent_ode_first_world_id": "train_fit53_0000",
+      "independent_ode_function_evaluations": 1956,
+      "train_worlds": 64
+    },
+    {
+      "boundary_to_interior_rate_max": 1.0115409260553012,
+      "boundary_to_interior_rate_min": 1.0115409260553012,
+      "fit": 71,
+      "independent_ode_first_world_id": "train_fit71_0000",
+      "independent_ode_function_evaluations": 2400,
+      "train_worlds": 64
+    }
+  ],
+  "initial_event_atom_counts_per_world_threshold": {
+    "0.0": 219,
+    "0.5": 522,
+    "1.0": 219
+  },
+  "limitations": [
+    "finite-state known-law numerical diagnostic, not continuum first-passage proof",
+    "original TRAIN schedules and five reused research checkpoints, not independent efficacy evidence",
+    "large endpoint/first-hit differences can include initial-hit probability, not only reset effects",
+    "ODE and transient-matrix agreement are numerical checks, not outward-rounded certificates",
+    "no actual Pocket4 production checkpoint, weight mutation, policy improvement or trading claim"
+  ],
+  "methods": [
+    "transient-submatrix survival complement on all 320 TRAIN schedules",
+    "transient interior matrix solve for competing first-boundary cause flux",
+    "DOP853 full CTMC/count ODE on first listed TRAIN world of each fit",
+    "source-selected original state/policy definitions on all 320 repair counterfactuals"
+  ],
+  "new_generalization_or_task_value_evidence": false,
+  "new_training_or_weight_edit": false,
+  "numerical_maximum_absolute_differences": {
+    "endpoint": 1.0147438445073931e-13,
+    "first_hit": 4.923839114212569e-14,
+    "lower_first": 2.736699755701011e-14,
+    "ode_boundary_mass": 1.149080830487037e-14,
+    "ode_counts": 1.2434497875801753e-14,
+    "outer_survival": 5.440092820663267e-15,
+    "raw_partitions": 1.3145040611561853e-13,
+    "stored_transition": 2.4646951146678475e-14,
+    "upper_first": 1.7041923427996153e-14
+  },
+  "numerical_tolerance": 5e-10,
+  "producer_frozen_files_modified": false,
+  "producer_results_sha256": "afeef1c538c358a14afab2294951e7e5c833798270a9dd2d24e6bd1b14701a91",
+  "protocol_sha256": "b6d272a3f329fab883bb1ef12e7fbddcad9a82793a14d8d2409aaca83f5bc648",
+  "read_file_sha256": {
+    "PROTOCOL_FROZEN.json": "b6d272a3f329fab883bb1ef12e7fbddcad9a82793a14d8d2409aaca83f5bc648",
+    "ctmc_semantics.py": "358253f8f0538fb79a5e226029ff0f6859f8dd3d4a4b100074aec1cfc7e550b3",
+    "execution_r1/run/RESULTS.json": "afeef1c538c358a14afab2294951e7e5c833798270a9dd2d24e6bd1b14701a91",
+    "execution_r1/run/STARTED.json": "d86394c4f91f1f2310c8cffab85d2d9501a3754623f66405c4ae1f86bd7f96e3",
+    "execution_r1/run/fit_11_RECORDS.json.gz": "66600d54e2947ed0cdfb395d7ba840ed77b2a26474e23a8ad441fedd7bfe1de9",
+    "execution_r1/run/fit_23_RECORDS.json.gz": "da9b6ed9c69d508b7708d98d47232754bc3ca60bb7c2df148afc89f09ecc5b30",
+    "execution_r1/run/fit_37_RECORDS.json.gz": "da9f33ce02c5cef4856056d131dfadfc9659ad0112e7c37ff772588a4a34d47c",
+    "execution_r1/run/fit_53_RECORDS.json.gz": "20bf369a7350721b833b0d5946064fc6fca7c93523feb27f1ba9e4483f9f066d",
+    "execution_r1/run/fit_71_RECORDS.json.gz": "3c2463ebcea881a7ae153c213014960f83325cb83d37467060dd1e3c244549da",
+    "freeze_protocol.py": "75d29468ff5478183aa55307476c5516e71903730832d29debe5c5d54accae99",
+    "inputs/fit_11_C.json.gz": "fd4e8104066879320811d8276eb96ff524fcb224f80aab4dd20dacb4a9d628e9",
+    "inputs/fit_11_TRAIN_PUBLICS.json.gz": "1b8381020bb5ecb60a5d75233082de80b9761cb61a1e43b08ce7b9ff2f7c1960",
+    "inputs/fit_23_C.json.gz": "2037bf93f45bf19cd27f73201e57bedc41ddea08243728eaa466d8f7e3555693",
+    "inputs/fit_23_TRAIN_PUBLICS.json.gz": "a8f2b75e8dd939b8c5c357ee22db5b1b734f39041b482fc09daeb30e557cb5a5",
+    "inputs/fit_37_C.json.gz": "1f4a3be85213f3fc221187dcb16308d033d033cccf48c86da7fec703e7bfb774",
+    "inputs/fit_37_TRAIN_PUBLICS.json.gz": "89ce630969362b3352bf7fa6f079293674b4300b010f2dc6e5c05952b46feeed",
+    "inputs/fit_53_C.json.gz": "b412cd6743563caaa57d66399c46afdd7394bfd4fe4c964a84e221b3c23ffd24",
+    "inputs/fit_53_TRAIN_PUBLICS.json.gz": "5903b1ac76387ab25a6a24d996869c800b2752f0742e3f7e0c50f02caa3bc90b",
+    "inputs/fit_71_C.json.gz": "8420c224f35255dfba2e30dbbd59947fe3e64281473877d9d47869bef995df6f",
+    "inputs/fit_71_TRAIN_PUBLICS.json.gz": "e89efc01d96de6ce3d48127b9866474bb98b0f342a1a35eb1c3c0ba4d54d1bff",
+    "measure_process.py": "dba06c62a8050e01f0e9f55b5062c1c3a47100e807e4aa127d5be7284a906279",
+    "run_diagnostic.py": "b7ada01c56d6d10aa6d6c7ef39ebfba2f478fddf042f0f2d534ab59b4f107dea",
+    "vendor/frozen_joint/checked_replay.py": "d0922ab0c458d9d382e1f9c851c52731c4a71256870000862dbebf5d38366b24",
+    "vendor/frozen_joint/joint_deploy.py": "c91ef40c484000e2a2b923425467c03fbbfb4e15a1f54856f6c850f9242c8e26",
+    "vendor/frozen_joint/joint_task.py": "51139ba57004f2a5d69381af2f781b3717404318f122d8b6bec8416004efffa5",
+    "vendor/frozen_joint/legacy_task.py": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06",
+    "verify_diagnostic.py": "9cb8e455944d6082c0b86eafe9eef098aa738e4d47cc4781d5ebfa63d95752d9"
+  },
+  "repair_counterfactual": {
+    "any_predicted_belief_difference": 320,
+    "any_predicted_q_difference": 320,
+    "cases": 320,
+    "equal_bank": 320,
+    "equal_mass": 320,
+    "read_reopened": 320
+  },
+  "review_body_cpu_seconds": 0.5149077270000001,
+  "review_body_wall_seconds": 0.5154565529992396,
+  "review_peak_rss_bytes": 69963776,
+  "reviewer_source_sha256": "e9904c1d6cad97bddd193ccc2cce8f2159fe892903c361a18ba7d3f85cefbebc",
+  "schema": "hepta-ctmc-independent-semantic-review-v1",
+  "status": "PASS_WITH_SCOPE_LIMITS"
+}

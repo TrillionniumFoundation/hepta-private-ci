@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/db06eb2f868f/neuron_work/review_semantics.py", line 275, in <module>
+    main()
+  File "/workspace/scratch/db06eb2f868f/neuron_work/review_semantics.py", line 205, in main
+    state = ctx['initial'](public)
+            ^^^^^^^^^^^^^^^^^^^^^^
+  File "joint_task.py", line 52, in initial
+  File "joint_task.py", line 27, in validate_public
+ValueError: incompatible dynamic-task schema

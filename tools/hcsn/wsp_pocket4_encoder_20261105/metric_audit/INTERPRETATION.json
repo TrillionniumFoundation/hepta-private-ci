@@ -1,0 +1,50 @@
+{
+  "independently_reaggregated_raw_metrics": {
+    "candidate": {
+      "hits_argmax_first_index_tie_break": 1,
+      "max_probability_sum_error": 1.0803341865539551e-07,
+      "mean_multiclass_brier": 0.9829790930804314,
+      "mean_nll_from_stored_raw_probabilities": 2.3504294451001884
+    },
+    "parent": {
+      "hits_argmax_first_index_tie_break": 1,
+      "max_probability_sum_error": 7.078051567077637e-08,
+      "mean_multiclass_brier": 0.9836789713470508,
+      "mean_nll_from_stored_raw_probabilities": 2.3527060284566677
+    }
+  },
+  "interpretation": [
+    "Original reported training metrics are consistent with independently aggregated stored raw probabilities within the frozen 1e-6 absolute tolerance.",
+    "The raw candidate improves slightly over its parent but still has higher NLL and Brier than the exact uniform zero-edit control on these training rows.",
+    "The already-recorded calibrated candidate is close to the already-recorded same-training-row Laplace prior; attribution must distinguish prior fitting from neural residual signal.",
+    "The calibration coefficient multiplies centered raw probabilities; it is not a claim that approximately 96 percent of the output is a prior and 4 percent raw in a convex mixture.",
+    "No out-of-sample, profitability, direct-edit efficacy, or training-waste conclusion is established by these 32 training rows.",
+    "This cheap audit motivates retaining uniform and fitted-prior controls before spending additional model-training compute."
+  ],
+  "limitations": [
+    "Targets came from bound final receipts, not an independent reread of the original dataset.",
+    "Raw probabilities and row IDs remained on Pocket4.",
+    "No Torch import, new model forward, training, evaluator, production mutation or broker action occurred.",
+    "Recorded calibrated performance was extracted, not independently refitted or remeasured."
+  ],
+  "recorded_calibration_vs_train_prior": {
+    "brier_improvement": 5.357768243563488e-05,
+    "formula": "q(x) = train_prior + model_weight * (raw_probability(x) - mean_training_raw_probability)",
+    "independently_recomputed": false,
+    "model_weight": 0.0397510467570488,
+    "nll_improvement": 0.0004508289281066613,
+    "not_a_prior_raw_convex_mixture": true
+  },
+  "reported_metric_max_abs_discrepancy": 7.410085212100626e-08,
+  "result_sha256": "5011c318b5b63794a70f05a897c142e14d90b7ba2a22e3d9b503d6d35081b3e5",
+  "schema": "hepta.wsp.metric_audit.interpretation.v1",
+  "scope": "SAME_32_RECORDED_TRAINING_ROWS",
+  "uniform_zero_edit_control": {
+    "mean_multiclass_brier": 0.8571428571428571,
+    "mean_nll": 1.9459101490553132,
+    "model_forwards": 0,
+    "parameters_edited": 0,
+    "source": "EXACT_SEVEN_CLASS_UNIFORM_DISTRIBUTION_MATH",
+    "training_steps": 0
+  }
+}

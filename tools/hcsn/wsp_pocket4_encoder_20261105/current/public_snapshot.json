@@ -1,0 +1,405 @@
+{
+  "adapter": {
+    "all_finite": true,
+    "data_layout_nonoverlapping_and_complete": true,
+    "parameter_count": 2379,
+    "tensor_count": 6,
+    "tensors": [
+      {
+        "dtype": "F32",
+        "finite_parameters": 64,
+        "name": "model.act_head.2.A",
+        "parameters": 64,
+        "shape": [
+          1,
+          64
+        ]
+      },
+      {
+        "dtype": "F32",
+        "finite_parameters": 2,
+        "name": "model.act_head.2.B",
+        "parameters": 2,
+        "shape": [
+          2,
+          1
+        ]
+      },
+      {
+        "dtype": "F32",
+        "finite_parameters": 1536,
+        "name": "model.scorer.1.A",
+        "parameters": 1536,
+        "shape": [
+          2,
+          768
+        ]
+      },
+      {
+        "dtype": "F32",
+        "finite_parameters": 8,
+        "name": "model.scorer.1.B",
+        "parameters": 8,
+        "shape": [
+          4,
+          2
+        ]
+      },
+      {
+        "dtype": "F32",
+        "finite_parameters": 768,
+        "name": "model.scorer.3.A",
+        "parameters": 768,
+        "shape": [
+          1,
+          768
+        ]
+      },
+      {
+        "dtype": "F32",
+        "finite_parameters": 1,
+        "name": "model.scorer.3.B",
+        "parameters": 1,
+        "shape": [
+          1,
+          1
+        ]
+      }
+    ]
+  },
+  "atomic_cross_file_snapshot": false,
+  "base_weight_content_refreshed": false,
+  "broker_queries_sent": 0,
+  "candidate_binding": {
+    "candidate_id": "8fe51f354c8a75001b0948c3588cab7d62dcb54c90f932f32e7bf9eb1505bf5a",
+    "created": {
+      "america_new_york": "2026-11-04T17:17:07.075000-05:00",
+      "utc": "2026-11-04T22:17:07.075000+00:00"
+    },
+    "job_id": "c216bbf84a164b52050b719f352e5c5e4f4feab18de2015af1cfd1ed00aab286",
+    "manifest_adapter_hash_matches": true,
+    "plan_file_exists": false,
+    "registration_is_performance_result": false,
+    "registration_state": "REGISTRATION_RECORD_NOT_AVAILABLE",
+    "same_candidate_and_job_at_end": true,
+    "training_state": "COMPLETED"
+  },
+  "candidate_reported_training": {
+    "calibration": {
+      "additional_independent_training_rows": 0,
+      "calibration_is_train_only": true,
+      "future_value_proven": false,
+      "model_weight": 0.0397510467570488,
+      "model_weight_max": 0.09029649466914888
+    },
+    "calibration_measurement": {
+      "exact_prior_fallback": false,
+      "future_value_proven": false,
+      "held_out": false,
+      "training_only": true
+    },
+    "measurement": {
+      "candidate_brier": 0.9829791057854891,
+      "candidate_ce": 2.3504293709993362,
+      "parent_brier": 0.9836789630353451,
+      "parent_ce": 2.352705989032984,
+      "rows": 32,
+      "training_only": true,
+      "unique_action_labels": 40
+    },
+    "resource_usage": {
+      "gpu_peak_scope": "CURRENT_PROCESS_PYTORCH_ALLOCATOR_STATS",
+      "max_gpu_allocated_bytes": 1591958016,
+      "max_gpu_reserved_bytes": 1621098496,
+      "max_process_rss_bytes": 1839026176,
+      "rss_and_gpu_bytes_are_not_additive": true,
+      "scope": "THIS_WORKER_PROCESS_THROUGH_RECEIPT_CREATION"
+    },
+    "scope": "Read from the bound candidate manifest; not independently rerun or out-of-sample efficacy",
+    "selected": {
+      "action_update_steps": 80,
+      "automatic_cutover": false,
+      "broker_orders_sent": 0,
+      "canonical_owner_activation_claimed": false,
+      "changed_parameters": 2251,
+      "effective_changed_coordinates": 3968,
+      "max_gpu_allocated_bytes": 1591958016,
+      "pnl_reward_used": false,
+      "pretrained_base_unchanged": true,
+      "status": "REQUIRES_INDEPENDENT_FUTURE_EVALUATION",
+      "trainable_parameters": 2379,
+      "wall_seconds": 100.90378057898488
+    }
+  },
+  "cost": {
+    "cpu_seconds": 0.007492324999999994,
+    "max_rss_kib_linux": 23548,
+    "wall_seconds": 0.048288787016645074
+  },
+  "effective_service_config_match": true,
+  "finished_america_new_york": "2026-11-05T00:12:09.227592-05:00",
+  "finished_utc": "2026-11-05T05:12:09.227586+00:00",
+  "forward_preflight": {
+    "admit_new_worker": false,
+    "at_ms": 1793855516902,
+    "cached_probe_diagnostic": {
+      "broker_queries_sent": 0,
+      "cached_probe_status_at_ms": 1793855515919,
+      "cached_probe_unusable": 24,
+      "cached_probe_usable": 0,
+      "fresh_original_live_source_proven": false,
+      "live_quote_relabelled": false,
+      "observed_source_state": "HOLD_NEW_FUSION_WINDOW",
+      "orders_sent": 0,
+      "schema": "heptatrader.readiness-held-before-live-refresh.v1"
+    },
+    "full_memory_psi": {
+      "avg10": 0.0,
+      "avg60": 0.0
+    },
+    "memory_bytes": {
+      "MemAvailable": 11454173184,
+      "MemTotal": 26357305344,
+      "SwapFree": 2922262528,
+      "SwapTotal": 17179860992
+    },
+    "minimum_available_bytes": 8589934592,
+    "original_live_source_evidence": {
+      "broker_queries_sent": 0,
+      "fresh_original_live_source_proven": false,
+      "source_ttl_ms": 5000,
+      "status": "NOT_COLLECTED_WHILE_SOURCE_PROBES_HELD"
+    },
+    "reasons": [
+      "LATEST_SOURCE_QUOTE_NOT_FRESH",
+      "SOURCE_CONTINUITY_NOT_READY",
+      "SOURCE_QUALITY_HOLD_NO_REFRESH_AUTHORITY"
+    ],
+    "registration_stability": {
+      "future_resource_capacity_reserved": false,
+      "healthy_samples": 0,
+      "maximum_observation_gap_ms": 90000,
+      "minimum_sample_interval_ms": 30000,
+      "minimum_span_ms": 60000,
+      "observed_span_ms": 0,
+      "profile": "CONSECUTIVE_ORIGINAL_GUARD_HEALTH_V1",
+      "ready": false,
+      "required_samples": 3,
+      "reset_reason": "ORIGINAL_GUARD_DENIED",
+      "scope": "SAMPLED_ORIGINAL_ADMISSION_NOT_FUTURE_RESOURCE_GUARANTEE",
+      "state_survives_restart": false
+    },
+    "trial_allocated": false,
+    "worker_launch_authority": false,
+    "worker_launched": false
+  },
+  "full_trader_to_hepta_neuron_semantic_mapping_verified": false,
+  "live_process_identity_stable": true,
+  "live_trainer_binding_after": {
+    "config_argument_matches": true,
+    "observed_utc": "2026-11-05T05:12:09.206115+00:00",
+    "process_start_and_argument_commitment_sha256": "f5285b62ac6a7966f2983304a2b510734b30a4a31824fddc2e74950ffd883e2b"
+  },
+  "live_trainer_binding_before": {
+    "config_argument_matches": true,
+    "observed_utc": "2026-11-05T05:12:09.195772+00:00",
+    "process_start_and_argument_commitment_sha256": "f5285b62ac6a7966f2983304a2b510734b30a4a31824fddc2e74950ffd883e2b"
+  },
+  "model_forward_executed": false,
+  "orders_sent": 0,
+  "performance_qualified": false,
+  "public_projection": {
+    "derivation": "Explicit field whitelist; per-step records and private row IDs omitted",
+    "new_remote_reads_or_model_calls": 0,
+    "original_private_stdout_bytes": 111819,
+    "original_private_stdout_sha256": "3951fd0f700d8c5664fb2a4b7819d9a7dcfdd70b2b7a0d7c15032138b9014dea",
+    "raw_stdout_published": false,
+    "sanitizer_sha256": "c1a78d7cfc952229508d763ea02ddd9876a9b0d9a6e843a355e8d29556209177",
+    "schema": "hepta.wsp.readonly_audit_public_projection.v1"
+  },
+  "read_only": true,
+  "resources": {
+    "loadavg": [
+      7.18359375,
+      6.857421875,
+      6.26953125
+    ],
+    "logical_cpu_count": 24,
+    "memory_kib": {
+      "MemAvailable": 11545164,
+      "MemTotal": 25739556,
+      "SwapFree": 2844176,
+      "SwapTotal": 16777208
+    },
+    "observed_utc": "2026-11-05T05:12:09.206136+00:00",
+    "pressure": {
+      "cpu": "some avg10=2.22 avg60=2.69 avg300=3.56 total=38836639365\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n",
+      "io": "some avg10=0.80 avg60=0.18 avg300=0.44 total=8100052756\nfull avg10=0.80 avg60=0.17 avg300=0.37 total=7340612415\n",
+      "memory": "some avg10=0.29 avg60=0.06 avg300=0.33 total=5133906387\nfull avg10=0.29 avg60=0.06 avg300=0.23 total=4924880846\n"
+    }
+  },
+  "schema": "hepta.wsp.live_candidate_readonly_audit.v1",
+  "services": {
+    "heptatrader-execution.service": {
+      "observed_utc": "2026-11-05T05:12:09.227564+00:00",
+      "properties": {
+        "ActiveState": "activating",
+        "CPUQuotaPerSecUSec": "infinity",
+        "MemoryCurrent": "[not set]",
+        "MemoryHigh": "infinity",
+        "MemoryMax": "infinity",
+        "MemoryPeak": "125149184",
+        "NRestarts": "4122",
+        "SubState": "auto-restart",
+        "TasksCurrent": "[not set]"
+      }
+    },
+    "heptatrader-laya-evaluator.service": {
+      "observed_utc": "2026-11-05T05:12:09.219790+00:00",
+      "properties": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "4s",
+        "MemoryCurrent": "34697216",
+        "MemoryHigh": "6442450944",
+        "MemoryMax": "6442450944",
+        "MemoryPeak": "3354959872",
+        "NRestarts": "0",
+        "SubState": "running",
+        "TasksCurrent": "1"
+      }
+    },
+    "heptatrader-laya-trainer.service": {
+      "observed_utc": "2026-11-05T05:12:09.212833+00:00",
+      "properties": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1.500000s",
+        "MemoryCurrent": "757280768",
+        "MemoryHigh": "6442450944",
+        "MemoryMax": "6442450944",
+        "MemoryPeak": "4289187840",
+        "NRestarts": "0",
+        "SubState": "running",
+        "TasksCurrent": "1"
+      }
+    }
+  },
+  "services_changed": false,
+  "source_sha256": "76b5c2e7bd36e25c8fa2d371ed44648ba3e157c94d014a5a1456193dafae90d7",
+  "sources": {
+    "adapter": {
+      "bytes": 9988,
+      "observed_end_utc": "2026-11-05T05:12:09.198813+00:00",
+      "observed_start_utc": "2026-11-05T05:12:09.198777+00:00",
+      "same_descriptor_and_path_metadata_during_read": true,
+      "sha256": "94a8a2275e92fa6343b5c2b662c3a440c3cc870f067d73e86bb1c0069b880ee0"
+    },
+    "bound_job_configuration": {
+      "bytes": 33745,
+      "observed_end_utc": "2026-11-05T05:12:09.196903+00:00",
+      "observed_start_utc": "2026-11-05T05:12:09.196675+00:00",
+      "same_descriptor_and_path_metadata_during_read": true,
+      "sha256": "6aa613e66402422a3a3e8061d5d4b64543579e4823518dd39cccd2d39131b5a5"
+    },
+    "candidate_manifest": {
+      "bytes": 219353,
+      "observed_end_utc": "2026-11-05T05:12:09.197369+00:00",
+      "observed_start_utc": "2026-11-05T05:12:09.197092+00:00",
+      "same_descriptor_and_path_metadata_during_read": true,
+      "sha256": "4e394fc98e2cce78629ca38f024b403f9fbcf236f5c521167a1dd6861e0ca6a9"
+    },
+    "guardian_config": {
+      "bytes": 1952,
+      "observed_end_utc": "2026-11-05T05:12:09.179463+00:00",
+      "observed_start_utc": "2026-11-05T05:12:09.179370+00:00",
+      "same_descriptor_and_path_metadata_during_read": true,
+      "sha256": "b6760d5a84266efc7e70e174a4b87139763fc59d824f6b42839cfb172b5334e0"
+    },
+    "original_config": {
+      "bytes": 30426,
+      "observed_end_utc": "2026-11-05T05:12:09.195855+00:00",
+      "observed_start_utc": "2026-11-05T05:12:09.195794+00:00",
+      "same_descriptor_and_path_metadata_during_read": true,
+      "sha256": "ffde1187e1fc0d28c893328920ae0f6a6a70615adad51fadcdfc85287bd54527"
+    },
+    "trainer_status_after": {
+      "bytes": 9421,
+      "observed_end_utc": "2026-11-05T05:12:09.199219+00:00",
+      "observed_start_utc": "2026-11-05T05:12:09.199192+00:00",
+      "same_descriptor_and_path_metadata_during_read": true,
+      "sha256": "79140a578856e3d31e5199c2c6600e5b4821b56ae9f935b7607b2862e6dc78ab"
+    },
+    "trainer_status_before": {
+      "bytes": 9421,
+      "observed_end_utc": "2026-11-05T05:12:09.196123+00:00",
+      "observed_start_utc": "2026-11-05T05:12:09.196078+00:00",
+      "same_descriptor_and_path_metadata_during_read": true,
+      "sha256": "79140a578856e3d31e5199c2c6600e5b4821b56ae9f935b7607b2862e6dc78ab"
+    }
+  },
+  "started_utc": "2026-11-05T05:12:09.179320+00:00",
+  "status": "PASS_BOUND_CURRENT_SMALL_ADAPTER_STATIC_AUDIT",
+  "trainer": {
+    "at_ms": 1793855520147,
+    "blocking_deferred_training_candidates": 1,
+    "completed_candidates_without_forward_trial": 43,
+    "current_blockers": [
+      "CANDIDATE_READY_AWAITING_FORWARD_ADMISSION",
+      "LATEST_SOURCE_QUOTE_NOT_FRESH",
+      "SOURCE_CONTINUITY_NOT_READY",
+      "SOURCE_QUALITY_HOLD_NO_REFRESH_AUTHORITY"
+    ],
+    "current_blockers_checked_at_ms": 1793855520146,
+    "deferred_training_candidates": 1,
+    "forward_registration_wait_reasons": [
+      "LATEST_SOURCE_QUOTE_NOT_FRESH",
+      "SOURCE_CONTINUITY_NOT_READY",
+      "SOURCE_QUALITY_HOLD_NO_REFRESH_AUTHORITY"
+    ],
+    "job_counts": {
+      "ADMITTED": 0,
+      "COMPLETED": 114,
+      "FAILED": 2,
+      "RUNNING": 0
+    },
+    "no_forward_trial_is_not_performance_rejection": true,
+    "pending_evaluations": 0,
+    "schema": "heptatrader.laya-resident-status.v1",
+    "source_time": {
+      "america_new_york": "2026-11-05T00:12:00.147000-05:00",
+      "utc": "2026-11-05T05:12:00.147000+00:00"
+    },
+    "state": "CANDIDATE_READY_AWAITING_FORWARD_ADMISSION",
+    "viable_pending_evaluations": 0
+  },
+  "training_lineage": {
+    "auxiliary_action_phase": {
+      "encoder_parameters_updated": false,
+      "epochs": 4,
+      "gradient_norm_cap": 1.0,
+      "loss_weight": 0.1,
+      "max_optimizer_steps": 80,
+      "max_pairs": 20,
+      "max_unique_rows": 40,
+      "optimizer": "SEPARATE_ACT_ONLY_AdamW",
+      "price_parameters_updated": false,
+      "repeated_presentations_are_new_independent_rows": false
+    },
+    "completed_jobs_are_cumulative_updates": false,
+    "episode_profile": {
+      "batch_order": "FROZEN_CAUSAL_PARENT_BALANCED_ORDER_REPEATED",
+      "batch_rows": 2,
+      "checkpoint_selection": "FIXED_BUDGET_FINAL",
+      "epochs": 4,
+      "max_optimizer_steps": 64,
+      "max_unique_rows": 32,
+      "measurement_scope": "TRAINING_ONLY_NOT_FORWARD_EFFICACY",
+      "optimizer_state": "CONTINUOUS_WITHIN_EPISODE",
+      "schema": "heptatrader.laya-training-episode-profile.v1"
+    },
+    "mode": "BOUNDED_CONTINUOUS_EPISODE_FROM_CONFIGURED_PARENT",
+    "optimizer_reset_between_epochs": false,
+    "optimizer_reset_each_job": true,
+    "price_steps_exclude_auxiliary_action_steps": true
+  },
+  "training_started": false
+}

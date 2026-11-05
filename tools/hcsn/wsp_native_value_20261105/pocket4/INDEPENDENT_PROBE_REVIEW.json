@@ -1,0 +1,153 @@
+{
+  "actual_trader_value_improvement_qualified": false,
+  "aggregate": {
+    "both_attempts_child_cpu_seconds": 4.058811,
+    "both_attempts_child_wall_seconds_sum": 8.322469639941119,
+    "changed_f32_weight_coordinates_across_three_heads": 3968,
+    "relative_l2_f64_across_three_head_weight_matrices": 0.00033133503415104575,
+    "relative_percent": 0.03313350341510458
+  },
+  "attempts": {
+    "diagnostic": {
+      "child_cpu_seconds": 2.046843,
+      "child_peak_rss_bytes": 684548096,
+      "child_wall_seconds": 4.151250267983414,
+      "files": {
+        "PROTOCOL_FROZEN.json": {
+          "bytes": 1353,
+          "sha256": "0dc62f4922ca8cc1b548890e8edd1df3c5d68b2f7695385dc7c27ed0478bdef5"
+        },
+        "RESULTS.json": {
+          "bytes": 9863,
+          "sha256": "a029b314df128975398e4ac82315875607f89ed276e2541cb1d8ed7e8cf16fbf"
+        },
+        "SUPERVISOR_RECEIPT.json": {
+          "bytes": 757,
+          "sha256": "75ef83b0efc229339705631f1031f3162c8f6963d50a8af08aa0c515f7107d13"
+        }
+      },
+      "source": {
+        "file": "probe_adapter_heads_diagnostic.py",
+        "sha256": "dee2de37754edbebdc2c80b7ff1796ae8575d7e6d58c70ed4cd8267362f34f6c"
+      },
+      "status": "FAIL_FIXED_ALLCLOSE_DIAGNOSTIC_PRESERVED"
+    },
+    "first": {
+      "child_cpu_seconds": 2.011968,
+      "child_peak_rss_bytes": 654192640,
+      "child_wall_seconds": 4.171219371957704,
+      "files": {
+        "PROTOCOL_FROZEN.json": {
+          "bytes": 1181,
+          "sha256": "766393633fd857164ca48538b9231706b2aa6b17d2661236bdeb244593ac2a6a"
+        },
+        "RESULTS.json": {
+          "bytes": 1191,
+          "sha256": "1dc357bb5095bc644bbfd40d2e806d23b91cb5394187f0dbff8200d8184f44c4"
+        },
+        "SUPERVISOR_RECEIPT.json": {
+          "bytes": 778,
+          "sha256": "7d2c8c0e0e688d8aa30ceeae9fe3eacf12cf45b74b62c889270627990f861872"
+        }
+      },
+      "source": {
+        "file": "probe_adapter_heads_attempt1.py",
+        "sha256": "fe6b661c349443a6e6d647eed895313247b2941fcb2ba9f430fd6794a91ceaa0"
+      },
+      "status": "FAILED_PRESERVED"
+    }
+  },
+  "checks_passed": [
+    "first: local source, protocol, result-to-stdout and receipt identities consistent",
+    "diagnostic: local source, protocol, result-to-stdout and receipt identities consistent",
+    "Diagnostic preserved the original seed, input count, identities, source-class hashes and all numeric tolerances",
+    "Reported aggregate relative norm recomputes from the three inspected head matrices",
+    "Every mask, base-parameter preservation and in-memory parent restoration flag is consistent with the diagnostic completion path"
+  ],
+  "engineering_partial_results": [
+    "Three inspected effective-weight masks were preserved.",
+    "Base head weights and biases were unchanged.",
+    "The parent was restored in the isolated in-memory source-class objects with byte-identical probe outputs.",
+    "The source-class effective matrices agreed with the independently constructed reference within their distinct declared tolerances."
+  ],
+  "interpretation": {
+    "gamma_diagnostic_is_an_outward_rounded_certificate": false,
+    "no_threshold_relaxation_or_relabelled_pass": true,
+    "numeric_cause_formally_proved": false,
+    "numeric_findings_consistent_with_float32_accumulation_and_cancellation": true,
+    "probe_5_is_the_same_prespecified_1000_scale_synthetic_input": true,
+    "same_failing_coordinate_identities_not_retained": true,
+    "scorer_1_parent_and_child_each_fail_five_elements_only_in_probe_index_5": true
+  },
+  "layers": [
+    {
+      "changed_f32_weight_coordinates": 3072,
+      "child_failed_elements": 5,
+      "child_fixed_allclose_pass": false,
+      "mask_and_parent_memory_restore_recorded": true,
+      "name": "scorer.1",
+      "parent_failed_elements": 5,
+      "parent_fixed_allclose_pass": false
+    },
+    {
+      "changed_f32_weight_coordinates": 768,
+      "child_failed_elements": 0,
+      "child_fixed_allclose_pass": true,
+      "mask_and_parent_memory_restore_recorded": true,
+      "name": "scorer.3",
+      "parent_failed_elements": 0,
+      "parent_fixed_allclose_pass": true
+    },
+    {
+      "changed_f32_weight_coordinates": 128,
+      "child_failed_elements": 0,
+      "child_fixed_allclose_pass": true,
+      "mask_and_parent_memory_restore_recorded": true,
+      "name": "act_head.2",
+      "parent_failed_elements": 0,
+      "parent_fixed_allclose_pass": true
+    }
+  ],
+  "original_forward_tolerance_qualification": "FAIL_RETAINED",
+  "private_export_review": {
+    "input_path_or_credential_strings_observed_in_retained_json": false,
+    "raw_weights_or_private_rows_observed_in_retained_json": false,
+    "scope": "inspection of these retained JSON artifacts and producer code, not a universal data-loss-prevention proof"
+  },
+  "private_input_preservation": {
+    "atomic_cross_file_snapshot": false,
+    "base_model_copied": false,
+    "base_reproduction_requires_existing_or_upstream_hash_matched_checkpoint": true,
+    "receipt_file": "PRIVATE_INPUT_SNAPSHOT_RECEIPT.json",
+    "receipt_reports_live_binding_stable": true,
+    "receipt_reports_no_original_file_changes": true,
+    "receipt_reports_private_exclusive_copies": true,
+    "receipt_sha256": "94b3156d286750baec48152f9e44353b7ad116e847e9cd405c5daf2a14791700",
+    "receipt_status": "PASS_PRIVATE_SMALL_INPUTS_PRESERVED",
+    "review_scope": "Read the public receipt and compare preserved class/adapter identities to the probe records; private copies were not independently opened by this reviewer."
+  },
+  "production_eligible": false,
+  "review_class": "source_and_retained_record_audit_no_additional_model_execution",
+  "reviewed_utc": "2026-11-05T03:49:28.480360+00:00",
+  "reviewer": "/root/wsp_literature",
+  "schema": "hepta.wsp.independent-pocket4-probe-record-review.v1",
+  "scope_limits": [
+    "This review did not rerun the model, access private weights, or independently reread the private source-class files; their byte checks are execution-record claims.",
+    "The aggregate norm denominator includes only the three inspected effective head weight matrices, not the full model or LoRA factors.",
+    "The first attempt stopped at the original allclose failure before final live-binding checks or the complete layer/restore report; the diagnostic completed those checks.",
+    "Finite deterministic synthetic probes do not establish behavior on the distribution of real encoder activations.",
+    "Memory-only restoration does not demonstrate production installation, rollout rollback, power-loss recovery, or live-trainer recovery.",
+    "CPU-F32 execution does not qualify the original ROCm mixed-precision path or the full encoder/trading model.",
+    "Complete waited child-process costs are retained for both attempts; supervisor setup/final receipt costs, transfer costs, historical training and energy remain outside those child totals.",
+    "The numerical diagnostic was selected after the original failure, so it is explanatory evidence rather than a fresh scientific holdout."
+  ],
+  "source_confirmation": {
+    "additional_forward_executed": false,
+    "masked_action_B_constructor": "nn.Parameter(torch.zeros(2, 1, device=base.weight.device))",
+    "method": "Parent independently reread the preserved private resident_model.py; this reviewer did not read the private source bytes.",
+    "parent_missing_action_adapter_implication": "The constructor B is zero, so the missing parent action adapter contributes exactly zero in these finite CPU probes; the action parent effective-weight delta is also reported as zero.",
+    "reporting_agent": "/root",
+    "resident_model_source_sha256": "5d4c0dc65fd5b765f4f01e949220854a352ef5cb2e984e5551d2470ec4f34cdb"
+  },
+  "updated_utc": "2026-11-05T03:54:27.327536+00:00"
+}

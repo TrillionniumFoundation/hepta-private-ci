@@ -1,0 +1,35 @@
+{
+  "base_checkpoint": {
+    "bytes": 643835514,
+    "head_tensor_count_loaded": 6,
+    "sha256": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204",
+    "streamed_full_hash": true
+  },
+  "cost": {
+    "scope": "worker excludes interpreter startup and final result write; supervisor accounts complete process",
+    "worker_cpu_seconds_through_result": 1.506873514,
+    "worker_peak_rss_bytes": 654192640,
+    "worker_wall_seconds_through_result": 3.1524651440558955
+  },
+  "failure": {
+    "message_code": "HEAD_FORWARD_REFERENCE_MISMATCH",
+    "type": "ValueError"
+  },
+  "finished_utc": "2026-11-05T03:41:17.410199+00:00",
+  "full_model_forward_executed": false,
+  "gpu_initialized": false,
+  "private_weights_or_rows_exported": false,
+  "production_mutated": false,
+  "protocol_sha256": "766393633fd857164ca48538b9231706b2aa6b17d2661236bdeb244593ac2a6a",
+  "schema": "hepta.wsp.laya_cpu_head_probe.v1",
+  "started_utc": "2026-11-05T03:41:14.257859+00:00",
+  "status": "FAILED_PRESERVED",
+  "trader_value_qualified": false,
+  "training_executed": false,
+  "versions": {
+    "dtype": "CPU_F32",
+    "numpy": "2.4.1",
+    "threads": 1,
+    "torch": "2.13.0+rocm7.14.0"
+  }
+}

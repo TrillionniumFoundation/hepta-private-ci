@@ -1,0 +1,51 @@
+{
+  "cgroup_limits_observed": {
+    "cpu_core_fraction": 0.5,
+    "cpu_period_us": 100000,
+    "cpu_quota_us": 50000,
+    "membership_sha256": "468338f84c4176c6da2fd493479a2a3c3b311f0d23e224b98ee330ff2459ddb7",
+    "memory_max_bytes": 3221225472,
+    "pids_max": 32
+  },
+  "cgroup_memory_max_bytes_expected": 3221225472,
+  "child_cpu_hard_seconds": 190,
+  "child_cpu_soft_seconds": 180,
+  "child_exit_code": 0,
+  "child_system_cpu_seconds": 1.393623,
+  "child_user_cpu_seconds": 31.352522,
+  "child_wall_timeout_seconds": 420,
+  "complete_child_peak_rss_bytes": 2770612224,
+  "elapsed_wall_seconds": 65.71059253497515,
+  "enclosing_cpu_quota_expected": "50%",
+  "files": {
+    "head_probe_helpers.py": {
+      "bytes": 23103,
+      "sha256": "dee2de37754edbebdc2c80b7ff1796ae8575d7e6d58c70ed4cd8267362f34f6c"
+    },
+    "probe_full_encoder.py": {
+      "bytes": 20360,
+      "sha256": "f4246efa5baf5dfdbd5fc21e1638f49f1af4038fd3b7644d41d8591e0d37d5ae"
+    },
+    "supervise_full_encoder.py": {
+      "bytes": 4904,
+      "sha256": "09c845903ac6b018bcfb37ea1ef01632a9c8953e64fcfeb55bc9cb116d301469"
+    }
+  },
+  "finished_utc": "2026-11-05T05:25:50.929755+00:00",
+  "gpu_execution_permitted": false,
+  "nested_worker_timings_must_not_be_added": true,
+  "schema": "hepta.wsp.full_encoder.supervisor.v1",
+  "started_utc": "2026-11-05T05:24:45.219198+00:00",
+  "status": "COMPLETED",
+  "streams": {
+    "stderr.log": {
+      "bytes": 110,
+      "sha256": "750c6c0facb6027d81ae964415a98f8fa181fed4ef4821b164bb0aa0c9404b48"
+    },
+    "stdout.log": {
+      "bytes": 149,
+      "sha256": "0b3ea1aaef0c132f35b425e9ee1a56dfe4de6b294474f6bdd1f89d773a6cd0d6"
+    }
+  },
+  "supervisor_cpu_seconds": 0.047204666
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.wsp.external_baseline_count_audit.v1",
+  "source_repository": "carlostoledo1891/cert-machine",
+  "source_commit": "76805430d50e396cae81a704bd17dc68152414fc",
+  "source_path": "certs/wsp-baseline.json",
+  "source_git_blob_sha1": "e3ce4652c2f3f152e582aefdd2db10c851264dac",
+  "source_generated_utc": "2026-11-03T18:58:52Z",
+  "root_independently_read_original_record": true,
+  "reaggregated_from_all_per_problem_sample_rows": {
+    "C1": {
+      "problems": 500,
+      "samples": 2000,
+      "CORRECT": 144,
+      "WRONG": 1849,
+      "REFUSED": 7,
+      "tokens": 61731466,
+      "cut": 1862
+    },
+    "C2": {
+      "problems": 500,
+      "samples": 2000,
+      "CORRECT": 445,
+      "WRONG": 1532,
+      "REFUSED": 23,
+      "tokens": 135529511,
+      "cut": 1499
+    },
+    "C3": {
+      "problems": 500,
+      "samples": 2000,
+      "CORRECT": 879,
+      "WRONG": 889,
+      "REFUSED": 232,
+      "tokens": 18114139,
+      "cut": 6
+    }
+  },
+  "all_reported_counts_matched": true,
+  "model_generations_rerun": false,
+  "grader_verdicts_independently_recomputed": false,
+  "full_generation_texts_retrieved": false,
+  "mit_common_grader_used": false,
+  "edited_by_configuration_factorial_complete": false,
+  "posthoc_best_of_first_and_all_samples_adopted": false,
+  "scope": "Independent count arithmetic over 6000 author-supplied sample verdict records, not a new model execution, answer regrading, or completed edited/unedited factorial."
+}

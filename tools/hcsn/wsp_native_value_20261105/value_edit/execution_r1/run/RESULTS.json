@@ -1,0 +1,554 @@
+{
+  "actual_trader_gain_qualified": false,
+  "all_E_numeric_pass": true,
+  "all_original_failures_retained": true,
+  "all_other_endpoint_numeric_pass": true,
+  "arithmetic_audit": {
+    "count": 5561606,
+    "max_abs_difference": 2.7977620220553945e-14,
+    "max_input_abs": 1.4296477208379161,
+    "max_output_abs": 3.494153045284628,
+    "nonfinite_count": 0
+  },
+  "cost_scope": "complete outer worker receipt includes imports and final writes; previous research, base training, agent and energy costs unknown/excluded explicitly",
+  "full_NDU_economic_net_gain_qualified": false,
+  "full_weight_global_optimum_qualified": false,
+  "gates": {
+    "11": {
+      "E": {
+        "accepted": false,
+        "chosen_model": {
+          "compressed_sha256": "fd4e8104066879320811d8276eb96ff524fcb224f80aab4dd20dacb4a9d628e9",
+          "model_sha256": "a561706ebbad90353f8f7558041a5836fed9ec43fadbb2f09c5258a33ef0fe02",
+          "path": "models/fit_11_E_gated.json.gz",
+          "protected_fields_unchanged": true,
+          "serialize_save_load_cpu_seconds": 0.15391672700002346
+        },
+        "delta": {
+          "iid": -0.014795023898577286,
+          "ood": 0.02031612274590497
+        },
+        "numeric_pass": true,
+        "rejected_restoration_verified": true
+      },
+      "G": {
+        "accepted": false,
+        "chosen_model": {
+          "compressed_sha256": "fd4e8104066879320811d8276eb96ff524fcb224f80aab4dd20dacb4a9d628e9",
+          "model_sha256": "a561706ebbad90353f8f7558041a5836fed9ec43fadbb2f09c5258a33ef0fe02",
+          "path": "models/fit_11_G_gated.json.gz",
+          "protected_fields_unchanged": true,
+          "serialize_save_load_cpu_seconds": 0.15245220699995343
+        },
+        "delta": {
+          "iid": -0.014795023898577286,
+          "ood": 0.02031612274590497
+        },
+        "numeric_pass": true,
+        "rejected_restoration_verified": true
+      }
+    },
+    "23": {
+      "E": {
+        "accepted": true,
+        "chosen_model": {
+          "compressed_sha256": "49069db5fd6e2eea28df52fc8a28259897fa4f18028fdfa8e2b91d1f0e78bc8f",
+          "model_sha256": "78fe6a28ba1749f8dba945f282ad07432d2d505087e6cdb03b364b21c299bb88",
+          "path": "models/fit_23_E_gated.json.gz",
+          "protected_fields_unchanged": true,
+          "serialize_save_load_cpu_seconds": 0.15806095400000686
+        },
+        "delta": {
+          "iid": 0.0026612636281033997,
+          "ood": 0.038974395691547314
+        },
+        "numeric_pass": true,
+        "rejected_restoration_verified": null
+      },
+      "G": {
+        "accepted": true,
+        "chosen_model": {
+          "compressed_sha256": "05e6e8dedaf649e35b27d71439c4745b10d5556710080b6ff6d66c55d415b1a8",
+          "model_sha256": "21d2fd664d6c91cda7799b50b9f9d410c9939fedf584c4c286d0fcc2ef660298",
+          "path": "models/fit_23_G_gated.json.gz",
+          "protected_fields_unchanged": true,
+          "serialize_save_load_cpu_seconds": 0.15037332700001116
+        },
+        "delta": {
+          "iid": 0.0026612636281033997,
+          "ood": 0.038974395691547314
+        },
+        "numeric_pass": true,
+        "rejected_restoration_verified": null
+      }
+    },
+    "37": {
+      "E": {
+        "accepted": false,
+        "chosen_model": {
+          "compressed_sha256": "1f4a3be85213f3fc221187dcb16308d033d033cccf48c86da7fec703e7bfb774",
+          "model_sha256": "cc849236225ba68c6e4c882dde665fa598c924386a8029bacdd35bac3cb8b668",
+          "path": "models/fit_37_E_gated.json.gz",
+          "protected_fields_unchanged": true,
+          "serialize_save_load_cpu_seconds": 0.1577928909999855
+        },
+        "delta": {
+          "iid": -0.011732131489722908,
+          "ood": -0.009562864818137146
+        },
+        "numeric_pass": true,
+        "rejected_restoration_verified": true
+      },
+      "G": {
+        "accepted": false,
+        "chosen_model": {
+          "compressed_sha256": "1f4a3be85213f3fc221187dcb16308d033d033cccf48c86da7fec703e7bfb774",
+          "model_sha256": "cc849236225ba68c6e4c882dde665fa598c924386a8029bacdd35bac3cb8b668",
+          "path": "models/fit_37_G_gated.json.gz",
+          "protected_fields_unchanged": true,
+          "serialize_save_load_cpu_seconds": 0.1542060340000262
+        },
+        "delta": {
+          "iid": -0.011732131489722908,
+          "ood": -0.009562864818137146
+        },
+        "numeric_pass": true,
+        "rejected_restoration_verified": true
+      }
+    },
+    "53": {
+      "E": {
+        "accepted": false,
+        "chosen_model": {
+          "compressed_sha256": "b412cd6743563caaa57d66399c46afdd7394bfd4fe4c964a84e221b3c23ffd24",
+          "model_sha256": "56f1440b6ac62ed8c35edbeabfff7503e8aab4c5d739f9dc1487f6845890e437",
+          "path": "models/fit_53_E_gated.json.gz",
+          "protected_fields_unchanged": true,
+          "serialize_save_load_cpu_seconds": 0.14990779099997553
+        },
+        "delta": {
+          "iid": -0.032853579223295765,
+          "ood": 0.03480165127131825
+        },
+        "numeric_pass": true,
+        "rejected_restoration_verified": true
+      },
+      "G": {
+        "accepted": false,
+        "chosen_model": {
+          "compressed_sha256": "b412cd6743563caaa57d66399c46afdd7394bfd4fe4c964a84e221b3c23ffd24",
+          "model_sha256": "56f1440b6ac62ed8c35edbeabfff7503e8aab4c5d739f9dc1487f6845890e437",
+          "path": "models/fit_53_G_gated.json.gz",
+          "protected_fields_unchanged": true,
+          "serialize_save_load_cpu_seconds": 0.15039971300001298
+        },
+        "delta": {
+          "iid": -0.032853579223295765,
+          "ood": 0.03480165127131825
+        },
+        "numeric_pass": true,
+        "rejected_restoration_verified": true
+      }
+    },
+    "71": {
+      "E": {
+        "accepted": false,
+        "chosen_model": {
+          "compressed_sha256": "8420c224f35255dfba2e30dbbd59947fe3e64281473877d9d47869bef995df6f",
+          "model_sha256": "3d4ebabbccc995f632d7e23e2c904e5e5ee38b50ce6b8df8eb57be8633b5e15b",
+          "path": "models/fit_71_E_gated.json.gz",
+          "protected_fields_unchanged": true,
+          "serialize_save_load_cpu_seconds": 0.15412334000001238
+        },
+        "delta": {
+          "iid": 0.017987762165353527,
+          "ood": -0.00700435559671031
+        },
+        "numeric_pass": true,
+        "rejected_restoration_verified": true
+      },
+      "G": {
+        "accepted": false,
+        "chosen_model": {
+          "compressed_sha256": "8420c224f35255dfba2e30dbbd59947fe3e64281473877d9d47869bef995df6f",
+          "model_sha256": "3d4ebabbccc995f632d7e23e2c904e5e5ee38b50ce6b8df8eb57be8633b5e15b",
+          "path": "models/fit_71_G_gated.json.gz",
+          "protected_fields_unchanged": true,
+          "serialize_save_load_cpu_seconds": 0.15818746700000474
+        },
+        "delta": {
+          "iid": 0.017987762165353527,
+          "ood": -0.00700435559671031
+        },
+        "numeric_pass": true,
+        "rejected_restoration_verified": true
+      }
+    }
+  },
+  "internal_cpu_seconds_before_final_write": 534.692746729,
+  "internal_wall_seconds_before_final_write": 536.3315689980009,
+  "new_training_fit_count": 0,
+  "primary": {
+    "E_gated_iid": {
+      "benefit_pass": false,
+      "delta": 0.004837651440044705,
+      "familywise_95_conditional_interval": [
+        -0.01207190410293426,
+        0.021747206983023668
+      ]
+    },
+    "E_gated_ood": {
+      "benefit_pass": false,
+      "delta": -0.0024837918612679115,
+      "familywise_95_conditional_interval": [
+        -0.011165652668279824,
+        0.006198068945744
+      ]
+    }
+  },
+  "primary_family_size": 2,
+  "protocol_sha256": "226713c4ceab5ebf4da08e62d495a529ddb41a461bec1ce3f7f6ffbecab981dd",
+  "reused_training_fit_count": 5,
+  "source_unchanged": true,
+  "statistical_scope": "conditional model-assumption confirmation for five pre-existing training fits; not new-fit replication or distribution-free guarantee",
+  "structural_controls_are_not_weight_gains": true,
+  "summary": {
+    "iid": {
+      "C": {
+        "delta": 0.0,
+        "mean": 0.22652224096483073,
+        "paired_95_descriptive": [
+          0.0,
+          0.0
+        ],
+        "per_fit": [
+          0.19582224594318262,
+          0.2077906899910929,
+          0.2661753024742327,
+          0.2373586969885645,
+          0.2254642694270809
+        ]
+      },
+      "E": {
+        "delta": 0.022541839430513744,
+        "mean": 0.24906408039534447,
+        "paired_95_descriptive": [
+          0.004015259676403239,
+          0.04106841918462425
+        ],
+        "per_fit": [
+          0.23356179249574427,
+          0.23197894719131643,
+          0.27083091013468297,
+          0.24745285957564908,
+          0.2614958925793296
+        ]
+      },
+      "EA": {
+        "delta": 0.012770875970387808,
+        "mean": 0.23929311693521854,
+        "paired_95_descriptive": [
+          -0.007996848727598106,
+          0.03353860066837372
+        ],
+        "per_fit": [
+          0.23541181802871392,
+          0.21220777949490097,
+          0.2705199169980439,
+          0.23489796328721868,
+          0.2434281068672152
+        ]
+      },
+      "EU": {
+        "delta": 0.0,
+        "mean": 0.22652224096483073,
+        "paired_95_descriptive": [
+          0.0,
+          0.0
+        ],
+        "per_fit": [
+          0.19582224594318262,
+          0.2077906899910929,
+          0.2661753024742327,
+          0.2373586969885645,
+          0.2254642694270809
+        ]
+      },
+      "E_gated": {
+        "delta": 0.004837651440044705,
+        "mean": 0.23135989240487542,
+        "paired_95_descriptive": [
+          -0.00859382222132047,
+          0.01826912510140988
+        ],
+        "per_fit": [
+          0.19582224594318262,
+          0.23197894719131643,
+          0.2661753024742327,
+          0.2373586969885645,
+          0.2254642694270809
+        ]
+      },
+      "G": {
+        "delta": 0.0226703480712551,
+        "mean": 0.24919258903608582,
+        "paired_95_descriptive": [
+          0.00393831408612717,
+          0.041402382056383025
+        ],
+        "per_fit": [
+          0.23420433569945104,
+          0.23197894719131643,
+          0.27083091013468297,
+          0.24745285957564908,
+          0.2614958925793296
+        ]
+      },
+      "G_gated": {
+        "delta": 0.004837651440044705,
+        "mean": 0.23135989240487542,
+        "paired_95_descriptive": [
+          -0.00859382222132047,
+          0.01826912510140988
+        ],
+        "per_fit": [
+          0.19582224594318262,
+          0.23197894719131643,
+          0.2661753024742327,
+          0.2373586969885645,
+          0.2254642694270809
+        ]
+      },
+      "J": {
+        "delta": 0.1389499020373433,
+        "mean": 0.365472143002174,
+        "paired_95_descriptive": [
+          0.12569389630757313,
+          0.15220590776711349
+        ],
+        "per_fit": [
+          0.3333291683113239,
+          0.3475984059159426,
+          0.3995290207496258,
+          0.3652100504910807,
+          0.3816940695428971
+        ]
+      },
+      "M": {
+        "delta": -0.027232143082812604,
+        "mean": 0.19929009788201812,
+        "paired_95_descriptive": [
+          -0.03836532370260992,
+          -0.016098962463015284
+        ],
+        "per_fit": [
+          0.18022613079694977,
+          0.1847886319622331,
+          0.23902729155149366,
+          0.1976194365835891,
+          0.19478899851582496
+        ]
+      },
+      "P": {
+        "delta": 0.001515467785799457,
+        "mean": 0.22803770875063017,
+        "paired_95_descriptive": [
+          -0.007655118144268871,
+          0.010686053715867784
+        ],
+        "per_fit": [
+          0.19304161907596123,
+          0.2121348249923437,
+          0.2596548981456659,
+          0.2372224475591126,
+          0.23813475398006748
+        ]
+      },
+      "R": {
+        "delta": -0.07133898505906774,
+        "mean": 0.15518325590576296,
+        "paired_95_descriptive": [
+          -0.15027221240670283,
+          0.007594242288567338
+        ],
+        "per_fit": [
+          0.10165398434300453,
+          0.21284050543703625,
+          0.2538020595340138,
+          0.10926039769935603,
+          0.09835933251540424
+        ]
+      }
+    },
+    "ood": {
+      "C": {
+        "delta": 0.0,
+        "mean": 0.12753670792337374,
+        "paired_95_descriptive": [
+          0.0,
+          0.0
+        ],
+        "per_fit": [
+          0.16455231267712206,
+          0.09182612320220558,
+          0.1239219580382993,
+          0.08159937250999297,
+          0.1757837731892489
+        ]
+      },
+      "E": {
+        "delta": -0.0022107531675685356,
+        "mean": 0.1253259547558052,
+        "paired_95_descriptive": [
+          -0.019934762937705193,
+          0.015513256602568123
+        ],
+        "per_fit": [
+          0.1480618669027397,
+          0.07940716389586602,
+          0.12814584319004907,
+          0.10071468697036166,
+          0.17030021282000968
+        ]
+      },
+      "EA": {
+        "delta": 0.0007523305594570512,
+        "mean": 0.1282890384828308,
+        "paired_95_descriptive": [
+          -0.017782422235378494,
+          0.0192870833542926
+        ],
+        "per_fit": [
+          0.14854965590774943,
+          0.08298049837989929,
+          0.1371232685727572,
+          0.10085391266280555,
+          0.1719378568909426
+        ]
+      },
+      "EU": {
+        "delta": 0.0,
+        "mean": 0.12753670792337374,
+        "paired_95_descriptive": [
+          0.0,
+          0.0
+        ],
+        "per_fit": [
+          0.16455231267712206,
+          0.09182612320220558,
+          0.1239219580382993,
+          0.08159937250999297,
+          0.1757837731892489
+        ]
+      },
+      "E_gated": {
+        "delta": -0.0024837918612679115,
+        "mean": 0.12505291606210583,
+        "paired_95_descriptive": [
+          -0.009379903616815321,
+          0.004412319894279497
+        ],
+        "per_fit": [
+          0.16455231267712206,
+          0.07940716389586602,
+          0.1239219580382993,
+          0.08159937250999297,
+          0.1757837731892489
+        ]
+      },
+      "G": {
+        "delta": -0.0022107531675685356,
+        "mean": 0.1253259547558052,
+        "paired_95_descriptive": [
+          -0.019934762937705193,
+          0.015513256602568123
+        ],
+        "per_fit": [
+          0.1480618669027397,
+          0.07940716389586602,
+          0.12814584319004907,
+          0.10071468697036166,
+          0.17030021282000968
+        ]
+      },
+      "G_gated": {
+        "delta": -0.0024837918612679115,
+        "mean": 0.12505291606210583,
+        "paired_95_descriptive": [
+          -0.009379903616815321,
+          0.004412319894279497
+        ],
+        "per_fit": [
+          0.16455231267712206,
+          0.07940716389586602,
+          0.1239219580382993,
+          0.08159937250999297,
+          0.1757837731892489
+        ]
+      },
+      "J": {
+        "delta": 0.18528327758094248,
+        "mean": 0.3128199855043162,
+        "paired_95_descriptive": [
+          0.14576150264824556,
+          0.22480505251363941
+        ],
+        "per_fit": [
+          0.34277771239799004,
+          0.2827779514090851,
+          0.3274008213576736,
+          0.3003021521748398,
+          0.31084129018199264
+        ]
+      },
+      "M": {
+        "delta": -0.039166326206906174,
+        "mean": 0.08837038171646759,
+        "paired_95_descriptive": [
+          -0.090432604903907,
+          0.012099952490094663
+        ],
+        "per_fit": [
+          0.07315532950809747,
+          0.025996596792798192,
+          0.10139101087516195,
+          0.09769892039382755,
+          0.14361005101245278
+        ]
+      },
+      "P": {
+        "delta": 0.01437769980059223,
+        "mean": 0.141914407723966,
+        "paired_95_descriptive": [
+          -0.037847045925770074,
+          0.06660244552695453
+        ],
+        "per_fit": [
+          0.16546468067567466,
+          0.08411450308624499,
+          0.12368222467535779,
+          0.170735691627329,
+          0.16557493855522354
+        ]
+      },
+      "R": {
+        "delta": -0.047394452839115975,
+        "mean": 0.08014225508425779,
+        "paired_95_descriptive": [
+          -0.10571447616680801,
+          0.010925570488576057
+        ],
+        "per_fit": [
+          0.059982778451215225,
+          0.056634291883618015,
+          0.08708037085502288,
+          0.09990610589512962,
+          0.09710772833630323
+        ]
+      }
+    }
+  },
+  "test_cpu_seconds": 168.19312847499998,
+  "validation_cpu_seconds": 65.66040759599997,
+  "weight_efficacy_qualified": false
+}

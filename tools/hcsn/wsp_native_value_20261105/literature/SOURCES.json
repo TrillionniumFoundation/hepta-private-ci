@@ -1,0 +1,627 @@
+{
+  "schema": "hepta.wsp-literature-review.v1",
+  "reviewed_at_utc": "2026-11-05T03:33:35Z",
+  "user_date": "2026-11-04",
+  "user_timezone": "America/New_York",
+  "review_class": "primary_source_read_and_numeric_transcription_only",
+  "new_model_execution": false,
+  "new_checkpoint_edit": false,
+  "new_training": false,
+  "production_activation": false,
+  "scientific_benefit_qualified": false,
+  "sources": [
+    {
+      "id": "MIT_HARNESS",
+      "repository": "RikiyaT/lm_understand-logs",
+      "revision": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+      "path": "README.md",
+      "git_blob_sha1": "63404d03e357ad223fe971740919e221d6297215",
+      "url": "https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/README.md",
+      "evidence_type": "authors_method_and_release_description",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Reported runs only; earlier prompt trials are excluded."
+      ]
+    },
+    {
+      "id": "MIT_EXP8_METHOD",
+      "repository": "RikiyaT/lm_understand-logs",
+      "revision": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+      "path": "exp8_math/README.md",
+      "git_blob_sha1": "9232f3da94a9fa6d6b9bc83eef7c8766e48120e5",
+      "url": "https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/README.md",
+      "evidence_type": "authors_method_and_cost_record",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "One reported edit-discovery run per request budget.",
+        "Complete original forward/agent harness and intermediate work folders are not released.",
+        "Reported 20.3 hours for p50c includes service outage waiting; it is not GPU compute time."
+      ]
+    },
+    {
+      "id": "MIT_EXP8_HISTORY",
+      "repository": "RikiyaT/lm_understand-logs",
+      "revision": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+      "path": "exp8_math/runs/p50c/work_notes/experiment_history.md",
+      "git_blob_sha1": "c361b3b48e87db549482ab8d67de067c83196017",
+      "url": "https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/work_notes/experiment_history.md",
+      "evidence_type": "authors_edit_search_history",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Read-only inspection of retained notes; no new direction-discovery experiment."
+      ]
+    },
+    {
+      "id": "MIT_EXP8_MANIFEST",
+      "repository": "RikiyaT/lm_understand-logs",
+      "revision": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+      "path": "exp8_math/runs/p50c/edit/manifest.json",
+      "git_blob_sha1": "d78897bbfc9d626682d4e42a9cefd95a93aed069",
+      "url": "https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/edit/manifest.json",
+      "evidence_type": "authors_rounded_tensor_identity",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Hash metadata inspected; tensors were not independently rebuilt by this review."
+      ]
+    },
+    {
+      "id": "MIT_EXP8_BASE_SCORES",
+      "repository": "RikiyaT/lm_understand-logs",
+      "revision": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+      "path": "exp8_math/eval/unedited/merged.json",
+      "git_blob_sha1": "25dc7585fd36ecbe0ddac112434b77dbbb9deca4",
+      "url": "https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/eval/unedited/merged.json",
+      "evidence_type": "authors_generated_answer_scores",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Source-record scores; no model reexecution."
+      ]
+    },
+    {
+      "id": "MIT_EXP8_EDIT_SCORES",
+      "repository": "RikiyaT/lm_understand-logs",
+      "revision": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+      "path": "exp8_math/eval/p50c/merged.json",
+      "git_blob_sha1": "4e87efcd1ff0720be63d15c8866678353618aa1e",
+      "url": "https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/eval/p50c/merged.json",
+      "evidence_type": "authors_generated_answer_scores",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Source-record scores; no model reexecution."
+      ]
+    },
+    {
+      "id": "MIT_EXP8_FINAL",
+      "repository": "RikiyaT/lm_understand-logs",
+      "revision": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+      "path": "exp8_math/runs/p50c/final_answer.md",
+      "git_blob_sha1": "a89bf809b386f87400ef1b671824292501920c4f",
+      "url": "https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/runs/p50c/final_answer.md",
+      "evidence_type": "authors_final_agent_report",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Practice confirmation differs from the unseen benchmark evaluation."
+      ]
+    },
+    {
+      "id": "MIT_GEMMA_NEGATIVE",
+      "repository": "RikiyaT/lm_understand-logs",
+      "revision": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+      "path": "exp8_math/gemma_followup/README.md",
+      "git_blob_sha1": "221848c81fc04bd37b671b95829641645372df9b",
+      "url": "https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/gemma_followup/README.md",
+      "evidence_type": "authors_negative_control",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Format-agnostic Gemma grading differs from Qwen strict boxed grading.",
+        "No established capability gain; not proof that all future edits must fail."
+      ]
+    },
+    {
+      "id": "MIT_APPLY_EDIT",
+      "repository": "RikiyaT/lm_understand-logs",
+      "revision": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+      "path": "exp8_math/code/apply_edit.py",
+      "git_blob_sha1": "cc1d7c249ece802bd2e7b5907b082caeec716923",
+      "url": "https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/exp8_math/code/apply_edit.py",
+      "evidence_type": "authors_rebuild_source",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Source read only; execution is separate from capability evaluation."
+      ]
+    },
+    {
+      "id": "MIT_LICENSE",
+      "repository": "RikiyaT/lm_understand-logs",
+      "revision": "4d09ba6d6a7e891dd8063974dfe81b3d78e3494f",
+      "path": "LICENSE",
+      "git_blob_sha1": "5137aa7a114872294fa20195ef84a89dfd0e1b67",
+      "url": "https://github.com/RikiyaT/lm_understand-logs/blob/4d09ba6d6a7e891dd8063974dfe81b3d78e3494f/LICENSE",
+      "evidence_type": "license",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": []
+    },
+    {
+      "id": "BASELINE_PREREGISTRATION",
+      "repository": "carlostoledo1891/cert-machine",
+      "revision": "76805430d50e396cae81a704bd17dc68152414fc",
+      "path": "notes/wsp-stage3-preregistration-2026-11-02.md",
+      "git_blob_sha1": "3b435d32d7687e61c7f344c95559b88f9964265a",
+      "url": "https://github.com/carlostoledo1891/cert-machine/blob/76805430d50e396cae81a704bd17dc68152414fc/notes/wsp-stage3-preregistration-2026-11-02.md",
+      "evidence_type": "independent_auditor_preregistration_and_amendment",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "The November 3 amendment was made after C1 started, and states it preceded any C2/C3 tokens.",
+        "Auditor's interpretation rule is not adopted as a universal efficacy criterion."
+      ]
+    },
+    {
+      "id": "BASELINE_RESULTS",
+      "repository": "carlostoledo1891/cert-machine",
+      "revision": "76805430d50e396cae81a704bd17dc68152414fc",
+      "path": "certs/wsp-baseline.json",
+      "git_blob_sha1": "e3ce4652c2f3f152e582aefdd2db10c851264dac",
+      "url": "https://github.com/carlostoledo1891/cert-machine/blob/76805430d50e396cae81a704bd17dc68152414fc/certs/wsp-baseline.json",
+      "evidence_type": "independent_auditor_no_edit_execution_record",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Read numeric records; generated answers and model were not rerun in this review.",
+        "One run per condition; 2000 generations are not 2000 independently discovered edits.",
+        "Custom three-valued exact grader differs from MIT's math-verify.",
+        "C4 edited-with-recommended-thinking-settings arm was not run.",
+        "Do not choose max(first-sample, all-sample) post hoc as this review's estimator."
+      ]
+    },
+    {
+      "id": "TURING_README",
+      "repository": "alan-turing-institute/weights_editing",
+      "revision": "9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca",
+      "path": "README.md",
+      "git_blob_sha1": "4308f8d749e60e3e8b78879d4b36f5816ef5e911",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/README.md",
+      "evidence_type": "independent_team_replication_and_followup_report",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Program policies have one discovery run per reported cell; network means generally use three.",
+        "Custom-game mechanics and poisoning findings are small pilots.",
+        "This review did not run the published networks, train PPO, or audit every raw run."
+      ]
+    },
+    {
+      "id": "TURING_PLAN",
+      "repository": "alan-turing-institute/weights_editing",
+      "revision": "9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca",
+      "path": "PLAN.md",
+      "git_blob_sha1": "9c520b1092102da98a4fb5d627de9a737f94512b",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/PLAN.md",
+      "evidence_type": "independent_team_scope_and_cost_limitations",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Experiment 8 is explicitly outside the executed plan; its SPEC setup notes do not establish Qwen replication.",
+        "Some model prices and timed-out call usage are absent."
+      ]
+    },
+    {
+      "id": "TURING_LICENSE",
+      "repository": "alan-turing-institute/weights_editing",
+      "revision": "9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca",
+      "path": "LICENSE",
+      "git_blob_sha1": "873f5193f5948ea247571a1ab51155e0b8a64ace",
+      "url": "https://github.com/alan-turing-institute/weights_editing/blob/9b4a7f1b23a1cc2e1290e4c73ebcb77e87a285ca/LICENSE",
+      "evidence_type": "license",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": []
+    },
+    {
+      "id": "CLINICAL_PAPER",
+      "repository": "hnusrat1/weightspace-rt",
+      "path": "paper/paper.md",
+      "revision": "19506e63f3ec859624ead33495469bc760e079ea",
+      "git_blob_sha1": "2f0749e01a1c4c9ade14f8ff8ff5e817bf9d54f8",
+      "url": "https://github.com/hnusrat1/weightspace-rt/blob/19506e63f3ec859624ead33495469bc760e079ea/paper/paper.md",
+      "evidence_type": "authors_preprint_full_text",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Not peer reviewed; reported external experiments not rerun here.",
+        "Healthy-control, dtype, faulted-harness, forcing and incomplete cost-accounting limitations must accompany repair results."
+      ]
+    },
+    {
+      "id": "CLINICAL_README",
+      "repository": "hnusrat1/weightspace-rt",
+      "path": "README.md",
+      "revision": "19506e63f3ec859624ead33495469bc760e079ea",
+      "git_blob_sha1": "183b3b359273f8bc4a0c5cd5eaa5e4117dd9bdad",
+      "url": "https://github.com/hnusrat1/weightspace-rt/blob/19506e63f3ec859624ead33495469bc760e079ea/README.md",
+      "evidence_type": "authors_reproduction_and_limitations",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Reproduction scripts overwrite analysis outputs; the full script also reruns gradient comparators and needs at least 8GB free RAM.",
+        "Only final harness version is included; run logs preserve earlier failures and changed procedures."
+      ]
+    },
+    {
+      "id": "CLINICAL_PANEL",
+      "repository": "hnusrat1/weightspace-rt",
+      "path": "data/table2_panel.csv",
+      "revision": "19506e63f3ec859624ead33495469bc760e079ea",
+      "git_blob_sha1": "239f32e1654b34efc19cbf50a9faf9307dafd12b",
+      "url": "https://github.com/hnusrat1/weightspace-rt/blob/19506e63f3ec859624ead33495469bc760e079ea/data/table2_panel.csv",
+      "evidence_type": "authors_panel_result_table",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "The paper's table data, not new measurement or independent replication.",
+        "A diagnosed flaw and a globally correct or dtype-safe network are distinct claims."
+      ]
+    },
+    {
+      "id": "CLINICAL_REPAIRS",
+      "repository": "hnusrat1/weightspace-rt",
+      "path": "data/fig3_repairs.csv",
+      "revision": "19506e63f3ec859624ead33495469bc760e079ea",
+      "git_blob_sha1": "50be760aa0386e5a89c08cd149f9e50c70621879",
+      "url": "https://github.com/hnusrat1/weightspace-rt/blob/19506e63f3ec859624ead33495469bc760e079ea/data/fig3_repairs.csv",
+      "evidence_type": "authors_per_network_repair_and_finetune_results",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Five fine-tuning seeds per network are distinct from five independent weight-edit discoveries.",
+        "Finite test results do not constitute whole-input-domain verification."
+      ]
+    },
+    {
+      "id": "CLINICAL_RUNS",
+      "repository": "hnusrat1/weightspace-rt",
+      "path": "runs_table.csv",
+      "revision": "19506e63f3ec859624ead33495469bc760e079ea",
+      "git_blob_sha1": "11c0245330c7c0e559e0cc669bdf7997813400b1",
+      "url": "https://github.com/hnusrat1/weightspace-rt/blob/19506e63f3ec859624ead33495469bc760e079ea/runs_table.csv",
+      "evidence_type": "authors_per_audit_settings_and_outcomes",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Some token fields omit earlier phases or are unavailable; table is not a full compute/dollar ledger.",
+        "Repeated or forced audits cannot be collapsed into one clean first attempt."
+      ]
+    },
+    {
+      "id": "REA_README",
+      "repository": "morluto/rea",
+      "path": "README.md",
+      "revision": "71f680d7c1aa7a45ba0325fe87b104744b0c105f",
+      "git_blob_sha1": "a6343e167a3c91b210b7252e32467d69a6651d86",
+      "url": "https://github.com/morluto/rea/blob/71f680d7c1aa7a45ba0325fe87b104744b0c105f/README.md",
+      "evidence_type": "official_reverse_engineering_tool_description",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Software reverse-engineering evidence is not evidence of neural-circuit understanding or optimized model value."
+      ]
+    },
+    {
+      "id": "REA_CONTRACT",
+      "repository": "morluto/rea",
+      "path": "docs/mcp-contracts.md",
+      "revision": "71f680d7c1aa7a45ba0325fe87b104744b0c105f",
+      "git_blob_sha1": "db8159db46af8354bc86520122a1d0686b57c5f7",
+      "url": "https://github.com/morluto/rea/blob/71f680d7c1aa7a45ba0325fe87b104744b0c105f/docs/mcp-contracts.md",
+      "evidence_type": "official_mcp_evidence_and_coverage_contract",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "Architecture inspiration only; no REA code installed, copied or executed here.",
+        "Retained evidence integrity and complete static traversal do not imply runtime behavior equivalence."
+      ]
+    },
+    {
+      "id": "REA_LICENSE",
+      "repository": "morluto/rea",
+      "path": "LICENSE",
+      "revision": "71f680d7c1aa7a45ba0325fe87b104744b0c105f",
+      "git_blob_sha1": "2d476d24fa5a9ae2ab35e5fd121494049eb2ee5d",
+      "url": "https://github.com/morluto/rea/blob/71f680d7c1aa7a45ba0325fe87b104744b0c105f/LICENSE",
+      "evidence_type": "official_license",
+      "read_in_this_review": true,
+      "model_executed_in_this_review": false,
+      "limits": [
+        "MIT license; no upstream code imported by this literature addendum."
+      ]
+    }
+  ],
+  "reported_results": {
+    "mit": {
+      "source_ids": [
+        "MIT_EXP8_BASE_SCORES",
+        "MIT_EXP8_EDIT_SCORES",
+        "MIT_EXP8_METHOD",
+        "MIT_EXP8_MANIFEST"
+      ],
+      "base": {
+        "math500": {
+          "acc": 0.079,
+          "cut_share": 0.93,
+          "mean_tokens": 30868.4345,
+          "problems": 500,
+          "complete": true,
+          "acc_lenient": null
+        },
+        "gsm8k": {
+          "acc": 0.13836239575435935,
+          "cut_share": 0.8749052312357847,
+          "mean_tokens": 29288.653904473085,
+          "problems": 1319,
+          "complete": true,
+          "acc_lenient": null
+        },
+        "ifeval": {
+          "acc": 0.2097966728280961,
+          "cut_share": 0.7486136783733827,
+          "mean_tokens": 25296.210720887248,
+          "problems": 541,
+          "complete": true,
+          "acc_lenient": 0.2097966728280961
+        }
+      },
+      "p50c": {
+        "math500": {
+          "acc": 0.481,
+          "cut_share": 0.3305,
+          "mean_tokens": 22037.1475,
+          "problems": 500,
+          "complete": true,
+          "acc_lenient": null
+        },
+        "gsm8k": {
+          "acc": 0.6709628506444276,
+          "cut_share": 0.07240333586050038,
+          "mean_tokens": 11993.395375284306,
+          "problems": 1319,
+          "complete": true,
+          "acc_lenient": null
+        },
+        "ifeval": {
+          "acc": 0.6229205175600739,
+          "cut_share": 0.022181146025878003,
+          "mean_tokens": 4240.579482439926,
+          "problems": 541,
+          "complete": true,
+          "acc_lenient": 0.6229205175600739
+        }
+      },
+      "changed_entries_bf16": 130188,
+      "addressed_entries": 131072,
+      "forward_requests": 50,
+      "cli_turns": 158,
+      "python_runs": 80,
+      "wall_hours": 20.3,
+      "included_service_wait_hours": 4.7,
+      "base_revision": "2fc06364715b967f1860aea9cf38778875588b17"
+    },
+    "no_edit_baseline": {
+      "generated_at_utc": "2026-11-03T18:58:52Z",
+      "source_id": "BASELINE_RESULTS",
+      "target_model": "unedited Qwen/Qwen3.5-0.8B",
+      "target_model_revision": "2fc06364715b967f1860aea9cf38778875588b17",
+      "n_problems": 500,
+      "samples_per_problem": 4,
+      "discovery_runs_per_condition": 1,
+      "conditions": {
+        "C1": {
+          "thinking": true,
+          "sampling": {
+            "temperature": 0.6,
+            "top_p": 0.95,
+            "top_k": 20,
+            "presence_penalty": 1.5,
+            "max_tokens": 32768,
+            "seed": 0
+          },
+          "correct": 144,
+          "wrong": 1849,
+          "refused": 7,
+          "n": 2000,
+          "accuracy_refused_counted_wrong": 0.072,
+          "accuracy_among_decided": 0.07225288509784245,
+          "cut_share": 0.931,
+          "total_generated_tokens": 61731466,
+          "recorded_seconds": 4984,
+          "first_sample_n": 500,
+          "first_sample_accuracy_refused_counted_wrong": 0.078,
+          "gpu": "NVIDIA H200",
+          "versions": {
+            "vllm": "0.33.0",
+            "transformers": "5.20.2",
+            "torch": "2.14.0+cu130",
+            "cuda": "13.0",
+            "python": "3.12.3"
+          }
+        },
+        "C2": {
+          "thinking": true,
+          "sampling": {
+            "temperature": 1,
+            "top_p": 0.95,
+            "top_k": 20,
+            "min_p": 0,
+            "presence_penalty": 1.5,
+            "max_tokens": 81920,
+            "seed": 0
+          },
+          "correct": 445,
+          "wrong": 1532,
+          "refused": 23,
+          "n": 2000,
+          "accuracy_refused_counted_wrong": 0.2225,
+          "accuracy_among_decided": 0.22508851795649976,
+          "cut_share": 0.7495,
+          "total_generated_tokens": 135529511,
+          "recorded_seconds": 21590,
+          "first_sample_n": 500,
+          "first_sample_accuracy_refused_counted_wrong": 0.22,
+          "gpu": "NVIDIA H200",
+          "versions": {
+            "vllm": "0.33.0",
+            "transformers": "5.20.2",
+            "torch": "2.14.0+cu130",
+            "cuda": "13.0",
+            "python": "3.12.3"
+          }
+        },
+        "C3": {
+          "thinking": false,
+          "sampling": {
+            "temperature": 1,
+            "top_p": 1,
+            "top_k": 20,
+            "min_p": 0,
+            "presence_penalty": 2,
+            "max_tokens": 32768,
+            "seed": 0
+          },
+          "correct": 879,
+          "wrong": 889,
+          "refused": 232,
+          "n": 2000,
+          "accuracy_refused_counted_wrong": 0.4395,
+          "accuracy_among_decided": 0.4971719457013575,
+          "cut_share": 0.003,
+          "total_generated_tokens": 18114139,
+          "recorded_seconds": 991,
+          "first_sample_n": 500,
+          "first_sample_accuracy_refused_counted_wrong": 0.456,
+          "gpu": "NVIDIA H200",
+          "versions": {
+            "vllm": "0.33.0",
+            "transformers": "5.20.2",
+            "torch": "2.14.0+cu130",
+            "cuda": "13.0",
+            "python": "3.12.3"
+          }
+        }
+      }
+    },
+    "turing": {
+      "source_ids": [
+        "TURING_README",
+        "TURING_PLAN"
+      ],
+      "gpt_6_astra": {
+        "breakout": {
+          "python_policy_score": 695.7,
+          "program_discoveries": 1,
+          "network_mean_score": 457,
+          "network_discoveries": 3
+        },
+        "asterix": {
+          "python_policy_score": 127,
+          "program_discoveries": 1,
+          "network_mean_score": 66.2,
+          "network_discoveries": 3
+        }
+      },
+      "cost_complete": false
+    },
+    "clinical_preprint": {
+      "classification": "External report, not independently executed here",
+      "arxiv_version": "2611.05341v1",
+      "submitted_utc": "2026-11-03T18:41:15Z",
+      "peer_reviewed": false,
+      "auditor_model_alias": "claude-opus-5-5",
+      "base_network_parameter_counts": [
+        433,
+        1377,
+        4801
+      ],
+      "flawed_panel_networks": 18,
+      "diagnosed_panel_flaws": 16,
+      "confound_and_drift_diagnosed": 15,
+      "confound_and_drift_total": 15,
+      "trigger_diagnosed": 1,
+      "trigger_total": 3,
+      "diagnosed_repairs": 16,
+      "median_parameters_changed_among_diagnosed_repairs": 3,
+      "healthy_networks_cleared_without_forcing": 2,
+      "healthy_networks_examined": 5,
+      "healthy_false_alarm_new_errors": 2018,
+      "fine_tuning_seeds_per_network_per_setting": 5,
+      "fine_tuning_reported_seconds_per_run": {
+        "constant_rate": 0.6,
+        "original_training_schedule_approximate": 3.0
+      },
+      "fine_tuning_time_is_author_report_not_full_pipeline_cost": true,
+      "dtype_failure": "Every repair that wrote weights of at least 1e5 failed under FP16 in the reported study.",
+      "evaluation_pool_requests": 416809,
+      "released_audits": 71,
+      "initial_max_effort_audits_without_answers": 7,
+      "initial_max_effort_minutes_per_audit": 65.8,
+      "raw_repair_csv_rows": 216,
+      "raw_repair_csv_method_counts": {
+        "language_model": 18,
+        "scripted_repair": 18,
+        "finetune_constant_rate": 90,
+        "finetune_training_schedule": 90
+      },
+      "full_cost_available": false,
+      "diagnosis_is_not_whole_domain_certification": true,
+      "sources": [
+        "CLINICAL_PAPER",
+        "CLINICAL_README",
+        "CLINICAL_PANEL",
+        "CLINICAL_REPAIRS",
+        "CLINICAL_RUNS"
+      ]
+    }
+  },
+  "not_used_as_pinned_evidence": [
+    {
+      "url": "https://huggingface.co/ML-Intern-lab/Qwen3.5-0.8B-weight-space-programming",
+      "reason": "Model card read in this session, but an immutable repository revision and eval files could not be independently retrieved with the available tool. Its reported 51.0% edited score is excluded from this review's quantitative evidence table. Do not identify it with another owner's model repository solely from similar content."
+    },
+    {
+      "url": "https://arxiv.org/abs/2611.04268v1",
+      "html_url": "https://arxiv.org/html/2611.04268v1",
+      "version": "2611.04268v1",
+      "submitted_utc": "2026-11-03T03:56:44Z",
+      "title": "Weight-Space Programming for Improving Image-Restoration Diffusion Models: Technical Conjectures and a Recursive Improvement Loop",
+      "authors": [
+        "Zhuoran Zheng",
+        "Doubao"
+      ],
+      "primary_source_read": true,
+      "classification": "Conjectural proposal, not empirical validation",
+      "git_or_download_sha_obtained": false,
+      "reason": "Primary versioned manuscript read, but no Git/download byte identity obtained; excluded from SHA-pinned quantitative evidence."
+    }
+  ],
+  "review_inferences": [
+    "Strong no-edit configuration and code-policy baselines are required before attributing benefit to weight editing.",
+    "Replay, independent edit discovery, and transfer to a new Hepta checkpoint are separate claims.",
+    "Zero backward passes does not mean zero search, editor inference, observations, failed attempts, or historical training cost.",
+    "A sparse weight count is not a guarantee of small effect or preservation.",
+    "Mathematical certificates must retain their fixed subproblem, arithmetic and provenance scope.",
+    "Sparse parameter count alone does not establish lower complete optimization cost; the clinical WSP paper reports successful second-scale fine-tuning beside minute-scale weight audits.",
+    "Model repair must be qualified under the intended dtype; successful high-precision edits can fail under FP16.",
+    "REA offers evidence-identity and bounded-coverage architecture patterns, not neural-circuit or global-value guarantees."
+  ],
+  "additional_source_check_utc": "2026-11-05T04:00:08.985249+00:00",
+  "additional_review_date": "2026-11-05",
+  "additional_review_timezone": "Etc/UTC"
+}

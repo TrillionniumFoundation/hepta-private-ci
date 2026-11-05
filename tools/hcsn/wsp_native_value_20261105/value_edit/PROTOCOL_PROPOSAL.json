@@ -1,0 +1,132 @@
+{
+  "status": "proposal_not_frozen_no_new_holdouts_generated",
+  "written_utc": "2026-11-05T03:34:17.702968+00:00",
+  "name": "terminal_anchored_occupancy_policy_improvement",
+  "novelty": "One-step incumbent-policy advantages calibrated against the unchanged terminal decoder, with exact own-law incumbent occupancy weighting; not another 3-bias grid and not full-optimal-Q uniform MSE.",
+  "inputs": {
+    "published_research": "/workspace/scratch/ad8dc3f3c796/hepta-wsp-followup/tools/hcsn/wsp_followup_20261105",
+    "working_input_root": "/workspace/scratch/ad8dc3f3c796/ndu_followup",
+    "fits": [
+      11,
+      23,
+      37,
+      53,
+      71
+    ],
+    "train_worlds_per_fit": 64,
+    "incumbent": "fixed previously published C continuation head",
+    "representation": "85 input to tanh48; fixed Belief row, input weights and law",
+    "editable_parameters": 147,
+    "historical_exclusion": "all available 1936 old unique schedules plus prior followup 480 unique schedules; also check duplicates across all new holdouts",
+    "historical_unknowns": "unknown external trials and unavailable original formal-confirmation content remain unexcluded; historical compute cost not recoverable is unknown"
+  },
+  "candidate_construction": {
+    "information": "original TRAIN public schedules and checkpoint own transition/emission law only; no evaluator truth posterior, Q, or outcomes",
+    "state_key": "complete serialized state including sunk charges, not merged Markov representation",
+    "teacher": "Q_C(s,a) = expected immediate reward plus continuation with fixed C; all transitions enumerated exactly in floating-point order",
+    "terminal_anchor": "a_T(s)=first argmax of unchanged C decoder over legal STOP and SUBMIT actions; T_pred = decoder score; T_own = own-law expected payoff of a_T; Y_a = T_pred + Q_C(s,a) - T_own",
+    "occupancy": "exact own-law state occupancy of C; per world mixture 0.9 normalized incumbent occupancy + 0.1 uniform full support, then uniform legal continuation actions",
+    "objective": "weighted squared error to anchored one-step targets plus 1e-4 squared change; same known exact-F64 norm limit 0.5*||C_Q||",
+    "solver": "direct spectral trust-region solve; matched projected-gradient solve of identical quadratic, start, radius and stopping tolerance",
+    "finite_path": [
+      0,
+      0.25,
+      0.5,
+      0.75,
+      1
+    ],
+    "selection": "per fit maximum full own-law TRAIN expected utility along stored-F64 path; ties choose smaller alpha. Includes exact no-edit alpha0. No mathematical claim beyond this fixed finite set."
+  },
+  "arms": [
+    {
+      "id": "C",
+      "kind": "unchanged strong incumbent"
+    },
+    {
+      "id": "E",
+      "kind": "anchored occupancy-mixture direct edit, primary"
+    },
+    {
+      "id": "G",
+      "kind": "matched-information gradient solution and same finite path"
+    },
+    {
+      "id": "EU",
+      "kind": "same anchored one-step target with uniform full-support weighting"
+    },
+    {
+      "id": "EA",
+      "kind": "same occupancy-mixture weighting but unanchored raw one-step Q_C target"
+    },
+    {
+      "id": "M",
+      "kind": "previous frozen DQ old uniform full-optimal-Q MSE model, no new tuning"
+    },
+    {
+      "id": "R",
+      "kind": "single preseeded norm-matched random continuation edit, no search"
+    },
+    {
+      "id": "P",
+      "kind": "zero-weight-edit C with own-law analytic terminal posterior, program control"
+    },
+    {
+      "id": "J",
+      "kind": "zero-weight-edit full own-law Bellman program control"
+    }
+  ],
+  "holdout_design": {
+    "fresh_validation_worlds_per_fit_domain": 16,
+    "fresh_test_worlds_per_fit_domain": 32,
+    "domains": [
+      "iid",
+      "ood"
+    ],
+    "freeze_order": [
+      "source and protocol",
+      "all fit candidate weights and all TRAIN selection results",
+      "generate validation",
+      "all gate decisions",
+      "generate TEST"
+    ],
+    "validation_gate": "equal-domain mean E/G improvement versus C >=0.005 and neither domain negative, per fit; otherwise byte-equivalent C restored",
+    "primary_contrasts": [
+      "E_gated-C IID",
+      "E_gated-C OOD"
+    ],
+    "confidence": "five paired fit differences; Student-t df4, Bonferroni across two predeclared primary contrasts; both lower bounds must exceed0.005",
+    "secondary": "all raw and gated arms, behavior, proxy loss, selected alphas and compute; report descriptive only; no holdout optimization",
+    "sampling_limitation": "same five training fits; new scenarios are not new independently trained models; non-overlap does not prove statistical independence"
+  },
+  "budget": {
+    "threads": 1,
+    "worker_cpu_limit_seconds": 1200,
+    "worker_wall_limit_seconds": 1800,
+    "fresh_model_training": false,
+    "remote_execution": false,
+    "push": false,
+    "accounting": [
+      "all preparation and feature/target computations",
+      "direct and PGD costs",
+      "finite path own-law scoring",
+      "all frozen failed arms",
+      "all validation and test scoring",
+      "serialization verification",
+      "failed process attempts"
+    ],
+    "not_claimed": [
+      "energy without measurement",
+      "dollar cost without price evidence",
+      "overall speedup excluding shared preprocessing",
+      "recovered cost of unknown historical runs"
+    ]
+  },
+  "scope_limits": [
+    "finite synthetic sign task only",
+    "not actual Trader gain",
+    "not first-passage repair",
+    "not full-weight global optimum",
+    "no repeated adaptive candidate search after failure",
+    "no stronger claim from solver certificates or proxy loss reduction"
+  ]
+}

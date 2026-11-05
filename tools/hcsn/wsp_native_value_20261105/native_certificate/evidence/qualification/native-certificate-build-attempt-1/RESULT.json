@@ -1,0 +1,115 @@
+{
+  "commands": [
+    {
+      "command": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 2.772472291951999,
+      "child_cpu_seconds": 2.7118499999999996,
+      "peak_child_rss_kib": 138200,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/home/qian-qi/.cargo/bin/cargo",
+        "check",
+        "--offline",
+        "--all-features"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 35.619030434056185,
+      "child_cpu_seconds": 43.211598,
+      "peak_child_rss_kib": 1163604,
+      "log_sha256": "01c0035e8bfc6e00984cbc8b077bd9293ca5c17aa462936176da64819b2add2a"
+    }
+  ],
+  "original_hashes": {
+    "Cargo.toml": "fdb5f653f9c3d858dc5d1e20b285a0141e3cbc40106b2f5619ff315a9bfe59f4",
+    "Cargo.lock": "15b9fb468eb34a210238657d132cbf19e961552d1313de488e1f14936bfa4e5f",
+    "src/mcp/mod.rs": "0eb51b3b78086401c3ee1f49912dcf6c21fc84e655d809b6232c1bc1b876cb91",
+    "src/mcp/server.rs": "9b9cf2f08dc8ef210614b46981c812975091546785d32b8b62ca010391142bcc",
+    "src/mcp/weight_certificate.rs": "438ad0643c98e514144380dbd25df883d9682313165e806b7358de7f6b12ffd9",
+    "src/mcp/weight_certificate_exact.rs": "5efe988d1336e96dd6d6845fae017fc9379f95b112be593c9d21631854d03e38",
+    "src/mcp/weight_certificate_tests.rs": "c3a39408db770bb136e9cc9ee01b3285949af1198ed15a5b3688b5099d47b1ca"
+  },
+  "final_hashes": {
+    "Cargo.toml": "fdb5f653f9c3d858dc5d1e20b285a0141e3cbc40106b2f5619ff315a9bfe59f4",
+    "Cargo.lock": "91fd7a8a50e2cbd179b0f5bc3e6d6d9e71b95a94bce4e9eaa9fba67bbb877863",
+    "src/mcp/mod.rs": "0eb51b3b78086401c3ee1f49912dcf6c21fc84e655d809b6232c1bc1b876cb91",
+    "src/mcp/server.rs": "6c69c5ec985f3f6c5b58bdae6e2c6edafe7079e4568c4bcc04167018daf0bbef",
+    "src/mcp/weight_certificate.rs": "6079d9d845806ec6b1fc7bccfa50b3ec6b6b5b7ee22c2937580d957e00178f0c",
+    "src/mcp/weight_certificate_exact.rs": "722b7c9402d79dfedabde3120307264376e9e04247cc52433f98101bf88e3e7f",
+    "src/mcp/weight_certificate_tests.rs": "39da2d0a1736fac5cbf74247171164d5c40bc73298cddf4ce429f41e050fdb03"
+  },
+  "lock_changed_packages": [
+    "hepta-runtime@0.1.0"
+  ],
+  "lock_old_new": {
+    "hepta-runtime@0.1.0": {
+      "old": {
+        "name": "hepta-runtime",
+        "version": "0.1.0",
+        "dependencies": [
+          "anyhow",
+          "axum",
+          "clap",
+          "globset",
+          "ignore",
+          "libc",
+          "rayon",
+          "redb",
+          "regex",
+          "ring",
+          "rmcp",
+          "russh",
+          "russh-sftp",
+          "serde",
+          "serde_json",
+          "serial_test",
+          "sha2",
+          "subtle",
+          "tempfile",
+          "tokio",
+          "tokio-util",
+          "tracing",
+          "zeroize"
+        ]
+      },
+      "new": {
+        "name": "hepta-runtime",
+        "version": "0.1.0",
+        "dependencies": [
+          "anyhow",
+          "axum",
+          "clap",
+          "globset",
+          "ignore",
+          "libc",
+          "num-bigint",
+          "rayon",
+          "redb",
+          "regex",
+          "ring",
+          "rmcp",
+          "russh",
+          "russh-sftp",
+          "serde",
+          "serde_json",
+          "serial_test",
+          "sha2",
+          "subtle",
+          "tempfile",
+          "tokio",
+          "tokio-util",
+          "tracing",
+          "zeroize"
+        ]
+      }
+    }
+  },
+  "wall_seconds": 38.45597375894431,
+  "self_cpu_seconds": 0.12182696800000001,
+  "child_cpu_seconds": 45.923448
+}

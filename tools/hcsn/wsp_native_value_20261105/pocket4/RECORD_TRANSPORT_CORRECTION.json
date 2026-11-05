@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.wsp.record_transport_correction.v1",
+  "original_remote_observation_changed": false,
+  "additional_model_executions": 0,
+  "first_local_snapshot_sha256": "01b4afea7979067b28c8bb82fce1036a6021155f95367cadae84381996a210d8",
+  "first_local_snapshot_bytes": 13930,
+  "original_remote_snapshot_sha256": "71958034bb667cd9029ee504af8da53cc213bd296a95a7462c2d14cd7cbbc623",
+  "original_remote_snapshot_bytes": 13936,
+  "problem": "The initial public record transport parsed Python JSON and reserialized it through JavaScript, changing textual number representation. The original-byte identity gate correctly rejected that local copy.",
+  "correction": "Read the existing remote public_snapshot.json and capture_receipt.json as text strings, retained their remote byte counts and SHA256 values, and saved those original strings without reserializing their contents.",
+  "verifier_development_failures": [
+    "Original-byte snapshot hash failed on the initial reserialized local transport.",
+    "The first stdout reconstruction assumed full result JSON; source inspection corrected it to the producer's two-field status/result_sha256 stdout. No original source, result, receipt, threshold or model was changed."
+  ]
+}

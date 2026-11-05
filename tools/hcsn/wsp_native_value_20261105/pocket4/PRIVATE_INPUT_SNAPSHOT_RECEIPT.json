@@ -1,0 +1,49 @@
+{
+  "all_copies_exclusive_and_private": true,
+  "atomic_cross_file_snapshot": false,
+  "base_model_copied": false,
+  "base_model_reference_sha256": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204",
+  "base_reproduction_requires_existing_or_upstream_hash_matched_checkpoint": true,
+  "bound_probe_source_sha256": "fe6b661c349443a6e6d647eed895313247b2941fcb2ba9f430fd6794a91ceaa0",
+  "candidate_id": "8fe51f354c8a75001b0948c3588cab7d62dcb54c90f932f32e7bf9eb1505bf5a",
+  "cpu_seconds_through_receipt": 0.018433297,
+  "files": {
+    "base_manifest.json": {
+      "bytes": 1416,
+      "sha256": "3e5ec6c86be1cfa0bad3835467a7dd4b06f59f76dc956e920a3fcd2de6428701"
+    },
+    "candidate_adapter.safetensors": {
+      "bytes": 9988,
+      "sha256": "94a8a2275e92fa6343b5c2b662c3a440c3cc870f067d73e86bb1c0069b880ee0"
+    },
+    "candidate_manifest.json": {
+      "bytes": 219353,
+      "sha256": "4e394fc98e2cce78629ca38f024b403f9fbcf236f5c521167a1dd6861e0ca6a9"
+    },
+    "model.py": {
+      "bytes": 11087,
+      "sha256": "64bfa801f4d98c795f64d76fedea70c377b5b9225a26d73c426893e5338be29d"
+    },
+    "parent_adapter.safetensors": {
+      "bytes": 9572,
+      "sha256": "52adec4b889f2898d554877e3534f3121503f88850920868e9adc5b6547a7a73"
+    },
+    "parent_manifest.json": {
+      "bytes": 15726,
+      "sha256": "e95792264cb554d8d091d6d8e6ef65d68b293f8df2a9c29cb418e2251273f904"
+    },
+    "resident_model.py": {
+      "bytes": 4248,
+      "sha256": "5d4c0dc65fd5b765f4f01e949220854a352ef5cb2e984e5551d2470ec4f34cdb"
+    }
+  },
+  "live_binding_stable": true,
+  "model_forward_or_training_executed": false,
+  "observed_end_utc": "2026-11-05T03:49:30.935014+00:00",
+  "original_files_changed": false,
+  "public_raw_weights_or_private_rows": false,
+  "schema": "hepta.wsp.private_head_input_snapshot.v1",
+  "source_sha256": "5d3af03c16e0dacc7ee4b717c86d89fa479c3a2520ac6aaa67b97fb2e55e250b",
+  "status": "PASS_PRIVATE_SMALL_INPUTS_PRESERVED",
+  "wall_seconds_through_receipt": 0.03523300099186599
+}

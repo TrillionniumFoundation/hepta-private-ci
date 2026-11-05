@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.wsp.remote-source-readback.v1",
+  "host": "desktop",
+  "job_id": "1a1aa2113ac-fc05-3dbd",
+  "observation_unix_ms": 1793855666152,
+  "result": {
+    "binary_bytes": 382495848,
+    "binary_sha256": "692ea01fa5dd3a6e33cb343aee4d7c41a6ae4f015a352b2d2c42afd4655532ec",
+    "build_source_files_checked": 270,
+    "cpu_seconds": 1.322954846,
+    "differences": [],
+    "repository_head_expected": "bc38fb82244b946907886704b3c677bf00761cb9",
+    "unexpected_src_files": [],
+    "wall_seconds": 1.3239887249656022
+  },
+  "terminal": {
+    "at_unix_ms": 1793855666152,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aa2113ac-fc05-3dbd",
+    "launch_nonce": "d25209042f3a67c74802799f39d46554",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 331,
+        "stored": 331
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "scope": "Read-only source and binary readback; no execution of a new model or mutation of production state"
+}

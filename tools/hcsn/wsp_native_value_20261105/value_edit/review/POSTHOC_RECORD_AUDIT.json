@@ -1,0 +1,82 @@
+{
+  "changed_state_records": 43,
+  "complete_worlds": 48,
+  "example": {
+    "evaluator_E_minus_C": -0.4217498819656321,
+    "file": "test_006.json.gz",
+    "rule": "Smallest-index TEST world attaining the minimum already-frozen E-minus-C expected utility among all32 existing fit23 OOD TEST worlds; all48 records remain available.",
+    "test_index": 6,
+    "world_id": "anchored_value_test_ood_23_6"
+  },
+  "example_rule_verified": true,
+  "linear_contributions_from_stored_weights_and_hidden_checked": true,
+  "main_weight_efficacy_qualified": false,
+  "maximum_reviewer_global_residual": 1.1102230246251565e-16,
+  "maximum_reviewer_linear_residual": 2.5673907444456745e-16,
+  "new_model_or_teacher_execution": false,
+  "performance_and_first_prefix_identities_recomputed_from_records": true,
+  "protocol_sha256": "e5b50784baa48bee8e598ae99ef77216a5f8dc055eaf5718484bec44a81bfce6",
+  "results_sha256": "8381acdcdfbd566aacf5faeb0cb19ad18803aa6f04760f84239ac0ee02cd631c",
+  "reviewer_self_cpu_seconds": 0.12169028099999998,
+  "reviewer_wall_seconds": 0.12169662300220807,
+  "status": "PURE_POSTHOC_RECORD_AUDIT_PASS_NO_NEW_CONFIRMATION",
+  "sum_measured_eight_child_phases_CPU_seconds": 875.4554360000001,
+  "summary": {
+    "test": {
+      "categories": {
+        "other": {
+          "evaluator_E_expected_visit_count": 0.185178400287954,
+          "evaluator_advantage_contribution": 0.03389717244695961,
+          "state_count": 0.4375
+        },
+        "own_positive_evaluator_negative": {
+          "evaluator_E_expected_visit_count": 0.0,
+          "evaluator_advantage_contribution": 0.0,
+          "state_count": 0.0
+        },
+        "own_target_violation": {
+          "evaluator_E_expected_visit_count": 0.2594893673592342,
+          "evaluator_advantage_contribution": -0.04631613175329917,
+          "state_count": 0.40625
+        }
+      },
+      "changed_state_records": 27,
+      "mean_evaluator_E_minus_C": -0.012418959306339555,
+      "mean_own_E_minus_C": -0.013961026900022254,
+      "world_count": 32
+    },
+    "validation": {
+      "categories": {
+        "other": {
+          "evaluator_E_expected_visit_count": 0.37889248616547155,
+          "evaluator_advantage_contribution": 0.10768888679135802,
+          "state_count": 0.75
+        },
+        "own_positive_evaluator_negative": {
+          "evaluator_E_expected_visit_count": 0.0,
+          "evaluator_advantage_contribution": 0.0,
+          "state_count": 0.0
+        },
+        "own_target_violation": {
+          "evaluator_E_expected_visit_count": 0.17818177475138938,
+          "evaluator_advantage_contribution": -0.06871449109981069,
+          "state_count": 0.25
+        }
+      },
+      "changed_state_records": 16,
+      "mean_evaluator_E_minus_C": 0.038974395691547335,
+      "mean_own_E_minus_C": 0.043426166281931966,
+      "world_count": 16
+    }
+  },
+  "whole_process_phase_CPU_seconds": {
+    "execution_r1": 535.948697,
+    "independent_verification": 332.887897,
+    "posthoc/execution_r1": 3.1301039999999998,
+    "posthoc/freeze_receipt": 0.16507699999999997,
+    "preparation": 2.0037570000000002,
+    "protocol_freeze": 0.174421,
+    "reporting_summary": 0.411016,
+    "semantic_checks": 0.734467
+  }
+}

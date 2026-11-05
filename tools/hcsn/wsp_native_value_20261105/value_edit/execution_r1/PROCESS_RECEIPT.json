@@ -1,0 +1,27 @@
+{
+  "child_peak_rss_bytes": 260947968,
+  "child_system_cpu_seconds": 2.767478,
+  "child_total_cpu_seconds": 535.948697,
+  "child_user_cpu_seconds": 533.181219,
+  "command": [
+    "python",
+    "run_experiment.py",
+    "--protocol",
+    "PROTOCOL_FROZEN.json",
+    "--output",
+    "execution_r1/run"
+  ],
+  "controller_cpu_seconds": 0.34864672900000004,
+  "controller_source": {
+    "bytes": 2862,
+    "sha256": "64e85e07ab6695409dccab89187f06fbff984f27184104eb5e3b4a8770d2903a"
+  },
+  "controller_timeout": false,
+  "elapsed_wall_seconds": 537.5946901529987,
+  "ended_utc": "2026-11-05T04:04:06.767926+00:00",
+  "exit_code": 0,
+  "schema": "hepta-value-edit-complete-process-receipt-v1",
+  "scope": "worker startup/imports/final writes included; controller CPU measures only main body after imports and before final receipt write, so controller startup/final-write cost is not measured; scientific caps belong to worker",
+  "started_utc": "2026-11-05T03:55:09.173292+00:00",
+  "threads_per_numeric_library": 1
+}

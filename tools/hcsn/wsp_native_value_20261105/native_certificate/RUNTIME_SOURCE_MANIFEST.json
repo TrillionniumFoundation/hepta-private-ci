@@ -1,0 +1,56 @@
+{
+  "base_commit": "990f85e46bedb8f49c0e6d0029ea6f9afbf6eac7",
+  "qualification": "LOCAL_SOFTWARE_AND_NATIVE_CORPUS_PASS_FIXED_MATHEMATICAL_SCOPE",
+  "files": [
+    {
+      "path": "Cargo.toml",
+      "bytes": 3417,
+      "sha256": "fdb5f653f9c3d858dc5d1e20b285a0141e3cbc40106b2f5619ff315a9bfe59f4"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 69320,
+      "sha256": "91fd7a8a50e2cbd179b0f5bc3e6d6d9e71b95a94bce4e9eaa9fba67bbb877863"
+    },
+    {
+      "path": "src/mcp/mod.rs",
+      "bytes": 2508,
+      "sha256": "0eb51b3b78086401c3ee1f49912dcf6c21fc84e655d809b6232c1bc1b876cb91"
+    },
+    {
+      "path": "src/mcp/server.rs",
+      "bytes": 141170,
+      "sha256": "6c69c5ec985f3f6c5b58bdae6e2c6edafe7079e4568c4bcc04167018daf0bbef"
+    },
+    {
+      "path": "src/mcp/weight_certificate.rs",
+      "bytes": 12789,
+      "sha256": "6079d9d845806ec6b1fc7bccfa50b3ec6b6b5b7ee22c2937580d957e00178f0c"
+    },
+    {
+      "path": "src/mcp/weight_certificate_exact.rs",
+      "bytes": 7093,
+      "sha256": "722b7c9402d79dfedabde3120307264376e9e04247cc52433f98101bf88e3e7f"
+    },
+    {
+      "path": "src/mcp/weight_certificate_tests.rs",
+      "bytes": 9592,
+      "sha256": "39da2d0a1736fac5cbf74247171164d5c40bc73298cddf4ce429f41e050fdb03"
+    },
+    {
+      "path": "experiments/weight/native_certificate_20261105/MATH.md",
+      "bytes": 4989,
+      "sha256": "77170926d89246f3821768fcbcb3df7e19838e28507dbe7e5a0d1a530d1c0225"
+    },
+    {
+      "path": "experiments/weight/native_certificate_20261105/SCHEMA.md",
+      "bytes": 6754,
+      "sha256": "58e4bbe524915473da8ee036931b516c0179108508a461d8545f63260dcbe08e"
+    }
+  ],
+  "published_runtime_commit": "bc38fb82244b946907886704b3c677bf00761cb9",
+  "published_runtime_tree": "49be4e1d4c62be77b21fd6fcd9a617aa6df265a8",
+  "published_runtime_pr": "https://github.com/TrillionniumFoundation/hepta-runtime/pull/94",
+  "execution_protocol_sha256": "7a361d5a451f9eba6b1d722e9596a4b30ba0b03fbf2aba057207c0a867b8dbd8",
+  "independent_review_and_official_ci": "recorded separately, not inferred from these local executions"
+}
