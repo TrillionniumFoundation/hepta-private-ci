@@ -228,13 +228,16 @@ impl UnifiedExecProcess {
     }
 
     pub(super) fn terminate(&self) {
-        if self.observe_current_exit() {
-            self.finish_termination();
-            return;
-        }
+        let observed_exit = self.observe_current_exit();
         match &self.process_handle {
-            ProcessHandle::Local(process_handle) => process_handle.terminate(),
+            ProcessHandle::Local(process_handle) => {
+                if !observed_exit {
+                    process_handle.terminate();
+                }
+            }
             ProcessHandle::ExecServer(process_handle) => {
+                // Executor cleanup still cancels owned network decisions after exit.
+                // Its acknowledgement does not supply native exit evidence.
                 let process_handle = Arc::clone(process_handle);
                 tokio::spawn(async move {
                     let _ = process_handle.terminate().await;
