@@ -151,6 +151,56 @@ The compatibility `open_state_dir` path uses the process system clock and no
 external rollback oracle. It remains useful for qualification/backward source
 compatibility but is not a production anti-rollback or attested-time claim.
 
+An `AuthorityFrontierStore::load` must observe the one authoritative frontier
+during that call; a cached, stale replica response cannot supply freshness. Its
+CAS compares the complete expected checkpoint and preserves the global
+revocation revision across epoch transitions. A larger epoch with a smaller or
+unchanged revision is refused before transport. A successful load is an
+observation, not a lease that excludes another writer, and neither a load nor a
+CAS receipt proves that a provider effect completed.
+
+### Ledger recovery and provider effects have separate owners
+
+A chain reorganization may replay ledger state. It must not refund a consumed
+FinalUse nonce, retire less key history, or forget an effect that may already
+have occurred. The contracts for an external effect remain four distinct steps:
+
+| Step | Required durable fact and boundary |
+| --- | --- |
+| Prepare | Persist the logical operation identity, authorization binding, exact payload digest and the owning runtime's budget reservation before entering the provider. Intent alone is not execution. |
+| Claim | Compare the complete independently fresh predecessor and atomically consume the execution permission while checking the current revocation head. An uncertain result retains the same identity. |
+| Execute | Give the provider the stable `ProviderEffectKey`; physical attempts and per-send nonces must not create a new logical effect. |
+| Confirm or reconcile | Store a key/payload/operation-bound acknowledgement, or retain the pending/indeterminate state and query that same identity. `Accepted` does not mean `Completed`. |
+
+`provider_effect.rs` supplies the separate effect contract. The
+`hepta-evidence` qualification facade persists intent and a dispatch-boundary
+quarantine before adapter entry; imported Pending intents and unknown outcomes
+cannot authorize another dispatch. Its SQLite restart verifier also preserves
+acknowledgement provenance: once a durably recorded StatusLookup acknowledgement exists, a
+later DispatchResponse acknowledgement cannot establish completion. The live
+append rule and cold recovery rule must agree even when all record digests and
+operation identities are individually valid. Identical acknowledgements may
+reuse an existing row, so replaying an identical ACK does not itself establish
+fresh lookup provenance or a complete history of every observation.
+
+That facade is not a registered production caller and does not compose the
+FinalUse frontier, a budget owner and the effect journal into one externally
+durable transaction. The V2 evidence recovery snapshot covers these facade
+provider-effect tables, including uncertainty and acknowledgement provenance,
+when compared with an independently retained checkpoint. It does not cover the
+separate AutomationStore effect owner. Chain's three-table `PqWitnessV4` cannot
+supply that coverage or freshness. A production composition still needs an
+append-consistent effect checkpoint, expected-old advancement and atomic durable
+witness state before co-signing. A signed counter by itself is insufficient.
+
+If a provider lacks durable idempotency and authoritative status lookup, keep
+the effect unresolved; local logs cannot promise arbitrary external exactly-once
+execution. If every replica, witness and backup can return to the same old
+snapshot, their old contents cannot establish the missing later history. At
+least one independently fresh failure domain is therefore required. Its outage
+may stop new related effects. That availability cost is an acceptance condition,
+and the witness gains neither PoN fork-choice authority nor grant-issuing power.
+
 ### Windows work within the existing PN0 storage item
 
 Windows remains unsupported by this owner. The C2a read-only descriptor utility
@@ -205,7 +255,8 @@ Windows durability, sandbox isolation or at-most-once qualification.
 4. The adapter performs its bounded asynchronous HTTPS read. It does not hold
    the owner mutex over network awaits, so trusted revocations can progress.
 5. `with_verified_use` checks that token and authority share the same owner,
-   validates binding/time/epoch/revocation under the authority mutex, then
+   validates binding/time/epoch/revocation and equality with the complete
+   claim-time head under the authority mutex, then
    releases the mutex before invoking the already selected synchronous
    callback. The successful final validation is the consumer-entry
    linearization point.
@@ -254,25 +305,40 @@ This closes the typed/canonical-JSON witness contract without turning an audit
 receipt into a portable bearer grant. Product code that does not need the
 serialized evidence may continue to use the opaque-token APIs.
 
-## Exact-frontier asynchronous entry
+## Exact-frontier final entry
 
-`claim` also snapshots the exact durable revocation head and includes that head,
-the signed grant and signature in the opaque token witness. Runtime Codex uses
-`VerifiedUseToken::enter(expected)` immediately before the first effectful
-await. This consumes the token, rechecks the protected owner clock, live
-revocations and binding, and requires the current head to equal the claim-time
-head. Even an unrelated frontier advance requires new independent authorization.
-The returned `EnteredUseToken` is non-constructible, non-cloneable and
-non-serializable; it establishes one effect entry, never permission to retry.
+`claim` snapshots the complete durable revocation head and includes that head,
+the signed grant and signature in the opaque token witness. Every final entry
+requires the current head to equal that claim-time head, in addition to its
+existing owner, binding, protected-clock, epoch and revocation checks. This
+applies to `VerifiedUseToken::enter` / `enter_verified_use`,
+`with_verified_use` / `deliver_final_use_with_witness`,
+`with_verified_effect` / `with_verified_use_async`, and
+`with_dispatch_boundary` / `dispatch_final_use_with_witness`.
 
-This entry-only API releases the owner mutex before I/O. A later revocation may
-deny future entries but cannot prove that the already-entered operation stopped.
-Unknown results must reconcile the same durable operation identity before a
-new grant. It differs from `with_verified_use_async` / `with_verified_effect`,
-which retain an active-effect guard for adapters whose contract requires
-revocation commits to return `DispatchInProgress` during the bounded effect.
-Synchronous `with_verified_use` retains its existing consumer-entry
-linearization contract and does not hold the mutex across arbitrary callbacks.
+Any head change, including an unrelated revision advance, refuses the old
+token with `StaleRevocationHead` before callback or effect entry. Existing live
+grant errors, including `Revoked`, retain precedence over this head mismatch.
+The claim's nonce remains consumed. If no effect has entered, a new
+independently authorized claim at the current head can cross the same boundary;
+a local token refresh or nonce refund cannot supply that authorization.
+
+Runtime Codex uses `VerifiedUseToken::enter(expected)` immediately before the
+first effectful await. The returned `EnteredUseToken` is non-constructible,
+non-cloneable and non-serializable; it establishes one effect entry, never
+permission to retry. This entry-only API releases the owner mutex before I/O.
+A later revocation may deny future entries but cannot prove that an
+already-entered operation stopped. An already-entered or indeterminate effect
+must be reconciled against the same durable operation identity; a new grant
+must not become an automatic retry of that effect.
+
+`with_verified_use_async` / `with_verified_effect` retain an active-effect guard
+for adapters whose contract requires revocation commits to return
+`DispatchInProgress` during the bounded effect. Synchronous
+`with_verified_use` retains its consumer-entry linearization contract and
+does not hold the mutex across arbitrary callbacks. The local dispatch APIs
+retain their short mutex fence. These distinct effect lifetimes all share the
+same exact-head check before entry.
 
 `revocation_head()` only reports the locally trusted head. An independently
 authenticated feed must pass `update_revocations`; reading the head does not
@@ -300,7 +366,7 @@ fetch newer data or replace protected time and the external rollback frontier.
 | `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired`                                          | Reject stale or currently unauthorized use under the locally trusted head                                                                                     |
 | `AlreadyClaimed`, `CapacityExceeded`                                                          | Require owner reconciliation/new authorization or an epoch transition                                                                                         |
 | `InvalidTrust`, `AntiRollbackViolation`, `UnsafeStateDirectory`, `StateLocked`, `Unavailable` | Fail closed; repair owner clock/frontier/configuration/storage without resetting authority implicitly                                                         |
-| `StaleRevocationHead`                                                                         | Reject a rollback/inconsistent host update                                                                                                                    |
+| `StaleRevocationHead`                                                                         | Reject an inconsistent host update or a token whose complete claim-time head differs from the current head; keep its nonce consumed                            |
 
 Bao additionally distinguishes provider denial, missing data, transport failure,
 timeout, malformed/oversized replies, version mismatch and digest mismatch.
@@ -385,3 +451,25 @@ used by automation. It and `with_verified_use_async` reject concurrent trusted
 revocation commits with `DispatchInProgress` until completion or cancellation.
 Both use the same authority owner, clock and persisted revocation state.
 The local `with_dispatch_boundary` witness APIs retain their short mutex fence.
+
+### Evidence recovery checkpoint V2
+
+Agentd's signed evidence recovery checkpoint now uses the V2 snapshot and
+`hepta.kernel.evidence.recovery-frontier.v2` signing domain. In addition to
+qualification evidence and AuthBus replay, it commits every `hepta-evidence`
+provider-effect intent, uncertainty and receipt. Table identity, sequence, record
+digest, ACK provenance and cross-table ordering timestamp are all bound. The
+snapshot reads every component in one SQLite transaction and rechecks each
+record digest against its actual JSON bytes; effect rows use primary-key pages.
+A self-consistent old database containing fewer effect rows
+therefore cannot equal a retained current V2 checkpoint.
+
+V1 evidence recovery files are refused and require a newly reviewed and signed
+V2 checkpoint from the existing recovery authority. They must not be silently
+upgraded using the database being recovered. The recovery trust key remains
+Ed25519 in this interface; this change does not qualify that interface as PQ.
+An external checkpoint file is not a freshness oracle or a live atomic consume
+service. A deployment still needs independent fresh state and an atomic
+consumption/receipt contract for each effect owner. This snapshot does not
+consume FinalUse rights, issue business permission, turn preparation into an
+execution receipt, or resolve an unknown result by allocating a new nonce.

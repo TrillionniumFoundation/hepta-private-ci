@@ -21,6 +21,9 @@ mod capacity_tests;
 #[path = "final_use_pq_recovery_tests.rs"]
 mod recovery_tests;
 
+#[path = "final_use_pq_entry_tests.rs"]
+mod entry_tests;
+
 type PqTestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
 fn key(seed: u8, id: &str) -> PqTestResult<(PqNativeSigningKey, PqAuthorityTrustKey)> {

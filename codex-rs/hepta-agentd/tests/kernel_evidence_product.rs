@@ -10,7 +10,7 @@ use anyhow::Result;
 use anyhow::ensure;
 use app_test_support::MockResponsesConfig;
 use codex_hepta_agentd::AgentdError;
-use codex_hepta_agentd::EvidenceRecoveryFrontierV1;
+use codex_hepta_agentd::EvidenceRecoveryFrontierV2;
 use codex_hepta_agentd::KernelEvidenceAppendIngress;
 use codex_hepta_agentd::KernelEvidenceCandidateV1;
 use codex_hepta_agentd::KernelEvidenceQueryV1;
@@ -586,6 +586,20 @@ async fn signed_recovery_frontier_allows_exact_current_database() -> Result<()> 
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn signed_recovery_frontier_rejects_valid_older_database_image() -> Result<()> {
+    check_recovery_rollback(RecoveryRollbackFixture::Qualification).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn signed_recovery_frontier_rejects_effect_only_database_rollback() -> Result<()> {
+    check_recovery_rollback(RecoveryRollbackFixture::ProviderEffect).await
+}
+
+enum RecoveryRollbackFixture {
+    Qualification,
+    ProviderEffect,
+}
+
+async fn check_recovery_rollback(fixture: RecoveryRollbackFixture) -> Result<()> {
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(RECOVERY_OLD_AGENT_ID, "kernel-evidence-recovery-old")?;
     let model = core_test_support::responses::start_mock_server().await;
@@ -620,27 +634,45 @@ async fn signed_recovery_frontier_rejects_valid_older_database_image() -> Result
     std::fs::copy(&database_path, &old_image)?;
 
     let current_store = HeptaEvidenceStore::open(&sqlite).await?;
-    let envelope = base_evidence(
-        "evidence:recovery-newer",
-        EvidenceCandidateV1 {
-            candidate_id: "candidate:kernel-evidence-recovery-old".to_string(),
-            source_commit: "c".repeat(40),
-            source_tree: "d".repeat(40),
-        },
-        EvidenceClaimClassV1::ExactSource,
-        EvidenceIssuerRoleV1::Architecture,
-        now_ms()?,
-        None,
-        json!({"frontier": "newer"}),
-    )?;
-    append_direct_evidence(
-        &current_store,
-        ARCHITECTURE_ISSUER,
-        &architecture_key,
-        1,
-        &envelope,
-    )
-    .await?;
+    match fixture {
+        RecoveryRollbackFixture::Qualification => {
+            let envelope = base_evidence(
+                "evidence:recovery-newer",
+                EvidenceCandidateV1 {
+                    candidate_id: "candidate:kernel-evidence-recovery-old".to_string(),
+                    source_commit: "c".repeat(40),
+                    source_tree: "d".repeat(40),
+                },
+                EvidenceClaimClassV1::ExactSource,
+                EvidenceIssuerRoleV1::Architecture,
+                now_ms()?,
+                None,
+                json!({"frontier": "newer"}),
+            )?;
+            append_direct_evidence(
+                &current_store,
+                ARCHITECTURE_ISSUER,
+                &architecture_key,
+                1,
+                &envelope,
+            )
+            .await?;
+        }
+        RecoveryRollbackFixture::ProviderEffect => {
+            let intent = codex_hepta_contracts::ProviderEffectIntent::new(
+                codex_hepta_contracts::ProviderEffectKey::for_operation(
+                    "provider:recovery",
+                    "run",
+                    "step",
+                )?,
+                Sha256Digest::for_bytes(b"original external effect"),
+            );
+            current_store.append_provider_effect_intent(&intent).await?;
+            current_store
+                .mark_provider_effect_indeterminate(&intent.key, "provider_result_unknown")
+                .await?;
+        }
+    }
     let current_snapshot = current_store.recovery_snapshot().await?;
     current_store.close().await;
 
@@ -801,11 +833,11 @@ async fn append_direct_evidence(
 fn write_recovery_frontier(
     directory: &Path,
     store_id: &str,
-    snapshot: codex_hepta_evidence::EvidenceRecoverySnapshotV1,
+    snapshot: codex_hepta_evidence::EvidenceRecoverySnapshotV2,
 ) -> Result<(std::path::PathBuf, std::path::PathBuf)> {
     let signer_key = SigningKey::from_bytes(&[63; 32]);
-    let mut frontier = EvidenceRecoveryFrontierV1 {
-        schema_version: 1,
+    let mut frontier = EvidenceRecoveryFrontierV2 {
+        schema_version: 2,
         store_id: store_id.to_string(),
         frontier_generation: 1,
         snapshot,

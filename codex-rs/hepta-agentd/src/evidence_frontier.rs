@@ -1,8 +1,9 @@
-//! Independent signed recovery-frontier admission for kernel.evidence.
+//! Externally supplied signed recovery-frontier admission for kernel.evidence.
 //!
 //! The frontier and signer trust files must be supplied from outside the Agent
 //! home so restoring the evidence SQLite image cannot silently roll them back
-//! as part of the same local state bundle.
+//! as part of the same local state bundle. This path check does not establish
+//! an independent failure domain or freshness if the whole host is rolled back.
 
 #[cfg(unix)]
 use std::fs::File;
@@ -13,7 +14,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_evidence::EVIDENCE_DATABASE_LINEAGE;
-use codex_hepta_evidence::EvidenceRecoverySnapshotV1;
+use codex_hepta_evidence::EvidenceRecoverySnapshotV2;
 use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -32,11 +33,11 @@ const MAX_FUTURE_CLOCK_SKEW_MS: u64 = 5 * 60 * 1000;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct EvidenceRecoveryFrontierV1 {
+pub struct EvidenceRecoveryFrontierV2 {
     pub schema_version: u32,
     pub store_id: String,
     pub frontier_generation: u64,
-    pub snapshot: EvidenceRecoverySnapshotV1,
+    pub snapshot: EvidenceRecoverySnapshotV2,
     pub source_commit: String,
     pub source_tree: String,
     pub created_at_unix_ms: u64,
@@ -55,11 +56,11 @@ struct EvidenceRecoveryFrontierTrustV1 {
     revoked: bool,
 }
 
-impl EvidenceRecoveryFrontierV1 {
+impl EvidenceRecoveryFrontierV2 {
     fn validate(&self) -> Result<(), AgentdError> {
-        if self.schema_version != 1
+        if self.schema_version != 2
             || self.frontier_generation == 0
-            || self.snapshot.schema_version != 1
+            || self.snapshot.schema_version != 2
             || self.snapshot.database_lineage != EVIDENCE_DATABASE_LINEAGE
         {
             return Err(invalid(
@@ -84,10 +85,10 @@ impl EvidenceRecoveryFrontierV1 {
 }
 
 pub fn evidence_recovery_frontier_signing_bytes(
-    frontier: &EvidenceRecoveryFrontierV1,
+    frontier: &EvidenceRecoveryFrontierV2,
 ) -> Result<Vec<u8>, AgentdError> {
     frontier.validate()?;
-    let mut bytes = b"hepta.kernel.evidence.recovery-frontier.v1\0".to_vec();
+    let mut bytes = b"hepta.kernel.evidence.recovery-frontier.v2\0".to_vec();
     push_part(&mut bytes, frontier.store_id.as_bytes());
     bytes.extend_from_slice(&frontier.frontier_generation.to_be_bytes());
     push_part(&mut bytes, frontier.snapshot.database_lineage.as_bytes());
@@ -112,6 +113,15 @@ pub fn evidence_recovery_frontier_signing_bytes(
             .as_str()
             .as_bytes(),
     );
+    bytes.extend_from_slice(&frontier.snapshot.provider_effect_rows.to_be_bytes());
+    push_part(
+        &mut bytes,
+        frontier
+            .snapshot
+            .provider_effect_frontier_sha256
+            .as_str()
+            .as_bytes(),
+    );
     push_part(&mut bytes, frontier.source_commit.as_bytes());
     push_part(&mut bytes, frontier.source_tree.as_bytes());
     bytes.extend_from_slice(&frontier.created_at_unix_ms.to_be_bytes());
@@ -127,7 +137,10 @@ pub(crate) async fn verify_evidence_recovery_frontier(
     signer_trust_file: &Path,
 ) -> Result<(), AgentdError> {
     let frontier_bytes = read_external_file(frontier_file, identity, MAX_FRONTIER_FILE_BYTES)?;
-    let frontier: EvidenceRecoveryFrontierV1 = serde_json::from_slice(&frontier_bytes)?;
+    let frontier: EvidenceRecoveryFrontierV2 =
+        serde_json::from_slice(&frontier_bytes).map_err(|_| {
+            recovery_required("a signed V2 checkpoint covering provider effects is required")
+        })?;
     frontier.validate()?;
 
     let trust_bytes =
@@ -167,7 +180,7 @@ pub(crate) async fn verify_evidence_recovery_frontier(
     let actual = store.recovery_snapshot().await.map_err(evidence_error)?;
     if actual != frontier.snapshot {
         return Err(recovery_required(
-            "local evidence/replay frontier does not match the signed checkpoint",
+            "local evidence/replay/effect frontier does not match the signed checkpoint",
         ));
     }
     store
@@ -284,3 +297,7 @@ fn recovery_required(message: &str) -> AgentdError {
 fn invalid(message: &str) -> AgentdError {
     AgentdError::Invalid(format!("kernel.evidence recovery: {message}"))
 }
+
+#[cfg(all(test, unix))]
+#[path = "evidence_frontier_tests.rs"]
+mod tests;
