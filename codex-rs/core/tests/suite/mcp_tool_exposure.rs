@@ -1241,12 +1241,16 @@ async fn later_follow_up_uses_background_recovered_apps_after_mid_thread_startup
     tokio::fs::remove_dir_all(test.codex_home_path().join("cache/codex_apps_tools")).await?;
     startup_control.fail_next_initialize_attempts(/*attempts*/ 1);
     test.codex.submit(Op::RefreshMcpServers).await?;
-    test.codex
+    let submission = test
+        .codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
             text: "use Calendar after transient Apps startup failures".into(),
             text_elements: Vec::new(),
         }]))
         .await?;
+    let codex_protocol::turn_input::TurnInputSubmission::Started { turn_id } = submission else {
+        anyhow::bail!("expected a newly admitted Apps recovery turn, got {submission:?}");
+    };
     tokio::time::timeout(Duration::from_secs(5), async {
         let mut turn_complete = false;
         let mut apps_ready = false;
@@ -1257,7 +1261,10 @@ async fn later_follow_up_uses_background_recovered_apps_after_mid_thread_startup
                 .await
                 .expect("event stream should stay open");
             match event.msg {
-                EventMsg::TurnComplete(_) => turn_complete = true,
+                EventMsg::TurnComplete(completed) => {
+                    assert_eq!(completed.turn_id, turn_id);
+                    turn_complete = true;
+                }
                 EventMsg::McpStartupUpdate(update)
                     if update.server == CODEX_APPS_MCP_SERVER_NAME
                         && matches!(
@@ -1269,6 +1276,11 @@ async fn later_follow_up_uses_background_recovered_apps_after_mid_thread_startup
                 }
                 _ => {}
             }
+        }
+        // TurnComplete and Apps Ready do not retire this turn's finish owner.
+        // Keep the exact-owner observation inside the original five-second phase.
+        if let Some(completion) = test.codex.pending_normal_turn_finish_completion(&turn_id) {
+            completion.await;
         }
     })
     .await
