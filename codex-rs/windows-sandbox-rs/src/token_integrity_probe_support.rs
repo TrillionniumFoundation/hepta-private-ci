@@ -169,7 +169,12 @@ impl LabelledObject {
         ensure!(unsafe { win::GetHandleInformation(handle, &mut flags) } != 0
             && flags & win::HANDLE_FLAG_INHERIT == 0, "invalid inherited fixture handle");
         let original = Descriptor::read(handle)?;
-        ensure!(original.text(security::LABEL_SECURITY_INFORMATION)? == initial_label.text(security::LABEL_SECURITY_INFORMATION)?,
+        let actual_label = original.text(security::LABEL_SECURITY_INFORMATION)?;
+        let expected_label = initial_label.text(security::LABEL_SECURITY_INFORMATION)?;
+        observe(format_args!(
+            "initial_label path={path:?} actual={actual_label:?} expected={expected_label:?}"
+        ))?;
+        ensure!(actual_label == expected_label,
             "created object did not preserve its explicit initial label");
         let result = Self {
             path: path.to_owned(), original_identity: identity(&file)?,
