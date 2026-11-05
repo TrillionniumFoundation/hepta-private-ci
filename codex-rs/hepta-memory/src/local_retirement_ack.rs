@@ -216,14 +216,9 @@ impl LocalLeaseOutbox {
                 "retirement ACK belongs to another writer".into(),
             ));
         }
-        // This is the original guarded writable pool. Managed checkout first
-        // durably invalidates Current; the lock-only barrier is never upgraded.
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        // This is the original guarded writable pool. Write admission confirms
+        // durable Dirty under its lock; the lock-only barrier is never upgraded.
+        let mut transaction = self.store.begin_write_transaction().await?;
         let existing = self
             .retained_application_retirement_ack_transaction(
                 &mut transaction,

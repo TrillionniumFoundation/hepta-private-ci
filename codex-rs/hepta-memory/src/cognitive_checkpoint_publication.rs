@@ -8,6 +8,10 @@ use std::pin::Pin;
 /// this capability; it contains neither a store handle nor another ledger.
 pub(crate) trait BoundOwnerPublication: Send + Sync {
     fn deadline(&self) -> Duration;
+    /// Reconfirm durable Dirty after acquiring the original SQLite write lock.
+    /// Failed or cancelled transitions retain the coordinator's permanent fence.
+    fn prepare_write(&self) -> Pin<Box<dyn Future<Output = ()> + Send + '_>>;
+
     /// Observe the actual authenticated peer without publishing or dirtying.
     fn observe_current<'a>(
         &'a self,
@@ -37,6 +41,11 @@ impl<T: CognitiveCheckpointTransport> BoundOwnerPublication for ProtectedCogniti
     fn deadline(&self) -> Duration {
         self.deadline
     }
+
+    fn prepare_write(&self) -> Pin<Box<dyn Future<Output = ()> + Send + '_>> {
+        Box::pin(self.before_checkout())
+    }
+
     fn observe_current<'a>(
         &'a self,
         cut: &'a CognitiveRecoveryAnchor,
