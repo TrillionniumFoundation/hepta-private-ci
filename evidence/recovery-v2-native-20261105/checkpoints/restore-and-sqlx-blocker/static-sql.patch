@@ -1,0 +1,59 @@
+diff --git a/codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs b/codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs
+index 369d06302d..1b03f6f797 100644
+--- a/codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs
++++ b/codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs
+@@ -242,20 +242,38 @@ async fn recovery_snapshot_refuses_changed_json_with_retained_record_digests() {
+         .await
+         .expect("receipt");
+     let before = store.recovery_snapshot().await.expect("valid snapshot");
+-    for table in [
+-        "provider_effect_intents",
+-        "provider_effect_acknowledgements",
+-        "provider_effect_uncertainties",
++    for (table, select_sql, drop_trigger_sql, corrupt_sql, restore_sql) in [
++        (
++            "provider_effect_intents",
++            "SELECT payload_json FROM provider_effect_intents",
++            "DROP TRIGGER provider_effect_intents_no_update",
++            "UPDATE provider_effect_intents SET payload_json = '{}'",
++            "UPDATE provider_effect_intents SET payload_json = ?",
++        ),
++        (
++            "provider_effect_acknowledgements",
++            "SELECT payload_json FROM provider_effect_acknowledgements",
++            "DROP TRIGGER provider_effect_acknowledgements_no_update",
++            "UPDATE provider_effect_acknowledgements SET payload_json = '{}'",
++            "UPDATE provider_effect_acknowledgements SET payload_json = ?",
++        ),
++        (
++            "provider_effect_uncertainties",
++            "SELECT payload_json FROM provider_effect_uncertainties",
++            "DROP TRIGGER provider_effect_uncertainties_no_update",
++            "UPDATE provider_effect_uncertainties SET payload_json = '{}'",
++            "UPDATE provider_effect_uncertainties SET payload_json = ?",
++        ),
+     ] {
+-        let original: String = sqlx::query_scalar(&format!("SELECT payload_json FROM {table}"))
++        let original: String = sqlx::query_scalar(select_sql)
+             .fetch_one(&store.pool)
+             .await
+             .expect("original payload");
+-        sqlx::query(&format!("DROP TRIGGER {table}_no_update"))
++        sqlx::query(drop_trigger_sql)
+             .execute(&store.pool)
+             .await
+             .expect("model post-open imported mutation");
+-        sqlx::query(&format!("UPDATE {table} SET payload_json = '{{}}'"))
++        sqlx::query(corrupt_sql)
+             .execute(&store.pool)
+             .await
+             .expect("retain digest but replace JSON");
+@@ -266,7 +284,7 @@ async fn recovery_snapshot_refuses_changed_json_with_retained_record_digests() {
+             ),
+             "snapshot trusted a retained {table} digest without checking its bytes"
+         );
+-        sqlx::query(&format!("UPDATE {table} SET payload_json = ?"))
++        sqlx::query(restore_sql)
+             .bind(original)
+             .execute(&store.pool)
+             .await

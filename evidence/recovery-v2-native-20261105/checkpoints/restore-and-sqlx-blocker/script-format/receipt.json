@@ -1,0 +1,35 @@
+{
+  "candidate": "f2bc730eb40faaf1937c5f5f5c6286e24cb2b4f7",
+  "candidate_tree": "748b0c85c2980c73a87d4ee3892905aa113569ec",
+  "base": "3a8e50ddd79ec3e52ca58157323726c37069202c",
+  "source_commit": "29fcd2e88654d5bec2bf30134cc030b5bfa7831b",
+  "source_tree": "9653293a81dfda7f17c12a54fd7bd5f4170ea867",
+  "phase": "format",
+  "qualification": "HOLD_NO_GO",
+  "commands": [
+    {
+      "label": "format-check",
+      "cwd": "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/runtime/codex-rs",
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "3a8e50ddd79ec3e52ca58157323726c37069202c",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "format-check.log",
+      "observed_test_statuses": {},
+      "expected_statuses_match": null
+    }
+  ],
+  "environment": {
+    "CARGO_TARGET_DIR": null,
+    "RUSTFLAGS": null,
+    "CARGO_ENCODED_RUSTFLAGS": null,
+    "RUSTC_WRAPPER": null,
+    "RUSTC_WORKSPACE_WRAPPER": null,
+    "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER": null
+  },
+  "requested_phase_completed": true
+}

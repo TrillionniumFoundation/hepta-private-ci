@@ -1,0 +1,101 @@
+{
+  "dispatcher": {
+    "passed": true,
+    "expected": [
+      "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+      "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+      "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+      "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+      "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+      "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+      "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+      "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+      "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+      "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+      "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+      "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+      "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+      "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+    ],
+    "observed": [
+      [
+        "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+        "ok"
+      ]
+    ]
+  },
+  "product": {
+    "passed": true,
+    "expected": [
+      "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+      "real_agentd_without_explicit_trust_rejects_signed_text",
+      "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+    ],
+    "observed": [
+      [
+        "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+        "ok"
+      ],
+      [
+        "real_agentd_without_explicit_trust_rejects_signed_text",
+        "ok"
+      ],
+      [
+        "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+        "ok"
+      ]
+    ]
+  }
+}

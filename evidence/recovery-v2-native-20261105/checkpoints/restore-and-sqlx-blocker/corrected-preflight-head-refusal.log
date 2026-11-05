@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/native-validation/reproduce.py", line 218, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/native-validation/reproduce.py", line 71, in main
+    raise RuntimeError("HEAD differs from the requested candidate")
+RuntimeError: HEAD differs from the requested candidate

@@ -1,0 +1,11 @@
+Receipt: /workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/receipts/script-owner/receipt.json
+Qualification remains HOLD_NO_GO; this script covers scoped regressions only.
+Traceback (most recent call last):
+  File "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/runtime/evidence/recovery-v2-integration-20261105/reproduce.py", line 217, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/runtime/evidence/recovery-v2-integration-20261105/reproduce.py", line 181, in main
+    record("owner-red", red_repo / "codex-rs", owner_command,
+  File "/workspace/scratch/822cc50e24f0/authority-recovery/native-20261105/runtime/evidence/recovery-v2-integration-20261105/reproduce.py", line 141, in record
+    raise RuntimeError(label + ": assertions not verified; inspect the raw log")
+RuntimeError: owner-red: assertions not verified; inspect the raw log
