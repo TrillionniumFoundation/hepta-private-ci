@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.memory.integrated-checks.v1",
+  "started_at": "2026-11-05T16:25:10.326468+00:00",
+  "finished_at": "2026-11-05T16:27:35.645021+00:00",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "pythonpath": "/workspace/scratch/b5d58a60397e/python-deps",
+  "steps": [
+    {
+      "label": "normal",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/scratch/659d49a81461/memory-cell-work/qualification/memory-cell-v15/verify.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 34.60077947100217,
+      "log_sha256": "e4b7c1232910f7244e515baa0af8625b7eb4c137a267a0ee49a79855d34ce575",
+      "tests_run": 150,
+      "passed": true
+    },
+    {
+      "label": "history",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/scratch/659d49a81461/memory-cell-work/qualification/memory-cell-v15/device_qualification/history_tests.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 43.241299259003426,
+      "log_sha256": "eb2cf46260e2736d399c07b2dc0fee076029430d389d175edc045edf59360f15"
+    },
+    {
+      "label": "optimized",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-O",
+        "/workspace/scratch/659d49a81461/memory-cell-work/qualification/memory-cell-v15/verify.py"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 66.66795621899655,
+      "log_sha256": "15e3848d2516d06639451584ba7797b1902a97e59fa7a73c5fff46529d07ad34",
+      "tests_run": 150,
+      "passed": true
+    },
+    {
+      "label": "historical-receipts",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/scratch/659d49a81461/memory-cell-work/qualification/memory-cell-v15/device_qualification/verify_receipts.py",
+        "--output",
+        "/workspace/scratch/659d49a81461/memory-cell-work/qualification/memory-cell-v15/evidence/integrated-20261105/historical-receipts.json"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.8028419499969459,
+      "log_sha256": "16033696762116fa111c3b90a60dad07831de9b77fb3612602c06c4a9adf1e9a"
+    }
+  ],
+  "source_sha256": {
+    "admission.py": "68c5f46179c712bf2321e3e12ec4b9fda1f05341960d45e215d03fd2e0e15ebe",
+    "admission_test_support.py": "d57a0633ce2d6fcd95bf375513a8a36f912d53324e86bf75e1b9c6939858349d",
+    "admission_tests.py": "914e002d2aebb73a4edb03f683fd16d7b0b514777d73cce4de196299a84e70be",
+    "audit_v14.py": "58d71c7fbea2cd1ed583ba4fa7668e18a623b56be49e05aa767de522a5919943",
+    "authority.py": "cb66f793698dbe2ec8aba8eaf9e10a6a2ea783c31f17ca3bddb19ac5e87fd57b",
+    "authority_tests.py": "6a1e15817b306cc4f1736a48667ff3f173d3243e974c4db03e86ecfbf00be7eb",
+    "cohort.py": "c14e4ecc87e926894da1ba2838df02b420b6fd660c9ec28039567840f85b1bfe",
+    "cohort_tests.py": "1eb266d798932c1309bf89bacf70db55f83be09776ff816e31b4e3b9255a9875",
+    "counter_tests.py": "176e4daa5f9201091c1052e68ef9540c5c8bd41f8d7cf1b4e2587ed586dd0fca",
+    "device_qualification/history_tests.py": "c4451d19139fa803dabfbc30a77946b0a938c0afa15b261b6d9b23659ff2a0f2",
+    "device_qualification/verify_receipts.py": "bffedde293fc5076f7377cb986ef146a03b1046482449552194104eec45c3e3c",
+    "durable_admission.py": "45334865fe102cc25489c0b4ceb284792ca71f94e0f3bdd387508137edb37c9c",
+    "evidence/integrated-20261105/capture.py": "adf45e30f6dedf324c4898c3efced7fec67a6665d761b0e52b2c0cc4ec15f2a3",
+    "execution_snapshot.py": "52e66613b18f185e21d11cdc1d1619ef23e1ab8f5dea20e88168e366ad92c5c0",
+    "experiment_ledger.py": "e2a623bcb97154e69c998f08fa9a16772f5a78b0603b9a06c45d578b5abd3afb",
+    "experiment_ledger_tests.py": "5fab18867ad6ca4b4f95d9ebc3702c234a2977f0af682bf8f8898b32bc77b4e7",
+    "identifier_tests.py": "7054811869bef2e0b215929a57a84026f230a1dac63fcd807eb78a5eaa710c32",
+    "integration_tests.py": "67b48845f264b6661f1487ba2d9254c4d1e7eb06aabb0d9916bb0c9faa3fa5df",
+    "isolated_runner.py": "2e1516b39f2939041437790c34f4f8a3163cda1af04bd4ee8b64f6881c51eac7",
+    "isolated_runner_tests.py": "e26da4569330383fe72d9849a9ece54514f09229574035d3fd5ae19a7eb5622e",
+    "native-transfer/identifier_tests.rs": "9002b61ca22913a966b284d2dec8c7fd0a496a08fea2146277fe297488880fca",
+    "native-transfer/runner.rs": "572baa0cf599f0aa304fd1f79ff4b2d5d9c6ffead4b678dbec4851687859cdf0",
+    "native-transfer/transfer.rs": "691f218f6275d43774047437a494b8aaf44fe362ecf0f62302af12d1eac30dcc",
+    "review_tests.py": "defdc391623754719b6794de4d7f2d1bbef38b1c0743142049376fc7a2c5e53f",
+    "routing_diagnostics.py": "8485541eb306b7633417e7f606dcadf0676e937631280830788eb8e8cca950f3",
+    "routing_diagnostics_tests.py": "efd2e17a6eb76e671691dfa464295b7f9094291a702c28fa3bd0c25e29c60237",
+    "runner_review_fixture.py": "acb4f8fbb54b83530e8aea2ce96826d67795f9a76c9bba8561fee8d7ac68f836",
+    "runner_review_tests.py": "d08ada18c3e4f9d70b1968ea6d95fcefa720104bdf6ba2dab80a67816ec12254",
+    "typed_json.py": "18a948695925b18398f857017a05087815c445813049d53e39e4fec5e417ed48",
+    "typed_output_tests.py": "28ebd7ac4f7a790f0a583ada8ac51c8e798ec0da3cba99b5fde429ac947f14d1",
+    "verify.py": "3b6577d127a6ea623b8faff070baae72b41b8be339f7e5c10e76db731d98d8d6"
+  },
+  "source_unchanged": true,
+  "historical_checks_restored": true,
+  "passed": true,
+  "scope": "Current reference checks and offline verification of historical signed host receipts; no new model runs, independent samples, remote host operations or full lifecycle costs.",
+  "new_model_runs": 0,
+  "new_independent_language_samples": 0,
+  "production_activation_allowed": false
+}

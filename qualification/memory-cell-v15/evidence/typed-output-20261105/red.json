@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.memory.typed-output-regression.v1",
+  "regression_fixed": false,
+  "candidate_correct": 256,
+  "expected_candidate_correct": 0,
+  "candidate_output_type": "bool",
+  "gold_output_type": "int",
+  "queries": 256,
+  "approved": true,
+  "paired_mean": 1.0,
+  "reasons": [],
+  "durable_terminal": "completed",
+  "worker_status": {
+    "candidate": "completed",
+    "incumbent": "completed"
+  },
+  "data_sha256": "9ded2c0b327bd03851418e36d9fb90c01f1934e65b111679183264fa8071016f",
+  "source_sha256": {
+    "admission.py": "68c5f46179c712bf2321e3e12ec4b9fda1f05341960d45e215d03fd2e0e15ebe",
+    "cohort.py": "c14e4ecc87e926894da1ba2838df02b420b6fd660c9ec28039567840f85b1bfe",
+    "isolated_runner.py": "944346ca3cdc64af6c13f168231a2af08d833092541790dcc053a7de94383768",
+    "durable_admission.py": "4f2b280484ec5fa3942f52967ca4068ef9f7181369cc07005d50dadb10c36f6c",
+    "experiment_ledger.py": "e2a623bcb97154e69c998f08fa9a16772f5a78b0603b9a06c45d578b5abd3afb",
+    "execution_snapshot.py": "52e66613b18f185e21d11cdc1d1619ef23e1ab8f5dea20e88168e366ad92c5c0",
+    "admission_test_support.py": "d57a0633ce2d6fcd95bf375513a8a36f912d53324e86bf75e1b9c6939858349d"
+  },
+  "source_unchanged": true,
+  "probe_sha256": "3dc0754526c13f8cacebfc61eb82e1229b8bf3d2b1612047ce5f77c72931c0f0",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "scope": "Synthetic protocol regression with artificial cost controls; no real-model training, independent task sample, deployment or product-gain claim.",
+  "production_authority": false
+}

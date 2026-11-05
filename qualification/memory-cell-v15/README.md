@@ -6,12 +6,21 @@ resource budgets and complete cost receipts, freezes execution settings, isolate
 each arm in a bounded worker, and separates historical-device evidence from current
 source checks. Historical results below retain their original source scope.
 
-The current increment is [draft PR #4885](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4885).
+The preceding admission increment is [draft PR #4885](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4885).
 Local normal and optimized Python each passed **93/93**; historical-identity
 controls passed **9/9**. At the recorded 2026-11-05 15:19 UTC observation,
 [scoped CI 42051127746](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42051127746)
 was still queued, with no executed job or artifact. This is not a new remote CI
 success or whole-repository qualification; see the retained queue snapshot.
+
+The continuation fixes invalid identifier transfer deadlocks and typed-output
+false positives, adds [durable prospective evaluation](DURABLE_EVALUATION.md),
+and separates coverage/local-scoring/routing diagnostics. The identifier repair
+is [draft PR #4889](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4889).
+Current results and explicit open gates are in
+[CONTINUATION_20261105.zh-CN.md](CONTINUATION_20261105.zh-CN.md).
+An isolated whole-authority rollback probe still reproduces stale-owner and
+revoked-source acceptance; that protection is **not qualified**.
 
 This directory adds an executable reference for ownership, version publication,
 migration, structural admission, and evidence-bound evaluation. It also independently
@@ -38,6 +47,9 @@ chosen numerical representation. More cells or parameters are not acceptance cri
 | `admission.py` | Frozen prospective paired evaluation; same lawful information and actual common budget; independently reported quality/resource/economic qualification; complete-cost and retention refusal |
 | `isolated_runner.py` | Fresh interpreter/private working directory per arm; trusted callback snapshots; per-process CPU/address-space limits, arm deadline, joined-CPU postcheck and complete failure denominator |
 | `cohort.py` | Registered candidate roster, phase/source separation, logical source-unit deduplication and finite planned-look correction |
+| `experiment_ledger.py` / `durable_admission.py` | Opt-in single-owner durable comparison/look reservations, frozen complete callback roster, terminal receipt retention and no automatic replay |
+| `typed_json.py` | Common strict JSON value semantics for worker scoring and routing diagnostics; booleans, integers and floats are distinct |
+| `routing_diagnostics.py` | Fixed-trace coverage, local-scoring, cross-cell routing and grounded-output decomposition; no promotion or causal claim |
 | `integration_tests.py` | Loads verified serialized finite-model bytes, executes the evaluator, and connects its decision to publication; synthetic contract fixture only |
 | `authority_tests.py` | Real concurrent processes, process-kill commit boundaries, cold restore, migration and authorization controls |
 | `review_tests.py` | Independent adversarial tests, including frozen-input and executor-state counterexamples found during review |
@@ -212,9 +224,11 @@ reproduction instructions are in [`device_qualification/`](device_qualification/
   not external services, shared absolute paths or hostile code. CPU/address-space
   hard limits are per process; joined-child CPU is checked after execution. A
   production aggregate process-tree budget requires additional supervision.
-- Registration and settings are frozen within one evaluation object. A persistent
-  experiment/look ledger is not implemented: the trusted host must reserve looks
-  before dispatch, preserve unknown outcomes and prevent adaptive holdout reuse.
+- The opt-in durable wrapper freezes the complete callback roster and reserves
+  comparisons/looks in one persistent ledger before model dispatch. Direct calls
+  to the old evaluator, separate databases and whole-ledger rollback do not carry
+  that guarantee. Authentic source provenance and semantic holdout independence
+  still require a trusted ingestion boundary.
 - No new long-term language retention, strict full-budget superiority or positive
   learned split/merge result is established. Existing negative evidence remains valid.
 

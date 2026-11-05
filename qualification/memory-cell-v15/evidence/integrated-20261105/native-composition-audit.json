@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.memory.native-composition-read-audit.v1",
+  "source_commit": "f88b826d3c22b5f89fd350dab4813be2855a2f93",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "git_blob_sha1": "bf07a62a63d4058e1f958fb5c67b0d77ca0fd481",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f88b826d3c22b5f89fd350dab4813be2855a2f93/codex-rs/hepta-agentd/src/config.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "git_blob_sha1": "60595420f4bf42089b5745830ac611df1c7ec2c2",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f88b826d3c22b5f89fd350dab4813be2855a2f93/codex-rs/hepta-agentd/src/main.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_cell_migration_v9_transport.rs",
+      "git_blob_sha1": "be24ba4ecb478ffc01cf0b0041ffdeec74a42f85",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f88b826d3c22b5f89fd350dab4813be2855a2f93/codex-rs/hepta-agentd/src/memory_cell_migration_v9_transport.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_cell_runtime.rs",
+      "git_blob_sha1": "5733109a55c927728d159cc2f9b8e9fe9806fdb4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f88b826d3c22b5f89fd350dab4813be2855a2f93/codex-rs/hepta-agentd/src/memory_cell_runtime.rs"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "git_blob_sha1": "043ffd75a20c42935959a98d37f40e3d7229c407",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f88b826d3c22b5f89fd350dab4813be2855a2f93/codex-rs/hepta-contracts/src/authority_trust.rs"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "git_blob_sha1": "3cc75fab4185789514e4ecc7522e52f1ca59249f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f88b826d3c22b5f89fd350dab4813be2855a2f93/codex-rs/hepta-contracts/src/final_use.rs"
+    }
+  ],
+  "scope": "Read-only source inspection. Existing native components are retained; no build, execution, deployment or end-to-end V15 qualification is implied.",
+  "observations": {
+    "memory_cells_default": "None",
+    "explicit_with_memory_cells_config_exists": true,
+    "main_rs_calls_with_memory_cells": false,
+    "provider_new_and_reconnect_require_loopback": true,
+    "runtime_revalidates_source_owner_after_read": true,
+    "external_frontier_interface_exists": true,
+    "qualified_external_frontier_deployment_proven": false,
+    "production_activation_allowed": false
+  }
+}

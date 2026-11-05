@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.memory.typed-output-fix-source.v1",
+  "scope": "Synthetic typed-output acceptance regression; no product accuracy or neural memory gain claim",
+  "same_probe_sha256": "3dc0754526c13f8cacebfc61eb82e1229b8bf3d2b1612047ce5f77c72931c0f0",
+  "same_data_sha256": "9ded2c0b327bd03851418e36d9fb90c01f1934e65b111679183264fa8071016f",
+  "red_correct": 256,
+  "green_correct": 0,
+  "red_approved": true,
+  "green_approved": false,
+  "files_sha256": {
+    "typed_json.py": "18a948695925b18398f857017a05087815c445813049d53e39e4fec5e417ed48",
+    "isolated_runner.py": "2e1516b39f2939041437790c34f4f8a3163cda1af04bd4ee8b64f6881c51eac7",
+    "routing_diagnostics.py": "351e0a51bdc27a6045ca7f6f7aaf28bed2f5487053e8fbc00b3f65e05f5b0e4f",
+    "typed_output_tests.py": "28ebd7ac4f7a790f0a583ada8ac51c8e798ec0da3cba99b5fde429ac947f14d1",
+    "routing_diagnostics_tests.py": "9a9608e08b7cb47f92d08f1b52f35bc37de1f9fdb0357fc02aadbd4e0698223f",
+    "durable_admission.py": "45334865fe102cc25489c0b4ceb284792ca71f94e0f3bdd387508137edb37c9c",
+    "execution_snapshot.py": "52e66613b18f185e21d11cdc1d1619ef23e1ab8f5dea20e88168e366ad92c5c0",
+    "experiment_ledger.py": "e2a623bcb97154e69c998f08fa9a16772f5a78b0603b9a06c45d578b5abd3afb",
+    "admission.py": "68c5f46179c712bf2321e3e12ec4b9fda1f05341960d45e215d03fd2e0e15ebe",
+    "cohort.py": "c14e4ecc87e926894da1ba2838df02b420b6fd660c9ec28039567840f85b1bfe",
+    "admission_test_support.py": "d57a0633ce2d6fcd95bf375513a8a36f912d53324e86bf75e1b9c6939858349d"
+  },
+  "raw_receipts_sha256": {
+    "probe.py": "3dc0754526c13f8cacebfc61eb82e1229b8bf3d2b1612047ce5f77c72931c0f0",
+    "red.json": "d1bd7bacc764cc3f7ef9ecca7d8e343c369ed37407a8c278d2fcc4da8d1b74ab",
+    "green.json": "735bd8f10647fad3209c4a7e8325faffa4c83f14aa348e4b2e8e75cc7453f795"
+  },
+  "comparison_policy": {
+    "accepted_types": [
+      "null",
+      "bool",
+      "int",
+      "float",
+      "str",
+      "list",
+      "dict-with-string-keys"
+    ],
+    "bool_vs_integer": "different",
+    "integer_vs_float": "different",
+    "finite_float_signed_zero": "equal",
+    "object_key_order": "ignored",
+    "array_order": "preserved",
+    "nonfinite_and_non_json": "error",
+    "custom_equality": "never_called"
+  },
+  "targeted_tests": {
+    "normal": 28,
+    "optimized": 28,
+    "typed": 11,
+    "routing": 17
+  },
+  "production_activation_allowed": false
+}

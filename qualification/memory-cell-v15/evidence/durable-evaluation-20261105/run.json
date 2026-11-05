@@ -1,0 +1,66 @@
+{
+  "cloudpickle_version": "3.1.2",
+  "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+  "local_snapshot_commit": "ae4b786893c719c617fc41be0b624a3e60e49b24",
+  "passed": true,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "production_authority": false,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "pythonpath": "/workspace/scratch/b5d58a60397e/python-deps",
+  "recorded_at": "2026-11-05T16:20:03.334273+00:00",
+  "runs": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/workspace/scratch/659d49a81461/memory-cell-work/qualification/memory-cell-v15",
+        "-p",
+        "experiment_ledger_tests.py",
+        "-v"
+      ],
+      "cwd": "/workspace/scratch/659d49a81461/memory-cell-work",
+      "exit_code": 0,
+      "finished_at": "2026-11-05T16:19:58.978988+00:00",
+      "log": "normal.log",
+      "log_sha256": "0976566c17e994b8cb171cbc7dbf00b48d785fd819f95c7b99cb76a7d6ff567f",
+      "mode": "normal",
+      "started_at": "2026-11-05T16:19:54.379913+00:00",
+      "test_count": 20,
+      "wall_seconds": 4.598556403005205
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-O",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/workspace/scratch/659d49a81461/memory-cell-work/qualification/memory-cell-v15",
+        "-p",
+        "experiment_ledger_tests.py",
+        "-v"
+      ],
+      "cwd": "/workspace/scratch/659d49a81461/memory-cell-work",
+      "exit_code": 0,
+      "finished_at": "2026-11-05T16:20:03.326529+00:00",
+      "log": "optimized.log",
+      "log_sha256": "661c1253c088a2544fc9970e8a5621b5e9fa68160d0709012defc15d6f25ae36",
+      "mode": "optimized",
+      "started_at": "2026-11-05T16:19:58.979171+00:00",
+      "test_count": 20,
+      "wall_seconds": 4.346578457996657
+    }
+  ],
+  "schema": "hepta.memory.durable-evaluation-evidence.v1",
+  "scope": "20 focused durable ledger/wrapper tests; not integrated qualification or efficacy/cost evidence",
+  "source_hashes_after": "source-hashes.after.json",
+  "source_hashes_before": "source-hashes.before.json",
+  "source_stable": true,
+  "synthetic_control_costs": true,
+  "upstream_source_commit": "f88b826d3c22b5f89fd350dab4813be2855a2f93",
+  "working_copy_modified": true
+}
