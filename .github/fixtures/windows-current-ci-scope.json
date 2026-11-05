@@ -399,6 +399,15 @@
         "suite::v2::thread_termination_observed::observed_termination_jsonrpc_reaches_core_and_original_child"
       ],
       "filter": "test(=suite::v2::thread_termination_observed::observed_termination_jsonrpc_reaches_core_and_original_child)"
+    },
+    {
+      "id": "sandbox-setup-handle-inheritance-sentinel",
+      "package": "codex-windows-sandbox",
+      "expectedTestCount": 1,
+      "requiredTests": [
+        "setup_background::tests::background_setup_inherits_only_dedicated_null_handles"
+      ],
+      "filter": "test(=setup_background::tests::background_setup_inherits_only_dedicated_null_handles)"
     }
   ]
 }
