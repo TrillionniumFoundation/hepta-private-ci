@@ -1080,6 +1080,29 @@ where
     response_mock
 }
 
+/// Mount a request-driven response with captured, invariant-checked requests.
+/// The caller owns its completion matcher when the number of polls is variable.
+pub async fn mount_response_match<M, R>(
+    server: &MockServer,
+    matcher: M,
+    responder: R,
+) -> ResponseMock
+where
+    M: wiremock::Match + Send + Sync + 'static,
+    R: Respond + Send + Sync + 'static,
+{
+    let response_mock = ResponseMock::new();
+    Mock::given(method("POST"))
+        .and(path_regex(".*/responses$"))
+        .and(matcher)
+        .and(response_mock.clone())
+        .respond_with(responder)
+        .expect(1..)
+        .mount(server)
+        .await;
+    response_mock
+}
+
 fn base_mock() -> (MockBuilder, ResponseMock) {
     let response_mock = ResponseMock::new();
     let mock = Mock::given(method("POST"))
