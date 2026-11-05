@@ -15,10 +15,6 @@ use super::write_curated_plugins_sha;
 use codex_git_utils::GitCommandCancellation;
 use codex_git_utils::run_git_command_with_custody;
 use std::path::Path;
-#[cfg(target_os = "macos")]
-use std::process::Command;
-#[cfg(target_os = "macos")]
-use std::process::Stdio;
 
 pub(super) fn sync_with_cancellation(
     codex_home: &Path,
@@ -220,16 +216,17 @@ fn git_head_sha(repo_path: &Path, git_binary: &Path, cancellation: &GitCommandCa
 }
 
 #[cfg(target_os = "macos")]
-pub(super) fn apple_developer_tools_available() -> bool {
-    Command::new("/usr/bin/xcode-select")
-        .arg("-p")
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .status()
-        .is_ok_and(|status| status.success())
+pub(super) fn apple_developer_tools_available(cancellation: &GitCommandCancellation) -> Result<bool, String> {
+    let mut command = std::process::Command::new("/usr/bin/xcode-select");
+    command.arg("-p");
+    let result = run_git_command_with_custody(
+        &mut command, "xcode-select developer tools probe", CURATED_PLUGINS_GIT_TIMEOUT, cancellation,
+    );
+    cancellation.check()?;
+    Ok(result.is_ok_and(|output| output.status.success()))
 }
 
+#[cfg(test)]
 pub(super) fn sync_openai_plugins_repo_via_git(codex_home: &Path, git_binary: &Path) -> Result<String, String> {
     sync_with_cancellation(codex_home, git_binary, &GitCommandCancellation::default())
 }
