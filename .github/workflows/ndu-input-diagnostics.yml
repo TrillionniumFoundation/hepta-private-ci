@@ -1,0 +1,88 @@
+name: NDU input-chain interventions
+
+on:
+  push:
+    branches:
+      - research/ndu-input-diagnostics-20261105
+    paths:
+      - experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/diagnostics.py
+      - .github/workflows/ndu-input-diagnostics.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONNOUSERSITE: "1"
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+  OPENBLAS_NUM_THREADS: "2"
+  HF_HUB_DISABLE_TELEMETRY: "1"
+
+jobs:
+  input-interventions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/multimodal_output_portfolio/joint_hepta_20261029
+            experiments/multimodal_output_portfolio/unified_20261028
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - name: Prepare evidence and verified prior image interventions
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/input-evidence"
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          git rev-parse HEAD > "$RUNNER_TEMP/input-evidence/SOURCE_SHA.txt"
+          python - <<'PY'
+          import hashlib,json,os,pathlib,shutil
+          root=pathlib.Path("experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/real_20261105")
+          out=pathlib.Path(os.environ["RUNNER_TEMP"])/"input-evidence"
+          review=json.loads((root/"REVIEW.json").read_text())
+          records={x["path"]:x for x in review["original_file_manifest"]}
+          for current,original in (("input.png","real/input.png"),("direct.png","real/direct/02-draft.png")):
+              data=(root/current).read_bytes()
+              assert hashlib.sha256(data).hexdigest()==records[original]["sha256"]
+              shutil.copyfile(root/current,out/current)
+          (out/"ORIGIN.json").write_text(json.dumps({"source_sha":review["source_sha"],"run_id":review["run_id"],"archive_sha256":review["archive_sha256"]}))
+          PY
+      - name: Install the same declared CPU runtime
+        run: |
+          python -m pip install --no-cache-dir --disable-pip-version-check --extra-index-url https://download.pytorch.org/whl/cpu torch==2.8.0+cpu torchvision==0.23.0+cpu numpy==2.3.5 Pillow==13.0.0 transformers==4.57.3 diffusers==0.35.2 accelerate==1.12.0 safetensors==0.7.0 num2words==0.5.14
+          python -m pip freeze > "$RUNNER_TEMP/input-evidence/environment.txt"
+      - name: Acquire the same pinned model material
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.acquire_models --root "$RUNNER_TEMP/dual-models" 2>&1 | tee "$RUNNER_TEMP/input-evidence/acquisition.log"
+      - name: Six real image and instruction interventions
+        run: |
+          set -euo pipefail
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.diagnostics --models "$RUNNER_TEMP/dual-models" --original "$RUNNER_TEMP/input-evidence/input.png" --generated "$RUNNER_TEMP/input-evidence/direct.png" --output "$RUNNER_TEMP/input-evidence/diagnostics" --source-sha "${{ github.sha }}" --threads 2 --max-tokens 80 2>&1 | tee "$RUNNER_TEMP/input-evidence/diagnostics.log"
+          git diff --check
+          git diff --exit-code
+      - name: Preserve acquisition receipts
+        if: always()
+        run: |
+          python - <<'PY'
+          import os,pathlib,shutil
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          for name in ("ACQUISITION.json","ACQUISITION_ATTEMPTS.jsonl","vlm/MANIFEST.json","sd/MANIFEST.json","task/INPUT_MANIFEST.json"):
+              src=root/"dual-models"/name
+              if src.is_file():
+                  dst=root/"input-evidence"/"acquisition"/name
+                  dst.parent.mkdir(parents=True,exist_ok=True)
+                  shutil.copyfile(src,dst)
+          PY
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: ndu-input-${{ github.sha }}
+          path: ${{ runner.temp }}/input-evidence/
+          retention-days: 30
