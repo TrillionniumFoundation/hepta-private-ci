@@ -1,5 +1,9 @@
 //! Computation admissions and receipt binding for the bounded V2 profile.
 
+use std::collections::BTreeMap;
+
+use codex_hepta_contracts::Sha256Digest;
+
 use crate::BoundedCircuitDefinitionV2;
 use crate::CircuitActivationStatusV2 as Status;
 use crate::CircuitBudgetV2;
@@ -15,6 +19,7 @@ use crate::circuit_profile::digest;
 use crate::circuit_profile::hash;
 use crate::circuit_profile::invalid;
 use crate::circuit_state::CircuitInstanceV2;
+use crate::circuit_state::CircuitNodeProgressV2;
 
 impl CircuitRunV2 {
     pub(crate) fn dispatch(&self, definition: &BoundedCircuitDefinitionV2, id: u64) -> Result<CircuitDispatchV2, TaskFlowError> {
@@ -74,7 +79,7 @@ impl CircuitRunV2 {
                 self.instances.insert(id, CircuitInstanceV2 {
                     program_id: program, parent_activation: Some(id), child_depth,
                     budget: CircuitBudgetV2::new(max_work), exit: None, returned: false,
-                    last_output: None, no_progress: 0,
+                    progress: BTreeMap::new(),
                 });
                 self.activations.get_mut(&id).ok_or_else(|| invalid("unknown activation"))?.status = Status::ChildRunning;
                 self.enqueue(definition, id, &entry, /*round*/ 0, vec![id], activation.input_digest,
@@ -125,13 +130,7 @@ impl CircuitRunV2 {
         }
         let instance = self.instances.get_mut(&activation.instance_id).ok_or_else(|| invalid("unknown instance"))?;
         let settlement = instance.budget.settle(id, completion.actual_work)?;
-        instance.no_progress = if instance.last_output.as_ref() == Some(&completion.output_digest) {
-            instance.no_progress + 1
-        } else {
-            0
-        };
-        instance.last_output = Some(completion.output_digest.clone());
-        let no_progress = instance.no_progress;
+        let no_progress = self.observe_output(activation.instance_id, &activation.node_id, &completion.output_digest)?;
         let completed = self.activations.get_mut(&id).ok_or_else(|| invalid("unknown completion"))?;
         completed.status = Status::Completed;
         completed.output_digest = Some(completion.output_digest.clone());
@@ -150,6 +149,23 @@ impl CircuitRunV2 {
             return self.stop(definition, Stop::NoProgress);
         }
         self.route(definition, id, &completion.selected_edges)
+    }
+
+    /// Different cells can alternate stable outputs. Keep observations local
+    /// to each (instance, node), including a returning composite computation.
+    pub(crate) fn observe_output(
+        &mut self, instance_id: u64, node_id: &str, output: &Sha256Digest,
+    ) -> Result<u32, TaskFlowError> {
+        let instance = self.instances.get_mut(&instance_id).ok_or_else(|| invalid("unknown progress instance"))?;
+        let no_progress = match instance.progress.get(node_id) {
+            Some(previous) if previous.last_output == *output =>
+                previous.no_progress.checked_add(1).ok_or_else(|| invalid("progress counter overflow"))?,
+            _ => 0,
+        };
+        instance.progress.insert(node_id.to_string(), CircuitNodeProgressV2 {
+            last_output: output.clone(), no_progress,
+        });
+        Ok(no_progress)
     }
 
     pub(crate) fn complete_internal(

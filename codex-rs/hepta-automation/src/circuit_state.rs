@@ -77,6 +77,12 @@ pub struct CircuitActivationV2 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub(crate) struct CircuitNodeProgressV2 {
+    pub last_output: Sha256Digest,
+    pub no_progress: u32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub(crate) struct CircuitInstanceV2 {
     pub program_id: String,
     pub parent_activation: Option<u64>,
@@ -84,8 +90,7 @@ pub(crate) struct CircuitInstanceV2 {
     pub budget: CircuitBudgetV2,
     pub exit: Option<(CircuitExitV2, Sha256Digest)>,
     pub returned: bool,
-    pub last_output: Option<Sha256Digest>,
-    pub no_progress: u32,
+    pub progress: BTreeMap<String, CircuitNodeProgressV2>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]

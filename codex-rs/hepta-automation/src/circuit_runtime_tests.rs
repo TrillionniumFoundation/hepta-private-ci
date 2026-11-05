@@ -106,7 +106,7 @@ fn v1_cycle_validation_remains_an_independent_compatibility_gate() {
     definition().validate().expect("explicit V2 feedback profile");
 }
 
-fn join_definition(mode: CircuitJoinV2) -> BoundedCircuitDefinitionV2 {
+pub(super) fn join_definition(mode: CircuitJoinV2) -> BoundedCircuitDefinitionV2 {
     let mut definition = definition();
     let program = &mut definition.programs[0];
     program.entry_node = "fork".to_string();
@@ -115,6 +115,9 @@ fn join_definition(mode: CircuitJoinV2) -> BoundedCircuitDefinitionV2 {
         node("join", CircuitNodeKindV2::Join { mode, timeout_ms: 50 }),
         node("success", CircuitNodeKindV2::Exit { outcome: CircuitExitV2::Succeeded }),
         node("failure", CircuitNodeKindV2::Exit { outcome: CircuitExitV2::Failed })];
+    program.nodes[3].output_schema = circuit_join_output_schema_v2();
+    program.nodes[4].input_schema = circuit_join_output_schema_v2();
+    program.nodes[4].output_schema = circuit_join_output_schema_v2();
     program.edges = vec![edge("fork-left", "fork", "left"), edge("fork-right", "fork", "right"),
         edge("left-join", "left", "join"), edge("right-join", "right", "join"), edge("joined", "join", "success")];
     definition
@@ -377,4 +380,89 @@ fn child_overrun_debt_propagates_to_every_parent_without_double_charging() {
         (Some(CircuitExitV2::Failed), Some(CircuitStopReasonV2::WorkBudget), 8, 0));
     assert!(run.instances.values().all(|instance|
         instance.budget.spent() == 8 && instance.budget.reserved() == 0 && instance.returned));
+}
+
+#[test]
+fn distinct_cells_in_a_feedback_loop_are_checked_for_progress_independently() {
+    let mut definition = definition();
+    definition.limits.max_no_progress = 1;
+    let program = &mut definition.programs[0];
+    program.nodes.push(node("other-cell", CircuitNodeKindV2::Compute { max_work: 5 }));
+    program.edges = vec![edge("next", "decide", "other-cell"),
+        CircuitEdgeV2 { feedback_delay_ms: Some(10), ..edge("again", "other-cell", "decide") },
+        edge("done", "decide", "success")];
+    let run = CircuitRunV2::prepare(&definition, &start(), &fence(/*generation*/ 1)).expect("run");
+    let (run, first) = advance(&run, &definition, /*now_ms*/ 10);
+    let (run, _) = run.reduce(&definition, &CircuitEventV2::Complete {
+        completion: completion(&first[0], &["next"], "cell-a-stable"),
+    }, /*now_ms*/ 11).expect("A");
+    let (run, second) = advance(&run, &definition, /*now_ms*/ 12);
+    let (run, _) = run.reduce(&definition, &CircuitEventV2::Complete {
+        completion: completion(&second[0], &["again"], "cell-b-different-but-stable"),
+    }, /*now_ms*/ 13).expect("B");
+    let (run, reactivated) = advance(&run, &definition, /*now_ms*/ 23);
+    assert_eq!(reactivated[0].node_id, first[0].node_id);
+    let (run, _) = run.reduce(&definition, &CircuitEventV2::Complete {
+        completion: completion(&reactivated[0], &["next"], "cell-a-stable"),
+    }, /*now_ms*/ 24).expect("same A result is no progress despite intervening B");
+    assert_eq!((run.stop_reason(), run.outcome(), run.budget().spent()),
+        (Some(CircuitStopReasonV2::NoProgress), Some(CircuitExitV2::Failed), 9));
+}
+
+#[test]
+fn joins_require_the_reference_schema_and_export_the_exact_frozen_bytes() {
+    let definition = join_definition(CircuitJoinV2::All);
+    let mut mismatched = definition.clone();
+    mismatched.programs[0].nodes[3].output_schema = digest("vector-v1");
+    mismatched.programs[0].nodes[4].input_schema = digest("vector-v1");
+    mismatched.programs[0].nodes[4].output_schema = digest("vector-v1");
+    assert!(mismatched.validate().is_err(), "an internally consistent edge still needs the explicit join schema");
+    let (run, work) = fork(&definition);
+    let (run, _) = run.reduce(&definition, &CircuitEventV2::Complete {
+        completion: completion(&work[1], &["right-join"], "right-result"),
+    }, /*now_ms*/ 13).expect("right arrival");
+    let waiting = run.activations().values().find(|a| a.node_id == "join").expect("join slot").activation_id;
+    assert!(run.join_output_bytes(waiting).is_err());
+    let (run, _) = run.reduce(&definition, &CircuitEventV2::Complete {
+        completion: completion(&work[0], &["left-join"], "left-result"),
+    }, /*now_ms*/ 14).expect("left arrival");
+    assert!(run.join_output_bytes(waiting).is_err(), "a ready join has not committed output yet");
+    let (run, _) = advance(&run, &definition, /*now_ms*/ 15);
+    let bytes = run.join_output_bytes(waiting).expect("frozen reference envelope");
+    let envelope: CircuitJoinEnvelopeV2 = serde_json::from_slice(&bytes).expect("public wire type");
+    assert_eq!(envelope.causal_parents, vec![work[1].activation_id, work[0].activation_id]);
+    assert_eq!(envelope.arrival_input_digests, vec![digest("right-result"), digest("left-result")]);
+    assert_eq!(envelope.canonical_bytes().expect("canonical round trip"), bytes);
+    let successor = run.activations().values().find(|a| a.node_id == "success").expect("successor");
+    assert_eq!(successor.input_digest, Sha256Digest::for_bytes(&bytes));
+    assert!(run.join_output_bytes(work[0].activation_id).is_err(), "ordinary computation is not a join");
+}
+
+#[test]
+fn returning_subcircuits_preserve_parent_node_progress_across_child_instances() {
+    let mut definition = child_definition(/*reservation*/ 12);
+    definition.limits.max_no_progress = 1;
+    let parent = &mut definition.programs[0];
+    parent.nodes.push(node("gate", CircuitNodeKindV2::Decide { max_work: 5 }));
+    parent.edges = vec![edge("returned", "call", "gate"),
+        CircuitEdgeV2 { feedback_delay_ms: Some(10), ..edge("again", "gate", "call") },
+        edge("done", "gate", "success")];
+    let run = CircuitRunV2::prepare(&definition, &start(), &fence(/*generation*/ 1)).expect("run");
+    let (run, child) = advance(&run, &definition, /*now_ms*/ 10);
+    let (run, _) = run.reduce(&definition, &CircuitEventV2::Complete {
+        completion: completion(&child[0], &["done"], "stable-child-result"),
+    }, /*now_ms*/ 11).expect("first child result");
+    let (run, gate) = advance(&run, &definition, /*now_ms*/ 12);
+    assert_eq!(gate[0].node_id, "gate");
+    let (run, _) = run.reduce(&definition, &CircuitEventV2::Complete {
+        completion: completion(&gate[0], &["again"], "first-parent-gate"),
+    }, /*now_ms*/ 13).expect("another child invocation");
+    let (run, child) = advance(&run, &definition, /*now_ms*/ 23);
+    let (run, _) = run.reduce(&definition, &CircuitEventV2::Complete {
+        completion: completion(&child[0], &["done"], "stable-child-result"),
+    }, /*now_ms*/ 24).expect("same output from a new child instance");
+    let (run, dispatches) = advance(&run, &definition, /*now_ms*/ 25);
+    assert!(dispatches.is_empty());
+    assert_eq!((run.stop_reason(), run.outcome(), run.budget().spent(), run.budget().reserved()),
+        (Some(CircuitStopReasonV2::NoProgress), Some(CircuitExitV2::Failed), 9, 0));
 }

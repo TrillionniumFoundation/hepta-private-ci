@@ -1,6 +1,7 @@
 //! Causal frontier, joins, child return, and cancellation for the V2 reducer.
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 
 use codex_hepta_contracts::Sha256Digest;
 
@@ -14,6 +15,7 @@ use crate::CircuitRunV2;
 use crate::CircuitStopReasonV2 as Stop;
 use crate::TaskFlowError;
 use crate::circuit_budget::CircuitWorkSettlementV2;
+use crate::circuit_join::CircuitJoinEnvelopeV2;
 use crate::circuit_profile::hash;
 use crate::circuit_profile::invalid;
 
@@ -84,15 +86,22 @@ impl CircuitRunV2 {
             let activation = self.activations.get_mut(&id).ok_or_else(|| invalid("unknown join"))?;
             activation.arrivals.insert(edge.to_string(), producer);
             activation.arrival_inputs.push(input);
-            activation.causal_parents.extend(parents);
+            // Shared child continuations may appear on several arriving edges.
+            // Causality records an identity once, keeping first-observed order.
+            let mut seen: BTreeSet<_> = activation.causal_parents.iter().copied().collect();
+            activation.causal_parents.extend(parents.into_iter().filter(|parent| seen.insert(*parent)));
             activation.causal_depth = activation.causal_depth.max(depth);
             activation.ready_at_ms = activation.ready_at_ms.max(ready_at_ms);
             if activation.arrivals.len() >= required {
                 activation.status = Status::Ready;
                 activation.join_deadline_ms = None;
                 let accepted = activation.arrivals.clone();
-                activation.input_digest = hash("hepta.circuit.join-input.v2",
-                    &(node_id, round, &activation.causal_parents, &activation.arrival_inputs))?;
+                let envelope = CircuitJoinEnvelopeV2 {
+                    node_id: node_id.to_string(), round,
+                    causal_parents: activation.causal_parents.clone(),
+                    arrival_input_digests: activation.arrival_inputs.clone(),
+                };
+                activation.input_digest = Sha256Digest::for_bytes(&envelope.canonical_bytes()?);
                 let surplus: Vec<_> = self.activations.values()
                     .filter(|a| a.instance_id == instance_id && a.round == round
                         && branch_sources.iter().any(|(edge, source)|
@@ -264,6 +273,10 @@ impl CircuitRunV2 {
             }
             if outcome != CircuitExitV2::Succeeded {
                 self.fallback_instance(definition, parent.instance_id, output)?;
+                continue;
+            }
+            if self.observe_output(parent.instance_id, &parent.node_id, &output)? >= definition.limits.max_no_progress {
+                self.stop(definition, Stop::NoProgress)?;
                 continue;
             }
             let program = definition.program(&self.instances[&parent.instance_id].program_id)?;
