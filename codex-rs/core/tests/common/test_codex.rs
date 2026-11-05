@@ -330,6 +330,7 @@ pub struct TestCodexBuilder {
     cloud_config_bundle: Option<CloudConfigBundleLoader>,
     user_shell_override: Option<Shell>,
     exec_server_url: Option<String>,
+    resume_environments: Option<Vec<TurnEnvironmentSelection>>,
     extensions: Arc<ExtensionRegistry<Config>>,
     user_instructions_provider: Option<Arc<dyn UserInstructionsProvider>>,
     supports_openai_form_elicitation: bool,
@@ -441,6 +442,13 @@ impl TestCodexBuilder {
 
     pub fn with_exec_server_url(mut self, exec_server_url: impl Into<String>) -> Self {
         self.exec_server_url = Some(exec_server_url.into());
+        self
+    }
+
+    /// Preserve an explicitly captured execution context while resuming stored history.
+    /// This fixture option does not infer or normalize a foreign executor's paths.
+    pub fn with_resume_environments(mut self, environments: Vec<TurnEnvironmentSelection>) -> Self {
+        self.resume_environments = Some(environments);
         self
     }
 
@@ -731,6 +739,11 @@ impl TestCodexBuilder {
         };
         let thread_manager = Arc::new(thread_manager);
         let user_shell_override = self.user_shell_override.clone();
+        anyhow::ensure!(
+            self.resume_environments.is_none()
+                || (resume_from.is_some() && user_shell_override.is_none()),
+            "explicit resume environments require a stored-history resume without a shell override"
+        );
         let client_mcp_extensions = || {
             ClientMcpExtensions::new(
                 self.supports_openai_form_elicitation
@@ -761,12 +774,13 @@ impl TestCodexBuilder {
                     auth,
                     config.codex_home.to_path_buf(),
                 );
-                Box::pin(thread_manager.resume_thread_from_rollout(
+                Box::pin(thread_manager.resume_thread_from_rollout_with_environments(
                     config.clone(),
                     path,
                     auth_manager,
                     /*parent_trace*/ None,
                     client_mcp_extensions(),
+                    self.resume_environments.clone(),
                 ))
                 .await?
             }
@@ -1392,6 +1406,7 @@ pub fn test_codex() -> TestCodexBuilder {
         cloud_config_bundle: None,
         user_shell_override: None,
         exec_server_url: None,
+        resume_environments: None,
         extensions: empty_extension_registry(),
         user_instructions_provider: None,
         supports_openai_form_elicitation: false,
