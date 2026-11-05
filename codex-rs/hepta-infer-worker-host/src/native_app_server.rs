@@ -679,6 +679,14 @@ impl AppServerModelDriver {
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
+            // Preserve the classified boundary, usage and owner loss before
+            // any cleanup await, including the Agentd cancellation RPC.
+            let observation_recorded = control
+                .settle_native(request_id, output.clone())
+                .map(|_| ());
+            let cancel_recorded = control.cancel_native(request_id);
+            #[cfg(all(test, unix))]
+            failure_tests::pause_after_observation_journal(request_id).await;
             if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
                 if let Ok(cancelled) = owner
                     .run_cancel(
@@ -691,19 +699,8 @@ impl AppServerModelDriver {
                     intelligence_revision = Some(cancelled.receipt.revision);
                 }
             }
-            // Persist cancellation intent, but still interrupt if that write
-            // fails. A failed journal write fences later admission/settlement.
-            // Commit observed authority loss before waiting for interruption:
-            // a process crash must not erase it from a later settlement.
-            let loss_recorded =
-                if matches!(output.owner_authority, NativeOwnerAuthority::Lost { .. }) {
-                    control
-                        .settle_native(request_id, output.clone())
-                        .map(|_| ())
-                } else {
-                    Ok(())
-                };
-            let cancel_recorded = control.cancel_native(request_id);
+            // Attempt physical cleanup even if a journal append failed. The
+            // retained error still fences settlement and later admission.
             interrupt(&mut client, &output).await;
             let grace = CancellationToken::new();
             let _ = self
@@ -716,7 +713,7 @@ impl AppServerModelDriver {
                     &binding,
                 )
                 .await;
-            loss_recorded?;
+            observation_recorded?;
             cancel_recorded?;
             if !output.terminal_observed
                 && let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
@@ -1212,6 +1209,8 @@ fn observe_event(
                 return Err("provider cumulative usage regressed".to_string());
             }
             output.observed_output_tokens = Some(observed_tokens);
+            #[cfg(all(test, unix))]
+            failure_tests::notify_observed_usage(observed_tokens);
         }
         ServerNotification::TurnCompleted(completed)
             if completed.thread_id == output.thread_id && completed.turn.id == output.turn_id =>
@@ -1258,3 +1257,7 @@ fn observe_event(
 #[cfg(test)]
 #[path = "native_app_server_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "native_failure_tests.rs"]
+mod failure_tests;
