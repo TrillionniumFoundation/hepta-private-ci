@@ -701,6 +701,12 @@ client_request_definitions! {
         serialization: thread_id(params.thread_id),
         response: v2::ThreadBackgroundTerminalsTerminateResponse,
     },
+    #[experimental("thread/backgroundTerminals/terminateObserved")]
+    ThreadBackgroundTerminalsTerminateObserved => "thread/backgroundTerminals/terminateObserved" {
+        params: v2::ThreadBackgroundTerminalsTerminateObservedParams,
+        serialization: thread_id(params.thread_id),
+        response: v2::ThreadBackgroundTerminalsTerminateObservedResponse,
+    },
     ThreadRollback => "thread/rollback" {
         params: v2::ThreadRollbackParams,
         serialization: thread_id(params.thread_id),

@@ -97,11 +97,15 @@ use tokio::sync::Semaphore;
 use tokio::sync::broadcast;
 use tokio::sync::watch;
 use tokio::time::Duration;
+use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 use tracing::Instrument;
 
 use crate::models_refresh_worker::ModelsRefreshWorker;
+
+#[path = "observed_termination_dispatch.rs"]
+mod observed_termination_dispatch;
 
 const CONNECTION_RPC_DRAIN_TIMEOUT: Duration = Duration::from_secs(/*secs*/ 30);
 
@@ -654,6 +658,7 @@ impl MessageProcessor {
         transport: &AppServerTransport,
         session: Arc<ConnectionSessionState>,
     ) {
+        let admitted_at = Instant::now();
         let request_method = request.method.as_str();
         tracing::trace!(
             ?connection_id,
@@ -688,6 +693,7 @@ impl MessageProcessor {
                             Arc::clone(&session),
                             /*outbound_initialized*/ None,
                             request_context.clone(),
+                            admitted_at,
                         )
                         .await
                     }
@@ -712,6 +718,7 @@ impl MessageProcessor {
         session: Arc<ConnectionSessionState>,
         outbound_initialized: &AtomicBool,
     ) {
+        let admitted_at = Instant::now();
         let request_id = ConnectionRequestId {
             connection_id,
             request_id: request.id().clone(),
@@ -739,6 +746,7 @@ impl MessageProcessor {
                         Arc::clone(&session),
                         Some(outbound_initialized),
                         request_context.clone(),
+                        admitted_at,
                     )
                     .await;
                 if let Err(error) = result {
@@ -896,6 +904,7 @@ impl MessageProcessor {
         // lib.rs can deliver connection-scoped initialize notifications first.
         outbound_initialized: Option<&AtomicBool>,
         request_context: RequestContext,
+        admitted_at: Instant,
     ) -> Result<(), JSONRPCErrorError> {
         let connection_id = connection_request_id.connection_id;
         if let ClientRequest::Initialize { request_id, params } = codex_request {
@@ -927,6 +936,7 @@ impl MessageProcessor {
             codex_request,
             session,
             request_context,
+            admitted_at,
         )
         .await
     }
@@ -937,6 +947,7 @@ impl MessageProcessor {
         codex_request: ClientRequest,
         session: Arc<ConnectionSessionState>,
         request_context: RequestContext,
+        admitted_at: Instant,
     ) -> Result<(), JSONRPCErrorError> {
         if !session.initialized() {
             return Err(invalid_request("Not initialized"));
@@ -953,6 +964,20 @@ impl MessageProcessor {
             connection_request_id.request_id.clone(),
             &codex_request,
         );
+
+        if let ClientRequest::ThreadBackgroundTerminalsTerminateObserved { params, .. } =
+            codex_request
+        {
+            return self
+                .enqueue_observed_termination(
+                    connection_request_id,
+                    params,
+                    session,
+                    request_context,
+                    admitted_at,
+                )
+                .await;
+        }
 
         let event_stream_ready = match &codex_request {
             ClientRequest::McpServerEventStreamStart { params, .. } => Some(
@@ -1390,6 +1415,9 @@ impl MessageProcessor {
                 processor.thread_processor
                     .thread_background_terminals_terminate(params)
                     .await
+            },
+            ClientRequest::ThreadBackgroundTerminalsTerminateObserved { .. } => {
+                Err(internal_error("observed termination requires ingress admission"))
             },
             ClientRequest::ThreadRollback { params, .. } => {
                 processor.thread_processor
