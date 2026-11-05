@@ -431,8 +431,9 @@ impl DeleteMatrix {
                         deleted.push(true)
                     }
                     Err(error) => {
-                        return Err(error)
-                            .with_context(|| format!("readback after {label}: {}", path.display()));
+                        return Err(error).with_context(|| {
+                            format!("readback after {label}: {}", path.display())
+                        });
                     }
                 }
             }
