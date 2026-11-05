@@ -171,7 +171,9 @@ async fn reopened_terminal_reconciliation_preserves_usage_and_irreversible_bound
                 };
             }
             let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
-            control.reserve_native(request.clone(), /*maximum_in_flight*/ 1).unwrap();
+            control
+                .reserve_native(request.clone(), /*maximum_in_flight*/ 1)
+                .unwrap();
             control.dispatch_native(REQUEST, dispatch.clone()).unwrap();
             control.native_started(REQUEST, TURN.to_string()).unwrap();
             let original = control.settle_native(REQUEST, previous.clone()).unwrap();
@@ -229,7 +231,10 @@ async fn reopened_terminal_reconciliation_preserves_usage_and_irreversible_bound
                 ..previous
             };
             assert_eq!(recovered, expected);
-            assert_eq!(recovered.succeeded(), boundary == NativeBoundaryStatus::Indeterminate);
+            assert_eq!(
+                recovered.succeeded(),
+                boundary == NativeBoundaryStatus::Indeterminate
+            );
             let settled = control.settle_native(REQUEST, recovered.clone()).unwrap();
             assert_eq!(settled.state, NativeReservationState::Released);
             assert_eq!(settled.observation, Some(expected));
@@ -238,7 +243,9 @@ async fn reopened_terminal_reconciliation_preserves_usage_and_irreversible_bound
                 control.dispatch_native(REQUEST, dispatch),
                 Err(ControlError::InvalidTransition)
             );
-            control.reserve_native(next_request, /*maximum_in_flight*/ 1).unwrap();
+            control
+                .reserve_native(next_request, /*maximum_in_flight*/ 1)
+                .unwrap();
             drop(control);
             let control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
             assert_eq!(control.native_record(REQUEST), Some(&settled));
@@ -253,7 +260,9 @@ async fn reopened_cancellation_intent_never_upgrades_a_completed_turn_to_success
         let path = directory.path().join("inference.journal");
         let (request, dispatch, intent) = fixture();
         let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
-        control.reserve_native(request.clone(), /*maximum_in_flight*/ 1).unwrap();
+        control
+            .reserve_native(request.clone(), /*maximum_in_flight*/ 1)
+            .unwrap();
         control.dispatch_native(REQUEST, dispatch).unwrap();
         if tokens.is_some() {
             control.native_started(REQUEST, TURN.to_string()).unwrap();
@@ -290,7 +299,9 @@ async fn reopened_cancellation_intent_never_upgrades_a_completed_turn_to_success
         assert!(settled.cancel_requested);
         let mut next_request = request;
         next_request.request_id = "request:next".to_string();
-        control.reserve_native(next_request, /*maximum_in_flight*/ 1).unwrap();
+        control
+            .reserve_native(next_request, /*maximum_in_flight*/ 1)
+            .unwrap();
         drop(control);
         let control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
         assert_eq!(control.native_record(REQUEST), Some(&settled));
@@ -306,7 +317,9 @@ fn terminal_reconciliation_rejects_cross_request_and_cross_turn_usage() {
         /*capacity*/ 8,
     )
     .unwrap();
-    control.reserve_native(request, /*maximum_in_flight*/ 1).unwrap();
+    control
+        .reserve_native(request, /*maximum_in_flight*/ 1)
+        .unwrap();
     control.dispatch_native(REQUEST, dispatch).unwrap();
     control.native_started(REQUEST, TURN.to_string()).unwrap();
     let mut previous = pending();

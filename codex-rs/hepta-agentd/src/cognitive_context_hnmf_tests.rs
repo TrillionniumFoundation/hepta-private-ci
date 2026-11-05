@@ -1,6 +1,9 @@
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
+use std::sync::mpsc;
+use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -9,6 +12,8 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
+use codex_hepta_memory::CognitiveStoreError;
+use codex_hepta_memory::ForgetMemoryDraft;
 use codex_hepta_memory::LedgerSourceKind;
 use codex_hepta_memory::MemoryDraft;
 use codex_hepta_memory::MemoryLifecycleState;
@@ -16,6 +21,7 @@ use codex_hepta_memory::MemoryRevisionDraft;
 use codex_hepta_memory::MemoryVerification;
 use codex_hepta_memory::RetrievalExecutionContextV1;
 use codex_hepta_memory::SourceDraft;
+use codex_hepta_memory::StableMemoryId;
 use codex_hepta_memory::sqlite_owner_cue_profile_digest;
 use codex_hepta_memory::sqlite_owner_retrieval_policy_v1;
 use codex_hepta_memory_retrieval::EngramDynamicsPolicyV1;
@@ -29,6 +35,9 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
+use pretty_assertions::assert_eq;
+use tokio::sync::Notify;
+use tokio::time::timeout;
 
 use crate::CurrentMemoryRetrievalContext;
 
@@ -60,6 +69,29 @@ impl CurrentMemoryRetrievalContext for SwitchingContext {
         } else {
             Ok(self.first.clone())
         }
+    }
+}
+
+struct BlockingContext {
+    context: SwitchingContext,
+    entered: Arc<Notify>,
+    release: Mutex<Option<mpsc::Receiver<()>>>,
+}
+
+impl CurrentMemoryRetrievalContext for BlockingContext {
+    fn current(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+    ) -> Result<RetrievalExecutionContextV1, String> {
+        let context = self.context.current(owner, body_generation)?;
+        if let Some(release) = self.release.lock().unwrap().take() {
+            self.entered.notify_one();
+            release
+                .recv_timeout(Duration::from_secs(30))
+                .map_err(|error| error.to_string())?;
+        }
+        Ok(context)
     }
 }
 
@@ -300,4 +332,136 @@ async fn final_use_revalidation_rejects_changed_hnmf_context() {
             codex_hepta_memory::CognitiveStoreError::Conflict(_)
         ))
     ));
+}
+
+#[derive(Clone, Copy)]
+enum OwnerChange {
+    Tombstone,
+    SourceFrontier,
+}
+
+async fn reject_owner_change_during_provider_callback(change: OwnerChange) {
+    let (_temp, store, owner, context, _) = fixture(/*suffix*/ 134).await;
+    let stable = SwitchingContext {
+        owner: owner.clone(),
+        generation: 1,
+        first: context.clone(),
+        later: context,
+        switch_after_first: false,
+        calls: Arc::new(AtomicUsize::new(0)),
+    };
+    let provider: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(stable.clone());
+    let snapshot = read_with_retrieval_context(
+        &store,
+        &owner,
+        /*body_generation*/ 1,
+        "lemon",
+        /*limit*/ 4,
+        /*ranker*/ None,
+        Some(&provider),
+    )
+    .await
+    .unwrap();
+    assert_eq!(snapshot.items.len(), 1);
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+    let before = store
+        .lane_c_snapshot(&access, &scope, /*now_unix_seconds*/ 200)
+        .await
+        .unwrap();
+    let entered = Arc::new(Notify::new());
+    let (release, wait) = mpsc::channel();
+    let blocking: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(BlockingContext {
+        context: stable,
+        entered: Arc::clone(&entered),
+        release: Mutex::new(Some(wait)),
+    });
+    let revalidation = crate::cognitive_context::revalidate_with_retrieval_context(
+        &store,
+        &owner,
+        &snapshot.snapshot_digest,
+        &snapshot.read_digest,
+        snapshot.omitted_records,
+        &snapshot.items,
+        snapshot.plan.as_ref(),
+        /*ranker*/ None,
+        /*body_generation*/ 1,
+        Some(&blocking),
+    );
+    let mutation = async {
+        // The provider is entered only after final use has captured its cut.
+        // Commit through the real owner before releasing that callback.
+        timeout(Duration::from_secs(30), entered.notified())
+            .await
+            .expect("final-use retrieval provider was not reached");
+        match change {
+            OwnerChange::Tombstone => {
+                let memory_id = StableMemoryId::parse(&snapshot.items[0].memory_id).unwrap();
+                let memory = store.latest_memory(&access, &memory_id).await.unwrap();
+                store
+                    .forget_memory(
+                        &access,
+                        &memory_id,
+                        memory.id.revision,
+                        &ForgetMemoryDraft {
+                            scope: scope.clone(),
+                            reason: "withdrawn during final-use callback".to_string(),
+                            valid_from_unix_seconds: 200,
+                            citations: memory.citations,
+                        },
+                    )
+                    .await
+                    .unwrap();
+            }
+            OwnerChange::SourceFrontier => {
+                store
+                    .append_source(
+                        &access,
+                        &SourceDraft {
+                            scope: scope.clone(),
+                            kind: LedgerSourceKind::ExplicitMemoryDirective,
+                            event_key: "final-use-callback-source".to_string(),
+                            content: b"source frontier advanced during callback".to_vec(),
+                            observed_at_unix_seconds: 200,
+                        },
+                    )
+                    .await
+                    .unwrap();
+            }
+        }
+        let after = store
+            .lane_c_snapshot(&access, &scope, /*now_unix_seconds*/ 200)
+            .await
+            .unwrap();
+        match change {
+            OwnerChange::Tombstone => assert_ne!(after.snapshot(), before.snapshot()),
+            OwnerChange::SourceFrontier => assert_eq!(
+                after.snapshot(),
+                before.snapshot(),
+                "source-only drift must leave the complete memory snapshot unchanged"
+            ),
+        }
+        assert_ne!(after.cut_digest(), before.cut_digest());
+        release.send(()).unwrap();
+    };
+    let (rejected, ()) = tokio::join!(revalidation, mutation);
+    assert!(
+        matches!(
+            &rejected,
+            Err(CognitiveContextError::Store(CognitiveStoreError::Conflict(
+                _
+            )))
+        ),
+        "owner changes committed during a provider callback must stale final use: {rejected:?}"
+    );
+}
+
+#[tokio::test]
+async fn final_use_revalidation_rejects_tombstone_during_provider_callback() {
+    reject_owner_change_during_provider_callback(OwnerChange::Tombstone).await;
+}
+
+#[tokio::test]
+async fn final_use_revalidation_rejects_source_drift_during_provider_callback() {
+    reject_owner_change_during_provider_callback(OwnerChange::SourceFrontier).await;
 }

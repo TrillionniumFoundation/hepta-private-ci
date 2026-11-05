@@ -7,6 +7,7 @@ use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::VerifiedUseAuthorityRefV1;
 use codex_hepta_contracts::authority_lease::AuthorityLease;
 use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
+use codex_hepta_contracts::authority_lease::LeaseVerifiedUseToken;
 use codex_hepta_contracts::authority_lease::dispatch_authority_lease_with_witness;
 use ed25519_dalek::Signature;
 
@@ -42,11 +43,10 @@ impl HostAuthorityWriterRegistration {
         Ok(())
     }
 
-    pub(crate) fn with_live<T>(
+    pub(super) fn verify_live_token(
         &self,
         verifier: &AuthorityLeaseVerifier,
-        dispatch: impl FnOnce(u64) -> io::Result<T>,
-    ) -> io::Result<T> {
+    ) -> io::Result<LeaseVerifiedUseToken> {
         self.validate()?;
         let lease = verifier
             .read_lease(&self.authority_lease.lease_id)
@@ -59,9 +59,18 @@ impl HostAuthorityWriterRegistration {
                 "writer lease changed",
             ));
         }
-        let token = verifier
+        verifier
             .verify_use(&lease.lease_id, lease.revision, &lease.binding)
-            .map_err(root::lease_error)?;
+            .map_err(root::lease_error)
+    }
+
+    pub(crate) fn with_live<T>(
+        &self,
+        verifier: &AuthorityLeaseVerifier,
+        dispatch: impl FnOnce(u64) -> io::Result<T>,
+    ) -> io::Result<T> {
+        let token = self.verify_live_token(verifier)?;
+        let lease = &self.authority_lease;
         let (result, _) =
             dispatch_authority_lease_with_witness(verifier, token, &lease.binding, |witness| {
                 match &witness.authority_ref {

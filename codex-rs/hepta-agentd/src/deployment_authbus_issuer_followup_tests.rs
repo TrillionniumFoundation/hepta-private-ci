@@ -13,7 +13,7 @@ fn objective_independent_issuer_revocation_refuses_new_canonical_signature() {
             destination_id: "canonical-objective-issuer".into(),
             ..f.registration.authority_lease.binding.clone()
         },
-        ..f.registration.authority_lease.clone()
+        ..f.registration.authority_lease
     };
     f.leases.put_lease(parent.clone(), 0).unwrap();
     // The original registered fixture initially aliases issuer and writer.
@@ -45,7 +45,9 @@ fn objective_independent_issuer_revocation_refuses_new_canonical_signature() {
         .unwrap();
     f.leases.revoke(&parent.lease_id, 1, [8; 32]).unwrap();
     assert!(f.base.issuer.with_live_lease(|_| Ok(())).is_err());
-    f.registration.with_live(&f.leases.verifier(), |_| Ok(())).unwrap();
+    f.registration
+        .with_live(&f.leases.verifier(), |_| Ok(()))
+        .unwrap();
     let before = serde_json::to_value(f.base.issuer.store.load(STATE_OWNER).unwrap()).unwrap();
     let frontier = f.leases.frontier().unwrap();
     assert!(
@@ -69,7 +71,7 @@ fn original_registered_text_fixture(parent_id: &str) -> (WriterFixture, Authorit
             destination_id: "canonical-text-issuer".into(),
             ..f.registration.authority_lease.binding.clone()
         },
-        ..f.registration.authority_lease.clone()
+        ..f.registration.authority_lease
     };
     f.leases.put_lease(parent.clone(), 0).unwrap();
     f.base.issuer.lease = Some(
@@ -148,7 +150,9 @@ fn text_independent_issuer_revocation_refuses_new_canonical_signature() {
     authenticate_original_text(&f, &signed);
     f.leases.revoke(&parent.lease_id, 1, [8; 32]).unwrap();
     assert!(f.base.issuer.with_live_lease(|_| Ok(())).is_err());
-    f.registration.with_live(&f.leases.verifier(), |_| Ok(())).unwrap();
+    f.registration
+        .with_live(&f.leases.verifier(), |_| Ok(()))
+        .unwrap();
     let before = serde_json::to_value(f.base.issuer.store.load(STATE_OWNER).unwrap()).unwrap();
     let frontier = f.leases.frontier().unwrap();
     assert!(
@@ -156,8 +160,14 @@ fn text_independent_issuer_revocation_refuses_new_canonical_signature() {
         "Text must not create a new canonical signature after its independent issuer was revoked"
     );
     // An exact retained readback neither signs nor grants new authority.
-    assert_eq!(text("followup-text:1", TextIssuerOperation::Lookup).unwrap(), signed);
-    assert_eq!(text("followup-text:1", TextIssuerOperation::Sign).unwrap(), signed);
+    assert_eq!(
+        text("followup-text:1", TextIssuerOperation::Lookup).unwrap(),
+        signed
+    );
+    assert_eq!(
+        text("followup-text:1", TextIssuerOperation::Sign).unwrap(),
+        signed
+    );
     assert_eq!(
         serde_json::to_value(f.base.issuer.store.load(STATE_OWNER).unwrap()).unwrap(),
         before
@@ -213,15 +223,23 @@ fn human_text_independent_issuer_revocation_refuses_new_canonical_signature() {
     assert_eq!(signed.expires_at_ms, human.expires_at_ms);
     f.leases.revoke(&parent.lease_id, 1, [8; 32]).unwrap();
     assert!(f.base.issuer.with_live_lease(|_| Ok(())).is_err());
-    f.registration.with_live(&f.leases.verifier(), |_| Ok(())).unwrap();
+    f.registration
+        .with_live(&f.leases.verifier(), |_| Ok(()))
+        .unwrap();
     let before = serde_json::to_value(f.base.issuer.store.load(STATE_OWNER).unwrap()).unwrap();
     let frontier = f.leases.frontier().unwrap();
     assert!(
         text("followup-human:2", TextIssuerOperation::Sign).is_err(),
         "Human Text must not create a new canonical signature after its independent issuer was revoked"
     );
-    assert_eq!(text("followup-human:1", TextIssuerOperation::Lookup).unwrap(), signed);
-    assert_eq!(text("followup-human:1", TextIssuerOperation::Sign).unwrap(), signed);
+    assert_eq!(
+        text("followup-human:1", TextIssuerOperation::Lookup).unwrap(),
+        signed
+    );
+    assert_eq!(
+        text("followup-human:1", TextIssuerOperation::Sign).unwrap(),
+        signed
+    );
     assert_eq!(
         serde_json::to_value(f.base.issuer.store.load(STATE_OWNER).unwrap()).unwrap(),
         before

@@ -13,17 +13,18 @@ fn independent_issuer_deadline_caps_grant_and_expiry_creates_no_new_effect_lease
             destination_id: "canonical-notes-issuer".into(),
             ..f.writer.authority_lease.binding.clone()
         },
-        ..f.writer.authority_lease.clone()
+        ..f.writer.authority_lease
     };
     f.registry.put_lease(parent.clone(), 0).unwrap();
-    f.issuer.lease = Some(
-        ProtectedLease::new(f.registry.verifier(), parent.lease_id, parent.revision).unwrap(),
-    );
+    f.issuer.lease =
+        Some(ProtectedLease::new(f.registry.verifier(), parent.lease_id, parent.revision).unwrap());
     let admission = f.admission();
     let signed = admission.issue(&f.issuer, &f.binding).unwrap().unwrap();
     assert_eq!(signed.grant.expires_at_unix_ms, 10_500);
     f.clock.0.store(10_500, Ordering::SeqCst);
-    f.writer.with_live(&f.registry.verifier(), |_| Ok(())).unwrap();
+    f.writer
+        .with_live(&f.registry.verifier(), |_| Ok(()))
+        .unwrap();
     let before = serde_json::to_value(f.issuer.store.load(STATE_OWNER).unwrap()).unwrap();
     let frontier = f.registry.frontier().unwrap();
     let mut next = f.binding.clone();

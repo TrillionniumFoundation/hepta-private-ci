@@ -1,0 +1,1122 @@
+{
+  "schema": "hepta.source-navigation-observation-rebind.v1",
+  "schemaVersion": 1,
+  "sourceCandidate": {
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+  },
+  "scope": "source_navigation_only",
+  "executionEvidenceTransferred": false,
+  "qualificationRulesModified": false,
+  "historicalSourceBasesModified": false,
+  "historicalExecutionRecordsModified": false,
+  "qualificationAfterCommitRequired": true,
+  "priorRecordRecovery": "git cat-file blob <previousMap.blob>; verify SHA-256 and byte count",
+  "records": [
+    {
+      "module": "automation.taskflow",
+      "mapPath": "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "8a2ec5946e61756c173969a39f25b4ccd1f5df83",
+        "sha256": "422f34a5ad944ce91b2c36985df1888c0b661af6582b2acab24f0ffd421caff0",
+        "bytes": 16540
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "repositoryControlledDocumentationGapsClosed": true,
+        "repositoryControlledMappingGapsClosed": true,
+        "repositoryControlledSourceBoundaryGapsClosed": true,
+        "productExecutionComplete": false,
+        "deploymentQualificationComplete": false,
+        "independentAcceptanceComplete": false,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "repositoryControlledProductCompositionGapsClosed": false,
+        "calendarV2ProductControlComplete": true,
+        "externalEffectProductCompositionComplete": false,
+        "agedTurnRecoveryLivenessGapClosed": true,
+        "terminalObserverPerPassBounded": true,
+        "terminalObserverDurableContinuation": true,
+        "externalEffectAsyncBridgeComplete": true,
+        "externalEffectExactWireBindingComplete": true,
+        "externalEffectDurableRecoveryIdentityComplete": true,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "87539beadc2c88b777a7984cf55eb11d878df166f8ffceba3e08573fb5334981"
+    },
+    {
+      "module": "cognitive.read",
+      "mapPath": "docs/modules/cognitive.read/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "f7503922a2066f30f77939b68f2ba7aa19cd891b",
+        "sha256": "6ce095a039d1afab06dbe0de443efdc3c6f917d71dcb16d01452270905caca85",
+        "bytes": 14146
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "dbcc6c02352215eaea3a817cf500d1134e3694c5ee2ebdc5867c7182e6a6564f"
+    },
+    {
+      "module": "cognitive.store",
+      "mapPath": "docs/modules/cognitive.store/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "d1203fed73f7e170038d90e4f789f2429ebfcb74",
+        "sha256": "b48b3821baa63041bc2a18741c282eb62c2f869c4560c397cbe04ee892346cea",
+        "bytes": 14770
+      },
+      "previousSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "57c0b643d2a54ed95d6bdd2f6582f0ebfae63450b307475178e87ae762a4833c"
+    },
+    {
+      "module": "context.compiler",
+      "mapPath": "docs/modules/context.compiler/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "b982d3e96ae12f35929e7c148d3d13cb74ab6b90",
+        "sha256": "d0571848b065c088ba8ed039f997a75b64a1ebf0e0e2c2ee0c42b9a4fe4ed046",
+        "bytes": 10201
+      },
+      "previousSourceBase": {
+        "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
+        "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
+        "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "1a42efd63c96339fa5f66f56fe9a5d76ff13a8342e1524a30ae8d24ed754b430"
+    },
+    {
+      "module": "inference.worker",
+      "mapPath": "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "94b5f3ff7195454c5c8107bd5c7bbdc9b35dab78",
+        "sha256": "68a20d8fea7eaea8b7b0b29db3bf80d9a876e2459d5c4ff893a7ee57087308c1",
+        "bytes": 6336
+      },
+      "previousSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "repositoryControlledDocumentationGapsClosed": true,
+        "repositoryControlledMappingGapsClosed": true,
+        "repositoryControlledSourceBoundaryGapsClosed": false,
+        "productExecutionComplete": false,
+        "deploymentQualificationComplete": false,
+        "independentAcceptanceComplete": false,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "3fb30232146da6cae6f3fe9e283f350a428f640459562957701c18369076888e"
+    },
+    {
+      "module": "intelligence.control",
+      "mapPath": "docs/modules/intelligence.control/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "8464639f089ff6c7a4fcf2cfa46d9e7076827260",
+        "sha256": "261a27a7a69cdf316feeb855e30eb1b96d0aab06ad013182fcb865b5775d4b9f",
+        "bytes": 27689
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "3ceda9d3c9eb1f91b9093138ac7bc3f9f0bc8af1843c79529778fc3c0c885b9d"
+    },
+    {
+      "module": "kernel.authority",
+      "mapPath": "docs/modules/kernel.authority/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "4a5bb7b59fb10b674f4253407beb6171fbf5b8f4",
+        "sha256": "787c3d2ab166acf4e0891aa083586903e391524dd1fa012b5c4a92acd0d4ee7a",
+        "bytes": 11357
+      },
+      "previousSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "4faaee74efdc3cb1db492d701339d64183e27651193e563e4c5ac8f134dc88cd"
+    },
+    {
+      "module": "kernel.evidence",
+      "mapPath": "docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "3a7db28cf3774193080ecb15279fcffd7e8342bf",
+        "sha256": "b816131a7e43e26f353519f74c9af8e06489f633776004b14ed107757462bb73",
+        "bytes": 6791
+      },
+      "previousSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "e0301e04e1af0e8a37ac2220e2e7a6d9c57eb37de0f984fd99691723e038201a"
+    },
+    {
+      "module": "kernel.operations",
+      "mapPath": "docs/modules/kernel.operations/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "97685939417621d695c2897890050481f0215964",
+        "sha256": "843283e522c7449a31908e2f5faee07fdb748ac88359ba8472ba0d49466d49a9",
+        "bytes": 15841
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "57dbc6d7c029a6c46d1134d5f530c36dccf4eee28e38a105fd36e0e067c7224c"
+    },
+    {
+      "module": "knowledge.graph",
+      "mapPath": "docs/modules/knowledge.graph/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "b39e574e3504ecf724ddf14406b6cd298e0da959",
+        "sha256": "543885e40763443c1f41c8166eaa94d2866b769cf25411e037710cda945740fa",
+        "bytes": 13230
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "da1cd608ee0a3fae6130f77182145e97c0b22e5579381bddc28a2bd5fdcb4600"
+    },
+    {
+      "module": "learning.artifacts",
+      "mapPath": "docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "9d826ffb7ed7fb96caf1f2d052b5fa66312a384b",
+        "sha256": "ac8cae2ebc782bdebc51db93612003c5d7d964fe386884b5abbe2fdfd7d91818",
+        "bytes": 20630
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "77cc8a3c24a846ce5901eef12c82c6ad8a2d81f5bdadf104462034ce564c19d2"
+    },
+    {
+      "module": "learning.eval",
+      "mapPath": "docs/modules/learning.eval/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "e6453a9df9c29fbbd3dcfdb970362aec6ae3823d",
+        "sha256": "a478b27c2b0a88c18a3e0edb0ab76879202180d4f6febb5b26470782f11cdbdb",
+        "bytes": 15234
+      },
+      "previousSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productAdapterComposed": true,
+        "concreteLocalCasBackend": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "targetHostQualified": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "26bb9fd0cc72ab77174d10676800aadf300e7fa7a3675bf9a7e1b8c49a9012a1"
+    },
+    {
+      "module": "learning.ledger",
+      "mapPath": "docs/modules/learning.ledger/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "4483f1597bfaf9eacfb3e02ea0385bda022ec986",
+        "sha256": "35759393b6fa9fc58c15ce454ce32697b120f30ee898434f68f7962511796936",
+        "bytes": 20665
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "durableRunStartJournalSourceImplemented": true,
+        "authenticatedProductRunStartComposition": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "48284c03a301fba750fe17f53ef2513c3683d5ffda599e63abb3c659b5e644eb"
+    },
+    {
+      "module": "learning.operator",
+      "mapPath": "docs/modules/learning.operator/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "38c51d93c69fae593b80aacf5fdbef875d0352b4",
+        "sha256": "d0e6f494c86cb079a1a3f52d5c58beede1193f04b28b31a3f86550dfa1aeb5db",
+        "bytes": 14176
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "publicOperationInventoryComplete": true,
+        "explicitReadConsumerComposed": true,
+        "defaultProductLoopWired": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "5779da673fe643a43100cc257b0a041deacf069557d137c546120f4e82e381f0"
+    },
+    {
+      "module": "learning.plasticity",
+      "mapPath": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "e34fac6d9eec6f94d61a31e62f9145b88a135235",
+        "sha256": "1afcf5cca1cf5d5a25fe04df9d9ea4ace6037d4009d8fdbc5336953ddb85b2eb",
+        "bytes": 37294
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "757b58d7cf49cb316ac269c4d001a0b5fc027be3a95740021bac73e4c2f72b07"
+    },
+    {
+      "module": "memory.federation",
+      "mapPath": "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "8a382fcfaef65313c1288c11ab06a23ea82ef17b",
+        "sha256": "6a20fac8af4010780aa35ec5d32017dee98fdad97a113bc5d62602fd44946e18",
+        "bytes": 10103
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "e8f32d5ee14272146ee011d4bfb02bfce2fb1e41c161bdbe0c6e7c551f9c1a38"
+    },
+    {
+      "module": "memory.retrieval",
+      "mapPath": "docs/modules/memory.retrieval/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "18ab799265dd6c4ccce24da2ae880e78d15d18a8",
+        "sha256": "319e582f9d52414c2bc1446a74859ca77875ff394a8324bde0051a3d277b3bbc",
+        "bytes": 12703
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "960a3654a38ce0a7a693d5eaeea238e1bd1dc481a5ec8a7a07556953a72f2033"
+    },
+    {
+      "module": "objective.compiler",
+      "mapPath": "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "6c4e5f9c72f5b9670b4c3158ef0ec25e8d97d4d1",
+        "sha256": "c9c90dbcd02f4933ffb9149e1b9c2d9b3d4144b40cd3d50c9b695f99fa39ab04",
+        "bytes": 18523
+      },
+      "previousSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "productSourceComposition": true,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "f6e35e6784e3c02f9907d4b8f521dc6bbe82412c06fbff6f7e89710e81e22f66"
+    },
+    {
+      "module": "platform.types",
+      "mapPath": "docs/modules/platform.types/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "16e3676ca895dac14efc993fbacbb8934c6853b6",
+        "sha256": "e2f5649ee5ed76f3e13d5e7f1d578391fa0953dbc689a8cac658382173942110",
+        "bytes": 9939
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "implementedOperationMappingComplete": true,
+        "ownedTargetProtocolSourceComplete": false,
+        "nativeSourceMappingComplete": false,
+        "repositoryControlledDocumentationGapsClosed": true,
+        "repositoryControlledMappingGapsClosed": true,
+        "repositoryControlledSourceBoundaryGapsClosed": false,
+        "productExecutionComplete": false,
+        "deploymentQualificationComplete": false,
+        "independentAcceptanceComplete": false,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "0a1118a8e6dc0d25f84cf0039fb0c030bb731a6aeafd70925c903f52ba26603f"
+    },
+    {
+      "module": "platform.wire",
+      "mapPath": "docs/modules/platform.wire/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "8e8903bdc1992195a4471fd20100a46cba4f638b",
+        "sha256": "f24afecff5549f86f5aa19868f415d4163a49b2db2c844a3afe10a06455afac9",
+        "bytes": 7972
+      },
+      "previousSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "c8782458da47d4afe82e03050350e65f3a8217c6f40a7ffc41d2f1f6fbfaf935"
+    },
+    {
+      "module": "runtime.agentd",
+      "mapPath": "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "87a08e411991a2718a35a6b2590f0bfd1ad00942",
+        "sha256": "fdec79bc475c6578dda563e552e42b4265215824e60738f5807003cb16e62deb",
+        "bytes": 17344
+      },
+      "previousSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "repositoryControlledDocumentationGapsClosed": true,
+        "repositoryControlledMappingGapsClosed": true,
+        "repositoryControlledSourceBoundaryGapsClosed": false,
+        "productExecutionComplete": false,
+        "deploymentQualificationComplete": false,
+        "independentAcceptanceComplete": false,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "durableRunStartProjectionSourceImplemented": true,
+        "currentTrustRunStartRevalidationComposed": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "db66d3b586292fba0c244fbd5cf09e7182ee191ed15059629b0453c3f043c718"
+    },
+    {
+      "module": "runtime.codex",
+      "mapPath": "docs/modules/runtime.codex/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "fb092a82ccda46da7b7fc510954cad6351c677cf",
+        "sha256": "08b10bad948d2fc0e05a9a060a4c02fff4dd9fddba760a1dcada60f6262edbbb",
+        "bytes": 15869
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": false,
+        "repositoryControlledDocumentationGapsClosed": true,
+        "repositoryControlledMappingGapsClosed": false,
+        "repositoryControlledSourceBoundaryGapsClosed": false,
+        "productExecutionComplete": false,
+        "deploymentQualificationComplete": false,
+        "independentAcceptanceComplete": false,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "1eb9fc49492edbe2c810ef92e9eab2a85f082ecc3a076f6274b8a768ceca109c"
+    },
+    {
+      "module": "runtime.fleet",
+      "mapPath": "docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "238586672b9161cd9a91234e6d2071e886146125",
+        "sha256": "c2f6cb4612a8067c3e548e4366ad2014c4d38851682e29b300c8eb00d3044f93",
+        "bytes": 4570
+      },
+      "previousSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "repositoryControlledDocumentationGapsClosed": true,
+        "repositoryControlledMappingGapsClosed": true,
+        "repositoryControlledSourceBoundaryGapsClosed": false,
+        "productExecutionComplete": false,
+        "deploymentQualificationComplete": false,
+        "independentAcceptanceComplete": false,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "35881aca21712608552740995fb31b883b534dcd428ca98566acc551e8fb8492"
+    },
+    {
+      "module": "runtime.supervisor",
+      "mapPath": "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "0ebfc4d68fd9cc6c60b9e612d3003f55bb97b89c",
+        "sha256": "362f4f5ca0a88f603099f4c0f02c434945d81b3210fa2af833de4be4332f4d69",
+        "bytes": 18249
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+        "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
+      },
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "repositoryControlledDocumentationGapsClosed": true,
+        "repositoryControlledMappingGapsClosed": true,
+        "repositoryControlledSourceBoundaryGapsClosed": true,
+        "productExecutionComplete": false,
+        "deploymentQualificationComplete": false,
+        "independentAcceptanceComplete": false,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "e01ea1e0be9b049c7b50346188795ce7ec1aacf902207580eb01c67b239e018f",
+      "reviewedObservationArchival": {
+        "module": "runtime.supervisor",
+        "previousMapBlob": "0ebfc4d68fd9cc6c60b9e612d3003f55bb97b89c",
+        "previousMapSha256": "362f4f5ca0a88f603099f4c0f02c434945d81b3210fa2af833de4be4332f4d69",
+        "previousObservationSha256": "68b7b5826763ebc54617a46d4d48b19fb4baa4a183f5b382923e5f56dc7a7be3",
+        "previousObservedAtHead": {
+          "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+          "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384",
+          "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
+        },
+        "reviewReason": "This exact historical source-convergence observation explicitly leaves product activation, deployed trust roots, target-host qualification and independent acceptance external. Preserve its full interpretation here; the replacement observation records current source navigation only.",
+        "historicalInterpretationTransferred": false,
+        "replacementScope": "source_navigation_only"
+      }
+    },
+    {
+      "module": "secrets.heptabao",
+      "mapPath": "docs/modules/secrets.heptabao/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "1364f47a2dcef91e28e3e34637a4ff83417f0cb4",
+        "sha256": "9e5c8a5efa822b2bbac223e04198c0427f0d9206594614e1783a1ecb708377db",
+        "bytes": 3880
+      },
+      "previousSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "3643aeb71f1a6cf03dba0447b734a95701427a2d37b8c9a346cd00baf669cbfb"
+    },
+    {
+      "module": "utility.ndu",
+      "mapPath": "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b",
+        "blob": "e6bdd280f2fd4aab4d31de587ab543dac6f1c97c",
+        "sha256": "cfa9b8b3968ceeb86bc472cc21ce6e70d9800719e12d616b31873684f330402d",
+        "bytes": 27997
+      },
+      "previousSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "previousObservedAtHead": null,
+      "replacementSourceBase": {
+        "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+        "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+      },
+      "replacementObservedAtHead": {
+        "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+        "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "requestLocalReadOnlyProductExecutionProved": false,
+        "authenticatedOwnerSourceImplemented": true,
+        "authenticatedProductionProductExecutionProved": false,
+        "productionWriterSourceImplemented": true,
+        "productionWriterActivated": false,
+        "stochasticAdmissionSourceImplemented": true,
+        "independentDecisionSourceImplemented": true,
+        "independentDecisionEvidenceProved": false,
+        "namedHostQualificationReceiptProved": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "011b2d06cc200feb05df02018bea2d5aac8b7d81a784e724d4c175895381fb3c"
+    }
+  ]
+}

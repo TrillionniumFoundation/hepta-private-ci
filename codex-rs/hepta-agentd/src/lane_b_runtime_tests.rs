@@ -610,7 +610,9 @@ fn dispatched_coordinator_with_deadline(deadline_ms: u64) -> AgentRunCoordinator
         AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
     let mut run = snapshot();
     run.deadline_ms = deadline_ms;
-    coordinator.start_run(/*now_ms*/ 100, run).expect("admit run");
+    coordinator
+        .start_run(/*now_ms*/ 100, run)
+        .expect("admit run");
     let mut context = attachment();
     context.deadline_ms = deadline_ms;
     coordinator
@@ -628,7 +630,12 @@ fn cancellation_deadline_overflow_preserves_dispatched_run() {
     let before = coordinator.run("run.1");
     let now_ms = u64::MAX - CANCEL_ACK_TIMEOUT_MS + 1;
     assert_eq!(
-        coordinator.cancel_run(now_ms, "run.1", /*expected_revision*/ 3, "operator_request"),
+        coordinator.cancel_run(
+            now_ms,
+            "run.1",
+            /*expected_revision*/ 3,
+            "operator_request"
+        ),
         Err(AgentRunError::ArithmeticOverflow)
     );
     assert_eq!(coordinator.run("run.1"), before);
@@ -657,8 +664,16 @@ fn last_representable_cancel_deadline_remains_reconcilable() {
     expected.cancel_reason = Some("operator_request".to_string());
     expected.cancel_ack_deadline_ms = Some(u64::MAX);
     assert_eq!(
-        coordinator.cancel_run(now_ms, "run.1", /*expected_revision*/ 3, "operator_request"),
-        Ok((CancellationDisposition::CancellingAfterDispatch, expected.clone()))
+        coordinator.cancel_run(
+            now_ms,
+            "run.1",
+            /*expected_revision*/ 3,
+            "operator_request"
+        ),
+        Ok((
+            CancellationDisposition::CancellingAfterDispatch,
+            expected.clone()
+        ))
     );
     assert_eq!(coordinator.expire_deadlines(u64::MAX), Ok(1));
     expected.revision += 1;
@@ -679,7 +694,11 @@ fn revision_overflow_preserves_pre_dispatch_state() {
             .expect("admit run");
         if phase == RunPhase::ContextAttached {
             coordinator
-                .attach_context(/*now_ms*/ 200, /*expected_revision*/ 1, attachment())
+                .attach_context(
+                    /*now_ms*/ 200,
+                    /*expected_revision*/ 1,
+                    attachment(),
+                )
                 .expect("attach context");
         }
         // Earlier phases do not have a public recovery constructor. Inject
@@ -720,12 +739,21 @@ fn revision_overflow_preserves_dispatched_and_cancelling_state() {
         let mut coordinator = dispatched_coordinator_with_deadline(/*deadline_ms*/ 10_000);
         if phase == RunPhase::Cancelling {
             coordinator
-                .cancel_run(/*now_ms*/ 400, "run.1", /*expected_revision*/ 3, "operator_request")
+                .cancel_run(
+                    /*now_ms*/ 400,
+                    "run.1",
+                    /*expected_revision*/ 3,
+                    "operator_request",
+                )
                 .expect("cancel after dispatch");
         }
         coordinator.runs.get_mut("run.1").expect("run").revision = u64::MAX;
         let before = coordinator.run("run.1");
-        let now_ms = if phase == RunPhase::Cancelling { 3_400 } else { 500 };
+        let now_ms = if phase == RunPhase::Cancelling {
+            3_400
+        } else {
+            500
+        };
         assert_eq!(
             coordinator.cancel_run(now_ms, "run.1", u64::MAX, "operator_request"),
             Err(AgentRunError::ArithmeticOverflow)
@@ -801,7 +829,9 @@ fn bulk_unknown_error_retains_completed_prefix_and_failed_record() {
     let failed = coordinator.run("run.1");
     let mut first = snapshot();
     first.run_id = "run.0".to_string();
-    coordinator.start_run(/*now_ms*/ 100, first).expect("admit first run");
+    coordinator
+        .start_run(/*now_ms*/ 100, first)
+        .expect("admit first run");
     let mut context = attachment();
     context.run_id = "run.0".to_string();
     coordinator

@@ -1,6 +1,9 @@
+use super::AgentMessageOutput as NativeMessageOutput;
+use super::observe_for_test_with_messages as observe_for_test;
 use super::*;
 use codex_app_server_protocol::ItemCompletedNotification;
 use codex_app_server_protocol::ItemStartedNotification;
+use codex_app_server_protocol::ThreadItem;
 
 fn message(id: &str, text: &str) -> ThreadItem {
     ThreadItem::AgentMessage {
@@ -46,7 +49,12 @@ fn complete_only_message_is_observed_only_for_the_bound_turn() {
     observe_for_test(
         &mut output,
         &mut messages,
-        completed("thread-a", "turn-a", "complete-only", "fresh context accepted"),
+        completed(
+            "thread-a",
+            "turn-a",
+            "complete-only",
+            "fresh context accepted",
+        ),
     )
     .unwrap();
     assert_eq!(output.output, "fresh context accepted");
@@ -186,7 +194,12 @@ fn oversized_complete_item_preserves_previous_output_and_pending_state() {
         observe_for_test(
             &mut output,
             &mut messages,
-            completed("thread-a", "turn-a", "one", &"x".repeat(MAX_OUTPUT_BYTES + 1)),
+            completed(
+                "thread-a",
+                "turn-a",
+                "one",
+                &"x".repeat(MAX_OUTPUT_BYTES + 1)
+            ),
         )
         .is_err()
     );
@@ -203,22 +216,36 @@ fn oversized_complete_item_preserves_previous_output_and_pending_state() {
 
 #[test]
 fn empty_items_cannot_retain_unbounded_metadata() {
-    let mut output = String::new();
+    let mut output = output();
     let mut messages = NativeMessageOutput::default();
     let suffix = "x".repeat(MAX_OUTPUT_BYTES / 16);
     let mut rejected = false;
     for index in 0..=16 {
         let id = format!("{index}{suffix}");
-        if messages.start(&id).is_err() {
+        let notification = ServerNotification::ItemStarted(ItemStartedNotification {
+            item: message(&id, ""),
+            thread_id: "thread-a".to_string(),
+            turn_id: "turn-a".to_string(),
+            started_at_ms: 0,
+        });
+        if messages.observe(&notification, &mut output).is_err() {
             rejected = true;
             break;
         }
     }
     assert!(rejected);
     messages
-        .complete(&format!("0{suffix}"), "existing item still fits", &mut output)
+        .observe(
+            &completed(
+                "thread-a",
+                "turn-a",
+                &format!("0{suffix}"),
+                "existing item still fits",
+            ),
+            &mut output,
+        )
         .unwrap();
-    assert_eq!(output, "existing item still fits");
+    assert_eq!(output.output, "existing item still fits");
 }
 
 #[test]
@@ -254,4 +281,3 @@ fn oversized_terminal_snapshot_cannot_authorize_completion() {
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(!output.terminal_observed);
 }
-
