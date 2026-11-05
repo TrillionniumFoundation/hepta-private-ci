@@ -11,6 +11,7 @@ on:
       - codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs
       - codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs
       - .github/workflows/hepta-windows-token-mechanism-probe.yml
+      - .github/scripts/run_b11_acl_identity_counterfactual.py
 
 permissions:
   contents: read
@@ -35,6 +36,7 @@ jobs:
           cache-scope: bazel-test
 
       - name: Run the original outer Windows sandbox unit target
+        id: original_unit_target
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
         shell: bash
@@ -78,6 +80,17 @@ jobs:
           printf '%s\n' "${statuses[1]}" > "$evidence/console-copy-exit-code.txt"
           git status --porcelain=v1 > "$evidence/source-status-after.txt"
           exit "${statuses[0]}"
+
+      - name: Check the ACL identity counterfactual and restore its source
+        if: always() && !cancelled() && steps.original_unit_target.outcome != 'skipped'
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$(cygpath -u "${RUNNER_TEMP}")/b11-token-mechanism-probe"
+          python3 .github/scripts/run_b11_acl_identity_counterfactual.py \
+            --evidence "$(cygpath -w "$evidence")"
 
       # The unchanged wrapper already retains this exact target on both failure
       # and console-reported success, including cached/missing evidence limits.
